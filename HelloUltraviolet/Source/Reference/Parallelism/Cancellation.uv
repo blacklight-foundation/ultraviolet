@@ -12,12 +12,24 @@ internal procedure cancelledParallelReference(context: Context) -> bool {
 internal procedure cancellationChildReference() -> bool {
     let token: CancelToken@Active = CancelToken::new()
     let child: CancelToken@Active = token~>child()
+    let pending = child~>wait_cancelled()
+    let _ = pending
     token~>cancel()
     return child~>is_cancelled()
+}
+
+internal procedure cancelTokenStaticSemanticsReference() -> bool {
+    return cancellationChildReference()
+}
+
+internal procedure parallelCancelTokenAvailabilityReference(context: Context) -> bool {
+    return cancelledParallelReference(context)
 }
 
 /// Exercises the Parallelism Cancellation reference surface.
 public procedure runParallelismCancellationReference(context: Context) -> bool {
     return cancelledParallelReference(context) &&
-        cancellationChildReference()
+        cancellationChildReference() &&
+        cancelTokenStaticSemanticsReference() &&
+        parallelCancelTokenAvailabilityReference(context)
 }

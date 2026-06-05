@@ -42,6 +42,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "06_driver/cli.h"
@@ -56,6 +57,7 @@
 #include "06_driver/version.h"
 
 #include "00_core/assert_spec.h"
+#include "00_core/behavior_model.h"
 #include "00_core/build_log_policy.h"
 #include "00_core/crash_debug.h"
 #include "00_core/diagnostic_messages.h"
@@ -198,6 +200,30 @@ bool HasBlockingErrorsForSema(const ultraviolet::core::DiagnosticStream& diags) 
 
 std::size_t CountErrorDiagnostics(const ultraviolet::core::DiagnosticStream& diags) {
   return ultraviolet::analysis::CountErrorLikeDiagnostics(diags);
+}
+
+void RecordOutputBackendDiagnostic(std::string_view code,
+                                   std::string_view source) {
+  if (!ultraviolet::core::Conformance::Enabled() ||
+      code.rfind("E-OUT-04", 0) != 0) {
+    return;
+  }
+
+  std::string payload;
+  payload += "source=";
+  payload += source;
+  payload += ";code=";
+  payload += code;
+  payload += ";phase=diagnostics;diagnostic_family=output-backend;"
+             "spec_section=24.8";
+  ultraviolet::core::Conformance::Record(
+      "req.24.OutputBackendDiagnosticsOwnership",
+      std::nullopt,
+      payload);
+  ultraviolet::core::Conformance::Record(
+      "diag.24.OutputBackendDiagnostics",
+      std::nullopt,
+      payload);
 }
 
 void EmitInternalDiagnostic(ultraviolet::core::DiagnosticStream& diags,
@@ -685,11 +711,39 @@ std::filesystem::path HarnessRootForAssembly(
   return assembly.outputs.root / "Tests" / assembly.name;
 }
 
+std::filesystem::path SourceNativeTestTemporaryDirectoryForAssembly(
+    const ultraviolet::project::Project& project,
+    const ultraviolet::project::Assembly& assembly) {
+  const std::filesystem::path project_parent = project.root.parent_path();
+  const std::filesystem::path temporary_owner_root =
+      project_parent.empty() ? project.root : project_parent;
+  const std::filesystem::path project_name =
+      project.root.filename().empty() ? std::filesystem::path("Project")
+                                      : project.root.filename();
+  return temporary_owner_root / "Build" / "Tests" / project_name /
+         assembly.name / "tmp";
+}
+
+void RecordSourceNativeTestHarnessGeneration(
+    const ultraviolet::project::Assembly& assembly,
+    const std::vector<ultraviolet::driver::SourceNativeTestDescriptor>& tests,
+    std::string_view harness_module_path,
+    const std::filesystem::path& harness_source) {
+  std::string payload = "source=BuildAndRunSourceNativeTestHarness;assembly=" +
+      assembly.name + ";selected_tests=" + std::to_string(tests.size()) +
+      ";harness_module=" + std::string(harness_module_path) +
+      ";harness_source=" + harness_source.generic_string() +
+      ";ephemeral=true;compiled_with_harness_entrypoint=true;"
+      "invokes_selected_tests=true;deterministic_order=true";
+  ultraviolet::core::Conformance::Record(
+      "lowering.TestHarnessGeneration", std::nullopt, payload);
+}
+
 std::string GenerateSourceNativeTestHarness(
     const std::vector<ultraviolet::driver::SourceNativeTestDescriptor>& tests,
     const std::filesystem::path& temporary_directory,
     ultraviolet::project::TargetProfile target_profile,
-    const std::filesystem::path& current_directory) {
+    const std::filesystem::path& compiler_current_directory) {
   std::ostringstream out;
   out << "//! Generated source-native test harness.\n\n";
   out << "public procedure main(context: Context) -> i32 {\n";
@@ -704,6 +758,7 @@ std::string GenerateSourceNativeTestHarness(
     out << "        io: context.io,\n";
     out << "        sys: context.sys,\n";
     out << "        heap: context.heap,\n";
+    out << "        time: context.time,\n";
     out << "        temporary_directory: \""
         << EscapeUvString(temporary_directory.string()) << "\",\n";
     out << "        target_profile: \""
@@ -713,7 +768,7 @@ std::string GenerateSourceNativeTestHarness(
     out << "        compiler_executable_path: \""
         << EscapeUvString(g_compiler_executable_path.string()) << "\",\n";
     out << "        compiler_current_directory: \""
-        << EscapeUvString(current_directory.string()) << "\"\n";
+        << EscapeUvString(compiler_current_directory.string()) << "\"\n";
     out << "    }\n";
   }
 
@@ -770,7 +825,6 @@ std::optional<int> BuildAndRunSourceNativeTestHarness(
     const std::vector<ultraviolet::driver::SourceNativeTestDescriptor>& tests,
     ultraviolet::project::TargetProfile target_profile,
     const ultraviolet::driver::CliOptions& opts,
-    const std::filesystem::path& current_directory,
     ultraviolet::core::DiagnosticStream& diags) {
   const std::filesystem::path harness_root = HarnessRootForAssembly(assembly);
   const std::filesystem::path harness_source_dir = harness_root / "Source";
@@ -780,7 +834,10 @@ std::optional<int> BuildAndRunSourceNativeTestHarness(
       harness_source_dir / "Main.uv";
 
   const std::string source = GenerateSourceNativeTestHarness(
-      tests, harness_root / "tmp", target_profile, current_directory);
+      tests,
+      SourceNativeTestTemporaryDirectoryForAssembly(project, assembly),
+      target_profile,
+      project.root);
   if (!WriteTextFile(harness_source, source, diags)) {
     return std::nullopt;
   }
@@ -829,6 +886,8 @@ std::optional<int> BuildAndRunSourceNativeTestHarness(
   } else if (opts.color_mode == ultraviolet::driver::ColorMode::Never) {
     build_args.push_back("--color=never");
   }
+  RecordSourceNativeTestHarnessGeneration(
+      assembly, tests, harness_module_path, harness_source);
 
   ultraviolet::core::HostProcessSpec build_spec;
   build_spec.program = g_compiler_executable_path;
@@ -1941,6 +2000,88 @@ std::unordered_map<std::string, std::string> ModuleOwnerMapForAssemblies(
   return owners;
 }
 
+std::string ModulePathListPayload(
+    const std::vector<ultraviolet::ast::ModulePath>& module_paths) {
+  std::string payload;
+  for (std::size_t i = 0; i < module_paths.size(); ++i) {
+    if (i != 0) {
+      payload.push_back(',');
+    }
+    payload += ultraviolet::core::StringOfPath(module_paths[i]);
+  }
+  return payload;
+}
+
+void RecordModuleAggregationInputsOutputs(
+    const ultraviolet::project::Project& project,
+    std::size_t compilation_unit_count,
+    std::size_t compilation_unit_file_count,
+    const std::optional<std::vector<ultraviolet::ast::ASTModule>>&
+        project_ast_modules,
+    const std::vector<ultraviolet::ast::ASTModule>& resolved_ast_modules,
+    const ultraviolet::analysis::NameMapBuildResult& name_maps,
+    const ultraviolet::analysis::ResolveModulesResult& resolved,
+    const ultraviolet::analysis::TypecheckResult& typechecked) {
+  if (!ultraviolet::core::Conformance::Enabled()) {
+    return;
+  }
+
+  const bool has_init_plan = typechecked.init_plan.has_value();
+  const std::size_t project_ast_module_count =
+      project_ast_modules.has_value() ? project_ast_modules->size() : 0;
+
+  std::string payload =
+      "source=CompilerMain;tuple=ModuleAggInputsOutputs;modules=" +
+      std::to_string(project.modules.size()) +
+      ";source_root=" + project.source_root.generic_string() +
+      ";compilation_units=" + std::to_string(compilation_unit_count) +
+      ";compilation_unit_files=" +
+      std::to_string(compilation_unit_file_count) +
+      ";ast_modules=" + std::to_string(resolved_ast_modules.size()) +
+      ";project_ast_modules=" + std::to_string(project_ast_module_count) +
+      ";name_maps=" + std::to_string(name_maps.name_maps.size()) +
+      ";resolved_modules=" + std::to_string(resolved.modules.size()) +
+      ";resolve_ok=" + std::string(resolved.ok ? "true" : "false") +
+      ";init_plan=" + std::string(has_init_plan ? "true" : "false");
+
+  if (has_init_plan) {
+    const auto& init_plan = *typechecked.init_plan;
+    payload += ";dependency_graph_modules=" +
+        std::to_string(init_plan.graph.modules.size());
+    payload += ";type_edges=" +
+        std::to_string(init_plan.graph.type_edges.size());
+    payload += ";eager_edges=" +
+        std::to_string(init_plan.graph.eager_edges.size());
+    payload += ";lazy_edges=" +
+        std::to_string(init_plan.graph.lazy_edges.size());
+    payload += ";init_order_count=" +
+        std::to_string(init_plan.init_order.size());
+    payload += ";init_order=" + ModulePathListPayload(init_plan.init_order);
+    payload += ";topo_ok=" + std::string(init_plan.topo_ok ? "true" : "false");
+  }
+
+  const bool all_outputs_present =
+      resolved.ok && has_init_plan &&
+      resolved_ast_modules.size() == resolved.modules.size() &&
+      name_maps.name_maps.size() >= project.modules.size();
+  payload += ";all_outputs_present=" +
+      std::string(all_outputs_present ? "true" : "false");
+
+  ultraviolet::core::Conformance::Record(
+      "def.ModuleAggregationInputsOutputs", std::nullopt, payload);
+
+  if (has_init_plan) {
+    ultraviolet::core::Conformance::Record(
+        "conformance.ModuleAggregationEagerGraphLoweringInput",
+        std::nullopt,
+        payload);
+    ultraviolet::core::Conformance::Record(
+        "conformance.ModuleAggregationLifecycleLoweringOwnership",
+        std::nullopt,
+        payload);
+  }
+}
+
 std::optional<std::string> ResolveImportedAssemblyName(
     const ultraviolet::ast::ImportDecl& import,
     const ultraviolet::ast::ModulePath& current_module,
@@ -2020,8 +2161,12 @@ std::filesystem::path ConformanceLogsDir(
 }
 
 std::filesystem::path FallbackConformanceLogsDir(
-    const std::filesystem::path& project_root) {
-  return project_root / "Build" / "Logs" / "Conformance";
+    const std::filesystem::path& project_root,
+    const ultraviolet::driver::CliOptions& opts) {
+  if (opts.out_dir.has_value()) {
+    return ConformanceLogsDir(project_root / *opts.out_dir);
+  }
+  return ConformanceLogsDir(project_root / "Build");
 }
 
 std::filesystem::path ResolveLogFileName(
@@ -2114,15 +2259,18 @@ void EmitExternalCode(ultraviolet::core::DiagnosticStream& diags,
       child.message = *note;
       diag->children.push_back(std::move(child));
     }
+    RecordOutputBackendDiagnostic(code, "EmitExternalCode");
     ultraviolet::core::Emit(diags, *diag);
     return;
   }
+  RecordOutputBackendDiagnostic(code, "EmitExternalCode/fallback");
   ultraviolet::core::EmitExternalDiagnostic(diags, code);
 }
 
 void EnsureCompilerLogDirectory(const std::filesystem::path& logs_root) {
   std::error_code ec;
-  std::filesystem::create_directories(logs_root, ec);
+  std::filesystem::create_directories(
+      ultraviolet::core::HostFilesystemPath(logs_root), ec);
 }
 
 void EnsureRuntimeLogDirectory(const ultraviolet::project::Project& project,
@@ -2145,10 +2293,43 @@ std::optional<ultraviolet::project::TargetProfile> ResolveSelectedTargetProfile(
     const ultraviolet::project::Project& project,
     ultraviolet::core::DiagnosticStream& diags) {
   if (opts.target_profile_override.has_value()) {
-    return *opts.target_profile_override;
+    const auto selected = *opts.target_profile_override;
+    if (ultraviolet::core::Conformance::Enabled()) {
+      const std::string profile(
+          ultraviolet::project::TargetProfileName(selected));
+      ultraviolet::core::Conformance::Record(
+          "req.TargetProfileResolution",
+          std::nullopt,
+          "source=cli_override;resolution_once=true;selected=" + profile);
+      ultraviolet::core::Conformance::Record(
+          "req.TargetProfileNoHostInference",
+          std::nullopt,
+          "host_inference=false;selected=" + profile);
+    }
+    return selected;
   }
   if (project.toolchain.target_profile.has_value()) {
-    return *project.toolchain.target_profile;
+    const auto selected = *project.toolchain.target_profile;
+    if (ultraviolet::core::Conformance::Enabled()) {
+      const std::string profile(
+          ultraviolet::project::TargetProfileName(selected));
+      ultraviolet::core::Conformance::Record(
+          "req.TargetProfileResolution",
+          std::nullopt,
+          "source=toolchain.target_profile;resolution_once=true;selected=" +
+              profile);
+      ultraviolet::core::Conformance::Record(
+          "req.TargetProfileNoHostInference",
+          std::nullopt,
+          "host_inference=false;selected=" + profile);
+    }
+    return selected;
+  }
+  if (ultraviolet::core::Conformance::Enabled()) {
+    ultraviolet::core::Conformance::Record(
+        "req.TargetProfileNoHostInference",
+        std::nullopt,
+        "host_inference=false;selected=none;status=ill_formed");
   }
   ultraviolet::core::EmitExternalDiagnostic(diags, "E-PRJ-0112");
   return std::nullopt;
@@ -2439,6 +2620,9 @@ IncrementalNoopCheckResult CheckIncrementalNoopReuse(
   return result;
 }
 
+namespace ast = ultraviolet::ast;
+namespace codegen = ultraviolet::codegen;
+
 }  // namespace
 
 // ============================================================================
@@ -2692,10 +2876,7 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
       }
       const auto result = BuildAndRunSourceNativeTestHarness(
           *project_result.project, *assembly_it, tests_by_assembly[assembly_name],
-          *selected_target_profile,
-          *opts,
-          current_dir_ec ? std::filesystem::path(".") : current_directory,
-          test_diags);
+          *selected_target_profile, *opts, test_diags);
       if (!result.has_value()) {
         RenderDriverDiagnostics(test_diags, *opts, color_override);
         return 1;
@@ -2855,7 +3036,25 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
   }
 
   const std::filesystem::path input_path = opts->input_path;
+  if (opts->conformance_path.has_value() && opts->out_dir.has_value()) {
+    const std::filesystem::path requested_output_root(*opts->out_dir);
+    if (requested_output_root.is_absolute()) {
+      const std::filesystem::path conformance_logs_dir =
+          ConformanceLogsDir(requested_output_root);
+      EnsureCompilerLogDirectory(conformance_logs_dir);
+      core::Conformance::Init(
+          EffectiveConformancePath(conformance_logs_dir, *opts), "compile");
+      core::Conformance::SetRoot(input_path.string());
+      core::Conformance::SetPhase("project-root");
+      core::RecordBehaviorModelConformance();
+    }
+  }
   const auto project_root = project::FindProjectRoot(input_path);
+  if (core::Conformance::Enabled()) {
+    core::Conformance::SetRoot(project_root.string());
+    core::Conformance::SetPhase("project-load");
+    core::RecordBehaviorModelConformance();
+  }
 
   core::DiagnosticStream diags;
   const bool is_verbose = opts->verbosity == Verbosity::Verbose;
@@ -2924,11 +3123,11 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
   bool incremental_noop_reused = false;
 
   // Per-phase timing (for --verbose)
-  long long parse_ms = 0;
-  long long comptime_ms = 0;
-  long long check_ms = 0;
-  long long codegen_ms = 0;
-  long long link_ms = 0;
+  std::int64_t parse_ms = 0;
+  std::int64_t comptime_ms = 0;
+  std::int64_t check_ms = 0;
+  std::int64_t codegen_ms = 0;
+  std::int64_t link_ms = 0;
 
   log_machine("phase=project-load");
   const auto assembly_target =
@@ -2963,16 +3162,19 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
 
   if (opts->conformance_path.has_value()) {
     std::filesystem::path conformance_logs_dir =
-        FallbackConformanceLogsDir(project_root);
+        FallbackConformanceLogsDir(project_root, *opts);
     if (project_result.project.has_value()) {
       conformance_logs_dir =
           ConformanceLogsDir(project_result.project->outputs.root);
     }
     EnsureCompilerLogDirectory(conformance_logs_dir);
-    core::Conformance::Init(
-        EffectiveConformancePath(conformance_logs_dir, *opts), "compile");
+    if (!core::Conformance::Enabled()) {
+      core::Conformance::Init(
+          EffectiveConformancePath(conformance_logs_dir, *opts), "compile");
+    }
     core::Conformance::SetRoot(project_root.string());
     core::Conformance::SetPhase("project-load");
+    core::RecordBehaviorModelConformance();
   }
 
   for (const auto& diag : project_result.diags) {
@@ -3059,6 +3261,9 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
       return InspectSource(source);
     };
     deps.parallel_modules = true;
+    std::mutex module_aggregation_telemetry_mutex;
+    std::size_t module_aggregation_compilation_units = 0;
+    std::size_t module_aggregation_compilation_unit_files = 0;
     deps.file_telemetry =
         [&compiler_profile](const frontend::ParseFileTelemetry& record) {
           compiler_profile.Emit(
@@ -3075,7 +3280,17 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                ProfileNumber("elapsed_ms", record.total_ms)});
         };
     deps.module_telemetry =
-        [&compiler_profile](const frontend::ParseModuleTelemetry& record) {
+        [&compiler_profile,
+         &module_aggregation_telemetry_mutex,
+         &module_aggregation_compilation_units,
+         &module_aggregation_compilation_unit_files](
+            const frontend::ParseModuleTelemetry& record) {
+          {
+            std::lock_guard<std::mutex> lock(
+                module_aggregation_telemetry_mutex);
+            ++module_aggregation_compilation_units;
+            module_aggregation_compilation_unit_files += record.file_count;
+          }
           compiler_profile.Emit(
               "parse-module",
               {ProfileString("module", record.module_path),
@@ -3729,6 +3944,16 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                ProfileNumber("elapsed_ms", typecheck_modules_ms)});
 
           if (typecheck_ok) {
+            RecordModuleAggregationInputsOutputs(
+                sema_project,
+                module_aggregation_compilation_units,
+                module_aggregation_compilation_unit_files,
+                parsed_project_module_set,
+                ctx.sigma.mods,
+                name_maps,
+                resolved,
+                typechecked);
+
             std::vector<const ast::ASTModule*> cap_modules;
             cap_modules.reserve(ctx.sigma.mods.size());
             for (const auto& module : ctx.sigma.mods) {
@@ -3838,6 +4063,8 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                   sema_project, *assembly_graph, sema_project.assembly.name);
               if (!output_project.has_value()) {
                 if (const auto diag = core::MakeDiagnosticById("E-OUT-0417")) {
+                  RecordOutputBackendDiagnostic("E-OUT-0417",
+                                                "compiler_main/lowerability");
                   core::Emit(diags, *diag);
                 }
                 phase4_ok = false;
@@ -3877,7 +4104,8 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                 ultraviolet::project::IsExecutable(sema_project);
             lower_ctx.shared_library_project =
                 ultraviolet::project::IsSharedLibrary(sema_project);
-            lower_ctx.log_enabled = opts->log_enabled;
+            lower_ctx.log_enabled =
+                opts->log_enabled || opts->conformance_path.has_value();
             lower_ctx.log_to_console = opts->log_to_console;
             lower_ctx.log_to_file = opts->log_to_file;
             lower_ctx.log_file_path = EffectiveRuntimeLogFilePath(sema_project, *opts);
@@ -4027,10 +4255,20 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                 lower_ctx.module_path = module.path;
                 lower_ctx.resolve_failed = false;
                 lower_ctx.codegen_failed = false;
+                lower_ctx.codegen_failure_kind.reset();
+                lower_ctx.llvm_type_mapping_diagnostic_emitted = false;
                 lower_ctx.resolve_failures.clear();
                 auto decls = codegen::LowerModule(module, lower_ctx);
                 if (lower_ctx.resolve_failed || lower_ctx.codegen_failed) {
-                  if (const auto diag = core::MakeDiagnosticById("E-OUT-0403")) {
+                  const char* diag_id =
+                      lower_ctx.codegen_failure_kind.has_value() &&
+                              *lower_ctx.codegen_failure_kind ==
+                                  codegen::LowerCtx::CodegenFailureKind::LLVMTypeMapping
+                          ? "E-OUT-0410"
+                          : "E-OUT-0403";
+                  if (const auto diag = core::MakeDiagnosticById(diag_id)) {
+                    RecordOutputBackendDiagnostic(diag_id,
+                                                  "compiler_main/emit-ir");
                     core::Emit(diags, *diag);
                   }
                   phase4_ok = false;
@@ -4073,6 +4311,7 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                      trace_root,
                      log_file_path,
                      &sema_project,
+                     &diags,
                      &compiler_profile,
                      &log_machine](
                         const project::Project& p)
@@ -4089,7 +4328,8 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                       auto cache = BuildCodegenCache(sema_project,
                                                      *ctx_ptr,
                                                      *name_maps_ptr,
-                                                     *typechecked_ptr);
+                                                     *typechecked_ptr,
+                                                     &diags);
                       if (cache) {
                         ConfigureCodegenContextForProject(*cache, p);
                         cache->ctx.log_enabled = log_enabled;
@@ -4234,7 +4474,6 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
 
                   driver::OutputPipelineDeps out_deps;
                   out_deps.ensure_dir = EnsureDir;
-                  out_deps.codegen_obj_thread_safe = true;
                   out_deps.codegen_obj =
                       [ensure_cache, target_profile, opt_level](const project::ModuleInfo& module,
                                              const project::Project& p)
@@ -4358,7 +4597,6 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                     }
                     compiler_profile.Emit("output-pipeline", profile_fields);
                   };
-                  out_deps.codegen_obj_thread_safe = true;
                   const auto codegen_cache = ensure_cache(output_project);
                   if (!codegen_cache || !codegen_cache->ok.load()) {
                     EmitInternalDiagnostic(

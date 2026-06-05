@@ -14,8 +14,11 @@
 
 #include "05_codegen/lower/stmt/frame_stmt.h"
 
+#include <mutex>
 #include <optional>
 #include <string>
+#include <string_view>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -34,6 +37,86 @@
 namespace ultraviolet::codegen {
 
 namespace {
+
+void RecordFrameLoweringConformanceOnce(std::once_flag& flag,
+                                        std::string_view rule_id,
+                                        std::string payload) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  std::call_once(flag, [rule_id = std::string(rule_id),
+                        payload = std::move(payload)]() {
+    core::Conformance::Record(rule_id, std::nullopt, payload);
+  });
+}
+
+void AppendFramePayloadField(std::string& payload,
+                             std::string_view key,
+                             std::string_view value) {
+  if (!payload.empty()) {
+    payload += ';';
+  }
+  payload += key;
+  payload += '=';
+  payload += value;
+}
+
+void AppendFramePayloadField(std::string& payload,
+                             std::string_view key,
+                             const char* value) {
+  AppendFramePayloadField(payload,
+                          key,
+                          std::string_view(value ? value : "-"));
+}
+
+void AppendFramePayloadField(std::string& payload,
+                             std::string_view key,
+                             bool value) {
+  AppendFramePayloadField(payload,
+                          key,
+                          std::string_view(value ? "true" : "false"));
+}
+
+std::string FrameRuntimeRegionEntryPayload() {
+  std::string payload;
+  AppendFramePayloadField(payload, "operation", "RegionEntry");
+  AppendFramePayloadField(payload, "source", "LowerFrameStmt");
+  AppendFramePayloadField(payload, "runtime_symbol", "Region::mark");
+  AppendFramePayloadField(payload, "runtime_struct", "UVRegionEntry");
+  AppendFramePayloadField(payload, "fields", "tag,target,scope,mark_opt");
+  AppendFramePayloadField(payload, "tag_source", "uv_region_fresh_token");
+  AppendFramePayloadField(payload, "target_source", "frame_target_region");
+  AppendFramePayloadField(payload, "scope_source", "CurrentRuntimeScopeId");
+  AppendFramePayloadField(payload, "mark_opt", "frame_mark");
+  return payload;
+}
+
+std::string FrameRuntimeRegionStackPayload() {
+  std::string payload;
+  AppendFramePayloadField(payload, "operation", "UpdateRegionStack");
+  AppendFramePayloadField(payload, "source", "LowerFrameStmt");
+  AppendFramePayloadField(payload, "runtime_symbol", "Region::mark");
+  AppendFramePayloadField(payload, "runtime_storage", "UVRegionState.region_stack");
+  AppendFramePayloadField(payload, "update", "push");
+  AppendFramePayloadField(payload, "entry", "frame_tag,target,scope,mark");
+  AppendFramePayloadField(payload, "preserves_scope_addr_arena_poison", true);
+  return payload;
+}
+
+std::string FrameResetCleanupBeforeArenaPayload() {
+  std::string payload;
+  AppendFramePayloadField(payload, "requirement", "RegionReleaseCleanupBeforeArenaReclaim");
+  AppendFramePayloadField(payload, "source", "LowerFrameStmt");
+  AppendFramePayloadField(payload, "cleanup_owner", "CleanupScope");
+  AppendFramePayloadField(payload, "arena_reclaim_symbol", "Region::reset_to");
+  AppendFramePayloadField(payload, "reset_registered_as_defer", true);
+  AppendFramePayloadField(payload, "cleanup_scope_before_reset", true);
+  return payload;
+}
+
+std::once_flag g_frame_runtime_region_entry_obligation_once;
+std::once_flag g_frame_runtime_region_stack_obligation_once;
+std::once_flag g_frame_reset_cleanup_before_arena_obligation_once;
 
 // Check if a dispatch expression has a reduce option
 bool DispatchHasReduce(const ast::DispatchExpr& expr) {
@@ -178,6 +261,14 @@ IRPtr LowerFrameStmt(const ast::FrameStmt& stmt, LowerCtx& ctx) {
   }
   const std::string frame_tag = ctx.FreshRegionAlias();
   ctx.ReserveRegionTag(frame_tag);
+  RecordFrameLoweringConformanceOnce(
+      g_frame_runtime_region_entry_obligation_once,
+      "def.RuntimeRegionEntry",
+      FrameRuntimeRegionEntryPayload());
+  RecordFrameLoweringConformanceOnce(
+      g_frame_runtime_region_stack_obligation_once,
+      "def.RuntimeRegionStack",
+      FrameRuntimeRegionStackPayload());
 
   // Set up parallel collection scope
   ParallelCollectScope collect_scope(ctx);
@@ -185,6 +276,10 @@ IRPtr LowerFrameStmt(const ast::FrameStmt& stmt, LowerCtx& ctx) {
   // Register the reset as a defer to ensure it runs on scope exit
   // This ensures reset runs after defers/drops in this frame scope.
   ctx.RegisterDefer(reset_ir);
+  RecordFrameLoweringConformanceOnce(
+      g_frame_reset_cleanup_before_arena_obligation_once,
+      "req.RegionReleaseCleanupBeforeArenaReclaim",
+      FrameResetCleanupBeforeArenaPayload());
 
   // Lower the body statements
   IRPtr stmts_ir = LowerStmtList(stmt.body->stmts, ctx);
@@ -253,6 +348,18 @@ IRPtr LowerFrameStmt(const ast::FrameStmt& stmt, LowerCtx& ctx) {
   frame.region = region_value;
   frame.body = MakeIR(std::move(block_ir));
   frame.value = result_value;
+
+  std::string lowering_payload =
+      "source=LowerFrameStmt;ir_form=IRFrame;components=RegionMark,LowerStmtList,"
+      "FrameBody,CleanupScope";
+  lowering_payload += ";target=";
+  lowering_payload += stmt.target_opt.has_value() ? "explicit" : "implicit";
+  lowering_payload += ";reset_registered_as_defer=true;body_lowered=true";
+  core::Conformance::Record(
+      stmt.target_opt.has_value() ? "rule.18.Lower-Stmt-Frame-Explicit"
+                                  : "rule.18.Lower-Stmt-Frame-Implicit",
+      std::nullopt,
+      lowering_payload);
 
   return MakeIR(std::move(frame));
 }

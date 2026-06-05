@@ -1,0 +1,156 @@
+//! Artifact fixture for compile-time lowering and runtime erasure evidence.
+
+internal let RUNTIME_ERASURE_CAPTURED_VALUE: i32 = 17
+
+#reflect
+internal record RuntimeErasureRecord {
+    internal first: i32
+    internal second: bool
+}
+
+#reflect
+internal enum RuntimeErasureEnum {
+    Empty
+    Value(i32)
+}
+
+#reflect
+internal modal RuntimeErasureModal {
+    @Ready {
+        internal value: i32
+    }
+
+    @Done {}
+}
+
+internal class RuntimeErasureForm {}
+
+internal record RuntimeErasureImplementation <: RuntimeErasureForm {
+    internal value: i32
+}
+
+internal class RuntimeErasureDerivedClass {}
+
+comptime internal procedure requireRuntimeErasure(condition: bool) -> bool {
+    return if condition {
+        true
+    } else {
+        diagnostics~>error("compile-time runtime erasure assertion failed")
+        false
+    }
+}
+
+comptime internal procedure chooseRuntimeErasureValue(
+    value: usize
+) -> usize
+|: value > 0usize |= @result > value
+{
+    return value + 2usize
+}
+
+derive target EmitRuntimeErasureDerive(target: Type) |: emits RuntimeErasureDerivedClass {
+    requireRuntimeErasure(
+        introspect~>category(target) == TypeCategory::Record &&
+            diagnostics~>current_module() != ""
+    )
+    let ast: Ast::Item = quote {
+        internal procedure emittedRuntimeErasureDerivedValue() -> i32 {
+            return 37
+        }
+    }
+    emitter~>emit(ast)
+}
+
+#derive(EmitRuntimeErasureDerive)
+internal record DerivedRuntimeErasure <: RuntimeErasureDerivedClass {
+    internal value: i32
+}
+
+internal procedure compileTimeRuntimeErasureCapabilityAndReflectionChecks() -> bool {
+    comptime {
+        requireRuntimeErasure(diagnostics~>current_module() != "")
+        requireRuntimeErasure(
+            introspect~>category(Type::<RuntimeErasureRecord>) == TypeCategory::Record
+        )
+        requireRuntimeErasure(
+            introspect~>category(Type::<RuntimeErasureEnum>) == TypeCategory::Enum
+        )
+        requireRuntimeErasure(
+            introspect~>category(Type::<RuntimeErasureModal>) == TypeCategory::Modal
+        )
+        requireRuntimeErasure(
+            introspect~>implements_form(
+                Type::<RuntimeErasureImplementation>,
+                Type::<RuntimeErasureForm>
+            )
+        )
+    }
+
+    var reflected_field_count: usize = 0usize
+    comptime loop field in introspect~>fields(Type::<RuntimeErasureRecord>) {
+        reflected_field_count = reflected_field_count + 1usize
+        reflected_field_count = reflected_field_count + comptime { field.index }
+    }
+
+    return reflected_field_count == 3usize
+}
+
+internal procedure compileTimeRuntimeErasureForms() -> usize {
+    var total: usize = comptime { chooseRuntimeErasureValue(5usize) }
+    let selected: usize =
+        comptime if true { 7usize } else { missingRuntimeBranch() }
+    comptime if false {
+        total = total + missingRuntimeStatementBranch()
+    }
+    comptime loop value: usize in [1usize, 2usize, 3usize] {
+        total = total + comptime { value }
+    }
+    return total + selected
+}
+
+internal procedure emitRuntimeErasureQuoteSpliceItems() -> bool {
+    #emit
+    comptime {
+        let first_ast: Ast::Item = quote {
+            internal procedure emittedRuntimeErasureQuoteCaptureValue() -> i32 {
+                return RUNTIME_ERASURE_CAPTURED_VALUE
+            }
+        }
+        emitter~>emit(first_ast)
+
+        let return_type: Ast::Type = quote type { i32 }
+        let return_expr: Ast::Expr = quote { 19 + 23 }
+        let second_ast: Ast::Item = quote {
+            internal procedure emittedRuntimeErasureSplicedValue() -> $(return_type) {
+                return $(return_expr)
+            }
+        }
+        emitter~>emit(second_ast)
+
+        let parameter_name = "runtime_erasure_input"
+        let third_ast: Ast::Item = quote {
+            internal procedure emittedRuntimeErasureIdentifierSpliceValue(
+                $parameter_name: i32
+            ) -> i32 {
+                return $parameter_name + 2
+            }
+        }
+        emitter~>emit(third_ast)
+    }
+
+    return true
+}
+
+public procedure compileTimeRuntimeErasureEntryPoint() -> i32 {
+    let emitted: bool = emitRuntimeErasureQuoteSpliceItems()
+    let capabilities_ok: bool =
+        compileTimeRuntimeErasureCapabilityAndReflectionChecks()
+    let forms_value: usize = compileTimeRuntimeErasureForms()
+    if emitted && capabilities_ok && forms_value == 20usize {
+        return emittedRuntimeErasureQuoteCaptureValue() +
+            emittedRuntimeErasureSplicedValue() +
+            emittedRuntimeErasureIdentifierSpliceValue(59) +
+            emittedRuntimeErasureDerivedValue()
+    }
+    return 0
+}

@@ -10,18 +10,18 @@ public procedure validatedProjectAndCompilationModelToolResolutionAndIRAssemblyI
     if acceptedObligationEntryMatches(
         "def.SearchDirs",
         6638usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsAssemblyModelReference",
-        "Source/Reference/Projects/AssemblyModel.uv"
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitBcExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.CompilerToolBinDir",
         6655usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsAssemblyModelReference",
-        "Source/Reference/Projects/AssemblyModel.uv"
+        "HelloUltraviolet::Audit",
+        "outputDiagnosticRuntimeLibMissingExercise",
+        "Source/Audit/OutputDiagnosticExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -46,45 +46,45 @@ public procedure validatedProjectAndCompilationModelToolResolutionAndIRAssemblyI
     if acceptedObligationEntryMatches(
         "ResolveTool-Err-Linker",
         6704usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsAssemblyModelReference",
-        "Source/Reference/Projects/AssemblyModel.uv"
+        "HelloUltraviolet::Audit",
+        "outputDiagnosticLinkerToolResolveFailureExercise",
+        "Source/Audit/OutputDiagnosticExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "ResolveTool-Err-Archiver",
         6722usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsAssemblyModelReference",
-        "Source/Reference/Projects/AssemblyModel.uv"
+        "HelloUltraviolet::Audit",
+        "outputDiagnosticArchiverToolResolveFailureExercise",
+        "Source/Audit/OutputDiagnosticExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "ResolveTool-Err-IR",
         6740usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsAssemblyModelReference",
-        "Source/Reference/Projects/AssemblyModel.uv"
+        "HelloUltraviolet::Audit",
+        "outputDiagnosticLlvmToolResolveOwnershipExercise",
+        "Source/Audit/OutputDiagnosticExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "AssembleIR-Ok",
         6758usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsAssemblyModelReference",
-        "Source/Reference/Projects/AssemblyModel.uv"
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitBcExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "AssembleIR-Err",
         6776usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsAssemblyModelReference",
-        "Source/Reference/Projects/AssemblyModel.uv"
+        "HelloUltraviolet::Audit",
+        "outputDiagnosticEmitLLVMRenderFailureExercise",
+        "Source/Audit/OutputDiagnosticExecution.uv"
     ) {
         count = count + 1usize
     }

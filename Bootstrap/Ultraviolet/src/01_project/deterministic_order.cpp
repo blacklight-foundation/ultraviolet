@@ -136,8 +136,103 @@ namespace {
 
 constexpr std::string_view kBottomOrderKey = "<bottom>";
 
+struct DirEntry {
+  std::filesystem::path path;
+  OrderKey key;
+};
+
 void EmitExternal(core::DiagnosticStream& diags, std::string_view code) {
   core::EmitExternalDiagnostic(diags, code);
+}
+
+std::string RenderBool(bool value) {
+  return value ? "true" : "false";
+}
+
+std::string RenderPath(const std::filesystem::path& path) {
+  return path.generic_string();
+}
+
+std::string RenderOrderKey(const OrderKey& key) {
+  return "<" + key.folded + "," + key.raw + ">";
+}
+
+std::string RenderDirEntries(const std::vector<DirEntry>& entries) {
+  std::string out = "[";
+  bool first = true;
+  for (const auto& entry : entries) {
+    if (!first) {
+      out += ",";
+    }
+    first = false;
+    out += RenderPath(entry.path);
+    out += "=";
+    out += RenderOrderKey(entry.key);
+  }
+  out += "]";
+  return out;
+}
+
+std::string RenderDirs(const std::vector<std::filesystem::path>& dirs) {
+  std::string out = "[";
+  bool first = true;
+  for (const auto& dir : dirs) {
+    if (!first) {
+      out += ",";
+    }
+    first = false;
+    out += RenderPath(dir);
+  }
+  out += "]";
+  return out;
+}
+
+void RecordDirKey(const std::filesystem::path& dir,
+                  const std::filesystem::path& base,
+                  const std::optional<std::string>& relative,
+                  const OrderKey& key,
+                  bool fallback) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  SPEC_RULE("def.DirKey");
+  core::Conformance::Record(
+      "def.DirKey",
+      std::nullopt,
+      "dir=" + RenderPath(dir) +
+          ";base=" + RenderPath(base) +
+          ";relative=" + (relative.has_value() ? *relative : "<bottom>") +
+          ";folded=" + key.folded +
+          ";raw=" + key.raw +
+          ";fallback=" + RenderBool(fallback));
+}
+
+void RecordDirectoryOrdering(const std::filesystem::path& root,
+                             const std::vector<DirEntry>& entries) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  SPEC_RULE("def.DirectoryOrdering");
+  core::Conformance::Record(
+      "def.DirectoryOrdering",
+      std::nullopt,
+      "root=" + RenderPath(root) +
+          ";count=" + std::to_string(entries.size()) +
+          ";ordered_keys=" + RenderDirEntries(entries));
+}
+
+void RecordDirSeq(const std::filesystem::path& root,
+                  const std::vector<std::filesystem::path>& dirs) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  SPEC_RULE("def.DirSeq");
+  core::Conformance::Record(
+      "def.DirSeq",
+      std::nullopt,
+      "root=" + RenderPath(root) +
+          ";count=" + std::to_string(dirs.size()) +
+          ";dirs=" + RenderDirs(dirs));
 }
 
 std::vector<std::string> SplitModulePath(std::string_view path) {
@@ -233,18 +328,18 @@ OrderKey DirKey(const std::filesystem::path& dir,
   if (!rel.has_value()) {
     SPEC_RULE("DirSeq-Rel-Fail");
     EmitExternal(diags, "E-PRJ-0303");
-    return OrderKey{std::string(kBottomOrderKey), core::Basename(dir_str)};
+    OrderKey key{std::string(kBottomOrderKey), core::Basename(dir_str)};
+    RecordDirKey(dir, base, rel, key, true);
+    return key;
   }
-  return OrderKey{FoldPath(*rel), *rel};
+  OrderKey key{FoldPath(*rel), *rel};
+  RecordDirKey(dir, base, rel, key, false);
+  return key;
 }
 
 DirSeqResult DirSeqFrom(const std::filesystem::path& root,
                         const std::vector<std::filesystem::path>& dirs) {
   DirSeqResult result;
-  struct DirEntry {
-    std::filesystem::path path;
-    OrderKey key;
-  };
   std::vector<DirEntry> entries;
   entries.reserve(dirs.size());
   for (const auto& dir : dirs) {
@@ -254,10 +349,12 @@ DirSeqResult DirSeqFrom(const std::filesystem::path& root,
                    [](const DirEntry& lhs, const DirEntry& rhs) {
                      return KeyLess(lhs.key, rhs.key);
                    });
+  RecordDirectoryOrdering(root, entries);
   result.dirs.reserve(entries.size());
   for (const auto& entry : entries) {
     result.dirs.push_back(entry.path);
   }
+  RecordDirSeq(root, result.dirs);
   return result;
 }
 

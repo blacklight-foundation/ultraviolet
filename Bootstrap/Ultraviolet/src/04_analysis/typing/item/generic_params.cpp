@@ -23,10 +23,11 @@
 #include <vector>
 
 #include "00_core/assert_spec.h"
+#include "04_analysis/caps/cap_system.h"
+#include "04_analysis/composite/classes.h"
 #include "04_analysis/generics/monomorphize.h"
 #include "04_analysis/typing/context.h"
 #include "04_analysis/typing/type_lower.h"
-#include "04_analysis/composite/classes.h"
 #include "02_source/ast/ast.h"
 
 namespace ultraviolet::analysis {
@@ -44,6 +45,15 @@ static inline void SpecDefsGenericParams() {
   SPEC_DEF("GenDefault", "9.3");
   SPEC_DEF("GenDistinct", "9.1");
   SPEC_DEF("GenWhere", "9.2");
+}
+
+static bool ClassBoundPathExists(const ScopeContext& ctx,
+                                 const ast::ClassPath& path) {
+  if (IsCapabilityClassPath(path)) {
+    SPEC_RULE("req.14.CapabilityClassesGenericBounds");
+    return true;
+  }
+  return ctx.sigma.classes.find(PathKeyOf(path)) != ctx.sigma.classes.end();
 }
 
 }  // namespace
@@ -65,6 +75,7 @@ GenericParamsResult ProcessGenericParams(
     // Check for duplicate parameter names
     if (!seen_names.insert(param.name).second) {
       SPEC_RULE("GenDistinct-Err");
+      SPEC_RULE("rule.14.WF-Generic-Param");
       result.ok = false;
       // §13.1.1 Diagnostics
       result.diag_id = "E-TYP-2304";
@@ -77,14 +88,15 @@ GenericParamsResult ProcessGenericParams(
     // Process class bounds
     for (const auto& bound : param.bounds) {
       // Verify the class exists
-      const auto key = PathKeyOf(bound.class_path);
-      if (ctx.sigma.classes.find(key) == ctx.sigma.classes.end()) {
+      if (!ClassBoundPathExists(ctx, bound.class_path)) {
         SPEC_RULE("GenBound-ClassNotFound");
+        SPEC_RULE("rule.14.WF-ClassPath-Err");
         result.ok = false;
         // §13.3 Constraints(1) + Diagnostics
         result.diag_id = "E-TYP-2305";
         return result;
       }
+      SPEC_RULE("rule.14.WF-ClassPath");
       for (const auto& arg : bound.generic_args) {
         const auto lowered_arg = LowerType(ctx, arg);
         if (!lowered_arg.ok) {
@@ -117,6 +129,7 @@ GenericParamsResult ProcessGenericParams(
       seen_default = true;
     } else if (seen_default) {
       SPEC_RULE("GenDefault-Order-Err");
+      SPEC_RULE("rule.14.WF-Generic-Param");
       result.ok = false;
       // Ill-formed generic parameter list (§13.1.1).
       result.diag_id = "E-TYP-2304";
@@ -157,12 +170,14 @@ GenericArgsCheckResult CheckGenericArgs(
   // Check argument count
   if (args.size() < required) {
     SPEC_RULE("GenArgs-TooFew");
+    SPEC_RULE("rule.14.WF-Apply-ArgCount-Err");
     result.ok = false;
     result.diag_id = "E-TYP-2303";
     return result;
   }
   if (args.size() > params.size()) {
     SPEC_RULE("GenArgs-TooMany");
+    SPEC_RULE("rule.14.WF-Apply-ArgCount-Err");
     result.ok = false;
     result.diag_id = "E-TYP-2303";
     return result;

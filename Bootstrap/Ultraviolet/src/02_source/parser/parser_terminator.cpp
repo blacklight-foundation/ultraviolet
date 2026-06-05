@@ -27,6 +27,11 @@ using ultraviolet::lexer::TokenKind;
 
 namespace {
 
+static inline void SpecDefsParserTerminator() {
+  SPEC_DEF("rule.18.ConsumeTerminatorOpt-Req-No", "18.1.2");
+  SPEC_DEF("diag.18.Blocks", "18.1.7");
+}
+
 // =============================================================================
 // IsTerminatorToken - Check if token is a statement terminator
 // =============================================================================
@@ -48,6 +53,8 @@ void EmitMissingTerminator(core::DiagnosticStream& diags, const core::Span& span
     return;
   }
   SPEC_RULE_AT("Missing-Terminator-Err", span);
+  SPEC_RULE_AT("diag.18.Blocks", span);
+  SPEC_RULE_AT("req.16.ControlExpressionDiagnosticOwnership", span);
   core::Emit(diags, *diag);
 }
 
@@ -64,6 +71,8 @@ void EmitMissingTerminator(core::DiagnosticStream& diags, const core::Span& span
 //   - "ConsumeTerminatorOpt-Opt-No": Optional policy, terminator missing
 
 void ConsumeTerminatorOpt(Parser& parser, TerminatorPolicy policy) {
+  SpecDefsParserTerminator();
+
   const Token* tok = Tok(parser);
   const bool is_term = tok && IsTerminatorToken(*tok);
 
@@ -74,6 +83,7 @@ void ConsumeTerminatorOpt(Parser& parser, TerminatorPolicy policy) {
       return;
     }
     SPEC_RULE("ConsumeTerminatorOpt-Req-No");
+    SPEC_RULE_AT("rule.18.ConsumeTerminatorOpt-Req-No", TokSpan(parser));
     EmitMissingTerminator(parser.diags, TokSpan(parser));
     SyncStmt(parser);
     return;
@@ -96,6 +106,8 @@ void ConsumeTerminatorOpt(Parser& parser, TerminatorPolicy policy) {
 //   - "ConsumeTerminatorReq-No": Terminator missing
 
 void ConsumeTerminatorReq(Parser& parser) {
+  SpecDefsParserTerminator();
+
   const Token* tok = Tok(parser);
   if (tok && IsTerminatorToken(*tok)) {
     SPEC_RULE("ConsumeTerminatorReq-Yes");

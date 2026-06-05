@@ -64,6 +64,7 @@ enum class AttrKind {
   Dereferenceable,
   Alignment,
   StructRet,
+  ByVal,
   NoCapture,
   NoReturn,
   NoUnwind,
@@ -72,7 +73,7 @@ enum class AttrKind {
 struct AttrSpec {
   AttrKind kind;
   std::uint64_t value = 0;  // For Dereferenceable/Alignment
-  llvm::Type* type = nullptr;  // For typed attributes like sret
+  llvm::Type* type = nullptr;  // For typed attributes like sret/byval
 };
 
 using AttrSet = std::vector<AttrSpec>;

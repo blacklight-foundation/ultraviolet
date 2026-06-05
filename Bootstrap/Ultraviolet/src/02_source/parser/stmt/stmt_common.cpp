@@ -406,10 +406,14 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
+#include <type_traits>
 #include <variant>
 #include <vector>
 
 #include "00_core/assert_spec.h"
+#include "02_source/ast/ast_utils.h"
 
 namespace ultraviolet::ast {
 
@@ -436,6 +440,62 @@ bool IsExprStartToken(const Token& tok);
 // Forward declaration - defined in expr_stmt.cpp
 bool EndsWithBlock(const ExprPtr& expr);
 
+namespace {
+
+std::string_view StatementTerminatorMembershipForm(const Stmt& stmt) {
+  return std::visit(
+      [](const auto& node) -> std::string_view {
+        using T = std::decay_t<decltype(node)>;
+        if constexpr (std::is_same_v<T, LetStmt>) {
+          return "LetStmt";
+        } else if constexpr (std::is_same_v<T, VarStmt>) {
+          return "VarStmt";
+        } else if constexpr (std::is_same_v<T, UsingLocalStmt>) {
+          return "UsingLocalStmt";
+        } else if constexpr (std::is_same_v<T, AssignStmt>) {
+          return "AssignStmt";
+        } else if constexpr (std::is_same_v<T, CompoundAssignStmt>) {
+          return "CompoundAssignStmt";
+        } else if constexpr (std::is_same_v<T, ExprStmt>) {
+          return "ExprStmt";
+        } else {
+          return "NonReqTermStmt";
+        }
+      },
+      stmt);
+}
+
+bool IsRequiredStatementTerminatorMember(const Stmt& stmt) {
+  return std::holds_alternative<LetStmt>(stmt) ||
+         std::holds_alternative<VarStmt>(stmt) ||
+         std::holds_alternative<UsingLocalStmt>(stmt) ||
+         std::holds_alternative<AssignStmt>(stmt) ||
+         std::holds_alternative<CompoundAssignStmt>(stmt) ||
+         std::holds_alternative<ExprStmt>(stmt);
+}
+
+void RecordRequiredStatementTerminatorMembership(const Stmt& stmt,
+                                                 bool requires_terminator) {
+  SPEC_DEF("def.18.RequiredStatementTerminators", "18.1.2");
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload = "source=RequiresTerminator;stmt_form=";
+  const std::string_view stmt_form = StatementTerminatorMembershipForm(stmt);
+  payload.append(stmt_form.data(), stmt_form.size());
+  payload += ";requires_terminator=";
+  payload += requires_terminator ? "true" : "false";
+  payload +=
+      ";required_set=LetStmt,VarStmt,UsingLocalStmt,AssignStmt,"
+      "CompoundAssignStmt,ExprStmt";
+  core::Conformance::Record("def.18.RequiredStatementTerminators",
+                            std::optional<core::Span>(span_of(stmt)),
+                            payload);
+}
+
+}  // namespace
+
 // =============================================================================
 // RequiresTerminator - Check if statement requires terminator
 // =============================================================================
@@ -443,15 +503,10 @@ bool EndsWithBlock(const ExprPtr& expr);
 // SPEC: ReqTerm(s) predicate
 
 bool RequiresTerminator(const Stmt& stmt) {
-  if (const auto* expr_stmt = std::get_if<ExprStmt>(&stmt)) {
-    return !EndsWithBlock(expr_stmt->value);
-  }
-  // These statement types require terminators
-  return std::holds_alternative<LetStmt>(stmt) ||
-         std::holds_alternative<VarStmt>(stmt) ||
-         std::holds_alternative<UsingLocalStmt>(stmt) ||
-         std::holds_alternative<AssignStmt>(stmt) ||
-         std::holds_alternative<CompoundAssignStmt>(stmt);
+  const bool requires_terminator =
+      IsRequiredStatementTerminatorMember(stmt);
+  RecordRequiredStatementTerminatorMembership(stmt, requires_terminator);
+  return requires_terminator;
 }
 
 // =============================================================================

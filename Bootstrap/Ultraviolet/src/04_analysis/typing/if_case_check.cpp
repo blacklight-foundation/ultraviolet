@@ -15,6 +15,7 @@
 
 #include "00_core/assert_spec.h"
 #include "00_core/process_config.h"
+#include "02_source/ast/ast_utils.h"
 #include "04_analysis/generics/monomorphize.h"
 #include "04_analysis/modal/modal.h"
 #include "04_analysis/resolve/scopes.h"
@@ -184,7 +185,7 @@ static std::unordered_set<IdKey> ModalExhaustiveStatesForScrutinee(
     const TypeRef& scrutinee,
     const ast::ModalDecl& modal_decl) {
   auto states = StateNameSet(modal_decl);
-  const auto async_sig = AsyncSigOf(ctx, scrutinee);
+  const auto async_sig = AsyncSigOf(ctx, StripPerm(scrutinee));
   if (async_sig.has_value() && IsNeverTypeLocal(async_sig->err)) {
     states.erase(IdKeyOf("Failed"));
   }
@@ -199,6 +200,32 @@ static TypeRef StripPermOnceLocal(const TypeRef& type) {
     return perm->base;
   }
   return type;
+}
+
+static std::string ScrutineeBindingTypeDetail(const ast::ExprPtr& scrutinee,
+                                              const TypeEnv& env) {
+  if (!scrutinee) {
+    return {};
+  }
+  const ast::ExprPtr* place = nullptr;
+  if (const auto* move = std::get_if<ast::MoveExpr>(&scrutinee->node)) {
+    place = &move->place;
+  } else {
+    place = &scrutinee;
+  }
+  if (!place || !*place) {
+    return {};
+  }
+  const auto* ident = std::get_if<ast::IdentifierExpr>(&(*place)->node);
+  if (!ident) {
+    return {};
+  }
+  const auto binding = BindOf(env, ident->name);
+  if (!binding.has_value()) {
+    return " with no binding for " + ident->name;
+  }
+  return " with binding " + ident->name + ": " +
+         TypeToString(binding->type);
 }
 
 static TypeEquivResult TypeEquivIgnorePerm(const TypeRef& lhs, const TypeRef& rhs) {
@@ -1137,6 +1164,7 @@ static bool HasIrrefutableArm(const ScopeContext& ctx,
                               const std::vector<ast::IfCaseClause>& arms,
                               const TypeRef& expected) {
   SpecDefsIfCase();
+  SPEC_RULE("def.17.ExhaustivenessIrrefutabilityHelpers");
   for (const auto& arm : arms) {
     if (IrrefutablePattern(ctx, arm.pattern, expected)) {
       return true;
@@ -1354,6 +1382,7 @@ static IfCaseUnreachableResult FindUnreachableArm(
     const TypeRef& scrutinee,
     const std::vector<ast::IfCaseClause>& arms) {
   SpecDefsIfCase();
+  SPEC_RULE("def.17.ExhaustivenessIrrefutabilityHelpers");
   IfCaseUnreachableResult result{true, std::nullopt, false};
   for (std::size_t i = 0; i < arms.size(); ++i) {
     const auto arm_result = ArmUnreachable(ctx, scrutinee, arms, i);
@@ -1418,6 +1447,7 @@ static ExhaustiveResult UnionTypesExhaustive(
     const std::vector<ast::IfCaseClause>& arms,
     const std::vector<TypeRef>& members) {
   SpecDefsIfCase();
+  SPEC_RULE("def.17.ExhaustivenessIrrefutabilityHelpers");
   for (const auto& member : members) {
     bool found = false;
     for (const auto& arm : arms) {
@@ -1464,8 +1494,15 @@ static ExprTypeResult TypeArmBody(const ScopeContext& ctx,
       return TypeExpr(ctx, arm_ctx, inner, active_env());
     };
     auto type_ident = [&](std::string_view name) -> ExprTypeResult {
-      return TypeIdentifierExpr(ctx, ast::IdentifierExpr{std::string(name)},
-                                active_env());
+      auto ident_result =
+          TypeIdentifierExpr(ctx, ast::IdentifierExpr{std::string(name)},
+                             active_env());
+      if (ident_result.ok) {
+        if (const auto binding = BindOf(active_env(), name)) {
+          EmitStaleBindingReferenceWarning(*binding, arm_ctx, std::nullopt);
+        }
+      }
+      return ident_result;
     };
     auto type_place = [&](const ast::ExprPtr& inner) {
       return TypePlace(ctx, arm_ctx, inner, active_env());
@@ -1513,8 +1550,15 @@ static CheckResult CheckArmBody(const ScopeContext& ctx,
       return TypeExpr(ctx, arm_ctx, inner, active_env());
     };
     auto type_ident = [&](std::string_view name) -> ExprTypeResult {
-      return TypeIdentifierExpr(ctx, ast::IdentifierExpr{std::string(name)},
-                                active_env());
+      auto ident_result =
+          TypeIdentifierExpr(ctx, ast::IdentifierExpr{std::string(name)},
+                             active_env());
+      if (ident_result.ok) {
+        if (const auto binding = BindOf(active_env(), name)) {
+          EmitStaleBindingReferenceWarning(*binding, arm_ctx, std::nullopt);
+        }
+      }
+      return ident_result;
     };
     auto type_place = [&](const ast::ExprPtr& inner) {
       return TypePlace(ctx, arm_ctx, inner, active_env());
@@ -1524,6 +1568,8 @@ static CheckResult CheckArmBody(const ScopeContext& ctx,
                    type_ident, type_place, arm_ctx.env_ref);
     if (!check.ok) {
       result.diag_id = check.diag_id;
+      result.diag_detail = check.diag_detail;
+      result.diag_span = check.diag_span;
       return result;
     }
     SPEC_RULE("ArmBody-Block-Chk");
@@ -1534,6 +1580,8 @@ static CheckResult CheckArmBody(const ScopeContext& ctx,
   const auto check = CheckExprAgainst(ctx, type_ctx, body, expected, env);
   if (!check.ok) {
     result.diag_id = check.diag_id;
+    result.diag_detail = check.diag_detail;
+    result.diag_span = check.diag_span;
     return result;
   }
   SPEC_RULE("ArmBody-Expr-Chk");
@@ -1569,6 +1617,7 @@ ExprTypeResult TypeIfIsExpr(const ScopeContext& ctx,
   const TypeRef scrutinee_base =
       CanonicalAsyncPatternType(ctx, scrutinee_norm.type);
   if (!scrutinee_base) {
+    result.diag_detail = "if-is scrutinee type could not be canonicalized";
     return result;
   }
   const TypeRef scrutinee_match_type =
@@ -1687,6 +1736,11 @@ CheckResult CheckIfIsExpr(const ScopeContext& ctx,
       result.diag_id = then_check.diag_id.has_value()
                            ? then_check.diag_id
                            : std::optional<std::string_view>{"If-Branch-Mismatch"};
+      result.diag_detail = then_check.diag_detail;
+      if (result.diag_detail.empty()) {
+        result.diag_detail = "if-is then branch failed checking";
+      }
+      result.diag_span = then_check.diag_span;
       return result;
     }
 
@@ -1711,6 +1765,11 @@ CheckResult CheckIfIsExpr(const ScopeContext& ctx,
       CheckArmBody(ctx, type_ctx, expr.then_expr, case_scope.env, expected);
   if (!then_check.ok) {
     result.diag_id = then_check.diag_id;
+    result.diag_detail = then_check.diag_detail;
+    if (result.diag_detail.empty()) {
+      result.diag_detail = "if-is then branch failed checking";
+    }
+    result.diag_span = then_check.diag_span;
     return result;
   }
 
@@ -1726,6 +1785,11 @@ CheckResult CheckIfIsExpr(const ScopeContext& ctx,
       CheckExprAgainst(ctx, type_ctx, expr.else_expr, expected, else_scope.env);
   if (!else_check.ok) {
     result.diag_id = else_check.diag_id;
+    result.diag_detail = else_check.diag_detail;
+    if (result.diag_detail.empty()) {
+      result.diag_detail = "if-is else branch failed checking";
+    }
+    result.diag_span = else_check.diag_span;
     return result;
   }
 
@@ -1760,6 +1824,7 @@ ExprTypeResult TypeIfCaseExpr(const ScopeContext& ctx,
   const TypeRef scrutinee_base =
       CanonicalAsyncPatternType(ctx, scrutinee_norm.type);
   if (!scrutinee_base) {
+    result.diag_detail = "if-case scrutinee type could not be canonicalized";
     return result;
   }
   const TypeRef scrutinee_match_type =
@@ -1796,6 +1861,14 @@ ExprTypeResult TypeIfCaseExpr(const ScopeContext& ctx,
                                          ast::Mutability::Let);
     if (!case_scope.ok) {
       result.diag_id = case_scope.diag_id;
+      result.diag_detail =
+          "if-case pattern failed case-scope binding against scrutinee type " +
+          TypeToString(scrutinee_match_type) +
+          " from scrutinee expression kind " + ast::node_kind(*expr.scrutinee) +
+          ScrutineeBindingTypeDetail(expr.scrutinee, env);
+      if (arm.pattern) {
+        result.diag_span = arm.pattern->span;
+      }
       return result;
     }
     const TypeEnv arm_env = case_scope.env;
@@ -1812,6 +1885,10 @@ ExprTypeResult TypeIfCaseExpr(const ScopeContext& ctx,
         ElseScopeForCases(ctx, expr.scrutinee, env, expr.cases, scrutinee_base);
     if (!else_scope.ok) {
       result.diag_id = else_scope.diag_id;
+      result.diag_detail =
+          "if-case else scope failed after case pattern refinement";
+      result.diag_span = expr.scrutinee ? std::optional<core::Span>(expr.scrutinee->span)
+                                        : std::nullopt;
       return result;
     }
     SPEC_RULE("ElseScope");
@@ -1838,11 +1915,14 @@ ExprTypeResult TypeIfCaseExpr(const ScopeContext& ctx,
   const auto unreachable = FindUnreachableArm(ctx, scrutinee_match_type, expr.cases);
   if (!unreachable.ok) {
     result.diag_id = unreachable.diag_id;
+    result.diag_detail = "if-case unreachable-arm analysis failed";
     return result;
   }
   if (unreachable.unreachable) {
     SPEC_RULE("IfCase-Unreachable");
+    SPEC_RULE("rule.17.IfCase-Unreachable");
     result.diag_id = "E-SEM-2751";
+    result.diag_detail = "if-case contains an unreachable arm";
     return result;
   }
 
@@ -1853,7 +1933,12 @@ ExprTypeResult TypeIfCaseExpr(const ScopeContext& ctx,
         !HasIrrefutableArm(ctx, expr.cases, scrutinee_match_type) &&
         arm_variants != decl_variants) {
       SPEC_RULE("IfCase-Enum-NonExhaustive");
+      SPEC_RULE("rule.17.IfCase-Enum-NonExhaustive");
       result.diag_id = "E-SEM-2741";
+      result.diag_detail =
+          "if-case over enum type is not exhaustive and has no else branch";
+      result.diag_span = expr.scrutinee ? std::optional<core::Span>(expr.scrutinee->span)
+                                        : std::nullopt;
       return result;
     }
     SPEC_RULE("T-IfCase-Enum");
@@ -1865,7 +1950,12 @@ ExprTypeResult TypeIfCaseExpr(const ScopeContext& ctx,
         !HasIrrefutableArm(ctx, expr.cases, scrutinee_match_type) &&
         arm_states != decl_states) {
       SPEC_RULE("IfCase-Modal-NonExhaustive");
+      SPEC_RULE("rule.17.IfCase-Modal-NonExhaustive");
       result.diag_id = "E-TYP-2060";
+      result.diag_detail =
+          "if-case over modal type is not exhaustive and has no else branch";
+      result.diag_span = expr.scrutinee ? std::optional<core::Span>(expr.scrutinee->span)
+                                        : std::nullopt;
       return result;
     }
     SPEC_RULE("T-IfCase-Modal");
@@ -1880,7 +1970,12 @@ ExprTypeResult TypeIfCaseExpr(const ScopeContext& ctx,
         !HasIrrefutableArm(ctx, expr.cases, scrutinee_match_type) &&
         !exhaustive.exhaustive) {
       SPEC_RULE("IfCase-Union-NonExhaustive");
+      SPEC_RULE("rule.17.IfCase-Union-NonExhaustive");
       result.diag_id = "E-SEM-2705";
+      result.diag_detail =
+          "if-case over union type is not exhaustive and has no else branch";
+      result.diag_span = expr.scrutinee ? std::optional<core::Span>(expr.scrutinee->span)
+                                        : std::nullopt;
       return result;
     }
     SPEC_RULE("T-IfCase-Union");
@@ -1889,6 +1984,11 @@ ExprTypeResult TypeIfCaseExpr(const ScopeContext& ctx,
         !HasIrrefutableArm(ctx, expr.cases, scrutinee_match_type)) {
       SPEC_RULE("IfCase-Enum-NonExhaustive");
       result.diag_id = "E-SEM-2741";
+      result.diag_detail =
+          "if-case is not exhaustive for scrutinee type " +
+          TypeToString(scrutinee_match_type) + " and has no else branch";
+      result.diag_span = expr.scrutinee ? std::optional<core::Span>(expr.scrutinee->span)
+                                        : std::nullopt;
       return result;
     }
     SPEC_RULE("T-IfCase-Other");
@@ -1906,7 +2006,12 @@ CheckResult CheckIfCaseExpr(const ScopeContext& ctx,
                            const TypeRef& expected) {
   SpecDefsIfCase();
   CheckResult result;
-  if (!expr.scrutinee || !expected) {
+  if (!expr.scrutinee) {
+    result.diag_detail = "if-case expression is missing a scrutinee";
+    return result;
+  }
+  if (!expected) {
+    result.diag_detail = "if-case expression is missing an expected checking type";
     return result;
   }
 
@@ -1915,6 +2020,8 @@ CheckResult CheckIfCaseExpr(const ScopeContext& ctx,
       env);
   if (!scrutinee.ok) {
     result.diag_id = scrutinee.diag_id;
+    result.diag_detail = scrutinee.diag_detail;
+    result.diag_span = scrutinee.diag_span;
     return result;
   }
 
@@ -1926,6 +2033,9 @@ CheckResult CheckIfCaseExpr(const ScopeContext& ctx,
   const TypeRef scrutinee_base =
       CanonicalAsyncPatternType(ctx, scrutinee_norm.type);
   if (!scrutinee_base) {
+    result.diag_detail =
+        "if-case scrutinee has no canonical pattern type after alias normalization";
+    result.diag_span = expr.scrutinee->span;
     return result;
   }
   const TypeRef scrutinee_match_type =
@@ -1950,7 +2060,12 @@ CheckResult CheckIfCaseExpr(const ScopeContext& ctx,
   }
 
   for (const auto& arm : expr.cases) {
-    if (!arm.pattern || !arm.body) {
+    if (!arm.pattern) {
+      result.diag_detail = "if-case clause is missing a pattern";
+      return result;
+    }
+    if (!arm.body) {
+      result.diag_detail = "if-case clause is missing a body";
       return result;
     }
     const auto case_scope = CaseScopeEnv(ctx,
@@ -1961,12 +2076,28 @@ CheckResult CheckIfCaseExpr(const ScopeContext& ctx,
                                          ast::Mutability::Let);
     if (!case_scope.ok) {
       result.diag_id = case_scope.diag_id;
+      result.diag_detail =
+          "if-case pattern failed case-scope binding against scrutinee type " +
+          TypeToString(scrutinee_match_type) +
+          " from scrutinee expression kind " + ast::node_kind(*expr.scrutinee) +
+          ScrutineeBindingTypeDetail(expr.scrutinee, env);
+      result.diag_span = arm.pattern->span;
       return result;
     }
     const TypeEnv arm_env = case_scope.env;
     const auto check = CheckArmBody(ctx, type_ctx, arm.body, arm_env, expected);
     if (!check.ok) {
       result.diag_id = check.diag_id;
+      result.diag_detail = check.diag_detail;
+      if (result.diag_detail.empty()) {
+        result.diag_detail = "if-case arm body failed checking against expected " +
+                             TypeToString(expected);
+      } else {
+        result.diag_detail = "if-case arm body failed checking against expected " +
+                             TypeToString(expected) + ": " +
+                             result.diag_detail;
+      }
+      result.diag_span = check.diag_span;
       return result;
     }
   }
@@ -1976,6 +2107,9 @@ CheckResult CheckIfCaseExpr(const ScopeContext& ctx,
         ElseScopeForCases(ctx, expr.scrutinee, env, expr.cases, scrutinee_base);
     if (!else_scope.ok) {
       result.diag_id = else_scope.diag_id;
+      result.diag_detail =
+          "if-case else scope failed after case pattern refinement";
+      result.diag_span = expr.scrutinee->span;
       return result;
     }
     SPEC_RULE("ElseScope");
@@ -1983,6 +2117,11 @@ CheckResult CheckIfCaseExpr(const ScopeContext& ctx,
         CheckExprAgainst(ctx, type_ctx, expr.else_expr, expected, else_scope.env);
     if (!else_check.ok) {
       result.diag_id = else_check.diag_id;
+      result.diag_detail = else_check.diag_detail;
+      if (result.diag_detail.empty()) {
+        result.diag_detail = "if-case else branch failed checking";
+      }
+      result.diag_span = else_check.diag_span;
       return result;
     }
   }
@@ -1990,11 +2129,14 @@ CheckResult CheckIfCaseExpr(const ScopeContext& ctx,
   const auto unreachable = FindUnreachableArm(ctx, scrutinee_match_type, expr.cases);
   if (!unreachable.ok) {
     result.diag_id = unreachable.diag_id;
+    result.diag_detail = "if-case unreachable-arm analysis failed";
     return result;
   }
   if (unreachable.unreachable) {
     SPEC_RULE("IfCase-Unreachable");
+    SPEC_RULE("rule.17.IfCase-Unreachable");
     result.diag_id = "E-SEM-2751";
+    result.diag_detail = "if-case contains an unreachable arm";
     return result;
   }
 
@@ -2005,7 +2147,11 @@ CheckResult CheckIfCaseExpr(const ScopeContext& ctx,
         !HasIrrefutableArm(ctx, expr.cases, scrutinee_match_type) &&
         arm_variants != decl_variants) {
       SPEC_RULE("IfCase-Enum-NonExhaustive");
+      SPEC_RULE("rule.17.IfCase-Enum-NonExhaustive");
       result.diag_id = "E-SEM-2741";
+      result.diag_detail =
+          "if-case over enum type is not exhaustive and has no else branch";
+      result.diag_span = expr.scrutinee->span;
       return result;
     }
     SPEC_RULE("Chk-IfCase-Enum");
@@ -2017,7 +2163,11 @@ CheckResult CheckIfCaseExpr(const ScopeContext& ctx,
         !HasIrrefutableArm(ctx, expr.cases, scrutinee_match_type) &&
         arm_states != decl_states) {
       SPEC_RULE("IfCase-Modal-NonExhaustive");
+      SPEC_RULE("rule.17.IfCase-Modal-NonExhaustive");
       result.diag_id = "E-TYP-2060";
+      result.diag_detail =
+          "if-case over modal type is not exhaustive and has no else branch";
+      result.diag_span = expr.scrutinee->span;
       return result;
     }
     SPEC_RULE("Chk-IfCase-Modal");
@@ -2032,7 +2182,11 @@ CheckResult CheckIfCaseExpr(const ScopeContext& ctx,
         !HasIrrefutableArm(ctx, expr.cases, scrutinee_match_type) &&
         !exhaustive.exhaustive) {
       SPEC_RULE("IfCase-Union-NonExhaustive");
+      SPEC_RULE("rule.17.IfCase-Union-NonExhaustive");
       result.diag_id = "E-SEM-2705";
+      result.diag_detail =
+          "if-case over union type is not exhaustive and has no else branch";
+      result.diag_span = expr.scrutinee->span;
       return result;
     }
     SPEC_RULE("Chk-IfCase-Union");
@@ -2041,6 +2195,10 @@ CheckResult CheckIfCaseExpr(const ScopeContext& ctx,
         !HasIrrefutableArm(ctx, expr.cases, scrutinee_match_type)) {
       SPEC_RULE("IfCase-Enum-NonExhaustive");
       result.diag_id = "E-SEM-2741";
+      result.diag_detail =
+          "if-case is not exhaustive for scrutinee type " +
+          TypeToString(scrutinee_match_type) + " and has no else branch";
+      result.diag_span = expr.scrutinee->span;
       return result;
     }
     SPEC_RULE("Chk-IfCase-Other");

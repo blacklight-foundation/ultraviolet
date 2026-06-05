@@ -93,14 +93,22 @@ static inline void SpecDefsRecordMethods() {
   SPEC_DEF("MethodNames", "5.3.2");
   SPEC_DEF("Self_R", "5.3.2");
   SPEC_DEF("SelfType", "5.3.2");
+  SPEC_DEF("def.15.SelfType", "15.2.2");
   SPEC_DEF("RecvType", "5.3.1");
   SPEC_DEF("RecvMode", "5.3.1");
   SPEC_DEF("RecvPerm", "5.3.1");
   SPEC_DEF("PermOf", "5.3.1");
+  SPEC_DEF("rule.15.Record-Method-RecvSelf-Err", "15.2.3");
   SPEC_DEF("RecvBaseType", "5.3.2");
   SPEC_DEF("RecvArgOk", "5.3.2");
   SPEC_DEF("ArgsOkJudg", "5.3.2");
+  SPEC_DEF("rule.16.Call-ArgCount-Err", "16.4");
+  SPEC_DEF("rule.16.Call-ArgType-Err", "16.4");
+  SPEC_DEF("rule.16.Call-Move-Missing", "16.4");
+  SPEC_DEF("rule.16.Call-Move-Unexpected", "16.4");
+  SPEC_DEF("rule.16.Call-Arg-NotPlace", "16.4");
   SPEC_DEF("LookupMethodRules", "5.3.2");
+  SPEC_DEF("rule.15.LookupMethod-NotFound", "15.3.4");
   SPEC_DEF("StripPerm", "5.2.12");
   SPEC_DEF("AddrOfOk", "5.2.12");
   SPEC_DEF("IsPlace", "3.3.3");
@@ -258,7 +266,9 @@ RecvTypeResult RecvTypeForReceiver(const ScopeContext& ctx,
             return result;
           }
           if (!IsExplicitSelfReceiverType(lowered.type)) {
+            SPEC_RULE("def.15.SelfType");
             SPEC_RULE("Record-Method-RecvSelf-Err");
+            SPEC_RULE("rule.15.Record-Method-RecvSelf-Err");
             result.diag_id = "Record-Method-RecvSelf-Err";
             return result;
           }
@@ -296,6 +306,8 @@ RecvBaseTypeResult RecvBaseType(const ast::ExprPtr& base,
   if (!mode.has_value()) {
     if (HasSourceProvenance(base)) {
       if (!IsPlaceExprForCall(base)) {
+        SPEC_RULE("Call-Arg-NotPlace");
+        SPEC_RULE("rule.16.Call-Arg-NotPlace");
         result.diag_id = "E-TYP-1603";
         return result;
       }
@@ -343,6 +355,8 @@ RecvArgOkResult RecvArgOk(const ast::ExprPtr& base,
   if (!mode.has_value()) {
     const bool has_source_provenance = HasSourceProvenance(base);
     if (has_source_provenance && !IsPlaceExprForCall(base)) {
+      SPEC_RULE("Call-Arg-NotPlace");
+      SPEC_RULE("rule.16.Call-Arg-NotPlace");
       result.diag_id = "E-TYP-1603";
       return result;
     }
@@ -414,6 +428,7 @@ static ArgsOkResult CheckLoweredArgsOk(
 
   if (lowered_params.size() != args.size()) {
     SPEC_RULE("Call-ArgCount-Err");
+    SPEC_RULE("rule.16.Call-ArgCount-Err");
     result.diag_id = "E-SEM-2532";
     return result;
   }
@@ -422,6 +437,7 @@ static ArgsOkResult CheckLoweredArgsOk(
   for (std::size_t i = 0; i < args.size(); ++i) {
     if (MethodArgMissingMove(facts[i], lowered_params[i].mode, args[i])) {
       SPEC_RULE("Call-Move-Missing");
+      SPEC_RULE("rule.16.Call-Move-Missing");
       result.diag_id = "E-SEM-2534";
       return result;
     }
@@ -431,6 +447,7 @@ static ArgsOkResult CheckLoweredArgsOk(
     if (!lowered_params[i].mode.has_value() &&
         args[i].pass == ast::ArgPassKind::Move) {
       SPEC_RULE("Call-Move-Unexpected");
+      SPEC_RULE("rule.16.Call-Move-Unexpected");
       result.diag_id = "E-SEM-2535";
       return result;
     }
@@ -455,6 +472,7 @@ static ArgsOkResult CheckLoweredArgsOk(
       const bool has_source_prov = MethodArgHasSourceProvenance(facts[i], arg);
       if (has_source_prov && !MethodArgIsPlace(facts[i], arg)) {
         SPEC_RULE("Call-Arg-NotPlace");
+        SPEC_RULE("rule.16.Call-Arg-NotPlace");
         result.diag_id = "E-TYP-1603";
         return result;
       }
@@ -517,6 +535,7 @@ static ArgsOkResult CheckLoweredArgsOk(
     }
     if (!sub.subtype) {
       SPEC_RULE("Call-ArgType-Err");
+      SPEC_RULE("rule.16.Call-ArgType-Err");
       result.diag_id = "E-SEM-2533";
       return result;
     }
@@ -557,6 +576,7 @@ ArgsOkResult ArgsOk(const ScopeContext& ctx,
 
   if (params.size() != args.size()) {
     SPEC_RULE("Call-ArgCount-Err");
+    SPEC_RULE("rule.16.Call-ArgCount-Err");
     result.diag_id = "E-SEM-2532";
     return result;
   }
@@ -590,6 +610,7 @@ ArgsOkResult ArgsOkWithSubst(const ScopeContext& ctx,
 
   if (params.size() != args.size()) {
     SPEC_RULE("Call-ArgCount-Err");
+    SPEC_RULE("rule.16.Call-ArgCount-Err");
     result.diag_id = "E-SEM-2532";
     return result;
   }
@@ -704,11 +725,13 @@ StaticMethodLookup LookupMethodStatic(const ScopeContext& ctx,
 
   if (defaults.empty()) {
     SPEC_RULE("LookupMethod-NotFound");
+    SPEC_RULE("rule.15.LookupMethod-NotFound");
     result.diag_id = "LookupMethod-NotFound";
     return result;
   }
   if (defaults.size() > 1) {
     SPEC_RULE("LookupMethod-Ambig");
+    SPEC_RULE("rule.15.LookupMethod-Ambig");
     result.diag_id = "LookupMethod-Ambig";
     return result;
   }

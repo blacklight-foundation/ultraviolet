@@ -69,6 +69,68 @@ static void EmitAttrSyntaxErr(Parser& parser, const core::Span& span) {
   EmitAttrDiagById(parser, "E-MOD-2450", span);
 }
 
+static bool IsFfiAttributeName(const AttrName& name) {
+  const std::string_view full_name = name.full_name;
+  return full_name == "export" || full_name == "host_export" ||
+         full_name == "mangle" || full_name == "library" ||
+         full_name == "unwind" || full_name == "ffi_pass_by_value";
+}
+
+static void RecordFfiAttributeParsingConformance(
+    const AttributeItem& item,
+    std::string_view arg_form) {
+  if (!core::Conformance::Enabled() || !IsFfiAttributeName(item.name)) {
+    return;
+  }
+
+  std::string payload;
+  payload.reserve(item.name.full_name.size() + arg_form.size() + 96);
+  payload += "source=ParseAttributeItem;parser=attribute_list;attribute=";
+  payload += item.name.full_name;
+  payload += ";arg_form=";
+  payload += arg_form;
+  payload += ";ordinary_attribute_entry=true";
+  core::Conformance::Record(
+      "requirement.23.FfiAttributesParsing", item.span, payload);
+}
+
+static bool IsBuiltinLayoutAttributeName(const AttrName& name) {
+  // Section 9.3.1 gives the built-in layout attribute a concrete form.
+  return !name.vendor_prefix_opt.has_value() && name.leaf_name == "layout";
+}
+
+static bool IsBuiltinDeriveAttributeName(const AttrName& name) {
+  return !name.vendor_prefix_opt.has_value() && name.leaf_name == "derive";
+}
+
+static void RecordDeriveAttributeParsingConformance(const AttributeItem& item) {
+  if (!core::Conformance::Enabled() || !IsBuiltinDeriveAttributeName(item.name)) {
+    return;
+  }
+
+  std::string payload = "source=ParseAttributeItem;parser=attribute_list;args=";
+  payload.append(std::to_string(item.args.size()));
+  payload.append(";attribute=derive");
+  core::Conformance::Record(
+      "requirement.22.DeriveAttributeParsingReference", item.span, payload);
+}
+
+static void RecordLayoutAttributeParsingConformance(const AttributeItem& item) {
+  if (!core::Conformance::Enabled() || !IsBuiltinLayoutAttributeName(item.name)) {
+    return;
+  }
+
+  std::string payload = "source=ParseAttributeItem;parser=attribute_list;args=";
+  payload.append(std::to_string(item.args.size()));
+  payload.append(";ast_attachment=true");
+  core::Conformance::Record(
+      "grammar.LayoutAttributeSyntax", item.span, payload);
+  core::Conformance::Record(
+      "req.LayoutAttributeParserReuse", item.span, payload);
+  core::Conformance::Record(
+      "def.LayoutAttributeAstAttachment", item.span, payload);
+}
+
 // =============================================================================
 // ParseAttrArgListTail - Parse remaining attribute args after first
 // =============================================================================
@@ -95,9 +157,7 @@ ParseElemResult<std::vector<Identifier>> ParseVendorPrefixTail(
 ParseElemResult<ParsedAttrName> ParseAttrName(Parser parser);
 
 static bool RequiresAttrArgList(const AttrName& name) {
-  // §9.3.1 gives the built-in layout attribute a concrete form:
-  // #layout(layout_args). Vendor-qualified names remain schema-defined.
-  return !name.vendor_prefix_opt.has_value() && name.leaf_name == "layout";
+  return IsBuiltinLayoutAttributeName(name);
 }
 
 static bool UsesInlineArgGrammar(const AttrName& name) {
@@ -509,6 +569,7 @@ ParseElemResult<AttributeItem> ParseAttributeItem(Parser parser) {
     }
     SPEC_RULE("Parse-AttrArgsOpt-None");
     item.span = SpanBetween(parser, next);
+    RecordFfiAttributeParsingConformance(item, "none");
     return {next, item};
   }
 
@@ -535,6 +596,9 @@ ParseElemResult<AttributeItem> ParseAttributeItem(Parser parser) {
   next = after_close;
 
   item.span = SpanBetween(parser, next);
+  RecordDeriveAttributeParsingConformance(item);
+  RecordLayoutAttributeParsingConformance(item);
+  RecordFfiAttributeParsingConformance(item, "parenthesized");
   return {next, item};
 }
 

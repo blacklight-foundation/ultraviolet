@@ -26,6 +26,7 @@
 
 #include "00_core/spec_trace.h"
 #include "04_analysis/layout/layout.h"
+#include "05_codegen/abi/abi.h"
 #include "05_codegen/llvm/emit/internal_helpers.h"
 #include "05_codegen/llvm/llvm_emit.h"
 
@@ -34,6 +35,8 @@
 #include "llvm/IR/InstrTypes.h"
 
 #include <algorithm>
+#include <atomic>
+#include <string>
 
 namespace ultraviolet::codegen {
 
@@ -43,6 +46,58 @@ bool AttrSpecEquals(const AttrSpec& lhs, const AttrSpec& rhs) {
   return lhs.kind == rhs.kind &&
          lhs.value == rhs.value &&
          lhs.type == rhs.type;
+}
+
+bool AttrSetContainsKind(const AttrSet& attrs, AttrKind kind) {
+  return std::any_of(
+      attrs.begin(),
+      attrs.end(),
+      [&](const AttrSpec& attr) { return attr.kind == kind; });
+}
+
+void RecordPtrAttrsOtherOracleCase(std::string_view state_name,
+                                   const AttrSet& attrs) {
+  std::string payload = "check=llvm-ptrattrs-oracle;state=";
+  payload += state_name;
+  payload += ";result=";
+  payload += attrs.empty() ? "empty" : "unexpected-nonempty";
+  payload += ";attr_count=";
+  payload += std::to_string(attrs.size());
+  core::Conformance::Record("LLVM-PtrAttrs-Other", std::nullopt, payload);
+}
+
+void EnsurePtrAttrsOtherOracle(const LowerCtx* ctx) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  static std::atomic<int> state{0};
+  int expected = 0;
+  if (!state.compare_exchange_strong(expected, 1)) {
+    return;
+  }
+
+  const analysis::TypeRef element = analysis::MakeTypePrim("i32");
+  const AttrSet unspecified_attrs =
+      ComputePtrAttrs(analysis::MakeTypePtr(element, std::nullopt), ctx);
+  RecordPtrAttrsOtherOracleCase("Unspecified", unspecified_attrs);
+
+  const AttrSet null_attrs = ComputePtrAttrs(
+      analysis::MakeTypePtr(element, analysis::PtrState::Null), ctx);
+  RecordPtrAttrsOtherOracleCase("Null", null_attrs);
+
+  const AttrSet expired_attrs = ComputePtrAttrs(
+      analysis::MakeTypePtr(element, analysis::PtrState::Expired), ctx);
+  RecordPtrAttrsOtherOracleCase("Expired", expired_attrs);
+
+  const bool ok =
+      unspecified_attrs.empty() && null_attrs.empty() && expired_attrs.empty();
+  core::Conformance::Record(
+      "LLVM-PtrAttrs-Other",
+      std::nullopt,
+      ok ? "check=llvm-ptrattrs-oracle;overall=ok"
+         : "check=llvm-ptrattrs-oracle;overall=failed");
+  state.store(2);
 }
 
 }  // namespace
@@ -87,11 +142,23 @@ std::optional<analysis::PtrState> PtrStateOf(const analysis::TypeRef& type) {
   return std::nullopt;
 }
 
+std::optional<::ultraviolet::analysis::layout::Layout> ABILayoutForPointerElement(
+    const analysis::ScopeContext& scope,
+    const analysis::TypeRef& element) {
+  const auto stripped = StripPerm(element);
+  if (stripped && std::holds_alternative<analysis::TypeDynamic>(stripped->node)) {
+    return ABITy(scope, element);
+  }
+  return ::ultraviolet::analysis::layout::LayoutOf(scope, element);
+}
+
 // -----------------------------------------------------------------------------
 // Attribute Building
 // -----------------------------------------------------------------------------
 
 AttrSet ComputePtrAttrs(const analysis::TypeRef& type, const LowerCtx* ctx) {
+  EnsurePtrAttrsOtherOracle(ctx);
+
   AttrSet attrs;
 
   const auto stripped = StripPerm(type);
@@ -122,8 +189,7 @@ AttrSet ComputePtrAttrs(const analysis::TypeRef& type, const LowerCtx* ctx) {
   if (ctx && ctx->sigma) {
     const analysis::ScopeContext& scope = emit_detail::BuildScope(ctx);
 
-    const auto layout =
-        ::ultraviolet::analysis::layout::LayoutOf(scope, ptr->element);
+    const auto layout = ABILayoutForPointerElement(scope, ptr->element);
     if (layout.has_value()) {
       attrs.push_back({AttrKind::Dereferenceable, layout->size});
       if (layout->align > 0) {
@@ -190,8 +256,26 @@ AttrSet ComputeArgAttrsExt(const std::string& param_name,
   // Start with basic arg attrs
   AttrSet attrs = ComputeArgAttrs(type);
 
-  if (NoEscapeParam(param_name)) {
+  const bool no_escape = NoEscapeParam(param_name);
+  if (no_escape) {
     attrs.push_back({AttrKind::NoCapture, 0});
+  }
+  if (core::Conformance::Enabled()) {
+    const std::string type_name = analysis::TypeToString(type);
+    std::string payload;
+    payload.reserve(96 + param_name.size() + type_name.size());
+    payload += "check=optional-argument-attrs;param=";
+    payload += param_name.empty() ? "-" : param_name;
+    payload += ";type=";
+    payload += type_name;
+    payload += ";no_escape=";
+    payload += no_escape ? "true" : "false";
+    payload += ";nocapture=";
+    payload += AttrSetContainsKind(attrs, AttrKind::NoCapture)
+                   ? "present"
+                   : "absent";
+    core::Conformance::Record(
+        "def.24.LLVMOptionalArgumentAttrs", std::nullopt, payload);
   }
 
   return attrs;
@@ -228,6 +312,11 @@ void AddAttrSetToBuilder(llvm::AttrBuilder& builder,
       case AttrKind::StructRet:
         if (attr.type) {
           builder.addStructRetAttr(attr.type);
+        }
+        break;
+      case AttrKind::ByVal:
+        if (attr.type) {
+          builder.addByValAttr(attr.type);
         }
         break;
       case AttrKind::NoCapture:

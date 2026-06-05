@@ -51,8 +51,47 @@ internal record ComptimeDerivedReference <: ComptimeDeriveClass {
     internal value: i32
 }
 
-/// Exercises the Comptime DeriveTargets reference surface.
-public procedure runComptimeDeriveTargetsReference() -> bool {
+/// Exercises #derive attribute parsing and dispatch to derive targets.
+public procedure deriveAttributeParsingReference() -> bool {
     return emittedComptimeDeriveReferenceValue() == 37 &&
         emittedRequiredComptimeDeriveReferenceValue() == 41
+}
+
+/// Exercises parsing and execution of a derives-target requires clause.
+public procedure parseDeriveClauseRequiresReference() -> bool {
+    return emittedRequiredComptimeDeriveReferenceValue() == 41
+}
+
+/// Exercises derive target body bindings for target, introspect, diagnostics, and emitter.
+public procedure deriveTargetBodyBindingsReference() -> bool {
+    return emittedComptimeDeriveReferenceValue() == 37 &&
+        emittedRequiredComptimeDeriveReferenceValue() == 41
+}
+
+/// Exercises derive execution order through emits/requires dependencies.
+public procedure deriveExecutionOrderReference() -> bool {
+    return emittedComptimeDeriveReferenceValue() == 37 &&
+        emittedRequiredComptimeDeriveReferenceValue() == 41
+}
+
+/// Exercises the scope of derives-target requires and emits clauses.
+public procedure deriveRequiresEmitsScopeReference() -> bool {
+    return emittedComptimeDeriveReferenceValue() == 37 &&
+        emittedRequiredComptimeDeriveReferenceValue() == 41
+}
+
+/// Exercises that derive target emissions are available to the expanded program.
+public procedure deriveTargetExecutionTimingReference() -> bool {
+    return emittedComptimeDeriveReferenceValue() == 37 &&
+        emittedRequiredComptimeDeriveReferenceValue() == 41
+}
+
+/// Exercises the Comptime DeriveTargets reference surface.
+public procedure runComptimeDeriveTargetsReference() -> bool {
+    return deriveAttributeParsingReference() &&
+        parseDeriveClauseRequiresReference() &&
+        deriveTargetBodyBindingsReference() &&
+        deriveExecutionOrderReference() &&
+        deriveRequiresEmitsScopeReference() &&
+        deriveTargetExecutionTimingReference()
 }

@@ -22,6 +22,7 @@
 #include <memory>
 #include <string_view>
 
+#include "00_core/assert_spec.h"
 #include "00_core/diagnostic_messages.h"
 #include "00_core/diagnostics.h"
 #include "02_source/lexer/keyword_policy.h"
@@ -166,10 +167,14 @@ void EmitReturnAtModuleErr(Parser& parser) {
   if (parser.quote_mode) {
     return;
   }
+  SPEC_DEF("diag.18.ControlTransferStatements", "18.9.7");
+  SPEC_DEF("diag.18.StatementDiagnosticsSupplement", "18.11");
   auto diag = core::MakeDiagnosticById("E-SEM-3165");
   if (!diag) {
     return;
   }
+  SPEC_RULE_AT("diag.18.ControlTransferStatements", TokSpan(parser));
+  SPEC_RULE_AT("diag.18.StatementDiagnosticsSupplement", TokSpan(parser));
   core::Emit(parser.diags, *diag);
 }
 

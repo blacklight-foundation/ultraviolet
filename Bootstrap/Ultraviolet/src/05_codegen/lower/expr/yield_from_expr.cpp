@@ -38,6 +38,8 @@ namespace ultraviolet::codegen {
 
 LowerResult LowerYieldFromExpr(const ast::YieldFromExpr& expr, LowerCtx& ctx) {
     SPEC_RULE("Lower-Expr-YieldFrom");
+    SPEC_RULE("def.21.SuspensionLoweringForms");
+    SPEC_RULE("rule.21.Lower-YieldFrom");
 
     // Lower the source expression
     auto source_result = LowerExpr(*expr.value, ctx);

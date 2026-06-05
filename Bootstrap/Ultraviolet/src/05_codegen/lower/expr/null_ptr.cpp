@@ -16,7 +16,27 @@
 #include "05_codegen/lower/expr/null_ptr.h"
 #include "00_core/assert_spec.h"
 
+#include <mutex>
+
 namespace ultraviolet::codegen {
+
+namespace {
+
+std::once_flag g_safe_pointer_null_constructor_obligation_once;
+
+void RecordSafePointerNullConstructorOnce() {
+    if (!core::Conformance::Enabled()) {
+        return;
+    }
+    std::call_once(g_safe_pointer_null_constructor_obligation_once, []() {
+        core::Conformance::Record(
+            "def.SafePointerRuntimeConstructors",
+            std::nullopt,
+            "source=LowerPtrNull;state=Null;constructor=Ptr@Null;value=PtrVal;addr=0");
+    });
+}
+
+}  // namespace
 
 // =============================================================================
 // LowerPtrNull - Lower a null pointer expression to IR
@@ -36,6 +56,8 @@ namespace ultraviolet::codegen {
 
 LowerResult LowerPtrNull(const ast::PtrNullExpr& /*expr*/, LowerCtx& /*ctx*/) {
     SPEC_RULE("Lower-Expr-PtrNull");
+    SPEC_RULE("rule.16.Lower-Expr-PtrNull");
+    RecordSafePointerNullConstructorOnce();
 
     IRValue value;
     value.kind = IRValue::Kind::Immediate;

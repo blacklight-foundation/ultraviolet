@@ -48,6 +48,7 @@ namespace ultraviolet::codegen {
 
 LowerResult LowerArrayLiteral(const ast::ArrayExpr& expr, LowerCtx& ctx) {
     SPEC_RULE("Lower-Expr-Array");
+    SPEC_RULE("rule.16.Lower-Expr-Array");
 
     auto [ir, lowered_segments] = LowerList(expr.elements, ctx);
 
@@ -102,6 +103,7 @@ LowerResult LowerArrayLiteral(const ast::ArrayExpr& expr, LowerCtx& ctx) {
 
 LowerResult LowerArrayRepeat(const ast::ArrayRepeatExpr& expr, LowerCtx& ctx) {
     SPEC_RULE("Lower-Expr-Array");
+    SPEC_RULE("rule.16.Lower-Expr-Array");
 
     // Lower value and count expressions
     auto value_result = LowerExpr(*expr.value, ctx);

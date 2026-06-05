@@ -753,6 +753,10 @@ TypeRef MakeTypeDynamic(TypePath path) {
 TypeRef MakeTypeModalState(ModalRef modal_ref, std::string state) {
   SpecDefsTypeRepr();
   SPEC_RULE("TypeRef-ModalStateRef");
+  if (PathMatchesBuiltinName(ModalRefPath(modal_ref), "Async") &&
+      (state == "Suspended" || state == "Completed" || state == "Failed")) {
+    SPEC_RULE("requirement.21.ReservedAsyncStates");
+  }
   TypeModalState node;
   node.modal_ref = std::move(modal_ref);
   node.state = std::move(state);
@@ -1524,16 +1528,25 @@ bool IdEq(const std::string& a, const std::string& b) {
 
 // Check if path matches the Async built-in modal type
 bool IsAsyncModalPath(const TypePath& path) {
-  return PathMatchesBuiltinName(path, "Async");
+  const bool matches = PathMatchesBuiltinName(path, "Async");
+  if (matches) {
+    SPEC_RULE("requirement.21.ReservedAsyncTypeConstructors");
+  }
+  return matches;
 }
 
 // Check if path matches a built-in async type alias
 bool IsAsyncAliasPath(const TypePath& path) {
-  return PathMatchesBuiltinName(path, "Future") ||
-         PathMatchesBuiltinName(path, "Sequence") ||
-         PathMatchesBuiltinName(path, "Stream") ||
-         PathMatchesBuiltinName(path, "Pipe") ||
-         PathMatchesBuiltinName(path, "Exchange");
+  const bool matches =
+      PathMatchesBuiltinName(path, "Future") ||
+      PathMatchesBuiltinName(path, "Sequence") ||
+      PathMatchesBuiltinName(path, "Stream") ||
+      PathMatchesBuiltinName(path, "Pipe") ||
+      PathMatchesBuiltinName(path, "Exchange");
+  if (matches) {
+    SPEC_RULE("requirement.21.ReservedAsyncTypeConstructors");
+  }
+  return matches;
 }
 
 namespace {
@@ -1545,48 +1558,72 @@ std::optional<AsyncSig> AsyncSigFromBuiltinName(
   auto never_type = MakeTypePrim("!");
 
   if (IdEq(name, "Async")) {
+    if (generic_args.empty() || generic_args.size() > 4) {
+      return std::nullopt;
+    }
+    if (generic_args.size() < 4) {
+      SPEC_RULE("requirement.21.AsyncParameterDefaults");
+    }
     AsyncSig sig;
-    sig.out = generic_args.size() > 0 ? generic_args[0] : unit_type;
+    sig.out = generic_args[0];
     sig.in = generic_args.size() > 1 ? generic_args[1] : unit_type;
     sig.result = generic_args.size() > 2 ? generic_args[2] : unit_type;
     sig.err = generic_args.size() > 3 ? generic_args[3] : never_type;
     return sig;
   }
   if (IdEq(name, "Future")) {
+    if (generic_args.empty() || generic_args.size() > 2) {
+      return std::nullopt;
+    }
+    if (generic_args.size() < 2) {
+      SPEC_RULE("requirement.21.AsyncParameterDefaults");
+    }
     AsyncSig sig;
     sig.out = unit_type;
     sig.in = unit_type;
-    sig.result = generic_args.size() > 0 ? generic_args[0] : unit_type;
+    sig.result = generic_args[0];
     sig.err = generic_args.size() > 1 ? generic_args[1] : never_type;
     return sig;
   }
   if (IdEq(name, "Sequence")) {
+    if (generic_args.size() != 1) {
+      return std::nullopt;
+    }
     AsyncSig sig;
-    sig.out = generic_args.size() > 0 ? generic_args[0] : unit_type;
+    sig.out = generic_args[0];
     sig.in = unit_type;
     sig.result = unit_type;
     sig.err = never_type;
     return sig;
   }
   if (IdEq(name, "Stream")) {
+    if (generic_args.size() != 2) {
+      return std::nullopt;
+    }
     AsyncSig sig;
-    sig.out = generic_args.size() > 0 ? generic_args[0] : unit_type;
+    sig.out = generic_args[0];
     sig.in = unit_type;
     sig.result = unit_type;
-    sig.err = generic_args.size() > 1 ? generic_args[1] : never_type;
+    sig.err = generic_args[1];
     return sig;
   }
   if (IdEq(name, "Pipe")) {
+    if (generic_args.size() != 2) {
+      return std::nullopt;
+    }
     AsyncSig sig;
-    sig.out = generic_args.size() > 1 ? generic_args[1] : unit_type;
-    sig.in = generic_args.size() > 0 ? generic_args[0] : unit_type;
+    sig.out = generic_args[1];
+    sig.in = generic_args[0];
     sig.result = unit_type;
     sig.err = never_type;
     return sig;
   }
   if (IdEq(name, "Exchange")) {
+    if (generic_args.size() != 1) {
+      return std::nullopt;
+    }
     AsyncSig sig;
-    auto t = generic_args.size() > 0 ? generic_args[0] : unit_type;
+    auto t = generic_args[0];
     sig.out = t;
     sig.in = t;
     sig.result = t;
@@ -1616,17 +1653,21 @@ std::optional<AsyncSig> GetAsyncSig(const TypeRef& type) {
         if constexpr (std::is_same_v<T, TypePathType>) {
           // Async built-ins are recognized by canonical builtin names.
           if (IsAsyncModalPath(node.path) || IsAsyncAliasPath(node.path)) {
+            SPEC_RULE("requirement.21.AsyncTypeNoAdditionalConcreteGrammar");
             return AsyncSigFromBuiltinName(node.path.back(), node.generic_args);
           }
           return std::nullopt;
         } else if constexpr (std::is_same_v<T, TypeApply>) {
           if (IsAsyncModalPath(node.path) || IsAsyncAliasPath(node.path)) {
+            SPEC_RULE("requirement.21.AsyncTypeNoAdditionalConcreteGrammar");
             return AsyncSigFromBuiltinName(node.path.back(), node.args);
           }
           return std::nullopt;
         } else if constexpr (std::is_same_v<T, TypeModalState>) {
           // Async@Suspended, Async@Completed, Async@Failed
           if (IsAsyncModalPath(ModalRefPath(node.modal_ref))) {
+            SPEC_RULE("requirement.21.AsyncTypeNoAdditionalConcreteGrammar");
+            SPEC_RULE("requirement.21.ReservedAsyncStates");
             return AsyncSigFromBuiltinName("Async", ModalRefArgs(node.modal_ref));
           }
           return std::nullopt;

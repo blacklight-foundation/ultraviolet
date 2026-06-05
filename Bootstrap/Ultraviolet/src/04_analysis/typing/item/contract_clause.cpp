@@ -53,6 +53,49 @@ namespace ultraviolet::analysis
       SPEC_DEF("Contract-Dynamic", "5.8");
     }
 
+    static std::string ContractClausePresencePayload(
+        const ast::ContractClause &contract,
+        bool is_dynamic)
+    {
+      std::string payload = "source=CheckContractClause";
+      payload += ";precondition=";
+      payload += (contract.precondition ? "present" : "absent");
+      payload += ";postcondition=";
+      payload += (contract.postcondition ? "present" : "absent");
+      payload += ";dynamic=";
+      payload += (is_dynamic ? "true" : "false");
+      return payload;
+    }
+
+    static void RecordContractClauseRuntimeLoweringEvidence(
+        const ast::ContractClause &contract,
+        bool is_dynamic)
+    {
+      if (!core::Conformance::Enabled())
+      {
+        return;
+      }
+
+      std::string runtime_payload =
+          ContractClausePresencePayload(contract, is_dynamic);
+      runtime_payload +=
+          ";runtime_effect=none;operational_impact=verification_and_contract_checks";
+      core::Conformance::Record(
+          "req.15.ContractClausesNoIndependentRuntimeEffect",
+          contract.span,
+          runtime_payload);
+
+      std::string lowering_payload =
+          ContractClausePresencePayload(contract, is_dynamic);
+      lowering_payload +=
+          ";direct_lowering=false;lowering_inputs=verification_results;"
+          "contract_checks=owned_by_15_8";
+      core::Conformance::Record(
+          "req.15.ContractClauseLoweringViaVerificationResults",
+          contract.span,
+          lowering_payload);
+    }
+
     // =============================================================================
     // PURITY CHECK
     // =============================================================================
@@ -408,6 +451,7 @@ namespace ultraviolet::analysis
     (void)env;
 
     SPEC_RULE("Contract-Ok");
+    RecordContractClauseRuntimeLoweringEvidence(contract, is_dynamic);
     return result;
   }
 

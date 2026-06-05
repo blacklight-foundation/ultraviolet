@@ -14,6 +14,15 @@ internal procedure outputDiagnosticFixtureArtifactsExistAtPaths(
         context.io~>exists(expected_path)
 }
 
+internal procedure outputDiagnosticFixtureArtifactsExistWithoutManifestAtPaths(
+    context: Context,
+    source_path: string@View,
+    expected_path: string@View
+) -> bool {
+    return context.io~>exists(source_path) &&
+        context.io~>exists(expected_path)
+}
+
 public procedure outputDiagnosticFixtureArtifactsExist(context: Context) -> bool {
     return outputDiagnosticFixtureArtifactsExistAtPaths(
         context,
@@ -29,9 +38,125 @@ public procedure outputDiagnosticFixtureArtifactsExist(context: Context) -> bool
         ) &&
         outputDiagnosticFixtureArtifactsExistAtPaths(
             context,
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure/Source/Library.uv",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure/Expected.uv"
+        ) &&
+        outputDiagnosticFixtureArtifactsExistAtPaths(
+            context,
             "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestParseError/Source/Main.uv",
             "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestParseError/Expected.uv"
+        ) &&
+        outputDiagnosticFixtureArtifactsExistWithoutManifestAtPaths(
+            context,
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestMissing/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestMissing/Expected.uv"
+        ) &&
+        outputDiagnosticFixtureArtifactsExistAtPaths(
+            context,
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestRequiredTypesInvalid/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestRequiredTypesInvalid/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestRequiredTypesInvalid/Expected.uv"
+        ) &&
+        outputDiagnosticFixtureArtifactsExistAtPaths(
+            context,
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestOutDirTypeInvalid/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestOutDirTypeInvalid/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestOutDirTypeInvalid/Expected.uv"
+        ) &&
+        outputDiagnosticFixtureArtifactsExistAtPaths(
+            context,
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestEmitIRTypeInvalid/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestEmitIRTypeInvalid/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestEmitIRTypeInvalid/Expected.uv"
+        ) &&
+        outputDiagnosticFixtureArtifactsExistAtPaths(
+            context,
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestLinkKindTypeInvalid/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestLinkKindTypeInvalid/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestLinkKindTypeInvalid/Expected.uv"
+        ) &&
+        outputDiagnosticFixtureArtifactsExistAtPaths(
+            context,
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestEmitIRInvalid/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestEmitIRInvalid/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestEmitIRInvalid/Expected.uv"
+        ) &&
+        outputDiagnosticFixtureArtifactsExistAtPaths(
+            context,
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestOutDirPathInvalid/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestOutDirPathInvalid/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestOutDirPathInvalid/Expected.uv"
+        ) &&
+        outputDiagnosticFixtureArtifactsExistAtPaths(
+            context,
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/HostedImportGraph/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/HostedImportGraph/Source/HostedImportGraph/Library.uv",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/HostedImportGraph/Expected.uv"
+        ) &&
+        context.io~>exists(
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/HostedImportGraph/Source/HostedImportProvider/Library.uv"
+        ) &&
+        outputDiagnosticFixtureArtifactsExistAtPaths(
+            context,
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure/Expected.uv"
+        ) &&
+        outputDiagnosticFixtureArtifactsExistAtPaths(
+            context,
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure/Source/Library.uv",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure/Expected.uv"
+        ) &&
+        outputDiagnosticFixtureArtifactsExistAtPaths(
+            context,
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing/Expected.uv"
+        ) &&
+        outputDiagnosticFixtureArtifactsExistAtPaths(
+            context,
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/RuntimeIncompatible/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/RuntimeIncompatible/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/RuntimeIncompatible/Expected.uv"
+        ) &&
+        outputDiagnosticFixtureArtifactsExistAtPaths(
+            context,
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/LinkerInvocationFailure/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/LinkerInvocationFailure/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/LinkerInvocationFailure/Expected.uv"
+        ) &&
+        context.io~>exists(
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/LinkerInvocationFailure/Tools/lld-link.exe"
+        ) &&
+        outputDiagnosticFixtureArtifactsExistAtPaths(
+            context,
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/ArchiverInvocationFailure/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/ArchiverInvocationFailure/Source/Library.uv",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/ArchiverInvocationFailure/Expected.uv"
+        ) &&
+        context.io~>exists(
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/ArchiverInvocationFailure/Tools/llvm-lib.exe"
+        ) &&
+        outputDiagnosticFixtureArtifactsExistAtPaths(
+            context,
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/OutputPipeline/DirectoryPreparationFailure/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/OutputPipeline/DirectoryPreparationFailure/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/OutputPipeline/DirectoryPreparationFailure/Expected.uv"
+        ) &&
+        outputDiagnosticFixtureArtifactsExistAtPaths(
+            context,
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/OutputPipeline/ObjectWriteFailure/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/OutputPipeline/ObjectWriteFailure/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/OutputPipeline/ObjectWriteFailure/Expected.uv"
+        ) &&
+        outputDiagnosticFixtureArtifactsExistAtPaths(
+            context,
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure/Expected.uv"
         ) &&
         outputDiagnosticFixtureArtifactsExistAtPaths(
             context,
@@ -81,11 +206,119 @@ public procedure emitLLVMRenderFailureExpectedDiagnosticFileMatches(
     )
 }
 
+public procedure llvmTypeMappingFailureExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return outputDiagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure/Expected.uv",
+        "//! Expected diagnostic metadata for the LlvmTypeMappingFailure output-diagnostic specimen.\n\nexpectedDiagnostic(\"E-OUT-0410\", \"rule.24.LLVMTy-Err\")\nexpectedDiagnostic(\"E-OUT-0402\", \"Out-Obj-Err\")\nexpectedDiagnostic(\"E-OUT-0402\", \"Output-Pipeline-Err\")\n"
+    )
+}
+
+public procedure linkerToolResolveFailureExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return outputDiagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure/Expected.uv",
+        "//! Expected diagnostic metadata for the LinkerToolResolveFailure output-diagnostic specimen.\n\nexpectedDiagnostic(\"E-OUT-0405\", \"ResolveTool-Err-Linker\")\nexpectedDiagnostic(\"E-OUT-0405\", \"Link-NotFound\")\nexpectedDiagnostic(\"E-OUT-0405\", \"Out-Final-Link-Err\")\nexpectedDiagnostic(\"E-OUT-0405\", \"Output-Pipeline-Err\")\n"
+    )
+}
+
+public procedure archiverToolResolveFailureExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return outputDiagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure/Expected.uv",
+        "//! Expected diagnostic metadata for the ArchiverToolResolveFailure output-diagnostic specimen.\n\nexpectedDiagnostic(\"E-OUT-0405\", \"ResolveTool-Err-Archiver\")\nexpectedDiagnostic(\"E-OUT-0405\", \"Archive-NotFound\")\nexpectedDiagnostic(\"E-OUT-0405\", \"Out-Final-Archive-Err\")\nexpectedDiagnostic(\"E-OUT-0405\", \"Output-Pipeline-Err\")\n"
+    )
+}
+
+public procedure runtimeLibMissingExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return outputDiagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing/Expected.uv",
+        "//! Expected diagnostic metadata for the RuntimeLibMissing output-diagnostic specimen.\n\nexpectedDiagnostic(\"E-OUT-0407\", \"ResolveRuntimeLib-Err\")\nexpectedDiagnostic(\"E-OUT-0407\", \"Link-Runtime-Missing\")\nexpectedDiagnostic(\"E-OUT-0407\", \"Out-Final-Link-Err\")\nexpectedDiagnostic(\"E-OUT-0407\", \"Output-Pipeline-Err\")\n"
+    )
+}
+
+public procedure runtimeIncompatibleExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return outputDiagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/RuntimeIncompatible/Expected.uv",
+        "//! Expected diagnostic metadata for the RuntimeIncompatible output-diagnostic specimen.\n\nexpectedDiagnostic(\"E-OUT-0408\", \"Link-Runtime-Incompatible\")\nexpectedDiagnostic(\"E-OUT-0408\", \"Out-Final-Link-Err\")\nexpectedDiagnostic(\"E-OUT-0408\", \"Output-Pipeline-Err\")\n"
+    )
+}
+
+public procedure linkerInvocationFailureExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return outputDiagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/LinkerInvocationFailure/Expected.uv",
+        "//! Expected diagnostic metadata for the LinkerInvocationFailure output-diagnostic specimen.\n\nexpectedDiagnostic(\"E-OUT-0404\", \"Link-Fail\")\nexpectedDiagnostic(\"E-OUT-0404\", \"Out-Final-Link-Err\")\nexpectedDiagnostic(\"E-OUT-0404\", \"Output-Pipeline-Err\")\n"
+    )
+}
+
+public procedure archiverInvocationFailureExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return outputDiagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/Linking/ArchiverInvocationFailure/Expected.uv",
+        "//! Expected diagnostic metadata for the ArchiverInvocationFailure output-diagnostic specimen.\n\nexpectedDiagnostic(\"E-OUT-0404\", \"Archive-Fail\")\nexpectedDiagnostic(\"E-OUT-0404\", \"Out-Final-Archive-Err\")\nexpectedDiagnostic(\"E-OUT-0404\", \"Output-Pipeline-Err\")\n"
+    )
+}
+
+public procedure directoryPreparationFailureExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return outputDiagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/OutputPipeline/DirectoryPreparationFailure/Expected.uv",
+        "//! Expected diagnostic metadata for the DirectoryPreparationFailure output-diagnostic specimen.\n\nexpectedDiagnostic(\"E-OUT-0401\", \"Out-Dirs-Err\")\nexpectedDiagnostic(\"E-OUT-0401\", \"Output-Pipeline-Err\")\n"
+    )
+}
+
+public procedure objectWriteFailureExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return outputDiagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/OutputPipeline/ObjectWriteFailure/Expected.uv",
+        "//! Expected diagnostic metadata for the ObjectWriteFailure output-diagnostic specimen.\n\nexpectedDiagnostic(\"E-OUT-0402\", \"Out-Obj-Err\")\nexpectedDiagnostic(\"E-OUT-0402\", \"Output-Pipeline-Err\")\n"
+    )
+}
+
+public procedure irWriteFailureExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return outputDiagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure/Expected.uv",
+        "//! Expected diagnostic metadata for the IRWriteFailure output-diagnostic specimen.\n\nexpectedDiagnostic(\"E-OUT-0403\", \"def.EmitIRFailLL\")\nexpectedDiagnostic(\"E-OUT-0403\", \"Emit-IR-Err\")\nexpectedDiagnostic(\"E-OUT-0403\", \"Out-IR-Err\")\nexpectedDiagnostic(\"E-OUT-0403\", \"Output-Pipeline-Err\")\n"
+    )
+}
+
 public procedure manifestParseErrorExpectedDiagnosticFileMatches(context: Context) -> bool {
     return outputDiagnosticExpectedFileMatches(
         context,
         "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestParseError/Expected.uv",
         "//! Expected diagnostic metadata for the ManifestParseError output-diagnostic specimen.\n\nexpectedDiagnostic(\"E-PRJ-0102\", \"Parse-Manifest-Err\")\nexpectedDiagnostic(\"E-PRJ-0102\", \"Step-Parse-Err\")\nexpectedDiagnostic(\"E-PRJ-0102\", \"LoadProject-Err\")\nexpectedDiagnostic(\"E-PRJ-0102\", \"diagnostics.ProjectDiagnostics\")\n"
+    )
+}
+
+public procedure hostedImportGraphExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return outputDiagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/HostedImportGraph/Expected.uv",
+        "//! Expected diagnostic metadata for the HostedImportGraph output-diagnostic specimen.\n\nexpectedDiagnostic(\"E-PRJ-0210\", \"def.HostedLibraryImportsLinkedLibrary\")\nexpectedDiagnostic(\"E-PRJ-0210\", \"Assembly-Graph-HostedImport-Err\")\n"
     )
 }
 
@@ -143,6 +376,7 @@ public procedure llvmToolResolveOwnershipConformanceLogMatches(context: Context)
     let conformance_log_path: string@View =
         "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/LlvmToolResolveOwnership/Build/Logs/Conformance/LlvmToolResolveOwnership.conformance.log"
     return artifactTextContains(context, conformance_log_path, "\tResolveTool-Err-IR\t") &&
+        artifactTextContains(context, conformance_log_path, "\tdef.EmitIRFailBC\t") &&
         artifactTextContains(context, conformance_log_path, "\tOut-IR-Err\t") &&
         artifactTextContains(context, conformance_log_path, "\tOutput-Pipeline-Err\t") &&
         artifactTextExcludes(context, conformance_log_path, "\tEmitObj-Err\t") &&
@@ -154,6 +388,7 @@ public procedure emitLLVMRenderFailureConformanceLogMatches(context: Context) ->
         "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure/Build/Logs/Conformance/EmitLLVMRenderFailure.conformance.log"
     return artifactTextContains(context, conformance_log_path, "\tResolveTool-Ok\t") &&
         artifactTextContains(context, conformance_log_path, "\tAssembleIR-Err\t") &&
+        artifactTextContains(context, conformance_log_path, "\tdef.EmitIRFailBC\t") &&
         artifactTextContains(context, conformance_log_path, "\tEmitLLVM-Err\t") &&
         artifactTextContains(context, conformance_log_path, "\tOut-IR-Err\t") &&
         artifactTextContains(context, conformance_log_path, "\tOutput-Pipeline-Err\t") &&

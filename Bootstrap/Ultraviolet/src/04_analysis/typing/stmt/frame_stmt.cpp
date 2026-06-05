@@ -34,6 +34,9 @@ static inline void SpecDefsFrameStmt() {
   SPEC_DEF("Frame-NoActiveRegion-Err", "5.2.17");
   SPEC_DEF("Frame-Target-NotActive-Err", "5.2.17");
   SPEC_DEF("FrameBind", "5.2.17");
+  SPEC_DEF("rule.18.Frame-NoActiveRegion-Err", "18.8.4");
+  SPEC_DEF("rule.18.Frame-Target-NotActive-Err", "18.8.4");
+  SPEC_DEF("diag.18.Frame", "18.8.7");
 }
 
 static IntroResult FrameBind(const TypeEnv& env,
@@ -45,6 +48,8 @@ static IntroResult FrameBind(const TypeEnv& env,
     if (!inner.has_value()) {
       diag_id = "Frame-NoActiveRegion-Err";
       SPEC_RULE("Frame-NoActiveRegion-Err");
+      SPEC_RULE("rule.18.Frame-NoActiveRegion-Err");
+      SPEC_RULE("diag.18.Frame");
       return {false, diag_id, env};
     }
     target = *inner;
@@ -58,6 +63,8 @@ static IntroResult FrameBind(const TypeEnv& env,
     if (!RegionActiveType(binding->type)) {
       diag_id = "Frame-Target-NotActive-Err";
       SPEC_RULE("Frame-Target-NotActive-Err");
+      SPEC_RULE("rule.18.Frame-Target-NotActive-Err");
+      SPEC_RULE("diag.18.Frame");
       return {false, diag_id, env};
     }
   }

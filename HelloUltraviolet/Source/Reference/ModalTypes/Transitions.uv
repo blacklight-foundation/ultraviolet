@@ -20,8 +20,8 @@ internal procedure modalTransitionDraftScore(reference: ModalTransitionReference
     return 1
 }
 
-/// Exercises the ModalTypes Transitions reference surface.
-public procedure runModalTypesTransitionsReference() -> bool {
+/// Exercises transition runtime semantics by consuming source states and checking target states.
+public procedure transitionRuntimeSemanticsReference() -> bool {
     let closed: unique ModalReference@Closed = ModalReference@Closed {}
     let opened: ModalReference@Open = closed~>open(23)
     let open_for_replace: unique ModalReference@Open = ModalReference@Open { value: 29 }
@@ -35,4 +35,9 @@ public procedure runModalTypesTransitionsReference() -> bool {
         replaced.value == 31 &&
         submitted.value == 41 &&
         modalTransitionDraftScore(reset) == 1
+}
+
+/// Exercises the ModalTypes Transitions reference surface.
+public procedure runModalTypesTransitionsReference() -> bool {
+    return transitionRuntimeSemanticsReference()
 }

@@ -20,6 +20,7 @@ struct ExprTypeResult {
   TypeRef type;
   std::string diag_detail;
   std::optional<core::Span> diag_span;
+  std::vector<std::string_view> diagnostic_obligation_ids;
 };
 
 using ExprTypeFn = std::function<ExprTypeResult(const ast::ExprPtr&)>;
@@ -27,6 +28,8 @@ using ExprTypeFn = std::function<ExprTypeResult(const ast::ExprPtr&)>;
 struct ArgCheckResult {
   bool ok = false;
   std::optional<std::string_view> diag_id;
+  std::string diag_detail;
+  std::optional<core::Span> diag_span;
 };
 
 using ArgCheckFn =

@@ -14,6 +14,7 @@
 #include "05_codegen/lower/stmt/defer_stmt.h"
 
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 #include "05_codegen/ir/ir_model.h"
 #include "05_codegen/lower/lower_expr.h"
 #include "05_codegen/lower/lower_stmt.h"
@@ -39,6 +40,22 @@ IRPtr LowerDeferStmt(const ast::DeferStmt& stmt, LowerCtx& ctx) {
   // cleanup at scope exit.
   LowerResult deferred_body = LowerBlock(*stmt.body, ctx);
   ctx.RegisterDefer(deferred_body.ir);
+
+  core::Conformance::Record(
+      "req.18.DeferCleanupSmallStep",
+      std::nullopt,
+      "source=LowerDeferStmt;operation=RegisterDefer;cleanup_stack=true;"
+      "statement_site_execution=false");
+  core::Conformance::Record(
+      "req.18.DeferCleanupBigStep",
+      std::nullopt,
+      "source=LowerDeferStmt;operation=RegisterDefer;scope_exit_cleanup=true;"
+      "deferred_body_lowered=true");
+  core::Conformance::Record(
+      "rule.18.Lower-Stmt-Defer",
+      std::nullopt,
+      "source=LowerDeferStmt;ir_form=IRDefer;body_lowered=LowerBlock;"
+      "registered_for_cleanup=true");
 
   // Runtime behavior is driven by cleanup expansion, not immediate execution
   // at the statement site.

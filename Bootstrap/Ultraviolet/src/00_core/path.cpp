@@ -78,6 +78,8 @@
 #include "00_core/path.h"
 
 #include <cstddef>
+#include <filesystem>
+#include <system_error>
 
 #include "00_core/assert_spec.h"
 
@@ -113,6 +115,37 @@ bool AbsPath(std::string_view p) {
 
 bool IsRelative(std::string_view p) {
   return !AbsPath(p);
+}
+
+std::filesystem::path HostFilesystemPath(const std::filesystem::path& path) {
+#ifdef _WIN32
+  std::error_code ec;
+  std::filesystem::path absolute =
+      path.is_absolute() ? path : std::filesystem::absolute(path, ec);
+  if (ec) {
+    absolute = path;
+  }
+  absolute.make_preferred();
+
+  std::wstring value = absolute.native();
+  if (value.size() < 240) {
+    return absolute;
+  }
+
+  constexpr std::wstring_view extended_prefix = LR"(\\?\)";
+  constexpr std::wstring_view unc_prefix = LR"(\\)";
+  if (value.rfind(extended_prefix, 0) == 0) {
+    return absolute;
+  }
+  if (value.rfind(unc_prefix, 0) == 0) {
+    value = LR"(\\?\UNC\)" + value.substr(2);
+  } else {
+    value = LR"(\\?\)" + value;
+  }
+  return std::filesystem::path(value);
+#else
+  return path;
+#endif
 }
 
 std::string RootTag(std::string_view p) {

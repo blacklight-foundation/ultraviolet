@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <set>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -40,6 +41,7 @@ static inline void SpecDefsTypePredicates() {
   SPEC_DEF("CloneType", "9.2");
   SPEC_DEF("DropType", "9.2");
   SPEC_DEF("FfiSafeType", "9.2");
+  SPEC_DEF("def.16.OperatorStaticTypes", "16.4.4");
   SPEC_DEF("GpuSafeType", "20.2.4");
   SPEC_DEF("GpuSafePrimTypes", "20.2.4");
   SPEC_DEF("ProhibitedGpuType", "20.2.4");
@@ -59,7 +61,7 @@ static inline void SpecDefsTypePredicates() {
   SPEC_DEF("GpuSafe-Record-Field-Err", "20.2.4");
   SPEC_DEF("GpuSafe-Generic-Unbounded-Err", "20.2.4");
   SPEC_DEF("ZeroableType", "23.3.4");
-  SPEC_DEF("BuiltinStepType", "14.10.4");
+  SPEC_DEF("BuiltinDiscreteType", "14.10.4");
 }
 
 TypeRef NormalizeFoundationalBuiltinBase(const TypeRef& type) {
@@ -603,6 +605,36 @@ static bool TypeParamHasPredicateBound(const ScopeContext& ctx,
   return false;
 }
 
+static bool TypeParamHasClassBound(const ScopeContext& ctx,
+                                   const TypePath& path,
+                                   std::string_view class_name) {
+  if (path.size() != 1) {
+    return false;
+  }
+
+  const auto key = IdKeyOf(path[0]);
+  for (const auto& scope : ctx.scopes) {
+    const auto it = scope.find(key);
+    if (it == scope.end()) {
+      continue;
+    }
+    const Entity& entity = it->second;
+    if (entity.kind != EntityKind::Type ||
+        (entity.target_opt.has_value() && !IdEq(*entity.target_opt, path[0]))) {
+      continue;
+    }
+    return std::any_of(
+        entity.type_param_class_bounds.begin(),
+        entity.type_param_class_bounds.end(),
+        [&](const ast::TypeBound& bound) {
+          return bound.class_path.size() == 1 &&
+                 IdEq(bound.class_path[0], class_name);
+        });
+  }
+
+  return false;
+}
+
 static bool IsGpuSafePrim(std::string_view name) {
   SPEC_RULE("GpuSafePrimTypes");
   return name == "i8" || name == "i16" || name == "i32" || name == "i64" ||
@@ -1050,19 +1082,79 @@ static std::optional<std::string_view> FfiSafeDiagForTypeImpl(
     const TypeRef& type,
     std::set<PathKey>& active_paths);
 
+static void RecordFfiSafeConformance(std::string_view rule_id,
+                                     std::string_view payload) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  core::Conformance::Record(rule_id, std::nullopt, payload);
+}
+
+static void RecordFfiSafeGenericBoundsFailureRule(bool is_record,
+                                                  bool is_type_application) {
+  SPEC_RULE("requirement.23.FfiSafeGenericBounds");
+  if (is_record) {
+    SPEC_RULE(is_type_application
+                  ? "rule.23.FfiSafe-Record-Apply-Generic-Unbounded-Err"
+                  : "rule.23.FfiSafe-Record-Generic-Unbounded-Err");
+    return;
+  }
+  SPEC_RULE(is_type_application
+                ? "rule.23.FfiSafe-Enum-Apply-Generic-Unbounded-Err"
+                : "rule.23.FfiSafe-Enum-Generic-Unbounded-Err");
+}
+
+static void RecordFfiSafeGenericBoundsConformance(bool is_record,
+                                                  bool is_type_application) {
+  SPEC_RULE("requirement.23.FfiSafeGenericBounds");
+  std::string_view kind = is_record ? "record" : "enum";
+  std::string_view use = is_type_application ? "application" : "declaration";
+  std::string payload;
+  payload.reserve(96);
+  payload += "source=FfiSafeType;kind=";
+  payload += kind;
+  payload += ";use=";
+  payload += use;
+  payload += ";required_bounds=FfiSafe;result=accepted";
+  RecordFfiSafeConformance("requirement.23.FfiSafeGenericBounds", payload);
+}
+
+static void RecordFfiSafeFieldFailureRule(bool is_record,
+                                          bool is_type_application) {
+  if (is_record) {
+    SPEC_RULE(is_type_application
+                  ? "rule.23.FfiSafe-Record-Field-Apply-Err"
+                  : "rule.23.FfiSafe-Record-Field-Err");
+    return;
+  }
+  SPEC_RULE(is_type_application
+                ? "rule.23.FfiSafe-Enum-Field-Apply-Err"
+                : "rule.23.FfiSafe-Enum-Field-Err");
+}
+
+static void RecordFfiSafeIncompleteFailureRule() {
+  SPEC_RULE("rule.23.FfiSafe-Incomplete-Err");
+}
+
 static std::optional<std::string_view> FfiSafeRecordDiag(
     const ScopeContext& ctx,
     const ast::RecordDecl& decl,
     const std::vector<TypeRef>& generic_args,
     const ast::ModulePath& decl_module,
+    bool is_type_application,
     std::set<PathKey>& active_paths) {
   if (!HasLayoutC(decl.attrs)) {
+    SPEC_RULE("rule.23.FfiSafe-Record-LayoutC-Err");
     return std::optional<std::string_view>{"E-TYP-2624"};
   }
   if (GenericParamsMissingFfiSafeReqs(decl.generic_params,
                                       decl.predicate_clause_opt,
                                       FfiSafeRecordTypeParamsInFields(decl))) {
+    RecordFfiSafeGenericBoundsFailureRule(true, is_type_application);
     return std::optional<std::string_view>{"E-TYP-2629"};
+  }
+  if (!ast::TypeParamsOpt(decl.generic_params).empty()) {
+    RecordFfiSafeGenericBoundsConformance(true, is_type_application);
   }
 
   const auto param_names = GenericParamNames(decl.generic_params);
@@ -1073,6 +1165,7 @@ static std::optional<std::string_view> FfiSafeRecordDiag(
     }
     const auto lowered = LowerType(ctx, field->type);
     if (!lowered.ok) {
+      RecordFfiSafeIncompleteFailureRule();
       return std::optional<std::string_view>{"E-TYP-2628"};
     }
     const auto instantiated =
@@ -1081,8 +1174,10 @@ static std::optional<std::string_view> FfiSafeRecordDiag(
         FfiSafeDiagForTypeImpl(ctx, &decl_module, instantiated, active_paths);
     if (field_diag.has_value()) {
       if (*field_diag == "E-TYP-2628") {
+        RecordFfiSafeIncompleteFailureRule();
         return field_diag;
       }
+      RecordFfiSafeFieldFailureRule(true, is_type_application);
       return std::optional<std::string_view>{"E-TYP-2626"};
     }
   }
@@ -1094,14 +1189,20 @@ static std::optional<std::string_view> FfiSafeEnumDiag(
     const ast::EnumDecl& decl,
     const std::vector<TypeRef>& generic_args,
     const ast::ModulePath& decl_module,
+    bool is_type_application,
     std::set<PathKey>& active_paths) {
   if (!HasLayoutC(decl.attrs)) {
+    SPEC_RULE("rule.23.FfiSafe-Enum-LayoutC-Err");
     return std::optional<std::string_view>{"E-TYP-2625"};
   }
   if (GenericParamsMissingFfiSafeReqs(decl.generic_params,
                                       decl.predicate_clause_opt,
                                       FfiSafeEnumTypeParamsInPayloads(decl))) {
+    RecordFfiSafeGenericBoundsFailureRule(false, is_type_application);
     return std::optional<std::string_view>{"E-TYP-2629"};
+  }
+  if (!ast::TypeParamsOpt(decl.generic_params).empty()) {
+    RecordFfiSafeGenericBoundsConformance(false, is_type_application);
   }
 
   const auto param_names = GenericParamNames(decl.generic_params);
@@ -1117,6 +1218,7 @@ static std::optional<std::string_view> FfiSafeEnumDiag(
             for (const auto& elem : payload.elements) {
               const auto lowered = LowerType(ctx, elem);
               if (!lowered.ok) {
+                RecordFfiSafeIncompleteFailureRule();
                 bad_payload = "E-TYP-2628";
                 return;
               }
@@ -1127,9 +1229,11 @@ static std::optional<std::string_view> FfiSafeEnumDiag(
                                          active_paths);
               if (elem_diag.has_value()) {
                 if (*elem_diag == "E-TYP-2628") {
+                  RecordFfiSafeIncompleteFailureRule();
                   bad_payload = "E-TYP-2628";
                   return;
                 }
+                RecordFfiSafeFieldFailureRule(false, is_type_application);
                 bad_payload = "E-TYP-2627";
                 return;
               }
@@ -1138,6 +1242,7 @@ static std::optional<std::string_view> FfiSafeEnumDiag(
             for (const auto& field : payload.fields) {
               const auto lowered = LowerType(ctx, field.type);
               if (!lowered.ok) {
+                RecordFfiSafeIncompleteFailureRule();
                 bad_payload = "E-TYP-2628";
                 return;
               }
@@ -1148,9 +1253,11 @@ static std::optional<std::string_view> FfiSafeEnumDiag(
                                          active_paths);
               if (field_diag.has_value()) {
                 if (*field_diag == "E-TYP-2628") {
+                  RecordFfiSafeIncompleteFailureRule();
                   bad_payload = "E-TYP-2628";
                   return;
                 }
+                RecordFfiSafeFieldFailureRule(false, is_type_application);
                 bad_payload = "E-TYP-2627";
                 return;
               }
@@ -1171,6 +1278,7 @@ static std::optional<std::string_view> FfiSafeDiagForTypeImpl(
     const TypeRef& type,
     std::set<PathKey>& active_paths) {
   if (!type) {
+    RecordFfiSafeIncompleteFailureRule();
     return std::optional<std::string_view>{"E-TYP-2628"};
   }
 
@@ -1181,6 +1289,7 @@ static std::optional<std::string_view> FfiSafeDiagForTypeImpl(
           if (IsFfiSafePrim(node.name)) {
             return std::nullopt;
           }
+          SPEC_RULE("rule.23.FfiSafe-Prohibited-Err");
           return std::optional<std::string_view>{"E-TYP-2623"};
         } else if constexpr (std::is_same_v<T, TypePerm>) {
           return FfiSafeDiagForTypeImpl(ctx, current_module, node.base,
@@ -1214,8 +1323,11 @@ static std::optional<std::string_view> FfiSafeDiagForTypeImpl(
               return node.args;
             }
           }();
+          const bool is_type_application =
+              std::is_same_v<T, TypeApply> || !applied_args.empty();
 
           if (applied_path.size() == 1 && IdEq(applied_path[0], "Context")) {
+            SPEC_RULE("rule.23.FfiSafe-Prohibited-Err");
             return std::optional<std::string_view>{"E-TYP-2623"};
           }
 
@@ -1224,11 +1336,13 @@ static std::optional<std::string_view> FfiSafeDiagForTypeImpl(
               ResolveNominalTypeDeclForFfi(ctx, current_module, applied_path,
                                            &resolved_path);
           if (!decl) {
+            RecordFfiSafeIncompleteFailureRule();
             return std::optional<std::string_view>{"E-TYP-2628"};
           }
 
           const auto key = PathKeyOf(resolved_path);
           if (active_paths.find(key) != active_paths.end()) {
+            RecordFfiSafeIncompleteFailureRule();
             return std::optional<std::string_view>{"E-TYP-2628"};
           }
 
@@ -1243,14 +1357,18 @@ static std::optional<std::string_view> FfiSafeDiagForTypeImpl(
                           resolved_decl.generic_params,
                           resolved_decl.predicate_clause_opt,
                           FfiSafeRecordTypeParamsInFields(resolved_decl))) {
+                    RecordFfiSafeGenericBoundsFailureRule(
+                        true, is_type_application);
                     return std::optional<std::string_view>{"E-TYP-2629"};
                   }
                   const auto args = ResolveDeclGenericArgs(
                       ctx, resolved_decl.generic_params, applied_args);
                   if (!args.has_value()) {
+                    RecordFfiSafeIncompleteFailureRule();
                     return std::optional<std::string_view>{"E-TYP-2628"};
                   }
                   return FfiSafeRecordDiag(ctx, resolved_decl, *args, decl_module,
+                                           is_type_application,
                                            active_paths);
                 } else if constexpr (std::is_same_v<D, ast::EnumDecl>) {
                   if (applied_args.empty() &&
@@ -1258,26 +1376,33 @@ static std::optional<std::string_view> FfiSafeDiagForTypeImpl(
                           resolved_decl.generic_params,
                           resolved_decl.predicate_clause_opt,
                           FfiSafeEnumTypeParamsInPayloads(resolved_decl))) {
+                    RecordFfiSafeGenericBoundsFailureRule(
+                        false, is_type_application);
                     return std::optional<std::string_view>{"E-TYP-2629"};
                   }
                   const auto args = ResolveDeclGenericArgs(
                       ctx, resolved_decl.generic_params, applied_args);
                   if (!args.has_value()) {
+                    RecordFfiSafeIncompleteFailureRule();
                     return std::optional<std::string_view>{"E-TYP-2628"};
                   }
                   return FfiSafeEnumDiag(ctx, resolved_decl, *args, decl_module,
+                                         is_type_application,
                                          active_paths);
                 } else if constexpr (std::is_same_v<D, ast::TypeAliasDecl>) {
                   if (!resolved_decl.type) {
+                    RecordFfiSafeIncompleteFailureRule();
                     return std::optional<std::string_view>{"E-TYP-2628"};
                   }
                   const auto args = ResolveDeclGenericArgs(
                       ctx, resolved_decl.generic_params, applied_args);
                   if (!args.has_value()) {
+                    RecordFfiSafeIncompleteFailureRule();
                     return std::optional<std::string_view>{"E-TYP-2628"};
                   }
                   const auto lowered = LowerType(ctx, resolved_decl.type);
                   if (!lowered.ok) {
+                    RecordFfiSafeIncompleteFailureRule();
                     return std::optional<std::string_view>{"E-TYP-2628"};
                   }
                   const auto param_names =
@@ -1287,6 +1412,7 @@ static std::optional<std::string_view> FfiSafeDiagForTypeImpl(
                   return FfiSafeDiagForTypeImpl(ctx, &decl_module, target,
                                                 active_paths);
                 } else {
+                  SPEC_RULE("rule.23.FfiSafe-Prohibited-Err");
                   return std::optional<std::string_view>{"E-TYP-2623"};
                 }
               },
@@ -1309,8 +1435,10 @@ static std::optional<std::string_view> FfiSafeDiagForTypeImpl(
                              std::is_same_v<T, TypeRangeTo> ||
                              std::is_same_v<T, TypeRangeToInclusive> ||
                              std::is_same_v<T, TypeRangeFull>) {
+          SPEC_RULE("rule.23.FfiSafe-Prohibited-Err");
           return std::optional<std::string_view>{"E-TYP-2623"};
         } else {
+          SPEC_RULE("rule.23.FfiSafe-Prohibited-Err");
           return std::optional<std::string_view>{"E-TYP-2623"};
         }
       },
@@ -1560,6 +1688,25 @@ bool DropType(const ScopeContext& ctx, const TypeRef& type) {
 bool FfiSafeType(const ScopeContext& ctx, const TypeRef& type) {
   SpecDefsTypePredicates();
   SPEC_RULE("FfiSafeType");
+  RecordFfiSafeConformance(
+      "requirement.23.FfiSafeSyntaxNoAdditionalForm",
+      "source=FfiSafeType;syntax=none;predicate=semantic_type_predicate");
+  RecordFfiSafeConformance(
+      "requirement.23.FfiSafeParsingNoAdditionalRules",
+      "source=FfiSafeType;parser_rules=none;uses_existing_type_forms=true");
+  RecordFfiSafeConformance(
+      "def.23.FfiLayoutAndPayloadHelpers",
+      "source=FfiSafeType;helpers=HasLayoutC,Fields,Variants,PayloadTypes");
+  RecordFfiSafeConformance(
+      "requirement.23.FfiSafeProhibitedCategories",
+      "source=FfiSafeType;categories=bool,modal,closure,opaque,tuple,union,"
+      "slice,string,bytes,safe_ptr,range,context");
+  RecordFfiSafeConformance(
+      "requirement.23.FfiSafeDynamicSemantics",
+      "source=FfiSafeType;dynamic_runtime_checks=none;compile_time_only=true");
+  RecordFfiSafeConformance(
+      "requirement.23.FfiSafeLowering",
+      "source=FfiSafeType;lowering_artifacts=none;admissibility_only=true");
   std::set<PathKey> active_paths;
   const ast::ModulePath* current_module =
       ctx.current_module.empty() ? nullptr : &ctx.current_module;
@@ -1601,10 +1748,12 @@ static std::optional<std::string_view> GpuSafeRecordDiag(
                                       decl.predicate_clause_opt,
                                       GpuSafeRecordTypeParamsInFields(decl))) {
     SPEC_RULE("GpuSafe-Generic-Unbounded-Err");
+    SPEC_RULE("rule.20.GpuSafe-Generic-Unbounded-Err");
     return std::optional<std::string_view>{"E-TYP-2642"};
   }
   if (!BitcopyType(ctx, record_type)) {
     SPEC_RULE("GpuSafeType-Err");
+    SPEC_RULE("rule.20.GpuSafeType-Err");
     return std::optional<std::string_view>{"E-TYP-2640"};
   }
 
@@ -1617,12 +1766,14 @@ static std::optional<std::string_view> GpuSafeRecordDiag(
     const auto lowered = LowerType(ctx, field->type);
     if (!lowered.ok) {
       SPEC_RULE("GpuSafe-Record-Field-Err");
+      SPEC_RULE("rule.20.GpuSafe-Record-Field-Err");
       return std::optional<std::string_view>{"E-TYP-2640"};
     }
     const auto instantiated =
         ApplyDeclGenericArgs(lowered.type, param_names, generic_args);
     if (GpuSafeDiagForTypeImpl(ctx, instantiated, active_paths).has_value()) {
       SPEC_RULE("GpuSafe-Record-Field-Err");
+      SPEC_RULE("rule.20.GpuSafe-Record-Field-Err");
       return std::optional<std::string_view>{"E-TYP-2640"};
     }
   }
@@ -1640,10 +1791,12 @@ static std::optional<std::string_view> GpuSafeEnumDiag(
                                       decl.predicate_clause_opt,
                                       GpuSafeEnumTypeParamsInPayloads(decl))) {
     SPEC_RULE("GpuSafe-Generic-Unbounded-Err");
+    SPEC_RULE("rule.20.GpuSafe-Generic-Unbounded-Err");
     return std::optional<std::string_view>{"E-TYP-2642"};
   }
   if (!BitcopyType(ctx, enum_type)) {
     SPEC_RULE("GpuSafeType-Err");
+    SPEC_RULE("rule.20.GpuSafeType-Err");
     return std::optional<std::string_view>{"E-TYP-2640"};
   }
 
@@ -1691,6 +1844,7 @@ static std::optional<std::string_view> GpuSafeEnumDiag(
         *variant.payload_opt);
     if (bad_payload.has_value()) {
       SPEC_RULE("GpuSafeType-Err");
+      SPEC_RULE("rule.20.GpuSafeType-Err");
       return bad_payload;
     }
   }
@@ -1714,6 +1868,7 @@ static std::optional<std::string_view> GpuSafeDiagForTypeImpl(
   if (IsCapabilityType(stripped)) {
     SPEC_RULE("ProhibitedGpuType");
     SPEC_RULE("GpuSafeType-Err");
+    SPEC_RULE("rule.20.GpuSafeType-Err");
     return std::optional<std::string_view>{"E-TYP-2640"};
   }
 
@@ -1732,6 +1887,7 @@ static std::optional<std::string_view> GpuSafeDiagForTypeImpl(
             return std::nullopt;
           }
           SPEC_RULE("GpuSafeType-Err");
+          SPEC_RULE("rule.20.GpuSafeType-Err");
           return std::optional<std::string_view>{"E-TYP-2640"};
         } else if constexpr (std::is_same_v<T, TypeRawPtr>) {
           const auto diag =
@@ -1743,6 +1899,7 @@ static std::optional<std::string_view> GpuSafeDiagForTypeImpl(
         } else if constexpr (std::is_same_v<T, TypeArray>) {
           if (!BitcopyType(ctx, stripped)) {
             SPEC_RULE("GpuSafeType-Err");
+            SPEC_RULE("rule.20.GpuSafeType-Err");
             return std::optional<std::string_view>{"E-TYP-2640"};
           }
           const auto diag =
@@ -1754,6 +1911,7 @@ static std::optional<std::string_view> GpuSafeDiagForTypeImpl(
         } else if constexpr (std::is_same_v<T, TypeTuple>) {
           if (!BitcopyType(ctx, stripped)) {
             SPEC_RULE("GpuSafeType-Err");
+            SPEC_RULE("rule.20.GpuSafeType-Err");
             return std::optional<std::string_view>{"E-TYP-2640"};
           }
           for (const auto& elem : node.elements) {
@@ -1768,6 +1926,7 @@ static std::optional<std::string_view> GpuSafeDiagForTypeImpl(
         } else if constexpr (std::is_same_v<T, TypeUnion>) {
           if (!BitcopyType(ctx, stripped)) {
             SPEC_RULE("GpuSafeType-Err");
+            SPEC_RULE("rule.20.GpuSafeType-Err");
             return std::optional<std::string_view>{"E-TYP-2640"};
           }
           for (const auto& member : node.members) {
@@ -1781,6 +1940,7 @@ static std::optional<std::string_view> GpuSafeDiagForTypeImpl(
         } else if constexpr (std::is_same_v<T, TypeSlice>) {
           if (!BitcopyType(ctx, stripped)) {
             SPEC_RULE("GpuSafeType-Err");
+            SPEC_RULE("rule.20.GpuSafeType-Err");
             return std::optional<std::string_view>{"E-TYP-2640"};
           }
           return GpuSafeDiagForTypeImpl(ctx, node.element, active_paths);
@@ -1791,6 +1951,7 @@ static std::optional<std::string_view> GpuSafeDiagForTypeImpl(
           }
           SPEC_RULE("ProhibitedGpuType");
           SPEC_RULE("GpuSafeType-Err");
+          SPEC_RULE("rule.20.GpuSafeType-Err");
           return std::optional<std::string_view>{"E-TYP-2640"};
         } else if constexpr (std::is_same_v<T, TypeBytes>) {
           if (node.state.has_value() && node.state == BytesState::View) {
@@ -1799,15 +1960,18 @@ static std::optional<std::string_view> GpuSafeDiagForTypeImpl(
           }
           SPEC_RULE("ProhibitedGpuType");
           SPEC_RULE("GpuSafeType-Err");
+          SPEC_RULE("rule.20.GpuSafeType-Err");
           return std::optional<std::string_view>{"E-TYP-2640"};
         } else if constexpr (std::is_same_v<T, TypePtr>) {
           if (node.state.has_value() && node.state == PtrState::Valid) {
             SPEC_RULE("ProhibitedGpuType");
             SPEC_RULE("GpuSafeType-Err");
+            SPEC_RULE("rule.20.GpuSafeType-Err");
             return std::optional<std::string_view>{"E-TYP-2640"};
           }
           if (!BitcopyType(ctx, stripped)) {
             SPEC_RULE("GpuSafeType-Err");
+            SPEC_RULE("rule.20.GpuSafeType-Err");
             return std::optional<std::string_view>{"E-TYP-2640"};
           }
           return std::nullopt;
@@ -1818,12 +1982,14 @@ static std::optional<std::string_view> GpuSafeDiagForTypeImpl(
                              std::is_same_v<T, TypeRangeToInclusive>) {
           if (!BitcopyType(ctx, stripped)) {
             SPEC_RULE("GpuSafeType-Err");
+            SPEC_RULE("rule.20.GpuSafeType-Err");
             return std::optional<std::string_view>{"E-TYP-2640"};
           }
           return GpuSafeDiagForTypeImpl(ctx, node.base, active_paths);
         } else if constexpr (std::is_same_v<T, TypeRangeFull>) {
           if (!BitcopyType(ctx, stripped)) {
             SPEC_RULE("GpuSafeType-Err");
+            SPEC_RULE("rule.20.GpuSafeType-Err");
             return std::optional<std::string_view>{"E-TYP-2640"};
           }
           return std::nullopt;
@@ -1831,6 +1997,7 @@ static std::optional<std::string_view> GpuSafeDiagForTypeImpl(
                              std::is_same_v<T, TypeModalState>) {
           SPEC_RULE("ProhibitedGpuType");
           SPEC_RULE("GpuSafeType-Err");
+          SPEC_RULE("rule.20.GpuSafeType-Err");
           return std::optional<std::string_view>{"E-TYP-2640"};
         } else if constexpr (std::is_same_v<T, TypePathType> ||
                              std::is_same_v<T, TypeApply>) {
@@ -1881,6 +2048,7 @@ static std::optional<std::string_view> GpuSafeDiagForTypeImpl(
           if (LookupModalDecl(ctx, applied_path)) {
             SPEC_RULE("ProhibitedGpuType");
             SPEC_RULE("GpuSafeType-Err");
+            SPEC_RULE("rule.20.GpuSafeType-Err");
             return std::optional<std::string_view>{"E-TYP-2640"};
           }
 
@@ -1909,6 +2077,7 @@ static std::optional<std::string_view> GpuSafeDiagForTypeImpl(
 
           if (!BitcopyType(ctx, stripped)) {
             SPEC_RULE("GpuSafeType-Err");
+            SPEC_RULE("rule.20.GpuSafeType-Err");
             return std::optional<std::string_view>{"E-TYP-2640"};
           }
           return std::nullopt;
@@ -1916,11 +2085,13 @@ static std::optional<std::string_view> GpuSafeDiagForTypeImpl(
                              std::is_same_v<T, TypeOpaque>) {
           if (!BitcopyType(ctx, stripped)) {
             SPEC_RULE("GpuSafeType-Err");
+            SPEC_RULE("rule.20.GpuSafeType-Err");
             return std::optional<std::string_view>{"E-TYP-2640"};
           }
           return std::nullopt;
         } else {
           SPEC_RULE("GpuSafeType-Err");
+          SPEC_RULE("rule.20.GpuSafeType-Err");
           return std::optional<std::string_view>{"E-TYP-2640"};
         }
       },
@@ -1953,6 +2124,7 @@ bool ZeroableType(const ScopeContext& ctx, const TypeRef& type) {
 // =============================================================================
 
 bool EqType(const TypeRef& type) {
+  SPEC_RULE("def.16.OperatorStaticTypes");
   if (!type) {
     return false;
   }
@@ -1992,15 +2164,25 @@ bool EqType(const TypeRef& type) {
 }
 
 bool EqType(const ScopeContext& ctx, const TypeRef& type) {
-  return EqType(type) || UnitEnumType(ctx, type);
+  if (EqType(type) || UnitEnumType(ctx, type)) {
+    return true;
+  }
+  const auto stripped = StripPermAndRefine(type);
+  if (!stripped) {
+    return false;
+  }
+  if (const auto* path = std::get_if<TypePathType>(&stripped->node)) {
+    return TypeParamHasClassBound(ctx, path->path, "Eq");
+  }
+  return false;
 }
 
 // =============================================================================
-// EXPORTED: BuiltinStepType
+// EXPORTED: BuiltinDiscreteType
 // =============================================================================
 
-bool BuiltinStepType(const TypeRef& type) {
-  SPEC_RULE("BuiltinStepType");
+bool BuiltinDiscreteType(const TypeRef& type) {
+  SPEC_RULE("BuiltinDiscreteType");
   if (!type) {
     return false;
   }
@@ -2018,9 +2200,9 @@ bool BuiltinStepType(const TypeRef& type) {
                  node.name == "u128" || node.name == "usize" ||
                  node.name == "char";
         } else if constexpr (std::is_same_v<T, TypePerm>) {
-          return BuiltinStepType(node.base);
+          return BuiltinDiscreteType(node.base);
         } else if constexpr (std::is_same_v<T, TypeRefine>) {
-          return BuiltinStepType(node.base);
+          return BuiltinDiscreteType(node.base);
         } else {
           return false;
         }
@@ -2033,7 +2215,7 @@ LookupFoundationalBuiltinMethodSigImpl(const ScopeContext* ctx,
                                        const TypeRef& recv_base,
                                        std::string_view name) {
   SPEC_RULE("ImplementsEq");
-  SPEC_RULE("ImplementsStep");
+  SPEC_RULE("ImplementsDiscrete");
   if (!recv_base) {
     return std::nullopt;
   }
@@ -2055,7 +2237,7 @@ LookupFoundationalBuiltinMethodSigImpl(const ScopeContext* ctx,
   }
 
   if ((IdEq(name, "successor") || IdEq(name, "predecessor")) &&
-      BuiltinStepType(base)) {
+      BuiltinDiscreteType(base)) {
     sig.ret = MakeTypeUnion({base, MakeTypePrim("()")});
     return sig;
   }
@@ -2081,6 +2263,7 @@ std::optional<FoundationalBuiltinMethodSig> LookupFoundationalBuiltinMethodSig(
 // =============================================================================
 
 bool OrdType(const TypeRef& type) {
+  SPEC_RULE("def.16.OperatorStaticTypes");
   if (!type) {
     return false;
   }

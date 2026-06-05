@@ -41,6 +41,7 @@
 #include <vector>
 
 #include "00_core/assert_spec.h"
+#include "00_core/diagnostic_messages.h"
 
 namespace ultraviolet::ast {
 
@@ -309,6 +310,20 @@ void ParseVariantSep(Parser& parser) {
   ConsumeTerminatorReq(parser);
 }
 
+void EmitEnumTopLevelCommaSeparatorErr(Parser& parser,
+                                       const core::Span& span) {
+  if (parser.quote_mode) {
+    return;
+  }
+  auto diag = core::MakeDiagnosticById("E-SRC-0520", span);
+  if (!diag) {
+    return;
+  }
+  diag->obligation_ids.emplace_back("req.EnumTopLevelCommaSeparatorRejected");
+  diag->obligation_ids.emplace_back("Parse-Syntax-Err");
+  core::Emit(parser.diags, *diag);
+}
+
 // =============================================================================
 // ParseVariantMembers - Parse item-separated enum variants
 // =============================================================================
@@ -333,7 +348,9 @@ ParseElemResult<std::vector<VariantDecl>> ParseVariantMembers(Parser parser) {
 
     // Enum variants are item-separated; commas are invalid separators.
     if (IsPunc(cur, ",")) {
-      EmitParseSyntaxErr(cur, TokSpan(cur));
+      SPEC_RULE("req.EnumTopLevelCommaSeparatorRejected");
+      SPEC_RULE("Parse-Syntax-Err");
+      EmitEnumTopLevelCommaSeparatorErr(cur, TokSpan(cur));
       cur = AdvanceOrEOF(cur);
       continue;
     }
@@ -345,7 +362,9 @@ ParseElemResult<std::vector<VariantDecl>> ParseVariantMembers(Parser parser) {
     cur = var.parser;
 
     if (IsPunc(cur, ",")) {
-      EmitParseSyntaxErr(cur, TokSpan(cur));
+      SPEC_RULE("req.EnumTopLevelCommaSeparatorRejected");
+      SPEC_RULE("Parse-Syntax-Err");
+      EmitEnumTopLevelCommaSeparatorErr(cur, TokSpan(cur));
       cur = AdvanceOrEOF(cur);
     } else {
       ParseVariantSep(cur);

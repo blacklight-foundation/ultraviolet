@@ -1,7 +1,7 @@
 //! Rejected source-text and lexical specimens.
 
 public procedure sourceTextRejectedSourceFixtureCount() -> usize {
-    return 9usize
+    return 13usize
 }
 
 internal procedure sourceTextRejectedFixtureMatches(
@@ -48,6 +48,36 @@ public procedure validatedSourceTextRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/SourceText/InvalidStringEscape/Expected.uv",
         "E-SRC-0302",
         "Lex-String-BadEscape"
+    ) {
+        count = count + 1usize
+    }
+    if sourceTextRejectedFixtureMatches(
+        "InvalidStringEscape",
+        "Fixtures/RejectedSource/SourceText/InvalidStringEscape",
+        "Fixtures/RejectedSource/SourceText/InvalidStringEscape/Source/Main.uv",
+        "Fixtures/RejectedSource/SourceText/InvalidStringEscape/Expected.uv",
+        "E-SRC-0302",
+        "def.FirstBadStringEscape"
+    ) {
+        count = count + 1usize
+    }
+    if sourceTextRejectedFixtureMatches(
+        "InvalidStringEscape",
+        "Fixtures/RejectedSource/SourceText/InvalidStringEscape",
+        "Fixtures/RejectedSource/SourceText/InvalidStringEscape/Source/Main.uv",
+        "Fixtures/RejectedSource/SourceText/InvalidStringEscape/Expected.uv",
+        "E-SRC-0302",
+        "Lex-Char-BadEscape"
+    ) {
+        count = count + 1usize
+    }
+    if sourceTextRejectedFixtureMatches(
+        "InvalidStringEscape",
+        "Fixtures/RejectedSource/SourceText/InvalidStringEscape",
+        "Fixtures/RejectedSource/SourceText/InvalidStringEscape/Source/Main.uv",
+        "Fixtures/RejectedSource/SourceText/InvalidStringEscape/Expected.uv",
+        "E-SRC-0302",
+        "def.FirstBadCharEscape"
     ) {
         count = count + 1usize
     }
@@ -108,6 +138,16 @@ public procedure validatedSourceTextRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/SourceText/InvalidUTF8/Expected.uv",
         "E-SRC-0101",
         "NoSpan-Decode"
+    ) {
+        count = count + 1usize
+    }
+    if sourceTextRejectedFixtureMatches(
+        "InvalidUTF8",
+        "Fixtures/RejectedSource/SourceText/InvalidUTF8",
+        "Fixtures/RejectedSource/SourceText/InvalidUTF8/Source/Main.uv",
+        "Fixtures/RejectedSource/SourceText/InvalidUTF8/Expected.uv",
+        "E-SRC-0101",
+        "req.LoadSourceShortCircuit"
     ) {
         count = count + 1usize
     }

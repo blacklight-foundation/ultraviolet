@@ -85,6 +85,13 @@ static inline void SpecDefsCalls() {
   SPEC_DEF("ArgPass", "5.2.4");
   SPEC_DEF("ArgExpr", "5.2.4");
   SPEC_DEF("ArgType", "5.2.4");
+  SPEC_DEF("rule.16.Call-Callee-NotFunc", "16.4");
+  SPEC_DEF("rule.16.Call-ArgCount-Err", "16.4");
+  SPEC_DEF("rule.16.Call-ArgType-Err", "16.4");
+  SPEC_DEF("rule.16.Call-Move-Missing", "16.4");
+  SPEC_DEF("rule.16.Call-Move-Unexpected", "16.4");
+  SPEC_DEF("rule.16.Call-Arg-Packed-Unsafe-Err", "16.4");
+  SPEC_DEF("rule.16.Call-Arg-NotPlace", "16.4");
   SPEC_DEF("ArgumentPassExpressions", "3.3.2.4");
   SPEC_DEF("IsPlace", "3.3.3");
   SPEC_DEF("Call-Arg-Packed-Unsafe-Err", "5.2.4");
@@ -1015,6 +1022,7 @@ static CallTypeResult CheckCallArguments(
   CallTypeResult result;
   if (params.size() != args.size()) {
     SPEC_RULE("Call-ArgCount-Err");
+    SPEC_RULE("rule.16.Call-ArgCount-Err");
     result.diag_id = "E-SEM-2532";
     result.diag_detail = "expected " + std::to_string(params.size()) +
                          " args, found " + std::to_string(args.size());
@@ -1026,6 +1034,7 @@ static CallTypeResult CheckCallArguments(
     if (MissingRequiredMoveForConsumingArg(facts[i], params[i].mode,
                                            args[i])) {
       SPEC_RULE("Call-Move-Missing");
+      SPEC_RULE("rule.16.Call-Move-Missing");
       result.diag_id = "E-SEM-2534";
       result.diag_span = ArgDiagnosticSpan(args[i]);
       return result;
@@ -1036,6 +1045,8 @@ static CallTypeResult CheckCallArguments(
     if (!params[i].mode.has_value() &&
         args[i].pass == ast::ArgPassKind::Move) {
       SPEC_RULE("Call-Move-Unexpected");
+      SPEC_RULE("rule.16.ArgsT-Cons-Ref");
+      SPEC_RULE("rule.16.Call-Move-Unexpected");
       result.diag_id = "E-SEM-2535";
       result.diag_span = ArgDiagnosticSpan(args[i]);
       return result;
@@ -1052,6 +1063,7 @@ static CallTypeResult CheckCallArguments(
         const auto copy_type = type_expr(PassExprForArg(facts[i], arg));
         if (!copy_type.ok) {
           result.diag_id = copy_type.diag_id;
+          result.diag_detail = copy_type.diag_detail;
           result.diag_span = copy_type.diag_span.has_value()
                                  ? copy_type.diag_span
                                  : ArgDiagnosticSpan(arg);
@@ -1068,6 +1080,7 @@ static CallTypeResult CheckCallArguments(
       if (has_source_prov && !expected_function_value &&
           !IsPlaceForArg(facts[i], arg)) {
         SPEC_RULE("Call-Arg-NotPlace");
+        SPEC_RULE("rule.16.Call-Arg-NotPlace");
         result.diag_id = "E-TYP-1603";
         result.diag_span = ArgDiagnosticSpan(arg);
         return result;
@@ -1089,17 +1102,25 @@ static CallTypeResult CheckCallArguments(
           }
           if (IsExpectedTypeMismatch(checked)) {
             SPEC_RULE("Call-ArgType-Err");
+            SPEC_RULE("rule.16.Call-ArgType-Err");
             result.diag_id = "E-SEM-2533";
-            result.diag_span = ArgDiagnosticSpan(arg);
+            result.diag_detail = checked.diag_detail;
+            result.diag_span = checked.diag_span.has_value()
+                                   ? checked.diag_span
+                                   : ArgDiagnosticSpan(arg);
             return result;
           }
           result.diag_id = checked.diag_id;
-          result.diag_span = ArgDiagnosticSpan(arg);
+          result.diag_detail = checked.diag_detail;
+          result.diag_span = checked.diag_span.has_value()
+                                 ? checked.diag_span
+                                 : ArgDiagnosticSpan(arg);
           return result;
         }
         const auto arg_type = type_expr(arg.value);
         if (!arg_type.ok) {
           result.diag_id = arg_type.diag_id;
+          result.diag_detail = arg_type.diag_detail;
           result.diag_span = arg_type.diag_span.has_value()
                                  ? arg_type.diag_span
                                  : ArgDiagnosticSpan(arg);
@@ -1120,17 +1141,25 @@ static CallTypeResult CheckCallArguments(
       }
       if (IsExpectedTypeMismatch(checked)) {
         SPEC_RULE("Call-ArgType-Err");
+        SPEC_RULE("rule.16.Call-ArgType-Err");
         result.diag_id = "E-SEM-2533";
-        result.diag_span = ArgDiagnosticSpan(arg);
+        result.diag_detail = checked.diag_detail;
+        result.diag_span = checked.diag_span.has_value()
+                               ? checked.diag_span
+                               : ArgDiagnosticSpan(arg);
         return result;
       }
       result.diag_id = checked.diag_id;
-      result.diag_span = ArgDiagnosticSpan(arg);
+      result.diag_detail = checked.diag_detail;
+      result.diag_span = checked.diag_span.has_value()
+                             ? checked.diag_span
+                             : ArgDiagnosticSpan(arg);
       return result;
     }
     const auto arg_type = type_expr(arg_expr);
     if (!arg_type.ok) {
       result.diag_id = arg_type.diag_id;
+      result.diag_detail = arg_type.diag_detail;
       result.diag_span = arg_type.diag_span.has_value()
                              ? arg_type.diag_span
                              : ArgDiagnosticSpan(arg);
@@ -1150,6 +1179,7 @@ static CallTypeResult CheckCallArguments(
     }
     if (!sub.subtype) {
       SPEC_RULE("Call-ArgType-Err");
+      SPEC_RULE("rule.16.Call-ArgType-Err");
       result.diag_id = "E-SEM-2533";
       result.diag_detail = "expected type " + TypeToString(params[i].type) +
                            ", found " + TypeToString(arg_types[i]);
@@ -1176,6 +1206,8 @@ static CallTypeResult CheckCallArguments(
           if (addr_ok.diag_id ==
               std::optional<std::string_view>("E-TYP-2105")) {
             SPEC_RULE("Call-Arg-Packed-Unsafe-Err");
+            SPEC_RULE("rule.16.Call-Arg-Packed-Unsafe-Err");
+            SPEC_RULE("req.PackedFieldReferenceRequiresUnsafe");
           }
           result.diag_id = addr_ok.diag_id;
           result.diag_span = ArgDiagnosticSpan(args[i]);
@@ -1249,6 +1281,7 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
       return result;
     }
     SPEC_RULE("Call-Callee-NotFunc");
+    SPEC_RULE("rule.16.Call-Callee-NotFunc");
     result.diag_id = "E-SEM-2531";
     return result;
   }
@@ -1322,6 +1355,7 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
       normalized_callee.type ? std::get_if<TypeFunc>(&normalized_callee.type->node) : nullptr;
   if (!func) {
     SPEC_RULE("Call-Callee-NotFunc");
+    SPEC_RULE("rule.16.Call-Callee-NotFunc");
     result.diag_id = "E-SEM-2531";
     return result;
   }
@@ -1329,6 +1363,7 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
   const auto& params = func->params;
   if (params.size() != args.size()) {
     SPEC_RULE("Call-ArgCount-Err");
+    SPEC_RULE("rule.16.Call-ArgCount-Err");
     result.diag_id = "E-SEM-2532";
     result.diag_detail = "expected " + std::to_string(params.size()) +
                          " args, found " + std::to_string(args.size());

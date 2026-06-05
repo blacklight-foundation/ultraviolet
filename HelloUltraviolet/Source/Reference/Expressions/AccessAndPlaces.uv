@@ -5,16 +5,38 @@ public record ExpressionPlaceReference {
     public second: i32
 }
 
-/// Exercises the Expressions AccessAndPlaces reference surface.
-public procedure runExpressionsAccessAndPlacesReference() -> bool {
+/// Exercises record field evaluation by reading the selected field value.
+public procedure evalSigmaFieldAccessReference() -> bool {
     let record_value: ExpressionPlaceReference = ExpressionPlaceReference {
         first: 4,
         second: 9
     }
-    let tuple_value: (i32, bool) = (record_value.first, true)
-    let array_value: [i32; 3] = [record_value.first, record_value.second, 12]
-    let field_ok: bool = record_value.second == 9
-    let tuple_ok: bool = tuple_value.0 == 4 && tuple_value.1
-    let index_ok: bool = array_value[2usize] == 12
-    return field_ok && tuple_ok && index_ok
+    return record_value.second == 9
+}
+
+/// Exercises tuple access evaluation by reading both tuple element positions.
+public procedure evalSigmaTupleAccessReference() -> bool {
+    let tuple_value: (i32, bool) = (4, true)
+    return tuple_value.0 == 4 && tuple_value.1
+}
+
+/// Exercises scalar index evaluation by reading the indexed array element.
+public procedure evalSigmaIndexReference() -> bool {
+    let array_value: [i32; 3] = [4, 9, 12]
+    return array_value[2usize] == 12
+}
+
+/// Exercises range index evaluation by producing and reading a slice.
+public procedure evalSigmaIndexRangeReference() -> bool {
+    let array_value: [i32; 4] = [4, 9, 12, 16]
+    let slice_value: [i32] = array_value[1usize..3usize]
+    return slice_value[0usize] == 9 && slice_value[1usize] == 12
+}
+
+/// Exercises the Expressions AccessAndPlaces reference surface.
+public procedure runExpressionsAccessAndPlacesReference() -> bool {
+    return evalSigmaFieldAccessReference() &&
+        evalSigmaTupleAccessReference() &&
+        evalSigmaIndexReference() &&
+        evalSigmaIndexRangeReference()
 }

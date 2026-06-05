@@ -23,8 +23,8 @@
 // 2. HasCode() helper (lines 37-44)
 //    - PURPOSE: Check if diagnostic stream contains specific code
 //
-// 3. DirListResult struct and CollectDirsRecursive() (lines 46-80)
-//    - PURPOSE: Recursively collect all directories under root
+// 3. RecordSourceRootDirectories() (lines 46-80)
+//    - PURPOSE: Record the source-root directory sequence from deterministic ordering
 //    - SPEC RULE: Dirs(S) = { d | is_dir(d) and relative(d, S) ok }
 //    - SPEC REF: Lines 1211-1213
 //    - DIAGNOSTIC: E-PRJ-0305 (DirSeq-Read-Err)
@@ -128,7 +128,7 @@
 // SPEC RULE ANNOTATIONS (use SPEC_RULE macro)
 // =============================================================================
 //
-// Lines 58, 65, 72, 93, 101, 109: SPEC_RULE("DirSeq-Read-Err");
+// Lines 263-334: SPEC_RULE("DirSeq-Read-Err") via DirSeq(source_root);
 // Line 167-168: SPEC_RULE("Module-Path-Rel-Fail"); SPEC_RULE("Disc-Rel-Fail");
 // Line 173: SPEC_RULE("Module-Path-Root");
 // Line 179: SPEC_RULE("Module-Path-Rel");
@@ -153,6 +153,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <filesystem>
+#include <initializer_list>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -166,6 +167,7 @@
 #include "00_core/host/services.h"
 #include "00_core/ident.h"
 #include "00_core/path.h"
+#include "00_core/spec_trace.h"
 #include "01_project/deterministic_order.h"
 #include "01_project/language_profile.h"
 
@@ -177,6 +179,20 @@ void EmitExternal(core::DiagnosticStream& diags, std::string_view code) {
   core::EmitExternalDiagnostic(diags, code);
 }
 
+void EmitExternalForObligations(
+    core::DiagnosticStream& diags,
+    std::string_view code,
+    std::initializer_list<std::string_view> obligation_ids) {
+  auto diag = core::MakeExternalDiagnostic(code);
+  if (!diag.has_value()) {
+    return;
+  }
+  for (const std::string_view obligation_id : obligation_ids) {
+    diag->obligation_ids.emplace_back(obligation_id);
+  }
+  core::Emit(diags, *diag);
+}
+
 bool HasCode(const core::DiagnosticStream& diags, std::string_view code) {
   for (const auto& diag : diags) {
     if (diag.code == code) {
@@ -186,46 +202,74 @@ bool HasCode(const core::DiagnosticStream& diags, std::string_view code) {
   return false;
 }
 
-struct DirListResult {
-  std::vector<std::filesystem::path> dirs;
-  core::DiagnosticStream diags;
-};
-
-DirListResult CollectDirsRecursive(const std::filesystem::path& root) {
-  DirListResult result;
-  result.dirs.push_back(root);
-
-  std::error_code ec;
-  std::filesystem::recursive_directory_iterator it(root, ec);
-  if (ec) {
-    SPEC_RULE("DirSeq-Read-Err");
-    EmitExternal(result.diags, "E-PRJ-0305");
-    return result;
-  }
-  const std::filesystem::recursive_directory_iterator end;
-  for (; it != end; it.increment(ec)) {
-    if (ec) {
-      SPEC_RULE("DirSeq-Read-Err");
-      EmitExternal(result.diags, "E-PRJ-0305");
-      return result;
+std::string RenderPathList(const std::vector<std::filesystem::path>& paths) {
+  std::string out = "[";
+  bool first = true;
+  for (const auto& path : paths) {
+    if (!first) {
+      out += ",";
     }
-    std::error_code type_ec;
-    if (it->is_directory(type_ec)) {
-      if (type_ec) {
-        SPEC_RULE("DirSeq-Read-Err");
-        EmitExternal(result.diags, "E-PRJ-0305");
-        return result;
-      }
-      result.dirs.push_back(it->path());
-    }
+    first = false;
+    out += path.generic_string();
   }
-  return result;
+  out += "]";
+  return out;
+}
+
+void RecordSourceRootDirectories(
+    const std::filesystem::path& source_root,
+    const std::vector<std::filesystem::path>& dirs) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  SPEC_RULE("def.SourceRootDirectories");
+  core::Conformance::Record(
+      "def.SourceRootDirectories",
+      std::nullopt,
+      "source_root=" + source_root.generic_string() +
+          ";count=" + std::to_string(dirs.size()) +
+          ";dirs=" + RenderPathList(dirs));
 }
 
 struct ModuleDirCheck {
   bool ok = true;
   bool is_module = false;
+  std::filesystem::path source_file;
 };
+
+void RecordModuleDir(const std::filesystem::path& dir,
+                     const LanguageProfile& language,
+                     const ModuleDirCheck& check) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  SPEC_RULE("Module-Dir");
+  core::Conformance::Record(
+      "Module-Dir",
+      std::nullopt,
+      "module_dir=" + dir.generic_string() +
+          ";source_extension=" + std::string(language.source_extension) +
+          ";source_file=" + check.source_file.generic_string() +
+          ";is_module=true");
+}
+
+void RecordModuleDirectoryFiles(
+    const std::filesystem::path& module_dir,
+    const std::vector<std::filesystem::path>& files) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  SPEC_RULE("def.ModuleDirectoryFiles");
+  core::Conformance::Record(
+      "def.ModuleDirectoryFiles",
+      std::nullopt,
+      "module_dir=" + module_dir.generic_string() +
+          ";count=" + std::to_string(files.size()) +
+          ";files=" + RenderPathList(files));
+}
 
 ModuleDirCheck CheckModuleDir(const std::filesystem::path& dir,
                               const LanguageProfile& language,
@@ -260,6 +304,7 @@ ModuleDirCheck CheckModuleDir(const std::filesystem::path& dir,
     const std::string file_str = it->path().generic_string();
     if (core::FileExt(file_str) == language.source_extension) {
       result.is_module = true;
+      result.source_file = it->path();
       break;
     }
   }
@@ -336,17 +381,39 @@ bool ValidateModulePath(const std::vector<std::string>& components,
   for (const auto& comp : components) {
     if (!core::IsIdentifier(comp)) {
       SPEC_RULE("WF-Module-Path-Ident-Err");
-      EmitExternal(diags, "E-MOD-1106");
+      EmitExternalForObligations(
+          diags,
+          "E-MOD-1106",
+          {"WF-Module-Path-Ident-Err", "Disc-Invalid-Component"});
       return false;
     }
     if (core::IsKeyword(comp)) {
       SPEC_RULE("WF-Module-Path-Reserved");
-      EmitExternal(diags, "E-MOD-1105");
+      EmitExternalForObligations(
+          diags,
+          "E-MOD-1105",
+          {"WF-Module-Path-Reserved", "Disc-Invalid-Component"});
       return false;
     }
   }
   SPEC_RULE("WF-Module-Path-Ok");
   return true;
+}
+
+void RecordModuleDirOf(std::string_view module_path,
+                       const std::filesystem::path& module_dir,
+                       const std::filesystem::path& source_root) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload = "source=Modules;module_path=";
+  payload.append(module_path);
+  payload.append(";module_dir=");
+  payload.append(module_dir.generic_string());
+  payload.append(";source_root=");
+  payload.append(source_root.generic_string());
+  core::Conformance::Record("def.ModuleDirOf", std::nullopt, payload);
 }
 
 }  // namespace
@@ -416,6 +483,7 @@ CompilationUnitResult CompilationUnit(const std::filesystem::path& module_dir,
   for (const auto& entry : entries) {
     result.files.push_back(entry.path);
   }
+  RecordModuleDirectoryFiles(module_dir, result.files);
   return result;
 }
 
@@ -431,20 +499,15 @@ ModulesResult Modules(const std::filesystem::path& source_root,
 
   SPEC_RULE("Disc-Start");
 
-  const DirListResult dir_list = CollectDirsRecursive(source_root);
-  for (const auto& diag : dir_list.diags) {
-    core::Emit(result.diags, diag);
-  }
-  if (core::HasError(dir_list.diags)) {
-    SPEC_RULE("Modules-Err");
-    return result;
-  }
-
-  const DirSeqResult dir_seq = DirSeqFrom(source_root, dir_list.dirs);
+  const DirSeqResult dir_seq = DirSeq(source_root);
   for (const auto& diag : dir_seq.diags) {
     core::Emit(result.diags, diag);
   }
-  const bool dir_seq_error = core::HasError(dir_seq.diags);
+  if (core::HasError(dir_seq.diags)) {
+    SPEC_RULE("Modules-Err");
+    return result;
+  }
+  RecordSourceRootDirectories(source_root, dir_seq.dirs);
 
   std::unordered_map<std::string, std::string> seen;
   for (const auto& dir : dir_seq.dirs) {
@@ -458,7 +521,7 @@ ModulesResult Modules(const std::filesystem::path& source_root,
       SPEC_RULE("Disc-Skip");
       continue;
     }
-    SPEC_RULE("Module-Dir");
+    RecordModuleDir(dir, language, module_check);
 
     const ModulePathResult path_result =
         ModulePathFor(dir, source_root, assembly_name, result.diags);
@@ -485,13 +548,9 @@ ModulesResult Modules(const std::filesystem::path& source_root,
     }
 
     seen.emplace(folded, path_result.path);
+    RecordModuleDirOf(path_result.path, dir, source_root);
     result.modules.push_back(ModuleInfo{path_result.path, dir});
     SPEC_RULE("Disc-Add");
-  }
-
-  if (dir_seq_error) {
-    SPEC_RULE("Modules-Err");
-    return result;
   }
 
   SPEC_RULE("Disc-Done");

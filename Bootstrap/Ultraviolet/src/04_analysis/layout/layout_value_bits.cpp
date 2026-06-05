@@ -52,6 +52,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
+#include <string_view>
 
 #include "00_core/assert_spec.h"
 #include "00_core/int128.h"
@@ -60,6 +61,7 @@
 #include "04_analysis/modal/modal_widen.h"
 #include "04_analysis/resolve/scopes.h"
 #include "04_analysis/typing/type_equiv.h"
+#include "04_analysis/typing/type_lookup.h"
 
 namespace ultraviolet::analysis::layout
 {
@@ -70,6 +72,15 @@ namespace ultraviolet::analysis::layout
 
   namespace
   {
+
+    void RecordLayoutValueBitsConformance(std::string_view rule_id,
+                                           std::string_view payload)
+    {
+      if (core::Conformance::Enabled())
+      {
+        core::Conformance::Record(rule_id, std::nullopt, payload);
+      }
+    }
 
     std::uint64_t AlignUp(std::uint64_t value, std::uint64_t align)
     {
@@ -1027,6 +1038,133 @@ namespace ultraviolet::analysis::layout
         const std::vector<std::pair<std::string, ultraviolet::analysis::TypeRef>> &fields,
         const RecordVal &val);
 
+    const ultraviolet::ast::VariantDecl *FindEnumVariant(
+        const ultraviolet::ast::EnumDecl &decl,
+        std::string_view name,
+        std::size_t *index = nullptr)
+    {
+      for (std::size_t i = 0; i < decl.variants.size(); ++i)
+      {
+        if (ultraviolet::analysis::IdEq(decl.variants[i].name, name))
+        {
+          if (index)
+          {
+            *index = i;
+          }
+          return &decl.variants[i];
+        }
+      }
+      return nullptr;
+    }
+
+    bool CopyBitsAt(std::vector<std::uint8_t> &out,
+                    std::uint64_t offset,
+                    const std::vector<std::uint8_t> &bits)
+    {
+      if (offset > out.size() || bits.size() > out.size() - offset)
+      {
+        return false;
+      }
+      std::copy(bits.begin(), bits.end(), out.begin() + offset);
+      return true;
+    }
+
+    const Value *EnumRecordPayloadField(
+        const EnumPayloadRecordVal &payload,
+        std::string_view name)
+    {
+      for (const auto &entry : payload.fields)
+      {
+        if (ultraviolet::analysis::IdEq(entry.first, name))
+        {
+          return &entry.second;
+        }
+      }
+      return nullptr;
+    }
+
+    std::optional<std::vector<std::uint8_t>> EnumPayloadBits(
+        const ultraviolet::analysis::ScopeContext &ctx,
+        const ultraviolet::ast::EnumDecl &decl,
+        const std::vector<ultraviolet::analysis::TypeRef> &generic_args,
+        const ultraviolet::ast::VariantDecl &variant,
+        const EnumVal &value,
+        std::uint64_t payload_size)
+    {
+      if (!variant.payload_opt.has_value())
+      {
+        if (value.payload.has_value())
+        {
+          return std::nullopt;
+        }
+        return std::vector<std::uint8_t>(payload_size, 0);
+      }
+
+      std::vector<std::uint8_t> out(payload_size, 0);
+      if (const auto *tuple =
+              std::get_if<ultraviolet::ast::VariantPayloadTuple>(&*variant.payload_opt))
+      {
+        const auto *payload =
+            value.payload.has_value()
+                ? std::get_if<EnumPayloadTupleVal>(&*value.payload)
+                : nullptr;
+        if (!payload || payload->elements.size() != tuple->elements.size())
+        {
+          return std::nullopt;
+        }
+        for (std::size_t i = 0; i < tuple->elements.size(); ++i)
+        {
+          const auto member = EnumTuplePayloadMemberLayout(
+              ctx, decl, variant, generic_args, i);
+          if (!member.has_value())
+          {
+            return std::nullopt;
+          }
+          const auto elem_bits = ValueBits(ctx, member->type, payload->elements[i]);
+          if (!elem_bits.has_value() || !CopyBitsAt(out, member->offset, *elem_bits))
+          {
+            return std::nullopt;
+          }
+        }
+        return out;
+      }
+
+      if (const auto *record =
+              std::get_if<ultraviolet::ast::VariantPayloadRecord>(&*variant.payload_opt))
+      {
+        const auto *payload =
+            value.payload.has_value()
+                ? std::get_if<EnumPayloadRecordVal>(&*value.payload)
+                : nullptr;
+        if (!payload)
+        {
+          return std::nullopt;
+        }
+        for (const auto &field : record->fields)
+        {
+          const Value *field_value = EnumRecordPayloadField(*payload, field.name);
+          if (!field_value)
+          {
+            return std::nullopt;
+          }
+          const auto member = EnumRecordPayloadMemberLayout(
+              ctx, decl, variant, generic_args, field.name);
+          if (!member.has_value())
+          {
+            return std::nullopt;
+          }
+          const auto field_bits = ValueBits(ctx, member->type, *field_value);
+          if (!field_bits.has_value() || !CopyBitsAt(out, member->offset, *field_bits))
+          {
+            return std::nullopt;
+          }
+        }
+        return out;
+      }
+
+      return std::nullopt;
+    }
+
     std::optional<std::vector<std::uint8_t>> SliceBytes(
         const std::vector<std::uint8_t> &bits,
         std::size_t offset,
@@ -1241,6 +1379,10 @@ namespace ultraviolet::analysis::layout
       const ultraviolet::analysis::TypeRef &type,
       const ultraviolet::ast::Token &lit)
   {
+    SPEC_DEF("def.24.ConstantEncodingHelpers", "");
+    RecordLayoutValueBitsConformance(
+        "def.24.ConstantEncodingHelpers",
+        "helpers=le_bytes,bool,char,int,float,unit,never,rawptr_null");
     if (!type)
     {
       return std::nullopt;
@@ -1252,6 +1394,7 @@ namespace ultraviolet::analysis::layout
           lit.kind == ultraviolet::ast::TokenKind::NullLiteral)
       {
         SPEC_RULE("Encode-RawPtr-Null");
+        SPEC_RULE("rule.24.Encode-RawPtr-Null");
         return LEBytesU64(0, kPtrSize);
       }
       return std::nullopt;
@@ -1264,6 +1407,7 @@ namespace ultraviolet::analysis::layout
         return std::nullopt;
       }
       SPEC_RULE("Encode-Bool");
+      SPEC_RULE("rule.24.Encode-Bool");
       const bool value = lit.lexeme == "true";
       return LEBytesU64(value ? 1 : 0, 1);
     }
@@ -1274,6 +1418,7 @@ namespace ultraviolet::analysis::layout
         return std::nullopt;
       }
       SPEC_RULE("Encode-Char");
+      SPEC_RULE("rule.24.Encode-Char");
       const auto codepoint = DecodeCharLiteral(lit.lexeme);
       if (!codepoint.has_value())
       {
@@ -1285,11 +1430,13 @@ namespace ultraviolet::analysis::layout
     if (prim->name == "()")
     {
       SPEC_RULE("Encode-Unit");
+      SPEC_RULE("rule.24.Encode-Unit");
       return std::vector<std::uint8_t>{};
     }
     if (prim->name == "!")
     {
       SPEC_RULE("Encode-Never");
+      SPEC_RULE("rule.24.Encode-Never");
       return std::vector<std::uint8_t>{};
     }
 
@@ -1300,6 +1447,7 @@ namespace ultraviolet::analysis::layout
         return std::nullopt;
       }
       SPEC_RULE("Encode-Int");
+      SPEC_RULE("rule.24.Encode-Int");
       const auto value = ParseIntLiteralValue(lit.lexeme);
       if (!value.has_value())
       {
@@ -1320,6 +1468,7 @@ namespace ultraviolet::analysis::layout
         return std::nullopt;
       }
       SPEC_RULE("Encode-Float");
+      SPEC_RULE("rule.24.Encode-Float");
       const auto value = ParseFloatLiteralValue(lit.lexeme);
       if (!value.has_value())
       {
@@ -1352,6 +1501,10 @@ namespace ultraviolet::analysis::layout
                   const ultraviolet::analysis::TypeRef &type,
                   const std::vector<std::uint8_t> &bits)
   {
+    SPEC_DEF("def.24.ValidValueJudgement", "");
+    RecordLayoutValueBitsConformance(
+        "def.24.ValidValueJudgement",
+        "judgement=ValidValue;uses_layout_bits=true");
     if (!type)
     {
       return false;
@@ -1362,12 +1515,14 @@ namespace ultraviolet::analysis::layout
       if (prim->name == "bool")
       {
         SPEC_RULE("Valid-Bool");
+        SPEC_RULE("rule.24.Valid-Bool");
         return bits == std::vector<std::uint8_t>{0x00} ||
                bits == std::vector<std::uint8_t>{0x01};
       }
       if (prim->name == "char")
       {
         SPEC_RULE("Valid-Char");
+        SPEC_RULE("rule.24.Valid-Char");
         if (bits.size() != 4)
         {
           return false;
@@ -1382,19 +1537,26 @@ namespace ultraviolet::analysis::layout
       if (prim->name == "()")
       {
         SPEC_RULE("Valid-Unit");
+        SPEC_RULE("rule.24.Valid-Unit");
         return bits.empty();
       }
       if (prim->name == "!")
       {
         SPEC_RULE("Valid-Never");
+        SPEC_RULE("rule.24.Valid-Never");
         return false;
       }
       SPEC_RULE("Valid-Scalar");
+      SPEC_RULE("rule.24.Valid-Scalar");
       const auto size = PrimSize(ctx, prim->name);
       return size.has_value() && bits.size() == *size;
     }
     if (const auto *perm = std::get_if<ultraviolet::analysis::TypePerm>(&type->node))
     {
+      SPEC_DEF("def.24.ValidValueFallback", "");
+      RecordLayoutValueBitsConformance(
+          "def.24.ValidValueFallback",
+          "case=permission;uses_base_type=true");
       return ValidValue(ctx, perm->base, bits);
     }
     if (const auto *ptr = std::get_if<ultraviolet::analysis::TypePtr>(&type->node))
@@ -1416,7 +1578,7 @@ namespace ultraviolet::analysis::layout
     }
     if (const auto *tuple = std::get_if<ultraviolet::analysis::TypeTuple>(&type->node))
     {
-      const auto layout = RecordLayoutOf(ctx, tuple->elements);
+      const auto layout = TupleLayoutOf(ctx, tuple->elements);
       if (!layout.has_value())
       {
         return false;
@@ -1690,6 +1852,10 @@ namespace ultraviolet::analysis::layout
 
     if (const auto *perm = std::get_if<ultraviolet::analysis::TypePerm>(&type->node))
     {
+      SPEC_DEF("def.24.ValueBitsPerm", "");
+      RecordLayoutValueBitsConformance(
+          "def.24.ValueBitsPerm",
+          "case=permission;uses_base_value_bits=true");
       return ValueBits(ctx, perm->base, value);
     }
 
@@ -1745,7 +1911,7 @@ namespace ultraviolet::analysis::layout
         }
         bits.push_back(*elem_bits);
       }
-      const auto layout = RecordLayoutOf(ctx, tuple->elements);
+      const auto layout = TupleLayoutOf(ctx, tuple->elements);
       if (!layout.has_value())
       {
         return std::nullopt;
@@ -1881,6 +2047,76 @@ namespace ultraviolet::analysis::layout
         field_bits.push_back(*encoded);
       }
       return StructBits(field_bits, layout->offsets, layout->layout.size);
+    }
+
+    if (const auto *path = ultraviolet::analysis::AppliedTypePath(*type))
+    {
+      const auto *generic_args_ptr = ultraviolet::analysis::AppliedTypeArgs(*type);
+      const std::vector<ultraviolet::analysis::TypeRef> empty_args;
+      const auto &generic_args = generic_args_ptr ? *generic_args_ptr : empty_args;
+      if (const auto *enum_decl =
+              ultraviolet::analysis::LookupEnumDecl(ctx, *path))
+      {
+        const auto *enum_value = std::get_if<EnumVal>(&value.node);
+        if (!enum_value)
+        {
+          return std::nullopt;
+        }
+        std::size_t variant_index = 0;
+        const auto *variant =
+            FindEnumVariant(*enum_decl, enum_value->variant, &variant_index);
+        if (!variant)
+        {
+          return std::nullopt;
+        }
+        const auto discs = ultraviolet::analysis::EnumDiscriminants(*enum_decl);
+        if (!discs.ok || variant_index >= discs.discs.size())
+        {
+          return std::nullopt;
+        }
+        const auto layout = EnumLayoutOf(
+            ctx,
+            *enum_decl,
+            generic_args,
+            ResolveEnumLayoutOptions(enum_decl->attrs));
+        if (!layout.has_value())
+        {
+          return std::nullopt;
+        }
+        const auto payload_bits = EnumPayloadBits(
+            ctx,
+            *enum_decl,
+            generic_args,
+            *variant,
+            *enum_value,
+            layout->payload_size);
+        if (!payload_bits.has_value())
+        {
+          return std::nullopt;
+        }
+        const auto disc_size = PrimSize(ctx, layout->disc_type);
+        if (!disc_size.has_value())
+        {
+          return std::nullopt;
+        }
+        Value disc_value;
+        disc_value.node = IntVal{layout->disc_type,
+                                 core::UInt128FromU64(discs.discs[variant_index])};
+        const auto disc_bits =
+            ValueBits(ctx, ultraviolet::analysis::MakeTypePrim(layout->disc_type),
+                      disc_value);
+        if (!disc_bits.has_value())
+        {
+          return std::nullopt;
+        }
+        return TaggedBits(
+            *disc_bits,
+            *payload_bits,
+            *disc_size,
+            layout->payload_size,
+            layout->payload_align,
+            layout->layout.size);
+      }
     }
 
     if (std::holds_alternative<ultraviolet::analysis::TypeDynamic>(type->node))

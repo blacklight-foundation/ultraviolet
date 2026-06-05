@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <array>
 #include <cstdlib>
+#include <iostream>
 #include <memory>
 #include <optional>
 #include <string>
@@ -31,6 +32,7 @@
 
 #include "00_core/assert_spec.h"
 #include "00_core/diagnostic_messages.h"
+#include "00_core/spec_trace.h"
 #include "02_source/attributes/attribute_registry.h"
 #include "04_analysis/contracts/contract_check.h"
 #include "04_analysis/contracts/verification.h"
@@ -48,6 +50,7 @@
 #include "04_analysis/typing/type_lower.h"
 #include "04_analysis/memory/regions.h"
 #include "02_source/ast/ast.h"
+#include "02_source/ast/ast_utils.h"
 
 namespace ultraviolet::analysis {
 
@@ -66,6 +69,40 @@ PlaceTypeResult TypePlace(const ScopeContext& ctx,
                           const TypeEnv& env);
 
 // IntroResult is declared in type_stmt.h
+
+void MarkSharedDerivedBindingsStale(TypeEnv& env) {
+  for (auto& scope : env.scopes) {
+    for (auto& [_, binding] : scope) {
+      if (binding.derived_from_shared) {
+        binding.stale_after_release = true;
+      }
+    }
+  }
+}
+
+void EmitStaleBindingReferenceWarning(
+    const TypeBinding& binding,
+    const StmtTypeContext& type_ctx,
+    std::optional<core::Span> span) {
+  if (!binding.stale_after_release || binding.stale_ok || !type_ctx.diags) {
+    return;
+  }
+
+  const core::Span warning_span = span.value_or(core::Span{});
+  if (auto diag = core::MakeDiagnosticById("W-CON-0011", warning_span)) {
+    SPEC_RULE("requirement.21.YieldReleaseStalenessWarning");
+    if (type_ctx.in_shared_capturing_closure) {
+      SPEC_RULE("requirement.21.StaleValueMarkIRDiagnostics");
+      core::Conformance::Record(
+          "def.21.AsyncKeyIR",
+          warning_span,
+          "source=EmitStaleBindingReferenceWarning;"
+          "operation=mark-stale-after-yield-release;"
+          "component=StaleValueMarkIR;shared_capturing_closure=true");
+    }
+    core::Emit(*type_ctx.diags, *diag);
+  }
+}
 
 namespace {
 
@@ -111,6 +148,11 @@ static inline void SpecDefsTypeStmt() {
   SPEC_DEF("NumericTypes", "5.2.12");
   SPEC_DEF("Fact-Call-Postcondition", "15.8.4");
   SPEC_DEF("T-CtStmt", "22.1.2");
+  SPEC_DEF("rule.16.ValueUse-NonBitcopyPlace", "16.2.4");
+  SPEC_DEF("rule.18.Let-Refutable-Pattern-Err", "18.2.3");
+  SPEC_DEF("diag.18.BindingStatements", "18.2.7");
+  SPEC_DEF("rule.18.BlockInfo-Res-Err", "18.1.4");
+  SPEC_DEF("diag.18.Blocks", "18.1.7");
 }
 
 template <typename T>
@@ -270,6 +312,16 @@ static IntroResult IntroBinding(const TypeEnv& env,
   }
   if (InOuter(env, key)) {
     SPEC_RULE("Intro-Outer-Err");
+    if (core::IsDebugEnabled("shadow")) {
+      std::cerr << "[uv] outer name reuse rejected for binding `" << name << "`";
+      for (std::size_t i = 0; i + 1 < env.scopes.size(); ++i) {
+        if (env.scopes[i].count(key)) {
+          std::cerr << " (outer scope " << i << ")";
+          break;
+        }
+      }
+      std::cerr << "\n";
+    }
     return {false, "Intro-Outer-Err", env};
   }
 
@@ -872,6 +924,7 @@ static ExprTypeResult TypeIdentExpr(const ScopeContext& ctx,
   }
   if (!BitcopyType(ctx, binding->type)) {
     SPEC_RULE("ValueUse-NonBitcopyPlace");
+    SPEC_RULE("rule.16.ValueUse-NonBitcopyPlace");
     return {false, "ValueUse-NonBitcopyPlace", {}};
   }
   return {true, std::nullopt, binding->type};
@@ -931,7 +984,14 @@ static FlowTypingFns MakeFlowTypingFns(const ScopeContext& ctx,
     return TypeExpr(ctx, type_ctx, inner, env);
   };
   fns.type_ident = [&](std::string_view name) -> ExprTypeResult {
-    return TypeIdentifierExpr(ctx, ast::IdentifierExpr{std::string(name)}, env);
+    auto ident_result =
+        TypeIdentifierExpr(ctx, ast::IdentifierExpr{std::string(name)}, env);
+    if (ident_result.ok) {
+      if (const auto binding = BindOf(env, name)) {
+        EmitStaleBindingReferenceWarning(*binding, type_ctx, std::nullopt);
+      }
+    }
+    return ident_result;
   };
   fns.type_place = [&](const ast::ExprPtr& inner) {
     return TypePlace(ctx, type_ctx, inner, env);
@@ -1293,7 +1353,14 @@ struct DirectCallFactView {
 
 static std::optional<DirectCallFactView> DirectCallFactViewOf(
     const ast::ExprPtr& expr) {
-  const auto stripped = StripAttributedExpr(expr);
+  auto stripped = StripAttributedExpr(expr);
+  if (const auto* unsafe_block =
+          stripped ? std::get_if<ast::UnsafeBlockExpr>(&stripped->node)
+                   : nullptr;
+      unsafe_block && unsafe_block->block &&
+      unsafe_block->block->stmts.empty() && unsafe_block->block->tail_opt) {
+    stripped = StripAttributedExpr(unsafe_block->block->tail_opt);
+  }
   if (!stripped) {
     return std::nullopt;
   }
@@ -1379,6 +1446,48 @@ static const ast::ProcedureDecl* StaticCalleeProcedure(
     return nullptr;
   }
   return FindProcedureForCallPostcondition(*module, name->second);
+}
+
+static const ast::ExternProcDecl* FindExternProcedureForCallPostcondition(
+    const ast::ASTModule& module,
+    std::string_view name) {
+  const auto key = IdKeyOf(name);
+  for (const auto& item : module.items) {
+    const auto* block = std::get_if<ast::ExternBlock>(&item);
+    if (!block) {
+      continue;
+    }
+    for (const auto& ext_item : block->items) {
+      if (const auto* proc = std::get_if<ast::ExternProcDecl>(&ext_item);
+          proc && IdKeyOf(proc->name) == key) {
+        return proc;
+      }
+    }
+  }
+  return nullptr;
+}
+
+static const ast::ExternProcDecl* StaticCalleeExternProcedure(
+    const ScopeContext& ctx,
+    const DirectCallFactView& call) {
+  if (!call.callee) {
+    return nullptr;
+  }
+  const auto name = StaticCalleeName(ctx, *call.callee);
+  if (!name.has_value()) {
+    return nullptr;
+  }
+  const auto* module = FindModuleForCallPostcondition(ctx, name->first);
+  if (!module) {
+    return nullptr;
+  }
+  return FindExternProcedureForCallPostcondition(*module, name->second);
+}
+
+static bool ForeignPostconditionsUseStaticVerification(
+    const ast::ExternProcDecl& proc) {
+  const auto mode = ResolveVerificationModeAttribute(proc.attrs);
+  return !mode.has_value() || *mode == VerificationModeAttribute::Static;
 }
 
 static ast::ExprPtr IdentifierFactExpr(const std::string& name,
@@ -1606,6 +1715,77 @@ static std::shared_ptr<StaticProofContext> CallPostconditionProofContextForLet(
                                            let_stmt.span);
 }
 
+static std::shared_ptr<StaticProofContext>
+ForeignPostconditionProofContextForLet(
+    const ScopeContext& ctx,
+    const TypeEnv& env,
+    const std::shared_ptr<StaticProofContext>& current_proof_ctx,
+    const ast::LetStmt& let_stmt,
+    const std::string& binding_name) {
+  const auto call = DirectCallFactViewOf(let_stmt.binding.init);
+  if (!call.has_value()) {
+    return current_proof_ctx;
+  }
+  const auto* proc = StaticCalleeExternProcedure(ctx, *call);
+  if (!proc || !proc->foreign_contracts_opt.has_value() ||
+      !ForeignPostconditionsUseStaticVerification(*proc)) {
+    return current_proof_ctx;
+  }
+  if (!call->args || call->args->size() != proc->params.size()) {
+    return current_proof_ctx;
+  }
+
+  std::unordered_map<std::string, ast::ExprPtr> substitutions;
+  for (std::size_t i = 0; i < proc->params.size(); ++i) {
+    const auto& arg = (*call->args)[i];
+    if (!ExprStableForCallPostcondition(arg.value, env)) {
+      return current_proof_ctx;
+    }
+    substitutions.emplace(proc->params[i].name, arg.value);
+  }
+
+  bool has_error_predicates = false;
+  for (const auto& clause : *proc->foreign_contracts_opt) {
+    if (clause.kind == ast::ForeignContractKind::EnsuresError &&
+        !clause.predicates.empty()) {
+      has_error_predicates = true;
+      break;
+    }
+  }
+
+  auto proof_ctx = current_proof_ctx;
+  const auto result_expr = IdentifierFactExpr(binding_name, let_stmt.span);
+  std::size_t assumption_count = 0;
+  for (const auto& clause : *proc->foreign_contracts_opt) {
+    if (clause.kind != ast::ForeignContractKind::Ensures ||
+        has_error_predicates) {
+      continue;
+    }
+    for (const auto& predicate : clause.predicates) {
+      bool blocked = false;
+      const auto postcondition = SubstituteCallPostconditionExpr(
+          predicate, substitutions, result_expr, env, blocked);
+      if (blocked) {
+        continue;
+      }
+      proof_ctx = ExtendProofContextWithPredicateAt(proof_ctx, postcondition,
+                                                    let_stmt.span);
+      ++assumption_count;
+    }
+  }
+
+  if (assumption_count > 0 && core::Conformance::Enabled()) {
+    core::Conformance::Record(
+        "requirement.23.ForeignPostconditionStaticVerification",
+        std::optional<core::Span>(let_stmt.span),
+        "source=ForeignPostconditionProofContextForLet;mode=static;"
+        "kind=ForeignPost;proof=StaticProof;success_cond=not_errcond;"
+        "err_cond=derived;assumption_count=" +
+            std::to_string(assumption_count));
+  }
+  return proof_ctx;
+}
+
 static std::shared_ptr<StaticProofContext> LetBindingProofContextForStmt(
     const ScopeContext& ctx,
     const TypeEnv& env,
@@ -1613,7 +1793,8 @@ static std::shared_ptr<StaticProofContext> LetBindingProofContextForStmt(
     const ast::Stmt& stmt) {
   const ast::Binding* binding = nullptr;
   core::Span span;
-  if (const auto* let_stmt = std::get_if<ast::LetStmt>(&stmt)) {
+  const auto* let_stmt = std::get_if<ast::LetStmt>(&stmt);
+  if (let_stmt) {
     binding = &let_stmt->binding;
     span = let_stmt->span;
   } else if (const auto* var_stmt = std::get_if<ast::VarStmt>(&stmt)) {
@@ -1632,6 +1813,10 @@ static std::shared_ptr<StaticProofContext> LetBindingProofContextForStmt(
   auto proof_ctx = CallPostconditionProofContextForLet(
       ctx, env, current_proof_ctx,
       ast::LetStmt{*binding, span}, *binding_name);
+  if (let_stmt) {
+    proof_ctx = ForeignPostconditionProofContextForLet(
+        ctx, env, proof_ctx, ast::LetStmt{*binding, span}, *binding_name);
+  }
 
   ContractContext contract_ctx;
   contract_ctx.scope_ctx = &ctx;
@@ -2616,6 +2801,42 @@ bool BlockNeedsKeyAccessImpl(const ScopeContext& ctx,
                              const ast::Block& block,
                              const TypeEnv& env);
 
+struct ReadOnlyTypingContext {
+  StmtTypeContext ctx;
+  std::unordered_set<IdKey> parallel_bindings;
+  std::unordered_set<IdKey> parallel_first_child_moves;
+  std::vector<std::unordered_set<IdKey>> capture_first_child_moves;
+  std::vector<ParallelCaptureScopeView> capture_scopes;
+
+  explicit ReadOnlyTypingContext(const StmtTypeContext& source)
+      : ctx(source) {
+    ctx.diags = nullptr;
+    ctx.env_ref = nullptr;
+
+    if (source.parallel_bindings) {
+      parallel_bindings = *source.parallel_bindings;
+      ctx.parallel_bindings = &parallel_bindings;
+    }
+    if (source.parallel_first_child_moves) {
+      parallel_first_child_moves = *source.parallel_first_child_moves;
+      ctx.parallel_first_child_moves = &parallel_first_child_moves;
+    }
+    if (source.parallel_capture_scopes) {
+      capture_scopes.reserve(source.parallel_capture_scopes->size());
+      capture_first_child_moves.reserve(source.parallel_capture_scopes->size());
+      for (const auto& scope : *source.parallel_capture_scopes) {
+        ParallelCaptureScopeView copy = scope;
+        if (scope.first_child_moves) {
+          capture_first_child_moves.push_back(*scope.first_child_moves);
+          copy.first_child_moves = &capture_first_child_moves.back();
+        }
+        capture_scopes.push_back(copy);
+      }
+      ctx.parallel_capture_scopes = &capture_scopes;
+    }
+  }
+};
+
 bool ExprHasSharedPermissionImpl(const ScopeContext& ctx,
                                  const StmtTypeContext& type_ctx,
                                  const ast::ExprPtr& expr,
@@ -2623,12 +2844,13 @@ bool ExprHasSharedPermissionImpl(const ScopeContext& ctx,
   if (!expr) {
     return false;
   }
-  const auto place = TypePlace(ctx, type_ctx, expr, env);
+  ReadOnlyTypingContext query_ctx(type_ctx);
+  const auto place = TypePlace(ctx, query_ctx.ctx, expr, env);
   if (place.ok && place.type &&
       PermOfType(place.type) == Permission::Shared) {
     return true;
   }
-  const auto value = TypeExpr(ctx, type_ctx, expr, env);
+  const auto value = TypeExpr(ctx, query_ctx.ctx, expr, env);
   return value.ok && value.type &&
          PermOfType(value.type) == Permission::Shared;
 }
@@ -2814,6 +3036,7 @@ std::optional<std::string_view> CheckEscapingClosureSpawn(
     return std::nullopt;
   }
   SPEC_RULE("Parallel-Escaping-Closure-Spawn-Err");
+  SPEC_RULE("rule.20.Parallel-Escaping-Closure-Spawn-Err");
   return "E-CON-0131";
 }
 
@@ -2838,6 +3061,9 @@ std::optional<Dim3ConstValue> ExtractDim3Const(const ScopeContext& ctx,
     }
     const auto const_len = ConstLen(ctx, tuple->elements[i]);
     if (!const_len.ok || !const_len.value.has_value()) {
+      return std::nullopt;
+    }
+    if (*const_len.value == 0) {
       return std::nullopt;
     }
     *out[i] = *const_len.value;
@@ -2926,6 +3152,11 @@ std::optional<TypeBinding> BindOf(const TypeEnv& env, std::string_view name) {
   SpecDefsTypeStmt();
   ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::BindOf);
   const auto key = IdKeyOf(name);
+  core::Conformance::Record(
+      "def.18.BindingEnvironmentHelpers",
+      std::nullopt,
+      "source=BindOf;phase=semantic-analysis;helper=BindOf;"
+      "lookup=nearest-scope;scopes=reverse-lexical-order");
   for (auto it = env.scopes.rbegin(); it != env.scopes.rend(); ++it) {
     const auto found = it->find(key);
     if (found != it->end()) {
@@ -2942,6 +3173,11 @@ TypeRef StableBindingType(const TypeBinding& binding) {
 std::optional<ast::Mutability> MutOf(const TypeEnv& env,
                                         std::string_view name) {
   SpecDefsTypeStmt();
+  core::Conformance::Record(
+      "def.18.BindingEnvironmentHelpers",
+      std::nullopt,
+      "source=MutOf;phase=semantic-analysis;helper=MutOf;"
+      "definition=mutability-from-BindOf");
   const auto binding = BindOf(env, name);
   if (!binding.has_value()) {
     return std::nullopt;
@@ -3026,12 +3262,14 @@ GpuCaptureCheckResult CheckGpuCapture(const ScopeContext& ctx,
 
   if (PermOfType(binding->type) == Permission::Shared) {
     SPEC_RULE("GpuCapture-Shared-Err");
+    SPEC_RULE("rule.20.GpuCapture-Shared-Err");
     result.diag_id = "E-CON-0151";
     return result;
   }
 
   if (HasHeapProvenance(env, name)) {
     SPEC_RULE("GpuCapture-HeapProv-Err");
+    SPEC_RULE("rule.20.GpuCapture-HeapProv-Err");
     result.diag_id = "E-CON-0150";
     return result;
   }
@@ -3039,6 +3277,7 @@ GpuCaptureCheckResult CheckGpuCapture(const ScopeContext& ctx,
   if (const auto gpu_diag = GpuSafeDiagForType(ctx, binding->type);
       gpu_diag.has_value()) {
     SPEC_RULE("GpuCapture-NonGpuSafe-Err");
+    SPEC_RULE("rule.20.GpuCapture-NonGpuSafe-Err");
     result.diag_id = "E-CON-0153";
     result.supplemental_diag_id = *gpu_diag;
     return result;
@@ -3228,6 +3467,11 @@ StmtSeqResult TypeStmtSeq(const ScopeContext& ctx,
     if (!typed.ok) {
       result.diag_id = typed.diag_id;
       result.diag_detail = typed.diag_detail;
+      result.diagnostic_obligation_ids = typed.diagnostic_obligation_ids;
+      if (result.diag_detail.empty()) {
+        result.diag_detail =
+            std::string("statement failed typing: ") + ast::node_kind(stmt);
+      }
       if (typed.diag_span.has_value()) {
         result.diag_span = typed.diag_span;
       } else {
@@ -3288,6 +3532,8 @@ BlockInfoResult TypeBlockInfo(const ScopeContext& ctx,
     result.diag_id = stmts_typed.diag_id;
     result.diag_detail = stmts_typed.diag_detail;
     result.diag_span = stmts_typed.diag_span;
+    result.diagnostic_obligation_ids =
+        stmts_typed.diagnostic_obligation_ids;
     return result;
   }
   const bool reachable_ok = [&]() {
@@ -3296,6 +3542,10 @@ BlockInfoResult TypeBlockInfo(const ScopeContext& ctx,
     return WarnResultUnreachable(block.stmts, type_ctx);
   }();
   if (!reachable_ok) {
+    SPEC_RULE("BlockInfo-Res-Err");
+    SPEC_RULE("rule.18.BlockInfo-Res-Err");
+    SPEC_RULE("diag.18.Blocks");
+    SPEC_RULE("req.16.ControlExpressionDiagnosticOwnership");
     result.diag_id = "BlockInfo-Res-Err";
     return result;
   }
@@ -3356,6 +3606,9 @@ BlockInfoResult TypeBlockInfo(const ScopeContext& ctx,
 
   if (!stmts_typed.flow.results.empty()) {
     SPEC_RULE("BlockInfo-Res-Err");
+    SPEC_RULE("rule.18.BlockInfo-Res-Err");
+    SPEC_RULE("diag.18.Blocks");
+    SPEC_RULE("req.16.ControlExpressionDiagnosticOwnership");
     result.diag_id = "BlockInfo-Res-Err";
     return result;
   }
@@ -3420,6 +3673,8 @@ ExprTypeResult TypeBlock(const ScopeContext& ctx,
     result.diag_id = info.diag_id;
     result.diag_detail = info.diag_detail;
     result.diag_span = info.diag_span;
+    result.diagnostic_obligation_ids =
+        info.diagnostic_obligation_ids;
     return result;
   }
   SPEC_RULE("T-Block");
@@ -3449,15 +3704,41 @@ CheckResult CheckBlock(const ScopeContext& ctx,
                   type_ident, type_place, env_ref);
   if (!stmts_typed.ok) {
     result.diag_id = stmts_typed.diag_id;
+    result.diag_detail = stmts_typed.diag_detail;
     result.diag_span = stmts_typed.diag_span;
     return result;
   }
   if (!WarnResultUnreachable(block.stmts, type_ctx)) {
+    result.diag_detail = "block contains unreachable result expression";
     return result;
   }
 
   const auto res_type = ResType(ctx, stmts_typed.flow.results);
   if (res_type.has_value()) {
+    const auto sub = Subtyping(ctx, *res_type, expected);
+    if (!sub.ok) {
+      result.diag_id = sub.diag_id;
+      return result;
+    }
+    if (!sub.subtype) {
+      result.diag_id = sub.diag_id;
+      result.diag_detail =
+          "block result type " + TypeToString(*res_type) +
+          " is not compatible with expected " + TypeToString(expected);
+      return result;
+    }
+    SPEC_RULE("BlockInfo-Res");
+    result.ok = true;
+    return result;
+  }
+
+  if (!stmts_typed.flow.results.empty()) {
+    SPEC_RULE("BlockInfo-Res-Err");
+    SPEC_RULE("rule.18.BlockInfo-Res-Err");
+    SPEC_RULE("diag.18.Blocks");
+    SPEC_RULE("req.16.ControlExpressionDiagnosticOwnership");
+    result.diag_id = "BlockInfo-Res-Err";
+    result.diag_detail = "block result paths do not have one equivalent type";
     return result;
   }
 
@@ -3478,6 +3759,12 @@ CheckResult CheckBlock(const ScopeContext& ctx,
       return result;
     }
     result.diag_id = check.diag_id;
+    result.diag_detail = check.diag_detail;
+    if (result.diag_detail.empty()) {
+      result.diag_detail =
+          "block tail expression failed checking against expected " +
+          TypeToString(expected);
+    }
     result.diag_span =
         check.diag_span.has_value() ? check.diag_span
                                     : std::optional<core::Span>(block.tail_opt->span);
@@ -3497,6 +3784,9 @@ CheckResult CheckBlock(const ScopeContext& ctx,
     result.ok = true;
     return result;
   }
+  result.diag_detail =
+      "block has no tail expression or explicit return for expected " +
+      TypeToString(expected);
   return result;
 }
 
@@ -3576,6 +3866,8 @@ PatternTypeResult TypePattern(const ScopeContext& ctx,
           }
           if (tuple->elements.size() != node.elements.size()) {
             SPEC_RULE("Pat-Tuple-Arity-Err");
+            SPEC_RULE("Pat-Tuple-R-Arity-Err");
+            SPEC_RULE("rule.17.Pat-Tuple-R-Arity-Err");
             return {false, "E-TYP-1803", {}};
           }
           std::vector<std::pair<std::string, TypeRef>> binds;
@@ -3587,6 +3879,8 @@ PatternTypeResult TypePattern(const ScopeContext& ctx,
             binds.insert(binds.end(), sub.bindings.begin(), sub.bindings.end());
           }
           SPEC_RULE("Pat-Tuple");
+          SPEC_RULE("Pat-Tuple-R");
+          SPEC_RULE("rule.17.Pat-Tuple-R");
           return {true, std::nullopt, std::move(binds)};
         }
 
@@ -3617,6 +3911,8 @@ PatternTypeResult TypePattern(const ScopeContext& ctx,
               }
             }
             if (!field_decl) {
+              SPEC_RULE("RecordPattern-UnknownField");
+              SPEC_RULE("rule.17.RecordPattern-UnknownField");
               return {false, "RecordPattern-UnknownField", {}};
             }
             const auto field_type = LowerType(ctx, field_decl->type);
@@ -3637,6 +3933,8 @@ PatternTypeResult TypePattern(const ScopeContext& ctx,
             binds.insert(binds.end(), sub.bindings.begin(), sub.bindings.end());
           }
           SPEC_RULE("Pat-Record");
+          SPEC_RULE("Pat-Record-R");
+          SPEC_RULE("rule.17.Pat-Record-R");
           return {true, std::nullopt, std::move(binds)};
         }
 
@@ -3644,6 +3942,8 @@ PatternTypeResult TypePattern(const ScopeContext& ctx,
           // Other patterns (Literal, Enum, Modal, Range) are refutable
           // and cannot be used in let/var bindings
           SPEC_RULE("Let-Refutable-Pattern-Err");
+          SPEC_RULE("rule.18.Let-Refutable-Pattern-Err");
+          SPEC_RULE("diag.18.BindingStatements");
           return {false, "Let-Refutable-Pattern-Err", {}};
         }
       },

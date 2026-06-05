@@ -243,6 +243,62 @@ ParseElemResult<std::vector<ParallelOption>> ParseParallelOptsOpt(Parser parser)
   return {after_rbracket, std::move(opts.elem)};
 }
 
+void RecordParallelCancellationParserEvidence(const ParallelOption& opt) {
+  if (opt.kind != ParallelOptionKind::Cancel) {
+    return;
+  }
+
+  core::Conformance::Record(
+      "requirement.20.CancellationSyntax",
+      opt.span,
+      "source=ParseParallelOpt;option=cancel;surface=parallel_option;"
+      "ordinary_cancel_token_call_syntax=true;additional_syntax=false");
+  core::Conformance::Record(
+      "requirement.20.CancellationNoAdditionalParsingRules",
+      opt.span,
+      "source=ParseParallelOpt;option=cancel;parser=parallel_option;"
+      "additional_parsing_rules=false");
+}
+
+void RecordParallelExpressionParserEvidence(const ParallelExpr& par,
+                                            const core::Span& span) {
+  for (const auto& opt : par.opts) {
+    RecordParallelCancellationParserEvidence(opt);
+  }
+
+  core::Conformance::Record(
+      "requirement.20.ExecutionDomainSyntax",
+      span,
+      "source=ParseParallelExpr;domain_parser=ParseExprNoBrace;"
+      "method_call_syntax=ordinary_postfix_method_call;"
+      "call_syntax=ordinary_postfix_call;additional_domain_syntax=false");
+  core::Conformance::Record(
+      "requirement.20.ExecutionDomainsNoAdditionalParsingProductions",
+      span,
+      "source=ParseParallelExpr;domain_parser=ParseExprNoBrace;"
+      "parallel_option_boundary=stop_before_parallel_options;"
+      "additional_domain_productions=false");
+  core::Conformance::Record(
+      "requirement.20.DeterminismNestingNoAdditionalSyntax",
+      span,
+      "source=ParseParallelExpr;surface=parallel_spawn_dispatch;"
+      "determinism_nesting_syntax=none;additional_syntax=false");
+  core::Conformance::Record(
+      "requirement.20.DeterminismNestingNoAdditionalParsingRules",
+      span,
+      "source=ParseParallelExpr;parser=parallel_expr;"
+      "nesting=recursive_block_parse;additional_parsing_rules=false");
+  core::Conformance::Record(
+      "requirement.20.PanicHandlingNoAdditionalSyntax",
+      span,
+      "source=ParseParallelExpr;panic_surface=none;additional_syntax=false");
+  core::Conformance::Record(
+      "requirement.20.PanicHandlingNoAdditionalParsingRules",
+      span,
+      "source=ParseParallelExpr;panic_parser=none;"
+      "additional_parsing_rules=false");
+}
+
 }  // namespace
 
 // =============================================================================
@@ -274,6 +330,8 @@ ParseElemResult<ExprPtr> ParseParallelExpr(Parser parser) {
   par.domain = domain.elem;
   par.opts = std::move(opts.elem);
   par.body = body.elem;
-  return {body.parser, MakeExpr(SpanBetween(parser, body.parser), par)};
+  const core::Span expr_span = SpanBetween(parser, body.parser);
+  RecordParallelExpressionParserEvidence(par, expr_span);
+  return {body.parser, MakeExpr(expr_span, par)};
 }
 }  // namespace ultraviolet::ast

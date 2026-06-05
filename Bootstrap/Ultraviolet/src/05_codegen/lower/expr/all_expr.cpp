@@ -65,6 +65,8 @@ void AppendDistinctType(std::vector<analysis::TypeRef>& members,
 
 LowerResult LowerAllExpr(const ast::AllExpr& expr, LowerCtx& ctx) {
     SPEC_RULE("Lower-Expr-All");
+    SPEC_RULE("def.21.AsyncComposeIR");
+    SPEC_RULE("rule.21.Lower-Expr-All");
 
     // Build the IRAll node
     IRAll all;

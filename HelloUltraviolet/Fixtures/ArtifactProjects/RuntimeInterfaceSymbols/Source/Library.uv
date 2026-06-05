@@ -1,0 +1,510 @@
+//! Artifact fixture for runtime interface symbol and declaration coverage.
+
+public record RuntimeInterfaceContext {
+    public io: $IO
+    public net: $Network
+    public heap: $HeapAllocator
+    public sys: System
+    public reactor: $Reactor
+    public time: $Time
+}
+
+internal type RuntimeInterfaceValueFunction = () -> i32
+
+internal type RuntimeInterfaceValueClosure = || -> i32
+
+internal record RuntimeInterfaceValueRecord {
+    internal count: i32
+    internal is_ready: bool
+}
+
+internal enum RuntimeInterfaceValueEnum {
+    Empty
+    Count(i32)
+    Named { value: i32 }
+}
+
+internal modal RuntimeInterfaceValueModal {
+    @Ready {
+        internal value: i32
+    }
+}
+
+internal class RuntimeInterfaceDynamicValueClass {
+    internal procedure readRuntimeInterfaceDynamicValue(~) -> i32
+}
+
+internal record RuntimeInterfaceDynamicValueOwner <: RuntimeInterfaceDynamicValueClass {
+    internal value: i32
+
+    internal procedure readRuntimeInterfaceDynamicValue(~) -> i32 {
+        return self.value
+    }
+}
+
+internal procedure runtimeInterfaceValueFunction() -> i32 {
+    return 17
+}
+
+internal procedure runtimeInterfaceUnitValueScore(value: ()) -> i32 {
+    let _ = value
+    return 1
+}
+
+internal procedure runtimeInterfaceValueEnumScore(value: RuntimeInterfaceValueEnum) -> i32 {
+    return if value is {
+        RuntimeInterfaceValueEnum::Empty {
+            0
+        }
+        RuntimeInterfaceValueEnum::Count(count) {
+            count
+        }
+        RuntimeInterfaceValueEnum::Named { value: payload_value } {
+            payload_value
+        }
+    }
+}
+
+internal procedure runtimeInterfaceValueModalScore(value: RuntimeInterfaceValueModal) -> i32 {
+    return if value is {
+        @Ready { value: payload_value } {
+            payload_value
+        }
+    }
+}
+
+internal procedure runtimeInterfaceManagedStringValueSucceeded(
+    move result: Outcome<unique string@Managed, AllocationError>,
+    expected_length: usize
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            string::length(string::as_view(value)) == expected_length
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure runtimeInterfaceManagedBytesValueSucceeded(
+    move result: Outcome<unique bytes@Managed, AllocationError>,
+    expected_length: usize
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            bytes::length(bytes::as_view(value)) == expected_length
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+public procedure runtimeInterfaceScalarValueProbe() -> bool {
+    let truth: bool = true
+    let letter: char = 'A'
+    let unit_value: () = ()
+    let signed_value: i32 = -41
+    let unsigned_value: usize = 41usize
+    let wide_value: u128 = 1200u128
+    let ratio: f64 = 3.75f64
+    let narrow_ratio: f32 = 2.5f32
+    return runtimeInterfaceUnitValueScore(unit_value) == 1 &&
+        truth &&
+        letter == 'A' &&
+        signed_value == -41 &&
+        unsigned_value == 41usize &&
+        wide_value == 1200u128 &&
+        ratio > 3.0f64 &&
+        ratio < 4.0f64 &&
+        narrow_ratio > 2.0f32 &&
+        narrow_ratio < 3.0f32
+}
+
+public procedure runtimeInterfacePointerValueProbe() -> bool {
+    var value: i32 = 83
+    let safe_pointer: Ptr<i32> = &value
+    let safe_value: i32 = unsafe { *safe_pointer }
+    let safe_null: Ptr<i32> = Ptr::null()
+    let same_safe_null: Ptr<i32> = Ptr::null()
+    let raw_null: *mut i32 = null
+    let same_raw_null: *mut i32 = null
+    return safe_value == 83 &&
+        safe_null == same_safe_null &&
+        raw_null == same_raw_null
+}
+
+public procedure runtimeInterfaceAggregateValueProbe() -> bool {
+    let tuple_value: (i32, bool) = (3, true)
+    let array_value: [i32; 3] = [7, 11, 13]
+    let range_value: Range<usize> = 1usize..3usize
+    let slice_value: [i32] = array_value[range_value]
+    let record_value: RuntimeInterfaceValueRecord = RuntimeInterfaceValueRecord {
+        count: tuple_value.0 + array_value[2usize],
+        is_ready: tuple_value.1
+    }
+    let enum_value: RuntimeInterfaceValueEnum =
+        RuntimeInterfaceValueEnum::Named { value: record_value.count }
+    let modal_value: RuntimeInterfaceValueModal =
+        widen RuntimeInterfaceValueModal@Ready { value: 23 }
+    return slice_value[0usize] == 11 &&
+        record_value.count == 16 &&
+        record_value.is_ready &&
+        runtimeInterfaceValueEnumScore(enum_value) == 16 &&
+        runtimeInterfaceValueModalScore(modal_value) == 23
+}
+
+public procedure runtimeInterfaceRuntimeValueDomainProbe(
+    context: RuntimeInterfaceContext
+) -> bool {
+    let function_value: RuntimeInterfaceValueFunction = runtimeInterfaceValueFunction
+    let closure_value: RuntimeInterfaceValueClosure = || -> i32 19
+    let text_value: string@View = "value-domain"
+    let text_slice: string@View = string::slice(text_value, 0usize, 5usize)
+    let bytes_value: bytes@View = bytes::view_string(text_value)
+    let managed_text: Outcome<unique string@Managed, AllocationError> =
+        string::to_managed(text_slice, context.heap)
+    let managed_bytes: Outcome<unique bytes@Managed, AllocationError> =
+        bytes::to_managed(bytes_value, context.heap)
+    let dynamic_owner: RuntimeInterfaceDynamicValueOwner =
+        RuntimeInterfaceDynamicValueOwner { value: 31 }
+    let dynamic_value: $RuntimeInterfaceDynamicValueClass =
+        dynamic_owner as $RuntimeInterfaceDynamicValueClass
+    return runtimeInterfaceScalarValueProbe() &&
+        runtimeInterfacePointerValueProbe() &&
+        runtimeInterfaceAggregateValueProbe() &&
+        function_value() == 17 &&
+        closure_value() == 19 &&
+        string::length(text_value) == 12usize &&
+        bytes::length(bytes_value) == 12usize &&
+        runtimeInterfaceManagedStringValueSucceeded(move managed_text, 5usize) &&
+        runtimeInterfaceManagedBytesValueSucceeded(move managed_bytes, 12usize) &&
+        dynamic_value~>readRuntimeInterfaceDynamicValue() == 31
+}
+
+internal procedure runtimeInterfaceIoUnitSucceeded(result: Outcome<(), IoError>) -> bool {
+    return if result is {
+        @Value {
+            true
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure runtimeInterfaceManagedTextSucceeded(
+    move result: Outcome<unique string@Managed, IoError>
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let text: string@View = string::as_view(value)
+            string::length(text) >= 0usize
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure runtimeInterfaceManagedBytesSucceeded(
+    move result: Outcome<unique bytes@Managed, IoError>
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let data: bytes@View = bytes::as_view(value)
+            bytes::length(data) >= 0usize
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure runtimeInterfaceCloseRead(
+    move result: Outcome<unique File@Read, IoError>
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let read_result: Outcome<unique string@Managed, IoError> = value~>read_all()
+            let closed: File@Closed = value~>close()
+            let _ = closed
+            runtimeInterfaceManagedTextSucceeded(move read_result)
+        }
+        @Error {
+            true
+        }
+    }
+}
+
+internal procedure runtimeInterfaceReadBytesAndClose(
+    move result: Outcome<unique File@Read, IoError>
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let read_result: Outcome<unique bytes@Managed, IoError> =
+                value~>read_all_bytes()
+            let closed: File@Closed = value~>close()
+            let _ = closed
+            runtimeInterfaceManagedBytesSucceeded(move read_result)
+        }
+        @Error {
+            true
+        }
+    }
+}
+
+internal procedure runtimeInterfaceCloseWrite(
+    move result: Outcome<unique File@Write, IoError>,
+    data: bytes@View
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let write_result: Outcome<(), IoError> = value~>write(data)
+            let flush_result: Outcome<(), IoError> = value~>flush()
+            let closed: File@Closed = value~>close()
+            let _ = closed
+            runtimeInterfaceIoUnitSucceeded(write_result) &&
+                runtimeInterfaceIoUnitSucceeded(flush_result)
+        }
+        @Error {
+            true
+        }
+    }
+}
+
+internal procedure runtimeInterfaceCloseAppend(
+    move result: Outcome<unique File@Append, IoError>,
+    data: bytes@View
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let write_result: Outcome<(), IoError> = value~>write(data)
+            let flush_result: Outcome<(), IoError> = value~>flush()
+            let closed: File@Closed = value~>close()
+            let _ = closed
+            runtimeInterfaceIoUnitSucceeded(write_result) &&
+                runtimeInterfaceIoUnitSucceeded(flush_result)
+        }
+        @Error {
+            true
+        }
+    }
+}
+
+internal procedure runtimeInterfaceCloseDirectory(
+    move result: Outcome<unique DirIter@Open, IoError>
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let _ = value~>next()
+            let closed: DirIter@Closed = value~>close()
+            let _ = closed
+            true
+        }
+        @Error {
+            true
+        }
+    }
+}
+
+public procedure runtimeInterfaceIOProbe(
+    context: RuntimeInterfaceContext,
+    base_path: string@View,
+    data: string@View
+) -> bool {
+    let restricted: $IO = context.io~>restrict(base_path)
+    let file_path: string@View = "runtime-interface.txt"
+    let data_bytes: bytes@View = bytes::view_string(data)
+
+    let _ = restricted~>ensure_dir(".")
+    let _ = restricted~>create_dir("runtime-interface")
+    let _ = restricted~>write_file(file_path, data_bytes)
+    let _ = restricted~>read_file(file_path)
+    let _ = restricted~>read_bytes(file_path)
+    let _ = restricted~>write_stdout(data)
+    let _ = restricted~>write_stderr(data)
+    let _ = restricted~>exists(file_path)
+    let _ = restricted~>kind(file_path)
+
+    let read_closed: bool =
+        runtimeInterfaceCloseRead(restricted~>open_read(file_path))
+    let read_bytes_closed: bool =
+        runtimeInterfaceReadBytesAndClose(restricted~>open_read(file_path))
+    let write_closed: bool =
+        runtimeInterfaceCloseWrite(restricted~>open_write(file_path), data_bytes)
+    let append_closed: bool =
+        runtimeInterfaceCloseAppend(restricted~>open_append(file_path), data_bytes)
+    let create_closed: bool =
+        runtimeInterfaceCloseWrite(restricted~>create_write(file_path), data_bytes)
+    let directory_closed: bool =
+        runtimeInterfaceCloseDirectory(restricted~>open_dir("."))
+
+    let _ = restricted~>remove(file_path)
+    return read_closed &&
+        read_bytes_closed &&
+        write_closed &&
+        append_closed &&
+        create_closed &&
+        directory_closed
+}
+
+public procedure runtimeInterfaceNetworkProbe(context: RuntimeInterfaceContext) -> bool {
+    let restricted: $Network = context.net~>restrict_to_host("localhost")
+    let _ = restricted
+    return true
+}
+
+public procedure runtimeInterfaceHeapProbe(context: RuntimeInterfaceContext) -> bool {
+    let limited: $HeapAllocator = context.heap~>with_quota(64usize)
+    unsafe {
+        let ptr: *mut u8 = limited~>alloc_raw(0usize)
+        limited~>dealloc_raw(ptr, 0usize)
+    }
+    return true
+}
+
+public procedure runtimeInterfaceRegionModalProbe() -> bool {
+    let options: RegionOptions =
+        RegionOptions { stack_size: 0usize, name: "runtime-interface-region" }
+    let opened: unique Region@Active = Region::new_scoped(options)
+    let allocated: i32 = opened~>alloc(71)
+    let allocated_pointer: Ptr<i32> = &allocated
+    let allocated_value: i32 = unsafe { *allocated_pointer }
+    let frozen: unique Region@Frozen = opened~>freeze()
+    let thawed: unique Region@Active = frozen~>thaw()
+    let reset: unique Region@Active = unsafe { thawed~>reset_unchecked() }
+    let freed: unique Region@Freed = unsafe { reset~>free_unchecked() }
+    return allocated_value == 71
+}
+
+public procedure runtimeInterfaceRegionFrameProbe() -> bool {
+    var score: i32 = 0
+    region as runtime_region {
+        let implicit_allocated: i32 = ^71
+        if implicit_allocated == 71 {
+            score = score + 1
+        }
+        runtime_region.frame {
+            let allocated: i32 = runtime_region ^ 73
+            if allocated == 73 {
+                score = score + 1
+            }
+        }
+    }
+    return score == 2
+}
+
+public procedure runtimeInterfaceRegionAddressProbe() -> i32 {
+    let value: i32 = 79
+    let pointer: Ptr<i32> = &value
+    return unsafe { *pointer }
+}
+
+public procedure runtimeInterfaceCancelTokenProbe() -> bool {
+    let token: CancelToken@Active = CancelToken::new()
+    let child: CancelToken@Active = token~>child()
+    let pending = child~>wait_cancelled()
+    let _ = pending
+    token~>cancel()
+    return child~>is_cancelled()
+}
+
+internal procedure runtimeInterfaceReactorOutcome(should_fail: bool, value: i32) -> i32 | bool {
+    if should_fail {
+        return true
+    }
+    return value
+}
+
+internal procedure runtimeInterfaceReactorCompleted(value: i32) -> Future<i32, bool> {
+    return value
+}
+
+internal procedure runtimeInterfaceReactorFailed(value: i32) -> Future<i32, bool> {
+    let result: i32 = runtimeInterfaceReactorOutcome(true, value)?
+    return result
+}
+
+internal procedure runtimeInterfaceReactorSuspended(value: i32) -> Future<i32, bool> {
+    yield ()
+    return value
+}
+
+internal procedure runtimeInterfaceReactorValueIs(value: i32 | bool, expected: i32) -> bool {
+    return if value is {
+        actual: i32 {
+            actual == expected
+        }
+        failed: bool {
+            false
+        }
+    }
+}
+
+internal procedure runtimeInterfaceReactorFailureIs(value: i32 | bool) -> bool {
+    return if value is {
+        actual: i32 {
+            false
+        }
+        failed: bool {
+            failed
+        }
+    }
+}
+
+public procedure runtimeInterfaceReactorProbe(context: RuntimeInterfaceContext) -> bool {
+    let run_completed: i32 | bool =
+        context.reactor~>run(runtimeInterfaceReactorCompleted(65))
+    let run_failed: i32 | bool =
+        context.reactor~>run(runtimeInterfaceReactorFailed(66))
+    let run_suspended: i32 | bool =
+        context.reactor~>run(runtimeInterfaceReactorSuspended(67))
+    let tracked: Tracked<i32, bool> =
+        context.reactor~>register(runtimeInterfaceReactorSuspended(68))
+    let tracked_result: i32 | bool = wait tracked
+    return runtimeInterfaceReactorValueIs(run_completed, 65) &&
+        runtimeInterfaceReactorFailureIs(run_failed) &&
+        runtimeInterfaceReactorValueIs(run_suspended, 67) &&
+        runtimeInterfaceReactorValueIs(tracked_result, 68)
+}
+
+public procedure runtimeInterfaceSystemProbe(context: RuntimeInterfaceContext) -> usize {
+    let env: string@View = context.sys~>get_env("PATH")
+    let executable_path: string@View = context.sys~>executable_path()
+    let current_directory: string@View = context.sys~>current_directory()
+    let argument_count: usize = context.sys~>argument_count()
+    let first_argument: string@View = if argument_count > 0usize {
+        context.sys~>argument(0usize)
+    } else {
+        ""
+    }
+    let _ = context.sys~>run("echo runtime-interface")
+    return string::length(env) +
+        string::length(executable_path) +
+        string::length(current_directory) +
+        string::length(first_argument) +
+        argument_count
+}
+
+public procedure runtimeInterfaceSystemExitProbe(
+    context: RuntimeInterfaceContext,
+    code: i32
+) -> i32 {
+    return context.sys~>exit(code)
+}
+
+public procedure runtimeInterfaceTimeProbe(context: RuntimeInterfaceContext) -> bool {
+    let monotonic: $MonotonicTime = context.time~>monotonic()
+    let wall: $WallTime = context.time~>wall()
+    let start: MonotonicInstant = monotonic~>now()
+    let end: MonotonicInstant = monotonic~>now()
+    let resolution: Duration = monotonic~>resolution()
+    let _ = monotonic~>elapsed(start, end)
+    let _ = monotonic~>coarsen(resolution)
+    let _ = wall~>now_utc()
+    let _ = wall~>resolution()
+    let _ = wall~>coarsen(resolution)
+    return resolution.nanoseconds > 0u128
+}

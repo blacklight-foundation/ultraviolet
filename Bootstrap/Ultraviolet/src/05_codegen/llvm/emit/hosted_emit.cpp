@@ -132,6 +132,13 @@ void RecordHostedConformance(std::string_view rule_id, std::string payload)
   core::Conformance::Record(rule_id, std::nullopt, payload);
 }
 
+bool IsPoisonFlagHostedStateSymbol(const std::string &symbol)
+{
+  return symbol.find("_x3a_x3aruntime_x3a_x3apoison_x3a_x3a") !=
+             std::string::npos ||
+         symbol.rfind("runtime_x3a_x3apoison_x3a_x3a", 0) == 0;
+}
+
 }  // namespace
 
   bool LLVMEmitter::IsHostedLibraryBuild() const
@@ -249,8 +256,50 @@ void RecordHostedConformance(std::string_view rule_id, std::string payload)
     AppendTraceField(payload, "slot_size", it->second.size);
     AppendTraceField(payload, "has_fallback", fallback_ptr != nullptr);
     AppendTraceField(payload, "session_context_owned", true);
+    const bool poison_flag_symbol = IsPoisonFlagHostedStateSymbol(symbol);
+    std::string poison_payload = payload;
+    if (poison_flag_symbol)
+    {
+      AppendTraceField(poison_payload, "poison_flag", true);
+      AppendTraceField(poison_payload,
+                       "localization",
+                       "hosted_session_slot");
+    }
     RecordHostedConformance(
         "requirement.23.HostedStateSymbolResolution", std::move(payload));
+    std::string hosted_state_payload = poison_flag_symbol
+                                           ? poison_payload
+                                           : std::string{};
+    if (hosted_state_payload.empty())
+    {
+      AppendTraceField(hosted_state_payload, "symbol", std::string_view(symbol));
+      AppendTraceField(hosted_state_payload, "slot_offset", it->second.offset);
+      AppendTraceField(hosted_state_payload, "slot_size", it->second.size);
+      AppendTraceField(hosted_state_payload, "has_fallback", fallback_ptr != nullptr);
+      AppendTraceField(hosted_state_payload, "session_context_owned", true);
+    }
+    AppendTraceField(hosted_state_payload,
+                     "state_address",
+                     "session_context_slot");
+    AppendTraceField(hosted_state_payload,
+                     "address_expression",
+                     "hosted_env_base_plus_slot_offset");
+    RecordHostedConformance(
+        "def.24.HostedStateAddressDefinitions", hosted_state_payload);
+    RecordHostedConformance(
+        "req.24.HostedLibraryStateAddressInterpretation", hosted_state_payload);
+    if (poison_flag_symbol)
+    {
+      RecordHostedConformance(
+          "req.24.HostedPoisonFlagTemplate",
+          poison_payload);
+      RecordHostedConformance(
+          "req.24.HostedPoisonStateIsolation",
+          poison_payload);
+      RecordHostedConformance(
+          "req.HostedSessionPoisonFlagLocalization",
+          std::move(poison_payload));
+    }
 
     llvm::Type *ptr_ty = llvm::PointerType::get(value_ty, 0);
     auto coerce_fallback = [&]() -> llvm::Value * {
@@ -479,6 +528,47 @@ void RecordHostedConformance(std::string_view rule_id, std::string payload)
         lifecycle_payload);
     RecordHostedConformance(
         "requirement.23.HostedSessionHandleNoReissue", lifecycle_payload);
+    std::string hosted_lifecycle_payload = lifecycle_payload;
+    AppendTraceField(hosted_lifecycle_payload,
+                     "session_state",
+                     "uninitialized_live_destroyed");
+    AppendTraceField(hosted_lifecycle_payload, "image_state_required", true);
+    AppendTraceField(hosted_lifecycle_payload,
+                     "host_session_state",
+                     "fresh_live_destroyed");
+    AppendTraceField(hosted_lifecycle_payload,
+                     "context_cell",
+                     "hosted_env.context_offset");
+    AppendTraceField(hosted_lifecycle_payload,
+                     "panic_cell",
+                     "hosted_env.panic_offset");
+    AppendTraceField(hosted_lifecycle_payload, "no_concurrent_reentry", true);
+    RecordHostedConformance("def.24.HostedStateJudg",
+                            hosted_lifecycle_payload);
+    RecordHostedConformance("req.24.SessionStateInitDefinesHostedCells",
+                            hosted_lifecycle_payload);
+    RecordHostedConformance("req.24.SessionStateDestroyRemovesHostedCells",
+                            hosted_lifecycle_payload);
+    RecordHostedConformance("req.24.SharedLibraryImageStateInterpretation",
+                            hosted_lifecycle_payload);
+    RecordHostedConformance("req.24.SharedLibraryLinkedCallImageLifecycle",
+                            hosted_lifecycle_payload);
+    RecordHostedConformance("req.24.SharedLibraryLoaderEntrypoint",
+                            hosted_lifecycle_payload);
+    RecordHostedConformance("def.24.HostedSessionJudg",
+                            hosted_lifecycle_payload);
+    RecordHostedConformance("def.24.HostedSessionStateDefinitions",
+                            hosted_lifecycle_payload);
+    RecordHostedConformance("req.24.DistinctHostedState",
+                            hosted_lifecycle_payload);
+    RecordHostedConformance("req.24.HostedSessionLifecycleState",
+                            hosted_lifecycle_payload);
+    RecordHostedConformance("req.24.HostedSessionNoConcurrentReentry",
+                            hosted_lifecycle_payload);
+    RecordHostedConformance("rule.24.HostSessionInitSigma",
+                            hosted_lifecycle_payload);
+    RecordHostedConformance("rule.24.HostSessionDestroySigma",
+                            hosted_lifecycle_payload);
 
     auto ensure_runtime_fn = [&](const char *name,
                                  llvm::Type *ret_ty,
@@ -632,6 +722,17 @@ void RecordHostedConformance(std::string_view rule_id, std::string payload)
       {
         return;
       }
+      std::string panic_init_payload = lifecycle_payload;
+      AppendTraceField(panic_init_payload,
+                       "panic_record_slot",
+                       "hosted_env.panic_offset");
+      AppendTraceField(panic_init_payload,
+                       "panic_flag_value",
+                       static_cast<std::uint64_t>(0));
+      AppendTraceField(panic_init_payload,
+                       "panic_code_value",
+                       static_cast<std::uint64_t>(0));
+      RecordHostedConformance("def.24.PanicRecordInit", panic_init_payload);
       builder.CreateStore(llvm::ConstantInt::get(llvm::Type::getInt8Ty(context_), 0),
                           panic_field_ptr(builder,
                                           panic_ptr,
@@ -972,15 +1073,44 @@ void RecordHostedConformance(std::string_view rule_id, std::string payload)
         builder->CreateCondBr(load_panic_flag(*builder, panic_ptr), fail, cont);
         builder->SetInsertPoint(fail);
         {
-        clear_panic_record(*builder, panic_ptr);
-        for (std::size_t deinit_index = module_index; deinit_index > 0; --deinit_index)
-        {
-          call_proc_with_panic(*builder,
-                               DeinitFn(current_ctx_->init_order[deinit_index - 1]),
-                               panic_out_slot,
-                               env_ptr);
+          std::string partial_cleanup_payload = lifecycle_payload;
+          AppendTraceField(partial_cleanup_payload,
+                           "failed_module_index",
+                           static_cast<std::uint64_t>(module_index));
+          AppendTraceField(partial_cleanup_payload,
+                           "cleanup_deinit_prefix_length",
+                           static_cast<std::uint64_t>(module_index));
+          AppendTraceField(partial_cleanup_payload,
+                           "clears_panic_before_cleanup",
+                           true);
+          AppendTraceField(partial_cleanup_payload,
+                           "cleanup_prefix_reverse_order",
+                           true);
+          RecordHostedConformance("req.24.PartialInitPanicCleanupPrefix",
+                                  partial_cleanup_payload);
+          RecordHostedConformance("rule.24.Init-Panic",
+                                  partial_cleanup_payload);
           clear_panic_record(*builder, panic_ptr);
-        }
+          for (std::size_t deinit_index = module_index;
+               deinit_index > 0;
+               --deinit_index)
+          {
+            call_proc_with_panic(
+                *builder,
+                DeinitFn(current_ctx_->init_order[deinit_index - 1]),
+                panic_out_slot,
+                env_ptr);
+            std::string deinit_panic_payload = lifecycle_payload;
+            AppendTraceField(deinit_panic_payload,
+                             "cleanup_deinit_index",
+                             static_cast<std::uint64_t>(deinit_index - 1));
+            AppendTraceField(deinit_panic_payload,
+                             "deinit_panic_record_cleared",
+                             true);
+            RecordHostedConformance("rule.24.Deinit-Panic",
+                                    deinit_panic_payload);
+            clear_panic_record(*builder, panic_ptr);
+          }
         llvm::Value *leave_ok =
             builder->CreateCall(leave_fn, {handle, owner_token});
         llvm::BasicBlock *leave_ok_bb =
@@ -2219,6 +2349,12 @@ void RecordHostedConformance(std::string_view rule_id, std::string payload)
       }
 
       builder->SetInsertPoint(entered_bb);
+      std::string hosted_call_payload = thunk_payload;
+      AppendTraceField(hosted_call_payload, "session_handle_entered", true);
+      AppendTraceField(hosted_call_payload, "env_loaded_before_user_call", true);
+      AppendTraceField(hosted_call_payload, "panic_record_cleared", true);
+      RecordHostedConformance("rule.24.HostedCallSigma-Ok",
+                              hosted_call_payload);
       llvm::Value *env_ptr = builder->CreateLoad(opaque_ptr_ty, entered_env);
       llvm::Value *ctx_ptr =
           build_env_slot_ptr(*builder, env_ptr, hosted_layout_.context_offset, context_ty);

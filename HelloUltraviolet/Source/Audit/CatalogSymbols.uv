@@ -12,6 +12,7 @@ using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecute
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceExpressions }
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceFFI }
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceKeys }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceModalAndSpecialTypes }
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceModules }
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceNames }
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceParallelism }
@@ -48,19 +49,19 @@ using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecute
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteSourceTestsSourceNativeTestsUv }
 
 public procedure expectedCatalogCompiledSymbolCount() -> usize {
-    return 618usize
+    return 631usize
 }
 
 public procedure catalogCompiledSymbolCount() -> usize {
-    return 618usize
+    return 631usize
 }
 
 public procedure expectedCatalogCompiledSymbolTargetDigest() -> usize {
-    return 748129267usize
+    return 490981084usize
 }
 
 public procedure catalogCompiledSymbolTargetDigest() -> usize {
-    return 748129267usize
+    return 490981084usize
 }
 
 public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
@@ -83,6 +84,7 @@ public procedure catalogCompiledSymbolsExecute(context: Context) -> bool {
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceExpressions(context) && passed
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceFFI(context) && passed
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceKeys(context) && passed
+    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceModalAndSpecialTypes(context) && passed
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceModules(context) && passed
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceNames(context) && passed
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceParallelism(context) && passed

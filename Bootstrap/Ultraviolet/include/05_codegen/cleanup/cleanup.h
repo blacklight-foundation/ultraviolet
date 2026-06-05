@@ -23,6 +23,7 @@ struct CleanupAction {
     DropStatic,    // Drop an initialized static during init unwind
     DropTemp,      // Drop a temporary value
     DropField,     // Drop a field of a partially-moved record
+    SpeculativeWriteRollback, // Restore speculative fallback snapshots on panic
     ReleaseRegion, // Release a region
     ReleaseKeyScope, // Release all keys held by a key scope
     ReacquireReleasedKey, // Reacquire a previously released outer key
@@ -36,6 +37,7 @@ struct CleanupAction {
   analysis::TypeRef type;                  // Type to drop
   std::optional<IRValue> value;        // Value to drop (if already computed)
   std::optional<IRPtr> defer_ir;       // Defer block IR (for Kind::RunDefer)
+  std::optional<IRPtr> restore_ir;     // Restore IR (for SpeculativeWriteRollback)
   ast::ModulePath static_module_path;  // Static owner module (for Kind::DropStatic)
   std::vector<std::string> skip_fields; // Fields to skip (for partial moves)
   std::uint64_t scope_runtime_id = 0;  // Scope id (for RuntimeScopeExit)

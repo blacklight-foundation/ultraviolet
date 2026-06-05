@@ -16,7 +16,67 @@
 #include "05_codegen/lower/expr/alloc_expr.h"
 #include "00_core/assert_spec.h"
 
+#include <mutex>
+#include <string>
+#include <string_view>
+#include <utility>
+
 namespace ultraviolet::codegen {
+
+namespace {
+
+void RecordAllocLoweringConformanceOnce(std::once_flag& flag,
+                                        std::string_view rule_id,
+                                        std::string payload) {
+    if (!core::Conformance::Enabled()) {
+        return;
+    }
+    std::call_once(flag, [rule_id = std::string(rule_id),
+                          payload = std::move(payload)]() {
+        core::Conformance::Record(rule_id, std::nullopt, payload);
+    });
+}
+
+void AppendAllocPayloadField(
+    std::string& payload,
+    std::string_view key,
+    std::string_view value
+) {
+    if (!payload.empty()) {
+        payload += ';';
+    }
+    payload += key;
+    payload += '=';
+    payload += value;
+}
+
+void AppendAllocPayloadField(
+    std::string& payload,
+    std::string_view key,
+    const char* value
+) {
+    AppendAllocPayloadField(payload, key, std::string_view(value ? value : "-"));
+}
+
+void AppendAllocPayloadField(std::string& payload, std::string_view key, bool value) {
+    AppendAllocPayloadField(payload, key, std::string_view(value ? "true" : "false"));
+}
+
+std::string ActiveRuntimeRegionPayload(std::string_view alias) {
+    std::string payload;
+    AppendAllocPayloadField(payload, "operation", "ActiveTarget");
+    AppendAllocPayloadField(payload, "source", "LowerAllocExpr");
+    AppendAllocPayloadField(payload, "branch", "implicit");
+    AppendAllocPayloadField(payload, "active_region_aliases", "nonempty");
+    AppendAllocPayloadField(payload, "implementation_head", "back");
+    AppendAllocPayloadField(payload, "region_value_kind", "Local");
+    AppendAllocPayloadField(payload, "alias", alias);
+    return payload;
+}
+
+std::once_flag g_active_runtime_region_obligation_once;
+
+}  // namespace
 
 // =============================================================================
 // LowerAllocExpr - Lower an allocation expression to IR
@@ -41,6 +101,7 @@ LowerResult LowerAllocExpr(const ast::Expr& expr,
                            const ast::AllocExpr& alloc,
                            LowerCtx& ctx) {
     SPEC_RULE("Lower-Expr-Alloc");
+    SPEC_RULE("rule.16.Lower-Expr-Alloc");
 
     // The allocated value is consumed by AllocIR and stored into the target
     // region. Its top-level value must remain owned by the allocation result.
@@ -111,6 +172,11 @@ LowerResult LowerAllocExpr(const ast::Expr& expr,
         region_value.kind = IRValue::Kind::Local;
         region_value.name = ctx.active_region_aliases.back();
         ir_alloc.region = region_value;
+        RecordAllocLoweringConformanceOnce(
+            g_active_runtime_region_obligation_once,
+            "def.ActiveRuntimeRegion",
+            ActiveRuntimeRegionPayload(region_value.name)
+        );
     }
 
     IRValue ptr_value = ctx.FreshTempValue("alloc_ptr");

@@ -398,6 +398,7 @@ ParamUniquenessResult CheckParamUniqueness(
 
   for (const auto& param : params) {
     if (seen_names.find(param.name) != seen_names.end()) {
+      SPEC_RULE("rule.14.WF-Generic-Param");
       result.ok = false;
       result.diag_id = "E-TYP-2304";
       result.duplicate_name = param.name;

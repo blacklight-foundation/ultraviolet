@@ -1,0 +1,57 @@
+public enum IRLoweringChoice {
+    Left(i32)
+    Right(i32)
+}
+
+public procedure irLoweringLoopProbe(limit: i32) -> i32 {
+    var index: i32 = 0
+    var total: i32 = 0
+    loop index < limit {
+        total = total + index
+        index = index + 1
+    }
+    return total
+}
+
+public procedure irLoweringIfCaseProbe(choice: IRLoweringChoice) -> i32 {
+    return if choice is {
+        IRLoweringChoice::Left(payload) {
+            payload + 1
+        }
+        IRLoweringChoice::Right(payload) {
+            payload - 1
+        }
+    }
+}
+
+public procedure irLoweringBranchPhiProbe(flag: bool) -> i32 {
+    return if flag {
+        13
+    } else {
+        29
+    }
+}
+
+public procedure irLoweringRegionFrameProbe() -> i32 {
+    var score: i32 = 0
+    region as lowering_region {
+        let implicit_allocated: i32 = ^7
+        if implicit_allocated == 7 {
+            score = score + 1
+        }
+        lowering_region.frame {
+            let frame_allocated: i32 = lowering_region ^ 11
+            if frame_allocated == 11 {
+                score = score + 1
+            }
+        }
+    }
+    return score
+}
+
+public procedure irLoweringFormsProbe() -> i32 {
+    return irLoweringLoopProbe(4) +
+        irLoweringBranchPhiProbe(true) +
+        irLoweringIfCaseProbe(IRLoweringChoice::Left(5)) +
+        irLoweringRegionFrameProbe()
+}

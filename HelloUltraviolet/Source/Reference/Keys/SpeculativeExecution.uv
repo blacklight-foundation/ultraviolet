@@ -5,6 +5,9 @@ extern "C-unwind" {
     public procedure importedSpeculativePanicBoundary() -> i32
 }
 
+private var _SPECULATIVE_PANIC_TRACE: shared i32 = 1
+private var _SPECULATIVE_PANIC_INDEX: usize = 1usize
+
 internal record SpeculativeKeyCounter {
     internal value: i32
 
@@ -71,25 +74,71 @@ internal procedure speculativeIndexedFieldWriteValue() -> i32 {
 #unwind("catch")
 #mangle("importedSpeculativePanicBoundary")
 public procedure ffiImportedSpeculativePanicBoundaryProvider() -> i32 {
-    var shared_value: shared i32 = 1
-    %speculative write shared_value {
-        let values: [i32; 1] = [9]
-        var index: usize = 1usize
-        shared_value = values[index]
+    %write _SPECULATIVE_PANIC_TRACE {
+        _SPECULATIVE_PANIC_TRACE = 1
     }
-    return shared_value + 0
+    %speculative write _SPECULATIVE_PANIC_TRACE {
+        _SPECULATIVE_PANIC_TRACE = 2
+        let values: [i32; 1] = [9]
+        let panic_index: usize = _SPECULATIVE_PANIC_INDEX
+        let ignored: i32 = values[panic_index]
+        _SPECULATIVE_PANIC_TRACE = ignored
+    }
+    return _SPECULATIVE_PANIC_TRACE + 10
 }
 
 internal procedure callSpeculativePanicBoundary() -> i32 {
     return unsafe { importedSpeculativePanicBoundary() }
 }
 
-/// Exercises the Keys SpeculativeExecution reference surface.
-public procedure runKeysSpeculativeExecutionReference() -> bool {
+internal procedure speculativePanicTraceValue() -> i32 {
+    var observed: i32 = 0
+    %read _SPECULATIVE_PANIC_TRACE {
+        observed = _SPECULATIVE_PANIC_TRACE + 0
+    }
+    return observed
+}
+
+internal procedure speculativePermittedOperationsReference() -> bool {
     return speculativeWriteValue() == 2 &&
         speculativeConstReceiverCallValue() == 6 &&
-        speculativeMultiPathWriteValue() == 26 &&
+        speculativeMultiPathWriteValue() == 26
+}
+
+internal procedure speculativeSuccessfulExecutionReference() -> bool {
+    return speculativeWriteValue() == 2 &&
+        speculativeRecordFieldWriteValue() == 11 &&
+        speculativeIndexedFieldWriteValue() == 14
+}
+
+internal procedure speculativePanicReference() -> bool {
+    return callSpeculativePanicBoundary() == 0 &&
+        speculativePanicTraceValue() == 1
+}
+
+internal procedure speculativeRuntimeHelpersReference() -> bool {
+    return speculativeMultiPathWriteValue() == 26 &&
         speculativeRecordFieldWriteValue() == 11 &&
         speculativeIndexedFieldWriteValue() == 14 &&
-        callSpeculativePanicBoundary() == 0
+        speculativePanicReference()
+}
+
+internal procedure speculativeAtomicityReference() -> bool {
+    return speculativeMultiPathWriteValue() == 26 &&
+        speculativeIndexedFieldWriteValue() == 14
+}
+
+internal procedure speculativeAbstractSemanticsAndFallbackReference() -> bool {
+    return speculativeWriteValue() == 2 &&
+        speculativeRecordFieldWriteValue() == 11
+}
+
+/// Exercises the Keys SpeculativeExecution reference surface.
+public procedure runKeysSpeculativeExecutionReference() -> bool {
+    return speculativePermittedOperationsReference() &&
+        speculativeSuccessfulExecutionReference() &&
+        speculativePanicReference() &&
+        speculativeRuntimeHelpersReference() &&
+        speculativeAtomicityReference() &&
+        speculativeAbstractSemanticsAndFallbackReference()
 }

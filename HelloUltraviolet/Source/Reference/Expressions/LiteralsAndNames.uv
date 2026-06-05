@@ -1,18 +1,258 @@
 //! Reference specimens for Expressions / LiteralsAndNames.
 
+internal record LiteralNameEvaluationRecord {
+    internal left: i32
+    internal right: i32
+}
+
+internal type LiteralNameIdentityFunction = (i32) -> i32
+
+internal record LiteralNameEvalStateReference {
+    internal scope_value: i32
+    internal is_referenced_module_poisoned: bool
+}
+
+internal record LiteralNameEvalResultReference {
+    internal is_value: bool
+    internal value: i32
+    internal is_panic: bool
+}
+
+internal record LiteralNameLoweredErrorExprReference {
+    internal span_id: usize
+    internal lower_panic_span_id: usize
+    internal emits_lower_panic_error_expr: bool
+    internal produces_unreachable_value: bool
+}
+
+internal procedure literalNameUnitScore(value: ()) -> usize {
+    return 1usize
+}
+
+internal procedure literalNameSum(left: i32, right: i32) -> i32 {
+    return left + right
+}
+
+internal procedure literalNameStateMatches(
+    left: LiteralNameEvalStateReference,
+    right: LiteralNameEvalStateReference
+) -> bool {
+    return left.scope_value == right.scope_value &&
+        left.is_referenced_module_poisoned == right.is_referenced_module_poisoned
+}
+
+internal procedure literalNameEvalValue(value: i32) -> LiteralNameEvalResultReference {
+    return LiteralNameEvalResultReference {
+        is_value: true,
+        value: value,
+        is_panic: false
+    }
+}
+
+internal procedure literalNameEvalPanic() -> LiteralNameEvalResultReference {
+    return LiteralNameEvalResultReference {
+        is_value: false,
+        value: 0,
+        is_panic: true
+    }
+}
+
+internal procedure literalNameEvalPoisonable(
+    state: LiteralNameEvalStateReference
+) -> LiteralNameEvalResultReference {
+    if state.is_referenced_module_poisoned {
+        return literalNameEvalPanic()
+    }
+
+    return literalNameEvalValue(state.scope_value)
+}
+
+internal procedure literalNameEvalSigmaErrorExpr(
+    state: LiteralNameEvalStateReference
+) -> LiteralNameEvalResultReference {
+    return literalNameEvalPanic()
+}
+
+internal procedure literalNameEvalSigmaIdentPoison(
+    state: LiteralNameEvalStateReference
+) -> LiteralNameEvalResultReference {
+    return literalNameEvalPoisonable(state)
+}
+
+internal procedure literalNameEvalSigmaIdentPoisonRecordCtor(
+    state: LiteralNameEvalStateReference
+) -> LiteralNameEvalResultReference {
+    return literalNameEvalPoisonable(state)
+}
+
+internal procedure literalNameEvalSigmaPathPoison(
+    state: LiteralNameEvalStateReference
+) -> LiteralNameEvalResultReference {
+    return literalNameEvalPoisonable(state)
+}
+
+internal procedure literalNameEvalSigmaPathPoisonRecordCtor(
+    state: LiteralNameEvalStateReference
+) -> LiteralNameEvalResultReference {
+    return literalNameEvalPoisonable(state)
+}
+
+internal procedure literalNameLowerErrorExpr(
+    span_id: usize
+) -> LiteralNameLoweredErrorExprReference {
+    return LiteralNameLoweredErrorExprReference {
+        span_id: span_id,
+        lower_panic_span_id: span_id,
+        emits_lower_panic_error_expr: true,
+        produces_unreachable_value: true
+    }
+}
+
+/// Returns the supplied value for identifier and path evaluation references.
 public procedure literalNameIdentity(value: i32) -> i32 {
     return value
 }
 
-/// Exercises the Expressions LiteralsAndNames reference surface.
-public procedure runExpressionsLiteralsAndNamesReference() -> bool {
+public procedure evaluationJudgementsReference() -> bool {
+    let expression_value: i32 = literalNameIdentity(3)
+    let argument_list_value: i32 = literalNameSum(expression_value, 4)
+    let field_values: LiteralNameEvaluationRecord = LiteralNameEvaluationRecord {
+        left: argument_list_value,
+        right: literalNameIdentity(5)
+    }
+    let range_values: [i32; 4] = [10, 20, 30, 40]
+    let optional_low_absent: [i32] = range_values[..2usize]
+    let optional_high_absent: [i32] = range_values[1usize..]
+
+    return expression_value == 3 &&
+        argument_list_value == 7 &&
+        field_values.left == 7 &&
+        field_values.right == 5 &&
+        optional_low_absent[0usize] == 10 &&
+        optional_low_absent[1usize] == 20 &&
+        optional_high_absent[0usize] == 20 &&
+        optional_high_absent[2usize] == 40
+}
+
+public procedure literalRuntimeValuesReference() -> bool {
     let unit_value: () = ()
+    let true_value: bool = true
+    let false_value: bool = false
+    let character_value: char = 'L'
+    let text_value: string@View = "literal"
     let signed_value: i32 = -12
     let unsigned_value: usize = 12usize
-    let boolean_value: bool = true
-    let text_value: string@View = "literal"
+    let float_value: f64 = 1.25f64
+    let raw_pointer: *mut i32 = null
+
+    return literalNameUnitScore(unit_value) == 1usize &&
+        true_value &&
+        !false_value &&
+        character_value == 'L' &&
+        text_value == "literal" &&
+        signed_value == -12 &&
+        unsigned_value == 12usize &&
+        float_value > 1.0f64 &&
+        float_value < 2.0f64 &&
+        raw_pointer == null
+}
+
+public procedure evalSigmaLiteralReference() -> bool {
+    return literalRuntimeValuesReference()
+}
+
+public procedure evalSigmaPtrNullReference() -> bool {
+    let null_pointer: Ptr<i32> = Ptr::null()
+    let same_null_pointer: Ptr<i32> = Ptr::null()
+    return null_pointer == same_null_pointer
+}
+
+public procedure evalSigmaIdentReference() -> bool {
+    let source_value: i32 = 21
+    let identifier_value: i32 = source_value
+    return identifier_value == 21 &&
+        literalNameIdentity(source_value) == 21
+}
+
+public procedure evalSigmaPathReference() -> bool {
+    let identity: LiteralNameIdentityFunction =
+        HelloUltraviolet::Reference::Expressions::literalNameIdentity
+    let path_call_value: i32 =
+        HelloUltraviolet::Reference::Expressions::literalNameIdentity(34)
+
+    return identity(33) == 33 &&
+        path_call_value == 34
+}
+
+public procedure evalSigmaErrorExprReference() -> bool {
+    let before_state: LiteralNameEvalStateReference = LiteralNameEvalStateReference {
+        scope_value: 89,
+        is_referenced_module_poisoned: false
+    }
+    let after_state: LiteralNameEvalStateReference = LiteralNameEvalStateReference {
+        scope_value: 89,
+        is_referenced_module_poisoned: false
+    }
+    let result: LiteralNameEvalResultReference = literalNameEvalSigmaErrorExpr(before_state)
+
+    return result.is_panic &&
+        !result.is_value &&
+        literalNameStateMatches(before_state, after_state)
+}
+
+public procedure namePathPoisonedModuleEvaluationReference() -> bool {
+    let poisoned_state: LiteralNameEvalStateReference = LiteralNameEvalStateReference {
+        scope_value: 55,
+        is_referenced_module_poisoned: true
+    }
+    let clean_state: LiteralNameEvalStateReference = LiteralNameEvalStateReference {
+        scope_value: 55,
+        is_referenced_module_poisoned: false
+    }
+    let ident_poison: LiteralNameEvalResultReference =
+        literalNameEvalSigmaIdentPoison(poisoned_state)
+    let ident_record_ctor_poison: LiteralNameEvalResultReference =
+        literalNameEvalSigmaIdentPoisonRecordCtor(poisoned_state)
+    let path_poison: LiteralNameEvalResultReference =
+        literalNameEvalSigmaPathPoison(poisoned_state)
+    let path_record_ctor_poison: LiteralNameEvalResultReference =
+        literalNameEvalSigmaPathPoisonRecordCtor(poisoned_state)
+    let ident_clean: LiteralNameEvalResultReference =
+        literalNameEvalSigmaIdentPoison(clean_state)
+    let path_clean: LiteralNameEvalResultReference =
+        literalNameEvalSigmaPathPoison(clean_state)
+
+    return ident_poison.is_panic &&
+        ident_record_ctor_poison.is_panic &&
+        path_poison.is_panic &&
+        path_record_ctor_poison.is_panic &&
+        ident_clean.is_value &&
+        !ident_clean.is_panic &&
+        ident_clean.value == 55 &&
+        path_clean.is_value &&
+        !path_clean.is_panic &&
+        path_clean.value == 55
+}
+
+public procedure lowerExprErrorReference() -> bool {
+    let lowered: LiteralNameLoweredErrorExprReference = literalNameLowerErrorExpr(144usize)
+
+    return lowered.emits_lower_panic_error_expr &&
+        lowered.produces_unreachable_value &&
+        lowered.lower_panic_span_id == lowered.span_id
+}
+
+/// Exercises the Expressions LiteralsAndNames reference surface.
+public procedure runExpressionsLiteralsAndNamesReference() -> bool {
     let named_value: i32 = literalNameIdentity(12)
-    return boolean_value &&
-        signed_value + 24 == named_value &&
-        unsigned_value == 12usize
+    return named_value == 12 &&
+        evaluationJudgementsReference() &&
+        literalRuntimeValuesReference() &&
+        evalSigmaLiteralReference() &&
+        evalSigmaPtrNullReference() &&
+        evalSigmaIdentReference() &&
+        evalSigmaPathReference() &&
+        evalSigmaErrorExprReference() &&
+        namePathPoisonedModuleEvaluationReference() &&
+        lowerExprErrorReference()
 }

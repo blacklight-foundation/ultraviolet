@@ -318,6 +318,7 @@ IRPtr EmitContractParamEntrySnapshots(const ProcedureDecl& decl, LowerCtx& ctx) 
   if (ir_parts.empty()) {
     return nullptr;
   }
+  SPEC_RULE("req.15.ContractEntryRuntimeCapture");
   return SeqIR(std::move(ir_parts));
 }
 
@@ -672,6 +673,8 @@ IRPtr EmitEntryCapturesForPostcondition(const ast::ExprPtr& postcond, LowerCtx& 
   if (parts.empty()) {
     return nullptr;
   }
+  SPEC_RULE("req.15.ContractEntryRuntimeCapture");
+  SPEC_RULE("req.15.PostconditionLoweringRepresentation");
   return SeqIR(std::move(parts));
 }
 
@@ -769,6 +772,10 @@ bool CollectUsesAfterSuspension(IRPtr& ir,
             AddLocalUse(*node.cond_value, uses);
           }
           seen_here = CollectUsesAfterSuspension(node.body_ir, seen_here, uses, info);
+          seen_here =
+              CollectUsesAfterSuspension(node.invariant_entry_ir, seen_here, uses, info);
+          seen_here =
+              CollectUsesAfterSuspension(node.invariant_backedge_ir, seen_here, uses, info);
           if (seen_here) {
             AddLocalUse(node.body_value, uses);
           }
@@ -818,12 +825,15 @@ bool CollectUsesAfterSuspension(IRPtr& ir,
               CollectUsesAfterSuspension(node.captured_env, seen_suspension, uses, info);
           seen_here = CollectUsesAfterSuspension(node.body, seen_here, uses, info);
           return seen_here;
+        } else if constexpr (std::is_same_v<T, IRGpuBarrier>) {
+          return seen_suspension;
         } else if constexpr (std::is_same_v<T, IRDispatch>) {
           bool seen_here =
               CollectUsesAfterSuspension(node.captured_env, seen_suspension, uses, info);
           seen_here = CollectUsesAfterSuspension(node.body, seen_here, uses, info);
           if (seen_here) {
             AddLocalUse(node.range, uses);
+            AddLocalUse(node.workgroup_size, uses);
           }
           return seen_here;
         } else if constexpr (std::is_same_v<T, IRRaceReturn>) {
@@ -923,8 +933,19 @@ bool CollectUsesAfterSuspension(IRPtr& ir,
             }
           } else if constexpr (std::is_same_v<T, IRWait>) {
             AddLocalUse(node.handle, uses);
+          } else if constexpr (std::is_same_v<T, IRCancelRequest>) {
+            AddLocalUse(node.token, uses);
+          } else if constexpr (std::is_same_v<T, IRCancelWait>) {
+            AddLocalUse(node.token, uses);
+          } else if constexpr (std::is_same_v<T, IRCancelCheck>) {
+            AddLocalUse(node.token, uses);
+          } else if constexpr (std::is_same_v<T, IRGpuBarrier>) {
+            (void)node;
           } else if constexpr (std::is_same_v<T, IRSync>) {
             AddLocalUse(node.async_value, uses);
+            if (node.runtime_receiver.has_value()) {
+              AddLocalUse(*node.runtime_receiver, uses);
+            }
           } else if constexpr (std::is_same_v<T, IRAsyncComplete> ||
                                std::is_same_v<T, IRAsyncFail>) {
             AddLocalUse(node.value, uses);
@@ -965,6 +986,12 @@ void CollectAsyncSlotsFromBindings(const IRPtr& ir,
           CollectAsyncSlotsFromBindings(node.iter_ir, info, uses_after_suspension);
           CollectAsyncSlotsFromBindings(node.cond_ir, info, uses_after_suspension);
           CollectAsyncSlotsFromBindings(node.body_ir, info, uses_after_suspension);
+          CollectAsyncSlotsFromBindings(node.invariant_entry_ir,
+                                        info,
+                                        uses_after_suspension);
+          CollectAsyncSlotsFromBindings(node.invariant_backedge_ir,
+                                        info,
+                                        uses_after_suspension);
         } else if constexpr (std::is_same_v<T, IRIfCase>) {
           for (const auto& arm : node.arms) {
             CollectAsyncSlotsFromBindings(arm.body, info, uses_after_suspension);
@@ -991,6 +1018,8 @@ void CollectAsyncSlotsFromBindings(const IRPtr& ir,
         } else if constexpr (std::is_same_v<T, IRSpawn>) {
           CollectAsyncSlotsFromBindings(node.captured_env, info, uses_after_suspension);
           CollectAsyncSlotsFromBindings(node.body, info, uses_after_suspension);
+        } else if constexpr (std::is_same_v<T, IRGpuBarrier>) {
+          return;
         } else if constexpr (std::is_same_v<T, IRDispatch>) {
           CollectAsyncSlotsFromBindings(node.captured_env, info, uses_after_suspension);
           CollectAsyncSlotsFromBindings(node.body, info, uses_after_suspension);
@@ -1054,6 +1083,8 @@ void InstantiateIRTypes(IRPtr& ir,
           InstantiateIRTypes(node.iter_ir, type_subst);
           InstantiateIRTypes(node.cond_ir, type_subst);
           InstantiateIRTypes(node.body_ir, type_subst);
+          InstantiateIRTypes(node.invariant_entry_ir, type_subst);
+          InstantiateIRTypes(node.invariant_backedge_ir, type_subst);
         } else if constexpr (std::is_same_v<T, IRIfCase>) {
           node.scrutinee_type = InstantiateTypeRef(node.scrutinee_type, type_subst);
           for (auto& arm : node.arms) {
@@ -1084,6 +1115,8 @@ void InstantiateIRTypes(IRPtr& ir,
         } else if constexpr (std::is_same_v<T, IRSpawn>) {
           InstantiateIRTypes(node.captured_env, type_subst);
           InstantiateIRTypes(node.body, type_subst);
+        } else if constexpr (std::is_same_v<T, IRGpuBarrier>) {
+          return;
         } else if constexpr (std::is_same_v<T, IRDispatch>) {
           InstantiateIRTypes(node.body, type_subst);
           InstantiateIRTypes(node.captured_env, type_subst);
@@ -1130,13 +1163,16 @@ IRPtr EmitPreconditionCheck(const ExprPtr& precond, LowerCtx& ctx) {
     return nullptr;
   }
   SPEC_RULE("Contract-Pre-Check");
+  SPEC_RULE("req.15.PreconditionRuntimeEvaluationOrder");
+  SPEC_RULE("def.15.ContractEnvironments");
+  SPEC_RULE("def.15.RuntimeCheckInsertionPointsIntro");
 
   auto pre_result = LowerExpr(*precond, ctx);
 
   // Emit: if (!precond) panic(ContractPre)
   IRIf check;
   check.cond = pre_result.value;
-  check.then_ir = nullptr;  // Pass if true
+  check.then_ir = EmptyIR();
   check.else_ir = LowerContractViolation(ContractKind::Pre,
                                          ctx,
                                          precond.get(),
@@ -1147,6 +1183,154 @@ IRPtr EmitPreconditionCheck(const ExprPtr& precond, LowerCtx& ctx) {
 }
 
 }  // namespace
+
+void FinalizeProcIR(ProcIR& ir, LowerCtx& ctx) {
+  const analysis::ScopeContext& scope = ScopeForLowering(ctx);
+
+  if (!ir.abi.has_value()) {
+    ir.aggregate_copy_elision = AnalyzeAggregateCopyElision(ir, ctx);
+  }
+
+  if (ctx.LookupAsyncProc(ir.symbol) != nullptr) {
+    return;
+  }
+
+  if (!IsAsyncProc(scope, ir.ret)) {
+    return;
+  }
+
+  const auto sig = analysis::AsyncSigOf(scope, ir.ret);
+  if (!sig.has_value()) {
+    return;
+  }
+
+  SPEC_RULE("requirement.21.AsyncStateMachineSyntaxSurface");
+  SPEC_RULE("def.21.AsyncProcedureDefinition");
+  SPEC_RULE("requirement.21.AsyncStateMachineParsingSurface");
+  SPEC_RULE("requirement.21.AsyncTypeDynamicSemanticsReference");
+  SPEC_RULE("def.21.AsyncStateMachineHelperForms");
+  SPEC_RULE("def.21.AsyncStateMachineLoweringJudgements");
+  SPEC_RULE("def.21.AsyncStateMachineFrameHelpers");
+  SPEC_RULE("rule.21.Lower-Async-Proc");
+
+  AsyncIRInfo async_ir;
+  std::unordered_set<std::string> uses_after_suspension;
+  CollectUsesAfterSuspension(ir.body, false, uses_after_suspension, async_ir);
+
+  std::vector<std::string> param_names;
+  for (const auto& param : ir.params) {
+    if (param.name == kPanicOutName) {
+      continue;
+    }
+    param_names.push_back(param.name);
+    const std::string slot_name =
+        StableOrSourceName(param.name, param.stable_name);
+    if (uses_after_suspension.find(param.name) != uses_after_suspension.end() ||
+        uses_after_suspension.find(slot_name) != uses_after_suspension.end()) {
+      AddAsyncSlot(async_ir, slot_name, param.type, {param.name});
+    }
+  }
+  CollectAsyncSlotsFromBindings(ir.body, async_ir, uses_after_suspension);
+
+  const analysis::ScopeContext& scope_inner = ScopeForLowering(ctx);
+
+  LowerCtx::AsyncProcInfo async_info;
+  async_info.async_type = ir.ret;
+  async_info.out_type = sig->out;
+  async_info.in_type = sig->in;
+  async_info.result_type = sig->result;
+  async_info.err_type = sig->err;
+  async_info.resume_symbol = ir.symbol + "$resume";
+  async_info.resume_needs_panic_out =
+      ctx.NeedsPanicOutForSymbol(async_info.resume_symbol);
+  async_info.param_names = param_names;
+  async_info.slot_order = async_ir.slot_order;
+  async_info.slot_aliases = async_ir.slot_aliases;
+
+  std::uint64_t offset = kAsyncFrameHeaderSize;
+  std::uint64_t frame_align = kAsyncFrameHeaderAlign;
+  if (!async_ir.slot_order.empty()) {
+    SPEC_RULE("def.21.LiveAcrossSuspension");
+    SPEC_RULE("requirement.21.AsyncFrameStoredState");
+    SPEC_RULE("requirement.21.AsyncFrameInitIRSemantics");
+  }
+  for (const auto& name : async_ir.slot_order) {
+    const auto it = async_ir.slot_types.find(name);
+    if (it == async_ir.slot_types.end()) {
+      continue;
+    }
+    const auto& type = it->second;
+    const auto size_opt = ::ultraviolet::analysis::layout::SizeOf(scope_inner, type);
+    const auto align_opt = ::ultraviolet::analysis::layout::AlignOf(scope_inner, type);
+    if (!size_opt.has_value()) {
+      ctx.ReportCodegenFailure();
+      continue;
+    }
+    const std::uint64_t size = *size_opt;
+    const std::uint64_t align = align_opt.value_or(1);
+    offset = AlignUp(offset, align);
+    LowerCtx::AsyncFrameSlot slot;
+    slot.type = type;
+    slot.offset = offset;
+    slot.size = size;
+    slot.align = align;
+    async_info.slots[name] = slot;
+    offset += size;
+    frame_align = std::max(frame_align, align);
+  }
+  async_info.frame_align = frame_align;
+  async_info.frame_size = AlignUp(offset, frame_align);
+
+  LowerCtx::AsyncProcInfo wrapper_info = async_info;
+  wrapper_info.is_wrapper = true;
+  wrapper_info.is_resume = false;
+
+  LowerCtx::AsyncProcInfo resume_info = async_info;
+  resume_info.is_wrapper = false;
+  resume_info.is_resume = true;
+
+  ctx.async_procs[ir.symbol] = std::move(wrapper_info);
+  ctx.async_procs[async_info.resume_symbol] = std::move(resume_info);
+
+  ProcIR resume = ir;
+  resume.symbol = async_info.resume_symbol;
+  resume.params.clear();
+  resume.abi = std::string("C");
+
+  resume.params.push_back(HostedEnvParam());
+  ctx.hosted_explicit_env_procs.insert(resume.symbol);
+
+  IRParam out_param;
+  out_param.mode = analysis::ParamMode::Move;
+  out_param.name = std::string(kAsyncOutParamName);
+  out_param.stable_name = out_param.name;
+  out_param.type = analysis::MakeTypeRawPtr(analysis::RawPtrQual::Mut, ir.ret);
+  resume.params.push_back(std::move(out_param));
+
+  IRParam frame_param;
+  frame_param.mode = analysis::ParamMode::Move;
+  frame_param.name = "__uv_async_frame";
+  frame_param.stable_name = frame_param.name;
+  frame_param.type = analysis::MakeTypePtr(analysis::MakeTypePrim("u8"),
+                                           analysis::PtrState::Valid);
+  resume.params.push_back(frame_param);
+
+  IRParam input_param;
+  input_param.mode = analysis::ParamMode::Move;
+  input_param.name = "__uv_async_input";
+  input_param.stable_name = input_param.name;
+  input_param.type = analysis::MakeTypePtr(analysis::MakeTypePrim("u8"),
+                                           analysis::PtrState::Valid);
+  resume.params.push_back(input_param);
+  SPEC_RULE("rule.21.Lower-Async-Resume");
+  SPEC_RULE("requirement.21.AsyncResumeRuntimeSemantics");
+
+  if (async_info.resume_needs_panic_out) {
+    resume.params.push_back(PanicOutParam());
+  }
+
+  ctx.QueueExtraProc(std::move(resume), LinkageKind::Internal);
+}
 
 ProcIR LowerProc(const ProcedureDecl& decl,
                  const ModulePath& module_path,
@@ -1345,15 +1529,15 @@ ProcIR LowerProc(const ProcedureDecl& decl,
   std::vector<IRPtr> body_seq;
   body_seq.push_back(scope_enter_ir);
 
-  // Add precondition check at procedure entry
+  // Dynamic preconditions run before any @entry capture.
+  if (precond_ir) {
+    body_seq.push_back(precond_ir);
+  }
   if (param_entry_snapshot_ir) {
     body_seq.push_back(param_entry_snapshot_ir);
   }
   if (entry_capture_ir) {
     body_seq.push_back(entry_capture_ir);
-  }
-  if (precond_ir) {
-    body_seq.push_back(precond_ir);
   }
 
   if (body_res.ir) {
@@ -1381,126 +1565,9 @@ ProcIR LowerProc(const ProcedureDecl& decl,
 
   ir.body = SeqIR(std::move(body_seq));
 
-  if (!ir.abi.has_value()) {
-    ir.aggregate_copy_elision = AnalyzeAggregateCopyElision(ir, ctx);
-  }
-
-  if (IsAsyncProc(scope, ir.ret)) {
-    log_stage("async-lower-start");
-    const auto sig = analysis::AsyncSigOf(scope, ir.ret);
-    if (sig.has_value()) {
-      AsyncIRInfo async_ir;
-      std::unordered_set<std::string> uses_after_suspension;
-      CollectUsesAfterSuspension(ir.body, false, uses_after_suspension, async_ir);
-      std::vector<std::string> param_names;
-      for (const auto& param : ir.params) {
-        if (param.name == kPanicOutName) {
-          continue;
-        }
-        param_names.push_back(param.name);
-        const std::string slot_name =
-            StableOrSourceName(param.name, param.stable_name);
-        if (uses_after_suspension.find(param.name) != uses_after_suspension.end() ||
-            uses_after_suspension.find(slot_name) != uses_after_suspension.end()) {
-          AddAsyncSlot(async_ir, slot_name, param.type, {param.name});
-        }
-      }
-      CollectAsyncSlotsFromBindings(ir.body, async_ir, uses_after_suspension);
-
-      const analysis::ScopeContext& scope_inner = ScopeForLowering(ctx);
-
-      LowerCtx::AsyncProcInfo async_info;
-      async_info.async_type = ir.ret;
-      async_info.out_type = sig->out;
-      async_info.in_type = sig->in;
-      async_info.result_type = sig->result;
-      async_info.err_type = sig->err;
-      async_info.resume_symbol = ir.symbol + "$resume";
-      async_info.resume_needs_panic_out =
-          ctx.NeedsPanicOutForSymbol(async_info.resume_symbol);
-      async_info.param_names = param_names;
-      async_info.slot_order = async_ir.slot_order;
-      async_info.slot_aliases = async_ir.slot_aliases;
-
-      std::uint64_t offset = kAsyncFrameHeaderSize;
-      std::uint64_t frame_align = kAsyncFrameHeaderAlign;
-      for (const auto& name : async_ir.slot_order) {
-        const auto it = async_ir.slot_types.find(name);
-        if (it == async_ir.slot_types.end()) {
-          continue;
-        }
-        const auto& type = it->second;
-        const auto size_opt = ::ultraviolet::analysis::layout::SizeOf(scope_inner, type);
-        const auto align_opt = ::ultraviolet::analysis::layout::AlignOf(scope_inner, type);
-        if (!size_opt.has_value()) {
-          ctx.ReportCodegenFailure();
-          continue;
-        }
-        const std::uint64_t size = *size_opt;
-        const std::uint64_t align = align_opt.value_or(1);
-        offset = AlignUp(offset, align);
-        LowerCtx::AsyncFrameSlot slot;
-        slot.type = type;
-        slot.offset = offset;
-        slot.size = size;
-        slot.align = align;
-        async_info.slots[name] = slot;
-        offset += size;
-        frame_align = std::max(frame_align, align);
-      }
-      async_info.frame_align = frame_align;
-      async_info.frame_size = AlignUp(offset, frame_align);
-
-      LowerCtx::AsyncProcInfo wrapper_info = async_info;
-      wrapper_info.is_wrapper = true;
-      wrapper_info.is_resume = false;
-
-      LowerCtx::AsyncProcInfo resume_info = async_info;
-      resume_info.is_wrapper = false;
-      resume_info.is_resume = true;
-
-      ctx.async_procs[ir.symbol] = std::move(wrapper_info);
-      ctx.async_procs[async_info.resume_symbol] = std::move(resume_info);
-
-      ProcIR resume = ir;
-      resume.symbol = async_info.resume_symbol;
-      resume.params.clear();
-      resume.abi = std::string("C");
-
-      resume.params.push_back(HostedEnvParam());
-      ctx.hosted_explicit_env_procs.insert(resume.symbol);
-
-      IRParam out_param;
-      out_param.mode = analysis::ParamMode::Move;
-      out_param.name = std::string(kAsyncOutParamName);
-      out_param.stable_name = out_param.name;
-      out_param.type = analysis::MakeTypeRawPtr(analysis::RawPtrQual::Mut, ir.ret);
-      resume.params.push_back(std::move(out_param));
-
-      IRParam frame_param;
-      frame_param.mode = analysis::ParamMode::Move;
-      frame_param.name = "__uv_async_frame";
-      frame_param.stable_name = frame_param.name;
-      frame_param.type = analysis::MakeTypePtr(analysis::MakeTypePrim("u8"),
-                                               analysis::PtrState::Valid);
-      resume.params.push_back(frame_param);
-
-      IRParam input_param;
-      input_param.mode = analysis::ParamMode::Move;
-      input_param.name = "__uv_async_input";
-      input_param.stable_name = input_param.name;
-      input_param.type = analysis::MakeTypePtr(analysis::MakeTypePrim("u8"),
-                                               analysis::PtrState::Valid);
-      resume.params.push_back(input_param);
-
-      if (async_info.resume_needs_panic_out) {
-        resume.params.push_back(PanicOutParam());
-      }
-
-      ctx.QueueExtraProc(std::move(resume), LinkageKind::Internal);
-    }
-    log_stage("async-lower-finish");
-  }
+  log_stage("finalize-start");
+  FinalizeProcIR(ir, ctx);
+  log_stage("finalize-finish");
 
   ctx.dynamic_checks = prev_dynamic_checks;
   ctx.active_contract_postcondition = prev_active_postcondition;

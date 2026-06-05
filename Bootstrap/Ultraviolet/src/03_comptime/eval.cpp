@@ -235,6 +235,72 @@ bool BindEvalRangePattern(CtEnv& env,
   }
 }
 
+const CtValue* FindCtField(
+    const std::vector<std::pair<Identifier, CtValue>>& fields,
+    std::string_view name) {
+  for (const auto& field : fields) {
+    if (field.first == name) {
+      return &field.second;
+    }
+  }
+  return nullptr;
+}
+
+bool BindEvalFieldPatterns(
+    CtEnv& env,
+    const std::vector<ast::FieldPattern>& patterns,
+    const std::vector<std::pair<Identifier, CtValue>>& fields) {
+  CtEnv next = env;
+  for (const auto& field_pattern : patterns) {
+    const CtValue* field_value = FindCtField(fields, field_pattern.name);
+    if (!field_value) {
+      return false;
+    }
+    if (field_pattern.pattern_opt) {
+      if (!BindEvalPatternValue(next, field_pattern.pattern_opt, *field_value)) {
+        return false;
+      }
+      continue;
+    }
+    next.values[field_pattern.name] = *field_value;
+  }
+  env = std::move(next);
+  return true;
+}
+
+bool BindEvalEnumPayloadPattern(CtEnv& env,
+                                const ast::EnumPayloadPattern& pattern,
+                                const CtPayload& payload) {
+  return std::visit(
+      [&](const auto& payload_pattern) -> bool {
+        using P = std::decay_t<decltype(payload_pattern)>;
+        if constexpr (std::is_same_v<P, ast::TuplePayloadPattern>) {
+          const auto* tuple = std::get_if<CtTuplePayload>(&payload);
+          if (!tuple ||
+              tuple->elements.size() != payload_pattern.elements.size()) {
+            return false;
+          }
+          CtEnv next = env;
+          for (std::size_t i = 0; i < payload_pattern.elements.size(); ++i) {
+            if (!BindEvalPatternValue(next, payload_pattern.elements[i],
+                                      tuple->elements[i])) {
+              return false;
+            }
+          }
+          env = std::move(next);
+          return true;
+        } else if constexpr (std::is_same_v<P, ast::RecordPayloadPattern>) {
+          const auto* record = std::get_if<CtRecordPayload>(&payload);
+          return record &&
+                 BindEvalFieldPatterns(env, payload_pattern.fields,
+                                       record->fields);
+        } else {
+          return false;
+        }
+      },
+      pattern);
+}
+
 bool BindEvalPatternValue(CtEnv& env,
                           const ast::PatternPtr& pattern,
                           const CtValue& value) {
@@ -256,6 +322,33 @@ bool BindEvalPatternValue(CtEnv& env,
           return CtValueEqualsLiteral(value, node.literal);
         } else if constexpr (std::is_same_v<T, ast::TuplePattern>) {
           return BindEvalTuplePattern(env, node, value);
+        } else if constexpr (std::is_same_v<T, ast::RecordPattern>) {
+          const auto* record = std::get_if<std::shared_ptr<CtRecord>>(&value);
+          return record && *record && (*record)->path == node.path &&
+                 BindEvalFieldPatterns(env, node.fields, (*record)->fields);
+        } else if constexpr (std::is_same_v<T, ast::EnumPattern>) {
+          const auto* enum_value = std::get_if<std::shared_ptr<CtEnum>>(&value);
+          if (!enum_value || !*enum_value ||
+              (*enum_value)->path != node.path ||
+              (*enum_value)->variant != node.name) {
+            return false;
+          }
+          if (!node.payload_opt.has_value()) {
+            return std::holds_alternative<std::monostate>(
+                (*enum_value)->payload);
+          }
+          return BindEvalEnumPayloadPattern(env, *node.payload_opt,
+                                            (*enum_value)->payload);
+        } else if constexpr (std::is_same_v<T, ast::ModalPattern>) {
+          const auto* modal = std::get_if<std::shared_ptr<CtModalState>>(&value);
+          if (!modal || !*modal || (*modal)->target.state != node.state) {
+            return false;
+          }
+          if (!node.fields_opt.has_value()) {
+            return true;
+          }
+          return BindEvalFieldPatterns(env, node.fields_opt->fields,
+                                       (*modal)->fields);
         } else if constexpr (std::is_same_v<T, ast::RangePattern>) {
           return BindEvalRangePattern(env, node, value);
         } else {
@@ -341,6 +434,8 @@ EvalResult EvalCall(const ast::CallExpr& call, CtEnv& env) {
     if (!TryGetCtBool(pred.value, pred_bool)) {
       return {};
     }
+    SPEC_RULE_AT("requirement.22.CompileTimeProcedureContracts",
+                 call.callee ? call.callee->span : core::Span{});
     if (!pred_bool) {
       EmitComptimeDiag(env, "E-CTE-0033",
                       call.callee ? call.callee->span : core::Span{});
@@ -348,10 +443,11 @@ EvalResult EvalCall(const ast::CallExpr& call, CtEnv& env) {
     }
   }
 
-  const auto body = EvalBlock(*it->second.body, proc_env);
+  EvalResult body = EvalBlock(*it->second.body, proc_env);
   if (!body.ok) {
     return body;
   }
+  body.returned = false;
 
   if (it->second.contract && it->second.contract->postcondition) {
     CtEnv post_env = proc_env;
@@ -364,6 +460,8 @@ EvalResult EvalCall(const ast::CallExpr& call, CtEnv& env) {
     if (!TryGetCtBool(pred.value, pred_bool)) {
       return {};
     }
+    SPEC_RULE_AT("requirement.22.CompileTimeProcedureContracts",
+                 call.callee ? call.callee->span : core::Span{});
     if (!pred_bool) {
       EmitComptimeDiag(env, "E-CTE-0033",
                       call.callee ? call.callee->span : core::Span{});
@@ -378,6 +476,7 @@ EvalResult EvalMethodCall(const ast::MethodCallExpr& call, CtEnv& env) {
   if (!call.receiver) {
     return {};
   }
+  const core::Span call_span = call.receiver->span;
 
   if (const auto files_result = EvalProjectFilesMethod(call, env)) {
     return *files_result;
@@ -389,15 +488,19 @@ EvalResult EvalMethodCall(const ast::MethodCallExpr& call, CtEnv& env) {
   if (std::holds_alternative<ast::IdentifierExpr>(call.receiver->node)) {
     const auto& recv = std::get<ast::IdentifierExpr>(call.receiver->node).name;
     if (recv == "diagnostics") {
+      SPEC_RULE_AT("requirement.22.CtCapMethodCallParsing", call_span);
+      SPEC_RULE_AT("def.22.CtCapabilityDynamicHelpers", call_span);
       if (call.name == "current_module" && call.args.empty()) {
-        SPEC_RULE("CtBuiltin-Diagnostics-CurrentModule");
+        SPEC_RULE_AT("rule.22.CtBuiltin-Diagnostics-CurrentModule",
+                     env.current_span);
         EvalResult result;
         result.ok = true;
         result.value = CtString{ModulePathText(CtSiteOf(env).module_path)};
         return result;
       }
       if (call.name == "current_span" && call.args.empty()) {
-        SPEC_RULE("CtBuiltin-Diagnostics-CurrentSpan");
+        SPEC_RULE_AT("rule.22.CtBuiltin-Diagnostics-CurrentSpan",
+                     env.current_span);
         EvalResult result;
         result.ok = true;
         result.value = MakeSpanValue(CtSiteOf(env).span);
@@ -413,7 +516,10 @@ EvalResult EvalMethodCall(const ast::MethodCallExpr& call, CtEnv& env) {
           return {};
         }
         if (call.name == "error") {
-          SPEC_RULE("CtBuiltin-Diagnostics-Error");
+          SPEC_RULE_AT("rule.22.CtBuiltin-Diagnostics-Error",
+                       env.current_span);
+          SPEC_RULE_AT("requirement.22.UserDiagnosticBuiltinEmission",
+                       env.current_span);
           AppendCtCodedDiagnostic(
               env, "E-CTE-0070", core::Severity::Error, msg->value);
           EvalResult result;
@@ -422,7 +528,10 @@ EvalResult EvalMethodCall(const ast::MethodCallExpr& call, CtEnv& env) {
           return result;
         }
         if (call.name == "warning") {
-          SPEC_RULE("CtBuiltin-Diagnostics-Warning");
+          SPEC_RULE_AT("rule.22.CtBuiltin-Diagnostics-Warning",
+                       env.current_span);
+          SPEC_RULE_AT("requirement.22.UserDiagnosticBuiltinEmission",
+                       env.current_span);
           AppendCtCodedDiagnostic(
               env, "W-CTE-0071", core::Severity::Warning, msg->value);
           EvalResult result;
@@ -431,7 +540,10 @@ EvalResult EvalMethodCall(const ast::MethodCallExpr& call, CtEnv& env) {
           return result;
         }
         if (call.name == "note") {
-          SPEC_RULE("CtBuiltin-Diagnostics-Note");
+          SPEC_RULE_AT("rule.22.CtBuiltin-Diagnostics-Note",
+                       env.current_span);
+          SPEC_RULE_AT("requirement.22.UserDiagnosticBuiltinEmission",
+                       env.current_span);
           AppendCtUserNoteDiagnostic(env, msg->value);
           EvalResult result;
           result.ok = true;
@@ -443,6 +555,12 @@ EvalResult EvalMethodCall(const ast::MethodCallExpr& call, CtEnv& env) {
   }
 
   if (call.name == "emit" && call.args.size() == 1) {
+    if (std::holds_alternative<ast::IdentifierExpr>(call.receiver->node) &&
+        std::get<ast::IdentifierExpr>(call.receiver->node).name == "emitter") {
+      SPEC_RULE_AT("requirement.22.CtCapMethodCallParsing", call_span);
+      SPEC_RULE_AT("def.22.CtCapabilityDynamicHelpers", call_span);
+      SPEC_RULE_AT("requirement.22.TypeEmitterAvailability", call_span);
+    }
     const auto recv_value = EvalExpr(call.receiver, env);
     if (!recv_value.ok) {
       return recv_value;
@@ -455,11 +573,14 @@ EvalResult EvalMethodCall(const ast::MethodCallExpr& call, CtEnv& env) {
 
     if (const auto* ast_value = std::get_if<CtAst>(&value.value)) {
       if (ast_value->kind != CtAstKind::Item) {
-        EmitComptimeDiag(env, "E-CTE-0251",
-                         call.args[0].value
-                             ? call.args[0].value->span
-                             : (call.receiver ? call.receiver->span
-                                              : core::Span{}));
+        const core::Span emit_span =
+            call.args[0].value
+                ? call.args[0].value->span
+                : (call.receiver ? call.receiver->span : core::Span{});
+        SPEC_RULE_AT("requirement.22.TypeEmitterEmitTypeRequirement",
+                     emit_span);
+        SPEC_RULE_AT("requirement.22.EmitterEmitWellFormedness", emit_span);
+        EmitComptimeDiag(env, "E-CTE-0251", emit_span);
         return {};
       }
       auto hygienized = PrepareAstForInsertion(*ast_value, CtSiteOf(env), env);
@@ -471,6 +592,7 @@ EvalResult EvalMethodCall(const ast::MethodCallExpr& call, CtEnv& env) {
           pending->push_back(*item);
         }
         SPEC_RULE("CtBuiltin-Emit");
+        SPEC_RULE_AT("requirement.22.TypeEmitterAvailability", call_span);
         EvalResult result;
         result.ok = true;
         result.value = MakeCtUnit();
@@ -561,6 +683,7 @@ EvalResult EvalExpr(const ExprPtr& expr, CtEnv& env) {
   }
 
   ScopedCtSpan span_scope(env, expr->span);
+  SPEC_RULE_AT("requirement.22.CtEvalOrdinarySemantics", expr->span);
 
   return std::visit(
       [&](const auto& node) -> EvalResult {
@@ -791,6 +914,41 @@ EvalResult EvalExpr(const ExprPtr& expr, CtEnv& env) {
           }
           if (cond_bool) {
             return EvalExpr(node.then_expr, env);
+          }
+          if (node.else_expr) {
+            return EvalExpr(node.else_expr, env);
+          }
+          EvalResult out;
+          out.ok = true;
+          out.value = MakeCtUnit();
+          return out;
+        } else if constexpr (std::is_same_v<T, ast::IfIsExpr>) {
+          auto scrutinee = EvalExpr(node.scrutinee, env);
+          if (!scrutinee.ok) {
+            return scrutinee;
+          }
+          CtEnv then_env = env;
+          if (BindEvalPatternValue(then_env, node.pattern, scrutinee.value)) {
+            return EvalExpr(node.then_expr, then_env);
+          }
+          if (node.else_expr) {
+            return EvalExpr(node.else_expr, env);
+          }
+          EvalResult out;
+          out.ok = true;
+          out.value = MakeCtUnit();
+          return out;
+        } else if constexpr (std::is_same_v<T, ast::IfCaseExpr>) {
+          auto scrutinee = EvalExpr(node.scrutinee, env);
+          if (!scrutinee.ok) {
+            return scrutinee;
+          }
+          for (const auto& clause : node.cases) {
+            CtEnv case_env = env;
+            if (BindEvalPatternValue(case_env, clause.pattern,
+                                     scrutinee.value)) {
+              return EvalExpr(clause.body, case_env);
+            }
           }
           if (node.else_expr) {
             return EvalExpr(node.else_expr, env);

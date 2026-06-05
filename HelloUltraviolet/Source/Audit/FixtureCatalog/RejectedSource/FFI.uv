@@ -1,7 +1,7 @@
 //! Rejected FFI specimens.
 
 public procedure ffiRejectedSourceFixtureCount() -> usize {
-    return 45usize
+    return 46usize
 }
 
 public procedure validatedFFIRejectedSourceFixtureCount() -> usize {
@@ -54,6 +54,23 @@ public procedure validatedFFIRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/FFI/UnsupportedExternABI/Expected.uv",
         "E-SYS-3352",
         "diagnostics.23.FfiDiagnosticsSupplement"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "UnsupportedExternABI",
+            "Fixtures/RejectedSource/FFI/UnsupportedExternABI",
+            "Fixtures/RejectedSource/FFI/UnsupportedExternABI/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/UnsupportedExternABI/Expected.uv",
+            expectedDiagnostic("E-SYS-3352", "ExternAbi-Unknown-Err")
+        ),
+        "UnsupportedExternABI",
+        "Fixtures/RejectedSource/FFI/UnsupportedExternABI",
+        "Fixtures/RejectedSource/FFI/UnsupportedExternABI/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/UnsupportedExternABI/Expected.uv",
+        "E-SYS-3352",
+        "ExternAbi-Unknown-Err"
     ) {
         count = count + 1usize
     }
@@ -131,7 +148,7 @@ public procedure validatedFFIRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/FFI/BoundaryUnwindingNoAdditionalDiagnostics",
             "Fixtures/RejectedSource/FFI/BoundaryUnwindingNoAdditionalDiagnostics/Source/Main.uv",
             "Fixtures/RejectedSource/FFI/BoundaryUnwindingNoAdditionalDiagnostics/Expected.uv",
-            expectedDiagnostic(
+            expectedDiagnosticOnly(
                 "E-SYS-3355",
                 "diagnostics.23.BoundaryUnwindingNoAdditionalDiagnostics"
             )
@@ -372,13 +389,13 @@ public procedure validatedFFIRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnostics",
             "Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnostics/Source/Main.uv",
             "Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnostics/Expected.uv",
-            expectedDiagnostic("E-TYP-2623", "diagnostics.23.CapabilityIsolationDiagnostics")
+            expectedDiagnostic("E-SYS-3360", "diagnostics.23.CapabilityIsolationDiagnostics")
         ),
         "CapabilityIsolationDiagnostics",
         "Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnostics",
         "Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnostics/Source/Main.uv",
         "Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnostics/Expected.uv",
-        "E-TYP-2623",
+        "E-SYS-3360",
         "diagnostics.23.CapabilityIsolationDiagnostics"
     ) {
         count = count + 1usize

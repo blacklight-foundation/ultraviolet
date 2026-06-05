@@ -58,13 +58,37 @@ internal procedure unionPropagatesSuccess(value: DataUnionReference) -> bool {
     return numeric == 9
 }
 
-internal procedure unionLayoutReference() -> bool {
+internal procedure layoutUnionNicheReference() -> bool {
+    return sizeof(NicheDataUnionReference) == sizeof(Ptr<i32>@Valid) &&
+        alignof(NicheDataUnionReference) == alignof(Ptr<i32>@Valid)
+}
+
+internal procedure layoutUnionTaggedReference() -> bool {
     return sizeof(DataUnionReference) == 8usize &&
         alignof(DataUnionReference) == alignof(i32) &&
         sizeof(ExpandedDataUnionReference) == 16usize &&
+        alignof(ExpandedDataUnionReference) == alignof(i64)
+}
+
+internal procedure sizeUnionReference() -> bool {
+    return sizeof(DataUnionReference) == 8usize &&
+        sizeof(ExpandedDataUnionReference) == 16usize &&
+        sizeof(NicheDataUnionReference) == sizeof(Ptr<i32>@Valid)
+}
+
+internal procedure alignUnionReference() -> bool {
+    return alignof(DataUnionReference) == alignof(i32) &&
         alignof(ExpandedDataUnionReference) == alignof(i64) &&
-        sizeof(NicheDataUnionReference) == sizeof(Ptr<i32>@Valid) &&
         alignof(NicheDataUnionReference) == alignof(Ptr<i32>@Valid)
+}
+
+internal procedure unionLayoutReference() -> bool {
+    return layoutUnionTaggedReference() && layoutUnionNicheReference()
+}
+
+/// Exercises the union layout helper equations for size, alignment, tagged, and niche layout.
+public procedure unionLayoutHelpersReference() -> bool {
+    return sizeUnionReference() && alignUnionReference() && unionLayoutReference()
 }
 
 internal procedure expandedUnionValue(value: ExpandedDataUnionReference) -> i32 {
@@ -102,6 +126,36 @@ internal procedure nicheUnionPointerValue() -> i32 {
     return nicheUnionValue(value)
 }
 
+/// Exercises union member layout selection by requiring reordered branches to decode exactly.
+public procedure unionMemberLayoutSelectionReference() -> bool {
+    let numeric: DataUnionReference = numericUnionReference()
+    let boolean: DataUnionReference = booleanUnionReference()
+    let reordered: ReorderedDataUnionReference = reorderedUnionReference(numeric)
+    let reordered_boolean: ReorderedDataUnionReference = reorderedUnionReference(boolean)
+    let reordered_ok: bool = if reordered is {
+        flag_value: bool {
+            false
+        }
+        numeric_value: i32 {
+            numeric_value == 9
+        }
+    }
+    let reordered_boolean_ok: bool = if reordered_boolean is {
+        flag_value: bool {
+            flag_value
+        }
+        numeric_value: i32 {
+            false
+        }
+    }
+    return reordered_ok &&
+        reordered_boolean_ok &&
+        layoutUnionTaggedReference() &&
+        layoutUnionNicheReference() &&
+        nicheUnionValue(emptyNicheUnionReference()) == 0 &&
+        nicheUnionPointerValue() == 17
+}
+
 /// Exercises the DataTypes Unions reference surface.
 public procedure runDataTypesUnionsReference() -> bool {
     let numeric: DataUnionReference = numericUnionReference()
@@ -114,7 +168,7 @@ public procedure runDataTypesUnionsReference() -> bool {
     let empty_niche: NicheDataUnionReference = emptyNicheUnionReference()
     let reordered_ok: bool = if reordered is {
         flag_value: bool {
-            flag_value == false
+            false
         }
         numeric_value: i32 {
             numeric_value == 9
@@ -125,7 +179,7 @@ public procedure runDataTypesUnionsReference() -> bool {
             flag_value
         }
         numeric_value: i32 {
-            numeric_value == 0
+            false
         }
     }
     return unionPatternValue(numeric) == 9 &&
@@ -137,7 +191,8 @@ public procedure runDataTypesUnionsReference() -> bool {
         unionPropagatesSuccess(numeric) &&
         unionPropagatesSuccess(boolean) &&
         !unionPropagatesSuccess(false_boolean) &&
-        unionLayoutReference() &&
+        unionLayoutHelpersReference() &&
+        unionMemberLayoutSelectionReference() &&
         nicheUnionValue(empty_niche) == 0 &&
         nicheUnionPointerValue() == 17
 }

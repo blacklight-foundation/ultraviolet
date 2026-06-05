@@ -1,0 +1,10 @@
+//! Rejected polymorphism specimen for a Hash implementation without Eq.
+
+internal record HashWithoutEqValue <: Hash {
+    internal value: i32
+
+    internal procedure hash(~, hasher: unique $Hasher) -> () {
+        let _ = hasher
+        return ()
+    }
+}

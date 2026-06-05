@@ -1,0 +1,12 @@
+//! Hosted shared library fixture that imports a linked library assembly.
+
+public import HostedImportProvider
+
+public record HostedImportContext {
+    public sys: System
+}
+
+#host_export("C")
+public procedure hostedImportValue(context: HostedImportContext) -> i32 {
+    return HostedImportProvider::providedHostedImportValue()
+}

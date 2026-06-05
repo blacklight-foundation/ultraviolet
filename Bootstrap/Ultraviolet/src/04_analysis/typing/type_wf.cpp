@@ -119,9 +119,13 @@ static inline void SpecDefsTypeWF() {
   SPEC_DEF("WF-RawPtr", "5.2.12");
   SPEC_DEF("WF-ModalState", "5.4");
   SPEC_DEF("WF-ModalState-ArgCount-Err", "5.4");
+  SPEC_DEF("rule.21.WF-Async", "21.1.4");
   SPEC_DEF("WF-Async-Arg-WF-Err", "5.2.12");
+  SPEC_DEF("rule.21.WF-Async-Arg-WF-Err", "21.1.4");
   SPEC_DEF("WF-Async-ArgCount-Err", "5.2.12");
+  SPEC_DEF("rule.21.WF-Async-ArgCount-Err", "21.1.4");
   SPEC_DEF("WF-Async-Path-Err", "5.2.12");
+  SPEC_DEF("rule.21.WF-Async-Path-Err", "21.1.4");
   SPEC_DEF("K-Witness-Shared-WF", "19.1.4");
 }
 
@@ -140,6 +144,10 @@ static bool IsBuiltinCapClassPath(const TypePath& path) {
 
 static bool IsAsyncPathType(const TypePath& path) {
   return IsAsyncModalPath(path);
+}
+
+static bool AsyncDefaultArgsDefined(std::size_t arg_count) {
+  return arg_count >= 1 && arg_count <= 4;
 }
 
 static bool IsGpuPtrPathType(const TypePath& path) {
@@ -250,6 +258,7 @@ static TypeWfResult TypeWFImpl(const ScopeContext& ctx, const TypeRef& type) {
           }
           if (IdEq(node.name, "Async")) {
             SPEC_RULE("WF-Async-Path-Err");
+            SPEC_RULE("rule.21.WF-Async-Path-Err");
             return {false, "WF-Async-Path-Err"};
           }
           SPEC_RULE("WF-Prim");
@@ -264,6 +273,7 @@ static TypeWfResult TypeWFImpl(const ScopeContext& ctx, const TypeRef& type) {
                     std::get_if<TypeDynamic>(&node.base->node)) {
               if (!SharedDynamicReceiversAreConst(ctx, *dynamic)) {
                 SPEC_RULE("K-Witness-Shared-WF");
+                SPEC_RULE("requirement.19.SharedDynamicClassRejectsMutatingReceivers");
                 return {false, "E-CON-0083"};
               }
             }
@@ -360,20 +370,23 @@ static TypeWfResult TypeWFImpl(const ScopeContext& ctx, const TypeRef& type) {
           if (IsAsyncPathType(node.path)) {
             if (node.generic_args.empty()) {
               SPEC_RULE("WF-Async-Path-Err");
+              SPEC_RULE("rule.21.WF-Async-Path-Err");
               return {false, "WF-Async-Path-Err"};
             }
-            if (node.generic_args.size() != 4) {
+            if (!AsyncDefaultArgsDefined(node.generic_args.size())) {
               SPEC_RULE("WF-Async-ArgCount-Err");
+              SPEC_RULE("rule.21.WF-Async-ArgCount-Err");
               return {false, "WF-Async-ArgCount-Err"};
             }
             for (const auto& arg : node.generic_args) {
               const auto wf = TypeWFImpl(ctx, arg);
               if (!wf.ok) {
                 SPEC_RULE("WF-Async-Arg-WF-Err");
+                SPEC_RULE("rule.21.WF-Async-Arg-WF-Err");
                 return {false, "WF-Async-Arg-WF-Err"};
               }
             }
-            SPEC_RULE("WF-Path");
+            SPEC_RULE("rule.21.WF-Async");
             return {true, std::nullopt};
           }
           if (IsSelfVarPath(node.path)) {
@@ -390,6 +403,7 @@ static TypeWfResult TypeWFImpl(const ScopeContext& ctx, const TypeRef& type) {
           }
           if (const auto* params = TypeParamsOf(ctx, node.path)) {
             if (TotalParamCount(*params) > 0) {
+              SPEC_RULE("rule.14.WF-Path-Generic-Err");
               return {false, "E-TYP-2303"};
             }
           }
@@ -412,29 +426,33 @@ static TypeWfResult TypeWFImpl(const ScopeContext& ctx, const TypeRef& type) {
             return {true, std::nullopt};
           }
           if (IsAsyncPathType(node.path)) {
-            if (node.args.empty()) {
-              SPEC_RULE("WF-Async-Path-Err");
-              return {false, "WF-Async-Path-Err"};
-            }
-            if (node.args.size() != 4) {
+            if (!AsyncDefaultArgsDefined(node.args.size())) {
               SPEC_RULE("WF-Async-ArgCount-Err");
+              SPEC_RULE("rule.21.WF-Async-ArgCount-Err");
               return {false, "WF-Async-ArgCount-Err"};
             }
+            for (const auto& arg : node.args) {
+              const auto wf = TypeWFImpl(ctx, arg);
+              if (!wf.ok) {
+                SPEC_RULE("WF-Async-Arg-WF-Err");
+                SPEC_RULE("rule.21.WF-Async-Arg-WF-Err");
+                return {false, "WF-Async-Arg-WF-Err"};
+              }
+            }
+            SPEC_RULE("rule.21.WF-Async");
+            return {true, std::nullopt};
           } else if (const auto* params = TypeParamsOf(ctx, node.path)) {
             const auto provided = node.args.size();
             const auto required = RequiredParamCount(*params);
             const auto total = TotalParamCount(*params);
             if (provided < required || provided > total) {
+              SPEC_RULE("rule.14.WF-Apply-ArgCount-Err");
               return {false, "E-TYP-2303"};
             }
           }
           for (const auto& arg : node.args) {
             const auto wf = TypeWFImpl(ctx, arg);
             if (!wf.ok) {
-              if (IsAsyncPathType(node.path)) {
-                SPEC_RULE("WF-Async-Arg-WF-Err");
-                return {false, "WF-Async-Arg-WF-Err"};
-              }
               return wf;
             }
           }
@@ -442,6 +460,7 @@ static TypeWfResult TypeWFImpl(const ScopeContext& ctx, const TypeRef& type) {
             return {};
           }
           SPEC_RULE("WF-Apply");
+          SPEC_RULE("rule.14.WF-Apply");
           return {true, std::nullopt};
         } else if constexpr (std::is_same_v<T, TypeDynamic>) {
           if (IsBuiltinCapClassPath(node.path)) {
@@ -455,9 +474,11 @@ static TypeWfResult TypeWFImpl(const ScopeContext& ctx, const TypeRef& type) {
           }
           if (ctx.sigma.classes.find(PathKeyOf(ast_path)) == ctx.sigma.classes.end()) {
             SPEC_RULE("WF-Dynamic-Err");
+            SPEC_RULE("rule.14.WF-Dynamic-Err");
             return {false, "Superclass-Undefined"};
           }
           SPEC_RULE("WF-Dynamic");
+          SPEC_RULE("rule.14.WF-Dynamic");
           return {true, std::nullopt};
         } else if constexpr (std::is_same_v<T, TypeOpaque>) {
           ast::Path class_path;
@@ -467,9 +488,11 @@ static TypeWfResult TypeWFImpl(const ScopeContext& ctx, const TypeRef& type) {
           }
           if (ctx.sigma.classes.find(PathKeyOf(class_path)) == ctx.sigma.classes.end()) {
             SPEC_RULE("WF-Opaque-Err");
+            SPEC_RULE("rule.14.WF-Opaque-Err");
             return {false, "Superclass-Undefined"};
           }
           SPEC_RULE("WF-Opaque");
+          SPEC_RULE("rule.14.WF-Opaque");
           return {true, std::nullopt};
         } else if constexpr (std::is_same_v<T, TypeRefine>) {
           const auto base = TypeWFImpl(ctx, node.base);
@@ -491,13 +514,16 @@ static TypeWfResult TypeWFImpl(const ScopeContext& ctx, const TypeRef& type) {
             return {false, pred_type.diag_id};
           }
           if (!IsPrimType(pred_type.type, "bool")) {
+            SPEC_RULE("rule.14.WF-Refine-Type");
             return {false, "E-TYP-1955"};
           }
           const auto purity = CheckPurity(node.predicate);
           if (!purity.ok) {
+            SPEC_RULE("rule.14.WF-Refine-Type");
             return {false, std::optional<std::string_view>{"E-TYP-1954"}};
           }
           SPEC_RULE("WF-Refine-Type");
+          SPEC_RULE("rule.14.WF-Refine-Type");
           return {true, std::nullopt};
         } else if constexpr (std::is_same_v<T, TypeString>) {
           SPEC_RULE("WF-String");

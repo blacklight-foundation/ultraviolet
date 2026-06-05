@@ -50,6 +50,7 @@
 #include <limits>
 
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 #include "04_analysis/composite/enums.h"
 #include "04_analysis/generics/monomorphize.h"
 
@@ -163,6 +164,41 @@ std::optional<RecordLayout> RangeLayoutInternal(
   return RecordLayoutOf(ctx, fields);
 }
 
+void RecordEnumLayoutAttributeConformance(
+    const EnumLayoutOptions& options,
+    const EnumLayout& layout,
+    std::size_t variant_count) {
+  if (!options.disc_type.has_value() && !options.min_align.has_value()) {
+    return;
+  }
+
+  std::string payload = "source=EnumLayoutOf;variants=" +
+      std::to_string(variant_count) + ";disc_type=" + layout.disc_type +
+      ";explicit_disc_type=" +
+      (options.disc_type.has_value() ? "true" : "false") + ";min_align=" +
+      (options.min_align.has_value() ? std::to_string(*options.min_align)
+                                     : std::string("none")) +
+      ";size=" + std::to_string(layout.layout.size) + ";align=" +
+      std::to_string(layout.layout.align) + ";payload_size=" +
+      std::to_string(layout.payload_size) + ";payload_align=" +
+      std::to_string(layout.payload_align) +
+      ";runtime=none;static_only=true;lowering=enum-layout";
+
+  core::Conformance::Record(
+      "def.ValidLayoutAttributeCombinations", std::nullopt, payload);
+  core::Conformance::Record(
+      "conformance.LayoutAttributeDynamicSemantics", std::nullopt, payload);
+  core::Conformance::Record(
+      "conformance.LayoutAttributeLowering", std::nullopt, payload);
+  if (options.disc_type.has_value()) {
+    core::Conformance::Record(
+        "req.LayoutExplicitEnumDiscriminant", std::nullopt, payload);
+  }
+  if (options.min_align.has_value()) {
+    core::Conformance::Record("req.LayoutAlignSemantics", std::nullopt, payload);
+  }
+}
+
 }  // namespace
 
 std::optional<RecordLayout> RangeLayoutOf(
@@ -270,7 +306,7 @@ std::optional<EnumLayout> EnumLayoutOf(
         }
         elems.push_back(*lowered);
       }
-      layout = RecordLayoutOf(ctx, elems);
+      layout = TupleLayoutOf(ctx, elems);
     } else if (const auto* rec =
                    std::get_if<ultraviolet::ast::VariantPayloadRecord>(
                        &*variant.payload_opt)) {
@@ -305,6 +341,7 @@ std::optional<EnumLayout> EnumLayoutOf(
   out.disc_type = disc_type_name;
   out.payload_size = payload_size;
   out.payload_align = payload_align;
+  RecordEnumLayoutAttributeConformance(options, out, decl.variants.size());
   return out;
 }
 
@@ -338,7 +375,7 @@ std::optional<EnumPayloadMemberLayout> EnumTuplePayloadMemberLayout(
     }
     field_types.push_back(*lowered);
   }
-  const auto layout = RecordLayoutOf(ctx, field_types);
+  const auto layout = TupleLayoutOf(ctx, field_types);
   if (!layout.has_value() || index >= layout->offsets.size()) {
     return std::nullopt;
   }

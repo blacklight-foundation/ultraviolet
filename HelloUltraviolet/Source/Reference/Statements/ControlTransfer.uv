@@ -81,15 +81,40 @@ internal procedure breakTemporaryCleanupValue() -> i32 {
     return value
 }
 
+/// Exercises Lower-Stmt-Return-Unit with unit return control transfer.
+public procedure lowerStmtReturnUnitReference() -> bool {
+    return returnUnitObservedValue() == 5
+}
+
+/// Exercises Lower-Stmt-Break with a break value.
+public procedure lowerStmtBreakReference() -> bool {
+    return breakValueReference() == 11 &&
+        breakExpressionControlValue() == 17
+}
+
+/// Exercises Lower-Stmt-Break-Unit with empty break control transfer.
+public procedure lowerStmtBreakUnitReference() -> bool {
+    return breakUnitReferenceValue() == 15
+}
+
+/// Exercises Lower-Stmt-Continue with loop continuation control transfer.
+public procedure lowerStmtContinueReference() -> bool {
+    return continueReferenceValue() == 4
+}
+
+/// Exercises cleanup lowering for return and break transfer paths.
+public procedure controlTransferTemporaryCleanupLoweringReference() -> bool {
+    return returnTemporaryCleanupValue() == 19 &&
+        breakTemporaryCleanupValue() == 23
+}
+
 /// Exercises the Statements ControlTransfer reference surface.
 public procedure runStatementsControlTransferReference() -> bool {
     return returnValueReference() == 3 &&
-        returnUnitObservedValue() == 5 &&
+        lowerStmtReturnUnitReference() &&
         returnExpressionControlValue() == 7 &&
-        breakValueReference() == 11 &&
-        breakUnitReferenceValue() == 15 &&
-        breakExpressionControlValue() == 17 &&
-        continueReferenceValue() == 4 &&
-        returnTemporaryCleanupValue() == 19 &&
-        breakTemporaryCleanupValue() == 23
+        lowerStmtBreakReference() &&
+        lowerStmtBreakUnitReference() &&
+        lowerStmtContinueReference() &&
+        controlTransferTemporaryCleanupLoweringReference()
 }

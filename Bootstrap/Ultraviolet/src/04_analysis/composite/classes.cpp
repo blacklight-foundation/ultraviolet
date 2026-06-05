@@ -29,10 +29,14 @@
 
 #include "00_core/assert_spec.h"
 #include "00_core/process_config.h"
+#include "00_core/symbols.h"
+#include "04_analysis/caps/cap_concurrency.h"
+#include "04_analysis/caps/cap_system.h"
 #include "04_analysis/resolve/scopes.h"
 #include "04_analysis/resolve/scopes_lookup.h"
 #include "04_analysis/typing/type_equiv.h"
 #include "04_analysis/typing/type_predicates.h"
+#include "04_analysis/typing/types.h"
 
 namespace ultraviolet::analysis {
 
@@ -156,6 +160,27 @@ static std::vector<const ast::ClassFieldDecl*> ClassFields(
     }
   }
   return out;
+}
+
+void RecordFirstFieldByNameTrace(std::string_view operation,
+                                 const ast::ClassFieldDecl& field,
+                                 const TypeRef& field_sig,
+                                 std::string_view result) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  std::string payload;
+  payload.reserve(128);
+  payload += "operation=";
+  payload += operation;
+  payload += ";source=ClassFieldTable";
+  payload += ";field=";
+  payload += field.name;
+  payload += ";field_sig=";
+  payload += TypeToString(field_sig);
+  payload += ";result=";
+  payload += result;
+  core::Conformance::Record("def.FirstFieldByName", field.span, payload);
 }
 
 struct TypeLowerResult {
@@ -529,6 +554,34 @@ static TypeRef StripPermLocal(const TypeRef& type) {
   return type;
 }
 
+static ast::ClassPath AsAstClassPath(const TypePath& path) {
+  ast::ClassPath out;
+  out.reserve(path.size());
+  for (const auto& segment : path) {
+    out.emplace_back(segment);
+  }
+  return out;
+}
+
+static bool DynamicCapabilityTypeImplementsClass(const TypeDynamic& type,
+                                                 const ast::ClassPath& path) {
+  if (!IsCapabilityClassPath(path)) {
+    return false;
+  }
+  if (IsExecutionDomainClassPath(path)) {
+    const auto dynamic_path = AsAstClassPath(type.path);
+    if (IsExecutionDomainTypePath(dynamic_path)) {
+      SPEC_RULE("req.14.CapabilityClassesGenericBounds");
+      return true;
+    }
+  }
+  if (PathEq(AsAstClassPath(type.path), path)) {
+    SPEC_RULE("req.14.CapabilityClassesGenericBounds");
+    return true;
+  }
+  return false;
+}
+
 
 static Permission LowerReceiverPerm(ast::ReceiverPerm perm) {
   switch (perm) {
@@ -611,6 +664,42 @@ static bool SigEqual(const MethodSig& lhs, const MethodSig& rhs) {
   return true;
 }
 
+static void AppendMethodSig(std::string& out, const MethodSig& sig) {
+  out += "recv:";
+  out += TypeToString(sig.recv_type);
+  out += ";params:[";
+  for (std::size_t i = 0; i < sig.params.size(); ++i) {
+    if (i != 0) {
+      out += ",";
+    }
+    out += sig.params[i].mode.has_value() ? "move " : "ref ";
+    out += TypeToString(sig.params[i].type);
+  }
+  out += "];ret:";
+  out += TypeToString(sig.ret);
+}
+
+void RecordFirstByNameTrace(std::string_view operation,
+                            const ast::ClassMethodDecl& method,
+                            const MethodSig& sig,
+                            std::string_view result) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  std::string payload;
+  payload.reserve(192);
+  payload += "operation=";
+  payload += operation;
+  payload += ";source=ClassMethodTable";
+  payload += ";method=";
+  payload += method.name;
+  payload += ";sig=";
+  AppendMethodSig(payload, sig);
+  payload += ";result=";
+  payload += result;
+  core::Conformance::Record("def.FirstByName", method.span, payload);
+}
+
 static bool SelfOccurs(const std::shared_ptr<ast::Type>& type) {
   if (!type) {
     return false;
@@ -690,6 +779,7 @@ static bool SelfOccurs(const ast::ClassMethodDecl& method) {
 }
 
 static bool VtableEligibleInternal(const ast::ClassMethodDecl& method) {
+  SPEC_RULE("def.14.DynamicDispatchEligibility");
   if (method.generic_params && !method.generic_params->params.empty()) {
     return false;
   }
@@ -776,13 +866,16 @@ ClassMethodTableResult ClassMethodTable(const ScopeContext& ctx,
       if (it == seen.end()) {
         seen.emplace(key, sig);
         result.methods.push_back(ClassMethodTableResult::Entry{method, cls_path});
+        RecordFirstByNameTrace("first-method-keep", *method, sig, "kept");
         continue;
       }
       if (SigEqual(it->second, sig)) {
+        RecordFirstByNameTrace("duplicate-method-skip", *method, sig, "skipped");
         continue;
       }
       SPEC_RULE("EffMethods-Conflict");
-      result.diag_id = "EffMethods-Conflict";
+      SPEC_RULE("rule.14.EffMethods-Conflict");
+      result.diag_id = "E-TYP-2505";
       return result;
     }
   }
@@ -823,14 +916,19 @@ ClassFieldTableResult ClassFieldTable(const ScopeContext& ctx,
     if (it == seen.end()) {
       seen.emplace(key, lowered.type);
       result.fields.push_back(field);
+      RecordFirstFieldByNameTrace(
+          "first-field-keep", *field, lowered.type, "kept");
       continue;
     }
     const auto eq = TypeEquiv(it->second, lowered.type);
     if (eq.ok && eq.equiv) {
+      RecordFirstFieldByNameTrace(
+          "duplicate-field-skip", *field, lowered.type, "skipped");
       continue;
     }
     SPEC_RULE("EffFields-Conflict");
-    result.diag_id = "EffFields-Conflict";
+    SPEC_RULE("rule.14.EffFields-Conflict");
+    result.diag_id = "E-TYP-2505";
     return result;
   }
 
@@ -931,18 +1029,19 @@ bool TypeImplementsClass(const ScopeContext& ctx,
       return FfiSafeType(ctx, stripped);
     }
     if (IdEq(name, "Eq")) {
-      return EqType(ctx, stripped);
-    }
-    if (IdEq(name, "Step")) {
-      return BuiltinStepType(stripped);
-    }
-    if (IdEq(name, "Hash")) {
-      // Built-in hashability follows equality support for primitive/string/ptr
-      // families; user-defined aggregate hashing is checked via explicit impls.
-      if (EqType(stripped)) {
+      if (EqType(ctx, stripped)) {
         return true;
       }
     }
+    if (IdEq(name, "Discrete")) {
+      if (BuiltinDiscreteType(stripped)) {
+        return true;
+      }
+    }
+  }
+
+  if (const auto* dynamic_type = std::get_if<TypeDynamic>(&stripped->node)) {
+    return DynamicCapabilityTypeImplementsClass(*dynamic_type, path);
   }
 
   const auto* path_type = std::get_if<TypePathType>(&stripped->node);
@@ -1025,6 +1124,7 @@ bool IsModalClass(const ast::ClassDecl& decl) {
 bool VTableEligible(const ast::ClassMethodDecl& method) {
   SpecDefsClasses();
   SPEC_RULE("vtable_eligible");
+  SPEC_RULE("def.14.DynamicDispatchEligibility");
 
   // Must have receiver
   if (std::holds_alternative<ast::ReceiverShorthand>(method.receiver)) {
@@ -1141,6 +1241,7 @@ bool CheckOrphanRule(const ScopeContext& ctx,
                      const ast::ClassPath& class_path,
                      const ast::ModulePath& current_module) {
   SPEC_RULE("T-Orphan-Rule");
+  SPEC_RULE("req.14.ImplementationOrphanRequirement");
 
   auto in_current_assembly = [&](const ast::Path& path) {
     return !path.empty() && !current_module.empty() &&
@@ -1154,7 +1255,32 @@ bool CheckOrphanRule(const ScopeContext& ctx,
 
   const bool type_local = type_declared && in_current_assembly(type_path);
   const bool class_local = class_declared && in_current_assembly(class_path);
-  return type_local || class_local;
+  const bool accepted = type_local || class_local;
+
+  if (core::Conformance::Enabled()) {
+    std::string payload;
+    payload.reserve(192);
+    payload += "source=CheckOrphanRule;type=";
+    payload += core::StringOfPath(type_path);
+    payload += ";class=";
+    payload += core::StringOfPath(class_path);
+    payload += ";current_assembly=";
+    payload += current_module.empty() ? "" : std::string(current_module.front());
+    payload += ";type_declared=";
+    payload += type_declared ? "true" : "false";
+    payload += ";class_declared=";
+    payload += class_declared ? "true" : "false";
+    payload += ";type_local=";
+    payload += type_local ? "true" : "false";
+    payload += ";class_local=";
+    payload += class_local ? "true" : "false";
+    payload += ";result=";
+    payload += accepted ? "accepted" : "rejected";
+    core::Conformance::Record(
+        "req.14.ImplementationOrphanRequirement", std::nullopt, payload);
+  }
+
+  return accepted;
 }
 
 }  // namespace ultraviolet::analysis

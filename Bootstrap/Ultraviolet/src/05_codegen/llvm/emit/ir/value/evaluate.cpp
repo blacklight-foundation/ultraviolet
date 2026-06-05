@@ -4,14 +4,40 @@
 // =============================================================================
 #include "05_codegen/llvm/emit/llvm_emit_helpers.h"
 
+#include "00_core/int128.h"
+#include "00_core/spec_trace.h"
 #include "04_analysis/layout/layout.h"
 #include "05_codegen/symbols/mangle.h"
+
+#include <optional>
+#include <string>
 
 namespace ultraviolet::codegen {
 
 using namespace emit_detail;
 
 namespace {
+
+void RecordLoadValMemoryHelper(const char *source)
+{
+  SPEC_RULE("def.24.MemoryInstructionHelpers");
+  if (!core::Conformance::Enabled())
+  {
+    return;
+  }
+
+  std::string payload = "source=";
+  payload += source;
+  payload += ";helper=Load;lower_form=llvm.load";
+  core::Conformance::Record(
+      "def.24.MemoryInstructionHelpers", std::nullopt, payload);
+
+  payload = "source=";
+  payload += source;
+  payload += ";helper=LoadVal;lower_form=llvm.load;result=value";
+  core::Conformance::Record(
+      "def.24.MemoryInstructionHelpers", std::nullopt, payload);
+}
 
 std::optional<std::string> ProcedureSymbolForPath(
     const LowerCtx &ctx,
@@ -41,6 +67,226 @@ std::optional<std::string> ProcedureSymbolForPath(
     break;
   }
   return std::nullopt;
+}
+
+std::string TupleValueBitsPayload(
+    const analysis::TypeTuple &tuple,
+    const analysis::layout::RecordLayout &layout)
+{
+  std::string payload = "source=LLVMEmitter.TupleLit";
+  payload += ";tuple_layout=true";
+  payload += ";struct_bits=true";
+  payload += ";zero_padding=true";
+  payload += ";element_count=";
+  payload += std::to_string(tuple.elements.size());
+  payload += ";size=";
+  payload += std::to_string(layout.layout.size);
+  payload += ";offsets=";
+  for (std::size_t i = 0; i < layout.offsets.size(); ++i)
+  {
+    if (i != 0)
+    {
+      payload += ",";
+    }
+    payload += std::to_string(layout.offsets[i]);
+  }
+  return payload;
+}
+
+std::uint64_t AlignUpValueBits(std::uint64_t value, std::uint64_t align)
+{
+  if (align == 0)
+  {
+    return value;
+  }
+  const std::uint64_t rem = value % align;
+  if (rem == 0)
+  {
+    return value;
+  }
+  return value + (align - rem);
+}
+
+std::uint64_t ReadLittleEndianWord(
+    const std::vector<std::uint8_t> &bytes,
+    std::size_t offset,
+    std::size_t max_count)
+{
+  std::uint64_t word = 0;
+  const std::size_t end = std::min(bytes.size(), offset + max_count);
+  for (std::size_t i = offset; i < end; ++i)
+  {
+    word |= static_cast<std::uint64_t>(bytes[i]) << (8u * (i - offset));
+  }
+  return word;
+}
+
+core::UInt128 ReadLittleEndianUInt128(const std::vector<std::uint8_t> &bytes)
+{
+  return core::MakeUInt128(
+      ReadLittleEndianWord(bytes, 8, 8),
+      ReadLittleEndianWord(bytes, 0, 8));
+}
+
+bool IsFloatPrimName(std::string_view name)
+{
+  return name == "f16" || name == "f32" || name == "f64";
+}
+
+std::optional<analysis::layout::Value> ImmediateLayoutValue(
+    const IRValue &value,
+    const analysis::TypeRef &type,
+    const analysis::ScopeContext &scope)
+{
+  if (value.kind != IRValue::Kind::Immediate || !type)
+  {
+    return std::nullopt;
+  }
+
+  analysis::TypeRef value_type = analysis::StripPerm(type);
+  if (!value_type)
+  {
+    value_type = type;
+  }
+
+  const auto *prim = std::get_if<analysis::TypePrim>(&value_type->node);
+  if (!prim)
+  {
+    return std::nullopt;
+  }
+
+  analysis::layout::Value layout_value;
+  if (prim->name == "bool")
+  {
+    if (value.bytes.empty())
+    {
+      return std::nullopt;
+    }
+    layout_value.node = analysis::layout::BoolVal{value.bytes[0] != 0};
+    return layout_value;
+  }
+  if (prim->name == "char")
+  {
+    layout_value.node = analysis::layout::CharVal{
+        static_cast<std::uint32_t>(ReadLittleEndianWord(value.bytes, 0, 4))};
+    return layout_value;
+  }
+  if (prim->name == "()")
+  {
+    if (!value.bytes.empty())
+    {
+      return std::nullopt;
+    }
+    layout_value.node = analysis::layout::UnitVal{};
+    return layout_value;
+  }
+  if (prim->name == "!")
+  {
+    return std::nullopt;
+  }
+
+  const auto prim_size = analysis::layout::PrimSize(scope, prim->name);
+  if (!prim_size.has_value())
+  {
+    return std::nullopt;
+  }
+  if (IsFloatPrimName(prim->name))
+  {
+    layout_value.node = analysis::layout::FloatVal{
+        prim->name,
+        ReadLittleEndianWord(value.bytes, 0, 8)};
+    return layout_value;
+  }
+
+  layout_value.node = analysis::layout::IntVal{
+      prim->name,
+      ReadLittleEndianUInt128(value.bytes)};
+  return layout_value;
+}
+
+void ObserveImmediateTupleValueBits(
+    const analysis::ScopeContext &scope,
+    const analysis::TypeRef &tuple_type,
+    const analysis::TypeTuple &tuple,
+    const std::vector<IRValue> &elements)
+{
+  if (elements.size() != tuple.elements.size())
+  {
+    return;
+  }
+
+  analysis::layout::TupleVal tuple_value;
+  tuple_value.elements.reserve(elements.size());
+  for (std::size_t i = 0; i < elements.size(); ++i)
+  {
+    auto element_value = ImmediateLayoutValue(elements[i], tuple.elements[i], scope);
+    if (!element_value.has_value())
+    {
+      return;
+    }
+    tuple_value.elements.push_back(std::move(*element_value));
+  }
+
+  analysis::layout::Value aggregate_value;
+  aggregate_value.node = std::move(tuple_value);
+  if (auto bits = analysis::layout::ValueBits(scope, tuple_type, aggregate_value))
+  {
+    (void)analysis::layout::ValidValue(scope, tuple_type, *bits);
+  }
+}
+
+std::string EnumPayloadBitsPayload(std::string_view payload_kind,
+                                   const ast::VariantDecl &variant,
+                                   const analysis::layout::EnumLayout &layout,
+                                   std::size_t member_count)
+{
+  std::string payload = "source=LLVMEmitter.EnumLit";
+  payload += ";payload_kind=";
+  payload += payload_kind;
+  payload += ";pad_bytes=true";
+  payload += ";variant=";
+  payload += variant.name;
+  payload += ";payload_size=";
+  payload += std::to_string(layout.payload_size);
+  payload += ";member_count=";
+  payload += std::to_string(member_count);
+  return payload;
+}
+
+std::string EnumValueBitsPayload(std::string_view payload_kind,
+                                 const ast::VariantDecl &variant,
+                                 std::uint64_t disc,
+                                 const analysis::layout::EnumLayout &layout,
+                                 std::uint64_t disc_size,
+                                 std::size_t member_count)
+{
+  const std::uint64_t payload_offset =
+      AlignUpValueBits(disc_size, layout.payload_align);
+  std::string payload = "source=LLVMEmitter.EnumLit";
+  payload += ";enum_layout=true";
+  payload += ";enum_payload_bits=true";
+  payload += ";tagged_bits=true";
+  payload += ";payload_kind=";
+  payload += payload_kind;
+  payload += ";variant=";
+  payload += variant.name;
+  payload += ";disc=";
+  payload += std::to_string(disc);
+  payload += ";disc_type=";
+  payload += layout.disc_type;
+  payload += ";disc_size=";
+  payload += std::to_string(disc_size);
+  payload += ";payload_size=";
+  payload += std::to_string(layout.payload_size);
+  payload += ";payload_align=";
+  payload += std::to_string(layout.payload_align);
+  payload += ";payload_offset=";
+  payload += std::to_string(payload_offset);
+  payload += ";size=";
+  payload += std::to_string(layout.layout.size);
+  payload += ";member_count=";
+  payload += std::to_string(member_count);
+  return payload;
 }
 
 } // namespace
@@ -239,6 +485,16 @@ std::optional<std::string> ProcedureSymbolForPath(
         {
           return loaded;
         }
+        if (loaded->getType() == desired_llvm_ty)
+        {
+          return loaded;
+        }
+        llvm::Type *storage_llvm_ty = GetLLVMType(storage_type);
+        if (storage_llvm_ty &&
+            loaded->getType() == storage_llvm_ty)
+        {
+          return loaded;
+        }
         if (llvm::Value *coerced = CoerceToTyped(
                 *this,
                 builder,
@@ -253,6 +509,7 @@ std::optional<std::string> ProcedureSymbolForPath(
       };
       if (auto *alloca = llvm::dyn_cast<llvm::AllocaInst>(local))
       {
+        RecordLoadValMemoryHelper("EvaluateIRValue.local_alloca");
         llvm::Value *loaded = builder->CreateLoad(alloca->getAllocatedType(), alloca);
         return coerce_refined_local(loaded);
       }
@@ -268,6 +525,7 @@ std::optional<std::string> ProcedureSymbolForPath(
             {
               typed_ptr = builder->CreateBitCast(typed_ptr, expected_ptr_ty);
             }
+            RecordLoadValMemoryHelper("EvaluateIRValue.local_pointer");
             llvm::Value *loaded = builder->CreateLoad(local_ty, typed_ptr);
             return coerce_refined_local(loaded);
           }
@@ -355,6 +613,7 @@ std::optional<std::string> ProcedureSymbolForPath(
               typed_ptr = builder->CreateBitCast(
                   global_var, llvm::PointerType::get(symbol_ll, 0));
             }
+            RecordLoadValMemoryHelper("EvaluateIRValue.global_typed");
             llvm::LoadInst *loaded = builder->CreateLoad(symbol_ll, typed_ptr);
             loaded->setAlignment(load_align);
             return loaded;
@@ -364,6 +623,7 @@ std::optional<std::string> ProcedureSymbolForPath(
         if (llvm::Value *hosted_ptr =
                 GetHostedStatePtr(symbol, global_var->getValueType(), global_var))
         {
+          RecordLoadValMemoryHelper("EvaluateIRValue.hosted_state");
           llvm::LoadInst *loaded =
               builder->CreateLoad(global_var->getValueType(), hosted_ptr);
           loaded->setAlignment(global_var->getAlign().valueOrOne());
@@ -374,6 +634,7 @@ std::optional<std::string> ProcedureSymbolForPath(
           return nullptr;
         }
 
+        RecordLoadValMemoryHelper("EvaluateIRValue.global_var");
         llvm::LoadInst *loaded =
             builder->CreateLoad(global_var->getValueType(), global_var);
         loaded->setAlignment(global_var->getAlign().valueOrOne());
@@ -545,27 +806,28 @@ std::optional<std::string> ProcedureSymbolForPath(
         return llvm::APInt(bit_width, llvm::ArrayRef<std::uint64_t>(words));
       };
 
-      const bool looks_like_string_literal =
-          val.name.size() >= 2 && val.name.front() == '"' && val.name.back() == '"';
-      if (looks_like_string_literal)
+      auto has_immediate_literal_kind = [&](IRImmediateLiteralKind kind) -> bool
       {
-        if (core::IsDebugEnabled("obj"))
-        {
-          std::fprintf(stderr,
-                       "[llvm-immediate-string] name=%s bytes=%zu\n",
-                       val.name.c_str(),
-                       val.bytes.size());
-        }
-        auto *default_view_ty = llvm::StructType::get(
-            context_, {GetOpaquePtr(), llvm::Type::getInt64Ty(context_)});
-        if (llvm::Value *view = build_view_literal(default_view_ty, LiteralKind::String))
-        {
-          return view;
-        }
-      }
-
+        return val.literal_kind.has_value() && *val.literal_kind == kind;
+      };
+      auto *default_view_ty = llvm::StructType::get(
+          context_, {GetOpaquePtr(), llvm::Type::getInt64Ty(context_)});
       if (immediate_type)
       {
+        if (const auto *bytes_ty = std::get_if<analysis::TypeBytes>(&immediate_type->node))
+        {
+          if (bytes_ty->state.has_value() && *bytes_ty->state == analysis::BytesState::View)
+          {
+            if (llvm::Type *view_ty = GetLLVMType(immediate_type))
+            {
+              if (llvm::Value *view = build_view_literal(view_ty, LiteralKind::Bytes))
+              {
+                return view;
+              }
+            }
+          }
+        }
+
         if (const auto *str_ty = std::get_if<analysis::TypeString>(&immediate_type->node))
         {
           if (str_ty->state.has_value() && *str_ty->state == analysis::StringState::View)
@@ -579,19 +841,31 @@ std::optional<std::string> ProcedureSymbolForPath(
             }
           }
         }
+      }
 
-        if (const auto *bytes_ty = std::get_if<analysis::TypeBytes>(&immediate_type->node))
+      if (has_immediate_literal_kind(IRImmediateLiteralKind::Bytes))
+      {
+        if (llvm::Value *view = build_view_literal(default_view_ty, LiteralKind::Bytes))
         {
-          if (bytes_ty->state.has_value() && *bytes_ty->state == analysis::BytesState::View)
-          {
-            if (llvm::Type *view_ty = GetLLVMType(immediate_type))
-            {
-              if (llvm::Value *view = build_view_literal(view_ty, LiteralKind::Bytes))
-              {
-                return view;
-              }
-            }
-          }
+          return view;
+        }
+      }
+
+      const bool looks_like_string_literal =
+          val.name.size() >= 2 && val.name.front() == '"' && val.name.back() == '"';
+      if (looks_like_string_literal ||
+          has_immediate_literal_kind(IRImmediateLiteralKind::String))
+      {
+        if (core::IsDebugEnabled("obj"))
+        {
+          std::fprintf(stderr,
+                       "[llvm-immediate-string] name=%s bytes=%zu\n",
+                       val.name.c_str(),
+                       val.bytes.size());
+        }
+        if (llvm::Value *view = build_view_literal(default_view_ty, LiteralKind::String))
+        {
+          return view;
         }
       }
 
@@ -1084,7 +1358,7 @@ std::optional<std::string> ProcedureSymbolForPath(
           return nullptr;
         }
         const auto layout =
-            ::ultraviolet::analysis::layout::RecordLayoutOf(scope, tuple.elements);
+            ::ultraviolet::analysis::layout::TupleLayoutOf(scope, tuple.elements);
         if (!layout.has_value() || tuple_index >= layout->offsets.size())
         {
           return nullptr;
@@ -2423,7 +2697,7 @@ std::optional<std::string> ProcedureSymbolForPath(
               if (!field_offset.has_value())
               {
                 const analysis::ScopeContext &scope = BuildScope(ctx);
-                if (const auto layout = ::ultraviolet::analysis::layout::RecordLayoutOf(scope, tup->elements))
+                if (const auto layout = ::ultraviolet::analysis::layout::TupleLayoutOf(scope, tup->elements))
                 {
                   if (derived->tuple_index < layout->offsets.size())
                   {
@@ -2750,7 +3024,7 @@ std::optional<std::string> ProcedureSymbolForPath(
           if (tup && derived->tuple_index < tup->elements.size())
           {
             analysis::TypeRef elem_type = tup->elements[derived->tuple_index];
-            if (const auto layout = ::ultraviolet::analysis::layout::RecordLayoutOf(scope, tup->elements))
+            if (const auto layout = ::ultraviolet::analysis::layout::TupleLayoutOf(scope, tup->elements))
             {
               if (derived->tuple_index < layout->offsets.size())
               {
@@ -2822,8 +3096,9 @@ std::optional<std::string> ProcedureSymbolForPath(
       case DerivedValueInfo::Kind::Slice:
       {
         llvm::Type *i64_ty = llvm::Type::getInt64Ty(context_);
-        llvm::Value *base = EvaluateIRValue(derived->base);
-        if (!base)
+        llvm::Value *base_storage = GetAddressableStorage(derived->base);
+        llvm::Value *base = base_storage ? nullptr : EvaluateIRValue(derived->base);
+        if (!base_storage && !base)
         {
           break;
         }
@@ -2856,6 +3131,36 @@ std::optional<std::string> ProcedureSymbolForPath(
         {
           slice_type = analysis::MakeTypeSlice(elem_type);
         }
+        llvm::Value *loaded_base_slice = nullptr;
+        auto load_base_slice = [&]() -> llvm::Value *
+        {
+          if (!base_type || !std::holds_alternative<analysis::TypeSlice>(base_type->node))
+          {
+            return nullptr;
+          }
+          if (loaded_base_slice)
+          {
+            return loaded_base_slice;
+          }
+          llvm::Value *slice_addr = base_storage ? base_storage : base;
+          if (!slice_addr || !slice_addr->getType()->isPointerTy())
+          {
+            return nullptr;
+          }
+          llvm::Type *base_slice_ll = GetLLVMType(base_type);
+          if (!base_slice_ll)
+          {
+            return nullptr;
+          }
+          llvm::Value *typed_slice_ptr = builder->CreateBitCast(
+              slice_addr, llvm::PointerType::get(base_slice_ll, 0));
+          loaded_base_slice = builder->CreateLoad(base_slice_ll, typed_slice_ptr);
+          if (!loaded_base_slice || !loaded_base_slice->getType()->isStructTy())
+          {
+            loaded_base_slice = nullptr;
+          }
+          return loaded_base_slice;
+        };
         llvm::Type *slice_ll = slice_type ? GetLLVMType(slice_type) : nullptr;
         auto *slice_struct_ty = llvm::dyn_cast_or_null<llvm::StructType>(slice_ll);
         if (!slice_struct_ty || slice_struct_ty->getNumElements() < 2)
@@ -2876,11 +3181,15 @@ std::optional<std::string> ProcedureSymbolForPath(
         }
         else if (base_type && std::holds_alternative<analysis::TypeSlice>(base_type->node))
         {
-          if (base->getType()->isStructTy())
+          if (base && base->getType()->isStructTy())
           {
             base_len = builder->CreateExtractValue(base, {1u});
           }
-          else if (base->getType()->isPointerTy())
+          else if (llvm::Value *loaded_slice = load_base_slice())
+          {
+            base_len = builder->CreateExtractValue(loaded_slice, {1u});
+          }
+          else if (base && base->getType()->isPointerTy())
           {
             base_len = EmitIndexLenFromAddr(*this, *builder, base_type, base);
           }
@@ -3020,11 +3329,15 @@ std::optional<std::string> ProcedureSymbolForPath(
         llvm::Value *base_data_ptr = nullptr;
         if (base_type && std::holds_alternative<analysis::TypeSlice>(base_type->node))
         {
-          if (base->getType()->isStructTy())
+          if (base && base->getType()->isStructTy())
           {
             base_data_ptr = builder->CreateExtractValue(base, {0u});
           }
-          else if (base->getType()->isPointerTy())
+          else if (llvm::Value *loaded_slice = load_base_slice())
+          {
+            base_data_ptr = builder->CreateExtractValue(loaded_slice, {0u});
+          }
+          else if (base && base->getType()->isPointerTy())
           {
             llvm::Type *base_slice_ll = GetLLVMType(base_type);
             if (base_slice_ll)
@@ -3042,11 +3355,12 @@ std::optional<std::string> ProcedureSymbolForPath(
 
         if (!base_data_ptr)
         {
-          llvm::Value *base_ptr = pointer_from_value(base);
+          llvm::Value *base_ptr = base_storage ? base_storage : pointer_from_value(base);
           if (!base_ptr)
           {
-            if (auto *arr_ty = llvm::dyn_cast<llvm::ArrayType>(base->getType()))
+            if (base && llvm::isa<llvm::ArrayType>(base->getType()))
             {
+              auto *arr_ty = llvm::cast<llvm::ArrayType>(base->getType());
               llvm::Function *current_fn =
                   builder->GetInsertBlock() ? builder->GetInsertBlock()->getParent() : nullptr;
               if (!current_fn)
@@ -3107,7 +3421,7 @@ std::optional<std::string> ProcedureSymbolForPath(
           slice_len = builder->CreateIntCast(slice_len, slice_len_ty, false);
         }
 
-        llvm::Value *slice_value = llvm::UndefValue::get(slice_struct_ty);
+        llvm::Value *slice_value = llvm::Constant::getNullValue(slice_struct_ty);
         slice_value = builder->CreateInsertValue(slice_value, slice_ptr, {0u});
         slice_value = builder->CreateInsertValue(slice_value, slice_len, {1u});
         materialized = slice_value;
@@ -3575,6 +3889,77 @@ std::optional<std::string> ProcedureSymbolForPath(
           break;
         }
 
+        std::string enum_payload_kind = "unit";
+        std::size_t enum_payload_member_count = 0;
+        bool enum_payload_complete =
+            derived->payload_elems.empty() && derived->payload_fields.empty();
+        if (variant->payload_opt.has_value())
+        {
+          enum_payload_complete = false;
+          if (const auto *tuple_payload =
+                  std::get_if<ast::VariantPayloadTuple>(&*variant->payload_opt))
+          {
+            enum_payload_kind = "tuple";
+            enum_payload_member_count = tuple_payload->elements.size();
+            enum_payload_complete =
+                derived->payload_fields.empty() &&
+                derived->payload_elems.size() == enum_payload_member_count;
+          }
+          else if (const auto *record_payload =
+                       std::get_if<ast::VariantPayloadRecord>(&*variant->payload_opt))
+          {
+            enum_payload_kind = "record";
+            enum_payload_member_count = record_payload->fields.size();
+            enum_payload_complete =
+                derived->payload_elems.empty() &&
+                derived->payload_fields.size() == enum_payload_member_count;
+            for (const auto &field : record_payload->fields)
+            {
+              const auto found = std::find_if(
+                  derived->payload_fields.begin(),
+                  derived->payload_fields.end(),
+                  [&](const auto &entry)
+                  {
+                    return analysis::IdEq(entry.first, field.name);
+                  });
+              if (found == derived->payload_fields.end())
+              {
+                enum_payload_complete = false;
+                break;
+              }
+            }
+          }
+        }
+        const auto enum_disc_size =
+            ::ultraviolet::analysis::layout::PrimSize(scope, enum_layout->disc_type);
+
+        auto record_enum_value_bits = [&]()
+        {
+          if (!enum_payload_complete || !enum_disc_size.has_value() ||
+              !core::Conformance::Enabled())
+          {
+            return;
+          }
+          core::Conformance::Record(
+              "def.EnumPayloadBits",
+              std::nullopt,
+              EnumPayloadBitsPayload(
+                  enum_payload_kind,
+                  *variant,
+                  *enum_layout,
+                  enum_payload_member_count));
+          core::Conformance::Record(
+              "def.EnumValueBits",
+              std::nullopt,
+              EnumValueBitsPayload(
+                  enum_payload_kind,
+                  *variant,
+                  *disc,
+                  *enum_layout,
+                  *enum_disc_size,
+                  enum_payload_member_count));
+        };
+
         llvm::Type *enum_ty = enum_type ? GetLLVMType(enum_type) : nullptr;
         if (enum_layout->payload_size == 0)
         {
@@ -3592,8 +3977,9 @@ std::optional<std::string> ProcedureSymbolForPath(
             disc_value = CoerceTo(
                 builder,
                 llvm::ConstantInt::get(llvm::Type::getInt64Ty(context_), *disc),
-                enum_ty);
+              enum_ty);
           }
+          record_enum_value_bits();
           materialized = disc_value;
           break;
         }
@@ -3614,7 +4000,7 @@ std::optional<std::string> ProcedureSymbolForPath(
         llvm::AllocaInst *enum_slot = entry_builder.CreateAlloca(enum_struct_ty);
         builder->CreateStore(llvm::Constant::getNullValue(enum_struct_ty), enum_slot);
 
-        llvm::Value *disc_ptr = builder->CreateStructGEP(enum_struct_ty, enum_slot, 0);
+        llvm::Value *disc_ptr = enum_slot;
         llvm::Type *disc_ty = enum_struct_ty->getElementType(0);
         llvm::Value *disc_value = nullptr;
         if (auto *disc_int_ty = llvm::dyn_cast<llvm::IntegerType>(disc_ty))
@@ -3703,6 +4089,7 @@ std::optional<std::string> ProcedureSymbolForPath(
           }
         }
 
+        record_enum_value_bits();
         materialized = builder->CreateLoad(enum_struct_ty, enum_slot);
         break;
       }
@@ -4206,7 +4593,7 @@ std::optional<std::string> ProcedureSymbolForPath(
         if (tuple && struct_ty)
         {
           const auto layout =
-              ::ultraviolet::analysis::layout::RecordLayoutOf(scope, tuple->elements);
+              ::ultraviolet::analysis::layout::TupleLayoutOf(scope, tuple->elements);
           llvm::Function *current_fn =
               builder->GetInsertBlock() ? builder->GetInsertBlock()->getParent() : nullptr;
           if (layout.has_value() && current_fn &&
@@ -4253,6 +4640,19 @@ std::optional<std::string> ProcedureSymbolForPath(
                   llvm::PointerType::get(elem_ll, 0));
               llvm::StoreInst *store = builder->CreateStore(elem, field_ptr);
               store->setAlignment(llvm::Align(1));
+            }
+            if (count == tuple->elements.size() &&
+                core::Conformance::Enabled())
+            {
+              ObserveImmediateTupleValueBits(
+                  scope,
+                  tuple_type,
+                  *tuple,
+                  derived->elements);
+              core::Conformance::Record(
+                  "def.TupleValueBits",
+                  std::nullopt,
+                  TupleValueBitsPayload(*tuple, *layout));
             }
             materialized = builder->CreateLoad(struct_ty, agg_slot);
           }

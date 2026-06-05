@@ -1,0 +1,367 @@
+//! Output-diagnostic linking specimens.
+
+public procedure outputLinkingDiagnosticFixtureCount() -> usize {
+    return 21usize
+}
+
+public procedure validatedOutputLinkingDiagnosticFixtureCount() -> usize {
+    var count: usize = 0usize
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "LinkerToolResolveFailure",
+            "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure",
+            "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure/Source/Main.uv",
+            "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure/Expected.uv",
+            expectedDiagnostic("E-OUT-0405", "ResolveTool-Err-Linker")
+        ),
+        "LinkerToolResolveFailure",
+        "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure",
+        "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure/Source/Main.uv",
+        "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure/Expected.uv",
+        "E-OUT-0405",
+        "ResolveTool-Err-Linker"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "LinkerToolResolveFailure",
+            "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure",
+            "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure/Source/Main.uv",
+            "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure/Expected.uv",
+            expectedDiagnostic("E-OUT-0405", "Link-NotFound")
+        ),
+        "LinkerToolResolveFailure",
+        "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure",
+        "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure/Source/Main.uv",
+        "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure/Expected.uv",
+        "E-OUT-0405",
+        "Link-NotFound"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "LinkerToolResolveFailure",
+            "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure",
+            "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure/Source/Main.uv",
+            "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure/Expected.uv",
+            expectedDiagnostic("E-OUT-0405", "Out-Final-Link-Err")
+        ),
+        "LinkerToolResolveFailure",
+        "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure",
+        "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure/Source/Main.uv",
+        "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure/Expected.uv",
+        "E-OUT-0405",
+        "Out-Final-Link-Err"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "LinkerToolResolveFailure",
+            "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure",
+            "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure/Source/Main.uv",
+            "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure/Expected.uv",
+            expectedDiagnostic("E-OUT-0405", "Output-Pipeline-Err")
+        ),
+        "LinkerToolResolveFailure",
+        "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure",
+        "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure/Source/Main.uv",
+        "Fixtures/OutputDiagnostics/Linking/LinkerToolResolveFailure/Expected.uv",
+        "E-OUT-0405",
+        "Output-Pipeline-Err"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "ArchiverToolResolveFailure",
+            "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure",
+            "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure/Source/Library.uv",
+            "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure/Expected.uv",
+            expectedDiagnostic("E-OUT-0405", "ResolveTool-Err-Archiver")
+        ),
+        "ArchiverToolResolveFailure",
+        "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure",
+        "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure/Source/Library.uv",
+        "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure/Expected.uv",
+        "E-OUT-0405",
+        "ResolveTool-Err-Archiver"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "ArchiverToolResolveFailure",
+            "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure",
+            "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure/Source/Library.uv",
+            "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure/Expected.uv",
+            expectedDiagnostic("E-OUT-0405", "Archive-NotFound")
+        ),
+        "ArchiverToolResolveFailure",
+        "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure",
+        "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure/Source/Library.uv",
+        "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure/Expected.uv",
+        "E-OUT-0405",
+        "Archive-NotFound"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "ArchiverToolResolveFailure",
+            "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure",
+            "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure/Source/Library.uv",
+            "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure/Expected.uv",
+            expectedDiagnostic("E-OUT-0405", "Out-Final-Archive-Err")
+        ),
+        "ArchiverToolResolveFailure",
+        "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure",
+        "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure/Source/Library.uv",
+        "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure/Expected.uv",
+        "E-OUT-0405",
+        "Out-Final-Archive-Err"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "ArchiverToolResolveFailure",
+            "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure",
+            "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure/Source/Library.uv",
+            "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure/Expected.uv",
+            expectedDiagnostic("E-OUT-0405", "Output-Pipeline-Err")
+        ),
+        "ArchiverToolResolveFailure",
+        "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure",
+        "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure/Source/Library.uv",
+        "Fixtures/OutputDiagnostics/Linking/ArchiverToolResolveFailure/Expected.uv",
+        "E-OUT-0405",
+        "Output-Pipeline-Err"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "RuntimeLibMissing",
+            "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing",
+            "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing/Source/Main.uv",
+            "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing/Expected.uv",
+            expectedDiagnostic("E-OUT-0407", "ResolveRuntimeLib-Err")
+        ),
+        "RuntimeLibMissing",
+        "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing",
+        "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing/Source/Main.uv",
+        "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing/Expected.uv",
+        "E-OUT-0407",
+        "ResolveRuntimeLib-Err"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "RuntimeLibMissing",
+            "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing",
+            "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing/Source/Main.uv",
+            "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing/Expected.uv",
+            expectedDiagnostic("E-OUT-0407", "Link-Runtime-Missing")
+        ),
+        "RuntimeLibMissing",
+        "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing",
+        "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing/Source/Main.uv",
+        "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing/Expected.uv",
+        "E-OUT-0407",
+        "Link-Runtime-Missing"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "RuntimeLibMissing",
+            "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing",
+            "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing/Source/Main.uv",
+            "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing/Expected.uv",
+            expectedDiagnostic("E-OUT-0407", "Out-Final-Link-Err")
+        ),
+        "RuntimeLibMissing",
+        "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing",
+        "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing/Source/Main.uv",
+        "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing/Expected.uv",
+        "E-OUT-0407",
+        "Out-Final-Link-Err"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "RuntimeLibMissing",
+            "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing",
+            "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing/Source/Main.uv",
+            "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing/Expected.uv",
+            expectedDiagnostic("E-OUT-0407", "Output-Pipeline-Err")
+        ),
+        "RuntimeLibMissing",
+        "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing",
+        "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing/Source/Main.uv",
+        "Fixtures/OutputDiagnostics/Linking/RuntimeLibMissing/Expected.uv",
+        "E-OUT-0407",
+        "Output-Pipeline-Err"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "RuntimeIncompatible",
+            "Fixtures/OutputDiagnostics/Linking/RuntimeIncompatible",
+            "Fixtures/OutputDiagnostics/Linking/RuntimeIncompatible/Source/Main.uv",
+            "Fixtures/OutputDiagnostics/Linking/RuntimeIncompatible/Expected.uv",
+            expectedDiagnostic("E-OUT-0408", "Link-Runtime-Incompatible")
+        ),
+        "RuntimeIncompatible",
+        "Fixtures/OutputDiagnostics/Linking/RuntimeIncompatible",
+        "Fixtures/OutputDiagnostics/Linking/RuntimeIncompatible/Source/Main.uv",
+        "Fixtures/OutputDiagnostics/Linking/RuntimeIncompatible/Expected.uv",
+        "E-OUT-0408",
+        "Link-Runtime-Incompatible"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "RuntimeIncompatible",
+            "Fixtures/OutputDiagnostics/Linking/RuntimeIncompatible",
+            "Fixtures/OutputDiagnostics/Linking/RuntimeIncompatible/Source/Main.uv",
+            "Fixtures/OutputDiagnostics/Linking/RuntimeIncompatible/Expected.uv",
+            expectedDiagnostic("E-OUT-0408", "Out-Final-Link-Err")
+        ),
+        "RuntimeIncompatible",
+        "Fixtures/OutputDiagnostics/Linking/RuntimeIncompatible",
+        "Fixtures/OutputDiagnostics/Linking/RuntimeIncompatible/Source/Main.uv",
+        "Fixtures/OutputDiagnostics/Linking/RuntimeIncompatible/Expected.uv",
+        "E-OUT-0408",
+        "Out-Final-Link-Err"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "RuntimeIncompatible",
+            "Fixtures/OutputDiagnostics/Linking/RuntimeIncompatible",
+            "Fixtures/OutputDiagnostics/Linking/RuntimeIncompatible/Source/Main.uv",
+            "Fixtures/OutputDiagnostics/Linking/RuntimeIncompatible/Expected.uv",
+            expectedDiagnostic("E-OUT-0408", "Output-Pipeline-Err")
+        ),
+        "RuntimeIncompatible",
+        "Fixtures/OutputDiagnostics/Linking/RuntimeIncompatible",
+        "Fixtures/OutputDiagnostics/Linking/RuntimeIncompatible/Source/Main.uv",
+        "Fixtures/OutputDiagnostics/Linking/RuntimeIncompatible/Expected.uv",
+        "E-OUT-0408",
+        "Output-Pipeline-Err"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "LinkerInvocationFailure",
+            "Fixtures/OutputDiagnostics/Linking/LinkerInvocationFailure",
+            "Fixtures/OutputDiagnostics/Linking/LinkerInvocationFailure/Source/Main.uv",
+            "Fixtures/OutputDiagnostics/Linking/LinkerInvocationFailure/Expected.uv",
+            expectedDiagnostic("E-OUT-0404", "Link-Fail")
+        ),
+        "LinkerInvocationFailure",
+        "Fixtures/OutputDiagnostics/Linking/LinkerInvocationFailure",
+        "Fixtures/OutputDiagnostics/Linking/LinkerInvocationFailure/Source/Main.uv",
+        "Fixtures/OutputDiagnostics/Linking/LinkerInvocationFailure/Expected.uv",
+        "E-OUT-0404",
+        "Link-Fail"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "LinkerInvocationFailure",
+            "Fixtures/OutputDiagnostics/Linking/LinkerInvocationFailure",
+            "Fixtures/OutputDiagnostics/Linking/LinkerInvocationFailure/Source/Main.uv",
+            "Fixtures/OutputDiagnostics/Linking/LinkerInvocationFailure/Expected.uv",
+            expectedDiagnostic("E-OUT-0404", "Out-Final-Link-Err")
+        ),
+        "LinkerInvocationFailure",
+        "Fixtures/OutputDiagnostics/Linking/LinkerInvocationFailure",
+        "Fixtures/OutputDiagnostics/Linking/LinkerInvocationFailure/Source/Main.uv",
+        "Fixtures/OutputDiagnostics/Linking/LinkerInvocationFailure/Expected.uv",
+        "E-OUT-0404",
+        "Out-Final-Link-Err"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "LinkerInvocationFailure",
+            "Fixtures/OutputDiagnostics/Linking/LinkerInvocationFailure",
+            "Fixtures/OutputDiagnostics/Linking/LinkerInvocationFailure/Source/Main.uv",
+            "Fixtures/OutputDiagnostics/Linking/LinkerInvocationFailure/Expected.uv",
+            expectedDiagnostic("E-OUT-0404", "Output-Pipeline-Err")
+        ),
+        "LinkerInvocationFailure",
+        "Fixtures/OutputDiagnostics/Linking/LinkerInvocationFailure",
+        "Fixtures/OutputDiagnostics/Linking/LinkerInvocationFailure/Source/Main.uv",
+        "Fixtures/OutputDiagnostics/Linking/LinkerInvocationFailure/Expected.uv",
+        "E-OUT-0404",
+        "Output-Pipeline-Err"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "ArchiverInvocationFailure",
+            "Fixtures/OutputDiagnostics/Linking/ArchiverInvocationFailure",
+            "Fixtures/OutputDiagnostics/Linking/ArchiverInvocationFailure/Source/Library.uv",
+            "Fixtures/OutputDiagnostics/Linking/ArchiverInvocationFailure/Expected.uv",
+            expectedDiagnostic("E-OUT-0404", "Archive-Fail")
+        ),
+        "ArchiverInvocationFailure",
+        "Fixtures/OutputDiagnostics/Linking/ArchiverInvocationFailure",
+        "Fixtures/OutputDiagnostics/Linking/ArchiverInvocationFailure/Source/Library.uv",
+        "Fixtures/OutputDiagnostics/Linking/ArchiverInvocationFailure/Expected.uv",
+        "E-OUT-0404",
+        "Archive-Fail"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "ArchiverInvocationFailure",
+            "Fixtures/OutputDiagnostics/Linking/ArchiverInvocationFailure",
+            "Fixtures/OutputDiagnostics/Linking/ArchiverInvocationFailure/Source/Library.uv",
+            "Fixtures/OutputDiagnostics/Linking/ArchiverInvocationFailure/Expected.uv",
+            expectedDiagnostic("E-OUT-0404", "Out-Final-Archive-Err")
+        ),
+        "ArchiverInvocationFailure",
+        "Fixtures/OutputDiagnostics/Linking/ArchiverInvocationFailure",
+        "Fixtures/OutputDiagnostics/Linking/ArchiverInvocationFailure/Source/Library.uv",
+        "Fixtures/OutputDiagnostics/Linking/ArchiverInvocationFailure/Expected.uv",
+        "E-OUT-0404",
+        "Out-Final-Archive-Err"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "ArchiverInvocationFailure",
+            "Fixtures/OutputDiagnostics/Linking/ArchiverInvocationFailure",
+            "Fixtures/OutputDiagnostics/Linking/ArchiverInvocationFailure/Source/Library.uv",
+            "Fixtures/OutputDiagnostics/Linking/ArchiverInvocationFailure/Expected.uv",
+            expectedDiagnostic("E-OUT-0404", "Output-Pipeline-Err")
+        ),
+        "ArchiverInvocationFailure",
+        "Fixtures/OutputDiagnostics/Linking/ArchiverInvocationFailure",
+        "Fixtures/OutputDiagnostics/Linking/ArchiverInvocationFailure/Source/Library.uv",
+        "Fixtures/OutputDiagnostics/Linking/ArchiverInvocationFailure/Expected.uv",
+        "E-OUT-0404",
+        "Output-Pipeline-Err"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

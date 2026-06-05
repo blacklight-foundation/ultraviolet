@@ -13,23 +13,27 @@
 #include "05_codegen/lower/expr/closure_expr.h"
 
 #include <algorithm>
+#include <optional>
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-#include "05_codegen/lower/lower_expr.h"
-#include "05_codegen/ir/ir_model.h"
-#include "05_codegen/abi/abi.h"
-#include "05_codegen/checks/checks.h"
+#include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 #include "04_analysis/generics/monomorphize.h"
 #include "04_analysis/layout/layout.h"
 #include "04_analysis/resolve/scopes.h"
 #include "04_analysis/typing/type_lower.h"
 #include "04_analysis/typing/type_predicates.h"
-#include "05_codegen/symbols/mangle.h"
-#include "05_codegen/cleanup/cleanup.h"
 #include "04_analysis/typing/types.h"
-#include "00_core/assert_spec.h"
+#include "05_codegen/abi/abi.h"
+#include "05_codegen/checks/checks.h"
+#include "05_codegen/cleanup/cleanup.h"
+#include "05_codegen/lower/expr/expr_common.h"
+#include "05_codegen/lower/lower_expr.h"
+#include "05_codegen/ir/ir_model.h"
+#include "05_codegen/symbols/mangle.h"
 
 namespace ultraviolet::codegen {
 
@@ -198,13 +202,17 @@ struct ClosureCaptureCollector {
   std::unordered_map<std::string, CaptureBinding> captures;
   std::vector<std::string> order;
   ScopedNames locals;
+  bool contains_yield_release = false;
 
-  void RecordCapture(std::string_view name) {
+  void RecordCapture(std::string_view name, bool force_move = false) {
     const std::string key(name);
     if (locals.IsLocal(key)) {
       return;
     }
-    if (captures.find(key) != captures.end()) {
+    if (auto it = captures.find(key); it != captures.end()) {
+      if (force_move) {
+        it->second.by_move = true;
+      }
       return;
     }
 
@@ -223,16 +231,30 @@ struct ClosureCaptureCollector {
     CaptureBinding entry;
     entry.name = key;
     entry.type = cap_type;
-    entry.by_move = move_captures.find(key) != move_captures.end();
+    entry.by_move = force_move || move_captures.find(key) != move_captures.end();
     entry.from_capture_env = from_capture_env;
     captures.emplace(key, entry);
     order.push_back(key);
   }
 
+  void RecordMoveCapture(std::string_view name) {
+    RecordCapture(name, true);
+  }
+
+  void VisitKeyPath(const ast::KeyPathExpr& path);
   void VisitExpr(const ast::ExprPtr& expr);
   void VisitStmt(const ast::Stmt& stmt);
   void VisitBlock(const ast::Block& block);
 };
+
+void ClosureCaptureCollector::VisitKeyPath(const ast::KeyPathExpr& path) {
+  RecordCapture(path.root);
+  for (const auto& seg : path.segs) {
+    if (const auto* idx = std::get_if<ast::KeySegIndex>(&seg)) {
+      VisitExpr(idx->expr);
+    }
+  }
+}
 
 void ClosureCaptureCollector::VisitExpr(const ast::ExprPtr& expr) {
   if (!expr) {
@@ -381,7 +403,12 @@ void ClosureCaptureCollector::VisitExpr(const ast::ExprPtr& expr) {
         } else if constexpr (std::is_same_v<T, ast::CastExpr>) {
           VisitExpr(node.value);
         } else if constexpr (std::is_same_v<T, ast::MoveExpr>) {
-          VisitExpr(node.place);
+          if (node.place) {
+            if (const auto root = PlaceRoot(*node.place)) {
+              RecordMoveCapture(*root);
+            }
+            VisitExpr(node.place);
+          }
         } else if constexpr (std::is_same_v<T, ast::TransmuteExpr>) {
           VisitExpr(node.value);
         } else if constexpr (std::is_same_v<T, ast::RangeExpr>) {
@@ -415,8 +442,10 @@ void ClosureCaptureCollector::VisitExpr(const ast::ExprPtr& expr) {
           }
           locals.Pop();
         } else if constexpr (std::is_same_v<T, ast::YieldExpr>) {
+          contains_yield_release = contains_yield_release || node.release;
           VisitExpr(node.value);
         } else if constexpr (std::is_same_v<T, ast::YieldFromExpr>) {
+          contains_yield_release = contains_yield_release || node.release;
           VisitExpr(node.value);
         } else if constexpr (std::is_same_v<T, ast::SyncExpr>) {
           VisitExpr(node.value);
@@ -484,6 +513,9 @@ void ClosureCaptureCollector::VisitStmt(const ast::Stmt& stmt) {
             VisitBlock(*node.body);
           }
         } else if constexpr (std::is_same_v<T, ast::KeyBlockStmt>) {
+          for (const auto& path : node.paths) {
+            VisitKeyPath(path);
+          }
           if (node.body) {
             VisitBlock(*node.body);
           }
@@ -505,7 +537,12 @@ void ClosureCaptureCollector::VisitBlock(const ast::Block& block) {
 // CollectClosureCaptures - Collect the capture set for a closure body
 // =============================================================================
 
-std::vector<CaptureBinding> CollectClosureCaptures(
+struct ClosureCaptureSummary {
+  std::vector<CaptureBinding> captures;
+  bool contains_yield_release = false;
+};
+
+ClosureCaptureSummary CollectClosureCaptures(
     const ast::Block& body,
     LowerCtx& ctx,
     const std::unordered_set<std::string>& move_captures) {
@@ -517,7 +554,9 @@ std::vector<CaptureBinding> CollectClosureCaptures(
   for (const auto& key : collector.order) {
     result.push_back(collector.captures.at(key));
   }
-  return result;
+  return ClosureCaptureSummary{
+      std::move(result),
+      collector.contains_yield_release};
 }
 
 // =============================================================================
@@ -529,6 +568,237 @@ struct ClosureEnvLayout {
   std::uint64_t align = 1;
   std::vector<std::uint64_t> offsets;
 };
+
+std::string JoinStrings(const std::vector<std::string>& values) {
+  if (values.empty()) {
+    return "none";
+  }
+  std::string text;
+  for (const auto& value : values) {
+    if (!text.empty()) {
+      text += ",";
+    }
+    text += value;
+  }
+  return text;
+}
+
+std::string JoinOffsets(const std::vector<std::uint64_t>& values) {
+  if (values.empty()) {
+    return "none";
+  }
+  std::string text;
+  for (std::uint64_t value : values) {
+    if (!text.empty()) {
+      text += ",";
+    }
+    text += std::to_string(value);
+  }
+  return text;
+}
+
+std::string CaptureNamesText(const std::vector<CaptureBinding>& captures) {
+  std::vector<std::string> names;
+  names.reserve(captures.size());
+  for (const auto& capture : captures) {
+    names.push_back(capture.name);
+  }
+  return JoinStrings(names);
+}
+
+std::string CaptureModesText(const std::vector<CaptureBinding>& captures) {
+  std::vector<std::string> modes;
+  modes.reserve(captures.size());
+  for (const auto& capture : captures) {
+    if (capture.by_move) {
+      modes.emplace_back("move");
+    } else if (capture.from_capture_env) {
+      modes.emplace_back("from_env");
+    } else {
+      modes.emplace_back("ref");
+    }
+  }
+  return JoinStrings(modes);
+}
+
+bool CaptureTypeIsShared(const analysis::TypeRef& type) {
+  if (!type) {
+    return false;
+  }
+  const auto* perm = std::get_if<analysis::TypePerm>(&type->node);
+  return perm && perm->perm == analysis::Permission::Shared;
+}
+
+bool CapturesSharedValue(const std::vector<CaptureBinding>& captures) {
+  return std::any_of(
+      captures.begin(),
+      captures.end(),
+      [](const CaptureBinding& capture) {
+        return CaptureTypeIsShared(capture.type);
+      });
+}
+
+IRParam MakeClosureEnvParam() {
+  IRParam env_param;
+  env_param.mode = analysis::ParamMode::Move;
+  env_param.name = std::string(kClosureEnvParamName);
+  env_param.type =
+      analysis::MakeTypeRawPtr(analysis::RawPtrQual::Imm,
+                               analysis::MakeTypePrim("u8"));
+  return env_param;
+}
+
+void RecordClosureCodeSignature(const std::string& code_sym,
+                                std::string_view capture_kind,
+                                std::size_t source_param_count,
+                                std::size_t ir_param_count) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload =
+      "source=LowerClosureExpr;operation=ClosureCodeSig";
+  payload += ";capture_kind=";
+  payload += capture_kind;
+  payload += ";code_ptr_symbol=";
+  payload += code_sym;
+  payload += ";env_param=__env;env_param_index=0";
+  payload += ";env_param_type=*imm u8;source_param_count=";
+  payload += std::to_string(source_param_count);
+  payload += ";ir_param_count=";
+  payload += std::to_string(ir_param_count);
+  payload += ";panic_out=present;code_sig_env=first-param";
+
+  core::Conformance::Record("def.16.ClosureEnvParam", std::nullopt, payload);
+  core::Conformance::Record("def.16.ClosureCodeSig", std::nullopt, payload);
+}
+
+void RecordNonCapturingClosureValue(const std::string& code_sym) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload =
+      "source=LowerClosureExpr;operation=ClosureVal";
+  payload += ";capture_kind=noncapturing;env_ptr=null";
+  payload += ";code_ptr_symbol=";
+  payload += code_sym;
+  payload += ";code_ptr_domain=Symbol;target=TypeClosure";
+  payload += ";closure_rep=env_ptr,code_ptr;derived=TupleLit";
+
+  core::Conformance::Record("def.ClosureRuntimeValue", std::nullopt, payload);
+  core::Conformance::Record("req.ClosureOperationOwnership", std::nullopt, payload);
+  core::Conformance::Record("def.ClosureLoweringRep", std::nullopt, payload);
+  core::Conformance::Record("req.ClosureLoweringOwnership", std::nullopt, payload);
+  core::Conformance::Record("def.16.ClosureEnvironmentRuntimeModel", std::nullopt, payload);
+  core::Conformance::Record("rule.16.Lower-Expr-Closure-NonCapturing", std::nullopt, payload);
+}
+
+void RecordCapturingClosureValue(
+    const std::string& code_sym,
+    const std::string& env_sym,
+    const std::vector<CaptureBinding>& captures,
+    const ClosureEnvLayout& env_layout,
+    const std::vector<std::string>& move_capture_names) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload =
+      "source=LowerClosureExpr;operation=ClosureVal;capture_kind=capturing";
+  payload += ";env_ptr=addr;code_ptr_symbol=";
+  payload += code_sym;
+  payload += ";env_symbol=";
+  payload += env_sym;
+  payload += ";code_ptr_domain=Symbol;capture_count=";
+  payload += std::to_string(captures.size());
+  payload += ";capture_list=";
+  payload += CaptureNamesText(captures);
+  payload += ";capture_modes=";
+  payload += CaptureModesText(captures);
+  payload += ";env_size=";
+  payload += std::to_string(env_layout.size);
+  payload += ";env_align=";
+  payload += std::to_string(env_layout.align);
+  payload += ";env_offsets=";
+  payload += JoinOffsets(env_layout.offsets);
+  payload += ";lower_capture_env=alloc+stores;closure_rep=env_ptr,code_ptr";
+  payload += ";captured_access=env_param+offsets;mark_moved=";
+  payload += std::to_string(move_capture_names.size());
+  payload += ";code_sig_env=first-param";
+
+  core::Conformance::Record("def.ClosureRuntimeValue", std::nullopt, payload);
+  core::Conformance::Record("req.ClosureOperationOwnership", std::nullopt, payload);
+  core::Conformance::Record("def.ClosureLoweringRep", std::nullopt, payload);
+  core::Conformance::Record("req.ClosureLoweringOwnership", std::nullopt, payload);
+  core::Conformance::Record("def.16.ClosureEnvironmentRuntimeModel", std::nullopt, payload);
+  core::Conformance::Record("rule.16.Lower-Expr-Closure-Capturing", std::nullopt, payload);
+  core::Conformance::Record("def.16.ClosureLoweringCaptureTypes", std::nullopt, payload);
+  core::Conformance::Record("def.16.LowerCaptureEnv", std::nullopt, payload);
+  core::Conformance::Record("def.16.CapturedIdentifierLoweringHelpers", std::nullopt, payload);
+  if (payload.find("capture_modes=ref") != std::string::npos) {
+    core::Conformance::Record("rule.16.Lower-CapturedIdent-Ref", std::nullopt, payload);
+    core::Conformance::Record(
+        "req.16.LowerCapturedIdentRefTemporaries",
+        std::nullopt,
+        payload);
+  }
+  if (payload.find("capture_modes=move") != std::string::npos) {
+    core::Conformance::Record("rule.16.Lower-CapturedIdent-Move", std::nullopt, payload);
+  }
+}
+
+void RecordSharedClosureYieldReleaseLowering(
+    const std::string& code_sym,
+    const std::vector<CaptureBinding>& captures,
+    const ClosureEnvLayout& env_layout) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload =
+      "source=LowerClosureExpr;operation=ClosureYieldReleaseShared";
+  payload += ";code_ptr_symbol=";
+  payload += code_sym;
+  payload += ";shared_captures=true;yield_release=true";
+  payload += ";capture_count=";
+  payload += std::to_string(captures.size());
+  payload += ";capture_list=";
+  payload += CaptureNamesText(captures);
+  payload += ";env_size=";
+  payload += std::to_string(env_layout.size);
+  payload += ";captured_key_snapshot=closure_async_frame";
+  payload += ";component=StaleValueMarkIR";
+  payload += ";component_set=SnapshotHeldKeysIR,ReleaseHeldKeysIR,";
+  payload += "ReacquireHeldKeysIR,StaleValueMarkIR";
+
+  core::Conformance::Record(
+      "rule.21.Lower-Closure-Yield-Shared",
+      std::nullopt,
+      payload);
+  core::Conformance::Record("def.21.AsyncKeyIR", std::nullopt, payload);
+}
+
+void RecordClosureInvocation(const IRCall& call, std::size_t source_arg_count) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload =
+      "source=LowerClosureCall;operation=ClosureInvoke;callee=closure_value";
+  payload += ";env_arg=prepended;code_ptr=tuple_index_1;call_ir=IRCall";
+  payload += ";source_arg_count=";
+  payload += std::to_string(source_arg_count);
+  payload += ";ir_arg_count=";
+  payload += std::to_string(call.args.size());
+  payload += ";panic_out=present";
+  core::Conformance::Record("req.ClosureOperationOwnership", std::nullopt, payload);
+  core::Conformance::Record("rule.16.Lower-Closure-Call", std::nullopt, payload);
+  core::Conformance::Record(
+      "req.16.LowerClosureCallResolvedInternalForm",
+      std::nullopt,
+      payload);
+}
 
 ClosureEnvLayout ComputeClosureEnvLayout(
     const std::vector<CaptureBinding>& captures,
@@ -660,8 +930,8 @@ bool IsUnitType(const analysis::TypeRef& type) {
 //   - code_ptr: Symbol reference to the closure code procedure
 //
 // The closure code procedure has signature:
-//   For non-capturing: (params...) -> ret
-//   For capturing: (env_ptr, params...) -> ret
+//   For closure values: (__env, params...) -> ret
+//   For ordinary non-capturing function values: (params...) -> ret
 //
 // =============================================================================
 
@@ -756,10 +1026,14 @@ LowerResult LowerClosureExpr(
     LowerCtx& ctx,
     const std::vector<analysis::TypeRef>* inferred_param_types,
     const std::vector<std::optional<analysis::ParamMode>>* inferred_param_modes,
-    analysis::TypeRef inferred_ret_type) {
+    analysis::TypeRef inferred_ret_type,
+    bool lower_as_closure_value,
+    analysis::TypeRef inferred_closure_type) {
 
   // Step 1: Collect captures from the closure body
-  std::vector<CaptureBinding> captures = CollectClosureCaptures(body, ctx, move_captures);
+  ClosureCaptureSummary capture_summary =
+      CollectClosureCaptures(body, ctx, move_captures);
+  std::vector<CaptureBinding> captures = std::move(capture_summary.captures);
 
   // Step 2: Generate closure code symbol
   std::string code_sym = ClosureCodeSym(ctx);
@@ -788,12 +1062,13 @@ LowerResult LowerClosureExpr(
   if (captures.empty()) {
     SPEC_RULE("Lower-Expr-Closure-NonCapturing");
 
-    // Generate the closure code procedure.
-    // Non-capturing closures type as TypeFunc, so the emitted callable must
-    // use the ordinary function ABI with no hidden env parameter.
     ProcIR proc;
     proc.symbol = code_sym;
     proc.ret = ret_type;
+
+    if (lower_as_closure_value) {
+      proc.params.push_back(MakeClosureEnvParam());
+    }
 
     // Add parameters from closure signature
     std::vector<analysis::TypeFuncParam> fn_type_params;
@@ -893,7 +1168,38 @@ LowerResult LowerClosureExpr(
     }
 
     analysis::TypeRef result_ret_type = proc.ret;
+    const std::size_t ir_param_count = proc.params.size();
+    if (lower_as_closure_value) {
+      RecordClosureCodeSignature(
+          code_sym,
+          "noncapturing",
+          params.size(),
+          ir_param_count);
+    }
     ctx.QueueExtraProc(std::move(proc), LinkageKind::Internal);
+
+    if (lower_as_closure_value) {
+      IRValue env_null;
+      env_null.kind = IRValue::Kind::Immediate;
+      env_null.name = "null";
+      env_null.bytes = {0, 0, 0, 0, 0, 0, 0, 0};
+
+      IRValue code_val;
+      code_val.kind = IRValue::Kind::Symbol;
+      code_val.name = code_sym;
+
+      IRValue result = ctx.FreshTempValue("closure");
+      DerivedValueInfo closure_info;
+      closure_info.kind = DerivedValueInfo::Kind::TupleLit;
+      closure_info.elements.push_back(env_null);
+      closure_info.elements.push_back(code_val);
+      ctx.RegisterDerivedValue(result, closure_info);
+      if (inferred_closure_type) {
+        ctx.RegisterValueType(result, inferred_closure_type);
+      }
+      RecordNonCapturingClosureValue(code_sym);
+      return LowerResult{EmptyIR(), result};
+    }
 
     IRValue result;
     result.kind = IRValue::Kind::Symbol;
@@ -907,6 +1213,7 @@ LowerResult LowerClosureExpr(
 
   // Step 5: Capturing closure
   SPEC_RULE("Lower-Expr-Closure-Capturing");
+  const std::string env_sym = MangleClosureEnv(code_sym);
 
   // Compute environment layout
   ClosureEnvLayout env_layout = ComputeClosureEnvLayout(captures, scope);
@@ -1054,13 +1361,7 @@ LowerResult LowerClosureExpr(
   proc.ret = ret_type;
 
   // First parameter is env pointer
-  IRParam env_param;
-  env_param.mode = analysis::ParamMode::Move;
-  env_param.name = std::string(kClosureEnvParamName);
-  env_param.type =
-      analysis::MakeTypeRawPtr(analysis::RawPtrQual::Imm,
-                               analysis::MakeTypePrim("u8"));
-  proc.params.push_back(env_param);
+  proc.params.push_back(MakeClosureEnvParam());
 
   // Add parameters from closure signature
   for (std::size_t param_index = 0; param_index < params.size(); ++param_index) {
@@ -1179,6 +1480,11 @@ LowerResult LowerClosureExpr(
     snapshot.Restore(ctx);
   }
 
+  RecordClosureCodeSignature(
+      code_sym,
+      "capturing",
+      params.size(),
+      proc.params.size());
   ctx.QueueExtraProc(std::move(proc), LinkageKind::Internal);
 
   // Step 8: Return closure value
@@ -1194,6 +1500,15 @@ LowerResult LowerClosureExpr(
   code_val.name = code_sym;
   closure_info.elements.push_back(code_val);
   ctx.RegisterDerivedValue(result, closure_info);
+  RecordCapturingClosureValue(
+      code_sym,
+      env_sym,
+      captures,
+      env_layout,
+      move_capture_names);
+  if (capture_summary.contains_yield_release && CapturesSharedValue(captures)) {
+    RecordSharedClosureYieldReleaseLowering(code_sym, captures, env_layout);
+  }
 
   return LowerResult{SeqIR(std::move(env_parts)), result};
 }
@@ -1326,6 +1641,7 @@ LowerResult LowerClosureCall(
   if (closure_result_type) {
     ctx.RegisterValueType(call.result, closure_result_type);
   }
+  RecordClosureInvocation(call, args.size());
 
   // Combine all IR parts
   std::vector<IRPtr> parts;
@@ -1422,7 +1738,9 @@ LowerResult LowerClosureExprFromNode(
     LowerCtx& ctx,
     const std::vector<analysis::TypeRef>* inferred_param_types,
     const std::vector<std::optional<analysis::ParamMode>>* inferred_param_modes,
-    analysis::TypeRef inferred_ret_type) {
+    analysis::TypeRef inferred_ret_type,
+    bool lower_as_closure_value,
+    analysis::TypeRef inferred_closure_type) {
   // Convert ClosureExpr to the decomposed form
   // ClosureParam has: move_capture, name, type_opt
   // We need to convert to vector<ast::Param>
@@ -1452,7 +1770,8 @@ LowerResult LowerClosureExprFromNode(
     if (block_expr->block) {
       return LowerClosureExpr(params, expr.ret_type_opt, *block_expr->block,
                               move_captures, ctx, inferred_param_types,
-                              inferred_param_modes, inferred_ret_type);
+                              inferred_param_modes, inferred_ret_type,
+                              lower_as_closure_value, inferred_closure_type);
     }
   }
 
@@ -1462,7 +1781,8 @@ LowerResult LowerClosureExprFromNode(
 
   return LowerClosureExpr(params, expr.ret_type_opt, synth_block, move_captures,
                           ctx, inferred_param_types, inferred_param_modes,
-                          inferred_ret_type);
+                          inferred_ret_type, lower_as_closure_value,
+                          inferred_closure_type);
 }
 
 }  // namespace
@@ -1472,20 +1792,46 @@ LowerResult LowerClosureExprFromNode(
 // =============================================================================
 
 LowerResult LowerClosureExpr(const ast::ClosureExpr& expr, LowerCtx& ctx) {
-  return LowerClosureExprFromNode(expr, ctx, nullptr, nullptr, nullptr);
+  return LowerClosureExprFromNode(
+      expr,
+      ctx,
+      nullptr,
+      nullptr,
+      nullptr,
+      false,
+      nullptr);
 }
 
 LowerResult LowerClosureExpr(const ast::Expr& expr,
                              const ast::ClosureExpr& closure,
                              LowerCtx& ctx) {
+  analysis::TypeRef expected_type = nullptr;
+  if (ctx.expr_type) {
+    expected_type = ctx.expr_type(expr);
+  }
+  return LowerClosureExpr(expr, closure, ctx, expected_type);
+}
+
+LowerResult LowerClosureExpr(const ast::Expr& expr,
+                             const ast::ClosureExpr& closure,
+                             LowerCtx& ctx,
+                             analysis::TypeRef expected_type) {
   std::vector<analysis::TypeRef> inferred_param_types;
   std::vector<std::optional<analysis::ParamMode>> inferred_param_modes;
   analysis::TypeRef inferred_ret_type = nullptr;
+  analysis::TypeRef inferred_closure_type = nullptr;
+  bool lower_as_closure_value = false;
 
-  if (ctx.expr_type) {
-    if (analysis::TypeRef closure_type = ctx.expr_type(expr)) {
+  {
+    if (analysis::TypeRef closure_type = expected_type) {
       analysis::TypeRef callable_type =
           NormalizeCallableAliasForLowering(closure_type, ctx);
+      analysis::TypeRef stripped_callable = analysis::StripPerm(callable_type);
+      if (stripped_callable &&
+          std::holds_alternative<analysis::TypeClosure>(stripped_callable->node)) {
+        lower_as_closure_value = true;
+        inferred_closure_type = callable_type;
+      }
       if (analysis::TypeRef func_type = GetClosureFuncType(callable_type)) {
         if (const auto* fn = std::get_if<analysis::TypeFunc>(&func_type->node)) {
           inferred_ret_type = fn->ret;
@@ -1506,7 +1852,9 @@ LowerResult LowerClosureExpr(const ast::Expr& expr,
       inferred_param_modes.empty() ? nullptr : &inferred_param_modes;
 
   return LowerClosureExprFromNode(closure, ctx, inferred_types_ptr,
-                                  inferred_modes_ptr, inferred_ret_type);
+                                  inferred_modes_ptr, inferred_ret_type,
+                                  lower_as_closure_value,
+                                  inferred_closure_type);
 }
 
 }  // namespace ultraviolet::codegen

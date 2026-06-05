@@ -4,7 +4,138 @@
 // =============================================================================
 #include "../../ir_instruction_visitor.h"
 
+#include "00_core/assert_spec.h"
+
+#include <mutex>
+#include <string>
+#include <string_view>
+#include <utility>
+
 namespace ultraviolet::codegen::emit_detail {
+
+namespace {
+
+void RecordRegionEmissionConformanceOnce(std::once_flag& flag,
+                                         std::string_view rule_id,
+                                         std::string payload)
+{
+  if (!core::Conformance::Enabled())
+  {
+    return;
+  }
+  std::call_once(flag, [rule_id = std::string(rule_id),
+                        payload = std::move(payload)]() {
+    core::Conformance::Record(rule_id, std::nullopt, payload);
+  });
+}
+
+void AppendRegionPayloadField(std::string& payload,
+                              std::string_view key,
+                              std::string_view value)
+{
+  if (!payload.empty())
+  {
+    payload += ';';
+  }
+  payload += key;
+  payload += '=';
+  payload += value;
+}
+
+void AppendRegionPayloadField(std::string& payload,
+                              std::string_view key,
+                              const char* value)
+{
+  AppendRegionPayloadField(payload,
+                           key,
+                           std::string_view(value ? value : "-"));
+}
+
+void AppendRegionPayloadField(std::string& payload,
+                              std::string_view key,
+                              bool value)
+{
+  AppendRegionPayloadField(payload,
+                           key,
+                           std::string_view(value ? "true" : "false"));
+}
+
+std::string RuntimeRegionEntryPayload(std::string_view alias)
+{
+  std::string payload;
+  AppendRegionPayloadField(payload, "operation", "RegionEntry");
+  AppendRegionPayloadField(payload, "source", "IRRegionEmission");
+  AppendRegionPayloadField(payload, "runtime_symbol", "Region::new_scoped");
+  AppendRegionPayloadField(payload, "runtime_struct", "UVRegionEntry");
+  AppendRegionPayloadField(payload, "fields", "tag,target,scope,mark_opt");
+  AppendRegionPayloadField(payload, "tag_source", "uv_region_fresh_token");
+  AppendRegionPayloadField(payload, "target_source", "arena.handle");
+  AppendRegionPayloadField(payload, "scope_source", "uv_scope_current");
+  AppendRegionPayloadField(payload, "mark_opt", "none");
+  AppendRegionPayloadField(payload, "alias", alias);
+  return payload;
+}
+
+std::string RuntimeRegionStackPayload(std::string_view alias)
+{
+  std::string payload;
+  AppendRegionPayloadField(payload, "operation", "UpdateRegionStack");
+  AppendRegionPayloadField(payload, "source", "IRRegionEmission");
+  AppendRegionPayloadField(payload, "runtime_symbol", "Region::new_scoped");
+  AppendRegionPayloadField(payload, "runtime_storage", "UVRegionState.region_stack");
+  AppendRegionPayloadField(payload, "update", "push");
+  AppendRegionPayloadField(payload, "entry", "tag,target,scope,none");
+  AppendRegionPayloadField(payload, "preserves_scope_addr_arena_poison", true);
+  AppendRegionPayloadField(payload, "alias", alias);
+  return payload;
+}
+
+std::string FreshRegionTagAndArenaPayload(std::string_view alias)
+{
+  std::string payload;
+  AppendRegionPayloadField(payload, "operation", "FreshTagFreshArena");
+  AppendRegionPayloadField(payload, "source", "IRRegionEmission");
+  AppendRegionPayloadField(payload, "runtime_symbol", "Region::new_scoped");
+  AppendRegionPayloadField(payload, "generator", "uv_region_fresh_token");
+  AppendRegionPayloadField(payload, "fresh_tag", true);
+  AppendRegionPayloadField(payload, "fresh_arena", true);
+  AppendRegionPayloadField(payload, "handle_used_as_tag_and_target", true);
+  AppendRegionPayloadField(payload, "alias", alias);
+  return payload;
+}
+
+std::string StructuredRegionLoweringFormPayload()
+{
+  std::string payload;
+  AppendRegionPayloadField(payload,
+                           "obligation",
+                           "def.24.StructuredIRLoweringForms");
+  AppendRegionPayloadField(payload, "structured_form", "RegionIRForm");
+  AppendRegionPayloadField(payload, "structured_lower_form", "RegionLowerForm");
+  AppendRegionPayloadField(payload, "source", "IRRegionEmission");
+  return payload;
+}
+
+std::string RegionIRLoweringPayload(std::string_view alias)
+{
+  std::string payload;
+  AppendRegionPayloadField(payload, "obligation", "rule.24.Lower-RegionIR");
+  AppendRegionPayloadField(payload, "ir_form", "RegionIRForm");
+  AppendRegionPayloadField(payload, "lower_form", "RegionLowerForm");
+  AppendRegionPayloadField(payload, "source", "IRRegionEmission");
+  AppendRegionPayloadField(payload, "runtime_symbol", "Region::new_scoped");
+  AppendRegionPayloadField(payload, "alias", alias);
+  AppendRegionPayloadField(payload, "result", "value");
+  return payload;
+}
+
+std::once_flag g_runtime_region_entry_obligation_once;
+std::once_flag g_runtime_region_stack_obligation_once;
+std::once_flag g_fresh_runtime_region_tag_arena_obligation_once;
+std::once_flag g_structured_region_lowering_form_obligation_once;
+std::once_flag g_region_ir_lowering_obligation_once;
+
+}  // namespace
 
 void IRInstructionVisitor::operator()(const IRRegion &region) const
 {
@@ -107,6 +238,26 @@ void IRInstructionVisitor::operator()(const IRRegion &region) const
   {
     alias = std::string(project::ActiveLanguageProfile().region_active_alias);
   }
+  RecordRegionEmissionConformanceOnce(
+      g_runtime_region_entry_obligation_once,
+      "def.RuntimeRegionEntry",
+      RuntimeRegionEntryPayload(*alias));
+  RecordRegionEmissionConformanceOnce(
+      g_runtime_region_stack_obligation_once,
+      "def.RuntimeRegionStack",
+      RuntimeRegionStackPayload(*alias));
+  RecordRegionEmissionConformanceOnce(
+      g_fresh_runtime_region_tag_arena_obligation_once,
+      "def.FreshRuntimeRegionTagAndArena",
+      FreshRegionTagAndArenaPayload(*alias));
+  RecordRegionEmissionConformanceOnce(
+      g_structured_region_lowering_form_obligation_once,
+      "def.24.StructuredIRLoweringForms",
+      StructuredRegionLoweringFormPayload());
+  RecordRegionEmissionConformanceOnce(
+      g_region_ir_lowering_obligation_once,
+      "rule.24.Lower-RegionIR",
+      RegionIRLoweringPayload(*alias));
 
   llvm::Value *previous_local = emitter.GetLocal(*alias);
   analysis::TypeRef previous_type = emitter.LookupLocalType(*alias);

@@ -1,0 +1,15 @@
+//! Accepted project fixture for exact range lowering check-judgement evidence.
+
+/// Exercises the exact compiler lowering/check judgement set required by ranges.
+public procedure loweringChecksJudgementSetReference(
+    values: [i32],
+    index: usize,
+    pointer: *imm i32
+) -> i32 {
+    let scalar_value: i32 = values[index]
+    let range_value: [i32] = values[0usize..1usize]
+    unsafe {
+        let transmuted_value: u32 = transmute<i32, u32>(scalar_value)
+        return (transmuted_value as i32) + range_value[0usize] + *pointer
+    }
+}

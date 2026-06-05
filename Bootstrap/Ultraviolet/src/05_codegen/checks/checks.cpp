@@ -64,7 +64,7 @@
 //   - Valid: emit ReadPtr
 //   - Null: emit LowerPanic(NullDeref)
 //   - Expired: emit LowerPanic(ExpiredDeref)
-//   - Raw (*imm/*mut): emit unchecked ReadPtr
+//   - Raw (*imm/*mut): emit nonnull guard before ReadPtr
 // =============================================================================
 
 #include "05_codegen/checks/checks.h"
@@ -84,6 +84,7 @@
 
 #include <cassert>
 #include <limits>
+#include <mutex>
 #include <string_view>
 #include <unordered_map>
 #include <vector>
@@ -143,6 +144,164 @@ analysis::TypeRef ResolveAliasTypeForCodegen(const analysis::TypeRef& type,
   }
 
   return ResolveAliasTypeForCodegen(inst, ctx, depth + 1);
+}
+
+std::string_view RawPtrQualName(analysis::RawPtrQual qual) {
+  return qual == analysis::RawPtrQual::Mut ? "mut" : "imm";
+}
+
+bool IsSingleSegmentTypePath(const analysis::TypePath& path,
+                             std::string_view name) {
+  if (path.size() != 1) {
+    return false;
+  }
+  const std::string& segment = path.front();
+  return segment.size() == name.size() &&
+         segment.compare(0, segment.size(), name.data(), name.size()) == 0;
+}
+
+bool TryGpuPtrAddressSpaceName(const analysis::TypeRef& type,
+                               std::string_view& address_space) {
+  if (!type) {
+    return false;
+  }
+  const auto* path = analysis::AppliedTypePath(*type);
+  const auto* args = analysis::AppliedTypeArgs(*type);
+  if (!path || !args || !args->empty()) {
+    return false;
+  }
+  if (!IsSingleSegmentTypePath(*path, "Global") &&
+      !IsSingleSegmentTypePath(*path, "Shared") &&
+      !IsSingleSegmentTypePath(*path, "Private")) {
+    return false;
+  }
+  address_space = path->front();
+  return true;
+}
+
+bool TryGpuPtrPointerType(const analysis::TypeRef& type,
+                          analysis::TypeRef& element,
+                          std::string_view& address_space) {
+  if (!type) {
+    return false;
+  }
+  const auto* path = analysis::AppliedTypePath(*type);
+  const auto* args = analysis::AppliedTypeArgs(*type);
+  if (!path || !args || args->size() != 2 ||
+      !IsSingleSegmentTypePath(*path, "GpuPtr") ||
+      !(*args)[0] || !TryGpuPtrAddressSpaceName((*args)[1], address_space)) {
+    return false;
+  }
+  element = (*args)[0];
+  return true;
+}
+
+std::once_flag g_raw_pointer_read_mut_obligation_once;
+std::once_flag g_raw_pointer_read_imm_obligation_once;
+std::once_flag g_safe_pointer_expired_read_valid_obligation_once;
+std::once_flag g_safe_pointer_expired_read_static_obligation_once;
+std::once_flag g_safe_pointer_expired_read_unspecified_obligation_once;
+std::once_flag g_safe_pointer_expired_read_path_obligation_once;
+std::once_flag g_safe_pointer_expired_read_fallback_obligation_once;
+std::once_flag g_safe_pointer_null_read_valid_obligation_once;
+std::once_flag g_safe_pointer_null_read_static_obligation_once;
+std::once_flag g_safe_pointer_null_read_unspecified_obligation_once;
+std::once_flag g_safe_pointer_null_read_path_obligation_once;
+std::once_flag g_safe_pointer_null_read_fallback_obligation_once;
+
+std::once_flag& RawPointerReadFlag(analysis::RawPtrQual qual) {
+  return qual == analysis::RawPtrQual::Mut
+      ? g_raw_pointer_read_mut_obligation_once
+      : g_raw_pointer_read_imm_obligation_once;
+}
+
+std::once_flag& SafePointerExpiredReadFlag(std::string_view branch) {
+  if (branch == "valid-active-check") {
+    return g_safe_pointer_expired_read_valid_obligation_once;
+  }
+  if (branch == "static-expired") {
+    return g_safe_pointer_expired_read_static_obligation_once;
+  }
+  if (branch == "unspecified-active-check") {
+    return g_safe_pointer_expired_read_unspecified_obligation_once;
+  }
+  if (branch == "path-active-check") {
+    return g_safe_pointer_expired_read_path_obligation_once;
+  }
+  return g_safe_pointer_expired_read_fallback_obligation_once;
+}
+
+std::once_flag& SafePointerNullReadFlag(std::string_view branch) {
+  if (branch == "valid-null-check") {
+    return g_safe_pointer_null_read_valid_obligation_once;
+  }
+  if (branch == "static-null") {
+    return g_safe_pointer_null_read_static_obligation_once;
+  }
+  if (branch == "unspecified-null-check") {
+    return g_safe_pointer_null_read_unspecified_obligation_once;
+  }
+  if (branch == "path-null-check") {
+    return g_safe_pointer_null_read_path_obligation_once;
+  }
+  return g_safe_pointer_null_read_fallback_obligation_once;
+}
+
+void RecordRawPointerReadLowering(analysis::RawPtrQual qual) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  std::call_once(RawPointerReadFlag(qual), [qual]() {
+    std::string payload =
+        "source=LowerRawDeref;operation=ReadPtrSigma;runtime_value=RawPtr;qual=";
+    payload += RawPtrQualName(qual);
+    payload += ";check=nonnull;panic=NullDeref;ir=IRReadPtr;state_metadata=none";
+    core::Conformance::Record("def.RawPointerRuntimeValue", std::nullopt, payload);
+    core::Conformance::Record("req.RawPointerLowering", std::nullopt, payload);
+    core::Conformance::Record("rule.13.ReadPtr-Raw-Invalid", std::nullopt, payload);
+  });
+}
+
+void RecordGpuPtrVisibleDerefLowering(std::string_view address_space) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload =
+      "source=LowerRawDeref;operation=GpuPtrDeref;runtime_value=GpuPtr";
+  payload += ";visibility=visible;address_space=";
+  payload.append(address_space.data(), address_space.size());
+  payload += ";check=GpuMemVisible;ir=IRReadPtr";
+  core::Conformance::Record(
+      "rule.20.GpuPtr-Deref-Visible", std::nullopt, payload);
+}
+
+void RecordSafePointerNullReadLowering(std::string_view branch) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  std::string branch_name(branch);
+  std::call_once(SafePointerNullReadFlag(branch), [branch_name = std::move(branch_name)]() {
+    std::string payload =
+        "source=LowerRawDeref;operation=ReadPtrSigma;branch=";
+    payload += branch_name;
+    payload += ";ptr_state=Null;check=nonnull;panic=NullDeref";
+    core::Conformance::Record("rule.13.ReadPtr-Null", std::nullopt, payload);
+  });
+}
+
+void RecordSafePointerExpiredReadLowering(std::string_view branch) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  std::string branch_name(branch);
+  std::call_once(SafePointerExpiredReadFlag(branch), [branch_name = std::move(branch_name)]() {
+    std::string payload =
+        "source=LowerRawDeref;operation=ReadPtrSigma;branch=";
+    payload += branch_name;
+    payload += ";ptr_state=Expired;check=addr_active;panic=ExpiredDeref";
+    core::Conformance::Record("rule.13.ReadPtr-Expired", std::nullopt, payload);
+  });
 }
 
 std::string StripIntSuffix(std::string text) {
@@ -489,6 +648,22 @@ std::string PanicSym() {
   return RuntimePanicSym();
 }
 
+void RecordRuntimeCheckPanicBehavior(std::string_view check_kind,
+                                     std::string_view source) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload = "source=";
+  payload += source;
+  payload += ";runtime_check=";
+  payload += check_kind;
+  payload += ";behavior=Panic;panic_symbol=";
+  payload += RuntimePanicSym();
+  core::Conformance::Record("def.RuntimeCheck", std::nullopt, payload);
+  core::Conformance::Record("def.RuntimeCheckBehavior", std::nullopt, payload);
+}
+
 static IRPtr LowerInitPanic(const std::string& module_path,
                             LowerCtx& ctx,
                             IRPtr cleanup_ir) {
@@ -525,6 +700,7 @@ IRPtr LowerContractViolation(ContractKind kind,
                              const ast::Expr* predicate,
                              std::optional<core::Span> site_span) {
   SPEC_RULE("LowerPanic");
+  SPEC_RULE("rule.15.Check-Panic");
   if (ctx.active_static_init_module.has_value()) {
     CleanupPlan cleanup_plan = ActiveStaticInitCleanupPlan(ctx);
     return LowerInitPanic(*ctx.active_static_init_module,
@@ -567,6 +743,11 @@ IRPtr PanicFollowup(LowerCtx& ctx) {
 
 IRPtr CheckPoison(const std::string& module_path, LowerCtx& ctx) {
   SPEC_RULE("CheckPoison-Use");
+  SPEC_RULE("rule.24.CheckPoison-Use");
+  core::Conformance::Record(
+      "def.24.PoisonJudg",
+      std::nullopt,
+      "judgements=PoisonFlag,CheckPoison,SetPoison;source=CheckPoison");
   IRCheckPoison check;
   check.module = module_path;
   IRPtr trace_ir = EmitRuntimeTrace("CheckPoison", ctx);
@@ -595,6 +776,7 @@ LowerResult LowerTransmute(analysis::TypeRef from_type,
                            LowerCtx& ctx) {
   SPEC_RULE("Lower-Transmute");
   SPEC_RULE("Lower-Transmute-Err");
+  SPEC_RULE("rule.16.LowerCastTransmuteFamily");
 
   auto expr_result = LowerExpr(expr, ctx);
 
@@ -636,6 +818,7 @@ LowerResult LowerTransmute(analysis::TypeRef from_type,
 LowerResult LowerRawDeref(const IRValue& ptr_value,
                           analysis::TypeRef ptr_type,
                           LowerCtx& ctx) {
+  SPEC_RULE("req.16.EffectfulCoreLoweringMechanics");
   if (!ptr_type) {
     IRValue result = ctx.FreshTempValue("deref");
     return LowerResult{MakeIR(IROpaque{}), result};
@@ -663,11 +846,23 @@ LowerResult LowerRawDeref(const IRValue& ptr_value,
 
   IRValue result = ctx.FreshTempValue("deref");
 
+  analysis::TypeRef gpu_ptr_element;
+  std::string_view gpu_ptr_address_space;
+  if (TryGpuPtrPointerType(
+          ptr_type, gpu_ptr_element, gpu_ptr_address_space)) {
+    SPEC_RULE("rule.20.GpuPtr-Deref-Visible");
+    RecordGpuPtrVisibleDerefLowering(gpu_ptr_address_space);
+
+    IRReadPtr read;
+    read.ptr = ptr_value;
+    read.result = result;
+    ctx.RegisterValueType(result, gpu_ptr_element);
+    return LowerResult{MakeIR(std::move(read)), result};
+  }
+
   if (raw_ptr != nullptr) {
-    // Lower-RawDeref-Raw: raw pointer dereference.
-    // Even for raw pointers, null/expired addresses must trap in runtime
-    // semantics instead of silently producing UB.
     SPEC_RULE("Lower-RawDeref-Raw");
+    RecordRawPointerReadLowering(raw_ptr->qual);
 
     std::vector<IRPtr> seq;
 
@@ -678,28 +873,11 @@ LowerResult LowerRawDeref(const IRValue& ptr_value,
     seq.push_back(MakeIR(std::move(null_check)));
     seq.push_back(PanicFollowup(ctx));
 
-    IRCall active_call;
-    active_call.callee.kind = IRValue::Kind::Symbol;
-    active_call.callee.name = BuiltinModalSymRegionAddrIsActive();
-    active_call.args.push_back(ptr_value);
-    IRValue active_value = ctx.FreshTempValue("addr_active");
-    active_call.result = active_value;
-    ctx.RegisterValueType(active_value, analysis::MakeTypePrim("bool"));
-    seq.push_back(MakeIR(std::move(active_call)));
-
-    IRCheckOp active_check;
-    active_check.op = "addr_active";
-    active_check.reason = PanicReasonString(PanicReason::ExpiredDeref);
-    active_check.lhs = active_value;
-    seq.push_back(MakeIR(std::move(active_check)));
-    seq.push_back(PanicFollowup(ctx));
-
     IRReadPtr read;
     read.ptr = ptr_value;
     read.result = result;
     ctx.RegisterValueType(result, elem_type);
     seq.push_back(MakeIR(std::move(read)));
-
     return LowerResult{SeqIR(std::move(seq)), result};
   }
 
@@ -716,6 +894,7 @@ LowerResult LowerRawDeref(const IRValue& ptr_value,
             null_check.op = "nonnull";
             null_check.reason = PanicReasonString(PanicReason::NullDeref);
             null_check.lhs = ptr_value;
+            RecordSafePointerNullReadLowering("valid-null-check");
             seq.push_back(MakeIR(std::move(null_check)));
             seq.push_back(PanicFollowup(ctx));
 
@@ -732,6 +911,7 @@ LowerResult LowerRawDeref(const IRValue& ptr_value,
             active_check.op = "addr_active";
             active_check.reason = PanicReasonString(PanicReason::ExpiredDeref);
             active_check.lhs = active_value;
+            RecordSafePointerExpiredReadLowering("valid-active-check");
             seq.push_back(MakeIR(std::move(active_check)));
             seq.push_back(PanicFollowup(ctx));
 
@@ -746,6 +926,7 @@ LowerResult LowerRawDeref(const IRValue& ptr_value,
         case analysis::PtrState::Null:
           // Lower-RawDeref-Null: emit panic
           SPEC_RULE("Lower-RawDeref-Null");
+          RecordSafePointerNullReadLowering("static-null");
           {
             result = ctx.FreshTempValue("unreachable");
             return LowerResult{LowerPanic(PanicReason::NullDeref, ctx), result};
@@ -754,6 +935,7 @@ LowerResult LowerRawDeref(const IRValue& ptr_value,
         case analysis::PtrState::Expired:
           // Lower-RawDeref-Expired: emit panic
           SPEC_RULE("Lower-RawDeref-Expired");
+          RecordSafePointerExpiredReadLowering("static-expired");
           {
             result = ctx.FreshTempValue("unreachable");
             return LowerResult{LowerPanic(PanicReason::ExpiredDeref, ctx),
@@ -770,6 +952,7 @@ LowerResult LowerRawDeref(const IRValue& ptr_value,
     null_check.op = "nonnull";
     null_check.reason = PanicReasonString(PanicReason::NullDeref);
     null_check.lhs = ptr_value;
+    RecordSafePointerNullReadLowering("unspecified-null-check");
     seq.push_back(MakeIR(std::move(null_check)));
     seq.push_back(PanicFollowup(ctx));
 
@@ -786,6 +969,7 @@ LowerResult LowerRawDeref(const IRValue& ptr_value,
     active_check.op = "addr_active";
     active_check.reason = PanicReasonString(PanicReason::ExpiredDeref);
     active_check.lhs = active_value;
+    RecordSafePointerExpiredReadLowering("unspecified-active-check");
     seq.push_back(MakeIR(std::move(active_check)));
     seq.push_back(PanicFollowup(ctx));
 
@@ -803,11 +987,23 @@ LowerResult LowerRawDeref(const IRValue& ptr_value,
     const std::string& tail = path_ptr->path.back();
     if (tail == "RawPtr") {
       SPEC_RULE("Lower-RawDeref-Raw");
+      RecordRawPointerReadLowering(analysis::RawPtrQual::Mut);
+
+      std::vector<IRPtr> seq;
+
+      IRCheckOp null_check;
+      null_check.op = "nonnull";
+      null_check.reason = PanicReasonString(PanicReason::NullDeref);
+      null_check.lhs = ptr_value;
+      seq.push_back(MakeIR(std::move(null_check)));
+      seq.push_back(PanicFollowup(ctx));
+
       IRReadPtr read;
       read.ptr = ptr_value;
       read.result = result;
       ctx.RegisterValueType(result, elem_type);
-      return LowerResult{MakeIR(read), result};
+      seq.push_back(MakeIR(std::move(read)));
+      return LowerResult{SeqIR(std::move(seq)), result};
     }
     if (tail == "Ptr") {
       SPEC_RULE("Lower-RawDeref-Safe");
@@ -817,6 +1013,7 @@ LowerResult LowerRawDeref(const IRValue& ptr_value,
       null_check.op = "nonnull";
       null_check.reason = PanicReasonString(PanicReason::NullDeref);
       null_check.lhs = ptr_value;
+      RecordSafePointerNullReadLowering("path-null-check");
       seq.push_back(MakeIR(std::move(null_check)));
       seq.push_back(PanicFollowup(ctx));
 
@@ -833,6 +1030,7 @@ LowerResult LowerRawDeref(const IRValue& ptr_value,
       active_check.op = "addr_active";
       active_check.reason = PanicReasonString(PanicReason::ExpiredDeref);
       active_check.lhs = active_value;
+      RecordSafePointerExpiredReadLowering("path-active-check");
       seq.push_back(MakeIR(std::move(active_check)));
       seq.push_back(PanicFollowup(ctx));
 
@@ -879,5 +1077,3 @@ void AnchorChecksAndPanicRules() {
 }
 
 }  // namespace ultraviolet::codegen
-
-

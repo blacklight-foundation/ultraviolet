@@ -1,7 +1,7 @@
 //! Rejected compile-time execution specimens.
 
 public procedure comptimeRejectedSourceFixtureCount() -> usize {
-    return 17usize
+    return 24usize
 }
 
 public procedure validatedComptimeRejectedSourceFixtureCount() -> usize {
@@ -25,6 +25,23 @@ public procedure validatedComptimeRejectedSourceFixtureCount() -> usize {
     }
     if rejectedSpecimenMatches(
         rejectedSpecimen(
+            "UserDiagnosticError",
+            "Fixtures/RejectedSource/Comptime/UserDiagnosticError",
+            "Fixtures/RejectedSource/Comptime/UserDiagnosticError/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/UserDiagnosticError/Expected.uv",
+            expectedDiagnostic("E-CTE-0070", "requirement.22.UserDiagnosticBuiltinEmission")
+        ),
+        "UserDiagnosticError",
+        "Fixtures/RejectedSource/Comptime/UserDiagnosticError",
+        "Fixtures/RejectedSource/Comptime/UserDiagnosticError/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/UserDiagnosticError/Expected.uv",
+        "E-CTE-0070",
+        "requirement.22.UserDiagnosticBuiltinEmission"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
             "QuoteOutsideComptime",
             "Fixtures/RejectedSource/Comptime/QuoteOutsideComptime",
             "Fixtures/RejectedSource/Comptime/QuoteOutsideComptime/Source/Main.uv",
@@ -42,6 +59,26 @@ public procedure validatedComptimeRejectedSourceFixtureCount() -> usize {
     }
     if rejectedSpecimenMatches(
         rejectedSpecimen(
+            "QuoteOutsideComptime",
+            "Fixtures/RejectedSource/Comptime/QuoteOutsideComptime",
+            "Fixtures/RejectedSource/Comptime/QuoteOutsideComptime/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/QuoteOutsideComptime/Expected.uv",
+            expectedDiagnostic(
+                "E-CTE-0221",
+                "diagnostics.22.QuoteSpliceEmissionDiagnosticsReference"
+            )
+        ),
+        "QuoteOutsideComptime",
+        "Fixtures/RejectedSource/Comptime/QuoteOutsideComptime",
+        "Fixtures/RejectedSource/Comptime/QuoteOutsideComptime/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/QuoteOutsideComptime/Expected.uv",
+        "E-CTE-0221",
+        "diagnostics.22.QuoteSpliceEmissionDiagnosticsReference"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
             "InvalidQuotedContent",
             "Fixtures/RejectedSource/Comptime/InvalidQuotedContent",
             "Fixtures/RejectedSource/Comptime/InvalidQuotedContent/Source/Main.uv",
@@ -54,6 +91,23 @@ public procedure validatedComptimeRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Comptime/InvalidQuotedContent/Expected.uv",
         "E-CTE-0220",
         "requirement.22.QuotedContentValidity"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "IntrospectFieldsNonRecord",
+            "Fixtures/RejectedSource/Comptime/IntrospectFieldsNonRecord",
+            "Fixtures/RejectedSource/Comptime/IntrospectFieldsNonRecord/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/IntrospectFieldsNonRecord/Expected.uv",
+            expectedDiagnostic("E-CTE-0050", "diagnostics.22.ReflectionDiagnosticsReference")
+        ),
+        "IntrospectFieldsNonRecord",
+        "Fixtures/RejectedSource/Comptime/IntrospectFieldsNonRecord",
+        "Fixtures/RejectedSource/Comptime/IntrospectFieldsNonRecord/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/IntrospectFieldsNonRecord/Expected.uv",
+        "E-CTE-0050",
+        "diagnostics.22.ReflectionDiagnosticsReference"
     ) {
         count = count + 1usize
     }
@@ -130,6 +184,23 @@ public procedure validatedComptimeRejectedSourceFixtureCount() -> usize {
     }
     if rejectedSpecimenMatches(
         rejectedSpecimen(
+            "ComptimeProcedureContractFailure",
+            "Fixtures/RejectedSource/Comptime/ComptimeProcedureContractFailure",
+            "Fixtures/RejectedSource/Comptime/ComptimeProcedureContractFailure/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/ComptimeProcedureContractFailure/Expected.uv",
+            expectedDiagnostic("E-CTE-0033", "requirement.22.CompileTimeProcedureContracts")
+        ),
+        "ComptimeProcedureContractFailure",
+        "Fixtures/RejectedSource/Comptime/ComptimeProcedureContractFailure",
+        "Fixtures/RejectedSource/Comptime/ComptimeProcedureContractFailure/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/ComptimeProcedureContractFailure/Expected.uv",
+        "E-CTE-0033",
+        "requirement.22.CompileTimeProcedureContracts"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
             "IntrospectFieldsNonRecord",
             "Fixtures/RejectedSource/Comptime/IntrospectFieldsNonRecord",
             "Fixtures/RejectedSource/Comptime/IntrospectFieldsNonRecord/Source/Main.uv",
@@ -201,6 +272,43 @@ public procedure validatedComptimeRejectedSourceFixtureCount() -> usize {
     }
     if rejectedSpecimenMatches(
         rejectedSpecimen(
+            "EmitterEmitNonItem",
+            "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem",
+            "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem/Expected.uv",
+            expectedDiagnostic("E-CTE-0251", "requirement.22.EmitterEmitWellFormedness")
+        ),
+        "EmitterEmitNonItem",
+        "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem",
+        "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem/Expected.uv",
+        "E-CTE-0251",
+        "requirement.22.EmitterEmitWellFormedness"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "EmitterEmitNonItem",
+            "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem",
+            "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem/Expected.uv",
+            expectedDiagnostic(
+                "E-CTE-0251",
+                "diagnostics.22.CompileTimeCapabilitiesDiagnosticsReference"
+            )
+        ),
+        "EmitterEmitNonItem",
+        "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem",
+        "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem/Expected.uv",
+        "E-CTE-0251",
+        "diagnostics.22.CompileTimeCapabilitiesDiagnosticsReference"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
             "DeriveOnProcedure",
             "Fixtures/RejectedSource/Comptime/DeriveOnProcedure",
             "Fixtures/RejectedSource/Comptime/DeriveOnProcedure/Source/Main.uv",
@@ -213,6 +321,23 @@ public procedure validatedComptimeRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Comptime/DeriveOnProcedure/Expected.uv",
         "E-CTE-0311",
         "requirement.22.DeriveAttributeTargetKinds"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DeriveOnProcedure",
+            "Fixtures/RejectedSource/Comptime/DeriveOnProcedure",
+            "Fixtures/RejectedSource/Comptime/DeriveOnProcedure/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/DeriveOnProcedure/Expected.uv",
+            expectedDiagnostic("E-CTE-0311", "diagnostics.22.DeriveTargetsDiagnosticsReference")
+        ),
+        "DeriveOnProcedure",
+        "Fixtures/RejectedSource/Comptime/DeriveOnProcedure",
+        "Fixtures/RejectedSource/Comptime/DeriveOnProcedure/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/DeriveOnProcedure/Expected.uv",
+        "E-CTE-0311",
+        "diagnostics.22.DeriveTargetsDiagnosticsReference"
     ) {
         count = count + 1usize
     }

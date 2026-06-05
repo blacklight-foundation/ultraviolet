@@ -20,6 +20,7 @@
 #include "05_codegen/lower/stmt/assign_stmt.h"
 
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 
 namespace ultraviolet::codegen {
 
@@ -31,6 +32,12 @@ IRPtr LowerAssignStmt(const ast::AssignStmt& stmt, LowerCtx& ctx) {
 
   // Write to the place
   IRPtr write_ir = LowerWritePlace(*stmt.place, rhs_result.value, ctx);
+
+  core::Conformance::Record(
+      "rule.18.Lower-Stmt-Assign",
+      std::nullopt,
+      "source=LowerAssignStmt;ir_form=SeqIR;components=LowerExpr,LowerWritePlace;"
+      "rhs_value_written=true");
 
   return SeqIR({rhs_result.ir, write_ir});
 }

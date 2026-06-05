@@ -17,6 +17,7 @@ namespace ultraviolet::codegen {
 std::optional<ABIType> ABITyPrim(const analysis::ScopeContext& ctx,
                                  const analysis::TypePrim& prim) {
   SPEC_RULE("ABI-Prim");
+  SPEC_RULE("rule.24.ABI-Prim");
   const auto size = ::ultraviolet::analysis::layout::PrimSize(ctx, prim.name);
   const auto align = ::ultraviolet::analysis::layout::PrimAlign(ctx, prim.name);
   if (!size.has_value() || !align.has_value()) {

@@ -3,3 +3,7 @@
 public procedure invalidStringEscapeReference() -> string@View {
     return "bad\q"
 }
+
+public procedure invalidCharEscapeReference() -> char {
+    return '\q'
+}

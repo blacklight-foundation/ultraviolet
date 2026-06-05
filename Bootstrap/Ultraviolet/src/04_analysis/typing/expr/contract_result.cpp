@@ -66,11 +66,13 @@ namespace ultraviolet::analysis::expr
     if (type_ctx.contract_phase != ContractPhase::Postcondition)
     {
       SPEC_RULE("@result-Context");
+      SPEC_RULE("req.15.ContractResultProperties");
       result.diag_id = "E-SEM-2806"; // @result outside postcondition
       return result;
     }
 
     SPEC_RULE("@result-Intrinsic");
+    SPEC_RULE("req.15.ContractResultProperties");
     result.ok = true;
     // Return type from the typing context, or unit if not specified
     result.type = type_ctx.return_type ? type_ctx.return_type : MakeTypePrim("()");

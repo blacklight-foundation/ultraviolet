@@ -13,6 +13,7 @@
 #include <thread>
 #include <optional>
 #include <sstream>
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -49,7 +50,35 @@ using namespace ultraviolet::project;
 
 namespace {
 
+bool IsOutputBackendDiagnostic(std::string_view code) {
+  return code.rfind("E-OUT-04", 0) == 0;
+}
+
+void RecordOutputBackendDiagnostic(std::string_view code,
+                                   std::string_view source) {
+  if (!core::Conformance::Enabled() || !IsOutputBackendDiagnostic(code)) {
+    return;
+  }
+
+  std::string payload;
+  payload += "source=";
+  payload += source;
+  payload += ";code=";
+  payload += code;
+  payload += ";phase=diagnostics;diagnostic_family=output-backend;"
+             "spec_section=24.8";
+  core::Conformance::Record(
+      "req.24.OutputBackendDiagnosticsOwnership",
+      std::nullopt,
+      payload);
+  core::Conformance::Record(
+      "diag.24.OutputBackendDiagnostics",
+      std::nullopt,
+      payload);
+}
+
 void EmitExternal(core::DiagnosticStream& diags, std::string_view code) {
+  RecordOutputBackendDiagnostic(code, "OutputPipeline::EmitExternal");
   core::EmitExternalDiagnostic(diags, code);
 }
 
@@ -321,6 +350,98 @@ std::string RenderList(const std::vector<std::string>& items) {
   return oss.str();
 }
 
+std::vector<std::string> OutputPipelineModuleList(const Project& project) {
+  std::vector<std::string> modules;
+  modules.reserve(project.modules.size());
+  for (const auto& module : project.modules) {
+    modules.push_back(module.path);
+  }
+  return modules;
+}
+
+void RecordOutputPipelineDefinitions(const Project& project,
+                                     std::string_view emit_ir) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  const std::vector<std::string> modules = OutputPipelineModuleList(project);
+  const std::string input_payload =
+      "assembly=" + project.assembly.name +
+      ";output_root=" + project.outputs.root.generic_string() +
+      ";modules=" + RenderList(modules) + ";emit_ir=" + std::string(emit_ir);
+
+  SPEC_RULE("def.OutputPipelineBigStepInputs");
+  core::Conformance::Record(
+      "def.OutputPipelineBigStepInputs", std::nullopt, input_payload);
+
+  SPEC_RULE("def.OutputPipelineSmallStepInputs");
+  core::Conformance::Record(
+      "def.OutputPipelineSmallStepInputs", std::nullopt, input_payload);
+
+  SPEC_RULE("def.OutputPipelineState");
+  core::Conformance::Record(
+      "def.OutputPipelineState",
+      std::nullopt,
+      "assembly=" + project.assembly.name +
+          ";state_set=OutStart(P),OutDirs(P),OutObjs(P,ms,Objs),"
+          "OutIR(P,ms,Objs,IRs,e),OutFinal(P,Objs,IRs),"
+          "OutDone(Objs,IRs,Artifact),Error(code)");
+}
+
+void RecordEmitIRFailureDefinition(const Project& project,
+                                   const ModuleInfo& module,
+                                   std::string_view emit_ir,
+                                   std::string_view stage,
+                                   const std::filesystem::path& ir_path) {
+  std::string obligation_id;
+  if (emit_ir == "ll") {
+    SPEC_RULE("def.EmitIRFailLL");
+    obligation_id = "def.EmitIRFailLL";
+  } else if (emit_ir == "bc") {
+    SPEC_RULE("def.EmitIRFailBC");
+    obligation_id = "def.EmitIRFailBC";
+  } else {
+    return;
+  }
+
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  core::Conformance::Record(
+      obligation_id,
+      std::nullopt,
+      "assembly=" + project.assembly.name + ";module=" + module.path +
+          ";emit_ir=" + std::string(emit_ir) + ";stage=" + std::string(stage) +
+          ";ir_path=" + ir_path.generic_string());
+}
+
+void RecordDependencyAssemblyNoFinalArtifact(const Project& project,
+                                             const OutputArtifacts& artifacts) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  SPEC_RULE("req.DependencyAssemblyNoFinalArtifact");
+  core::Conformance::Record(
+      "req.DependencyAssemblyNoFinalArtifact",
+      std::nullopt,
+      "assembly=" + project.assembly.name +
+          ";kind=" + project.assembly.kind +
+          ";objs=" + std::to_string(artifacts.objs.size()) +
+          ";irs=" + std::to_string(artifacts.irs.size()) +
+          ";primary_artifact=" +
+          (artifacts.primary_artifact.has_value() ? std::string("present")
+                                                  : std::string("<bottom>")) +
+          ";import_lib=" +
+          (artifacts.import_lib.has_value() ? std::string("present")
+                                            : std::string("<bottom>")) +
+          ";map_file=" +
+          (artifacts.map_file.has_value() ? std::string("present")
+                                          : std::string("<bottom>")));
+}
+
 std::uintmax_t ModuleSourceByteEstimate(const ModuleInfo& module) {
   if (module.dir.empty()) {
     return 0;
@@ -584,6 +705,8 @@ void EmitUnsupportedArtifactDiagnostic(
     diag->children.push_back(std::move(support_note));
   }
 
+  RecordOutputBackendDiagnostic("E-OUT-0409",
+                                "EmitUnsupportedArtifactDiagnostic");
   core::Emit(diags, *diag);
 }
 
@@ -979,6 +1102,7 @@ OutputPipelineResult OutputPipelineSingleAssembly(
   SPEC_RULE("Out-Start");
 
   const std::string_view emit_ir = EmitIrMode(project);
+  RecordOutputPipelineDefinitions(project, emit_ir);
   const bool executable = IsExecutable(project);
   const bool dependency = IsDependency(project);
   const bool shared_library = IsSharedLibrary(project);
@@ -988,6 +1112,10 @@ OutputPipelineResult OutputPipelineSingleAssembly(
   const bool show_build_progress = output_log_mode != core::BuildLogMode::None;
   const bool show_detailed_progress =
       output_log_mode == core::BuildLogMode::Detailed;
+
+  if (core::Conformance::Enabled()) {
+    (void)OutputHygiene(project, target_profile);
+  }
 
   if (show_build_progress) {
     std::cerr << "   Compiling  " << project.assembly.name << " ("
@@ -1314,6 +1442,13 @@ OutputPipelineResult OutputPipelineSingleAssembly(
   auto emit_object_job = [&](std::size_t module_idx) {
     const auto& module = project.modules[module_idx];
     auto& state = obj_states[module_idx];
+    RecordOutputTelemetry(project,
+                          deps,
+                          "obj-module-start",
+                          {{"module", module.path},
+                           {"module_index", std::to_string(module_idx + 1)},
+                           {"module_count",
+                            std::to_string(project.modules.size())}});
     const auto codegen_start = std::chrono::steady_clock::now();
     auto emitted = codegen_object(module);
     state.codegen_ms = ElapsedMs(codegen_start);
@@ -1741,6 +1876,9 @@ OutputPipelineResult OutputPipelineSingleAssembly(
           LogBuildProgress(oss.str());
         }
         core::HostPrimFail(core::HostPrim::WriteFile, true);
+        SPEC_RULE("CodegenIR-LLVM");
+        RecordEmitIRFailureDefinition(
+            project, module, emit_ir, "write_file", ir_path);
         SPEC_RULE("Emit-IR-Err");
         SPEC_RULE("Out-IR-Err");
         EmitExternal(result.diags, "E-OUT-0403");
@@ -1798,6 +1936,8 @@ OutputPipelineResult OutputPipelineSingleAssembly(
             oss << "ir-error mode=ll module=" << module.path;
             LogBuildProgress(oss.str());
           }
+          RecordEmitIRFailureDefinition(
+              project, module, emit_ir, "codegen_ir", ir_path);
           SPEC_RULE("Emit-IR-Err");
           SPEC_RULE("Out-IR-Err");
           EmitExternal(result.diags, "E-OUT-0403");
@@ -1813,6 +1953,8 @@ OutputPipelineResult OutputPipelineSingleAssembly(
             LogBuildProgress(oss.str());
           }
           core::HostPrimFail(core::HostPrim::WriteFile, true);
+          RecordEmitIRFailureDefinition(
+              project, module, emit_ir, "write_file", ir_path);
           SPEC_RULE("Emit-IR-Err");
           SPEC_RULE("Out-IR-Err");
           EmitExternal(result.diags, "E-OUT-0403");
@@ -1867,14 +2009,50 @@ OutputPipelineResult OutputPipelineSingleAssembly(
               << " path=" << ir_path.generic_string();
           LogBuildProgress(oss.str());
         }
-        const auto bc_bytes = deps.codegen_ir(module, project, "bc");
+        const auto assembler = deps.resolve_tool(project, target_profile, "llvm-as");
+        if (!assembler.has_value()) {
+          if (show_build_progress) {
+            std::ostringstream oss;
+            oss << "ir-error mode=bc module=" << module.path
+                << " stage=resolve-tool tool=llvm-as";
+            LogBuildProgress(oss.str());
+          }
+          core::HostPrimFail(core::HostPrim::ResolveTool, true);
+          RecordEmitIRFailureDefinition(
+              project, module, emit_ir, "resolve_tool", ir_path);
+          SPEC_RULE("Emit-IR-Err");
+          SPEC_RULE("Out-IR-Err");
+          EmitExternal(result.diags, "E-OUT-0403");
+          SPEC_RULE("Output-Pipeline-Err");
+          return result;
+        }
+        const auto ll_bytes = deps.codegen_ir(module, project, "ll");
+        if (!ll_bytes.has_value()) {
+          if (show_build_progress) {
+            std::ostringstream oss;
+            oss << "ir-error mode=bc module=" << module.path
+                << " stage=codegen-ll";
+            LogBuildProgress(oss.str());
+          }
+          RecordEmitIRFailureDefinition(
+              project, module, emit_ir, "codegen_ir", ir_path);
+          SPEC_RULE("Emit-IR-Err");
+          SPEC_RULE("Out-IR-Err");
+          EmitExternal(result.diags, "E-OUT-0403");
+          SPEC_RULE("Output-Pipeline-Err");
+          return result;
+        }
+        const auto bc_bytes = deps.assemble_ir(*assembler, *ll_bytes);
         if (!bc_bytes.has_value()) {
           if (show_build_progress) {
             std::ostringstream oss;
             oss << "ir-error mode=bc module=" << module.path
-                << " stage=codegen";
+                << " stage=assemble-ir";
             LogBuildProgress(oss.str());
           }
+          core::HostPrimFail(core::HostPrim::AssembleIR, true);
+          RecordEmitIRFailureDefinition(
+              project, module, emit_ir, "assemble_ir", ir_path);
           SPEC_RULE("Emit-IR-Err");
           SPEC_RULE("Out-IR-Err");
           EmitExternal(result.diags, "E-OUT-0403");
@@ -1890,6 +2068,8 @@ OutputPipelineResult OutputPipelineSingleAssembly(
             LogBuildProgress(oss.str());
           }
           core::HostPrimFail(core::HostPrim::WriteFile, true);
+          RecordEmitIRFailureDefinition(
+              project, module, emit_ir, "write_file", ir_path);
           SPEC_RULE("Emit-IR-Err");
           SPEC_RULE("Out-IR-Err");
           EmitExternal(result.diags, "E-OUT-0403");
@@ -1981,6 +2161,7 @@ OutputPipelineResult OutputPipelineSingleAssembly(
 
     persist_manifest_if_enabled();
 
+    RecordDependencyAssemblyNoFinalArtifact(project, *result.artifacts);
     SPEC_RULE("Output-Pipeline-Dependency");
     if (show_build_progress) {
       std::ostringstream oss;
@@ -2310,6 +2491,19 @@ OutputPipelineResult OutputPipeline(const Project& project,
         return result;
       }
       library_inputs.push_back(*built_it->second.primary_artifact);
+    }
+    if (core::Conformance::Enabled()) {
+      SPEC_RULE("def.LibraryArtifactInputs");
+      core::Conformance::Record(
+          "def.LibraryArtifactInputs",
+          std::nullopt,
+          "assembly=" + output_project->assembly.name +
+              ";source=assembly_graph;count=" +
+              std::to_string(library_inputs.size()) +
+              ";first=" +
+              (library_inputs.empty()
+                   ? std::string("<bottom>")
+                   : library_inputs.front().generic_string()));
     }
 
     const auto extern_specs = analysis::CollectExternLibrarySpecs(*ast_modules);

@@ -13,3 +13,16 @@ public procedure branchValidatedValue(value: i32) -> i32 {
 
     return 0
 }
+
+public class FlowBehavioralReadableClass {
+    public procedure readFlowBehavioralValue(~, value: i32) -> i32
+    |: value > 0 |= @result >= value
+}
+
+public record FlowBehavioralReadableOwner <: FlowBehavioralReadableClass {
+    public procedure readFlowBehavioralValue(~, value: i32) -> i32
+    |: value >= 0 |= @result > value
+    {
+        return value + 1
+    }
+}

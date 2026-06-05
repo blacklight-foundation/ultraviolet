@@ -8385,7 +8385,7 @@ summary: Universe-protected binding set and enforcement phase
 -->
 
 **Universe-Protected Bindings.**
-UniverseProtected = {`i8`, `i16`, `i32`, `i64`, `i128`, `u8`, `u16`, `u32`, `u64`, `u128`, `f16`, `f32`, `f64`, `bool`, `char`, `usize`, `isize`, `Self`, `Drop`, `Bitcopy`, `Clone`, `Eq`, `Hash`, `Hasher`, `Iterator`, `Step`, `FfiSafe`, `string`, `bytes`, `Modal`, `Region`, `RegionOptions`, `CancelToken`, `Context`, `System`, `Network`, `ExecutionDomain`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`, `Duration`, `MonotonicInstant`, `UtcInstant`, `TimeError`, `CpuSet`, `Priority`, `Async`, `Future`, `Sequence`, `Stream`, `Pipe`, `Exchange`, `Tracked`, `Spawned`}
+UniverseProtected = {`i8`, `i16`, `i32`, `i64`, `i128`, `u8`, `u16`, `u32`, `u64`, `u128`, `f16`, `f32`, `f64`, `bool`, `char`, `usize`, `isize`, `Self`, `Drop`, `Bitcopy`, `Clone`, `Eq`, `Hash`, `Hasher`, `Iterator`, `Discrete`, `FfiSafe`, `string`, `bytes`, `Modal`, `Region`, `RegionOptions`, `CancelToken`, `Context`, `System`, `Network`, `ExecutionDomain`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`, `Duration`, `MonotonicInstant`, `UtcInstant`, `TimeError`, `CpuSet`, `Priority`, `Async`, `Future`, `Sequence`, `Stream`, `Pipe`, `Exchange`, `Tracked`, `Spawned`}
 UniverseProtectedPhase = Phase3
 
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
@@ -19048,7 +19048,7 @@ summary: Defines primitive, special, and async built-in type name sets.
 -->
 
 PrimTypeNames = {`i8`, `i16`, `i32`, `i64`, `i128`, `u8`, `u16`, `u32`, `u64`, `u128`, `f16`, `f32`, `f64`, `bool`, `char`, `usize`, `isize`}
-SpecialTypeNames = {`Self`, `Drop`, `Bitcopy`, `Clone`, `Eq`, `Hash`, `Hasher`, `Iterator`, `Step`, `FfiSafe`, `string`, `bytes`, `Modal`, `Region`, `RegionOptions`, `CancelToken`, `Context`, `System`, `Network`, `ExecutionDomain`, `CpuSet`, `Priority`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`, `Duration`, `MonotonicInstant`, `UtcInstant`, `TimeError`}
+SpecialTypeNames = {`Self`, `Drop`, `Bitcopy`, `Clone`, `Eq`, `Hash`, `Hasher`, `Iterator`, `Discrete`, `FfiSafe`, `string`, `bytes`, `Modal`, `Region`, `RegionOptions`, `CancelToken`, `Context`, `System`, `Network`, `ExecutionDomain`, `CpuSet`, `Priority`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`, `Duration`, `MonotonicInstant`, `UtcInstant`, `TimeError`}
 AsyncTypeNames = {`Async`, `Future`, `Sequence`, `Stream`, `Pipe`, `Exchange`, `Tracked`}
 
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
@@ -28868,12 +28868,14 @@ phase: semantic-analysis
 strength: required
 owner: checker.procedures
 applies-to: testing, authority, procedures, oracle.behavior, oracle.coverage
-summary: Defines TestAuthority as the only runner-injected authority value for source-native tests.
+summary: Defines TestAuthority as the only runner-injected authority and time value for source-native tests.
 -->
 
 The `TestAuthority` parameter is the only runner-injected value. It carries the
-filesystem, process, temporary-directory, target-profile, and compiler-invocation
-authority needed by effectful compiler tests.
+filesystem, process, temporary-directory, target-profile, compiler-invocation,
+and time authority needed by effectful compiler tests and benchmark-style tests.
+Its `time` field has type `$Time`; tests that measure elapsed time SHOULD use
+`time~>monotonic()`; `time~>wall()` is for UTC behavior, not benchmarks.
 
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
@@ -52498,7 +52500,7 @@ applies-to: compiler.parser, compiler.name-resolution, compiler.diagnostics, ora
 summary: Requires foundational classes to use ordinary class syntax and reserves foundational class names.
 labels: FoundationalClassesSyntaxAndReservedNames
 -->
-Foundational classes use ordinary class syntax from §14.3. The foundational names `Bitcopy`, `Clone`, `Drop`, `FfiSafe`, `Eq`, `Hasher`, `Hash`, `Iterator`, and `Step` are reserved.
+Foundational classes use ordinary class syntax from §14.3. The foundational names `Bitcopy`, `Clone`, `Drop`, `FfiSafe`, `Eq`, `Hasher`, `Hash`, `Iterator`, and `Discrete` are reserved.
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
 #### 14.10.2 Parsing
@@ -52528,7 +52530,7 @@ applies-to: compiler.builtins, compiler.name-resolution, oracle.reference-model,
 summary: Defines the set of foundational class names.
 labels: FoundationalClassName
 -->
-FoundationalClassName = {`Bitcopy`, `Clone`, `Drop`, `FfiSafe`, `Eq`, `Hasher`, `Hash`, `Iterator`, `Step`}
+FoundationalClassName = {`Bitcopy`, `Clone`, `Drop`, `FfiSafe`, `Eq`, `Hasher`, `Hash`, `Iterator`, `Discrete`}
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
 <!-- ULTRAVIOLET-SPEC-UNIT
@@ -52585,11 +52587,11 @@ applies-to: compiler.typecheck, oracle.reference-model, oracle.coverage
 summary: Defines intrinsic and implementation-based foundational class satisfaction predicates.
 labels: FoundationalImplementationPredicates
 -->
-BuiltinStepType(T) ⇔ StripPerm(T) = TypePrim(t) ∧ t ∈ IntTypes ∪ UnsignedIntTypes ∪ {`char`}
+BuiltinDiscreteType(T) ⇔ StripPerm(T) = TypePrim(t) ∧ t ∈ IntTypes ∪ UnsignedIntTypes ∪ {`char`}
 ImplementsEq(T) ⇔ EqType(T) ∨ `Eq` ∈ Implements(T)
 ImplementsHash(T) ⇔ `Hash` ∈ Implements(T)
 ImplementsIterator(T) ⇔ `Iterator` ∈ Implements(T)
-ImplementsStep(T) ⇔ BuiltinStepType(T) ∨ `Step` ∈ Implements(T)
+ImplementsDiscrete(T) ⇔ BuiltinDiscreteType(T) ∨ `Discrete` ∈ Implements(T)
 ImplementsHasher(T) ⇔ `Hasher` ∈ Implements(T)
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
@@ -52605,7 +52607,7 @@ applies-to: compiler.typecheck, oracle.reference-model, oracle.coverage
 summary: Defines which foundational class bounds use intrinsic satisfaction and which use ordinary class implementation lookup.
 labels: FoundationalBoundsIntrinsicSatisfaction
 -->
-Foundational class bounds for `Bitcopy`, `Clone`, `Drop`, and `FfiSafe` are interpreted by intrinsic satisfaction judgments, not by user-defined class implementation lookup. `Eq` is satisfied intrinsically when `EqType(T)` holds. `Step` is satisfied intrinsically when `BuiltinStepType(T)` holds. Other `Eq` and `Step` obligations are discharged through ordinary class implementation lookup.
+Foundational class bounds for `Bitcopy`, `Clone`, `Drop`, and `FfiSafe` are interpreted by intrinsic satisfaction judgments, not by user-defined class implementation lookup. `Eq` is satisfied intrinsically when `EqType(T)` holds. `Discrete` is satisfied intrinsically when `BuiltinDiscreteType(T)` holds. Other `Eq` and `Discrete` obligations are discharged through ordinary class implementation lookup.
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
 <!-- ULTRAVIOLET-SPEC-UNIT
@@ -52728,7 +52730,7 @@ phase: semantic-analysis
 strength: required
 owner: spec.abstraction-polymorphism
 applies-to: compiler.builtins, compiler.typecheck, oracle.reference-model, oracle.coverage
-summary: Defines built-in foundational class signatures for Eq, Hasher, Hash, Iterator, and Step.
+summary: Defines built-in foundational class signatures for Eq, Hasher, Hash, Iterator, and Discrete.
 labels: BuiltinFoundationalClassSignatures
 -->
 The built-in class signatures are:
@@ -52737,7 +52739,7 @@ The built-in class signatures are:
 - `Hasher`: `write(~!, data: bytes@View) -> ()`; `finish(~) -> u64`
 - `Hash`: `hash(~, hasher: unique Hasher) -> ()`
 - `Iterator`: associated type `Item`; `next(~!) -> Self::Item | ()`
-- `Step`: `successor(~) -> Self | ()`; `predecessor(~) -> Self | ()`
+- `Discrete`: `successor(~) -> Self | ()`; `predecessor(~) -> Self | ()`
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
 <!-- ULTRAVIOLET-SPEC-UNIT
@@ -52780,16 +52782,16 @@ labels: IteratorNextContract
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
 <!-- ULTRAVIOLET-SPEC-UNIT
-id: req.14.StepPartialInverseContract
+id: req.14.DiscretePartialInverseContract
 kind: semantic-requirement
 phase: semantic-analysis
 strength: required
 owner: spec.abstraction-polymorphism
 applies-to: compiler.typecheck, runtime, oracle.reference-model, oracle.coverage
-summary: Requires Step successor and predecessor to define a discrete stepping relation and partial inverses when both are defined.
-labels: StepPartialInverseContract
+summary: Requires Discrete successor and predecessor to define a discrete stepping relation and partial inverses when both are defined.
+labels: DiscretePartialInverseContract
 -->
-`Step::successor` and `Step::predecessor` define a discrete stepping relation and are partial inverses when both are defined.
+`Discrete::successor` and `Discrete::predecessor` define a discrete stepping relation and are partial inverses when both are defined.
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
 #### 14.10.5 Dynamic Semantics
@@ -52825,29 +52827,29 @@ labels: HasherDynamicSemantics
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
 <!-- ULTRAVIOLET-SPEC-UNIT
-id: req.14.IntegerStepDynamicSemantics
+id: req.14.IntegerDiscreteDynamicSemantics
 kind: dynamic-semantics
 phase: runtime
 strength: required
 owner: spec.abstraction-polymorphism
 applies-to: runtime, oracle.reference-model, oracle.coverage
-summary: Defines successor and predecessor behavior for built-in integer Step types.
-labels: IntegerStepDynamicSemantics
+summary: Defines successor and predecessor behavior for built-in integer Discrete types.
+labels: IntegerDiscreteDynamicSemantics
 -->
-For `BuiltinStepType(T)` with `StripPerm(T) = TypePrim(t)` and `t ∈ IntTypes ∪ UnsignedIntTypes`, `Step::successor` returns the least representable value greater than the receiver when one exists, or `()` otherwise; `Step::predecessor` returns the greatest representable value smaller than the receiver when one exists, or `()` otherwise.
+For `BuiltinDiscreteType(T)` with `StripPerm(T) = TypePrim(t)` and `t ∈ IntTypes ∪ UnsignedIntTypes`, `Discrete::successor` returns the least representable value greater than the receiver when one exists, or `()` otherwise; `Discrete::predecessor` returns the greatest representable value smaller than the receiver when one exists, or `()` otherwise.
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
 <!-- ULTRAVIOLET-SPEC-UNIT
-id: req.14.CharStepDynamicSemantics
+id: req.14.CharDiscreteDynamicSemantics
 kind: dynamic-semantics
 phase: runtime
 strength: required
 owner: spec.abstraction-polymorphism
 applies-to: runtime, oracle.reference-model, oracle.coverage
-summary: Defines successor and predecessor behavior for built-in char Step types over Unicode scalar values.
-labels: CharStepDynamicSemantics
+summary: Defines successor and predecessor behavior for built-in char Discrete types over Unicode scalar values.
+labels: CharDiscreteDynamicSemantics
 -->
-For `BuiltinStepType(T)` with `StripPerm(T) = TypePrim(`char`)`, `Step::successor` returns `CharVal(u')` where `u' = min { v ∈ UnicodeScalar | v > u }` for receiver `CharVal(u)` when such `u'` exists, or `()` otherwise; `Step::predecessor` returns `CharVal(u')` where `u' = max { v ∈ UnicodeScalar | v < u }` when such `u'` exists, or `()` otherwise.
+For `BuiltinDiscreteType(T)` with `StripPerm(T) = TypePrim(`char`)`, `Discrete::successor` returns `CharVal(u')` where `u' = min { v ∈ UnicodeScalar | v > u }` for receiver `CharVal(u)` when such `u'` exists, or `()` otherwise; `Discrete::predecessor` returns `CharVal(u')` where `u' = max { v ∈ UnicodeScalar | v < u }` when such `u'` exists, or `()` otherwise.
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
 #### 14.10.6 Lowering
@@ -52859,10 +52861,10 @@ phase: lowering
 strength: required
 owner: spec.abstraction-polymorphism
 applies-to: compiler.lowering, oracle.lowering-checks, oracle.coverage
-summary: Defines intrinsic lowering for built-in Eq and Step calls and ordinary method-call lowering for other Eq and Step calls.
+summary: Defines intrinsic lowering for built-in Eq and Discrete calls and ordinary method-call lowering for other Eq and Discrete calls.
 labels: FoundationalIntrinsicCallLowering
 -->
-`Eq::eq` on `EqType(T)` lowers intrinsically to the built-in equality relation for `T`. `Step::successor` and `Step::predecessor` on `BuiltinStepType(T)` lower intrinsically to the built-in stepping relation for `T`. Other `Eq` and `Step` calls lower through ordinary method-call lowering.
+`Eq::eq` on `EqType(T)` lowers intrinsically to the built-in equality relation for `T`. `Discrete::successor` and `Discrete::predecessor` on `BuiltinDiscreteType(T)` lower intrinsically to the built-in stepping relation for `T`. Other `Eq` and `Discrete` calls lower through ordinary method-call lowering.
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
 <!-- ULTRAVIOLET-SPEC-UNIT
@@ -52875,7 +52877,7 @@ applies-to: compiler.lowering, compiler.layout, oracle.lowering-checks, oracle.c
 summary: Requires foundational predicates and built-in classes not to introduce separate representation and to influence lowering through specified semantic hooks.
 labels: FoundationalPredicatesNoSeparateRepresentation
 -->
-These predicates and built-in classes do not introduce a separate representation. They influence lowering indirectly through copy semantics, drop-glue generation, built-in `Eq`/`Step` call selection, and whether a dynamic-class-object vtable header carries a non-null drop entry.
+These predicates and built-in classes do not introduce a separate representation. They influence lowering indirectly through copy semantics, drop-glue generation, built-in `Eq`/`Discrete` call selection, and whether a dynamic-class-object vtable header carries a non-null drop entry.
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
 #### 14.10.7 Diagnostics
@@ -62332,7 +62334,7 @@ summary: Types iterator loops by validating iterable type, range capabilities, o
 labels: T-Loop-Iter
 -->
 **(T-Loop-Iter)**
-(Γ; R; L ⊢ iter : T_iter)    LoopIterableType(T_iter, T)    (RangeLoopType(T_iter, T) ⇒ ImplementsStep(T))    (BoundedRangeLoopType(T_iter, T) ⇒ ImplementsEq(T))    (ty_opt = ⊥ ⇒ T_p = T)    (ty_opt = T_a ⇒ Γ ⊢ T <: T_a ∧ T_p = T_a)    Γ ⊢ pat ⇐ T_p ⊣ B    Distinct(PatNames(pat))    LoopInvOk(inv_opt)    Γ_0 = PushScope(Γ)    IntroAll(Γ_0, B) ⇓ Γ_1    Γ_1; R; `loop` ⊢ BlockInfo(body) ⇓ ⟨T_b, Brk, BrkVoid⟩    LoopTypeFin(Brk, BrkVoid) = T_r
+(Γ; R; L ⊢ iter : T_iter)    LoopIterableType(T_iter, T)    (RangeLoopType(T_iter, T) ⇒ ImplementsDiscrete(T))    (BoundedRangeLoopType(T_iter, T) ⇒ ImplementsEq(T))    (ty_opt = ⊥ ⇒ T_p = T)    (ty_opt = T_a ⇒ Γ ⊢ T <: T_a ∧ T_p = T_a)    Γ ⊢ pat ⇐ T_p ⊣ B    Distinct(PatNames(pat))    LoopInvOk(inv_opt)    Γ_0 = PushScope(Γ)    IntroAll(Γ_0, B) ⇓ Γ_1    Γ_1; R; `loop` ⊢ BlockInfo(body) ⇓ ⟨T_b, Brk, BrkVoid⟩    LoopTypeFin(Brk, BrkVoid) = T_r
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ LoopIter(pat, ty_opt, iter, inv_opt, body) : T_r
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
@@ -62539,7 +62541,7 @@ labels: IterJudg, Iter, Successor, EqHolds, IterInit, IterNext
 -->
 IterJudg = {IterInit(v) ⇓ it, IterNext(it) ⇓ (opt(v), it')}
 Iter = {SeqIter(v, i) | Len(v) defined ∧ i ∈ ℕ} ∪ {RangeIterExclusive(cur, hi)} ∪ {RangeIterInclusive(cur, hi)} ∪ {RangeIterFrom(cur)} ∪ {IterDone}
-Successor(v) ⇓ v' ⇔ `Step::successor` applied to v returns v'
+Successor(v) ⇓ v' ⇔ `Discrete::successor` applied to v returns v'
 EqHolds(v_1, v_2) ⇔ `Eq::eq` applied to ⟨v_1, v_2⟩ returns `true`
 
 IterInit(v) ⇓ SeqIter(v, 0) ⇔ Len(v) defined

@@ -6,8 +6,12 @@
 
 #include <algorithm>
 #include <iostream>
+#include <mutex>
+#include <string_view>
+#include <utility>
 
 #include "00_core/assert_spec.h"
+#include "00_core/diagnostic_messages.h"
 #include "04_analysis/layout/layout.h"
 #include "04_analysis/resolve/scopes.h"
 #include "04_analysis/resolve/resolve_items.h"
@@ -18,6 +22,248 @@
 namespace ultraviolet::codegen {
 
 namespace {
+
+void RecordLoweringConformanceOnce(std::once_flag& flag,
+                                   std::string_view rule_id,
+                                   std::string payload) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  std::call_once(flag, [rule_id = std::string(rule_id),
+                       payload = std::move(payload)]() {
+    core::Conformance::Record(rule_id, std::nullopt, payload);
+  });
+}
+
+void AppendPayloadField(std::string& payload,
+                        std::string_view key,
+                        std::string_view value) {
+  if (!payload.empty()) {
+    payload += ';';
+  }
+  payload += key;
+  payload += '=';
+  payload += value;
+}
+
+void AppendPayloadField(std::string& payload,
+                        std::string_view key,
+                        const std::string& value) {
+  AppendPayloadField(payload, key, std::string_view(value));
+}
+
+void AppendPayloadField(std::string& payload,
+                        std::string_view key,
+                        std::uint64_t value) {
+  const std::string text = std::to_string(value);
+  AppendPayloadField(payload, key, std::string_view(text));
+}
+
+void AppendPayloadField(std::string& payload,
+                        std::string_view key,
+                        const char* value) {
+  AppendPayloadField(payload, key, std::string_view(value ? value : "-"));
+}
+
+void AppendPayloadField(std::string& payload,
+                        std::string_view key,
+                        bool value) {
+  AppendPayloadField(payload, key, std::string_view(value ? "true" : "false"));
+}
+
+void RecordOutputBackendDiagnostic(std::string_view code,
+                                   std::string_view source) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload;
+  AppendPayloadField(payload, "source", source);
+  AppendPayloadField(payload, "code", code);
+  AppendPayloadField(payload, "phase", "diagnostics");
+  AppendPayloadField(payload, "diagnostic_family", "output-backend");
+  AppendPayloadField(payload, "spec_section", "24.8");
+  core::Conformance::Record(
+      "req.24.OutputBackendDiagnosticsOwnership",
+      std::nullopt,
+      payload);
+  core::Conformance::Record(
+      "diag.24.OutputBackendDiagnostics",
+      std::nullopt,
+      payload);
+}
+
+std::string RuntimeScopePayload(std::string_view operation,
+                                std::size_t before_depth,
+                                std::size_t after_depth,
+                                std::uint64_t scope_id,
+                                bool scope_returned) {
+  std::string payload;
+  AppendPayloadField(payload, "operation", operation);
+  AppendPayloadField(payload, "before_depth",
+                     static_cast<std::uint64_t>(before_depth));
+  AppendPayloadField(payload, "after_depth",
+                     static_cast<std::uint64_t>(after_depth));
+  AppendPayloadField(payload, "scope_id", scope_id);
+  AppendPayloadField(payload, "scope_returned", scope_returned);
+  AppendPayloadField(payload, "preserves_other_runtime_state", true);
+  return payload;
+}
+
+std::string AppendCleanupPayload(std::string_view item_kind,
+                                 std::size_t before_count,
+                                 std::size_t after_count,
+                                 std::uint64_t scope_id) {
+  std::string payload;
+  AppendPayloadField(payload, "operation", "AppendCleanup");
+  AppendPayloadField(payload, "item", item_kind);
+  AppendPayloadField(payload, "before_count",
+                     static_cast<std::uint64_t>(before_count));
+  AppendPayloadField(payload, "after_count",
+                     static_cast<std::uint64_t>(after_count));
+  AppendPayloadField(payload, "scope_id", scope_id);
+  AppendPayloadField(payload, "current_scope", true);
+  AppendPayloadField(payload, "preserves_names_vals_states", true);
+  return payload;
+}
+
+std::string BindingStateName(const BindingState& state) {
+  if (state.is_moved) {
+    return "Moved";
+  }
+  if (!state.moved_fields.empty()) {
+    return "PartiallyMoved";
+  }
+  return "Valid";
+}
+
+std::string BindingIdentityPayload(const BindingState& state,
+                                   std::string_view name,
+                                   std::string_view value_variant) {
+  std::string payload;
+  AppendPayloadField(payload, "operation", "Binding");
+  AppendPayloadField(payload, "identity", "scope_id+bind_id+name");
+  AppendPayloadField(payload, "scope_id", state.scope_runtime_id);
+  AppendPayloadField(payload, "bind_id", state.binding_id);
+  AppendPayloadField(payload, "name", name);
+  AppendPayloadField(payload, "stable_name", state.stable_name);
+  AppendPayloadField(payload, "value_variant", value_variant);
+  AppendPayloadField(payload, "state", BindingStateName(state));
+  return payload;
+}
+
+std::string AliasBindingIdentityPayload(const LocalAddrAlias& alias,
+                                        std::string_view alias_name) {
+  std::string payload;
+  AppendPayloadField(payload, "operation", "Binding");
+  AppendPayloadField(payload, "identity", "scope_id+bind_id+name");
+  AppendPayloadField(payload, "name", alias_name);
+  AppendPayloadField(payload, "source_name", alias.binding_name);
+  AppendPayloadField(payload, "bind_id", alias.binding_id);
+  AppendPayloadField(payload, "stable_name", alias.stable_name);
+  AppendPayloadField(payload, "value_variant", "Alias(addr)");
+  AppendPayloadField(payload, "addr_source", "local_addr_alias");
+  return payload;
+}
+
+std::string BindingLookupPayload(const BindingState& state,
+                                 std::string_view name,
+                                 std::string_view source,
+                                 std::string_view operation) {
+  std::string payload;
+  AppendPayloadField(payload, "operation", operation);
+  AppendPayloadField(payload, "source", source);
+  AppendPayloadField(payload, "scope_lookup", "scope_runtime_id");
+  AppendPayloadField(payload, "scope_id", state.scope_runtime_id);
+  AppendPayloadField(payload, "bind_id", state.binding_id);
+  AppendPayloadField(payload, "name", name);
+  AppendPayloadField(payload, "stable_name", state.stable_name);
+  AppendPayloadField(payload, "state", BindingStateName(state));
+  return payload;
+}
+
+std::string BindingTypeInfoPayload(const BindingState& state,
+                                   std::string_view name) {
+  std::string payload;
+  AppendPayloadField(payload, "operation", "TypeOfBindInfo");
+  AppendPayloadField(payload, "source", "BindingState");
+  AppendPayloadField(payload, "scope_id", state.scope_runtime_id);
+  AppendPayloadField(payload, "bind_id", state.binding_id);
+  AppendPayloadField(payload, "name", name);
+  AppendPayloadField(payload, "type_present", state.type != nullptr);
+  AppendPayloadField(payload, "bind_info_responsibility",
+                     state.has_responsibility ? "resp" : "alias");
+  AppendPayloadField(payload, "bind_info_immovable", state.is_immovable);
+  return payload;
+}
+
+std::string BindRuntimeValuePayload(const BindingState& state,
+                                    std::string_view name,
+                                    bool had_scope,
+                                    bool cleanup_registered) {
+  std::string payload;
+  AppendPayloadField(payload, "operation", "BindVal");
+  AppendPayloadField(payload, "scope_stack", had_scope ? "nonempty" : "empty");
+  AppendPayloadField(payload, "fresh_bind_id", true);
+  AppendPayloadField(payload, "names_updated", had_scope);
+  AppendPayloadField(payload, "vals_updated", true);
+  AppendPayloadField(payload, "state", "Valid");
+  AppendPayloadField(payload, "scope_id", state.scope_runtime_id);
+  AppendPayloadField(payload, "bind_id", state.binding_id);
+  AppendPayloadField(payload, "name", name);
+  AppendPayloadField(payload, "binding_returned", true);
+  AppendPayloadField(payload, "cleanup_registered", cleanup_registered);
+  return payload;
+}
+
+std::string SetBindingStatePayload(const BindingState& state,
+                                   std::string_view name,
+                                   std::string_view source) {
+  std::string payload;
+  AppendPayloadField(payload, "operation", "SetState");
+  AppendPayloadField(payload, "source", source);
+  AppendPayloadField(payload, "scope_id", state.scope_runtime_id);
+  AppendPayloadField(payload, "bind_id", state.binding_id);
+  AppendPayloadField(payload, "name", name);
+  AppendPayloadField(payload, "state", BindingStateName(state));
+  AppendPayloadField(payload, "scope_state_updated", true);
+  AppendPayloadField(payload, "preserves_value", true);
+  return payload;
+}
+
+const char* BindingStateSetSourceName(BindingStateSetSource source) {
+  switch (source) {
+    case BindingStateSetSource::MarkMoved:
+      return "MarkMoved";
+    case BindingStateSetSource::MarkFieldMoved:
+      return "MarkFieldMoved";
+  }
+  return "MarkMoved";
+}
+
+std::once_flag g_runtime_scope_push_obligation_once;
+std::once_flag g_runtime_scope_pop_obligation_once;
+std::once_flag g_append_cleanup_drop_binding_obligation_once;
+std::once_flag g_append_cleanup_defer_block_obligation_once;
+std::once_flag g_append_cleanup_runtime_scope_exit_obligation_once;
+std::once_flag g_runtime_binding_identity_value_obligation_once;
+std::once_flag g_runtime_binding_identity_alias_obligation_once;
+std::once_flag g_runtime_binding_value_lookup_obligation_once;
+std::once_flag g_runtime_binding_state_lookup_obligation_once;
+std::once_flag g_runtime_binding_type_info_obligation_once;
+std::once_flag g_bind_runtime_value_obligation_once;
+std::once_flag g_set_runtime_binding_state_mark_moved_obligation_once;
+std::once_flag g_set_runtime_binding_state_mark_field_moved_obligation_once;
+
+std::once_flag& SetRuntimeBindingStateOnceFlag(BindingStateSetSource source) {
+  switch (source) {
+    case BindingStateSetSource::MarkMoved:
+      return g_set_runtime_binding_state_mark_moved_obligation_once;
+    case BindingStateSetSource::MarkFieldMoved:
+      return g_set_runtime_binding_state_mark_field_moved_obligation_once;
+  }
+  return g_set_runtime_binding_state_mark_moved_obligation_once;
+}
 
 analysis::Permission PermissionOfType(const analysis::TypeRef& type) {
   if (!type) {
@@ -131,6 +377,7 @@ IRPtr EmitRuntimeScopeEnter(std::uint64_t scope_id, LowerCtx& ctx) {
 }
 
 void LowerCtx::PushScope(bool is_loop, bool is_region) {
+  const std::size_t before_depth = scope_stack.size();
   ScopeInfo scope;
   scope.is_loop = is_loop;
   scope.is_region = is_region;
@@ -138,7 +385,16 @@ void LowerCtx::PushScope(bool is_loop, bool is_region) {
     next_runtime_scope_id = std::make_shared<std::uint64_t>(1);
   }
   scope.runtime_scope_id = (*next_runtime_scope_id)++;
+  const std::uint64_t scope_id = scope.runtime_scope_id;
   scope_stack.push_back(std::move(scope));
+  RecordLoweringConformanceOnce(
+      g_runtime_scope_push_obligation_once,
+      "def.RuntimeScopePushPop",
+      RuntimeScopePayload("PushScope_sigma",
+                          before_depth,
+                          scope_stack.size(),
+                          scope_id,
+                          true));
 }
 
 void LowerCtx::PopScope() {
@@ -146,6 +402,7 @@ void LowerCtx::PopScope() {
     return;
   }
 
+  const std::size_t before_depth = scope_stack.size();
   const auto exiting_scope_id = scope_stack.back().runtime_scope_id;
   const auto& aliases = scope_stack.back().aliases;
   for (auto it = aliases.rbegin(); it != aliases.rend(); ++it) {
@@ -184,6 +441,14 @@ void LowerCtx::PopScope() {
   implicit_key_scope_names.erase(exiting_scope_id);
 
   scope_stack.pop_back();
+  RecordLoweringConformanceOnce(
+      g_runtime_scope_pop_obligation_once,
+      "def.RuntimeScopePushPop",
+      RuntimeScopePayload("PopScope_sigma",
+                          before_depth,
+                          scope_stack.size(),
+                          exiting_scope_id,
+                          true));
 }
 
 std::vector<std::string> LowerCtx::CurrentScopeVars() const {
@@ -228,6 +493,7 @@ void LowerCtx::RegisterVar(const std::string& name,
                            std::optional<std::string> prov_region,
                            bool preserve_addr_provenance,
                            std::optional<std::string> prov_region_tag) {
+  const bool had_scope = !scope_stack.empty();
   BindingState state;
   state.type = type;
   state.storage_type = type;
@@ -241,18 +507,36 @@ void LowerCtx::RegisterVar(const std::string& name,
   state.prov_region = std::move(prov_region);
   state.prov_region_tag = std::move(prov_region_tag);
   state.preserve_addr_provenance = preserve_addr_provenance;
+  bool cleanup_registered = false;
   if (!scope_stack.empty()) {
     state.scope_runtime_id = scope_stack.back().runtime_scope_id;
     scope_stack.back().variables.push_back(name);
     if (has_responsibility) {
+      const std::size_t cleanup_before = scope_stack.back().cleanup_items.size();
       CleanupItem item;
       item.kind = CleanupItem::Kind::DropBinding;
       item.name = name;
       item.binding_id = state.binding_id;
       scope_stack.back().cleanup_items.push_back(std::move(item));
+      cleanup_registered = true;
+      RecordLoweringConformanceOnce(
+          g_append_cleanup_drop_binding_obligation_once,
+          "def.AppendCleanup",
+          AppendCleanupPayload("DropBinding",
+                               cleanup_before,
+                               scope_stack.back().cleanup_items.size(),
+                               state.scope_runtime_id));
     }
   }
 
+  RecordLoweringConformanceOnce(
+      g_runtime_binding_identity_value_obligation_once,
+      "def.RuntimeBindingIdentityAndValue",
+      BindingIdentityPayload(state, name, "Value"));
+  RecordLoweringConformanceOnce(
+      g_bind_runtime_value_obligation_once,
+      "def.BindRuntimeValue",
+      BindRuntimeValuePayload(state, name, had_scope, cleanup_registered));
   binding_states[name].push_back(std::move(state));
 }
 
@@ -263,11 +547,19 @@ void LowerCtx::RegisterRuntimeScopeExit() {
   if (scope_stack.back().runtime_scope_exit_registered) {
     return;
   }
+  const std::size_t cleanup_before = scope_stack.back().cleanup_items.size();
   CleanupItem item;
   item.kind = CleanupItem::Kind::RuntimeScopeExit;
   item.scope_runtime_id = scope_stack.back().runtime_scope_id;
   scope_stack.back().cleanup_items.push_back(std::move(item));
   scope_stack.back().runtime_scope_exit_registered = true;
+  RecordLoweringConformanceOnce(
+      g_append_cleanup_runtime_scope_exit_obligation_once,
+      "def.AppendCleanup",
+      AppendCleanupPayload("RuntimeScopeExit",
+                           cleanup_before,
+                           scope_stack.back().cleanup_items.size(),
+                           scope_stack.back().runtime_scope_id));
 }
 
 void LowerCtx::RequireRuntimeScope(std::uint64_t scope_id) {
@@ -316,6 +608,15 @@ std::optional<std::uint64_t> LowerCtx::CurrentRuntimeScopeId() const {
   return scope_stack.back().runtime_scope_id;
 }
 
+void LowerCtx::RecordBindingStateSet(const BindingState& state,
+                                     const std::string& name,
+                                     BindingStateSetSource source) {
+  RecordLoweringConformanceOnce(
+      SetRuntimeBindingStateOnceFlag(source),
+      "def.SetRuntimeBindingState",
+      SetBindingStatePayload(state, name, BindingStateSetSourceName(source)));
+}
+
 void LowerCtx::MarkMoved(const std::string& name) {
   auto it = binding_states.find(name);
   if (it == binding_states.end() || it->second.empty()) {
@@ -327,6 +628,10 @@ void LowerCtx::MarkMoved(const std::string& name) {
       if (state.stable_name == name) {
         SPEC_RULE("UpdateValid-MoveRoot");
         state.is_moved = true;
+        RecordBindingStateSet(
+            state,
+            source_name,
+            BindingStateSetSource::MarkMoved);
         return;
       }
     }
@@ -336,6 +641,10 @@ void LowerCtx::MarkMoved(const std::string& name) {
   }
   SPEC_RULE("UpdateValid-MoveRoot");
   it->second.back().is_moved = true;
+  RecordBindingStateSet(
+      it->second.back(),
+      name,
+      BindingStateSetSource::MarkMoved);
 }
 
 void LowerCtx::MarkMoved(const std::vector<std::string>& names) {
@@ -363,11 +672,28 @@ void LowerCtx::MarkFieldMoved(const std::string& name, const std::string& field)
   SPEC_RULE("UpdateValid-PartialMove-Init");
   SPEC_RULE("UpdateValid-PartialMove-Step");
   it->second.back().moved_fields.push_back(field);
+  RecordBindingStateSet(
+      it->second.back(),
+      name,
+      BindingStateSetSource::MarkFieldMoved);
 }
 
 const BindingState* LowerCtx::GetBindingState(const std::string& name) const {
   auto it = binding_states.find(name);
   if (it != binding_states.end() && !it->second.empty()) {
+    const BindingState& state = it->second.back();
+    RecordLoweringConformanceOnce(
+        g_runtime_binding_value_lookup_obligation_once,
+        "def.RuntimeBindingValueLookup",
+        BindingLookupPayload(state, name, "GetBindingState", "BindingValue"));
+    RecordLoweringConformanceOnce(
+        g_runtime_binding_state_lookup_obligation_once,
+        "def.RuntimeBindingStateLookup",
+        BindingLookupPayload(state, name, "GetBindingState", "BindState"));
+    RecordLoweringConformanceOnce(
+        g_runtime_binding_type_info_obligation_once,
+        "def.RuntimeBindingTypeAndInfo",
+        BindingTypeInfoPayload(state, name));
     return &it->second.back();
   }
   for (const auto& [source_name, states] : binding_states) {
@@ -377,6 +703,20 @@ const BindingState* LowerCtx::GetBindingState(const std::string& name) const {
     }
     const BindingState& state = states.back();
     if (state.stable_name == name) {
+      RecordLoweringConformanceOnce(
+          g_runtime_binding_value_lookup_obligation_once,
+          "def.RuntimeBindingValueLookup",
+          BindingLookupPayload(state, source_name, "GetBindingStateStableName",
+                               "BindingValue"));
+      RecordLoweringConformanceOnce(
+          g_runtime_binding_state_lookup_obligation_once,
+          "def.RuntimeBindingStateLookup",
+          BindingLookupPayload(state, source_name, "GetBindingStateStableName",
+                               "BindState"));
+      RecordLoweringConformanceOnce(
+          g_runtime_binding_type_info_obligation_once,
+          "def.RuntimeBindingTypeAndInfo",
+          BindingTypeInfoPayload(state, source_name));
       return &state;
     }
   }
@@ -392,6 +732,19 @@ const BindingState* LowerCtx::GetBindingStateById(
   }
   for (auto rit = it->second.rbegin(); rit != it->second.rend(); ++rit) {
     if (rit->binding_id == binding_id) {
+      RecordLoweringConformanceOnce(
+          g_runtime_binding_value_lookup_obligation_once,
+          "def.RuntimeBindingValueLookup",
+          BindingLookupPayload(*rit, name, "GetBindingStateById",
+                               "BindingValue"));
+      RecordLoweringConformanceOnce(
+          g_runtime_binding_state_lookup_obligation_once,
+          "def.RuntimeBindingStateLookup",
+          BindingLookupPayload(*rit, name, "GetBindingStateById", "BindState"));
+      RecordLoweringConformanceOnce(
+          g_runtime_binding_type_info_obligation_once,
+          "def.RuntimeBindingTypeAndInfo",
+          BindingTypeInfoPayload(*rit, name));
       return &*rit;
     }
   }
@@ -440,6 +793,12 @@ void LowerCtx::RegisterLocalAddrAlias(const std::string& alias,
 
   if (!scope_stack.empty()) {
     scope_stack.back().aliases.push_back(alias);
+  }
+  if (state.kind == LocalAddrAlias::Kind::Binding) {
+    RecordLoweringConformanceOnce(
+        g_runtime_binding_identity_alias_obligation_once,
+        "def.RuntimeBindingIdentityAndValue",
+        AliasBindingIdentityPayload(state, alias));
   }
   local_addr_aliases[alias].push_back(std::move(state));
 }
@@ -518,11 +877,29 @@ const std::vector<analysis::TypeRef>* LowerCtx::LookupDynamicRefinementTypes(
 
 void LowerCtx::RegisterDefer(const IRPtr& defer_ir) {
   if (!scope_stack.empty()) {
+    const std::size_t cleanup_before = scope_stack.back().cleanup_items.size();
     CleanupItem item;
     item.kind = CleanupItem::Kind::DeferBlock;
     item.defer_ir = defer_ir;
     scope_stack.back().cleanup_items.push_back(std::move(item));
+    RecordLoweringConformanceOnce(
+        g_append_cleanup_defer_block_obligation_once,
+        "def.AppendCleanup",
+        AppendCleanupPayload("DeferBlock",
+                             cleanup_before,
+                             scope_stack.back().cleanup_items.size(),
+                             scope_stack.back().runtime_scope_id));
   }
+}
+
+void LowerCtx::RegisterSpeculativeWriteRollback(const IRPtr& restore_ir) {
+  if (!restore_ir || scope_stack.empty()) {
+    return;
+  }
+  CleanupItem item;
+  item.kind = CleanupItem::Kind::SpeculativeWriteRollback;
+  item.restore_ir = restore_ir;
+  scope_stack.back().cleanup_items.push_back(std::move(item));
 }
 
 void LowerCtx::RegisterRegionRelease(const std::string& name) {
@@ -668,6 +1045,39 @@ LoweredCaptureEnv LowerCtx::LowerParallelCaptureEnv(
   auto env_type = analysis::MakeTypeTuple(env_fields);
   const auto env_layout =
       analysis::layout::RecordLayoutOf(ScopeForLowering(*this), env_fields);
+  if (!captures.empty() && core::Conformance::Enabled()) {
+    std::string payload;
+    AppendPayloadField(payload, "source", "LowerParallelCaptureEnv");
+    AppendPayloadField(payload, "surface", std::string(env_prefix));
+    AppendPayloadField(
+        payload,
+        "capture_count",
+        static_cast<std::uint64_t>(captures.size()));
+    AppendPayloadField(payload, "env_model", "tuple");
+    AppendPayloadField(payload, "env_ptr", "addr");
+    AppendPayloadField(payload, "lower_capture_env", "alloc+stores");
+    AppendPayloadField(payload, "captured_access", "env_param+offsets");
+    AppendPayloadField(payload, "generic_closure_environment_lowering", true);
+    AppendPayloadField(payload, "parallel_specific_lowering_rule", false);
+    AppendPayloadField(payload, "closure_env_section", "16.9.6");
+    core::Conformance::Record(
+        "requirement.20.CaptureSemanticsGenericLowering",
+        std::nullopt,
+        payload);
+
+    std::string runtime_payload = payload;
+    AppendPayloadField(
+        runtime_payload,
+        "allowed_runtime_mechanisms",
+        "closure_environment_construction,gpu_work_item_capture_environment,key_synchronization");
+    AppendPayloadField(runtime_payload, "additional_runtime_mechanism", false);
+    AppendPayloadField(runtime_payload, "runtime_capture_api", "none");
+    AppendPayloadField(runtime_payload, "runtime_boundary", "env_ptr+env_size+body_fn");
+    core::Conformance::Record(
+        "requirement.20.CaptureSemanticsNoAdditionalRuntimeMechanism",
+        std::nullopt,
+        runtime_payload);
+  }
   lowered.env_info.env_type = env_type;
 
   IRValue env_ptr = FreshTempValue(std::string(env_prefix) + "_env_ptr");
@@ -838,7 +1248,33 @@ void LowerCtx::ReportResolveFailure(const std::string& name) {
 }
 
 void LowerCtx::ReportCodegenFailure(std::source_location loc) {
+  ReportCodegenFailure(CodegenFailureKind::Generic, loc);
+}
+
+void LowerCtx::ReportCodegenFailure(CodegenFailureKind kind,
+                                    std::source_location loc) {
   codegen_failed = true;
+  if (!codegen_failure_kind.has_value() ||
+      *codegen_failure_kind == CodegenFailureKind::Generic ||
+      kind != CodegenFailureKind::Generic) {
+    codegen_failure_kind = kind;
+  }
+  if (kind == CodegenFailureKind::LLVMTypeMapping &&
+      !llvm_type_mapping_diagnostic_emitted) {
+    llvm_type_mapping_diagnostic_emitted = true;
+    RecordOutputBackendDiagnostic("E-OUT-0410",
+                                  "LowerCtx::ReportCodegenFailure");
+    if (diagnostics != nullptr) {
+      if (diagnostics_mu != nullptr) {
+        std::lock_guard<std::mutex> lock(*diagnostics_mu);
+        core::EmitDiagnosticById(*diagnostics, "E-OUT-0410");
+      } else {
+        core::EmitDiagnosticById(*diagnostics, "E-OUT-0410");
+      }
+    } else if (auto diag = core::MakeDiagnosticById("E-OUT-0410")) {
+      std::cerr << core::Render(*diag) << "\n";
+    }
+  }
   std::cerr << "[uv] codegen failure at " << loc.file_name() << ":"
             << loc.line() << "\n";
 }
@@ -847,6 +1283,20 @@ void LowerCtx::RegisterValueType(const IRValue& value,
                                  analysis::TypeRef type,
                                  std::source_location loc) {
   if (!type) {
+    return;
+  }
+  if (value.kind == IRValue::Kind::Local) {
+    if (value.name.rfind("__bind_", 0) != 0) {
+      return;
+    }
+    std::string key = "local:";
+    key += value.name;
+    const auto [it, inserted] = values.value_types.emplace(key, type);
+    if (!inserted) {
+      it->second = type;
+    } else if (values.value_type_insert_sink) {
+      values.value_type_insert_sink->push_back(key);
+    }
     return;
   }
   if (value.kind == IRValue::Kind::Symbol) {
@@ -885,6 +1335,12 @@ analysis::TypeRef LowerCtx::LookupValueType(const IRValue& value) const {
   if (value.kind == IRValue::Kind::Local) {
     if (const auto* state = GetBindingState(value.name)) {
       return state->type;
+    }
+    std::string key = "local:";
+    key += value.name;
+    auto local_it = values.value_types.find(key);
+    if (local_it != values.value_types.end()) {
+      return local_it->second;
     }
     if (values.parent != nullptr) {
       return values.parent->LookupValueType(value);

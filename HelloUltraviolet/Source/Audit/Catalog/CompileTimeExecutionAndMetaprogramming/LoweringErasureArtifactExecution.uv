@@ -1,0 +1,160 @@
+//! Compile-time lowering and runtime erasure artifact checks.
+
+internal let COMPTIME_RUNTIME_ERASURE_PROJECT_PATH: string@View =
+    "Fixtures/ArtifactProjects/ComptimeRuntimeErasure"
+internal let COMPTIME_RUNTIME_ERASURE_LOG_NAME: string@View =
+    "comptime_runtime_erasure.conformance.log"
+internal let COMPTIME_RUNTIME_ERASURE_OUT_DIR: string@View =
+    "ComptimeRuntimeErasureArtifactBuild"
+internal let COMPTIME_RUNTIME_ERASURE_IR_PATH: string@View =
+    "Intermediate/IR/Source/ComptimeRuntimeErasure.ll"
+
+internal procedure comptimeRuntimeErasureArtifactRuns(
+    authority: TestAuthority
+) -> bool {
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+    return artifactProjectRunCase(
+        authority,
+        COMPTIME_RUNTIME_ERASURE_PROJECT_PATH,
+        authority.target_profile,
+        "off",
+        "ComptimeRuntimeErasureArtifact.out",
+        "ComptimeRuntimeErasureArtifact.err",
+        COMPTIME_RUNTIME_ERASURE_OUT_DIR,
+        COMPTIME_RUNTIME_ERASURE_LOG_NAME
+    )
+}
+
+internal procedure comptimeRuntimeErasureArtifactExists(
+    authority: TestAuthority
+) -> bool {
+    return acceptedProjectTempFileExists(
+            authority,
+            COMPTIME_RUNTIME_ERASURE_OUT_DIR,
+            COMPTIME_RUNTIME_ERASURE_IR_PATH
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            COMPTIME_RUNTIME_ERASURE_OUT_DIR,
+            "Intermediate/Obj/Source/ComptimeRuntimeErasure.obj"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            COMPTIME_RUNTIME_ERASURE_OUT_DIR,
+            "Library/ComptimeRuntimeErasure.lib"
+        )
+}
+
+internal procedure comptimeRuntimeErasureIrContains(
+    authority: TestAuthority,
+    required_text: string@View
+) -> bool {
+    return acceptedProjectTempFileContains(
+        authority,
+        COMPTIME_RUNTIME_ERASURE_OUT_DIR,
+        COMPTIME_RUNTIME_ERASURE_IR_PATH,
+        required_text
+    )
+}
+
+internal procedure comptimeRuntimeErasureIrExcludes(
+    authority: TestAuthority,
+    forbidden_text: string@View
+) -> bool {
+    return artifactProjectTempFileExcludes(
+        authority,
+        COMPTIME_RUNTIME_ERASURE_OUT_DIR,
+        COMPTIME_RUNTIME_ERASURE_IR_PATH,
+        forbidden_text
+    )
+}
+
+internal procedure comptimeRuntimeErasureConformanceContains(
+    authority: TestAuthority,
+    required_text: string@View
+) -> bool {
+    return acceptedProjectConformanceContains(
+        authority,
+        COMPTIME_RUNTIME_ERASURE_OUT_DIR,
+        COMPTIME_RUNTIME_ERASURE_LOG_NAME,
+        required_text
+    )
+}
+
+#test(name: "comptime runtime erasure artifact evidence matches")
+internal procedure comptimeRuntimeErasureArtifactEvidenceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return comptimeRuntimeErasureArtifactRuns(authority) &&
+        comptimeRuntimeErasureArtifactExists(authority) &&
+        comptimeRuntimeErasureIrContains(
+            authority,
+            "compileTimeRuntimeErasureEntryPoint"
+        ) &&
+        comptimeRuntimeErasureIrContains(
+            authority,
+            "emittedRuntimeErasureQuoteCaptureValue"
+        ) &&
+        comptimeRuntimeErasureIrContains(
+            authority,
+            "emittedRuntimeErasureSplicedValue"
+        ) &&
+        comptimeRuntimeErasureIrContains(
+            authority,
+            "emittedRuntimeErasureIdentifierSpliceValue"
+        ) &&
+        comptimeRuntimeErasureIrContains(
+            authority,
+            "emittedRuntimeErasureDerivedValue"
+        ) &&
+        comptimeRuntimeErasureIrExcludes(authority, "TypeEmitter") &&
+        comptimeRuntimeErasureIrExcludes(authority, "Introspect") &&
+        comptimeRuntimeErasureIrExcludes(authority, "ComptimeDiagnostics") &&
+        comptimeRuntimeErasureIrExcludes(authority, "ProjectFiles") &&
+        comptimeRuntimeErasureIrExcludes(
+            authority,
+            "chooseRuntimeErasureValue"
+        ) &&
+        comptimeRuntimeErasureIrExcludes(
+            authority,
+            "EmitRuntimeErasureDerive"
+        ) &&
+        comptimeRuntimeErasureIrExcludes(authority, "Ast::") &&
+        comptimeRuntimeErasureIrExcludes(authority, "QuoteExpr") &&
+        comptimeRuntimeErasureIrExcludes(authority, "ComptimeExpr") &&
+        comptimeRuntimeErasureIrExcludes(authority, "TypeLiteralExpr") &&
+        comptimeRuntimeErasureConformanceContains(
+            authority,
+            "\trequirement.22.CompileTimeCapabilitiesLowering\t"
+        ) &&
+        comptimeRuntimeErasureConformanceContains(
+            authority,
+            "\trequirement.22.CompileTimeFormsLowering\t"
+        ) &&
+        comptimeRuntimeErasureConformanceContains(
+            authority,
+            "\trequirement.22.DeriveTargetsLowering\t"
+        ) &&
+        comptimeRuntimeErasureConformanceContains(
+            authority,
+            "\trequirement.22.QuoteSpliceEmissionLowering\t"
+        ) &&
+        comptimeRuntimeErasureConformanceContains(
+            authority,
+            "\trequirement.22.ReflectionLowering\t"
+        ) &&
+        comptimeRuntimeErasureConformanceContains(
+            authority,
+            "source=VerifyCompileTimeErasure"
+        ) &&
+        comptimeRuntimeErasureConformanceContains(
+            authority,
+            "phase4_input_ct_meta_free=true"
+        )
+}

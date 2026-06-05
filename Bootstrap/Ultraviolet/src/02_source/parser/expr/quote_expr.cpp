@@ -131,8 +131,9 @@ std::optional<ParseElemResult<ExprPtr>> TryParseQuoteExpr(Parser parser) {
     SPEC_RULE("Parse-Quote-Raw");
   }
   Advance(content_end);
+  Parser merged = MergeDiag(parser, content_end, content_end);
   return ParseElemResult<ExprPtr>{
-      content_end, MakeExpr(SpanBetween(start, content_end), quote)};
+      merged, MakeExpr(SpanBetween(start, merged), quote)};
 }
 
 }  // namespace ultraviolet::ast

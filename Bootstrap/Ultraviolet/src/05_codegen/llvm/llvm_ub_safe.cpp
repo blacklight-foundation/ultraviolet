@@ -43,6 +43,7 @@
 #include "llvm/Support/raw_ostream.h"
 
 #include <string>
+#include <string_view>
 
 namespace ultraviolet::codegen {
 
@@ -59,6 +60,86 @@ std::string RenderLLVMIRText(const llvm::Module& module) {
 
 bool ContainsIRToken(const std::string& text, std::string_view token) {
   return text.find(std::string(token)) != std::string::npos;
+}
+
+std::string_view BoolPayload(bool value) {
+  return value ? "true" : "false";
+}
+
+void AppendMemoryPayloadField(std::string& payload,
+                              std::string_view name,
+                              std::string_view value) {
+  payload += ";";
+  payload += name;
+  payload += "=";
+  payload += value;
+}
+
+void AppendMemoryPayloadField(std::string& payload,
+                              std::string_view name,
+                              bool value) {
+  AppendMemoryPayloadField(payload, name, BoolPayload(value));
+}
+
+void AppendMemoryPayloadField(std::string& payload,
+                              std::string_view name,
+                              std::uint64_t value) {
+  payload += ";";
+  payload += name;
+  payload += "=";
+  payload += std::to_string(value);
+}
+
+void RecordMemoryIntrinsic(std::string_view operation,
+                           std::string_view selected,
+                           std::uint64_t align) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload = "source=llvm_ub_safe";
+  AppendMemoryPayloadField(payload, "operation", operation);
+  AppendMemoryPayloadField(payload, "selected", selected);
+  AppendMemoryPayloadField(payload, "align", align);
+  core::Conformance::Record("def.24.MemoryIntrinsics", std::nullopt, payload);
+}
+
+void RecordMemoryInstructionHelper(std::string_view helper,
+                                   std::string_view lower_form,
+                                   std::uint64_t align) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload = "source=llvm_ub_safe";
+  AppendMemoryPayloadField(payload, "helper", helper);
+  AppendMemoryPayloadField(payload, "lower_form", lower_form);
+  AppendMemoryPayloadField(payload, "align", align);
+  core::Conformance::Record(
+      "def.24.MemoryInstructionHelpers", std::nullopt, payload);
+}
+
+void RecordAggMemcpy(const llvm::Value* dst,
+                     const llvm::Value* src,
+                     const llvm::Value* size,
+                     bool overlap_unknown,
+                     bool memcpy_allowed,
+                     std::string_view selected,
+                     std::uint64_t align) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload = "source=llvm_ub_safe";
+  AppendMemoryPayloadField(payload, "operation", std::string_view("AggMemcpy"));
+  AppendMemoryPayloadField(payload, "memcpy_overlap_unknown", overlap_unknown);
+  AppendMemoryPayloadField(payload, "memcpy_allowed", memcpy_allowed);
+  AppendMemoryPayloadField(payload, "selected", selected);
+  AppendMemoryPayloadField(payload, "has_dst", dst != nullptr);
+  AppendMemoryPayloadField(payload, "has_src", src != nullptr);
+  AppendMemoryPayloadField(payload, "has_size", size != nullptr);
+  AppendMemoryPayloadField(payload, "align", align);
+  core::Conformance::Record("def.24.MemoryIntrinsics", std::nullopt, payload);
 }
 
 llvm::Value* LoadLocalPanicOutPtr(LLVMEmitter& emitter, llvm::IRBuilder<>* builder) {
@@ -515,6 +596,9 @@ void EmitMemSet(LLVMEmitter& emitter,
                 llvm::Value* size,
                 std::uint64_t align) {
   SPEC_RULE("MemIntrinsics-Set");
+  SPEC_RULE("def.24.MemoryInstructionHelpers");
+  RecordMemoryIntrinsic("AggZero", "llvm.memset", align);
+  RecordMemoryInstructionHelper("Memset", "llvm.memset", align);
 
   auto* builder = static_cast<llvm::IRBuilder<>*>(emitter.GetBuilderRaw());
   builder->CreateMemSet(dst, val, size, llvm::MaybeAlign(align));
@@ -526,6 +610,7 @@ void EmitMemMove(LLVMEmitter& emitter,
                  llvm::Value* size,
                  std::uint64_t align) {
   SPEC_RULE("MemIntrinsics-Move");
+  RecordMemoryIntrinsic("Memmove", "llvm.memmove", align);
 
   auto* builder = static_cast<llvm::IRBuilder<>*>(emitter.GetBuilderRaw());
   builder->CreateMemMove(dst, llvm::MaybeAlign(align), src, llvm::MaybeAlign(align), size);
@@ -536,12 +621,21 @@ void EmitAggMemcpy(LLVMEmitter& emitter,
                    llvm::Value* src,
                    llvm::Value* size,
                    std::uint64_t align) {
-  if (MemcpyAllowed(dst, src, size)) {
+  SPEC_RULE("def.24.MemoryInstructionHelpers");
+  const bool overlap_unknown = MemcpyOverlapUnknown(dst, src, size);
+  const bool memcpy_allowed = !overlap_unknown;
+  if (memcpy_allowed) {
+    RecordAggMemcpy(
+        dst, src, size, overlap_unknown, memcpy_allowed, "llvm.memcpy", align);
+    RecordMemoryInstructionHelper("Memcpy", "llvm.memcpy", align);
     auto* builder = static_cast<llvm::IRBuilder<>*>(emitter.GetBuilderRaw());
     builder->CreateMemCpy(dst, llvm::MaybeAlign(align), src,
                           llvm::MaybeAlign(align), size);
     return;
   }
+  RecordAggMemcpy(
+      dst, src, size, overlap_unknown, memcpy_allowed, "llvm.memmove", align);
+  RecordMemoryInstructionHelper("Memcpy", "llvm.memmove", align);
   EmitMemMove(emitter, dst, src, size, align);
 }
 
@@ -633,6 +727,3 @@ bool MightBePoison(llvm::Value* value) {
 }
 
 }  // namespace ultraviolet::codegen
-
-
-

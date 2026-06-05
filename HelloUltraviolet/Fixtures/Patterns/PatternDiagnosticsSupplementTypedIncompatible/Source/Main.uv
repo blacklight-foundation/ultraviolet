@@ -1,0 +1,9 @@
+//! Rejected pattern specimen for incompatible typed if-is patterns.
+
+public procedure patternDiagnosticsSupplementTypedIncompatibleReference() -> bool {
+    return if true is _: i32 {
+        true
+    } else {
+        false
+    }
+}

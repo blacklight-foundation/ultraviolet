@@ -1,4 +1,4 @@
-//! Rejected permission specimen for mutating a shared path without a key.
+//! Rejected permission specimen for a shared write that cannot form a key path.
 
 public record PermissionDiagnosticCell {
     public value: i32
@@ -6,6 +6,6 @@ public record PermissionDiagnosticCell {
 
 public procedure sharedMutationWithoutKeyReference() -> i32 {
     var cell: shared PermissionDiagnosticCell = PermissionDiagnosticCell { value: 1 }
-    cell.value = 2
+    (#dynamic cell.value) = 2
     return cell.value + 0
 }

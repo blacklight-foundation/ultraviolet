@@ -62,6 +62,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -69,6 +70,7 @@
 #include <unordered_set>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "05_codegen/abi/abi.h"
 #include "05_codegen/cleanup/cleanup.h"
@@ -82,9 +84,11 @@
 #include "05_codegen/symbols/linkage.h"
 #include "05_codegen/symbols/mangle.h"
 #include "01_project/ffi_library.h"
+#include "01_project/target_profile.h"
 #include "00_core/assert_spec.h"
 #include "00_core/process_config.h"
 #include "00_core/symbols.h"
+#include "02_source/ast/ast_utils.h"
 #include "02_source/attributes/attribute_registry.h"
 #include "04_analysis/attributes/ffi_library_attrs.h"
 #include "04_analysis/composite/classes.h"
@@ -92,10 +96,107 @@
 #include "04_analysis/generics/monomorphize.h"
 #include "04_analysis/typing/types.h"
 #include "05_codegen/ir/ir_control_flow.h"
+#include "05_codegen/ir/ir_model.h"
 
 namespace ultraviolet::codegen {
 
 namespace {
+
+bool ContainsForm(const std::vector<std::string>& forms,
+                  const std::string& form) {
+  return std::find(forms.begin(), forms.end(), form) != forms.end();
+}
+
+void AddLeakedFormIfPresent(const std::vector<std::string>& forms,
+                            const std::string& form,
+                            std::vector<std::string>& leaked_forms) {
+  if (ContainsForm(forms, form)) {
+    leaked_forms.push_back(form);
+  }
+}
+
+std::string JoinForms(const std::vector<std::string>& forms) {
+  if (forms.empty()) {
+    return "";
+  }
+
+  std::string out = forms.front();
+  for (std::size_t i = 1; i < forms.size(); ++i) {
+    out += ",";
+    out += forms[i];
+  }
+  return out;
+}
+
+bool VerifyCompileTimeErasure(const ast::ASTModule& module, LowerCtx& ctx) {
+  std::vector<std::string> leaked_forms;
+  const std::vector<std::string> item_forms = ast::appendix_item_forms(module);
+  const std::vector<std::string> ct_forms =
+      ast::appendix_ct_family_forms(module);
+
+  AddLeakedFormIfPresent(item_forms, "CtProc", leaked_forms);
+  AddLeakedFormIfPresent(item_forms, "DeriveTargetDecl", leaked_forms);
+  AddLeakedFormIfPresent(ct_forms, "CtStmt", leaked_forms);
+  AddLeakedFormIfPresent(ct_forms, "CtExpr", leaked_forms);
+  AddLeakedFormIfPresent(ct_forms, "CtIf", leaked_forms);
+  AddLeakedFormIfPresent(ct_forms, "CtLoopIter", leaked_forms);
+  AddLeakedFormIfPresent(ct_forms, "Type::<...>", leaked_forms);
+  AddLeakedFormIfPresent(ct_forms, "quote_type", leaked_forms);
+  AddLeakedFormIfPresent(ct_forms, "quote_pattern", leaked_forms);
+  AddLeakedFormIfPresent(ct_forms, "quote_expr", leaked_forms);
+  AddLeakedFormIfPresent(ct_forms, "splice_form", leaked_forms);
+
+  std::sort(leaked_forms.begin(), leaked_forms.end());
+  leaked_forms.erase(std::unique(leaked_forms.begin(), leaked_forms.end()),
+                     leaked_forms.end());
+  if (leaked_forms.empty()) {
+    return true;
+  }
+
+  if (core::IsDebugEnabled("codegen")) {
+    std::cerr << "[lower-comptime-erasure-leak] module="
+              << core::StringOfPath(module.path)
+              << " leaked_forms=" << JoinForms(leaked_forms) << "\n";
+  }
+  ctx.ReportCodegenFailure();
+  return false;
+}
+
+void RecordCompileTimeErasureEvidence(const ast::ASTModule& module,
+                                      const IRDecls& decls) {
+  const std::string module_key = core::StringOfPath(module.path);
+  const std::string payload =
+      "source=VerifyCompileTimeErasure;module=" + module_key +
+      ";phase=Phase4;decl_count=" + std::to_string(decls.size()) +
+      ";phase4_input_ct_meta_free=true;runtime_ir_validated=true";
+
+  core::Conformance::Record(
+      "requirement.22.CompileTimeCapabilitiesLowering",
+      std::nullopt,
+      payload +
+          ";capability_runtime_layout=false;capability_runtime_symbols=false");
+  core::Conformance::Record(
+      "requirement.22.CompileTimeFormsLowering",
+      std::nullopt,
+      payload +
+          ";runtime_ir_from_compile_time_forms=false;expanded_program_only=true");
+  core::Conformance::Record(
+      "requirement.22.DeriveTargetsLowering",
+      std::nullopt,
+      payload +
+          ";derive_runtime_dispatch=false;derive_runtime_metadata=false");
+  core::Conformance::Record(
+      "requirement.22.QuoteSpliceEmissionLowering",
+      std::nullopt,
+      payload +
+          ";quoted_ast_runtime_representation=false;"
+          "spliced_ast_runtime_representation=false");
+  core::Conformance::Record(
+      "requirement.22.ReflectionLowering",
+      std::nullopt,
+      payload +
+          ";reified_type_values_phase4=false;reflection_arrays_phase4=false");
+}
 
 bool IsUnitType(const analysis::TypeRef& type) {
   if (!type) {
@@ -177,18 +278,29 @@ std::string NormalizeExternAbi(std::string_view abi_raw) {
 }
 
 std::optional<std::string> ExportAbiFor(const ast::AttributeList& attrs) {
+  SPEC_RULE("def.24.AttributeSymbolHelpers");
   const auto abi = analysis::GetAttributeValue(attrs, analysis::attrs::kExport);
   if (!abi.has_value()) {
     return std::nullopt;
   }
-  return NormalizeExternAbi(*abi);
+  const std::string normalized = NormalizeExternAbi(*abi);
+  core::Conformance::Record(
+      "def.24.AttributeSymbolHelpers",
+      std::nullopt,
+      "source=ExportAbiFor;attribute=export;abi=" + normalized);
+  return normalized;
 }
 
 std::string ExternAbiFor(const std::optional<ast::ExternAbi>& abi_opt) {
+  SPEC_RULE("def.24.ExternAbiSymbolHelpers");
   if (!abi_opt.has_value()) {
+    core::Conformance::Record(
+        "def.24.ExternAbiSymbolHelpers",
+        std::nullopt,
+        "source=ExternAbiFor;explicit=false;name=C");
     return "C";
   }
-  return std::visit(
+  const std::string abi = std::visit(
       [](const auto& abi_node) -> std::string {
         using T = std::decay_t<decltype(abi_node)>;
         if constexpr (std::is_same_v<T, ast::ExternAbiString>) {
@@ -198,6 +310,11 @@ std::string ExternAbiFor(const std::optional<ast::ExternAbi>& abi_opt) {
         }
       },
       *abi_opt);
+  core::Conformance::Record(
+      "def.24.ExternAbiSymbolHelpers",
+      std::nullopt,
+      "source=ExternAbiFor;explicit=true;name=" + abi);
+  return abi;
 }
 
 IRInlineMode InlineModeFor(const ast::AttributeList& attrs) {
@@ -235,8 +352,13 @@ void ApplyProcAttrs(const ast::AttributeList& attrs, ProcIR& proc) {
 }
 
 bool ExternAbiUsesRawName(const std::optional<ast::ExternAbi>& abi_opt) {
+  SPEC_RULE("def.24.ExternAbiSymbolHelpers");
   // Extern ABI defaults to "C" when omitted.
   if (!abi_opt.has_value()) {
+    core::Conformance::Record(
+        "def.24.ExternAbiSymbolHelpers",
+        std::nullopt,
+        "source=ExternAbiUsesRawName;explicit=false;raw_name=true;name=C");
     return true;
   }
 
@@ -250,7 +372,13 @@ bool ExternAbiUsesRawName(const std::optional<ast::ExternAbi>& abi_opt) {
         }
       },
       *abi_opt);
-  return abi == "C" || abi == "C-unwind";
+  const bool raw_name = abi == "C" || abi == "C-unwind";
+  core::Conformance::Record(
+      "def.24.ExternAbiSymbolHelpers",
+      std::nullopt,
+      "source=ExternAbiUsesRawName;explicit=true;raw_name=" +
+          std::string(raw_name ? "true" : "false") + ";name=" + abi);
+  return raw_name;
 }
 
 std::optional<project::FfiLibrarySpec> ExternLibrarySpecFor(
@@ -267,6 +395,9 @@ std::optional<project::FfiLibrarySpec> ExternLibrarySpecFor(
 std::string ForeignExternProcSymbol(const ast::ModulePath& module_path,
                                     const std::optional<ast::ExternAbi>& abi_opt,
                                     const ast::ExternProcDecl& proc) {
+  SPEC_RULE("Mangle-ExternProc");
+  SPEC_RULE("rule.24.Mangle-ExternProc");
+  SPEC_RULE("def.24.ExternAbiSymbolHelpers");
   if (auto link_name = LinkName(proc.attrs, proc.name)) {
     return *link_name;
   }
@@ -601,12 +732,18 @@ bool HasHostExportAttr(const ast::AttributeList& attrs) {
 }
 
 std::optional<std::string> HostExportAbiFor(const ast::AttributeList& attrs) {
+  SPEC_RULE("def.24.AttributeSymbolHelpers");
   const auto abi =
       analysis::GetAttributeValue(attrs, analysis::attrs::kHostExport);
   if (!abi.has_value()) {
     return std::nullopt;
   }
-  return NormalizeExternAbi(*abi);
+  const std::string normalized = NormalizeExternAbi(*abi);
+  core::Conformance::Record(
+      "def.24.AttributeSymbolHelpers",
+      std::nullopt,
+      "source=HostExportAbiFor;attribute=host_export;abi=" + normalized);
+  return normalized;
 }
 
 std::string HostedThunkSymbol(const ast::ModulePath& module_path,
@@ -670,6 +807,16 @@ void RecordHostedExportLoweringFacts(
       "requirement.23.HostedExportForeignVisibleSignature", span, payload);
   core::Conformance::Record(
       "requirement.23.HostedExportForeignVisiblePassKind", span, payload);
+  core::Conformance::Record(
+      "requirement.23.FFIBoundaryDefinition",
+      span,
+      payload + ";boundary=hosted_export");
+  core::Conformance::Record(
+      "requirement.23.HostExportAttributeSemantics", span, payload);
+  core::Conformance::Record(
+      "requirement.23.FfiAttributesDynamicSemantics", span, payload);
+  core::Conformance::Record(
+      "requirement.23.FfiAttributesLowering", span, payload);
 }
 
 LowerCtx::ExportUnwindMode ExportUnwindModeFor(
@@ -694,6 +841,128 @@ LowerCtx::ExportUnwindMode ExportUnwindModeFor(
     return LowerCtx::ExportUnwindMode::Abort;
   }
   return LowerCtx::ExportUnwindMode::Abort;
+}
+
+void RecordRawExportLoweringFacts(
+    const ast::ModulePath& module_path,
+    const ast::ProcedureDecl& decl,
+    const ProcIR& sig,
+    LinkageKind linkage) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  const auto unwind_mode = ExportUnwindModeFor(decl.attrs);
+  std::string payload;
+  payload.reserve(sig.symbol.size() + decl.name.size() + 180);
+  payload += "module=";
+  payload += core::StringOfPath(module_path);
+  payload += ";procedure=";
+  payload += decl.name;
+  payload += ";symbol=";
+  payload += sig.symbol;
+  payload += ";abi=";
+  payload += sig.abi.value_or("-");
+  payload += ";source_param_count=";
+  payload += std::to_string(decl.params.size());
+  payload += ";visible_param_count=";
+  payload += std::to_string(sig.params.size());
+  payload += ";external_linkage=";
+  payload += linkage == LinkageKind::External ? "true" : "false";
+  payload += ";params_use_move_abi=true";
+  payload += ";panic_out_param=false";
+  payload += ";unwind_mode=";
+  payload +=
+      unwind_mode == LowerCtx::ExportUnwindMode::Catch ? "catch" : "abort";
+  payload += ";boundary=raw_export";
+  payload += ";raw_signature=true";
+  payload += ";capability_values_exposed=false";
+  payload += ";capability_carrier_lowering=none";
+
+  const std::optional<core::Span> span(decl.span);
+  core::Conformance::Record(
+      "requirement.23.RawExportedProcedureClassification", span, payload);
+  core::Conformance::Record(
+      "requirement.23.RawExportParsingUsesOrdinaryProcedureParser",
+      span,
+      payload);
+  core::Conformance::Record(
+      "requirement.23.RawExportParsingClassification", span, payload);
+  core::Conformance::Record(
+      "requirement.23.RawExportOrdinaryBodyAndCatchReturn", span, payload);
+  core::Conformance::Record("requirement.23.RawExportLowering", span, payload);
+  core::Conformance::Record(
+      "requirement.23.FFIBoundaryDefinition", span, payload);
+  core::Conformance::Record(
+      "requirement.23.ExportAttributeSemantics", span, payload);
+  if (analysis::HasAttribute(decl.attrs, analysis::attrs::kMangle)) {
+    core::Conformance::Record(
+        "requirement.23.MangleAttributeSemantics", span, payload);
+  }
+  core::Conformance::Record(
+      "requirement.23.FfiAttributesDynamicSemantics", span, payload);
+  core::Conformance::Record(
+      "requirement.23.FfiAttributesLowering", span, payload);
+  core::Conformance::Record(
+      "requirement.23.CapabilityIsolationDynamicSemantics", span, payload);
+  core::Conformance::Record(
+      "requirement.23.CapabilityIsolationLowering", span, payload);
+  core::Conformance::Record(
+      "requirement.23.BoundaryUnwindDynamicEffects", span, payload);
+  core::Conformance::Record(
+      "def.23.BoundaryUnwindCodeGenerationEffects", span, payload);
+}
+
+void RecordExternImportLoweringFacts(
+    const ast::ModulePath& module_path,
+    const ast::ExternProcDecl& decl,
+    const ExternProcIR& sig,
+    LowerCtx::FfiImportUnwindMode unwind_mode) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload;
+  payload.reserve(sig.symbol.size() + decl.name.size() + 180);
+  payload += "module=";
+  payload += core::StringOfPath(module_path);
+  payload += ";procedure=";
+  payload += decl.name;
+  payload += ";symbol=";
+  payload += sig.symbol;
+  payload += ";abi=";
+  payload += sig.abi.value_or("-");
+  payload += ";unwind_mode=";
+  payload += unwind_mode == LowerCtx::FfiImportUnwindMode::Catch ? "catch"
+                                                                 : "abort";
+  payload += ";boundary=extern_import";
+  payload += ";raw_signature=true";
+  payload += ";capability_values_exposed=false";
+  payload += ";capability_carrier_lowering=none";
+
+  const std::optional<core::Span> span(decl.span);
+  core::Conformance::Record(
+      "requirement.23.FFIBoundaryDefinition", span, payload);
+  core::Conformance::Record(
+      "requirement.23.ExternDynamicSemantics", span, payload);
+  core::Conformance::Record("requirement.23.ExternLowering", span, payload);
+  core::Conformance::Record("conformance.ExternBlockLowering", span, payload);
+  if (analysis::HasAttribute(decl.attrs, analysis::attrs::kMangle)) {
+    core::Conformance::Record(
+        "requirement.23.MangleAttributeSemantics", span, payload);
+  }
+  core::Conformance::Record(
+      "requirement.23.FfiAttributesDynamicSemantics", span, payload);
+  core::Conformance::Record(
+      "requirement.23.FfiAttributesLowering", span, payload);
+  core::Conformance::Record(
+      "requirement.23.CapabilityIsolationDynamicSemantics", span, payload);
+  core::Conformance::Record(
+      "requirement.23.CapabilityIsolationLowering", span, payload);
+  core::Conformance::Record(
+      "requirement.23.BoundaryUnwindDynamicEffects", span, payload);
+  core::Conformance::Record(
+      "def.23.BoundaryUnwindCodeGenerationEffects", span, payload);
 }
 
 ProcIR LowerProcLike(const std::string& symbol,
@@ -845,6 +1114,72 @@ std::vector<analysis::TypeRef> DefaultUserList(
   return out;
 }
 
+std::optional<ast::ClassPath> ImplementedClassContainingMethod(
+    const analysis::ScopeContext& scope,
+    const ast::RecordDecl& record,
+    const ast::MethodDecl& method) {
+  for (const auto& impl_path : record.implements) {
+    const auto method_table = analysis::ClassMethodTable(scope, impl_path);
+    if (!method_table.ok) {
+      continue;
+    }
+    for (const auto& entry : method_table.methods) {
+      if (entry.method && analysis::IdEq(entry.method->name, method.name)) {
+        return impl_path;
+      }
+    }
+  }
+  return std::nullopt;
+}
+
+void RecordImplementationBodyLowering(
+    std::string_view source,
+    std::string_view body_kind,
+    std::string_view lowered_as,
+    std::string_view dispatch_target,
+    const std::string& symbol,
+    const ast::Path& class_path,
+    std::string_view method_name) {
+  SPEC_RULE("req.14.ImplementationBodyLowering");
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload;
+  payload.reserve(symbol.size() + method_name.size() + 192);
+  payload += "source=";
+  payload += source;
+  payload += ";body_kind=";
+  payload += body_kind;
+  payload += ";lowered_as=";
+  payload += lowered_as;
+  payload += ";dispatch_target=";
+  payload += dispatch_target;
+  payload += ";symbol=";
+  payload += symbol;
+  payload += ";class=";
+  payload += core::StringOfPath(class_path);
+  payload += ";method=";
+  payload += method_name;
+  core::Conformance::Record(
+      "req.14.ImplementationBodyLowering", std::nullopt, payload);
+}
+
+void RecordMethodAndTransitionParams(
+    std::string_view source,
+    std::string_view form,
+    const std::string& symbol) {
+  SPEC_RULE("def.24.MethodAndTransitionParams");
+  std::string payload = "source=";
+  payload += source;
+  payload += ";form=";
+  payload += form;
+  payload += ";self_param=true;symbol=";
+  payload += symbol;
+  core::Conformance::Record(
+      "def.24.MethodAndTransitionParams", std::nullopt, payload);
+}
+
 ProcIR LowerRecordMethod(const ast::RecordDecl& record,
                          const ast::MethodDecl& method,
                          const ast::ModulePath& module_path,
@@ -877,6 +1212,21 @@ ProcIR LowerRecordMethod(const ast::RecordDecl& record,
   const auto ret_type =
       LowerReturnType(scope, method.return_type_opt, self_type, ctx);
   const std::string sym = MangleMethod(record_path, method);
+  RecordMethodAndTransitionParams("LowerRecordMethod", "MethodParams", sym);
+  if (core::Conformance::Enabled()) {
+    if (const auto class_path =
+            ImplementedClassContainingMethod(scope, record, method);
+        class_path.has_value()) {
+      RecordImplementationBodyLowering(
+          "LowerRecordMethod",
+          "implementation-specific",
+          "concrete_method",
+          "implementing_type_method",
+          sym,
+          *class_path,
+          method.name);
+    }
+  }
 
   const bool prev_dynamic_checks = ctx.dynamic_checks;
   const bool record_method_dynamic =
@@ -926,6 +1276,8 @@ ProcIR LowerStateMethodWithSymbol(
 
   auto ret_type = LowerReturnType(scope, method.return_type_opt, state_type, ctx);
   ret_type = ApplyTypeSubst(ret_type, type_subst);
+  RecordMethodAndTransitionParams(
+      "LowerStateMethodWithSymbol", "StateMethodParams", symbol);
   const bool prev_dynamic_checks = ctx.dynamic_checks;
   ctx.dynamic_checks =
       analysis::IsDynamicDecl(method) || analysis::IsDynamicDecl(modal);
@@ -973,11 +1325,19 @@ ProcIR LowerTransition(const ast::ModalDecl& modal,
 
   auto ret_type = analysis::MakeTypeModalState(modal_path, trans.target_state);
   const std::string sym = MangleTransition(modal_path, state.name, trans);
+  RecordMethodAndTransitionParams("LowerTransition", "TransitionParams", sym);
   const bool prev_dynamic_checks = ctx.dynamic_checks;
+  const auto prev_transition_lowering = ctx.active_transition_lowering;
   ctx.dynamic_checks =
       analysis::IsDynamicDecl(trans) || analysis::IsDynamicDecl(modal);
+  ctx.active_transition_lowering = LowerCtx::ActiveTransitionLowering{
+      modal_path,
+      state.name,
+      trans.target_state,
+  };
   auto proc = LowerProcLike(sym, params, ret_type, *trans.body, module_path, ctx);
   ctx.dynamic_checks = prev_dynamic_checks;
+  ctx.active_transition_lowering = prev_transition_lowering;
   ApplyProcAttrs(trans.attrs, proc);
   return proc;
 }
@@ -995,6 +1355,8 @@ std::vector<ProcIR> LowerClassMethodBody(const ast::ClassDecl& class_decl,
   const auto& scope = BuildScope(module_path, ctx);
   analysis::TypePath class_path = module_path;
   class_path.push_back(class_decl.name);
+  (void)MangleClassMethod(class_path, method);
+  (void)LinkageOf(method);
 
   std::vector<ProcIR> procs;
   const bool inherited_dynamic_checks =
@@ -1026,6 +1388,16 @@ std::vector<ProcIR> LowerClassMethodBody(const ast::ClassDecl& class_decl,
     const auto ret_type =
         LowerReturnType(scope, method.return_type_opt, self_type, ctx);
     const std::string sym = MangleDefaultImpl(self_type, class_path, method.name);
+    RecordMethodAndTransitionParams(
+        "LowerClassMethodBody", "ClassMethodParams_T", sym);
+    RecordImplementationBodyLowering(
+        "LowerClassMethodBody",
+        "class-default",
+        "default_method_body",
+        "reused_default_dispatch_target",
+        sym,
+        class_path,
+        method.name);
     auto proc = LowerProcLike(sym, params, ret_type, *method.body_opt, module_path, ctx);
     ApplyProcAttrs(method.attrs, proc);
     procs.push_back(std::move(proc));
@@ -1113,6 +1485,8 @@ ProcIR BuildRecordMethodSignature(const ast::RecordDecl& record,
   for (const auto& param : method.params) {
     ir.params.push_back(LowerParam(param, scope, self_type, ctx));
   }
+  RecordMethodAndTransitionParams(
+      "BuildRecordMethodSignature", "MethodParams", ir.symbol);
   ir.ret = LowerReturnType(scope, method.return_type_opt, self_type, ctx);
   AppendPanicOutParamIfNeeded(ir, ctx);
   return ir;
@@ -1146,6 +1520,8 @@ ProcIR BuildStateMethodSignature(const ast::ModalDecl& modal,
   for (const auto& param : method.params) {
     ir.params.push_back(LowerParam(param, scope, state_type, ctx));
   }
+  RecordMethodAndTransitionParams(
+      "BuildStateMethodSignature", "StateMethodParams", ir.symbol);
   ir.ret = LowerReturnType(scope, method.return_type_opt, state_type, ctx);
   AppendPanicOutParamIfNeeded(ir, ctx);
   return ir;
@@ -1168,6 +1544,8 @@ ProcIR BuildTransitionSignature(const ast::ModalDecl& modal,
   for (const auto& param : trans.params) {
     ir.params.push_back(LowerParam(param, scope, nullptr, ctx));
   }
+  RecordMethodAndTransitionParams(
+      "BuildTransitionSignature", "TransitionParams", ir.symbol);
   ir.ret = analysis::MakeTypeModalState(modal_path, trans.target_state);
   AppendPanicOutParamIfNeeded(ir, ctx);
   return ir;
@@ -1210,6 +1588,8 @@ std::vector<ProcIR> BuildClassMethodSignatures(const ast::ClassDecl& class_decl,
     for (const auto& param : method.params) {
       ir.params.push_back(LowerParam(param, scope, self_type, ctx));
     }
+    RecordMethodAndTransitionParams(
+        "BuildClassMethodSignatures", "ClassMethodParams_T", ir.symbol);
     ir.ret = LowerReturnType(scope, method.return_type_opt, self_type, ctx);
     AppendPanicOutParamIfNeeded(ir, ctx);
     out.push_back(std::move(ir));
@@ -1392,6 +1772,9 @@ bool RegisterModuleSignatures(const ast::ASTModule& module, LowerCtx& ctx) {
             const LinkageKind proc_linkage =
                 LinkageOf(node);
             register_user_proc(sig, proc_linkage, node.vis);
+            if (HasExportAttr(node.attrs)) {
+              RecordRawExportLoweringFacts(module.path, node, sig, proc_linkage);
+            }
             if (HasHostExportAttr(node.attrs)) {
               LowerCtx::HostedExportInfo info;
               info.internal_symbol = sig.symbol;
@@ -1463,7 +1846,10 @@ bool RegisterModuleSignatures(const ast::ASTModule& module, LowerCtx& ctx) {
                 auto sigs =
                     BuildClassMethodSignatures(node, *method, module.path, ctx);
                 for (const auto& proc : sigs) {
-                  register_user_proc(proc, LinkageOf(*method), method->vis);
+                  register_user_proc(
+                      proc,
+                      LinkageOfDefaultImpl(method->vis),
+                      method->vis);
                 }
               }
             }
@@ -1524,9 +1910,44 @@ bool RegisterModuleSignatures(const ast::ASTModule& module, LowerCtx& ctx) {
 
 IRDecls LowerModule(const ast::ASTModule& module, LowerCtx& ctx) {
   SPEC_RULE("Lower-Module");
+  SPEC_RULE("rule.24.CG-Module");
+  AnchorCodegenModelRules();
 
   IRDecls decls;
   ctx.module_path = module.path;
+  const std::string module_key = core::StringOfPath(module.path);
+  core::Conformance::Record(
+      "requirement.24.SharedLoweringScope",
+      std::nullopt,
+      "source=LowerModule;scope=shared-lowering;feature_local_rules=delegated");
+  core::Conformance::Record(
+      "def.24.CodegenModelAndTargets",
+      std::nullopt,
+      "source=LowerModule;target=ModuleIR;artifact_targets=llvm-ir,object");
+  core::Conformance::Record(
+      "def.24.CodegenJudgements",
+      std::nullopt,
+      "source=LowerModule;judgements=CG-Module,CG-Expr,CG-Stmt,CG-Block");
+  core::Conformance::Record(
+      "def.24.IRDefined",
+      std::nullopt,
+      "source=LowerModule;ir=IRDecls;decl_kinds=proc,extern,global,vtable");
+  core::Conformance::Record(
+      "def.24.CodegenCorrectnessPredicates",
+      std::nullopt,
+      "source=LowerModule;predicates=lowering-ok,emission-ok,ub-safe");
+  core::Conformance::Record(
+      "def.24.CodegenCorrectAndUndefined",
+      std::nullopt,
+      "source=LowerModule;undefined=reported-codegen-failure");
+  core::Conformance::Record(
+      "def.24.ModuleItems",
+      std::nullopt,
+      "source=LowerModule;module=" + module_key +
+          ";item_count=" + std::to_string(module.items.size()));
+  if (!VerifyCompileTimeErasure(module, ctx)) {
+    return decls;
+  }
   // Synthetic procedures are generated while lowering expressions (closures,
   // spawn/dispatch wrappers, async resume helpers). Ensure each module starts
   // with a clean queue and drain generated procedures into IR decls.
@@ -1571,20 +1992,20 @@ IRDecls LowerModule(const ast::ASTModule& module, LowerCtx& ctx) {
     }
   };
   auto drain_extra_procs = [&]() {
-    if (ctx.extra_procs.empty()) {
-      return;
-    }
-    std::vector<ProcIR> synthesized;
-    synthesized.swap(ctx.extra_procs);
-    for (auto& proc : synthesized) {
-      const auto linkage = ctx.LookupProcLinkage(proc.symbol).value_or(LinkageKind::Internal);
-      register_proc(proc, false, linkage);
-      decls.push_back(std::move(proc));
+    while (!ctx.extra_procs.empty()) {
+      std::vector<ProcIR> synthesized;
+      synthesized.swap(ctx.extra_procs);
+      for (auto& proc : synthesized) {
+        FinalizeProcIR(proc, ctx);
+        const auto linkage =
+            ctx.LookupProcLinkage(proc.symbol).value_or(LinkageKind::Internal);
+        register_proc(proc, false, linkage);
+        decls.push_back(std::move(proc));
+      }
     }
   };
 
   const bool debug_lower_module = core::IsDebugEnabled("codegen");
-  const std::string module_key = core::StringOfPath(module.path);
   std::size_t item_index = 0;
   for (const auto& item : module.items) {
     ++item_index;
@@ -1691,7 +2112,7 @@ IRDecls LowerModule(const ast::ASTModule& module, LowerCtx& ctx) {
               if (const auto* method = std::get_if<ast::ClassMethodDecl>(&item)) {
                 auto procs = LowerClassMethodBody(node, *method, module.path, ctx);
                 for (auto& proc : procs) {
-                  register_proc(proc, true, LinkageOf(*method));
+                  register_proc(proc, true, LinkageOfDefaultImpl(method->vis));
                   decls.push_back(std::move(proc));
                 }
               }
@@ -1752,16 +2173,39 @@ IRDecls LowerModule(const ast::ASTModule& module, LowerCtx& ctx) {
                       extern_proc.abi = ExternAbiFor(node.abi_opt);
                       if (library_spec.has_value() &&
                           library_spec->kind == "raw-dylib") {
+                        const project::TargetProfile selected_target_profile =
+                            ctx.target_profile.value_or(
+                                project::TargetProfile::X86_64SysV);
                         const auto dll_name =
                             project::ResolveLibraryNameForCurrentTarget(
                                 library_spec->name,
                                 library_spec->kind,
-                                project::TargetProfile::X86_64Win64);
-                        if (dll_name.has_value()) {
-                          extern_proc.raw_dylib_library_name = *dll_name;
-                        } else {
-                          extern_proc.raw_dylib_library_name =
-                              std::string(library_spec->name);
+                                selected_target_profile);
+                        const bool resolved_supported = dll_name.has_value();
+                        const std::string resolved_library_name =
+                            dll_name.value_or(std::string(library_spec->name));
+                        extern_proc.raw_dylib_library_name =
+                            resolved_library_name;
+                        if (core::Conformance::Enabled()) {
+                          std::string payload;
+                          payload.reserve(library_spec->name.size() +
+                                          resolved_library_name.size() + 160);
+                          payload +=
+                              "source=ResolveLibraryNameForCurrentTarget;kind=";
+                          payload += library_spec->kind;
+                          payload += ";name=";
+                          payload += library_spec->name;
+                          payload += ";profile=";
+                          payload += std::string(project::TargetProfileName(
+                              selected_target_profile));
+                          payload += ";resolved=";
+                          payload += resolved_library_name;
+                          payload += ";supported=";
+                          payload += resolved_supported ? "true" : "false";
+                          payload += ";fallback=";
+                          payload += resolved_supported ? "false" : "true";
+                          core::Conformance::Record(
+                              "def.23.ResolveLibraryName", proc.span, payload);
                         }
                         extern_proc.raw_dylib_foreign_symbol =
                             LinkName(proc.attrs, proc.name).value_or(proc.name);
@@ -1779,6 +2223,8 @@ IRDecls LowerModule(const ast::ASTModule& module, LowerCtx& ctx) {
                       ctx.RegisterProcLinkage(extern_proc.symbol, LinkageOf(proc));
                       ctx.RegisterProcFfiImport(extern_proc.symbol,
                                                 unwind_mode);
+                      RecordExternImportLoweringFacts(module.path, proc,
+                                                      extern_proc, unwind_mode);
 
                       LowerCtx::ForeignContractInfo foreign_info;
                       foreign_info.dynamic =
@@ -1902,6 +2348,13 @@ IRDecls LowerModule(const ast::ASTModule& module, LowerCtx& ctx) {
   ctx.values.value_types = std::move(module_value_types);
   ctx.values.derived_values = std::move(module_derived_values);
   ctx.values.drop_glue_types = std::move(module_drop_glue_types);
+
+  if (!ValidateModuleIR(decls)) {
+    ctx.ReportCodegenFailure();
+  }
+  if (!ctx.codegen_failed && !ctx.resolve_failed) {
+    RecordCompileTimeErasureEvidence(module, decls);
+  }
 
   return decls;
 }

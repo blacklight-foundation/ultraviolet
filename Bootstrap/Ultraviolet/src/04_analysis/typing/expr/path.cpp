@@ -147,6 +147,7 @@ ExprTypeResult TypePathExprImpl(const ScopeContext& ctx,
 
   const ast::ModulePath origin = expr.path.empty() ? ctx.current_module : expr.path;
   if (IsRuntimeComptimeProcedureRef(ctx, origin, expr.name, env)) {
+    SPEC_RULE("requirement.22.CompileTimeProcedureContextRestriction");
     result.diag_id = "E-CTE-0034";
     return result;
   }
@@ -194,10 +195,12 @@ ExprTypeResult TypeIdentifierExprImpl(const ScopeContext& ctx,
   if (ent && ent->origin_opt.has_value()) {
     const std::string resolved_name = ent->target_opt.value_or(std::string(name));
     if (IsRuntimeComptimeProcedureRef(ctx, *ent->origin_opt, resolved_name, env)) {
+      SPEC_RULE("requirement.22.CompileTimeProcedureContextRestriction");
       result.diag_id = "E-CTE-0034";
       return result;
     }
   } else if (IsRuntimeComptimeProcedureRef(ctx, ctx.current_module, name, env)) {
+    SPEC_RULE("requirement.22.CompileTimeProcedureContextRestriction");
     result.diag_id = "E-CTE-0034";
     return result;
   }

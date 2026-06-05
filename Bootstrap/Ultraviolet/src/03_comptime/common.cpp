@@ -3,6 +3,7 @@
 #include <string>
 #include <string_view>
 
+#include "00_core/assert_spec.h"
 #include "00_core/diagnostic_messages.h"
 
 namespace ultraviolet::frontend::comptime_internal {
@@ -69,12 +70,17 @@ CtEnv CtEmptyEnv(const ast::ASTModule& module) {
 }
 
 CtEnv WithCtCaps(CtEnv env, const AttributeList& attrs, bool derive_body) {
+  SPEC_RULE_AT("def.22.CompileTimeTypingEnvironment", env.current_span);
+  SPEC_RULE_AT("def.22.CtCapabilitiesAndBuiltinTypes", env.current_span);
+  SPEC_RULE_AT("requirement.22.IntrospectAndDiagnosticsAvailability",
+               env.current_span);
   env.caps.clear();
   env.values["introspect"] = MakeCtUnit();
   env.values["diagnostics"] = MakeCtUnit();
   env.caps.push_back("Introspect");
   env.caps.push_back("ComptimeDiagnostics");
   if (derive_body || HasAttribute(attrs, "emit")) {
+    SPEC_RULE_AT("requirement.22.TypeEmitterAvailability", env.current_span);
     env.values["emitter"] = MakeCtUnit();
     env.caps.push_back("TypeEmitter");
   }
@@ -83,6 +89,7 @@ CtEnv WithCtCaps(CtEnv env, const AttributeList& attrs, bool derive_body) {
       EmitComptimeDiag(env, "E-CTE-0060", env.current_span);
       return env;
     }
+    SPEC_RULE_AT("requirement.22.ProjectFilesAvailability", env.current_span);
     env.values["files"] = MakeCtUnit();
     env.caps.push_back("ProjectFiles");
   }

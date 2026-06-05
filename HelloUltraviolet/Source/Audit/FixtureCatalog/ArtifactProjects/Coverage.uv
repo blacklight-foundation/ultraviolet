@@ -1,11 +1,11 @@
 //! Coverage checks for artifact project fixture metadata.
 
 public procedure expectedArtifactProjectFixtureCount() -> usize {
-    return 14usize
+    return 33usize
 }
 
 public procedure artifactProjectFixtureCount() -> usize {
-    return 14usize
+    return 33usize
 }
 
 public procedure validatedArtifactProjectFixtureCount() -> usize {
@@ -75,6 +75,54 @@ public procedure validatedArtifactProjectFixtureCount() -> usize {
     }
     if artifactProjectSpecimenMatches(
         artifactProjectSpecimen(
+            "SharedLibraryImageLifecycle",
+            "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle",
+            "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/HostHarness/SharedLibraryImageLifecycleHarness.c",
+            "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Build/Binary/SharedLibraryImageLifecycleProvider.dll",
+            "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Build/Binary/SharedLibraryImageLifecycleHostHarness.exe",
+            artifactExpectation(
+                "SharedLibraryImageLifecycle",
+                "requirement.23.RawExportLibraryImageLifecycle"
+            )
+        ),
+        "SharedLibraryImageLifecycle",
+        "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle",
+        "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/HostHarness/SharedLibraryImageLifecycleHarness.c",
+        "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Build/Binary/SharedLibraryImageLifecycleProvider.dll",
+        "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Build/Binary/SharedLibraryImageLifecycleHostHarness.exe",
+        "SharedLibraryImageLifecycle",
+        "requirement.23.RawExportLibraryImageLifecycle"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "SharedLibraryImageLifecycle",
+            "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle",
+            "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/HostHarness/SharedLibraryImageLifecycleHarness.c",
+            "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Build/Binary/SharedLibraryImageLifecycleConsumer.dll",
+            "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Build/Binary/SharedLibraryImageLifecycleHostHarness.exe",
+            artifactExpectation(
+                "SharedLibraryLinkedCallLifecycle",
+                "requirement.23.SharedLibraryLinkedCallLifecycle"
+            )
+        ),
+        "SharedLibraryImageLifecycle",
+        "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle",
+        "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/HostHarness/SharedLibraryImageLifecycleHarness.c",
+        "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Build/Binary/SharedLibraryImageLifecycleConsumer.dll",
+        "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Build/Binary/SharedLibraryImageLifecycleHostHarness.exe",
+        "SharedLibraryLinkedCallLifecycle",
+        "requirement.23.SharedLibraryLinkedCallLifecycle"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
             "EmitLlLibrary",
             "Fixtures/ArtifactProjects/EmitLlLibrary",
             "Fixtures/ArtifactProjects/EmitLlLibrary/Ultraviolet.toml",
@@ -96,6 +144,27 @@ public procedure validatedArtifactProjectFixtureCount() -> usize {
     }
     if artifactProjectSpecimenMatches(
         artifactProjectSpecimen(
+            "RuntimeInterfaceSymbols",
+            "Fixtures/ArtifactProjects/RuntimeInterfaceSymbols",
+            "Fixtures/ArtifactProjects/RuntimeInterfaceSymbols/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/RuntimeInterfaceSymbols/Source/Library.uv",
+            "Fixtures/ArtifactProjects/RuntimeInterfaceSymbols/Build/Intermediate/IR/Source/RuntimeInterfaceSymbols.ll",
+            "Fixtures/ArtifactProjects/RuntimeInterfaceSymbols/Build/Intermediate/Obj/Source/RuntimeInterfaceSymbols.obj",
+            artifactExpectation("RuntimeInterfaceDeclarations", "rule.24.RuntimeDecls")
+        ),
+        "RuntimeInterfaceSymbols",
+        "Fixtures/ArtifactProjects/RuntimeInterfaceSymbols",
+        "Fixtures/ArtifactProjects/RuntimeInterfaceSymbols/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/RuntimeInterfaceSymbols/Source/Library.uv",
+        "Fixtures/ArtifactProjects/RuntimeInterfaceSymbols/Build/Intermediate/IR/Source/RuntimeInterfaceSymbols.ll",
+        "Fixtures/ArtifactProjects/RuntimeInterfaceSymbols/Build/Intermediate/Obj/Source/RuntimeInterfaceSymbols.obj",
+        "RuntimeInterfaceDeclarations",
+        "rule.24.RuntimeDecls"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
             "EmitBcLibrary",
             "Fixtures/ArtifactProjects/EmitBcLibrary",
             "Fixtures/ArtifactProjects/EmitBcLibrary/Ultraviolet.toml",
@@ -112,6 +181,27 @@ public procedure validatedArtifactProjectFixtureCount() -> usize {
         "Fixtures/ArtifactProjects/EmitBcLibrary/Build/Intermediate/Obj/Source/EmitBcLibrary.obj",
         "LlvmBitcodeArtifact",
         "def.24.LLVMText21Acceptance"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "EmitLlDependency",
+            "Fixtures/ArtifactProjects/EmitLlDependency",
+            "Fixtures/ArtifactProjects/EmitLlDependency/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/EmitLlDependency/Source/Library.uv",
+            "Fixtures/ArtifactProjects/EmitLlDependency/Build/Intermediate/IR/Source/EmitLlDependency.ll",
+            "Fixtures/ArtifactProjects/EmitLlDependency/Build/Intermediate/Obj/Source/EmitLlDependency.obj",
+            artifactExpectation("DependencyLlIrNoFinalize", "Out-IR-Done-NoFinalize")
+        ),
+        "EmitLlDependency",
+        "Fixtures/ArtifactProjects/EmitLlDependency",
+        "Fixtures/ArtifactProjects/EmitLlDependency/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/EmitLlDependency/Source/Library.uv",
+        "Fixtures/ArtifactProjects/EmitLlDependency/Build/Intermediate/IR/Source/EmitLlDependency.ll",
+        "Fixtures/ArtifactProjects/EmitLlDependency/Build/Intermediate/Obj/Source/EmitLlDependency.obj",
+        "DependencyLlIrNoFinalize",
+        "Out-IR-Done-NoFinalize"
     ) {
         count = count + 1usize
     }
@@ -154,6 +244,204 @@ public procedure validatedArtifactProjectFixtureCount() -> usize {
         "Fixtures/ArtifactProjects/ExecutableOutput/Build/Binary/ExecutableOutput.map",
         "ExecutablePrimaryArtifact",
         "PrimaryArtifactSet"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "ArrayIndexOOBPanic",
+            "Fixtures/ArtifactProjects/ArrayIndexOOBPanic",
+            "Fixtures/ArtifactProjects/ArrayIndexOOBPanic/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/ArrayIndexOOBPanic/Source/Main.uv",
+            "Fixtures/ArtifactProjects/ArrayIndexOOBPanic/Build/Binary/ArrayIndexOOBPanic.exe",
+            "Fixtures/ArtifactProjects/ArrayIndexOOBPanic/Build/Binary/ArrayIndexOOBPanic.map",
+            artifactExpectation("ArrayIndexOutOfBoundsRuntimePanic", "EvalSigma-Index-OOB")
+        ),
+        "ArrayIndexOOBPanic",
+        "Fixtures/ArtifactProjects/ArrayIndexOOBPanic",
+        "Fixtures/ArtifactProjects/ArrayIndexOOBPanic/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/ArrayIndexOOBPanic/Source/Main.uv",
+        "Fixtures/ArtifactProjects/ArrayIndexOOBPanic/Build/Binary/ArrayIndexOOBPanic.exe",
+        "Fixtures/ArtifactProjects/ArrayIndexOOBPanic/Build/Binary/ArrayIndexOOBPanic.map",
+        "ArrayIndexOutOfBoundsRuntimePanic",
+        "EvalSigma-Index-OOB"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "RawPointerNullReadPanic",
+            "Fixtures/ArtifactProjects/RawPointerNullReadPanic",
+            "Fixtures/ArtifactProjects/RawPointerNullReadPanic/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/RawPointerNullReadPanic/Source/Main.uv",
+            "Fixtures/ArtifactProjects/RawPointerNullReadPanic/Build/Binary/RawPointerNullReadPanic.exe",
+            "Fixtures/ArtifactProjects/RawPointerNullReadPanic/Build/Binary/RawPointerNullReadPanic.map",
+            artifactExpectation("RawPointerNullReadRuntimePanic", "rule.13.ReadPtr-Raw-Invalid")
+        ),
+        "RawPointerNullReadPanic",
+        "Fixtures/ArtifactProjects/RawPointerNullReadPanic",
+        "Fixtures/ArtifactProjects/RawPointerNullReadPanic/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/RawPointerNullReadPanic/Source/Main.uv",
+        "Fixtures/ArtifactProjects/RawPointerNullReadPanic/Build/Binary/RawPointerNullReadPanic.exe",
+        "Fixtures/ArtifactProjects/RawPointerNullReadPanic/Build/Binary/RawPointerNullReadPanic.map",
+        "RawPointerNullReadRuntimePanic",
+        "rule.13.ReadPtr-Raw-Invalid"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "RawPointerNullWritePanic",
+            "Fixtures/ArtifactProjects/RawPointerNullWritePanic",
+            "Fixtures/ArtifactProjects/RawPointerNullWritePanic/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/RawPointerNullWritePanic/Source/Main.uv",
+            "Fixtures/ArtifactProjects/RawPointerNullWritePanic/Build/Binary/RawPointerNullWritePanic.exe",
+            "Fixtures/ArtifactProjects/RawPointerNullWritePanic/Build/Binary/RawPointerNullWritePanic.map",
+            artifactExpectation("RawPointerNullWriteRuntimePanic", "rule.13.WritePtr-Raw-Invalid")
+        ),
+        "RawPointerNullWritePanic",
+        "Fixtures/ArtifactProjects/RawPointerNullWritePanic",
+        "Fixtures/ArtifactProjects/RawPointerNullWritePanic/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/RawPointerNullWritePanic/Source/Main.uv",
+        "Fixtures/ArtifactProjects/RawPointerNullWritePanic/Build/Binary/RawPointerNullWritePanic.exe",
+        "Fixtures/ArtifactProjects/RawPointerNullWritePanic/Build/Binary/RawPointerNullWritePanic.map",
+        "RawPointerNullWriteRuntimePanic",
+        "rule.13.WritePtr-Raw-Invalid"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "DynamicReceiverExpiredPanic",
+            "Fixtures/ArtifactProjects/DynamicReceiverExpiredPanic",
+            "Fixtures/ArtifactProjects/DynamicReceiverExpiredPanic/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/DynamicReceiverExpiredPanic/Source/Main.uv",
+            "Fixtures/ArtifactProjects/DynamicReceiverExpiredPanic/Build/Binary/DynamicReceiverExpiredPanic.exe",
+            "Fixtures/ArtifactProjects/DynamicReceiverExpiredPanic/Build/Intermediate/IR/Source/DynamicReceiverExpiredPanic.ll",
+            artifactExpectation(
+                "DynamicReceiverExpiredRuntimePanic",
+                "rule.15.EvalRecvSigma-Ref-Dyn-Expired"
+            )
+        ),
+        "DynamicReceiverExpiredPanic",
+        "Fixtures/ArtifactProjects/DynamicReceiverExpiredPanic",
+        "Fixtures/ArtifactProjects/DynamicReceiverExpiredPanic/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/DynamicReceiverExpiredPanic/Source/Main.uv",
+        "Fixtures/ArtifactProjects/DynamicReceiverExpiredPanic/Build/Binary/DynamicReceiverExpiredPanic.exe",
+        "Fixtures/ArtifactProjects/DynamicReceiverExpiredPanic/Build/Intermediate/IR/Source/DynamicReceiverExpiredPanic.ll",
+        "DynamicReceiverExpiredRuntimePanic",
+        "rule.15.EvalRecvSigma-Ref-Dyn-Expired"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "RefinementRuntimePanic",
+            "Fixtures/ArtifactProjects/RefinementRuntimePanic",
+            "Fixtures/ArtifactProjects/RefinementRuntimePanic/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/RefinementRuntimePanic/Source/Main.uv",
+            "Fixtures/ArtifactProjects/RefinementRuntimePanic/Build/Binary/RefinementRuntimePanic.exe",
+            "Fixtures/ArtifactProjects/RefinementRuntimePanic/Build/Binary/RefinementRuntimePanic.map",
+            artifactExpectation(
+                "RefinementRuntimeCheckPanic",
+                "req.14.RefinementRuntimeRepresentationAndPanic"
+            )
+        ),
+        "RefinementRuntimePanic",
+        "Fixtures/ArtifactProjects/RefinementRuntimePanic",
+        "Fixtures/ArtifactProjects/RefinementRuntimePanic/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/RefinementRuntimePanic/Source/Main.uv",
+        "Fixtures/ArtifactProjects/RefinementRuntimePanic/Build/Binary/RefinementRuntimePanic.exe",
+        "Fixtures/ArtifactProjects/RefinementRuntimePanic/Build/Binary/RefinementRuntimePanic.map",
+        "RefinementRuntimeCheckPanic",
+        "req.14.RefinementRuntimeRepresentationAndPanic"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "SliceRangeOOBPanic",
+            "Fixtures/ArtifactProjects/SliceRangeOOBPanic",
+            "Fixtures/ArtifactProjects/SliceRangeOOBPanic/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/SliceRangeOOBPanic/Source/Main.uv",
+            "Fixtures/ArtifactProjects/SliceRangeOOBPanic/Build/Binary/SliceRangeOOBPanic.exe",
+            "Fixtures/ArtifactProjects/SliceRangeOOBPanic/Build/Binary/SliceRangeOOBPanic.map",
+            artifactExpectation("SliceRangeOutOfBoundsRuntimePanic", "EvalSigma-Index-Range-OOB")
+        ),
+        "SliceRangeOOBPanic",
+        "Fixtures/ArtifactProjects/SliceRangeOOBPanic",
+        "Fixtures/ArtifactProjects/SliceRangeOOBPanic/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/SliceRangeOOBPanic/Source/Main.uv",
+        "Fixtures/ArtifactProjects/SliceRangeOOBPanic/Build/Binary/SliceRangeOOBPanic.exe",
+        "Fixtures/ArtifactProjects/SliceRangeOOBPanic/Build/Binary/SliceRangeOOBPanic.map",
+        "SliceRangeOutOfBoundsRuntimePanic",
+        "EvalSigma-Index-Range-OOB"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "IntegerOverflowPanic",
+            "Fixtures/ArtifactProjects/IntegerOverflowPanic",
+            "Fixtures/ArtifactProjects/IntegerOverflowPanic/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/IntegerOverflowPanic/Source/Main.uv",
+            "Fixtures/ArtifactProjects/IntegerOverflowPanic/Build/Binary/IntegerOverflowPanic.exe",
+            "Fixtures/ArtifactProjects/IntegerOverflowPanic/Build/Binary/IntegerOverflowPanic.map",
+            artifactExpectation("IntegerOverflowRuntimePanic", "def.RuntimeCheckBehavior")
+        ),
+        "IntegerOverflowPanic",
+        "Fixtures/ArtifactProjects/IntegerOverflowPanic",
+        "Fixtures/ArtifactProjects/IntegerOverflowPanic/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/IntegerOverflowPanic/Source/Main.uv",
+        "Fixtures/ArtifactProjects/IntegerOverflowPanic/Build/Binary/IntegerOverflowPanic.exe",
+        "Fixtures/ArtifactProjects/IntegerOverflowPanic/Build/Binary/IntegerOverflowPanic.map",
+        "IntegerOverflowRuntimePanic",
+        "def.RuntimeCheckBehavior"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "CastPanic",
+            "Fixtures/ArtifactProjects/CastPanic",
+            "Fixtures/ArtifactProjects/CastPanic/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/CastPanic/Source/Main.uv",
+            "Fixtures/ArtifactProjects/CastPanic/Build/Binary/CastPanic.exe",
+            "Fixtures/ArtifactProjects/CastPanic/Build/Binary/CastPanic.map",
+            artifactExpectation("CastRuntimePanic", "rule.16.EvalSigma-Cast-Panic")
+        ),
+        "CastPanic",
+        "Fixtures/ArtifactProjects/CastPanic",
+        "Fixtures/ArtifactProjects/CastPanic/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/CastPanic/Source/Main.uv",
+        "Fixtures/ArtifactProjects/CastPanic/Build/Binary/CastPanic.exe",
+        "Fixtures/ArtifactProjects/CastPanic/Build/Binary/CastPanic.map",
+        "CastRuntimePanic",
+        "rule.16.EvalSigma-Cast-Panic"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "OperatorUndefinedPanic",
+            "Fixtures/ArtifactProjects/OperatorUndefinedPanic",
+            "Fixtures/ArtifactProjects/OperatorUndefinedPanic/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/OperatorUndefinedPanic/Source/Main.uv",
+            "Fixtures/ArtifactProjects/OperatorUndefinedPanic/Build/Binary/OperatorUndefinedPanic.exe",
+            "Fixtures/ArtifactProjects/OperatorUndefinedPanic/Build/Binary/OperatorUndefinedPanic.map",
+            artifactExpectation(
+                "OperatorUndefinedAndNaNRuntimePanic",
+                "req.16.OperatorUndefinedAndNaNBehavior"
+            )
+        ),
+        "OperatorUndefinedPanic",
+        "Fixtures/ArtifactProjects/OperatorUndefinedPanic",
+        "Fixtures/ArtifactProjects/OperatorUndefinedPanic/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/OperatorUndefinedPanic/Source/Main.uv",
+        "Fixtures/ArtifactProjects/OperatorUndefinedPanic/Build/Binary/OperatorUndefinedPanic.exe",
+        "Fixtures/ArtifactProjects/OperatorUndefinedPanic/Build/Binary/OperatorUndefinedPanic.map",
+        "OperatorUndefinedAndNaNRuntimePanic",
+        "req.16.OperatorUndefinedAndNaNBehavior"
     ) {
         count = count + 1usize
     }
@@ -223,6 +511,27 @@ public procedure validatedArtifactProjectFixtureCount() -> usize {
         "Fixtures/ArtifactProjects/AArch64DependencyObject/Build/Intermediate/Incremental/AArch64DependencyObject.manifest",
         "AArch64DependencyObject",
         "def.TargetProfile"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "EmptyDependencyObject",
+            "Fixtures/ArtifactProjects/EmptyDependencyObject",
+            "Fixtures/ArtifactProjects/EmptyDependencyObject/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/EmptyDependencyObject/Source/.keep",
+            "Fixtures/ArtifactProjects/EmptyDependencyObject/Build/Logs/Conformance/empty_dependency_object.conformance.log",
+            "Fixtures/ArtifactProjects/EmptyDependencyObject/Build/Logs/BuildTelemetry.tsv",
+            artifactExpectation("EmptyDependencyObject", "Emit-Objects-Empty")
+        ),
+        "EmptyDependencyObject",
+        "Fixtures/ArtifactProjects/EmptyDependencyObject",
+        "Fixtures/ArtifactProjects/EmptyDependencyObject/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/EmptyDependencyObject/Source/.keep",
+        "Fixtures/ArtifactProjects/EmptyDependencyObject/Build/Logs/Conformance/empty_dependency_object.conformance.log",
+        "Fixtures/ArtifactProjects/EmptyDependencyObject/Build/Logs/BuildTelemetry.tsv",
+        "EmptyDependencyObject",
+        "Emit-Objects-Empty"
     ) {
         count = count + 1usize
     }
@@ -310,6 +619,111 @@ public procedure validatedArtifactProjectFixtureCount() -> usize {
         "Fixtures/ArtifactProjects/MacOSDylibLibrary/Build/Intermediate/Obj/Source/MacOSDylibLibrary.o",
         "MacOSDylibResolveLibraryName",
         "def.23.ResolveLibraryName"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "ModalSpecialLowering",
+            "Fixtures/ArtifactProjects/ModalSpecialLowering",
+            "Fixtures/ArtifactProjects/ModalSpecialLowering/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/ModalSpecialLowering/Source/Library.uv",
+            "Fixtures/ArtifactProjects/ModalSpecialLowering/Build/Library/ModalSpecialLowering.lib",
+            "Fixtures/ArtifactProjects/ModalSpecialLowering/Build/Intermediate/Obj/Source/ModalSpecialLowering.obj",
+            artifactExpectation("ModalSpecialLowering", "req.TransitionLowering")
+        ),
+        "ModalSpecialLowering",
+        "Fixtures/ArtifactProjects/ModalSpecialLowering",
+        "Fixtures/ArtifactProjects/ModalSpecialLowering/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/ModalSpecialLowering/Source/Library.uv",
+        "Fixtures/ArtifactProjects/ModalSpecialLowering/Build/Library/ModalSpecialLowering.lib",
+        "Fixtures/ArtifactProjects/ModalSpecialLowering/Build/Intermediate/Obj/Source/ModalSpecialLowering.obj",
+        "ModalSpecialLowering",
+        "req.TransitionLowering"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "LexerTokenizerOutput",
+            "Fixtures/ArtifactProjects/LexerTokenizerOutput",
+            "Fixtures/ArtifactProjects/LexerTokenizerOutput/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/LexerTokenizerOutput/Source/Library.uv",
+            "Fixtures/ArtifactProjects/LexerTokenizerOutput/Build/Library/LexerTokenizerOutput.lib",
+            "Fixtures/ArtifactProjects/LexerTokenizerOutput/Build/Intermediate/Obj/Source/LexerTokenizerOutput.obj",
+            artifactExpectation("LexerTokenizerOutput", "def.TokenizeOutputConstraints")
+        ),
+        "LexerTokenizerOutput",
+        "Fixtures/ArtifactProjects/LexerTokenizerOutput",
+        "Fixtures/ArtifactProjects/LexerTokenizerOutput/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/LexerTokenizerOutput/Source/Library.uv",
+        "Fixtures/ArtifactProjects/LexerTokenizerOutput/Build/Library/LexerTokenizerOutput.lib",
+        "Fixtures/ArtifactProjects/LexerTokenizerOutput/Build/Intermediate/Obj/Source/LexerTokenizerOutput.obj",
+        "LexerTokenizerOutput",
+        "def.TokenizeOutputConstraints"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "AttributeSemantics",
+            "Fixtures/ArtifactProjects/AttributeSemantics",
+            "Fixtures/ArtifactProjects/AttributeSemantics/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/AttributeSemantics/Source/Main.uv",
+            "Fixtures/ArtifactProjects/AttributeSemantics/Build/Library/AttributeSemantics.lib",
+            "Fixtures/ArtifactProjects/AttributeSemantics/Build/Intermediate/IR/Source/AttributeSemantics.ll",
+            artifactExpectation("AttributeSemantics", "conformance.LayoutAttributeLowering")
+        ),
+        "AttributeSemantics",
+        "Fixtures/ArtifactProjects/AttributeSemantics",
+        "Fixtures/ArtifactProjects/AttributeSemantics/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/AttributeSemantics/Source/Main.uv",
+        "Fixtures/ArtifactProjects/AttributeSemantics/Build/Library/AttributeSemantics.lib",
+        "Fixtures/ArtifactProjects/AttributeSemantics/Build/Intermediate/IR/Source/AttributeSemantics.ll",
+        "AttributeSemantics",
+        "conformance.LayoutAttributeLowering"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "AttributeTestHarness",
+            "Fixtures/ArtifactProjects/AttributeTestHarness",
+            "Fixtures/ArtifactProjects/AttributeTestHarness/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/AttributeTestHarness/Source/Tests/Harness.uv",
+            "Fixtures/ArtifactProjects/AttributeTestHarness/Build/Tests/AttributeTestHarness/Source/Main.uv",
+            "Fixtures/ArtifactProjects/AttributeTestHarness/Build/Intermediate/Conformance/attributes_test_harness.conformance.log",
+            artifactExpectation("AttributeTestHarness", "lowering.TestHarnessGeneration")
+        ),
+        "AttributeTestHarness",
+        "Fixtures/ArtifactProjects/AttributeTestHarness",
+        "Fixtures/ArtifactProjects/AttributeTestHarness/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/AttributeTestHarness/Source/Tests/Harness.uv",
+        "Fixtures/ArtifactProjects/AttributeTestHarness/Build/Tests/AttributeTestHarness/Source/Main.uv",
+        "Fixtures/ArtifactProjects/AttributeTestHarness/Build/Intermediate/Conformance/attributes_test_harness.conformance.log",
+        "AttributeTestHarness",
+        "lowering.TestHarnessGeneration"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "ModuleDiscoveryOrdering",
+            "Fixtures/ArtifactProjects/ModuleDiscoveryOrdering",
+            "Fixtures/ArtifactProjects/ModuleDiscoveryOrdering/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/ModuleDiscoveryOrdering/Source/Alpha/Extra.uv",
+            "Fixtures/ArtifactProjects/ModuleDiscoveryOrdering/Build/Intermediate/IR/Source/ModuleDiscoveryOrdering.ll",
+            "Fixtures/ArtifactProjects/ModuleDiscoveryOrdering/Build/Logs/Conformance/module_discovery.conformance.log",
+            artifactExpectation("ModuleDiscoveryOrdering", "def.DirSeq")
+        ),
+        "ModuleDiscoveryOrdering",
+        "Fixtures/ArtifactProjects/ModuleDiscoveryOrdering",
+        "Fixtures/ArtifactProjects/ModuleDiscoveryOrdering/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/ModuleDiscoveryOrdering/Source/Alpha/Extra.uv",
+        "Fixtures/ArtifactProjects/ModuleDiscoveryOrdering/Build/Intermediate/IR/Source/ModuleDiscoveryOrdering.ll",
+        "Fixtures/ArtifactProjects/ModuleDiscoveryOrdering/Build/Logs/Conformance/module_discovery.conformance.log",
+        "ModuleDiscoveryOrdering",
+        "def.DirSeq"
     ) {
         count = count + 1usize
     }

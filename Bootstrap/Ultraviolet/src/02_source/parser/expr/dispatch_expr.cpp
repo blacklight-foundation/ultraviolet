@@ -327,6 +327,19 @@ ParseElemResult<std::vector<DispatchOption>> ParseDispatchOptsOpt(Parser parser)
   return {after_rbracket, std::move(opts.elem)};
 }
 
+void RecordDispatchCaptureParserEvidence(const core::Span& span) {
+  core::Conformance::Record(
+      "requirement.20.CaptureSemanticsNoAdditionalSyntax",
+      span,
+      "source=ParseDispatchExpr;body_parser=ParseBlock;"
+      "capture_surface=dispatch_body;additional_syntax=false");
+  core::Conformance::Record(
+      "requirement.20.CaptureSemanticsNoAdditionalParsingRules",
+      span,
+      "source=ParseDispatchExpr;parser=dispatch_expr;body_parser=ParseBlock;"
+      "capture_parser=none;additional_parsing_rules=false");
+}
+
 }  // namespace
 
 ParseElemResult<ExprPtr> ParseDispatchExpr(Parser parser) {
@@ -360,7 +373,9 @@ ParseElemResult<ExprPtr> ParseDispatchExpr(Parser parser) {
   dispatch.key_clause = key_clause.elem;
   dispatch.opts = std::move(opts.elem);
   dispatch.body = body.elem;
-  return {body.parser, MakeExpr(SpanBetween(parser, body.parser), dispatch)};
+  const core::Span expr_span = SpanBetween(parser, body.parser);
+  RecordDispatchCaptureParserEvidence(expr_span);
+  return {body.parser, MakeExpr(expr_span, dispatch)};
 }
 
 }  // namespace ultraviolet::ast

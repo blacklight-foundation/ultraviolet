@@ -49,9 +49,17 @@ bool MarkMovedAliasBinding(const LocalAddrAlias& alias,
             SPEC_RULE("UpdateValid-PartialMove-Init");
             SPEC_RULE("UpdateValid-PartialMove-Step");
             state.moved_fields.push_back(*head);
+            ctx.RecordBindingStateSet(
+                state,
+                alias.binding_name,
+                BindingStateSetSource::MarkFieldMoved);
         } else {
             SPEC_RULE("UpdateValid-MoveRoot");
             state.is_moved = true;
+            ctx.RecordBindingStateSet(
+                state,
+                alias.binding_name,
+                BindingStateSetSource::MarkMoved);
         }
         return true;
     }
@@ -117,6 +125,7 @@ IRPtr MarkMovedPlace(const ast::Expr& place, LowerCtx& ctx) {
 
 LowerResult LowerMovePlace(const ast::Expr& place, LowerCtx& ctx) {
     SPEC_RULE("Lower-MovePlace");
+    SPEC_RULE("req.16.EffectfulCoreLoweringMechanics");
 
     auto read_result = LowerReadPlace(place, ctx);
     IRPtr move_state = MarkMovedPlace(place, ctx);
@@ -129,6 +138,7 @@ LowerResult LowerMovePlace(const ast::Expr& place, LowerCtx& ctx) {
 
 LowerResult LowerMovePlaceAsRef(const ast::Expr& place, LowerCtx& ctx) {
     SPEC_RULE("Lower-MovePlace");
+    SPEC_RULE("req.16.EffectfulCoreLoweringMechanics");
 
     auto addr_result = LowerAddrOf(place, ctx, AddressUseKind::TransientNoEscape);
     IRPtr move_state = MarkMovedPlace(place, ctx);
@@ -141,6 +151,7 @@ LowerResult LowerMovePlaceAsRef(const ast::Expr& place, LowerCtx& ctx) {
 
 LowerResult LowerCopyExpr(const ast::CopyExpr& expr, LowerCtx& ctx) {
     SPEC_RULE("Lower-Expr-Copy");
+    SPEC_RULE("rule.16.Lower-Expr-Copy");
     if (!expr.value) {
         return LowerResult{EmptyIR(), IRValue{}};
     }

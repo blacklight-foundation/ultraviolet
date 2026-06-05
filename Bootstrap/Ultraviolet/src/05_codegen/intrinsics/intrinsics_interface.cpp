@@ -19,6 +19,7 @@
 #include <set>
 
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 #include "00_core/symbols.h"
 #include "01_project/language_profile.h"
 #include "05_codegen/globals/globals.h"
@@ -64,6 +65,40 @@ std::string BuiltinSymFileAppendClose() {
 
 std::string BuiltinSymFileReadClose() {
   return core::PathSig({"File", "Read", "close"});
+}
+
+void RecordGpuIntrinsicTableConformance(std::string_view source,
+                                         std::string_view stage,
+                                         std::string_view symbol) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload;
+  payload += "source=";
+  payload += source;
+  payload += ";stage=";
+  payload += stage;
+  payload += ";symbol=";
+  payload += symbol;
+  payload += ";topology_intrinsics=7;barrier_intrinsics=3";
+  payload += ";signatures=";
+  payload += "gpu_global_id()->tuple_usize3|";
+  payload += "gpu_local_id()->tuple_usize3|";
+  payload += "gpu_workgroup_id()->tuple_usize3|";
+  payload += "gpu_workgroup_size()->tuple_usize3|";
+  payload += "gpu_global_size()->tuple_usize3|";
+  payload += "gpu_num_workgroups()->tuple_usize3|";
+  payload += "gpu_linear_id()->usize|";
+  payload += "gpu_barrier()->unit|";
+  payload += "gpu_memory_barrier()->unit|";
+  payload += "gpu_workgroup_barrier()->unit";
+  payload += ";runtime_backed=true";
+
+  core::Conformance::Record(
+      "def.20.GpuIntrinsicTable",
+      std::nullopt,
+      payload);
 }
 
 std::string BuiltinSymDirIterOpenNext() {
@@ -252,6 +287,10 @@ RuntimeCategoryMap BuildRuntimeCategoryMap() {
   AddRuntimeSymbol(categories, RuntimeSymbolCategory::ExecutionDomain, BuiltinSymGpuBarrier());
   AddRuntimeSymbol(categories, RuntimeSymbolCategory::ExecutionDomain, BuiltinSymGpuMemoryBarrier());
   AddRuntimeSymbol(categories, RuntimeSymbolCategory::ExecutionDomain, BuiltinSymGpuWorkgroupBarrier());
+  RecordGpuIntrinsicTableConformance(
+      "BuildRuntimeCategoryMap",
+      "registration",
+      "all");
 
   // CancelToken
   AddRuntimeSymbol(categories, RuntimeSymbolCategory::CancelToken, BuiltinSymCancelTokenNew());
@@ -274,9 +313,8 @@ RuntimeCategoryMap BuildRuntimeCategoryMap() {
   AddRuntimeSymbol(categories, RuntimeSymbolCategory::Async, BuiltinSymAsyncTake());
 
   // Reactor
-  // Note: Reactor does not currently have a dedicated RuntimeSymbolCategory.
-  AddRuntimeSymbol(categories, RuntimeSymbolCategory::Unknown, BuiltinSymReactorRun());
-  AddRuntimeSymbol(categories, RuntimeSymbolCategory::Unknown, BuiltinSymReactorRegister());
+  AddRuntimeSymbol(categories, RuntimeSymbolCategory::Reactor, BuiltinSymReactorRun());
+  AddRuntimeSymbol(categories, RuntimeSymbolCategory::Reactor, BuiltinSymReactorRegister());
 
   // Structured concurrency runtime
   AddRuntimeSymbol(categories, RuntimeSymbolCategory::Concurrency, ConcurrencySymParallelBegin());
@@ -317,6 +355,10 @@ const RuntimeCategoryMap& GetRuntimeCategoryMap() {
     cache.categories = BuildRuntimeCategoryMap();
     cache.initialized = true;
   }
+  RecordGpuIntrinsicTableConformance(
+      "GetRuntimeCategoryMap",
+      "registration",
+      "all");
   return cache.categories;
 }
 
@@ -379,6 +421,8 @@ void CollectRefSymsFromIR(std::set<std::string>& out, const IRPtr& ir) {
           CollectRefSymsFromIR(out, node.iter_ir);
           CollectRefSymsFromIR(out, node.cond_ir);
           CollectRefSymsFromIR(out, node.body_ir);
+          CollectRefSymsFromIR(out, node.invariant_entry_ir);
+          CollectRefSymsFromIR(out, node.invariant_backedge_ir);
         } else if constexpr (std::is_same_v<T, IRIfCase>) {
           for (const auto& arm : node.arms) {
             CollectRefSymsFromIR(out, arm.body);
@@ -411,12 +455,33 @@ void CollectRefSymsFromIR(std::set<std::string>& out, const IRPtr& ir) {
           CollectRefSymsFromIR(out, node.body);
         } else if constexpr (std::is_same_v<T, IRSpawn>) {
           AddRefSym(out, ConcurrencySymSpawnCreate());
+          if (node.runtime_symbol.has_value()) {
+            AddRefSym(out, *node.runtime_symbol);
+          }
           CollectRefSymsFromIR(out, node.captured_env);
           CollectRefSymsFromIR(out, node.body);
         } else if constexpr (std::is_same_v<T, IRWait>) {
           AddRefSym(out, ConcurrencySymSpawnWait());
+        } else if constexpr (std::is_same_v<T, IRCancelCreate>) {
+          AddRefSym(out, BuiltinSymCancelTokenNew());
+        } else if constexpr (std::is_same_v<T, IRCancelRequest>) {
+          AddRefSym(out, BuiltinSymCancelTokenActiveCancel());
+        } else if constexpr (std::is_same_v<T, IRCancelWait>) {
+          AddRefSym(out, BuiltinSymCancelTokenActiveWaitCancelled());
         } else if constexpr (std::is_same_v<T, IRCancelCheck>) {
           AddRefSym(out, BuiltinSymCancelTokenActiveIsCancelled());
+        } else if constexpr (std::is_same_v<T, IRGpuBarrier>) {
+          switch (node.kind) {
+            case IRGpuBarrierKind::Memory:
+              AddRefSym(out, BuiltinSymGpuMemoryBarrier());
+              break;
+            case IRGpuBarrierKind::Workgroup:
+              AddRefSym(out, BuiltinSymGpuWorkgroupBarrier());
+              break;
+            case IRGpuBarrierKind::Full:
+              AddRefSym(out, BuiltinSymGpuBarrier());
+              break;
+          }
         } else if constexpr (std::is_same_v<T, IRDispatch>) {
           AddRefSym(out, ConcurrencySymDispatchRun());
           CollectRefSymsFromIR(out, node.captured_env);
@@ -445,6 +510,12 @@ void CollectRefSymsFromIR(std::set<std::string>& out, const IRPtr& ir) {
           CollectRefSymsFromIR(out, node.fallback_ir);
         } else if constexpr (std::is_same_v<T, IRSync>) {
           AddRefSym(out, BuiltinSymAsyncResume());
+          if (node.runtime_symbol.has_value()) {
+            AddRefSym(out, *node.runtime_symbol);
+          }
+          if (node.runtime_receiver.has_value()) {
+            AddRefSymsFromValue(out, *node.runtime_receiver);
+          }
         } else if constexpr (std::is_same_v<T, IRRaceReturn>) {
           AddRefSym(out, BuiltinSymAsyncResume());
           for (const auto& arm : node.arms) {
@@ -472,12 +543,14 @@ void CollectRefSymsFromIR(std::set<std::string>& out, const IRPtr& ir) {
 }  // namespace
 
 std::vector<std::string> RefSyms(const IRPtr& ir) {
+  SPEC_RULE("def.24.RefSyms");
   std::set<std::string> refs;
   CollectRefSymsFromIR(refs, ir);
   return {refs.begin(), refs.end()};
 }
 
 std::vector<std::string> RefSyms(const IRDecl& decl) {
+  SPEC_RULE("def.24.RefSyms");
   std::set<std::string> refs;
   std::visit(
       [&](const auto& node) {
@@ -498,6 +571,7 @@ std::vector<std::string> RefSyms(const IRDecl& decl) {
 }
 
 std::vector<std::string> RefSyms(const IRDecls& decls) {
+  SPEC_RULE("def.24.RefSyms");
   std::set<std::string> refs;
   for (const auto& decl : decls) {
     const auto decl_refs = RefSyms(decl);
@@ -579,6 +653,9 @@ RuntimeSymbolCategory CategorizeRuntimeSymbol(const std::string& symbol) {
     }
     if (suffix.rfind("heap", 0) == 0) {
       return RuntimeSymbolCategory::HeapAllocator;
+    }
+    if (suffix.rfind("reactor", 0) == 0) {
+      return RuntimeSymbolCategory::Reactor;
     }
     if (suffix.rfind("system", 0) == 0) {
       return RuntimeSymbolCategory::System;
@@ -692,7 +769,7 @@ bool RuntimeUsesForeignABI(const std::string& symbol) {
              symbol == BuiltinModalSymRegionAddrTagScope() ||
              symbol == BuiltinModalSymRegionAddrIsActive() ||
              symbol == BuiltinModalSymRegionAddrTagFrom();
-    case RuntimeSymbolCategory::Unknown:
+    case RuntimeSymbolCategory::Reactor:
       return symbol == BuiltinSymReactorRun() ||
              symbol == BuiltinSymReactorRegister();
     default:
@@ -1267,8 +1344,17 @@ std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
   }
 
   // Reactor methods.
+  if (symbol == BuiltinSymReactorRun()) {
+    info.params.push_back(
+        make_param("self", t_raw_imm_u8, analysis::ParamMode::Move));
+    info.params.push_back(
+        make_param("future", t_raw_imm_u8, analysis::ParamMode::Move));
+    info.ret = t_async_resume;
+    return info;
+  }
   if (symbol == BuiltinSymReactorRegister()) {
-    info.params.push_back(make_param("self", t_reactor));
+    info.params.push_back(
+        make_param("self", t_raw_imm_u8, analysis::ParamMode::Move));
     info.params.push_back(
         make_param("future", t_raw_imm_u8, analysis::ParamMode::Move));
     info.ret = t_raw_mut_u8;
@@ -1364,41 +1450,58 @@ std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
       symbol == BuiltinSymGpuWorkgroupSize() ||
       symbol == BuiltinSymGpuGlobalSize() ||
       symbol == BuiltinSymGpuNumWorkgroups()) {
+    RecordGpuIntrinsicTableConformance(
+        "GetRuntimeFuncInfo",
+        "runtime_signature",
+        symbol);
     info.ret = t_usize3;
     return info;
   }
   if (symbol == BuiltinSymGpuLinearId()) {
+    RecordGpuIntrinsicTableConformance(
+        "GetRuntimeFuncInfo",
+        "runtime_signature",
+        symbol);
     info.ret = t_usize;
     return info;
   }
   if (symbol == BuiltinSymGpuBarrier() ||
       symbol == BuiltinSymGpuMemoryBarrier() ||
       symbol == BuiltinSymGpuWorkgroupBarrier()) {
+    RecordGpuIntrinsicTableConformance(
+        "GetRuntimeFuncInfo",
+        "runtime_signature",
+        symbol);
     info.ret = t_unit;
     return info;
   }
 
   // CancelToken builtins and modal methods.
   if (symbol == BuiltinSymCancelTokenNew()) {
+    SPEC_RULE("def.20.CancelRuntimeHelpers");
     info.ret = t_cancel_token_active;
     return info;
   }
   if (symbol == BuiltinSymCancelTokenActiveCancel()) {
+    SPEC_RULE("def.20.CancelRuntimeHelpers");
     info.params.push_back(make_param("self", t_raw_mut_u8, analysis::ParamMode::Move));
     info.ret = t_unit;
     return info;
   }
   if (symbol == BuiltinSymCancelTokenActiveIsCancelled()) {
+    SPEC_RULE("def.20.CancelRuntimeHelpers");
     info.params.push_back(make_param("self", t_raw_imm_u8, analysis::ParamMode::Move));
     info.ret = t_bool;
     return info;
   }
   if (symbol == BuiltinSymCancelTokenActiveChild()) {
+    SPEC_RULE("def.20.CancelRuntimeHelpers");
     info.params.push_back(make_param("self", t_raw_imm_u8, analysis::ParamMode::Move));
     info.ret = t_cancel_token_active;
     return info;
   }
   if (symbol == BuiltinSymCancelTokenActiveWaitCancelled()) {
+    SPEC_RULE("def.20.CancelRuntimeHelpers");
     mark_explicit_out_result();
     info.params.push_back(make_param("self", t_raw_imm_u8, analysis::ParamMode::Move));
     info.ret = t_async_unit;
@@ -1632,6 +1735,8 @@ std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
         make_param("ordered", t_i32, analysis::ParamMode::Move));
     info.params.push_back(
         make_param("chunk_size", t_usize, analysis::ParamMode::Move));
+    info.params.push_back(
+        make_param("workgroup_size", t_usize3, analysis::ParamMode::Move));
     info.ret = t_unit;
     return info;
   }

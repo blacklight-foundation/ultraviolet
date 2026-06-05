@@ -80,6 +80,7 @@ struct StaticRuleMeta {
 };
 
 ErrorRecoveryPolicy DefaultErrorRecoveryPolicy();
+void RecordBehaviorModelConformance();
 
 bool IsStaticCheck(CheckKind kind);
 bool IsRuntimeCheck(CheckKind kind);

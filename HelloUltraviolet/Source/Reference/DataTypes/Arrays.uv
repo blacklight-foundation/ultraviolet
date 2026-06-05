@@ -10,6 +10,16 @@ internal procedure arrayElementSegmentReference() -> bool {
         repeated[1usize] == 4
 }
 
+internal procedure evalSigmaArrayReference() -> bool {
+    let values: [i32; 3] = [1, 2, 3]
+    let repeated: [i32; 3] = [4; 3]
+    return values[0usize] == 1 &&
+        values[1usize] == 2 &&
+        values[2usize] == 3 &&
+        repeated[0usize] == 4 &&
+        repeated[2usize] == 4
+}
+
 internal procedure arrayPlaceIndexReference() -> bool {
     var values: [i32; 3] = [1, 2, 3]
     values[1usize] = values[0usize] + values[2usize]
@@ -41,6 +51,35 @@ internal procedure arrayConstructionControlReference(flag: bool) -> i32 {
     return values[0usize]
 }
 
+internal procedure evalSigmaArrayCtrlReference() -> bool {
+    return arrayConstructionControlReference(true) == 19
+}
+
+internal procedure evalSigmaIndexReference() -> bool {
+    return dynamicArrayIndexReference(2usize) == 7 &&
+        arrayPlaceIndexReference()
+}
+
+internal procedure arrayIndexRuntimeHelpersReference() -> bool {
+    let values: [i32; 3] = [5, 6, 7]
+    return values[0usize] == 5 &&
+        values[2usize] == 7 &&
+        dynamicArrayIndexReference(1usize) == 6
+}
+
+internal procedure sizeArrayReference() -> bool {
+    return sizeof([i32; 0]) == 0usize &&
+        sizeof([i32; 3]) == 3usize * sizeof(i32)
+}
+
+internal procedure alignArrayReference() -> bool {
+    return alignof([i32; 3]) == alignof(i32)
+}
+
+internal procedure layoutArrayReference() -> bool {
+    return sizeArrayReference() && alignArrayReference()
+}
+
 internal procedure arrayLayoutReference() -> bool {
     return sizeof([i32; 3]) == 3usize * sizeof(i32) &&
         alignof([i32; 3]) == alignof(i32)
@@ -49,10 +88,15 @@ internal procedure arrayLayoutReference() -> bool {
 /// Exercises the DataTypes Arrays reference surface.
 public procedure runDataTypesArraysReference() -> bool {
     return arrayElementSegmentReference() &&
+        evalSigmaArrayReference() &&
         arrayPlaceIndexReference() &&
         dynamicArrayIndexReference(2usize) == 7 &&
         dynamicArrayPlaceReference(1usize) == 12 &&
         arrayConstructionControlReference(false) == 1 &&
         arrayConstructionControlReference(true) == 19 &&
+        evalSigmaArrayCtrlReference() &&
+        evalSigmaIndexReference() &&
+        arrayIndexRuntimeHelpersReference() &&
+        layoutArrayReference() &&
         arrayLayoutReference()
 }

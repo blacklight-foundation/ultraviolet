@@ -1,0 +1,7 @@
+//! Executable consumer assembly for linked library artifact input exercises.
+
+public import LibraryArtifactProvider
+
+public procedure main(context: Context) -> i32 {
+    return LibraryArtifactProvider::providedArtifactValue() - 17
+}

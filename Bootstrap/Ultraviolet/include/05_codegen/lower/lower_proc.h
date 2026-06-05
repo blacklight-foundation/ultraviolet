@@ -29,6 +29,10 @@ ProcIR LowerProcInstantiated(const ast::ProcedureDecl& decl,
                              const std::map<std::string, analysis::TypeRef>& type_subst,
                              LowerCtx& ctx);
 
+// Apply procedure-wide IR finalization that is shared by source procedures and
+// synthesized procedures generated during expression lowering.
+void FinalizeProcIR(ProcIR& ir, LowerCtx& ctx);
+
 // AnchorProcRules - Emit SPEC_RULE anchors
 void AnchorProcRules();
 

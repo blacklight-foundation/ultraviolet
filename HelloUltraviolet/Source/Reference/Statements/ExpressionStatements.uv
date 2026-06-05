@@ -28,10 +28,15 @@ internal procedure expressionStatementPropagatesControl() -> i32 {
     return 0
 }
 
-/// Exercises the Statements ExpressionStatements reference surface.
-public procedure runStatementsExpressionStatementsReference() -> bool {
+/// Exercises Lower-Stmt-Expr by preserving expression side effects and control propagation.
+public procedure lowerStmtExprReference() -> bool {
     expressionStatementValue(11)
     return expressionStatementRunsBlockValue() == 5 &&
         expressionStatementRunsNestedExpression() == 8 &&
         expressionStatementPropagatesControl() == 13
+}
+
+/// Exercises the Statements ExpressionStatements reference surface.
+public procedure runStatementsExpressionStatementsReference() -> bool {
+    return lowerStmtExprReference()
 }

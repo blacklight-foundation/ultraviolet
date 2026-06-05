@@ -36,6 +36,16 @@
 
 namespace ultraviolet::analysis::expr {
 
+namespace {
+
+static inline void SpecDefsClosureExpr() {
+  SPEC_DEF("Infer-Closure-Params-Err", "16.9.4");
+  SPEC_DEF("rule.16.Infer-Closure-Params-Err", "16.9.4");
+  SPEC_DEF("req.16.ClosureParamInferenceFailure", "16.9.4");
+}
+
+}  // namespace
+
 static bool SameSpan(const std::optional<core::Span>& lhs,
                      const core::Span& rhs) {
   if (!lhs.has_value()) {
@@ -83,6 +93,7 @@ ExprTypeResult TypeClosureExpr(const ast::ClosureExpr& expr,
                                const IdentTypeFn& type_ident,
                                const PlaceTypeFn& type_place,
                                const TypeRef* expected_type) {
+  SpecDefsClosureExpr();
   SPEC_RULE("T-Closure-Local");
   SPEC_RULE("T-Closure-Escaping");
 
@@ -115,12 +126,26 @@ ExprTypeResult TypeClosureExpr(const ast::ClosureExpr& expr,
       param_type = expected_closure->params[i].second;
     }
     if (!param_type) {
-      // Parameter inference requires an expected closure type context.
+      SPEC_RULE("Infer-Closure-Params-Err");
+      SPEC_RULE("rule.16.Infer-Closure-Params-Err");
+      SPEC_RULE("req.16.ClosureParamInferenceFailure");
       result.diag_id = "Infer-Closure-Params-Err";
       return result;
     }
     param_types.push_back({param.move_capture, param_type});
     param_binds.push_back({param.name, param_type});
+  }
+
+  bool captures_any = false;
+  bool captures_shared = false;
+  {
+    auto closure_expr = std::make_shared<ast::Expr>();
+    closure_expr->node = expr;
+    if (const auto capture_info =
+            AnalyzeClosureCaptureInfo(closure_expr, env, nullptr)) {
+      captures_any = capture_info->captures_any;
+      captures_shared = capture_info->captures_shared;
+    }
   }
 
   // Type-check closure body in a scope that includes closure parameters.
@@ -146,6 +171,7 @@ ExprTypeResult TypeClosureExpr(const ast::ClosureExpr& expr,
 
   StmtTypeContext body_type_ctx = type_ctx;
   body_type_ctx.env_ref = &body_env;
+  body_type_ctx.in_shared_capturing_closure = captures_shared;
 
   if (!ret_type && expected_closure) {
     ret_type = expected_closure->ret;
@@ -156,30 +182,27 @@ ExprTypeResult TypeClosureExpr(const ast::ClosureExpr& expr,
     const auto body_check =
         CheckExprAgainst(ctx, body_type_ctx, expr.body, ret_type, body_env);
     if (!body_check.ok) {
+      if (captures_shared && body_check.diag_id.has_value() &&
+          *body_check.diag_id == "E-CON-0213") {
+        SPEC_RULE("rule.21.A-Closure-Yield-Keys-Err");
+        SPEC_RULE("requirement.21.SharedCapturingClosureYieldKeys");
+      }
       result.diag_id = body_check.diag_id;
       return result;
     }
   } else {
     const auto body_type = TypeExpr(ctx, body_type_ctx, expr.body, body_env);
     if (!body_type.ok) {
+      if (captures_shared && body_type.diag_id.has_value() &&
+          *body_type.diag_id == "E-CON-0213") {
+        SPEC_RULE("rule.21.A-Closure-Yield-Keys-Err");
+        SPEC_RULE("requirement.21.SharedCapturingClosureYieldKeys");
+      }
       result.diag_id = body_type.diag_id;
       return result;
     }
     SPEC_RULE("Infer-Closure-Return");
     ret_type = body_type.type;
-  }
-
-  // Non-capturing closures are first-class function values.
-  bool captures_any = false;
-  bool captures_shared = false;
-  {
-    auto closure_expr = std::make_shared<ast::Expr>();
-    closure_expr->node = expr;
-    if (const auto capture_info =
-            AnalyzeClosureCaptureInfo(closure_expr, env, nullptr)) {
-      captures_any = capture_info->captures_any;
-      captures_shared = capture_info->captures_shared;
-    }
   }
 
   if (captures_shared && type_ctx.diags) {

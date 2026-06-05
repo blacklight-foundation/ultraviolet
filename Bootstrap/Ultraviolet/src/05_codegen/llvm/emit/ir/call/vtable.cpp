@@ -6,6 +6,38 @@
 
 namespace ultraviolet::codegen::emit_detail {
 
+namespace {
+
+void ReportCodegenFailure(LLVMEmitter &emitter)
+{
+  if (const LowerCtx *ctx = emitter.GetCurrentCtx())
+  {
+    const_cast<LowerCtx *>(ctx)->ReportCodegenFailure();
+  }
+}
+
+void RecordDynamicReceiverAddressStateCheck()
+{
+  SPEC_RULE("rule.15.EvalRecvSigma-Ref-Dyn");
+  SPEC_RULE("rule.15.EvalRecvSigma-Ref-Dyn-Expired");
+  if (!core::Conformance::Enabled())
+  {
+    return;
+  }
+
+  const std::string payload =
+      "source=EmitIRCallVTable;operation=EvalRecvSigma;receiver=Dyn;"
+      "mode=ref;data=RawPtrImm;state_check=DynAddrState;"
+      "valid=continue;expired=panic;panic=ExpiredDeref;"
+      "runtime_check=region.addr_is_active;call_skipped_on_expired=true";
+  core::Conformance::Record(
+      "rule.15.EvalRecvSigma-Ref-Dyn", std::nullopt, payload);
+  core::Conformance::Record(
+      "rule.15.EvalRecvSigma-Ref-Dyn-Expired", std::nullopt, payload);
+}
+
+} // namespace
+
 void IRInstructionVisitor::operator()(const IRCallVTable &call) const
 {
   const bool debug_vtable_call = core::IsDebugEnabled("obj");
@@ -209,15 +241,72 @@ void IRInstructionVisitor::operator()(const IRCallVTable &call) const
   }
   llvm::FunctionType *fn_ty = llvm::FunctionType::get(ret_ty, param_tys, false);
 
-  llvm::CallInst *result = builder.CreateCall(fn_ty, fn_ptr, call_args);
-  if (result && !result->getType()->isVoidTy())
+  auto emit_vtable_call = [&]() -> llvm::Value *
+  {
+    llvm::CallInst *result = builder.CreateCall(fn_ty, fn_ptr, call_args);
+    if (result && !result->getType()->isVoidTy())
+    {
+      return result;
+    }
+    return nullptr;
+  };
+
+  if (call.check_dynamic_receiver_addr_active)
+  {
+    RecordDynamicReceiverAddressStateCheck();
+    llvm::Value *active = EmitRuntimeCallBySymbol(
+        emitter,
+        &builder,
+        BuiltinModalSymRegionAddrIsActive(),
+        {data_ptr});
+    if (!active)
+    {
+      ReportCodegenFailure(emitter);
+      emitter.SetTempValue(call.result, DefaultFor(call.result));
+      return;
+    }
+
+    llvm::Value *active_condition = AsBool(&builder, active);
+    llvm::Function *func = builder.GetInsertBlock()->getParent();
+    llvm::BasicBlock *valid_bb = llvm::BasicBlock::Create(
+        emitter.GetContext(), "dynrecv.addr.valid", func);
+    llvm::BasicBlock *expired_bb = llvm::BasicBlock::Create(
+        emitter.GetContext(), "dynrecv.addr.expired", func);
+    llvm::BasicBlock *join_bb = llvm::BasicBlock::Create(
+        emitter.GetContext(), "dynrecv.addr.join", func);
+
+    builder.CreateCondBr(active_condition, valid_bb, expired_bb);
+
+    builder.SetInsertPoint(expired_bb);
+    StorePanicRecord(emitter, &builder, PanicCode(PanicReason::ExpiredDeref));
+    builder.CreateBr(join_bb);
+
+    builder.SetInsertPoint(valid_bb);
+    llvm::Value *valid_result = emit_vtable_call();
+    builder.CreateBr(join_bb);
+
+    builder.SetInsertPoint(join_bb);
+    if (valid_result && !ret_ty->isVoidTy())
+    {
+      llvm::PHINode *phi = builder.CreatePHI(ret_ty, 2, "dynrecv.result");
+      phi->addIncoming(valid_result, valid_bb);
+      phi->addIncoming(llvm::Constant::getNullValue(ret_ty), expired_bb);
+      emitter.SetTempValue(call.result, phi);
+    }
+    else
+    {
+      emitter.SetTempValue(call.result, DefaultFor(call.result));
+    }
+    return;
+  }
+
+  llvm::Value *result = emit_vtable_call();
+  if (result)
   {
     emitter.SetTempValue(call.result, result);
+    return;
   }
-  else
-  {
-    emitter.SetTempValue(call.result, DefaultFor(call.result));
-  }
+  emitter.SetTempValue(call.result, DefaultFor(call.result));
 }
 
 } // namespace ultraviolet::codegen::emit_detail

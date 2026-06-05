@@ -25,6 +25,8 @@
 // =============================================================================
 
 #include "05_codegen/lower/expr/tuple_literal.h"
+#include "04_analysis/layout/layout.h"
+#include "04_analysis/typing/type_predicates.h"
 #include "00_core/assert_spec.h"
 
 namespace ultraviolet::codegen {
@@ -43,8 +45,29 @@ namespace ultraviolet::codegen {
 // when the value is stored or otherwise consumed.
 // =============================================================================
 
-LowerResult LowerTuple(const ast::TupleExpr& expr, LowerCtx& ctx) {
+LowerResult LowerTuple(
+    const ast::TupleExpr& expr,
+    LowerCtx& ctx,
+    analysis::TypeRef contextual_type) {
     SPEC_RULE("Lower-Expr-Tuple");
+    SPEC_RULE("rule.16.Lower-Expr-Tuple");
+
+    if (expr.elements.empty()) {
+        analysis::TypeRef unit_type = analysis::MakeTypePrim("()");
+        ast::Token unit_token;
+        unit_token.kind = ast::TokenKind::Punctuator;
+        unit_token.lexeme = "()";
+        if (auto bytes = analysis::layout::EncodeConst(unit_type, unit_token)) {
+            (void)analysis::layout::ValidValue(
+                ScopeForLowering(ctx),
+                unit_type,
+                *bytes);
+        }
+
+        IRValue unit_value = ctx.FreshTempValue("unit");
+        ctx.RegisterValueType(unit_value, unit_type);
+        return LowerResult{EmptyIR(), unit_value};
+    }
 
     // Lower all element expressions in left-to-right order
     auto [ir, values] = LowerList(expr.elements, ctx);
@@ -61,19 +84,41 @@ LowerResult LowerTuple(const ast::TupleExpr& expr, LowerCtx& ctx) {
     // Preserve the concrete tuple type at the tuple-literal definition site.
     // This makes tuple materialization explicit in the lowering path rather
     // than relying on generic post-lowering inference.
-    std::vector<analysis::TypeRef> element_types;
-    element_types.reserve(values.size());
-    bool all_typed = true;
-    for (const auto& value : values) {
-        analysis::TypeRef element_type = ctx.LookupValueType(value);
-        if (!element_type) {
-            all_typed = false;
-            break;
+    analysis::TypeRef tuple_type;
+    if (contextual_type) {
+        analysis::TypeRef stripped_type = analysis::StripPerm(contextual_type);
+        if (!stripped_type) {
+            stripped_type = contextual_type;
         }
-        element_types.push_back(element_type);
+        const auto* contextual_tuple = stripped_type
+            ? std::get_if<analysis::TypeTuple>(&stripped_type->node)
+            : nullptr;
+        if (contextual_tuple && contextual_tuple->elements.size() == values.size()) {
+            tuple_type = stripped_type;
+            for (std::size_t i = 0; i < values.size(); ++i) {
+                ctx.RegisterValueType(values[i], contextual_tuple->elements[i]);
+            }
+        }
     }
-    if (all_typed) {
-        ctx.RegisterValueType(tuple_value, analysis::MakeTypeTuple(std::move(element_types)));
+
+    if (!tuple_type) {
+        std::vector<analysis::TypeRef> element_types;
+        element_types.reserve(values.size());
+        bool all_typed = true;
+        for (const auto& value : values) {
+            analysis::TypeRef element_type = ctx.LookupValueType(value);
+            if (!element_type) {
+                all_typed = false;
+                break;
+            }
+            element_types.push_back(element_type);
+        }
+        if (all_typed) {
+            tuple_type = analysis::MakeTypeTuple(std::move(element_types));
+        }
+    }
+    if (tuple_type) {
+        ctx.RegisterValueType(tuple_value, tuple_type);
     }
 
     return LowerResult{ir, tuple_value};

@@ -15,6 +15,7 @@
 
 #include "00_core/compiler_support.h"
 #include "00_core/host/services.h"
+#include "00_core/path.h"
 #include "01_project/compiler_support_paths.h"
 #include "01_project/language_profile.h"
 #include "01_project/link.h"
@@ -145,6 +146,82 @@ bool ToolPathNamesWindowsExecutable(const std::filesystem::path& tool) {
 bool CanReadFile(const std::filesystem::path& path) {
   std::ifstream in(TargetHostFilesystemPath(path), std::ios::binary);
   return static_cast<bool>(in);
+}
+
+bool IsWin64DirectAggregateSize(std::uint64_t size) {
+  return size == 1 || size == 2 || size == 4 || size == 8;
+}
+
+bool IsRegisterPairDirectAggregateSize(std::uint64_t size) {
+  return size > 0 && size <= 16;
+}
+
+TargetAggregateCarrier IntegerCarrier(std::uint64_t bits) {
+  TargetAggregateCarrier carrier;
+  carrier.kind = TargetAggregateCarrierKind::Integer;
+  carrier.primary_bits = bits;
+  return carrier;
+}
+
+TargetAggregateCarrier IntegerPairCarrier(std::uint64_t high_bits,
+                                          bool packed) {
+  TargetAggregateCarrier carrier;
+  carrier.kind = TargetAggregateCarrierKind::IntegerPair;
+  carrier.primary_bits = 64;
+  carrier.secondary_bits = high_bits;
+  carrier.packed = packed;
+  return carrier;
+}
+
+TargetAggregateCarrier IntegerArrayCarrier(std::uint64_t element_bits,
+                                           std::uint64_t element_count) {
+  TargetAggregateCarrier carrier;
+  carrier.kind = TargetAggregateCarrierKind::IntegerArray;
+  carrier.element_bits = element_bits;
+  carrier.element_count = element_count;
+  return carrier;
+}
+
+TargetAggregateCarrier IndirectCarrier() {
+  TargetAggregateCarrier carrier;
+  carrier.kind = TargetAggregateCarrierKind::Indirect;
+  return carrier;
+}
+
+TargetAggregateCarrier Win64DirectAggregateCarrier(std::uint64_t size) {
+  if (!IsWin64DirectAggregateSize(size)) {
+    return {};
+  }
+  return IntegerCarrier(size * 8);
+}
+
+TargetAggregateCarrier RegisterPairAggregateCarrier(
+    std::uint64_t size,
+    bool contains_floating) {
+  if (!IsRegisterPairDirectAggregateSize(size) || contains_floating) {
+    return {};
+  }
+  if (size <= 8) {
+    return IntegerCarrier(size * 8);
+  }
+  return IntegerPairCarrier((size - 8) * 8, size != 16);
+}
+
+TargetAggregateCarrier AArch64AggregateCarrier(std::uint64_t size,
+                                               std::uint64_t align) {
+  if (!IsRegisterPairDirectAggregateSize(size)) {
+    return {};
+  }
+  if (size <= 8) {
+    return IntegerCarrier(size * 8);
+  }
+  if (size == 16 && align >= 16) {
+    return IntegerCarrier(128);
+  }
+  if (size == 16) {
+    return IntegerArrayCarrier(64, 2);
+  }
+  return IntegerPairCarrier((size - 8) * 8, true);
 }
 
 void AppendExistingUniqueDir(std::vector<std::filesystem::path>& out,
@@ -792,35 +869,76 @@ std::string_view TargetPackagedSupportPlatformDir(TargetProfile profile) {
   UnreachableTargetPlatform();
 }
 
+bool TargetCAggregateReturnUsesIndirect(TargetProfile profile,
+                                        std::uint64_t size) {
+  if (size == 0) {
+    return false;
+  }
+
+  switch (profile) {
+    case TargetProfile::X86_64Win64:
+      return !IsWin64DirectAggregateSize(size);
+    case TargetProfile::X86_64SysV:
+    case TargetProfile::AArch64AAPCS64:
+    case TargetProfile::AArch64Darwin:
+      return !IsRegisterPairDirectAggregateSize(size);
+  }
+
+  UnreachableTargetPlatform();
+}
+
+TargetAggregateCarrier TargetCAggregateDirectReturnCarrier(
+    TargetProfile profile,
+    std::uint64_t size,
+    std::uint64_t align,
+    bool contains_floating) {
+  switch (profile) {
+    case TargetProfile::X86_64Win64:
+      return Win64DirectAggregateCarrier(size);
+    case TargetProfile::X86_64SysV:
+      return RegisterPairAggregateCarrier(size, contains_floating);
+    case TargetProfile::AArch64AAPCS64:
+    case TargetProfile::AArch64Darwin:
+      return AArch64AggregateCarrier(size, align);
+  }
+
+  UnreachableTargetPlatform();
+}
+
+TargetAggregateCarrier TargetCAggregateByValueParamCarrier(
+    TargetProfile profile,
+    std::uint64_t size,
+    std::uint64_t align,
+    bool contains_floating) {
+  if (size == 0) {
+    return {};
+  }
+
+  switch (profile) {
+    case TargetProfile::X86_64Win64: {
+      const auto carrier = Win64DirectAggregateCarrier(size);
+      if (carrier.kind != TargetAggregateCarrierKind::None) {
+        return carrier;
+      }
+      return IndirectCarrier();
+    }
+    case TargetProfile::X86_64SysV:
+      return RegisterPairAggregateCarrier(size, contains_floating);
+    case TargetProfile::AArch64AAPCS64:
+    case TargetProfile::AArch64Darwin:
+      return {};
+  }
+
+  UnreachableTargetPlatform();
+}
+
+bool TargetForeignByValueAggregateIndirectParamUsesByVal(
+    TargetProfile profile) {
+  return ObjectFormatOf(profile) != ObjectFormat::Coff;
+}
+
 std::filesystem::path TargetHostFilesystemPath(const std::filesystem::path& path) {
-#ifdef _WIN32
-  std::error_code ec;
-  std::filesystem::path absolute =
-      path.is_absolute() ? path : std::filesystem::absolute(path, ec);
-  if (ec) {
-    absolute = path;
-  }
-  absolute.make_preferred();
-
-  std::wstring value = absolute.native();
-  if (value.size() < 240) {
-    return absolute;
-  }
-
-  constexpr std::wstring_view extended_prefix = LR"(\\?\)";
-  constexpr std::wstring_view unc_prefix = LR"(\\)";
-  if (value.rfind(extended_prefix, 0) == 0) {
-    return absolute;
-  }
-  if (value.rfind(unc_prefix, 0) == 0) {
-    value = LR"(\\?\UNC\)" + value.substr(2);
-  } else {
-    value = LR"(\\?\)" + value;
-  }
-  return std::filesystem::path(value);
-#else
-  return path;
-#endif
+  return ultraviolet::core::HostFilesystemPath(path);
 }
 
 std::string TargetToolPathArgString(const std::filesystem::path& tool,

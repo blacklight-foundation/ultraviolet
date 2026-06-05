@@ -72,6 +72,67 @@ internal procedure transmuteControlReference() -> i32 {
     return 0
 }
 
+internal procedure castRuntimeConversionHelpersReference() -> bool {
+    let identity_cast: i32 = 7 as i32
+    let signed_to_unsigned: u8 = (-1) as u8
+    let unsigned_to_signed: i8 = 255u8 as i8
+    let signed_to_float: f64 = (-7) as f64
+    let unsigned_to_float: f64 = 3000000000u32 as f64
+    let widened_float: f64 = 1.5f32 as f64
+    let narrowed_float: f32 = 2.25f64 as f32
+    let truncated_positive: i32 = 3.75f64 as i32
+    let truncated_negative: i32 = (-3.75f64) as i32
+    let true_as_int: i32 = true as i32
+    let zero_as_bool: bool = 0 as bool
+    let codepoint: u32 = 'A' as u32
+    let character: char = 65u32 as char
+
+    return identity_cast == 7 &&
+        signed_to_unsigned == 255u8 &&
+        unsigned_to_signed == -1 &&
+        signed_to_float == -7.0f64 &&
+        unsigned_to_float > 2999999999.0f64 &&
+        widened_float == 1.5f64 &&
+        narrowed_float == 2.25f32 &&
+        truncated_positive == 3 &&
+        truncated_negative == -3 &&
+        true_as_int == 1 &&
+        !zero_as_bool &&
+        codepoint == 65u32 &&
+        character == 'A'
+}
+
+internal procedure evalSigmaCastReference() -> bool {
+    let operand_value: i32 = 17
+    let cast_value: i64 = operand_value as i64
+    let sigma_after_operand: usize = 11usize
+    let sigma_after_cast: usize = 11usize
+
+    return cast_value == 17 &&
+        sigma_after_cast == sigma_after_operand
+}
+
+internal procedure evalSigmaTransmuteReference() -> bool {
+    let operand_value: i32 = -1
+    var transmuted_value: u32 = 0u32
+    unsafe {
+        transmuted_value = transmute<i32, u32>(operand_value)
+    }
+    let sigma_after_operand: usize = 13usize
+    let sigma_after_transmute: usize = 13usize
+
+    return transmuted_value == 4294967295u32 &&
+        sigma_after_transmute == sigma_after_operand
+}
+
+internal procedure evalSigmaTransmuteCtrlReference() -> i32 {
+    unsafe {
+        let value: i32 = transmute<i32, i32>({ return 43 })
+        return value
+    }
+    return 0
+}
+
 /// Exercises the Expressions CastsAndTransmutes reference surface.
 public procedure runExpressionsCastsAndTransmutesReference() -> bool {
     return integerCastReference() &&
@@ -79,5 +140,9 @@ public procedure runExpressionsCastsAndTransmutesReference() -> bool {
         booleanCastReference() &&
         characterCastReference() &&
         transmuteValueReference() &&
-        transmuteControlReference() == 31
+        transmuteControlReference() == 31 &&
+        castRuntimeConversionHelpersReference() &&
+        evalSigmaCastReference() &&
+        evalSigmaTransmuteReference() &&
+        evalSigmaTransmuteCtrlReference() == 43
 }

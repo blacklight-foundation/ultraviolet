@@ -42,6 +42,7 @@ ParseElemResult<std::vector<ExprPtr>> ParseAllExprListTail(
   SkipNewlines(parser);
   if (IsPunc(parser, "}")) {
     SPEC_RULE("Parse-AllExprListTail-End");
+    SPEC_RULE("rule.21.Parse-AllExprListTail-End");
     return {parser, xs};
   }
   if (IsPunc(parser, ",")) {
@@ -50,9 +51,11 @@ ParseElemResult<std::vector<ExprPtr>> ParseAllExprListTail(
     SkipNewlines(after);
     if (IsPunc(after, "}")) {
       SPEC_RULE("Parse-AllExprListTail-TrailingComma");
+      SPEC_RULE("rule.21.Parse-AllExprListTail-TrailingComma");
       return {after, xs};
     }
     SPEC_RULE("Parse-AllExprListTail-Comma");
+    SPEC_RULE("rule.21.Parse-AllExprListTail-Comma");
     ParseElemResult<ExprPtr> elem = ParseExpr(after);
     xs.push_back(elem.elem);
     return ParseAllExprListTail(elem.parser, std::move(xs));
@@ -74,6 +77,7 @@ ParseElemResult<std::vector<ExprPtr>> ParseAllExprList(Parser parser) {
     return {parser, {}};
   }
   SPEC_RULE("Parse-AllExprList-Cons");
+  SPEC_RULE("rule.21.Parse-AllExprList-Cons");
   ParseElemResult<ExprPtr> first = ParseExpr(parser);
   std::vector<ExprPtr> elems;
   elems.push_back(first.elem);
@@ -95,6 +99,7 @@ std::optional<ParseElemResult<ExprPtr>> TryParseAllExpr(Parser parser) {
   }
 
   SPEC_RULE("Parse-All-Expr");
+  SPEC_RULE("rule.21.Parse-All-Expr");
   Parser next = parser;
   Advance(next);
   if (!IsPunc(next, "{")) {
@@ -134,6 +139,7 @@ std::optional<ParseElemResult<ExprPtr>> TryParseAllExpr(Parser parser) {
 
 ParseElemResult<ExprPtr> ParseAllExpr(Parser parser) {
   SPEC_RULE("Parse-All-Expr");
+  SPEC_RULE("rule.21.Parse-All-Expr");
   Parser next = parser;
   Advance(next);  // consume "all"
   if (!IsPunc(next, "{")) {

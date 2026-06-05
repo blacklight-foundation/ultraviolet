@@ -33,10 +33,15 @@ internal procedure unsafeStatementControlValue() -> i32 {
     return 0
 }
 
-/// Exercises the Statements Unsafe reference surface.
-public procedure runStatementsUnsafeReference() -> bool {
+/// Exercises Lower-Stmt-UnsafeBlock by lowering the enclosed block unchanged.
+public procedure lowerStmtUnsafeBlockReference() -> bool {
     return unsafeStatementValue() == 1 &&
         unsafeStatementTailIgnoredValue() == 5 &&
         unsafeRequiredOperationValue() == 7 &&
         unsafeStatementControlValue() == 11
+}
+
+/// Exercises the Statements Unsafe reference surface.
+public procedure runStatementsUnsafeReference() -> bool {
+    return lowerStmtUnsafeBlockReference()
 }

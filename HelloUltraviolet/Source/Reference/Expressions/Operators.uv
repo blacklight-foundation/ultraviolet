@@ -49,38 +49,90 @@ internal procedure comparisonOperatorsReference() -> bool {
     let character_comparison: bool = 'B' > 'A' && 'B' >= 'B' && 'A' < 'B'
     let string_comparison: bool = "operator" == "operator" && "operator" != "operand"
     let float_comparison: bool = 3.5f64 > 3.0f64 && 3.5f64 <= 3.5f64
+    let zero: f64 = 0.0f64
+    let not_a_number: f64 = zero / zero
+    let nan_comparison: bool =
+        not_a_number != not_a_number &&
+        !(not_a_number == not_a_number) &&
+        !(not_a_number < 1.0f64) &&
+        !(not_a_number <= 1.0f64) &&
+        !(not_a_number > 1.0f64) &&
+        !(not_a_number >= 1.0f64)
 
     return integer_comparison &&
         boolean_comparison &&
         character_comparison &&
         string_comparison &&
-        float_comparison
+        float_comparison &&
+        nan_comparison
+}
+
+public procedure evalSigmaBinAndFalseReference() -> bool {
+    let skipped_and: bool = false && operatorUnexpectedRightOperand()
+    return !skipped_and
+}
+
+public procedure evalSigmaBinAndTrueReference() -> bool {
+    let evaluated_and_true: bool = true && operatorBoolean(true)
+    let evaluated_and_false: bool = true && operatorBoolean(false)
+    return evaluated_and_true && !evaluated_and_false
+}
+
+public procedure evalSigmaBinOrTrueReference() -> bool {
+    let skipped_or: bool = true || operatorUnexpectedRightOperand()
+    return skipped_or
+}
+
+public procedure evalSigmaBinOrFalseReference() -> bool {
+    let evaluated_or_true: bool = false || operatorBoolean(true)
+    let evaluated_or_false: bool = false || operatorBoolean(false)
+    return evaluated_or_true && !evaluated_or_false
 }
 
 internal procedure logicalOperatorsReference() -> bool {
-    let skipped_and: bool = false && operatorUnexpectedRightOperand()
-    let evaluated_and_true: bool = true && operatorBoolean(true)
-    let evaluated_and_false: bool = true && operatorBoolean(false)
-    let skipped_or: bool = true || operatorUnexpectedRightOperand()
-    let evaluated_or_true: bool = false || operatorBoolean(true)
-    let evaluated_or_false: bool = false || operatorBoolean(false)
-
-    return !skipped_and &&
-        evaluated_and_true &&
-        !evaluated_and_false &&
-        skipped_or &&
-        evaluated_or_true &&
-        !evaluated_or_false
+    return evalSigmaBinAndFalseReference() &&
+        evalSigmaBinAndTrueReference() &&
+        evalSigmaBinOrTrueReference() &&
+        evalSigmaBinOrFalseReference()
 }
 
 internal procedure unaryOperatorsReference() -> bool {
     let not_boolean: bool = !false
+    let bit_not_all: i32 = !(-1)
     let negative_integer: i32 = -6
     let negative_float: f64 = -1.5f64
 
     return not_boolean &&
+        bit_not_all == 0 &&
         negative_integer == -6 &&
         negative_float < -1.0f64
+}
+
+public procedure operatorComparisonRuntimeReference() -> bool {
+    return comparisonOperatorsReference()
+}
+
+public procedure operatorBitShiftArithmeticRuntimeReference() -> bool {
+    return arithmeticOperatorsReference() && bitwiseShiftOperatorsReference()
+}
+
+public procedure unaryOperatorRuntimeReference() -> bool {
+    return unaryOperatorsReference()
+}
+
+public procedure floatUnaryNegationTotalityReference() -> bool {
+    let negative_float32: f32 = -1.25f32
+    let negative_float64: f64 = -1.5f64
+    return negative_float32 < -1.0f32 &&
+        negative_float32 > -2.0f32 &&
+        negative_float64 < -1.0f64 &&
+        negative_float64 > -2.0f64
+}
+
+public procedure binaryOperatorRuntimeReference() -> bool {
+    return arithmeticOperatorsReference() &&
+        bitwiseShiftOperatorsReference() &&
+        comparisonOperatorsReference()
 }
 
 internal procedure rangeOperatorsReference() -> bool {
@@ -106,12 +158,32 @@ internal procedure rangeOperatorsReference() -> bool {
         full[4usize] == 50
 }
 
+public procedure evalSigmaRangeReference() -> bool {
+    return rangeOperatorsReference()
+}
+
+public procedure evalSigmaUnaryReference() -> bool {
+    return unaryOperatorsReference()
+}
+
+public procedure evalSigmaBinaryReference() -> bool {
+    return binaryOperatorRuntimeReference()
+}
+
+public procedure operatorRuntimeJudgementsAndValuePredicatesReference() -> bool {
+    return unaryOperatorRuntimeReference() &&
+        binaryOperatorRuntimeReference() &&
+        evalSigmaRangeReference()
+}
+
 /// Exercises the Expressions Operators reference surface.
 public procedure runExpressionsOperatorsReference() -> bool {
-    return arithmeticOperatorsReference() &&
-        bitwiseShiftOperatorsReference() &&
-        comparisonOperatorsReference() &&
+    return operatorRuntimeJudgementsAndValuePredicatesReference() &&
+        operatorComparisonRuntimeReference() &&
+        operatorBitShiftArithmeticRuntimeReference() &&
+        floatUnaryNegationTotalityReference() &&
+        evalSigmaUnaryReference() &&
+        evalSigmaBinaryReference() &&
         logicalOperatorsReference() &&
-        unaryOperatorsReference() &&
-        rangeOperatorsReference()
+        evalSigmaRangeReference()
 }

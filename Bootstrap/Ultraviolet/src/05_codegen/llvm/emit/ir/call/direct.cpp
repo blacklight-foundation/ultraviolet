@@ -8,6 +8,81 @@
 
 namespace ultraviolet::codegen::emit_detail {
 
+namespace {
+
+bool IsGpuIntrinsicRuntimeSymbol(const std::string& symbol)
+{
+  return symbol == BuiltinSymGpuGlobalId() ||
+         symbol == BuiltinSymGpuLocalId() ||
+         symbol == BuiltinSymGpuWorkgroupId() ||
+         symbol == BuiltinSymGpuWorkgroupSize() ||
+         symbol == BuiltinSymGpuGlobalSize() ||
+         symbol == BuiltinSymGpuNumWorkgroups() ||
+         symbol == BuiltinSymGpuLinearId() ||
+         symbol == BuiltinSymGpuBarrier() ||
+         symbol == BuiltinSymGpuMemoryBarrier() ||
+         symbol == BuiltinSymGpuWorkgroupBarrier();
+}
+
+void RecordGpuIntrinsicLoweringConformance(const std::string& symbol)
+{
+  if (!core::Conformance::Enabled())
+  {
+    return;
+  }
+
+  std::string payload;
+  payload += "source=EmitIRCall;stage=runtime_abi_lowering;symbol=";
+  payload += symbol;
+  payload += ";runtime_call=true";
+  core::Conformance::Record(
+      "def.20.GpuIntrinsicTable",
+      std::nullopt,
+      payload);
+}
+
+void RecordSharedLibraryLinkedCallLifecycleConformance(
+    const LowerCtx& ctx,
+    const std::string& callee_symbol,
+    const std::vector<std::string>& proc_module)
+{
+  if (!core::Conformance::Enabled() ||
+      ctx.module_path.empty() ||
+      proc_module.empty())
+  {
+    return;
+  }
+
+  const std::string& current_root = ctx.module_path.front();
+  const std::string& owner_root = proc_module.front();
+  const bool cross_shared_library_boundary =
+      owner_root != current_root &&
+      ctx.shared_library_assembly_names.contains(owner_root);
+  if (!cross_shared_library_boundary)
+  {
+    return;
+  }
+
+  std::string payload;
+  payload += "source=EmitIRCall;boundary=linked_shared_library;callee=";
+  payload += callee_symbol;
+  payload += ";current_assembly=";
+  payload += current_root;
+  payload += ";owner_assembly=";
+  payload += owner_root;
+  payload += ";image_init=LibraryImageInitSigma";
+  payload += ";linked_call_sigma=ApplyProcSigma";
+  payload += ";image_destroy=LibraryImageDestroySigma";
+  payload += ";reuse_live_image=true";
+  payload += ";destroy_exactly_once=true";
+  core::Conformance::Record(
+      "requirement.23.SharedLibraryLinkedCallLifecycle",
+      std::nullopt,
+      payload);
+}
+
+} // namespace
+
 void IRInstructionVisitor::operator()(const IRCall &call) const
 {
   struct IRCallStageTimer
@@ -85,7 +160,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     {
       return nullptr;
     }
-    llvm::Value *pair = llvm::UndefValue::get(pair_ty);
+    llvm::Value *pair = llvm::Constant::getNullValue(pair_ty);
     pair = builder.CreateInsertValue(pair, data, {0u});
     pair = builder.CreateInsertValue(pair, len, {1u});
     return pair;
@@ -383,12 +458,12 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
             llvm::AllocaInst *src_slot =
                 entry_builder.CreateAlloca(value->getType(), nullptr, "drop.src");
             builder.CreateStore(value, src_slot);
-            builder.CreateMemCpy(
+            EmitAggMemcpy(
+                emitter,
                 builder.CreateBitCast(slot, llvm::PointerType::get(i8_ty, 0)),
-                llvm::Align(1),
                 builder.CreateBitCast(src_slot, llvm::PointerType::get(i8_ty, 0)),
-                llvm::Align(1),
-                llvm::ConstantInt::get(i64_ty, copy_size));
+                llvm::ConstantInt::get(i64_ty, copy_size),
+                1);
           }
         }
         args.front() = slot;
@@ -538,6 +613,8 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
         return;
       }
 
+      SPEC_RULE("def.21.AsyncCombinatorRuntimeWrappers");
+
       llvm::IRBuilder<> entry_builder(
           &func->getEntryBlock(),
           func->getEntryBlock().begin());
@@ -592,12 +669,12 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
         const std::uint64_t copy_size = std::min(src_size, dst_size);
         if (copy_size > 0)
         {
-          builder.CreateMemCpy(
+          EmitAggMemcpy(
+              emitter,
               dst_i8,
-              llvm::Align(1),
               src_i8,
-              llvm::Align(1),
-              llvm::ConstantInt::get(i64_ty, copy_size));
+              llvm::ConstantInt::get(i64_ty, copy_size),
+              1);
         }
         return builder.CreateLoad(dst_ty, dst_slot);
       };
@@ -960,6 +1037,13 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
           finish_from(source_async);
           return;
         }
+        SPEC_RULE("rule.21.EvalSigma-Map-Create");
+        SPEC_RULE("rule.21.EvalSigma-Map-Resume-Yield");
+        SPEC_RULE("rule.21.EvalSigma-Map-Resume-Complete");
+        if (failed_disc.has_value())
+        {
+          SPEC_RULE("rule.21.EvalSigma-Map-Resume-Failed");
+        }
         llvm::BasicBlock *suspended_bb =
             llvm::BasicBlock::Create(emitter.GetContext(), "ac.map.suspended", func);
         llvm::BasicBlock *merge_bb =
@@ -994,6 +1078,10 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
           finish_from(source_async);
           return;
         }
+        SPEC_RULE("rule.21.EvalSigma-Filter-Create");
+        SPEC_RULE("rule.21.EvalSigma-Filter-Resume-Pass");
+        SPEC_RULE("rule.21.EvalSigma-Filter-Resume-Skip");
+        SPEC_RULE("rule.21.EvalSigma-Filter-Resume-Complete");
         llvm::BasicBlock *loop_bb =
             llvm::BasicBlock::Create(emitter.GetContext(), "ac.filter.loop", func);
         llvm::BasicBlock *suspended_bb =
@@ -1042,6 +1130,10 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
           finish_from(source_async);
           return;
         }
+        SPEC_RULE("rule.21.EvalSigma-Take-Create");
+        SPEC_RULE("rule.21.EvalSigma-Take-Resume-Yield");
+        SPEC_RULE("rule.21.EvalSigma-Take-Resume-Done");
+        SPEC_RULE("rule.21.EvalSigma-Take-Resume-Source-Complete");
         llvm::Type *i64_ty = llvm::Type::getInt64Ty(emitter.GetContext());
         auto load_count_value = [&](llvm::Value *storage) -> llvm::Value *
         {
@@ -1110,6 +1202,13 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
         {
           finish_from(source_async);
           return;
+        }
+        SPEC_RULE("rule.21.EvalSigma-Fold-Create");
+        SPEC_RULE("rule.21.EvalSigma-Fold-Resume-Accumulate");
+        SPEC_RULE("rule.21.EvalSigma-Fold-Resume-Complete");
+        if (failed_disc.has_value())
+        {
+          SPEC_RULE("rule.21.EvalSigma-Fold-Resume-Failed");
         }
         analysis::TypeRef acc_type = result_sig->result;
         llvm::Type *acc_ll =
@@ -1254,6 +1353,13 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
           finish_from(source_async);
           return;
         }
+        SPEC_RULE("rule.21.EvalSigma-Chain-Create");
+        SPEC_RULE("rule.21.EvalSigma-Chain-Resume-Source-Complete");
+        SPEC_RULE("rule.21.EvalSigma-Chain-Resume-Chained");
+        if (failed_disc.has_value())
+        {
+          SPEC_RULE("rule.21.EvalSigma-Chain-Resume-Source-Failed");
+        }
         llvm::BasicBlock *loop_bb =
             llvm::BasicBlock::Create(emitter.GetContext(), "ac.chain.loop", func);
         llvm::BasicBlock *suspended_bb =
@@ -1338,6 +1444,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
       (call.callee.name == BuiltinSymAsyncResume());
   if (is_async_resume_runtime_symbol)
   {
+    SPEC_RULE("requirement.21.AsyncResumeRuntimeSemantics");
     llvm::Type *opaque_ptr_ty = emitter.GetOpaquePtr();
     auto *opaque_ptr_ptr_ty = llvm::cast<llvm::PointerType>(opaque_ptr_ty);
     llvm::Function *func =
@@ -1458,16 +1565,38 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
   const bool is_foundational_eq_symbol =
       (call.callee.kind == IRValue::Kind::Symbol) &&
       (call.callee.name == BuiltinSymEqEq());
-  const bool is_foundational_step_successor_symbol =
+  const bool is_foundational_discrete_successor_symbol =
       (call.callee.kind == IRValue::Kind::Symbol) &&
-      (call.callee.name == BuiltinSymStepSuccessor());
-  const bool is_foundational_step_predecessor_symbol =
+      (call.callee.name == BuiltinSymDiscreteSuccessor());
+  const bool is_foundational_discrete_predecessor_symbol =
       (call.callee.kind == IRValue::Kind::Symbol) &&
-      (call.callee.name == BuiltinSymStepPredecessor());
+      (call.callee.name == BuiltinSymDiscretePredecessor());
   if (is_foundational_eq_symbol ||
-      is_foundational_step_successor_symbol ||
-      is_foundational_step_predecessor_symbol)
+      is_foundational_discrete_successor_symbol ||
+      is_foundational_discrete_predecessor_symbol)
   {
+    auto record_foundational_emit = [&](std::string_view method,
+                                        std::string_view builtin)
+    {
+      if (!core::Conformance::Enabled())
+      {
+        return;
+      }
+
+      std::string payload;
+      payload += "source=EmitIRCall;method=";
+      payload += method;
+      payload += ";builtin=";
+      payload += builtin;
+      payload += ";callee=";
+      payload += call.callee.name;
+      payload += ";runtime_call=false";
+      core::Conformance::Record(
+          "req.14.FoundationalIntrinsicCallLowering",
+          std::nullopt,
+          payload);
+    };
+
     auto report_builtin_failure = [&]()
     {
       if (ctx)
@@ -1504,6 +1633,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
         return;
       }
       emitter.SetTempValue(call.result, eq);
+      record_foundational_emit("eq", "Eq.eq");
       return;
     }
 
@@ -1519,21 +1649,22 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
       return;
     }
 
-    const auto step_result =
-        is_foundational_step_successor_symbol
+    const auto discrete_result =
+        is_foundational_discrete_successor_symbol
             ? EmitBuiltinSuccessor(builder, recv_type, args[0])
             : EmitBuiltinPredecessor(builder, recv_type, args[0]);
-    if (!step_result.has_value())
+    if (!discrete_result.has_value())
     {
       report_builtin_failure();
       return;
     }
 
     llvm::Value *packed_some = PackUnionFromMember(
-        emitter, &builder, step_result->next, target_ll, recv_type, result_type);
+        emitter, &builder, discrete_result->next, target_ll, recv_type, result_type);
     const analysis::TypeRef unit_type = analysis::MakeTypePrim("()");
     llvm::Type *unit_ll = emitter.GetLLVMType(unit_type);
-    llvm::Value *unit_value = unit_ll ? llvm::UndefValue::get(unit_ll) : nullptr;
+    llvm::Value *unit_value =
+        unit_ll ? llvm::Constant::getNullValue(unit_ll) : nullptr;
     llvm::Value *packed_none = PackUnionFromMember(
         emitter, &builder, unit_value, target_ll, unit_type, result_type);
     llvm::Function *fn =
@@ -1550,7 +1681,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
         llvm::BasicBlock::Create(emitter.GetContext(), "step.none", fn);
     llvm::BasicBlock *step_merge_bb =
         llvm::BasicBlock::Create(emitter.GetContext(), "step.merge", fn);
-    builder.CreateCondBr(step_result->has_next, step_some_bb, step_none_bb);
+    builder.CreateCondBr(discrete_result->has_next, step_some_bb, step_none_bb);
 
     builder.SetInsertPoint(step_some_bb);
     builder.CreateBr(step_merge_bb);
@@ -1565,6 +1696,14 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     phi->addIncoming(packed_some, step_some_end);
     phi->addIncoming(packed_none, step_none_end);
     emitter.SetTempValue(call.result, phi);
+    if (is_foundational_discrete_successor_symbol)
+    {
+      record_foundational_emit("successor", "Discrete.successor");
+    }
+    else
+    {
+      record_foundational_emit("predecessor", "Discrete.predecessor");
+    }
     return;
   }
   bool use_c_abi_aggregate_sret = false;
@@ -2466,6 +2605,10 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
   {
     if (const auto *proc_module = ctx->LookupProcModule(callee_symbol))
     {
+      RecordSharedLibraryLinkedCallLifecycleConformance(
+          *ctx,
+          callee_symbol,
+          *proc_module);
       SPEC_RULE("LowerIRInstr-CheckPoison");
       emitter.EmitPoisonCheck(core::StringOfPath(*proc_module));
     }
@@ -2482,6 +2625,10 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
             LowerCtx::FfiImportUnwindMode::Catch;
     const bool foreign_boundary_mode_independent =
         ffi_import_boundary || raw_export_boundary || runtime_foreign_boundary;
+    if (IsGpuIntrinsicRuntimeSymbol(callee_symbol))
+    {
+      RecordGpuIntrinsicLoweringConformance(callee_symbol);
+    }
     call_perf.switchTo(IRCallPerfKind::EmitCallABI);
     call_result = EmitABICall(
         emitter,
@@ -2812,12 +2959,12 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
       const std::uint64_t copy_size = std::min(raw_size, union_layout->payload_size);
       if (copy_size > 0)
       {
-        builder.CreateMemCpy(
+        EmitAggMemcpy(
+            emitter,
             payload_i8,
-            llvm::Align(1),
             builder.CreateBitCast(raw_slot, llvm::PointerType::get(i8_ty, 0)),
-            llvm::Align(1),
-            llvm::ConstantInt::get(i64_ty, copy_size));
+            llvm::ConstantInt::get(i64_ty, copy_size),
+            1);
       }
       return builder.CreateLoad(union_struct_ty, union_slot);
     };

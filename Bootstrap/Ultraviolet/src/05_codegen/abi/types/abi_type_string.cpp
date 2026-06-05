@@ -19,6 +19,7 @@ namespace ultraviolet::codegen {
 std::optional<ABIType> ABITyString(const analysis::ScopeContext& ctx,
                                    const analysis::TypeRef& type) {
   SPEC_RULE("ABI-StringBytes");
+  SPEC_RULE("rule.24.ABI-StringBytes");
   const auto size = ::ultraviolet::analysis::layout::SizeOf(ctx, type);
   const auto align = ::ultraviolet::analysis::layout::AlignOf(ctx, type);
   if (!size.has_value() || !align.has_value()) {
@@ -30,6 +31,7 @@ std::optional<ABIType> ABITyString(const analysis::ScopeContext& ctx,
 std::optional<ABIType> ABITyBytes(const analysis::ScopeContext& ctx,
                                   const analysis::TypeRef& type) {
   SPEC_RULE("ABI-StringBytes");
+  SPEC_RULE("rule.24.ABI-StringBytes");
   const auto size = ::ultraviolet::analysis::layout::SizeOf(ctx, type);
   const auto align = ::ultraviolet::analysis::layout::AlignOf(ctx, type);
   if (!size.has_value() || !align.has_value()) {

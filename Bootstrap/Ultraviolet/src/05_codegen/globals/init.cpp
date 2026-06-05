@@ -47,6 +47,7 @@
 #include <algorithm>
 #include <functional>
 #include <set>
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -158,6 +159,13 @@ std::vector<const ast::Expr*> InitList(const ast::ASTModule& module) {
 // SeqIRList([IR] ++ IRs) = SeqIR(IR, SeqIRList(IRs))
 static IRPtr SeqIRList(const std::vector<IRPtr>& irs) {
   SPEC_DEF("SeqIRList", "");
+  if (core::Conformance::Enabled()) {
+    const std::string payload =
+        "source=SeqIRList;ir_count=" + std::to_string(irs.size()) +
+        ";empty=" + (irs.empty() ? "true" : "false") +
+        ";composition=SeqIR";
+    core::Conformance::Record("def.SeqIRList", std::nullopt, payload);
+  }
   return SeqIR(std::vector<IRPtr>(irs.begin(), irs.end()));
 }
 
@@ -366,6 +374,7 @@ IRPtr LowerStaticDeinitNames(const ast::ModulePath& module_path,
                              LowerCtx& ctx) {
   if (names.empty()) {
     SPEC_RULE("Lower-StaticDeinitNames-Empty");
+    SPEC_RULE("rule.24.Lower-StaticDeinitNames-Empty");
     return EmptyIR();
   }
 
@@ -377,9 +386,11 @@ IRPtr LowerStaticDeinitNames(const ast::ModulePath& module_path,
         ctx.sigma ? StaticBindInfo(*ctx.sigma, module_path, name) : std::nullopt;
     if (!bind_info.has_value() || !bind_info->has_responsibility) {
       SPEC_RULE("Lower-StaticDeinitNames-Cons-NoResp");
+      SPEC_RULE("rule.24.Lower-StaticDeinitNames-Cons-NoResp");
       continue;
     }
     SPEC_RULE("Lower-StaticDeinitNames-Cons-Resp");
+    SPEC_RULE("rule.24.Lower-StaticDeinitNames-Cons-Resp");
 
     analysis::TypeRef type = bind_info->type;
     IRValue loaded_value;
@@ -409,6 +420,7 @@ IRPtr LowerStaticDeinitItem(const ast::ModulePath& module_path,
                             const ast::StaticDecl& item,
                             LowerCtx& ctx) {
   SPEC_RULE("Lower-StaticDeinit-Item");
+  SPEC_RULE("rule.24.Lower-StaticDeinit-Item");
 
   // (Lower-StaticDeinit-Item)
   // item = StaticDecl(vis, mut, binding, span, doc)
@@ -429,11 +441,13 @@ IRPtr LowerStaticDeinitItems(const ast::ModulePath& module_path,
   // (Lower-StaticDeinitItems-Empty)
   if (items.empty()) {
     SPEC_RULE("Lower-StaticDeinitItems-Empty");
+    SPEC_RULE("rule.24.Lower-StaticDeinitItems-Empty");
     return EmptyIR();
   }
 
   // (Lower-StaticDeinitItems-Cons)
   SPEC_RULE("Lower-StaticDeinitItems-Cons");
+  SPEC_RULE("rule.24.Lower-StaticDeinitItems-Cons");
 
   std::vector<IRPtr> ir_parts;
   ir_parts.reserve(items.size());
@@ -449,6 +463,7 @@ IRPtr LowerStaticDeinit(const ast::ModulePath& module_path,
                         const ast::ASTModule& module,
                         LowerCtx& ctx) {
   SPEC_RULE("Lower-StaticDeinit");
+  SPEC_RULE("rule.24.Lower-StaticDeinit");
 
   // (Lower-StaticDeinit)
   // StaticItems(Project(Gamma), m) = items
@@ -505,6 +520,7 @@ IRPtr InitCallIR(const ast::ModulePath& module_path, LowerCtx& ctx) {
 
 IRPtr DeinitCallIR(const ast::ModulePath& module_path, LowerCtx& ctx) {
   SPEC_RULE("DeinitCallIR");
+  SPEC_RULE("rule.24.DeinitCallIR");
 
   // (DeinitCallIR)
   // DeinitFn(m) => sym
@@ -1184,14 +1200,22 @@ void AnchorInitRules() {
   SPEC_RULE("Lower-StaticInitItems-Cons");
   SPEC_RULE("Lower-StaticInit");
   SPEC_RULE("Lower-StaticDeinitNames-Empty");
+  SPEC_RULE("rule.24.Lower-StaticDeinitNames-Empty");
   SPEC_RULE("Lower-StaticDeinitNames-Cons-Resp");
+  SPEC_RULE("rule.24.Lower-StaticDeinitNames-Cons-Resp");
   SPEC_RULE("Lower-StaticDeinitNames-Cons-NoResp");
+  SPEC_RULE("rule.24.Lower-StaticDeinitNames-Cons-NoResp");
   SPEC_RULE("Lower-StaticDeinit-Item");
+  SPEC_RULE("rule.24.Lower-StaticDeinit-Item");
   SPEC_RULE("Lower-StaticDeinitItems-Empty");
+  SPEC_RULE("rule.24.Lower-StaticDeinitItems-Empty");
   SPEC_RULE("Lower-StaticDeinitItems-Cons");
+  SPEC_RULE("rule.24.Lower-StaticDeinitItems-Cons");
   SPEC_RULE("Lower-StaticDeinit");
+  SPEC_RULE("rule.24.Lower-StaticDeinit");
   SPEC_RULE("InitCallIR");
   SPEC_RULE("DeinitCallIR");
+  SPEC_RULE("rule.24.DeinitCallIR");
   SPEC_RULE("EmitInitPlan");
   SPEC_RULE("EmitInitPlan-Err");
   SPEC_RULE("EmitDeinitPlan");
@@ -1202,11 +1226,13 @@ void AnchorInitRules() {
   SPEC_RULE("Init-Step");
   SPEC_RULE("Init-Next-Module");
   SPEC_RULE("Init-Panic");
+  SPEC_RULE("rule.24.Init-Panic");
   SPEC_RULE("Init-Done");
   SPEC_RULE("Init-Ok");
   SPEC_RULE("Init-Fail");
   SPEC_RULE("Deinit-Ok");
   SPEC_RULE("Deinit-Panic");
+  SPEC_RULE("rule.24.Deinit-Panic");
 
   // Definitions
   SPEC_DEF("InitSym", "");

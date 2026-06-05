@@ -1,0 +1,296 @@
+//! Shared helpers for Polymorphism / CapabilityClasses reference specimens.
+
+using HelloUltraviolet::Audit::{ auditTextEquals }
+
+internal procedure capabilityViewEquals(
+    left: string@View,
+    right: string@View
+) -> bool {
+    return auditTextEquals(left, right)
+}
+
+internal procedure capabilityUnitSucceeded(result: Outcome<(), IoError>) -> bool {
+    return if result is {
+        @Value {
+            true
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure capabilityTextEquals(
+    move result: Outcome<unique string@Managed, IoError>,
+    expected: string@View
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            capabilityViewEquals(string::as_view(value), expected)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure capabilityBytesLengthEquals(
+    move result: Outcome<unique bytes@Managed, IoError>,
+    expected: usize
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            bytes::length(bytes::as_view(value)) == expected
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure capabilityFileKindIsFile(result: Outcome<FileKind, IoError>) -> bool {
+    return if result is {
+        @Value { value } {
+            return if value is {
+                FileKind::File {
+                    true
+                }
+                FileKind::Dir {
+                    false
+                }
+                FileKind::Other {
+                    false
+                }
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure capabilityFileKindVariantKnown(kind: FileKind) -> bool {
+    return if kind is {
+        FileKind::File {
+            true
+        }
+        FileKind::Dir {
+            true
+        }
+        FileKind::Other {
+            true
+        }
+    }
+}
+
+internal procedure capabilityIoErrorVariantKnown(error: IoError) -> bool {
+    return if error is {
+        IoError::NotFound {
+            true
+        }
+        IoError::PermissionDenied {
+            true
+        }
+        IoError::AlreadyExists {
+            true
+        }
+        IoError::InvalidPath {
+            true
+        }
+        IoError::Busy {
+            true
+        }
+        IoError::IoFailure {
+            true
+        }
+        IoError::DirectoryNotEmpty {
+            true
+        }
+    }
+}
+
+internal procedure capabilityAllocationErrorValueKnown(error: AllocationError) -> bool {
+    return if error is {
+        AllocationError::OutOfMemory(size) {
+            size == 1usize
+        }
+        AllocationError::QuotaExceeded(size) {
+            size == 2usize
+        }
+    }
+}
+
+internal procedure capabilityTimeErrorKnown(error: TimeError) -> bool {
+    return if error is {
+        TimeError::Unsupported {
+            true
+        }
+        TimeError::ClockUnavailable {
+            true
+        }
+        TimeError::OutOfRange {
+            true
+        }
+        TimeError::InvalidResolution {
+            true
+        }
+        TimeError::ClockMismatch {
+            true
+        }
+    }
+}
+
+internal procedure capabilityDurationOutcomeObserved(
+    result: Outcome<Duration, TimeError>
+) -> bool {
+    return if result is {
+        @Value { value } {
+            value.nanoseconds >= 0u128
+        }
+        @Error { error } {
+            capabilityTimeErrorKnown(error)
+        }
+    }
+}
+
+internal procedure capabilityUtcOutcomeObserved(
+    result: Outcome<UtcInstant, TimeError>
+) -> bool {
+    return if result is {
+        @Value {
+            true
+        }
+        @Error { error } {
+            capabilityTimeErrorKnown(error)
+        }
+    }
+}
+
+internal procedure capabilityMonotonicOutcomeObserved(
+    result: Outcome<$MonotonicTime, TimeError>
+) -> bool {
+    return if result is {
+        @Value {
+            true
+        }
+        @Error { error } {
+            capabilityTimeErrorKnown(error)
+        }
+    }
+}
+
+internal procedure capabilityWallOutcomeObserved(
+    result: Outcome<$WallTime, TimeError>
+) -> bool {
+    return if result is {
+        @Value {
+            true
+        }
+        @Error { error } {
+            capabilityTimeErrorKnown(error)
+        }
+    }
+}
+
+internal procedure capabilityPriorityIsNormal(priority: Priority) -> bool {
+    return if priority is {
+        Priority::Low {
+            false
+        }
+        Priority::Normal {
+            true
+        }
+        Priority::High {
+            false
+        }
+    }
+}
+
+internal procedure capabilityReadHandleEquals(
+    move result: Outcome<unique File@Read, IoError>,
+    expected: string@View
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let read_result: Outcome<unique string@Managed, IoError> = value~>read_all()
+            let closed: File@Closed = value~>close()
+            let _ = closed
+            capabilityTextEquals(move read_result, expected)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure capabilityWriteHandleAccepts(
+    move result: Outcome<unique File@Write, IoError>,
+    payload: string@View
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let write_result: Outcome<(), IoError> =
+                value~>write(bytes::view_string(payload))
+            let flush_result: Outcome<(), IoError> = value~>flush()
+            let closed: File@Closed = value~>close()
+            let _ = closed
+            capabilityUnitSucceeded(write_result) &&
+                capabilityUnitSucceeded(flush_result)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure capabilityAppendHandleAccepts(
+    move result: Outcome<unique File@Append, IoError>,
+    payload: string@View
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let write_result: Outcome<(), IoError> =
+                value~>write(bytes::view_string(payload))
+            let flush_result: Outcome<(), IoError> = value~>flush()
+            let closed: File@Closed = value~>close()
+            let _ = closed
+            capabilityUnitSucceeded(write_result) &&
+                capabilityUnitSucceeded(flush_result)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure capabilityDirectoryHasEntry(
+    move result: Outcome<unique DirIter@Open, IoError>
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let first: Outcome<DirEntry | (), IoError> = value~>next()
+            let closed: DirIter@Closed = value~>close()
+            let _ = closed
+            return if first is {
+                @Value { value: first_value } {
+                    return if first_value is {
+                        entry: DirEntry {
+                            string::length(string::as_view(entry.name)) > 0usize &&
+                                string::length(string::as_view(entry.path)) > 0usize &&
+                                capabilityFileKindVariantKnown(entry.kind)
+                        }
+                        empty: () {
+                            false
+                        }
+                    }
+                }
+                @Error {
+                    false
+                }
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}

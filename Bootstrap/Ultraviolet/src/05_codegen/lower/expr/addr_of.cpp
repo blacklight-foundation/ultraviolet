@@ -36,6 +36,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <mutex>
 #include <string_view>
 #include <variant>
 
@@ -50,6 +51,20 @@ IRRange ToIRRange(const RangeVal& range) {
   out.lo = range.lo;
   out.hi = range.hi;
   return out;
+}
+
+std::once_flag g_safe_pointer_valid_constructor_obligation_once;
+
+void RecordSafePointerValidConstructorOnce() {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  std::call_once(g_safe_pointer_valid_constructor_obligation_once, []() {
+    core::Conformance::Record(
+        "def.SafePointerRuntimeConstructors",
+        std::nullopt,
+        "source=LowerAddrOf;state=Valid;constructor=Ptr@Valid;value=PtrVal;addr=place");
+  });
 }
 
 // Check if index bounds check is needed
@@ -296,6 +311,7 @@ std::optional<std::size_t> RefinedUnionPayloadIndex(const BindingState& state,
 LowerResult LowerAddrOf(const ast::Expr& place,
                         LowerCtx& ctx,
                         AddressUseKind use_kind) {
+  SPEC_RULE("req.16.EffectfulCoreLoweringMechanics");
   SPEC_RULE("Lower-AddrOf-Ident-Local");
   SPEC_RULE("Lower-AddrOf-Ident-Path");
   SPEC_RULE("Lower-AddrOf-Field");
@@ -322,6 +338,7 @@ LowerResult LowerAddrOf(const ast::Expr& place,
     }
     auto ptr_type = analysis::MakeTypePtr(pointee_type, analysis::PtrState::Valid);
     ctx.RegisterValueType(value, ptr_type);
+    RecordSafePointerValidConstructorOnce();
   };
 
   auto tag_from = [&](const IRValue& addr, const IRValue& base) -> IRPtr {
@@ -565,6 +582,7 @@ LowerResult LowerAddrOf(const ast::Expr& place,
           addr.result = ptr_value;
 
           if (std::holds_alternative<ast::RangeExpr>(node.index->node)) {
+            SPEC_RULE("req.16.IndexAccessRuntimeFailuresAndControlPropagation");
             const auto& range_node = std::get<ast::RangeExpr>(node.index->node);
             auto range_result = LowerRangeExpr(range_node, ctx);
 
@@ -591,6 +609,7 @@ LowerResult LowerAddrOf(const ast::Expr& place,
           }
 
           if (IsRangeIndexExpr(*node.index, ctx)) {
+            SPEC_RULE("req.16.IndexAccessRuntimeFailuresAndControlPropagation");
             auto range_result = LowerExpr(*node.index, ctx);
             const auto range_kind = RangeIndexKindOf(*node.index, ctx);
 
@@ -639,6 +658,7 @@ LowerResult LowerAddrOf(const ast::Expr& place,
           seq.push_back(base_result.ir);
           seq.push_back(index_result.ir);
           if (needs_check) {
+            SPEC_RULE("req.16.IndexAccessRuntimeFailuresAndControlPropagation");
             seq.push_back(MakeIR(std::move(check)));
             seq.push_back(PanicFollowup(ctx));
           }

@@ -13,9 +13,23 @@ internal record KeyPointerBox {
     internal pointer: Ptr<KeyLeaf>@Valid
 }
 
+internal record KeyPointerAliasBox {
+    internal first: Ptr<KeyLeaf>@Valid
+    internal second: Ptr<KeyLeaf>@Valid
+}
+
 internal record KeyBoundaryContainer {
     internal #leaf: KeyLeaf
     internal value: i32
+}
+
+internal record KeyBoundaryLeaf {
+    internal left: i32
+    internal right: i32
+}
+
+internal record KeyBoundaryPair {
+    internal #leaf: KeyBoundaryLeaf
 }
 
 internal class SharedDynamicKeyReadable {
@@ -47,6 +61,21 @@ internal procedure fieldBoundaryKeyPathValue() -> i32 {
     return observed
 }
 
+internal procedure fieldKeyBoundaryReference() -> bool {
+    var container: shared KeyBoundaryPair =
+        KeyBoundaryPair {
+            leaf: KeyBoundaryLeaf {
+                left: 17,
+                right: 19
+            }
+        }
+    var observed: i32 = 0
+    %read container.leaf.left {
+        observed = container.leaf.left + container.leaf.right
+    }
+    return observed == 36
+}
+
 internal procedure pointerDereferenceKeyPathValue() -> i32 {
     var leaf: KeyLeaf = KeyLeaf { value: 13 }
     var pointer_box: shared KeyPointerBox =
@@ -58,6 +87,54 @@ internal procedure pointerDereferenceKeyPathValue() -> i32 {
     return observed
 }
 
+internal procedure pointerDereferenceKeyAccessReference() -> bool {
+    return pointerDereferenceKeyPathValue() == 13
+}
+
+/// Exercises pointer-derived object identity through overlapping referent storage.
+internal procedure objectIdentityReference() -> bool {
+    var leaf: KeyLeaf = KeyLeaf { value: 21 }
+    var aliases: shared KeyPointerAliasBox =
+        KeyPointerAliasBox {
+            first: &leaf,
+            second: &leaf
+        }
+    var before: i32 = 0
+    var after: i32 = 0
+
+    %read aliases.first, aliases.second {
+        before = (*aliases.first).value + (*aliases.second).value
+    }
+    %write aliases.first {
+        (*aliases.first).value = 34
+    }
+    %read aliases.second {
+        after = (*aliases.second).value
+    }
+
+    return before == 42 && after == 34
+}
+
+internal procedure runtimeKeyRootIdentityConstraintsReference() -> bool {
+    var left: KeyLeaf = KeyLeaf { value: 23 }
+    var right: KeyLeaf = KeyLeaf { value: 29 }
+    var aliases: shared KeyPointerAliasBox =
+        KeyPointerAliasBox {
+            first: &left,
+            second: &right
+        }
+    var observed: i32 = 0
+
+    %write aliases.first {
+        (*aliases.first).value = 41
+    }
+    %read aliases.second {
+        observed = (*aliases.second).value
+    }
+
+    return objectIdentityReference() && observed == 29
+}
+
 internal procedure sharedDynamicMethodKeyPathValue() -> i32 {
     let owner: SharedDynamicKeyOwner = SharedDynamicKeyOwner { value: 15 }
     var dynamic_box: shared SharedDynamicKeyBox =
@@ -67,6 +144,10 @@ internal procedure sharedDynamicMethodKeyPathValue() -> i32 {
         observed = dynamic_box.owner~>readKeyValue()
     }
     return observed
+}
+
+internal procedure sharedDynamicClassObjectsReference() -> bool {
+    return sharedDynamicMethodKeyPathValue() == 15
 }
 
 internal procedure nestedKeyPathValue() -> i32 {
@@ -85,6 +166,11 @@ internal procedure nestedKeyPathValue() -> i32 {
     return observed
 }
 
+internal procedure keyPathWellFormednessReference() -> bool {
+    return nestedKeyPathValue() == 9 &&
+        fieldKeyBoundaryReference()
+}
+
 internal procedure rootKeyPathValue() -> i32 {
     var shared_value: shared i32 = 5
     var observed: i32 = 0
@@ -94,11 +180,22 @@ internal procedure rootKeyPathValue() -> i32 {
     return observed
 }
 
+internal procedure keyAnalysisSharedOnlyReference() -> bool {
+    var unique_leaf: unique KeyLeaf = KeyLeaf { value: 4 }
+    let local_leaf: KeyLeaf = KeyLeaf { value: 3 }
+    return rootKeyPathValue() == 5 &&
+        unique_leaf.value == 4 &&
+        local_leaf.value == 3
+}
+
 /// Exercises the Keys KeyPaths reference surface.
 public procedure runKeysKeyPathsReference() -> bool {
-    return rootKeyPathValue() == 5 &&
-        nestedKeyPathValue() == 9 &&
+    return keyPathWellFormednessReference() &&
+        keyAnalysisSharedOnlyReference() &&
         fieldBoundaryKeyPathValue() == 17 &&
-        pointerDereferenceKeyPathValue() == 13 &&
-        sharedDynamicMethodKeyPathValue() == 15
+        fieldKeyBoundaryReference() &&
+        pointerDereferenceKeyAccessReference() &&
+        objectIdentityReference() &&
+        runtimeKeyRootIdentityConstraintsReference() &&
+        sharedDynamicClassObjectsReference()
 }

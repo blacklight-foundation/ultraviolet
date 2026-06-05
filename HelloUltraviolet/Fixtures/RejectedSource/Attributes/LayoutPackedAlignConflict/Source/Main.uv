@@ -1,0 +1,7 @@
+//! Rejected layout attribute specimen for packed plus align conflict.
+
+#layout(packed, align(8))
+public record LayoutPackedAlignConflictRecord {
+    public flag: u8
+    public value: i32
+}

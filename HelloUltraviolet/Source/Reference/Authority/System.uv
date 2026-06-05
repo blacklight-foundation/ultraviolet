@@ -50,6 +50,127 @@ internal procedure systemArgumentSurfaceIsAvailable(sys: System) -> bool {
     return string::length(first_argument) > 0usize
 }
 
+internal record SystemStateReference {
+    internal environment_available: bool
+    internal exit_code_is_set: bool
+    internal exit_code: i32
+}
+
+internal procedure systemStateReference(
+    environment_available: bool,
+    exit_code_is_set: bool,
+    exit_code: i32
+) -> SystemStateReference {
+    return SystemStateReference {
+        environment_available: environment_available,
+        exit_code_is_set: exit_code_is_set,
+        exit_code: exit_code
+    }
+}
+
+internal procedure systemSetExitCodeReference(
+    state: SystemStateReference,
+    exit_code: i32
+) -> SystemStateReference {
+    return systemStateReference(
+        state.environment_available,
+        true,
+        exit_code
+    )
+}
+
+public procedure authoritySystemStateReference() -> bool {
+    let initial: SystemStateReference = systemStateReference(true, false, 0)
+    let exited: SystemStateReference = systemSetExitCodeReference(initial, 17)
+    return initial.environment_available &&
+        !initial.exit_code_is_set &&
+        exited.environment_available &&
+        exited.exit_code_is_set &&
+        exited.exit_code == 17
+}
+
+internal procedure systemRunSuccessCommand(sys: System) -> string@View {
+    let target_profile: string@View = auditTargetProfile(sys)
+    if auditTargetProfileIsWindows(target_profile) {
+        return "cmd /C exit 0"
+    }
+    return "exit 0"
+}
+
+internal procedure systemRunExitSevenCommand(sys: System) -> string@View {
+    let target_profile: string@View = auditTargetProfile(sys)
+    if auditTargetProfileIsWindows(target_profile) {
+        return "cmd /C exit 7"
+    }
+    return "exit 7"
+}
+
+public procedure authoritySystemPrimitiveJudgmentsReference(context: Context) -> bool {
+    let sys: System = context.sys
+    let missing_value: string@View =
+        sys~>get_env("HUV_REFERENCE_ENVIRONMENT_KEY_SHOULD_NOT_EXIST")
+    let zero_status: i32 = sys~>run(systemRunSuccessCommand(sys))
+    let nonzero_status: i32 = sys~>run(systemRunExitSevenCommand(sys))
+    return auditTextEquals(missing_value, "") &&
+        zero_status == 0 &&
+        nonzero_status == 7 &&
+        authoritySystemStateReference()
+}
+
+public procedure authoritySystemStateElidedEquivalencesReference(
+    context: Context
+) -> bool {
+    let explicit_state: SystemStateReference = systemStateReference(true, false, 0)
+    let exited: SystemStateReference = systemSetExitCodeReference(explicit_state, 3)
+    return authoritySystemPrimitiveJudgmentsReference(context) &&
+        explicit_state.environment_available &&
+        !explicit_state.exit_code_is_set &&
+        exited.exit_code_is_set &&
+        exited.exit_code == 3
+}
+
+public procedure authoritySystemPrimitiveCallsReference(context: Context) -> bool {
+    let sys: System = context.sys
+    let missing_value: string@View =
+        sys~>get_env("HUV_REFERENCE_ENVIRONMENT_KEY_SHOULD_NOT_EXIST")
+    let executable_path: string@View = sys~>executable_path()
+    let argument_count: usize = sys~>argument_count()
+    let argument_available: bool = if argument_count > 0usize {
+        string::length(sys~>argument(0usize)) > 0usize
+    } else {
+        true
+    }
+    let current_directory: string@View = sys~>current_directory()
+
+    return auditTextEquals(missing_value, "") &&
+        string::length(executable_path) > 0usize &&
+        argument_available &&
+        string::length(current_directory) > 0usize
+}
+
+public procedure authoritySystemEnvironmentPrimitiveReference(context: Context) -> bool {
+    let sys: System = context.sys
+    let system_root: string@View = sys~>get_env("SystemRoot")
+    let command_processor: string@View = sys~>get_env("ComSpec")
+    let search_path: string@View = sys~>get_env("PATH")
+    let missing_value: string@View =
+        sys~>get_env("HUV_REFERENCE_ENVIRONMENT_KEY_SHOULD_NOT_EXIST")
+
+    return (
+        string::length(system_root) > 0usize ||
+        string::length(command_processor) > 0usize ||
+        string::length(search_path) > 0usize
+    ) &&
+        auditTextEquals(missing_value, "")
+}
+
+public procedure authoritySystemRunPrimitiveReference(context: Context) -> bool {
+    let sys: System = context.sys
+    let zero_status: i32 = sys~>run(systemRunSuccessCommand(sys))
+    let nonzero_status: i32 = sys~>run(systemRunExitSevenCommand(sys))
+    return zero_status == 0 && nonzero_status == 7
+}
+
 /// Exercises the Authority System reference surface.
 public procedure runAuthoritySystemReference(context: Context) -> bool {
     let environment: SystemAuthorityReference =

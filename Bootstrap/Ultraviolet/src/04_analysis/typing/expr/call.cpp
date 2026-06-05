@@ -23,6 +23,7 @@
 #include "00_core/assert_spec.h"
 #include "00_core/diagnostic_messages.h"
 #include "00_core/process_config.h"
+#include "00_core/spec_trace.h"
 #include "02_source/attributes/attribute_registry.h"
 #include "04_analysis/caps/cap_concurrency.h"
 #include "04_analysis/caps/cap_system.h"
@@ -52,11 +53,24 @@ namespace {
 static inline void SpecDefsCall() {
   SPEC_DEF("T-Call", "5.2.12");
   SPEC_DEF("T-Generic-Call", "13.1.2");
+  SPEC_DEF("def.16.CallStaticJudgementsAndArgumentTyping", "16.3.4");
   SPEC_DEF("T-Record-Default", "5.2.12");
   SPEC_DEF("FreeProcedureOverloadResolutionBeforeCallTyping", "15.3.4");
+  SPEC_DEF("req.15.FreeProcedureOverloadResolutionBeforeCallTyping", "15.3.4");
+  SPEC_DEF("req.15.FreeCallOverloadResolutionAlgorithm", "15.3.4");
+  SPEC_DEF("diag-table.15.Overloading", "15.3.7");
+  SPEC_DEF("req.15.CallerResponsibleForPrecondition", "15.5.4");
+  SPEC_DEF("rule.15.Contract-Static-Fail", "15.8.4");
   SPEC_DEF("FFI-Arg-RegionLocalRawPtr-Err", "23.5.4");
   SPEC_DEF("Barrier-Outside-Err", "20.2.4");
   SPEC_DEF("GpuIntrinsic-Outside-Err", "20.2.4");
+  SPEC_DEF("rule.16.Call-ArgCount-Err", "16.4");
+  SPEC_DEF("rule.16.Call-ArgType-Err", "16.4");
+  SPEC_DEF("rule.16.Call-Move-Missing", "16.4");
+  SPEC_DEF("rule.16.Call-Move-Unexpected", "16.4");
+  SPEC_DEF("rule.16.Call-Arg-NotPlace", "16.4");
+  SPEC_DEF("req.16.ExternProcedureCallsRequireUnsafe", "16.3.4");
+  SPEC_DEF("requirement.23.ExternCallSafety", "23.2.4");
 }
 
 struct CallLookupPerfStats {
@@ -470,6 +484,7 @@ static OverloadCandidateCheck CheckFreeProcedureOverloadCandidate(
   OverloadCandidateCheck out;
   if (is_comptime_proc && !AllowsComptimeProcedureCall(type_ctx, env)) {
     out.hard_error = true;
+    SPEC_RULE("requirement.22.CompileTimeProcedureContextRestriction");
     out.diag_id = "E-CTE-0034";
     return out;
   }
@@ -578,6 +593,8 @@ static FreeProcedureOverloadResolution ResolveFreeProcedureOverload(
   out.applies = true;
   out.origin = overloads->origin;
   SPEC_RULE("FreeProcedureOverloadResolutionBeforeCallTyping");
+  SPEC_RULE("req.15.FreeProcedureOverloadResolutionBeforeCallTyping");
+  SPEC_RULE("req.15.FreeCallOverloadResolutionAlgorithm");
 
   struct Viable {
     const ProcLikeLookupEntry* entry = nullptr;
@@ -609,6 +626,7 @@ static FreeProcedureOverloadResolution ResolveFreeProcedureOverload(
   }
 
   if (viable.empty()) {
+    SPEC_RULE("diag-table.15.Overloading");
     out.diag_id = "E-SEM-3031";
     return out;
   }
@@ -641,6 +659,7 @@ static FreeProcedureOverloadResolution ResolveFreeProcedureOverload(
   }
 
   if (viable.size() != 1) {
+    SPEC_RULE("diag-table.15.Overloading");
     out.diag_id = "E-SEM-3030";
     return out;
   }
@@ -812,6 +831,15 @@ class ProcedureKeyAccessSummaryBuilder {
       const auto shared_params = SharedParamIndexMap(proc);
       AliasEnv aliases;
       VisitBlock(*proc.body, shared_params, aliases, summary);
+    }
+    if (!summary.accesses.empty()) {
+      core::Conformance::Record(
+          "def.19.DirectCalleeAccesses",
+          proc.span,
+          "source=ProcedureKeyAccessSummaryBuilder;"
+          "direct_callee_accesses=true;shared_param_summary=true;"
+          "access_count=" +
+              std::to_string(summary.accesses.size()));
     }
     active_.erase(&proc);
     cache_[&proc] = summary;
@@ -1309,6 +1337,7 @@ static void EmitUnknownCalleeAccessWarningIfNeeded(
     const core::Span diag_span =
         node.callee ? node.callee->span : core::Span{};
     if (auto diag = core::MakeDiagnosticById("W-CON-0005", diag_span)) {
+      SPEC_RULE("requirement.19.UnknownCalleeAccessWarning");
       core::Emit(*type_ctx.diags, *diag);
     }
     return;
@@ -1702,6 +1731,15 @@ static bool PredicateReqSatisfied(const ScopeContext& ctx,
   return false;
 }
 
+static bool ClassBoundPathExists(const ScopeContext& ctx,
+                                 const ast::ClassPath& path) {
+  if (IsCapabilityClassPath(path)) {
+    SPEC_RULE("req.14.CapabilityClassesGenericBounds");
+    return true;
+  }
+  return ctx.sigma.classes.find(PathKeyOf(path)) != ctx.sigma.classes.end();
+}
+
 static std::optional<std::string_view> ValidateProcedureTypeArgConstraints(
     const ScopeContext& ctx,
     const ast::ProcedureDecl& proc,
@@ -1716,8 +1754,8 @@ static std::optional<std::string_view> ValidateProcedureTypeArgConstraints(
       return std::optional<std::string_view>{"E-TYP-2302"};
     }
     for (const auto& bound : param.bounds) {
-      if (ctx.sigma.classes.find(PathKeyOf(bound.class_path)) ==
-          ctx.sigma.classes.end()) {
+      if (!ClassBoundPathExists(ctx, bound.class_path)) {
+        SPEC_RULE("rule.14.WF-ClassPath-Err");
         return std::optional<std::string_view>{"E-TYP-2305"};
       }
       if (!TypeImplementsClass(ctx, arg_it->second, bound.class_path)) {
@@ -1825,6 +1863,8 @@ static CallArgCollectionResult CollectCallArgTypesForInference(
     std::vector<TypeRef>& out_expected_param_types) {
   (void)ctx;
   if (proc.params.size() != args.size()) {
+    SPEC_RULE("Call-ArgCount-Err");
+    SPEC_RULE("rule.16.Call-ArgCount-Err");
     return {"E-SEM-2532", std::nullopt};
   }
 
@@ -1843,9 +1883,14 @@ static CallArgCollectionResult CollectCallArgTypesForInference(
 
   for (std::size_t i = 0; i < args.size(); ++i) {
     if (MissingRequiredMoveForConsuming(lowered_params[i].mode, args[i])) {
+      SPEC_RULE("Call-Move-Missing");
+      SPEC_RULE("rule.16.Call-Move-Missing");
       return {"E-SEM-2534", ArgDiagnosticSpan(args[i])};
     }
     if (!lowered_params[i].mode.has_value() && args[i].pass == ast::ArgPassKind::Move) {
+      SPEC_RULE("Call-Move-Unexpected");
+      SPEC_RULE("rule.16.ArgsT-Cons-Ref");
+      SPEC_RULE("rule.16.Call-Move-Unexpected");
       return {"E-SEM-2535", ArgDiagnosticSpan(args[i])};
     }
   }
@@ -1869,6 +1914,8 @@ static CallArgCollectionResult CollectCallArgTypesForInference(
           IsFunctionValueType(ctx, lowered_params[i].type);
       if (has_source_prov && !expected_function_value &&
           !IsPlaceExprForCall(args[i].value)) {
+        SPEC_RULE("Call-Arg-NotPlace");
+        SPEC_RULE("rule.16.Call-Arg-NotPlace");
         return {"E-TYP-1603", ArgDiagnosticSpan(args[i])};
       }
       if (has_source_prov && !expected_function_value && type_place) {
@@ -1931,6 +1978,8 @@ static GenericCallSubstResult InferGenericCallSubstForProc(
                           i < actual_arg_types.size(); ++i) {
     if (!BindTypeParamsForCall(type_params, expected_param_types[i],
                                actual_arg_types[i], bindings)) {
+      SPEC_RULE("Call-ArgType-Err");
+      SPEC_RULE("rule.16.Call-ArgType-Err");
       result.diag_id = "E-SEM-2533";
       if (i < args.size()) {
         result.diag_span = ArgDiagnosticSpan(args[i]);
@@ -1950,6 +1999,8 @@ static GenericCallSubstResult InferGenericCallSubstForProc(
     const bool matched = BindTypeParamsForCall(type_params, lowered_return.type,
                                                *expected_return, bindings);
     if (contains_type_param && !matched) {
+      SPEC_RULE("Call-ArgType-Err");
+      SPEC_RULE("rule.16.Call-ArgType-Err");
       result.diag_id = "E-SEM-2533";
       return result;
     }
@@ -2183,6 +2234,7 @@ CheckFfiBoundaryRegionLocalRawPointerArgs(const ScopeContext& ctx,
     if (const auto binding = BindingForFfiBoundaryExpr(env, arg.value);
         binding.has_value() && BindingProvenanceIsLocalFfi(*binding)) {
       SPEC_RULE("FFI-Arg-RegionLocalRawPtr-Err");
+      SPEC_RULE("rule.23.FFI-Arg-RegionLocalRawPtr-Err");
       return "E-SYS-3360";
     }
 
@@ -2195,6 +2247,7 @@ CheckFfiBoundaryRegionLocalRawPointerArgs(const ScopeContext& ctx,
     }
 
     SPEC_RULE("FFI-Arg-RegionLocalRawPtr-Err");
+    SPEC_RULE("rule.23.FFI-Arg-RegionLocalRawPtr-Err");
     return "E-SYS-3360";
   }
 
@@ -2226,6 +2279,38 @@ static std::optional<std::string_view> ExtractDirectCalleeName(
 static bool IsGpuBarrierName(std::string_view name) {
   return name == "gpu_barrier" || name == "gpu_memory_barrier" ||
          name == "gpu_workgroup_barrier";
+}
+
+static std::string_view GpuIntrinsicReturnName(std::string_view name) {
+  if (name == "gpu_linear_id") {
+    return "usize";
+  }
+  if (IsGpuBarrierName(name)) {
+    return "unit";
+  }
+  return "tuple_usize3";
+}
+
+static void RecordGpuIntrinsicTypecheckConformance(
+    std::string_view name,
+    const std::optional<core::Span>& span) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload;
+  payload += "source=TypeCallExpr;stage=typecheck;intrinsic=";
+  payload += name;
+  payload += ";args=0;gpu_context=true;return=";
+  payload += GpuIntrinsicReturnName(name);
+  core::Conformance::Record(
+      "def.20.GpuIntrinsicTable",
+      span,
+      payload);
+  core::Conformance::Record(
+      "rule.20.T-GpuIntrinsic",
+      span,
+      payload);
 }
 
 static ForeignVerificationMode ToForeignVerificationMode(
@@ -3126,6 +3211,7 @@ static std::optional<std::string_view> CheckCallSitePrecondition(
   if (lookup->proc->params.size() != call.args.size()) {
     return std::nullopt;
   }
+  SPEC_RULE("req.15.CallerResponsibleForPrecondition");
 
   std::vector<std::pair<std::string, ast::ExprPtr>> bindings;
   bindings.reserve(call.args.size());
@@ -3156,6 +3242,7 @@ static std::optional<std::string_view> CheckCallSitePrecondition(
 
   if (!type_ctx.contract_dynamic) {
     SPEC_RULE("Contract-Static-Fail");
+    SPEC_RULE("rule.15.Contract-Static-Fail");
     return std::optional<std::string_view>{"E-SEM-2801"};
   }
   return std::nullopt;
@@ -3343,6 +3430,7 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
                                 const ast::CallExpr& node,
                                 const TypeEnv& env) {
   SpecDefsCall();
+  SPEC_RULE("def.16.CallStaticJudgementsAndArgumentTyping");
 
   bool resolved_callee_ready = false;
   std::optional<CalleeNameResolution> resolved_callee;
@@ -3421,6 +3509,8 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
       if (lookup && lookup->is_comptime_proc &&
           !AllowsComptimeProcedureCall(type_ctx, env)) {
         ExprTypeResult r;
+        SPEC_RULE_AT("requirement.22.CompileTimeProcedureContextRestriction",
+                     node.callee ? node.callee->span : core::Span{});
         r.diag_id = "E-CTE-0034";
         return r;
       }
@@ -3450,6 +3540,8 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
       if (lookup && lookup->is_comptime_proc &&
           !AllowsComptimeProcedureCall(type_ctx, env)) {
         ExprTypeResult r;
+        SPEC_RULE_AT("requirement.22.CompileTimeProcedureContextRestriction",
+                     node.callee ? node.callee->span : core::Span{});
         r.diag_id = "E-CTE-0034";
         return r;
       }
@@ -3542,6 +3634,8 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
       !IsInUnsafeSpan(ctx, node.callee ? node.callee->span : core::Span{})) {
     ExprTypeResult r;
     SPEC_RULE("Call-Extern-Unsafe-Err");
+    SPEC_RULE("req.16.ExternProcedureCallsRequireUnsafe");
+    SPEC_RULE("requirement.23.ExternCallSafety");
     r.diag_id = "E-TYP-2106";
     return r;
   }
@@ -3553,12 +3647,22 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
       ExprTypeResult r;
       if (IsGpuBarrierName(*callee_name)) {
         SPEC_RULE("Barrier-Outside-Err");
+        SPEC_RULE("rule.20.Barrier-Outside-Err");
         r.diag_id = "E-CON-0156";
       } else {
         SPEC_RULE("GpuIntrinsic-Outside-Err");
+        SPEC_RULE("rule.20.GpuIntrinsic-Outside-Err");
         r.diag_id = "E-CON-0154";
       }
       return r;
+    }
+    if (node.args.empty()) {
+      const std::optional<core::Span> intrinsic_span =
+          node.callee ? std::optional<core::Span>{node.callee->span}
+                      : std::nullopt;
+      RecordGpuIntrinsicTypecheckConformance(
+          *callee_name,
+          intrinsic_span);
     }
   }
 
@@ -3582,13 +3686,16 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
                               const TypeRef& expected) -> ArgCheckResult {
     const auto checked =
         CheckExprAgainst(ctx, arg_ctx_for(expected), inner, expected, env);
-    return ArgCheckResult{checked.ok, checked.diag_id};
+    return ArgCheckResult{checked.ok, checked.diag_id, checked.diag_detail,
+                          checked.diag_span};
   };
 
   const auto& callee_proc = proc_lookup_for_call();
   if (callee_proc && callee_proc->is_comptime_proc &&
       !AllowsComptimeProcedureCall(type_ctx, env)) {
     ExprTypeResult r;
+    SPEC_RULE_AT("requirement.22.CompileTimeProcedureContextRestriction",
+                 node.callee ? node.callee->span : core::Span{});
     r.diag_id = "E-CTE-0034";
     return r;
   }
@@ -3655,6 +3762,7 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
       if (*subst_diag == "E-TYP-2303" ||
           GenericArgCountMismatch(callee_proc, node.generic_args.size())) {
         SPEC_RULE("Generic-Call-ArgCount-Err");
+        SPEC_RULE("rule.14.Generic-Call-ArgCount-Err");
         r.diag_id = "E-TYP-2303";
       } else {
         r.diag_id = *subst_diag;

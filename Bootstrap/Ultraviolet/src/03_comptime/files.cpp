@@ -291,6 +291,7 @@ std::optional<std::string> FindAncestorAccessError(
 
 CtValue SnapshotReadTextResult(const ProjectFileSnapshot& snapshot,
                                const std::string& canonical_text) {
+  SPEC_RULE("requirement.22.ProjectFileSnapshotStability");
   const auto entry_it = snapshot.entries.find(canonical_text);
   if (entry_it == snapshot.entries.end()) {
     if (const auto ancestor_error =
@@ -315,6 +316,7 @@ CtValue SnapshotReadTextResult(const ProjectFileSnapshot& snapshot,
 
 CtValue SnapshotReadBytesResult(const ProjectFileSnapshot& snapshot,
                                 const std::string& canonical_text) {
+  SPEC_RULE("requirement.22.ProjectFileSnapshotStability");
   const auto entry_it = snapshot.entries.find(canonical_text);
   if (entry_it == snapshot.entries.end()) {
     if (const auto ancestor_error =
@@ -340,6 +342,7 @@ CtValue SnapshotReadBytesResult(const ProjectFileSnapshot& snapshot,
 CtValue SnapshotExistsResult(const ProjectFileSnapshot& snapshot,
                              const std::string& canonical_text) {
   SPEC_RULE("CtExistsResult(io, q)");
+  SPEC_RULE("requirement.22.ProjectFileSnapshotStability");
   const auto entry_it = snapshot.entries.find(canonical_text);
   if (entry_it == snapshot.entries.end()) {
     if (const auto ancestor_error =
@@ -359,6 +362,7 @@ CtValue SnapshotExistsResult(const ProjectFileSnapshot& snapshot,
 CtValue SnapshotListDirResult(const ProjectFileSnapshot& snapshot,
                               const std::string& canonical_text) {
   SPEC_RULE("CtListDirResult(io, q)");
+  SPEC_RULE("requirement.22.ProjectFileSnapshotStability");
   const auto entry_it = snapshot.entries.find(canonical_text);
   if (entry_it == snapshot.entries.end()) {
     if (const auto ancestor_error =
@@ -416,6 +420,11 @@ std::optional<EvalResult> EvalProjectFilesMethod(const ast::MethodCallExpr& call
   if (recv != "files") {
     return std::nullopt;
   }
+  const core::Span call_span =
+      call.receiver ? call.receiver->span : core::Span{};
+  SPEC_RULE_AT("requirement.22.CtCapMethodCallParsing", call_span);
+  SPEC_RULE_AT("def.22.CtCapabilityDynamicHelpers", call_span);
+  SPEC_RULE_AT("requirement.22.ProjectFilesAvailability", call_span);
 
   if (call.name == "project_root" && call.args.empty()) {
     SPEC_RULE("CtBuiltin-ProjectRoot");
@@ -445,6 +454,7 @@ std::optional<EvalResult> EvalProjectFilesMethod(const ast::MethodCallExpr& call
 
   const auto restricted = RestrictProjectPath(*snapshot, path_arg->value);
   if (!restricted.has_value()) {
+    SPEC_RULE_AT("requirement.22.ProjectFilesPathRestrictions", call_span);
     if (call.name == "read") {
       SPEC_RULE("CtBuiltin-Read-InvalidPath");
     } else if (call.name == "read_bytes") {
@@ -453,6 +463,7 @@ std::optional<EvalResult> EvalProjectFilesMethod(const ast::MethodCallExpr& call
       SPEC_RULE("CtBuiltin-Exists-InvalidPath");
     } else if (call.name == "list_dir") {
       SPEC_RULE("CtBuiltin-ListDir-InvalidPath");
+      SPEC_RULE_AT("rule.22.CtBuiltin-ListDir-InvalidPath", call_span);
     } else {
       return std::nullopt;
     }
@@ -502,6 +513,7 @@ std::optional<EvalResult> EvalProjectFilesMethod(const ast::MethodCallExpr& call
   }
   if (call.name == "list_dir") {
     SPEC_RULE("CtBuiltin-ListDir");
+    SPEC_RULE_AT("rule.22.CtBuiltin-ListDir", call_span);
     result.value = MakeProjectFileOutcome(
         SnapshotListDirResult(*snapshot, *restricted),
         MakeTypeSliceAst(MakeTypeStringAst(ast::StringState::Managed)));

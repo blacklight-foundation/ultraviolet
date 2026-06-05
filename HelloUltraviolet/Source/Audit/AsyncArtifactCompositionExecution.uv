@@ -1,0 +1,208 @@
+//! Composition-specific evidence checks for async artifact obligations.
+
+internal procedure asyncArtifactMapContains(
+    authority: TestAuthority,
+    required_text: string@View
+) -> bool {
+    if !auditTextEquals(authority.target_profile, "x86_64-win64") {
+        return true
+    }
+
+    return acceptedProjectTempFileContains(
+        authority,
+        "ArtifactProjectAsyncObligationsBuild",
+        "Binary/AsyncObligations.map",
+        required_text
+    )
+}
+
+internal procedure asyncArtifactCompositionObligationIdsMatch(
+    conformance_text: string@View
+) -> bool {
+    return asyncArtifactConformanceTextContains(conformance_text,
+        "\trequirement.21.AsyncIterationSyntax\t"
+    ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncMethodCallSurfaces\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.UntilMethodCallSurface\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.ManualSteppingRequirement\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+        "\trequirement.21.AsyncCombinatorMemberLookup\t"
+    ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncIterationRuntimeSemantics\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.ManualSteppingRuntimeSemantics\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.SyncRuntimeSemantics\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Sync-Suspended\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Sync-Completed\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text, "\trule.21.EvalSigma-Sync-Failed\t") &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.RaceReturnRuntimeSemantics\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.RaceStreamingRuntimeSemantics\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text, "\trule.21.EvalSigma-Race-Return\t") &&
+        asyncArtifactConformanceTextContains(conformance_text, "\trule.21.EvalSigma-Race-Stream\t") &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Race-Stream-Resume\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.StreamingRaceResumptionOrder\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AllRuntimeSemantics\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text, "\trule.21.EvalSigma-All\t") &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.UntilRuntimeSemantics\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\tdef.21.AsyncCombinatorRuntimeWrappers\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text, "\trule.21.EvalSigma-Map-Create\t") &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Map-Resume-Yield\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Map-Resume-Complete\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Map-Resume-Failed\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Filter-Create\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Filter-Resume-Pass\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Filter-Resume-Skip\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Filter-Resume-Complete\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text, "\trule.21.EvalSigma-Take-Create\t") &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Take-Resume-Yield\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Take-Resume-Done\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Take-Resume-Source-Complete\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text, "\trule.21.EvalSigma-Fold-Create\t") &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Fold-Resume-Accumulate\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Fold-Resume-Complete\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Fold-Resume-Failed\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Chain-Create\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Chain-Resume-Source-Complete\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Chain-Resume-Chained\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Chain-Resume-Source-Failed\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text, "\tdef.21.AsyncComposeIR\t") &&
+        asyncArtifactConformanceTextContains(conformance_text, "\trule.21.Lower-Expr-Sync\t") &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.SyncLoopIRSemantics\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.Lower-Expr-Race-Return\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.Lower-Expr-Race-Stream\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.RaceInitIRSemantics\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.RaceResumeIRSemantics\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text, "\trule.21.Lower-Expr-All\t") &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AllJoinIRSemantics\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncCombinatorWrapperLowering\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text, "\trule.21.Lower-Async-Map\t") &&
+        asyncArtifactConformanceTextContains(conformance_text, "\trule.21.Lower-Async-Filter\t") &&
+        asyncArtifactConformanceTextContains(conformance_text, "\trule.21.Lower-Async-Take\t") &&
+        asyncArtifactConformanceTextContains(conformance_text, "\trule.21.Lower-Async-Fold\t") &&
+        asyncArtifactConformanceTextContains(conformance_text, "\trule.21.Lower-Async-Chain\t") &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncWrapperLoweringSemantics\t"
+        )
+}
+
+internal procedure asyncArtifactCompositionIrEvidenceMatches(
+    authority: TestAuthority
+) -> bool {
+    return asyncArtifactIrContains(authority, "sync.loop") &&
+        asyncArtifactIrContains(authority, "sync.suspended") &&
+        asyncArtifactIrContains(authority, "sync.completed") &&
+        asyncArtifactIrContains(authority, "sync.failed") &&
+        asyncArtifactIrContains(authority, "race.return.loop") &&
+        asyncArtifactIrContains(authority, "race.return.completed") &&
+        asyncArtifactIrContains(authority, "race.return.failed") &&
+        asyncArtifactIrContains(authority, "race.return.resume") &&
+        asyncArtifactIrContains(authority, "race.yield.suspended") &&
+        asyncArtifactIrContains(authority, "race.yield.failed") &&
+        asyncArtifactIrContains(authority, "race.yield.completed") &&
+        asyncArtifactIrContains(authority, "all.loop") &&
+        asyncArtifactIrContains(authority, "all.failed") &&
+        asyncArtifactIrContains(authority, "all.resume") &&
+        asyncArtifactIrContains(authority, "all.success") &&
+        asyncArtifactIrContains(authority, "ac.map.suspended") &&
+        asyncArtifactIrContains(authority, "ac.filter.loop") &&
+        asyncArtifactIrContains(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3aasync_x3a_x3atake("
+        ) &&
+        asyncArtifactIrContains(authority, "ac.fold.loop") &&
+        asyncArtifactIrContains(authority, "ac.chain.loop")
+}
+
+internal procedure asyncArtifactReactorIrEvidenceMatches(
+    authority: TestAuthority
+) -> bool {
+    return asyncArtifactIrContains(
+        authority,
+        "ultraviolet_x3a_x3aruntime_x3a_x3areactor_x3a_x3arun"
+    ) &&
+        asyncArtifactIrContains(
+            authority,
+            "ultraviolet_x3a_x3aruntime_x3a_x3areactor_x3a_x3aregister"
+        ) &&
+        asyncArtifactMapContains(
+            authority,
+            "ultraviolet_x3a_x3aruntime_x3a_x3areactor_x3a_x3aregister"
+        )
+}

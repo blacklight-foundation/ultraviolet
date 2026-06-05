@@ -34,8 +34,9 @@ internal procedure inferredBindingValue() -> i32 {
 internal procedure tuplePatternBindingValue() -> i32 {
     let pair: (i32, bool) = (11, true)
     let (count, is_ready) = pair
-    if is_ready
+    if is_ready {
         return count
+    }
     return 0
 }
 
@@ -43,8 +44,9 @@ internal procedure recordPatternBindingValue() -> i32 {
     let record_value: BindingPatternRecord =
         BindingPatternRecord { count: 13, is_ready: true }
     let BindingPatternRecord { count, is_ready } = record_value
-    if is_ready
+    if is_ready {
         return count
+    }
     return 0
 }
 
@@ -71,8 +73,9 @@ internal procedure freshRegionBindingValue() -> i32 {
     let opened: unique Region@Active = Region::new_scoped(options)
     let allocated: i32 = opened~>alloc(29)
     var score: i32 = 0
-    if allocated == 29
+    if allocated == 29 {
         score = score + 1
+    }
     let freed: unique Region@Freed = unsafe { opened~>free_unchecked() }
     return score
 }
@@ -83,8 +86,9 @@ internal procedure reboundRegionBindingValue() -> i32 {
     let alias: unique Region@Active = move opened
     let allocated: i32 = alias~>alloc(31)
     var score: i32 = 0
-    if allocated == 31
+    if allocated == 31 {
         score = score + 1
+    }
     let freed: unique Region@Freed = unsafe { alias~>free_unchecked() }
     return score
 }
@@ -100,17 +104,40 @@ internal procedure varInitializerControlValue() -> i32 {
     return value
 }
 
-/// Exercises the Statements Bindings reference surface.
-public procedure runStatementsBindingsReference() -> bool {
+/// Exercises runtime helper behavior for binding tuple, record, move, and suspended patterns.
+public procedure bindPatternRuntimeHelpersReference() -> bool {
+    return tuplePatternBindingValue() == 11 &&
+        recordPatternBindingValue() == 13 &&
+        movedUniqueBindingValue() == 19 &&
+        suspendedUniqueBindingValue() == 23
+}
+
+/// Exercises that var execution mirrors let execution while preserving mutability.
+public procedure varExecutionMirrorsLetReference() -> bool {
+    return inferredBindingValue() == 13 &&
+        varInitializerControlValue() == 41
+}
+
+/// Exercises Lower-Stmt-Let by lowering initializers and bind-pattern writes.
+public procedure lowerStmtLetReference() -> bool {
     return annotatedBindingValue() == 7 &&
-        inferredBindingValue() == 13 &&
         tuplePatternBindingValue() == 11 &&
         recordPatternBindingValue() == 13 &&
+        letInitializerControlValue() == 37
+}
+
+/// Exercises Lower-Stmt-Var by lowering mutable bindings through the same bind path as let.
+public procedure lowerStmtVarReference() -> bool {
+    return varExecutionMirrorsLetReference()
+}
+
+/// Exercises the Statements Bindings reference surface.
+public procedure runStatementsBindingsReference() -> bool {
+    return lowerStmtLetReference() &&
+        lowerStmtVarReference() &&
         immovableBindingValue() == 17 &&
-        movedUniqueBindingValue() == 19 &&
-        suspendedUniqueBindingValue() == 23 &&
+        bindPatternRuntimeHelpersReference() &&
         freshRegionBindingValue() == 1 &&
         reboundRegionBindingValue() == 1 &&
-        letInitializerControlValue() == 37 &&
-        varInitializerControlValue() == 41
+        varExecutionMirrorsLetReference()
 }

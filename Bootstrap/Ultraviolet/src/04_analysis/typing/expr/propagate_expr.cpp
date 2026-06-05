@@ -182,7 +182,9 @@ ExprTypeResult TypePropagateExprImpl(const ScopeContext& ctx,
   bool async_try = false;
   if (const auto async_sig = AsyncSigOf(ctx, type_ctx.return_type);
       async_sig.has_value() && IsPrimType(async_sig->err, "!")) {
+    SPEC_RULE("diag.16.EffectfulCoreExpressions");
     SPEC_RULE("Async-Try-Infallible-Err");
+    SPEC_RULE("rule.16.Async-Try-Infallible-Err");
     result.diag_id = "E-CON-0230";
     return result;
   } else if (async_sig.has_value()) {
@@ -253,9 +255,13 @@ ExprTypeResult TypePropagateExprImpl(const ScopeContext& ctx,
   }
 
   if (async_try) {
+    SPEC_RULE("def.16.SuccessMemberAsync");
     SPEC_RULE("T-Async-Try");
+    SPEC_RULE("rule.16.T-Async-Try");
   } else {
+    SPEC_RULE("def.16.SuccessMember");
     SPEC_RULE("T-Propagate");
+    SPEC_RULE("rule.16.T-Propagate");
   }
   result.ok = true;
   result.type = *success;

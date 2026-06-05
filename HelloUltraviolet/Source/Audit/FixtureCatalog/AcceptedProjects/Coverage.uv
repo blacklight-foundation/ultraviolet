@@ -1,11 +1,11 @@
 //! Coverage checks for accepted project fixture metadata.
 
 public procedure expectedAcceptedProjectFixtureCount() -> usize {
-    return 56usize
+    return 128usize
 }
 
 public procedure acceptedProjectFixtureCount() -> usize {
-    return 56usize
+    return 128usize
 }
 
 internal procedure hostedExportLibraryExpectationMatches(
@@ -235,6 +235,27 @@ public procedure validatedAcceptedProjectFixtureCount() -> usize {
     }
     if acceptedProjectSpecimenMatches(
         acceptedProjectSpecimen(
+            "PtrNullReturn",
+            "Fixtures/AcceptedProjects/PtrNullReturn",
+            "Fixtures/AcceptedProjects/PtrNullReturn/Ultraviolet.toml",
+            "Fixtures/AcceptedProjects/PtrNullReturn/Source/Library.uv",
+            "PtrNullReturn",
+            "library",
+            acceptedProjectExpectation("LowerExprPtrNull", "rule.16.Lower-Expr-PtrNull")
+        ),
+        "PtrNullReturn",
+        "Fixtures/AcceptedProjects/PtrNullReturn",
+        "Fixtures/AcceptedProjects/PtrNullReturn/Ultraviolet.toml",
+        "Fixtures/AcceptedProjects/PtrNullReturn/Source/Library.uv",
+        "PtrNullReturn",
+        "library",
+        "LowerExprPtrNull",
+        "rule.16.Lower-Expr-PtrNull"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectSpecimenMatches(
+        acceptedProjectSpecimen(
             "ExpressionSemantics",
             "Fixtures/AcceptedProjects/ExpressionSemantics",
             "Fixtures/AcceptedProjects/ExpressionSemantics/Ultraviolet.toml",
@@ -255,12 +276,560 @@ public procedure validatedAcceptedProjectFixtureCount() -> usize {
         count = count + 1usize
     }
     if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("CheckedIntLiteral", "rule.16.Chk-Int-Literal"),
+        "CheckedIntLiteral",
+        "rule.16.Chk-Int-Literal"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation(
+            "CheckedFloatLiteralExplicit",
+            "rule.16.Chk-Float-Literal-Explicit"
+        ),
+        "CheckedFloatLiteralExplicit",
+        "rule.16.Chk-Float-Literal-Explicit"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation(
+            "EffectfulCoreGrammar",
+            "grammar.16.EffectfulCoreExpressions"
+        ),
+        "EffectfulCoreGrammar",
+        "grammar.16.EffectfulCoreExpressions"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation(
+            "RegionAliasAllocRewrite",
+            "req.16.RegionAliasAllocRewrite"
+        ),
+        "RegionAliasAllocRewrite",
+        "req.16.RegionAliasAllocRewrite"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation(
+            "ParseUnaryDeref",
+            "rule.16.Parse-Unary-Deref"
+        ),
+        "ParseUnaryDeref",
+        "rule.16.Parse-Unary-Deref"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation(
+            "ParseUnaryAddressOf",
+            "rule.16.Parse-Unary-AddressOf"
+        ),
+        "ParseUnaryAddressOf",
+        "rule.16.Parse-Unary-AddressOf"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("ParseUnaryMove", "rule.16.Parse-Unary-Move"),
+        "ParseUnaryMove",
+        "rule.16.Parse-Unary-Move"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("ParseUnaryCopy", "rule.16.Parse-Unary-Copy"),
+        "ParseUnaryCopy",
+        "rule.16.Parse-Unary-Copy"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("PostfixPropagate", "rule.16.Postfix-Propagate"),
+        "PostfixPropagate",
+        "rule.16.Postfix-Propagate"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation(
+            "ParseAllocImplicit",
+            "rule.16.Parse-Alloc-Implicit"
+        ),
+        "ParseAllocImplicit",
+        "rule.16.Parse-Alloc-Implicit"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("ParseUnsafeExpr", "rule.16.Parse-Unsafe-Expr"),
+        "ParseUnsafeExpr",
+        "rule.16.Parse-Unsafe-Expr"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation(
+            "EffectfulCoreExprAst",
+            "def.16.EffectfulCoreExprAst"
+        ),
+        "EffectfulCoreExprAst",
+        "def.16.EffectfulCoreExprAst"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation(
+            "ResolveExprAllocExplicitByAlias",
+            "rule.16.ResolveExpr-Alloc-Explicit-ByAlias"
+        ),
+        "ResolveExprAllocExplicitByAlias",
+        "rule.16.ResolveExpr-Alloc-Explicit-ByAlias"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("TUnsafeExpr", "rule.16.T-Unsafe-Expr"),
+        "TUnsafeExpr",
+        "rule.16.T-Unsafe-Expr"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("ChkUnsafeExpr", "rule.16.Chk-Unsafe-Expr"),
+        "ChkUnsafeExpr",
+        "rule.16.Chk-Unsafe-Expr"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("TDerefPtr", "rule.16.T-Deref-Ptr"),
+        "TDerefPtr",
+        "rule.16.T-Deref-Ptr"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("TMove", "rule.16.T-Move"),
+        "TMove",
+        "rule.16.T-Move"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("TAllocExplicit", "rule.16.T-Alloc-Explicit"),
+        "TAllocExplicit",
+        "rule.16.T-Alloc-Explicit"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("TAllocImplicit", "rule.16.T-Alloc-Implicit"),
+        "TAllocImplicit",
+        "rule.16.T-Alloc-Implicit"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("SuccessMember", "def.16.SuccessMember"),
+        "SuccessMember",
+        "def.16.SuccessMember"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("TPropagate", "rule.16.T-Propagate"),
+        "TPropagate",
+        "rule.16.T-Propagate"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation(
+            "SuccessMemberAsync",
+            "def.16.SuccessMemberAsync"
+        ),
+        "SuccessMemberAsync",
+        "def.16.SuccessMemberAsync"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("TAsyncTry", "rule.16.T-Async-Try"),
+        "TAsyncTry",
+        "rule.16.T-Async-Try"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
         acceptedProjectExpectation(
             "MoveParameterByReferenceOwnership",
             "rule.16.Lower-Args-Cons-Move"
         ),
         "MoveParameterByReferenceOwnership",
         "rule.16.Lower-Args-Cons-Move"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LowerExprLiteral", "rule.16.Lower-Expr-Literal"),
+        "LowerExprLiteral",
+        "rule.16.Lower-Expr-Literal"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation(
+            "LowerExprIdentLocal",
+            "rule.16.Lower-Expr-Ident-Local"
+        ),
+        "LowerExprIdentLocal",
+        "rule.16.Lower-Expr-Ident-Local"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation(
+            "LowerExprIdentPath",
+            "rule.16.Lower-Expr-Ident-Path"
+        ),
+        "LowerExprIdentPath",
+        "rule.16.Lower-Expr-Ident-Path"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LowerExprPath", "rule.16.Lower-Expr-Path"),
+        "LowerExprPath",
+        "rule.16.Lower-Expr-Path"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LowerArgsConsRef", "rule.16.Lower-Args-Cons-Ref"),
+        "LowerArgsConsRef",
+        "rule.16.Lower-Args-Cons-Ref"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation(
+            "LowerExprCallPanicOut",
+            "rule.16.Lower-Expr-Call-PanicOut"
+        ),
+        "LowerExprCallPanicOut",
+        "rule.16.Lower-Expr-Call-PanicOut"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LowerExprCallFamily", "rule.16.Lower-Expr-CallFamily"),
+        "LowerExprCallFamily",
+        "rule.16.Lower-Expr-CallFamily"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LowerExprRecord", "rule.16.Lower-Expr-Record"),
+        "LowerExprRecord",
+        "rule.16.Lower-Expr-Record"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("RecordLowerExprRecord", "Lower-Expr-Record"),
+        "RecordLowerExprRecord",
+        "Lower-Expr-Record"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LowerFieldInitsEmpty", "LowerFieldInits-Empty"),
+        "LowerFieldInitsEmpty",
+        "LowerFieldInits-Empty"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LowerFieldInitsCons", "LowerFieldInits-Cons"),
+        "LowerFieldInitsCons",
+        "LowerFieldInits-Cons"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LowerCallIRRecordCtor", "Lower-CallIR-RecordCtor"),
+        "LowerCallIRRecordCtor",
+        "Lower-CallIR-RecordCtor"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation(
+            "RuleLowerCallIRRecordCtor",
+            "rule.16.Lower-CallIR-RecordCtor"
+        ),
+        "RuleLowerCallIRRecordCtor",
+        "rule.16.Lower-CallIR-RecordCtor"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LowerExprTuple", "Lower-Expr-Tuple"),
+        "LowerExprTuple",
+        "Lower-Expr-Tuple"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("RuleLowerExprTuple", "rule.16.Lower-Expr-Tuple"),
+        "RuleLowerExprTuple",
+        "rule.16.Lower-Expr-Tuple"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LowerExprArray", "Lower-Expr-Array"),
+        "LowerExprArray",
+        "Lower-Expr-Array"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("RuleLowerExprArray", "rule.16.Lower-Expr-Array"),
+        "RuleLowerExprArray",
+        "rule.16.Lower-Expr-Array"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation(
+            "LowerEnumConstructionFamily",
+            "rule.16.LowerEnumConstructionFamily"
+        ),
+        "LowerEnumConstructionFamily",
+        "rule.16.LowerEnumConstructionFamily"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LowerExprMove", "rule.16.Lower-Expr-Move"),
+        "LowerExprMove",
+        "rule.16.Lower-Expr-Move"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LowerExprCopy", "rule.16.Lower-Expr-Copy"),
+        "LowerExprCopy",
+        "rule.16.Lower-Expr-Copy"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LowerExprAddressOf", "rule.16.Lower-Expr-AddressOf"),
+        "LowerExprAddressOf",
+        "rule.16.Lower-Expr-AddressOf"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LowerExprDeref", "rule.16.Lower-Expr-Deref"),
+        "LowerExprDeref",
+        "rule.16.Lower-Expr-Deref"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LowerExprUnsafeBlock", "rule.16.Lower-Expr-UnsafeBlock"),
+        "LowerExprUnsafeBlock",
+        "rule.16.Lower-Expr-UnsafeBlock"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LowerExprAlloc", "rule.16.Lower-Expr-Alloc"),
+        "LowerExprAlloc",
+        "rule.16.Lower-Expr-Alloc"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation(
+            "LowerExprPropagateSuccess",
+            "rule.16.Lower-Expr-Propagate-Success"
+        ),
+        "LowerExprPropagateSuccess",
+        "rule.16.Lower-Expr-Propagate-Success"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation(
+            "LowerExprPropagateReturn",
+            "rule.16.Lower-Expr-Propagate-Return"
+        ),
+        "LowerExprPropagateReturn",
+        "rule.16.Lower-Expr-Propagate-Return"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation(
+            "EffectfulCoreLoweringMechanics",
+            "req.16.EffectfulCoreLoweringMechanics"
+        ),
+        "EffectfulCoreLoweringMechanics",
+        "req.16.EffectfulCoreLoweringMechanics"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("TypeRangeLift", "T-Range-Lift"),
+        "TypeRangeLift",
+        "T-Range-Lift"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("RangeFull", "Range-Full"),
+        "RangeFull",
+        "Range-Full"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("RangeTo", "Range-To"),
+        "RangeTo",
+        "Range-To"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("RangeToInclusive", "Range-ToInclusive"),
+        "RangeToInclusive",
+        "Range-ToInclusive"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("RangeFrom", "Range-From"),
+        "RangeFrom",
+        "Range-From"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("RangeExclusive", "Range-Exclusive"),
+        "RangeExclusive",
+        "Range-Exclusive"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("RangeInclusive", "Range-Inclusive"),
+        "RangeInclusive",
+        "Range-Inclusive"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LowerRangeFull", "Lower-Range-Full"),
+        "LowerRangeFull",
+        "Lower-Range-Full"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LowerRangeTo", "Lower-Range-To"),
+        "LowerRangeTo",
+        "Lower-Range-To"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LowerRangeToInclusive", "Lower-Range-ToInclusive"),
+        "LowerRangeToInclusive",
+        "Lower-Range-ToInclusive"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LowerRangeFrom", "Lower-Range-From"),
+        "LowerRangeFrom",
+        "Lower-Range-From"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LowerRangeInclusive", "Lower-Range-Inclusive"),
+        "LowerRangeInclusive",
+        "Lower-Range-Inclusive"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LowerRangeExclusive", "Lower-Range-Exclusive"),
+        "LowerRangeExclusive",
+        "Lower-Range-Exclusive"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LayoutRecordCons", "Layout-Record-Cons"),
+        "LayoutRecordCons",
+        "Layout-Record-Cons"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("SizeRecord", "Size-Record"),
+        "SizeRecord",
+        "Size-Record"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("AlignRecord", "Align-Record"),
+        "AlignRecord",
+        "Align-Record"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LayoutRecord", "Layout-Record"),
+        "LayoutRecord",
+        "Layout-Record"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LayoutTupleCons", "Layout-Tuple-Cons"),
+        "LayoutTupleCons",
+        "Layout-Tuple-Cons"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("SizeTuple", "Size-Tuple"),
+        "SizeTuple",
+        "Size-Tuple"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("AlignTuple", "Align-Tuple"),
+        "AlignTuple",
+        "Align-Tuple"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("LayoutTuple", "Layout-Tuple"),
+        "LayoutTuple",
+        "Layout-Tuple"
     ) {
         count = count + 1usize
     }

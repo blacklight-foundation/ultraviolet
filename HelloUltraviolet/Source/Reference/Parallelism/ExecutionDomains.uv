@@ -49,11 +49,158 @@ internal procedure gpuDomainReference(context: Context) -> usize {
     }
 }
 
+internal record GpuSafeRecordReference {
+    internal value: i32
+    internal count: usize
+}
+
+internal enum GpuSafeEnumReference {
+    Empty
+    Value(i32)
+}
+
+internal procedure gpuPtrTypeReference() -> bool {
+    return sizeof(GpuPtr<i32, Global>) > 0usize &&
+        sizeof(GpuPtr<i32, Shared>) > 0usize &&
+        sizeof(GpuPtr<i32, Private>) > 0usize
+}
+
+internal procedure gpuSafePrimitiveReference() -> bool {
+    return sizeof(GpuSafePayload<i32>) > 0usize &&
+        sizeof(GpuSafePayload<usize>) > 0usize &&
+        sizeof(GpuSafePayload<bool>) > 0usize
+}
+
+internal procedure gpuSafeRawPointerReference() -> bool {
+    return sizeof(GpuSafePayload<*mut i32>) > 0usize &&
+        sizeof(GpuSafePayload<*imm usize>) > 0usize
+}
+
+internal procedure gpuSafeArrayReference() -> bool {
+    return sizeof(GpuSafePayload<[i32; 2]>) > 0usize
+}
+
+internal procedure gpuSafeTupleReference() -> bool {
+    return sizeof(GpuSafePayload<(i32, usize)>) > 0usize
+}
+
+internal procedure gpuSafePermissionReference() -> bool {
+    return sizeof(GpuSafePayload<const i32>) > 0usize
+}
+
+internal procedure gpuSafeRecordReference() -> bool {
+    return sizeof(GpuSafePayload<GpuSafeRecordReference>) > 0usize
+}
+
+internal procedure gpuSafeEnumReference() -> bool {
+    return sizeof(GpuSafePayload<GpuSafeEnumReference>) > 0usize
+}
+
+internal procedure gpuSafeStringViewReference() -> bool {
+    return sizeof(GpuSafePayload<string@View>) > 0usize
+}
+
+internal procedure gpuSafeBytesViewReference() -> bool {
+    return sizeof(GpuSafePayload<bytes@View>) > 0usize
+}
+
+internal procedure gpuSafePredicateClausesReference() -> bool {
+    return sizeof(GpuSafePayload<GpuSafeRecordReference>) > 0usize &&
+        sizeof(GpuSafePayload<GpuSafeEnumReference>) > 0usize
+}
+
+internal procedure gpuSafeTypesReference() -> bool {
+    return gpuSafePrimitiveReference() &&
+        gpuSafeRawPointerReference() &&
+        gpuSafeArrayReference() &&
+        gpuSafeTupleReference() &&
+        gpuSafePermissionReference() &&
+        gpuSafeRecordReference() &&
+        gpuSafeEnumReference() &&
+        gpuSafeStringViewReference() &&
+        gpuSafeBytesViewReference() &&
+        gpuSafePredicateClausesReference()
+}
+
+internal procedure gpuTopologyIntrinsicReference(context: Context) -> bool {
+    let payload: GpuSafePayload<i32> = GpuSafePayload { value: 6 }
+    let observed: usize = parallel context~>gpu() [
+        workgroup: (2usize, 2usize, 2usize),
+        workgroups: (2usize, 1usize, 1usize)
+    ] {
+        dispatch index in 4usize..20usize [reduce: +, workgroup: (2usize, 2usize, 2usize)] {
+            let global_id: (usize, usize, usize) = gpu_global_id()
+            let local_id: (usize, usize, usize) = gpu_local_id()
+            let workgroup_id: (usize, usize, usize) = gpu_workgroup_id()
+            let workgroup_size: (usize, usize, usize) = gpu_workgroup_size()
+            let global_size: (usize, usize, usize) = gpu_global_size()
+            let num_workgroups: (usize, usize, usize) = gpu_num_workgroups()
+            let relative_index: usize = index - 4usize
+            let expected_local_linear: usize = relative_index % 8usize
+            let expected_local_x: usize = expected_local_linear % 2usize
+            let expected_local_y: usize = (expected_local_linear / 2usize) % 2usize
+            let expected_local_z: usize = expected_local_linear / 4usize
+            let expected_workgroup_x: usize = relative_index / 8usize
+            let expected_global_x: usize = expected_local_x + expected_workgroup_x * 2usize
+
+            gpu_memory_barrier()
+            gpu_workgroup_barrier()
+            gpu_barrier()
+
+            let matches_topology: bool =
+                global_id.0 == expected_global_x &&
+                global_id.1 == expected_local_y &&
+                global_id.2 == expected_local_z &&
+                local_id.0 == expected_local_x &&
+                local_id.1 == expected_local_y &&
+                local_id.2 == expected_local_z &&
+                workgroup_id.0 == expected_workgroup_x &&
+                workgroup_id.1 == 0usize &&
+                workgroup_id.2 == 0usize &&
+                workgroup_size.0 == 2usize &&
+                workgroup_size.1 == 2usize &&
+                workgroup_size.2 == 2usize &&
+                global_size.0 == 4usize &&
+                global_size.1 == 2usize &&
+                global_size.2 == 2usize &&
+                num_workgroups.0 == 2usize &&
+                num_workgroups.1 == 1usize &&
+                num_workgroups.2 == 1usize &&
+                gpu_linear_id() == relative_index
+
+            if matches_topology {
+                relative_index + (payload.value as usize)
+            } else {
+                1000usize + relative_index
+            }
+        }
+    }
+
+    return observed == 216usize
+}
+
+internal procedure executionDomainMethodsReference(context: Context) -> bool {
+    let inline_domain: $ExecutionDomain = context~>inline()
+    let cpu_domain: $ExecutionDomain = context~>cpu()
+    let gpu_domain: $ExecutionDomain = context~>gpu()
+
+    return string::length(inline_domain~>name()) > 0usize &&
+        inline_domain~>max_concurrency() > 0usize &&
+        string::length(cpu_domain~>name()) > 0usize &&
+        cpu_domain~>max_concurrency() > 0usize &&
+        string::length(gpu_domain~>name()) > 0usize &&
+        gpu_domain~>max_concurrency() > 0usize
+}
+
 /// Exercises the Parallelism ExecutionDomains reference surface.
 public procedure runParallelismExecutionDomainsReference(context: Context) -> bool {
     return inlineDomainReference(context) == 11 &&
         cpuDomainReference(context) == 12 &&
         cpuMaskDomainReference(context) == 14 &&
         cpuMaskPriorityDomainReference(context) == 15 &&
-        gpuDomainReference(context) == 1usize
+        gpuDomainReference(context) == 1usize &&
+        gpuPtrTypeReference() &&
+        gpuSafeTypesReference() &&
+        gpuTopologyIntrinsicReference(context) &&
+        executionDomainMethodsReference(context)
 }

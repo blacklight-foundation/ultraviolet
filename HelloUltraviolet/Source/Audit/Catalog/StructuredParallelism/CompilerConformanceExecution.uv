@@ -1,0 +1,153 @@
+//! Structured-parallelism accepted-project compiler conformance checks.
+
+internal let STRUCTURED_PARALLELISM_CONFORMANCE_PROJECT_PATH: string@View =
+    "Fixtures/AcceptedProjects/StructuredParallelism/ParserConformance"
+internal let STRUCTURED_PARALLELISM_CONFORMANCE_LOG_NAME: string@View =
+    "structured_parallelism.conformance.log"
+
+internal procedure structuredParallelismConformanceProjectRuns(
+    authority: TestAuthority,
+    output_suffix: string@View,
+    error_suffix: string@View,
+    out_dir_suffix: string@View
+) -> bool {
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+    return acceptedProjectRunCase(
+        authority,
+        STRUCTURED_PARALLELISM_CONFORMANCE_PROJECT_PATH,
+        "",
+        output_suffix,
+        error_suffix,
+        out_dir_suffix,
+        STRUCTURED_PARALLELISM_CONFORMANCE_LOG_NAME
+    )
+}
+
+internal procedure structuredParallelismConformanceLineContains(
+    authority: TestAuthority,
+    out_dir_suffix: string@View,
+    required_marker: string@View,
+    required_payload: string@View
+) -> bool {
+    return acceptedProjectConformanceLineContains(
+        authority,
+        out_dir_suffix,
+        STRUCTURED_PARALLELISM_CONFORMANCE_LOG_NAME,
+        required_marker,
+        required_payload
+    )
+}
+
+internal procedure structuredParallelismConformanceArtifactsExist(
+    authority: TestAuthority,
+    out_dir_suffix: string@View
+) -> bool {
+    return acceptedProjectTempFileExists(
+            authority,
+            out_dir_suffix,
+            "Intermediate/Obj/Source/StructuredParallelismConformance.obj"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            out_dir_suffix,
+            "Library/StructuredParallelismConformance.lib"
+        )
+}
+
+#test(name: "structured parallelism compiler parser conformance artifact matches")
+internal procedure structuredParallelismCompilerConformanceArtifactMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let out_dir: string@View = "StructuredParallelismConformanceBuild"
+    return structuredParallelismConformanceProjectRuns(
+            authority,
+            "StructuredParallelismConformance.out",
+            "StructuredParallelismConformance.err",
+            out_dir
+        ) &&
+        structuredParallelismConformanceArtifactsExist(authority, out_dir) &&
+        structuredParallelismConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.20.CancellationSyntax\t",
+            "source%3DParseParallelOpt%3Boption%3Dcancel%3Bsurface%3Dparallel_option%3Bordinary_cancel_token_call_syntax%3Dtrue%3Badditional_syntax%3Dfalse"
+        ) &&
+        structuredParallelismConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.20.CancellationNoAdditionalParsingRules\t",
+            "source%3DParseParallelOpt%3Boption%3Dcancel%3Bparser%3Dparallel_option%3Badditional_parsing_rules%3Dfalse"
+        ) &&
+        structuredParallelismConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.20.CaptureSemanticsNoAdditionalSyntax\t",
+            "source%3DParseSpawnExpr%3Bbody_parser%3DParseBlock%3Bcapture_surface%3Dspawn_body%3Badditional_syntax%3Dfalse"
+        ) &&
+        structuredParallelismConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.20.CaptureSemanticsNoAdditionalSyntax\t",
+            "source%3DParseDispatchExpr%3Bbody_parser%3DParseBlock%3Bcapture_surface%3Ddispatch_body%3Badditional_syntax%3Dfalse"
+        ) &&
+        structuredParallelismConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.20.CaptureSemanticsNoAdditionalParsingRules\t",
+            "source%3DParseSpawnExpr%3Bparser%3Dspawn_expr%3Bbody_parser%3DParseBlock%3Bcapture_parser%3Dnone%3Badditional_parsing_rules%3Dfalse"
+        ) &&
+        structuredParallelismConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.20.CaptureSemanticsNoAdditionalParsingRules\t",
+            "source%3DParseDispatchExpr%3Bparser%3Ddispatch_expr%3Bbody_parser%3DParseBlock%3Bcapture_parser%3Dnone%3Badditional_parsing_rules%3Dfalse"
+        ) &&
+        structuredParallelismConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.20.DeterminismNestingNoAdditionalSyntax\t",
+            "source%3DParseParallelExpr%3Bsurface%3Dparallel_spawn_dispatch%3Bdeterminism_nesting_syntax%3Dnone%3Badditional_syntax%3Dfalse"
+        ) &&
+        structuredParallelismConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.20.DeterminismNestingNoAdditionalParsingRules\t",
+            "source%3DParseParallelExpr%3Bparser%3Dparallel_expr%3Bnesting%3Drecursive_block_parse%3Badditional_parsing_rules%3Dfalse"
+        ) &&
+        structuredParallelismConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.20.ExecutionDomainSyntax\t",
+            "source%3DParseParallelExpr%3Bdomain_parser%3DParseExprNoBrace%3Bmethod_call_syntax%3Dordinary_postfix_method_call%3Bcall_syntax%3Dordinary_postfix_call%3Badditional_domain_syntax%3Dfalse"
+        ) &&
+        structuredParallelismConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.20.ExecutionDomainsNoAdditionalParsingProductions\t",
+            "source%3DParseParallelExpr%3Bdomain_parser%3DParseExprNoBrace%3Bparallel_option_boundary%3Dstop_before_parallel_options%3Badditional_domain_productions%3Dfalse"
+        ) &&
+        structuredParallelismConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.20.PanicHandlingNoAdditionalSyntax\t",
+            "source%3DParseParallelExpr%3Bpanic_surface%3Dnone%3Badditional_syntax%3Dfalse"
+        ) &&
+        structuredParallelismConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.20.PanicHandlingNoAdditionalParsingRules\t",
+            "source%3DParseParallelExpr%3Bpanic_parser%3Dnone%3Badditional_parsing_rules%3Dfalse"
+        ) &&
+        structuredParallelismConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.20.PanicHandlingNoAdditionalStaticTypingRules\t",
+            "source%3DTypeParallelExpr%3Btyping%3Dparallel_body,spawn,dispatch%3Bpanic_handling_static_typing%3Dnone%3Badditional_static_typing_rules%3Dfalse"
+        )
+}

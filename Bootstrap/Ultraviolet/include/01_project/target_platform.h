@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <filesystem>
 #include <optional>
 #include <string>
@@ -18,11 +19,42 @@ struct TargetLinkArgOptions {
   bool inputs_reference_gcc_personality = false;
 };
 
+enum class TargetAggregateCarrierKind {
+  None,
+  Integer,
+  IntegerPair,
+  IntegerArray,
+  Indirect,
+};
+
+struct TargetAggregateCarrier {
+  TargetAggregateCarrierKind kind = TargetAggregateCarrierKind::None;
+  std::uint64_t primary_bits = 0;
+  std::uint64_t secondary_bits = 0;
+  std::uint64_t element_bits = 0;
+  std::uint64_t element_count = 0;
+  bool packed = false;
+};
+
 std::string_view TargetRuntimeLibName(TargetProfile profile);
 std::string_view TargetLinkerToolName(TargetProfile profile);
 std::string_view TargetArchiverToolName(TargetProfile profile);
 std::string_view TargetRepoLLVMSubdir(TargetProfile profile);
 std::string_view TargetPackagedSupportPlatformDir(TargetProfile profile);
+
+bool TargetCAggregateReturnUsesIndirect(TargetProfile profile,
+                                        std::uint64_t size);
+TargetAggregateCarrier TargetCAggregateDirectReturnCarrier(
+    TargetProfile profile,
+    std::uint64_t size,
+    std::uint64_t align,
+    bool contains_floating);
+TargetAggregateCarrier TargetCAggregateByValueParamCarrier(
+    TargetProfile profile,
+    std::uint64_t size,
+    std::uint64_t align,
+    bool contains_floating);
+bool TargetForeignByValueAggregateIndirectParamUsesByVal(TargetProfile profile);
 
 std::filesystem::path TargetHostFilesystemPath(const std::filesystem::path& path);
 std::string TargetToolPathArgString(const std::filesystem::path& tool,

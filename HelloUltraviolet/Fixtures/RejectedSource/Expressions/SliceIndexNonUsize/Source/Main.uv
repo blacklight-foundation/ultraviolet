@@ -1,0 +1,8 @@
+//! Rejected slice specimen for scalar indices whose type is not usize.
+
+public procedure sliceIndexNonUsizeReference() -> i32 {
+    let values: [i32; 2] = [1, 2]
+    let slice: [i32] = values[..]
+    let index: i32 = 1
+    return slice[index]
+}

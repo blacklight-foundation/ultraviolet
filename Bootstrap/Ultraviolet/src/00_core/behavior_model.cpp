@@ -118,6 +118,29 @@ ErrorRecoveryPolicy DefaultErrorRecoveryPolicy() {
   return policy;
 }
 
+void RecordBehaviorModelConformance() {
+  SpecDefsBehaviorModel();
+  if (!Conformance::Enabled()) {
+    return;
+  }
+
+  Conformance::Record(
+      "def.JudgmentSubjectAndEnvironment",
+      std::nullopt,
+      "source=behavior_model;subject=leftmost_term_right_of_turnstile;"
+      "environment=left_of_turnstile;rule_registry=conclusion_family");
+  Conformance::Record(
+      "def.RuntimeCheck",
+      std::nullopt,
+      "source=behavior_model;"
+      "runtime_checks=IntegerOverflow,SliceBounds,IntDivisionByZero");
+  Conformance::Record(
+      "def.RuntimeCheckBehavior",
+      std::nullopt,
+      "source=behavior_model;IntegerOverflow=Panic;SliceBounds=Panic;"
+      "IntDivisionByZero=Panic");
+}
+
 bool IsStaticCheck(CheckKind kind) {
   SpecDefsBehaviorModel();
   switch (kind) {

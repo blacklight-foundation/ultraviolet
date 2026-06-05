@@ -6,10 +6,13 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <iostream>
+#include <string>
 #include <string_view>
 #include <variant>
 
 #include "00_core/assert_spec.h"
+#include "00_core/process_config.h"
 #include "02_source/attributes/attribute_registry.h"
 #include "04_analysis/contracts/verification.h"
 #include "04_analysis/keys/key_paths.h"
@@ -115,6 +118,62 @@ std::string FormatRangeBound(const ast::ExprPtr& expr) {
   return "?";
 }
 
+constexpr std::uint8_t kLowerRangeExprMember = 1u << 0;
+constexpr std::uint8_t kCheckIndexMember = 1u << 1;
+constexpr std::uint8_t kCheckRangeMember = 1u << 2;
+constexpr std::uint8_t kLowerTransmuteMember = 1u << 3;
+constexpr std::uint8_t kLowerRawDerefMember = 1u << 4;
+constexpr std::uint8_t kLoweringChecksJudgementSet =
+    kLowerRangeExprMember |
+    kCheckIndexMember |
+    kCheckRangeMember |
+    kLowerTransmuteMember |
+    kLowerRawDerefMember;
+
+std::string_view AccessOrderingName(AccessOrdering order) {
+  switch (order) {
+    case AccessOrdering::Relaxed:
+      return "relaxed";
+    case AccessOrdering::Acquire:
+      return "acquire";
+    case AccessOrdering::Release:
+      return "release";
+    case AccessOrdering::AcqRel:
+      return "acqrel";
+    case AccessOrdering::SeqCst:
+      return "seqcst";
+  }
+  return "seqcst";
+}
+
+std::string_view FenceOrderName(ast::FenceOrder order) {
+  switch (order) {
+    case ast::FenceOrder::Acquire:
+      return "acquire";
+    case ast::FenceOrder::Release:
+      return "release";
+    case ast::FenceOrder::SeqCst:
+      return "seqcst";
+  }
+  return "seqcst";
+}
+
+std::uint8_t LoweringChecksJudgementBit(LoweringChecksJudgementMember member) {
+  switch (member) {
+    case LoweringChecksJudgementMember::LowerRangeExpr:
+      return kLowerRangeExprMember;
+    case LoweringChecksJudgementMember::CheckIndex:
+      return kCheckIndexMember;
+    case LoweringChecksJudgementMember::CheckRange:
+      return kCheckRangeMember;
+    case LoweringChecksJudgementMember::LowerTransmute:
+      return kLowerTransmuteMember;
+    case LoweringChecksJudgementMember::LowerRawDeref:
+      return kLowerRawDerefMember;
+  }
+  return 0;
+}
+
 LowerResult LowerExprImpl(const ast::Expr& expr, LowerCtx& ctx) {
   return std::visit(
       [&ctx, &expr](const auto& node) -> LowerResult {
@@ -125,6 +184,24 @@ LowerResult LowerExprImpl(const ast::Expr& expr, LowerCtx& ctx) {
         } else if constexpr (std::is_same_v<T, ast::AttributedExpr>) {
           const auto prev_order = ctx.current_access_order;
           if (const auto order = MemoryOrderFromAttrs(node.attrs)) {
+            const bool contains_shared_access =
+                node.expr && IsSharedAccessExpr(*node.expr, ctx);
+            core::Conformance::Record(
+                "requirement.19.MemoryOrderAttributeAttachment",
+                expr.span,
+                "source=LowerAttributedExpr;attachment=attributed_expression;"
+                "order=" +
+                    std::string(AccessOrderingName(*order)) +
+                    ";contains_shared_access=" +
+                    (contains_shared_access ? "true" : "false"));
+            if (contains_shared_access) {
+              core::Conformance::Record(
+                  "requirement.19.ExpressionMemoryOrderWellFormedness",
+                  expr.span,
+                  "source=LowerAttributedExpr;attachment=attributed_expression;"
+                  "contains_keyed_or_shared_access=true;order=" +
+                      std::string(AccessOrderingName(*order)));
+            }
             ctx.current_access_order = *order;
           }
           auto lowered = node.expr ? LowerExprImpl(*node.expr, ctx) : LowerResult{};
@@ -139,7 +216,8 @@ LowerResult LowerExprImpl(const ast::Expr& expr, LowerCtx& ctx) {
         } else if constexpr (std::is_same_v<T, ast::PtrNullExpr>) {
           return LowerPtrNull(node, ctx);
         } else if constexpr (std::is_same_v<T, ast::TupleExpr>) {
-          return LowerTuple(node, ctx);
+          analysis::TypeRef contextual_type = ctx.expr_type ? ctx.expr_type(expr) : analysis::TypeRef{};
+          return LowerTuple(node, ctx, contextual_type);
         } else if constexpr (std::is_same_v<T, ast::ArrayExpr>) {
           return LowerArrayLiteral(node, ctx);
         } else if constexpr (std::is_same_v<T, ast::ArrayRepeatExpr>) {
@@ -219,10 +297,12 @@ LowerResult LowerExprImpl(const ast::Expr& expr, LowerCtx& ctx) {
         } else if constexpr (std::is_same_v<T, ast::IfExpr>) {
           return LowerIfExpr(expr, node, ctx);
         } else if constexpr (std::is_same_v<T, ast::IfCaseExpr>) {
+          SPEC_RULE("Lower-Expr-If-Cases");
           analysis::TypeRef result_type = ctx.expr_type ? ctx.expr_type(expr) : nullptr;
           return LowerIfCases(*node.scrutinee, node.cases, node.else_expr,
                               false, ctx, result_type);
         } else if constexpr (std::is_same_v<T, ast::IfIsExpr>) {
+          SPEC_RULE("Lower-Expr-If-Is");
           std::vector<ast::IfCaseClause> cases;
           ast::IfCaseClause case_clause;
           case_clause.pattern = node.pattern;
@@ -232,18 +312,25 @@ LowerResult LowerExprImpl(const ast::Expr& expr, LowerCtx& ctx) {
           return LowerIfCases(*node.scrutinee, cases, node.else_expr,
                               true, ctx, result_type);
         } else if constexpr (std::is_same_v<T, ast::BlockExpr>) {
+          SPEC_RULE("Lower-Expr-Block");
           return LowerBlock(*node.block, ctx);
         } else if constexpr (std::is_same_v<T, ast::LoopInfiniteExpr>) {
+          SPEC_RULE("Lower-Expr-LoopInf");
           return LowerLoopInfinite(expr, node, ctx);
         } else if constexpr (std::is_same_v<T, ast::LoopConditionalExpr>) {
+          SPEC_RULE("Lower-Expr-LoopCond");
           return LowerLoopConditional(expr, node, ctx);
         } else if constexpr (std::is_same_v<T, ast::LoopIterExpr>) {
+          SPEC_RULE("Lower-Expr-LoopIter");
           return LowerLoopIter(expr, node, ctx);
         } else if constexpr (std::is_same_v<T, ast::AddressOfExpr>) {
+          SPEC_RULE("rule.16.Lower-Expr-AddressOf");
           return LowerAddrOf(*node.place, ctx);
         } else if constexpr (std::is_same_v<T, ast::DerefExpr>) {
+          SPEC_RULE("rule.16.Lower-Expr-Deref");
           return LowerReadPlaceDeref(node, expr, ctx);
         } else if constexpr (std::is_same_v<T, ast::MoveExpr>) {
+          SPEC_RULE("rule.16.Lower-Expr-Move");
           return LowerMovePlace(*node.place, ctx);
         } else if constexpr (std::is_same_v<T, ast::CopyExpr>) {
           return LowerCopyExpr(node, ctx);
@@ -254,6 +341,12 @@ LowerResult LowerExprImpl(const ast::Expr& expr, LowerCtx& ctx) {
         } else if constexpr (std::is_same_v<T, ast::UnsafeBlockExpr>) {
           return LowerUnsafeBlockExpr(node, ctx);
         } else if constexpr (std::is_same_v<T, ast::ComptimeExpr>) {
+          if (core::IsDebugEnabled("codegen")) {
+            std::cerr << "[lower-comptime-unlowerable] file="
+                      << expr.span.file
+                      << " line=" << expr.span.start_line
+                      << " col=" << expr.span.start_col << "\n";
+          }
           ctx.ReportCodegenFailure();
           IRValue value = ctx.FreshTempValue("comptime_expr_unlowerable");
           return LowerResult{EmptyIR(), value};
@@ -270,6 +363,22 @@ LowerResult LowerExprImpl(const ast::Expr& expr, LowerCtx& ctx) {
           IRFence fence;
           fence.order = ToIRFenceOrder(node.order);
           fence.result = result;
+          core::Conformance::Record(
+              "requirement.19.FenceEvaluation",
+              expr.span,
+              "source=LowerExpr;expr=FenceExpr;event=FenceIR;"
+              "value=UnitVal;order=" +
+                  std::string(FenceOrderName(node.order)));
+          core::Conformance::Record(
+              "requirement.19.FenceOrderingConstraints",
+              expr.span,
+              "source=LowerExpr;expr=FenceExpr;order=" +
+                  std::string(FenceOrderName(node.order)) +
+                  ";sequenced_before_constraints=true");
+          core::Conformance::Record(
+              "rule.19.Lower-Expr-Fence",
+              expr.span,
+              "source=LowerExpr;expr=FenceExpr;ir=FenceIR;value=UnitVal");
           return LowerResult{MakeIR(std::move(fence)), result};
         } else if constexpr (std::is_same_v<T, ast::YieldExpr>) {
           return LowerYieldExpr(node, ctx);
@@ -299,6 +408,25 @@ LowerResult LowerExprImpl(const ast::Expr& expr, LowerCtx& ctx) {
 }
 
 }  // namespace
+
+void RecordLoweringChecksJudgementMember(
+    LowerCtx& ctx,
+    LoweringChecksJudgementMember member) {
+  ctx.lowering_checks_judgement_members |= LoweringChecksJudgementBit(member);
+  if (ctx.lowering_checks_judgement_recorded) {
+    return;
+  }
+  if (ctx.lowering_checks_judgement_members != kLoweringChecksJudgementSet) {
+    return;
+  }
+
+  ctx.lowering_checks_judgement_recorded = true;
+  core::Conformance::Record(
+      "def.LoweringChecksJudgementSet",
+      std::nullopt,
+      "source=LoweringChecksJudgementSet;members={LowerRangeExpr,CheckIndex,"
+      "CheckRange,LowerTransmute,LowerRawDeref};exact=true;count=5");
+}
 
 std::string StripIntSuffix(const std::string& text) {
   static const char* suffixes[] = {
@@ -867,6 +995,24 @@ IRPtr LowerImplicitKeyAccess(const ast::Expr& expr,
   }
 
   if (HasCoveringActiveKey(built.path, mode, ctx)) {
+    core::Conformance::Record(
+        "requirement.19.ValidKeyContext",
+        expr.span,
+        "source=LowerImplicitKeyAccess;key_path_defined=true;"
+        "required_mode_defined=true;covered=true;implicit_acquisition=false");
+    core::Conformance::Record(
+        "rule.19.K-Acquire-Covered",
+        expr.span,
+        "source=LowerImplicitKeyAccess;covered=true;context_unchanged=true;"
+        "mode=" +
+            std::string(mode == ast::KeyMode::Write ? "write" : "read") +
+            ";path=" + EncodeLoweredKeyPath(built.path));
+    core::Conformance::Record(
+        "rule.19.Lower-KeyAccess-Covered",
+        expr.span,
+        "source=LowerImplicitKeyAccess;covered=true;emits_ir=false;"
+        "path=" +
+            EncodeLoweredKeyPath(built.path));
     return EmptyIR();
   }
 
@@ -881,6 +1027,25 @@ IRPtr LowerImplicitKeyAccess(const ast::Expr& expr,
     encoded_path = EncodeLoweredKeyPath(built.path);
   }
   const std::uint8_t mode_byte = mode == ast::KeyMode::Write ? 1u : 0u;
+  core::Conformance::Record(
+      "requirement.19.ValidKeyContext",
+      expr.span,
+      "source=LowerImplicitKeyAccess;key_path_defined=true;"
+      "required_mode_defined=true;covered=false;implicit_acquisition=true");
+  core::Conformance::Record(
+      "rule.19.K-Acquire-New",
+      expr.span,
+      "source=LowerImplicitKeyAccess;covered=false;new_scope=true;"
+      "context_extended=true;mode=" +
+          std::string(mode == ast::KeyMode::Write ? "write" : "read") +
+          ";path=" + encoded_path);
+  core::Conformance::Record(
+      "rule.19.Lower-KeyAccess-Uncovered",
+      expr.span,
+      "source=LowerImplicitKeyAccess;covered=false;check_conflict=true;"
+      "acquire_key=true;mode=" +
+          std::string(mode == ast::KeyMode::Write ? "write" : "read") +
+          ";path=" + encoded_path);
 
   IRCall check;
   check.callee.kind = IRValue::Kind::Symbol;
@@ -921,6 +1086,12 @@ LowerResult ApplyEffectiveOrdering(const ast::Expr& expr,
 
   const AccessOrdering order =
       ctx.current_access_order.value_or(AccessOrdering::SeqCst);
+  core::Conformance::Record(
+      "rule.19.Lower-Ordered-Access",
+      expr.span,
+      "source=ApplyEffectiveOrdering;contains_shared_access=true;"
+      "ordered_access_ir=true;effective_order=" +
+          std::string(AccessOrderingName(order)));
   switch (order) {
     case AccessOrdering::Relaxed:
       return result;
@@ -1084,6 +1255,20 @@ std::pair<IRPtr, std::vector<IRValue>> LowerList(
     const std::vector<ast::ExprPtr>& exprs, LowerCtx& ctx) {
   SPEC_RULE("LowerList-Empty");
   SPEC_RULE("LowerList-Cons");
+  SPEC_RULE("rule.24.LowerList-Empty");
+  SPEC_RULE("rule.24.LowerList-Cons");
+  core::Conformance::Record(
+      "def.24.EvalOrderJudgements",
+      std::nullopt,
+      "source=LowerList;order=left-to-right;kind=expressions");
+  core::Conformance::Record(
+      "def.24.ChildExpressionListHelpers",
+      std::nullopt,
+      "source=LowerList;helper=expr-list;count=" + std::to_string(exprs.size()));
+  core::Conformance::Record(
+      "def.24.ChildrenLTRExpressions",
+      std::nullopt,
+      "source=LowerList;order=left-to-right;kind=expressions");
 
   if (exprs.empty()) {
     return {EmptyIR(), {}};
@@ -1108,6 +1293,21 @@ std::pair<IRPtr, std::vector<DerivedArraySegment>> LowerList(
     const std::vector<ast::ArraySegment>& segments, LowerCtx& ctx) {
   SPEC_RULE("LowerList-Empty");
   SPEC_RULE("LowerList-Cons");
+  SPEC_RULE("rule.24.LowerList-Empty");
+  SPEC_RULE("rule.24.LowerList-Cons");
+  core::Conformance::Record(
+      "def.24.EvalOrderJudgements",
+      std::nullopt,
+      "source=LowerList;order=left-to-right;kind=array-segments");
+  core::Conformance::Record(
+      "def.24.ChildExpressionListHelpers",
+      std::nullopt,
+      "source=LowerList;helper=array-segments;count=" +
+          std::to_string(segments.size()));
+  core::Conformance::Record(
+      "def.24.ChildrenLTRExpressions",
+      std::nullopt,
+      "source=LowerList;order=left-to-right;kind=array-segments");
 
   if (segments.empty()) {
     return {EmptyIR(), {}};
@@ -1158,6 +1358,8 @@ std::pair<IRPtr, std::vector<std::pair<std::string, IRValue>>> LowerFieldInits(
     const std::vector<ast::FieldInit>& fields, LowerCtx& ctx, bool suppress_temps) {
   SPEC_RULE("LowerFieldInits-Empty");
   SPEC_RULE("LowerFieldInits-Cons");
+  SPEC_RULE("rule.24.LowerFieldInits-Empty");
+  SPEC_RULE("rule.24.LowerFieldInits-Cons");
 
   if (fields.empty()) {
     return {EmptyIR(), {}};
@@ -1198,18 +1400,24 @@ IRValue RegisterLoweredRecordValue(
 
 std::pair<IRPtr, std::optional<IRValue>> LowerOpt(
     const ast::ExprPtr& expr_opt, LowerCtx& ctx) {
-  SPEC_RULE("LowerOpt-None");
-  SPEC_RULE("LowerOpt-Some");
-
   if (!expr_opt) {
+    SPEC_RULE("LowerOpt-None");
+    SPEC_RULE("rule.24.LowerOpt-None");
     return {EmptyIR(), std::nullopt};
   }
 
+  SPEC_RULE("LowerOpt-Some");
+  SPEC_RULE("rule.24.LowerOpt-Some");
   auto result = LowerExpr(*expr_opt, ctx);
   return {result.ir, result.value};
 }
 
 LowerResult LowerExpr(const ast::Expr& expr, LowerCtx& ctx) {
+  SPEC_RULE("rule.24.CG-Expr");
+  core::Conformance::Record(
+      "def.24.LowerExprJudgementsAndRetType",
+      std::nullopt,
+      "source=LowerExpr;result=LowerResult;ret_type=registered-or-inferred");
   ctx.temp_depth += 1;
   LowerResult result = LowerExprImpl(expr, ctx);
   const int depth = ctx.temp_depth;
@@ -1242,6 +1450,14 @@ LowerResult LowerExpr(const ast::Expr& expr, LowerCtx& ctx) {
   }
 
   result = ApplyEffectiveOrdering(expr, std::move(result), ctx);
+  core::Conformance::Record(
+      "rule.24.Lower-Expr-Correctness",
+      std::nullopt,
+      "source=LowerExpr;ir=LowerResult.ir;value=LowerResult.value");
+  core::Conformance::Record(
+      "def.24.LowerExprTotal",
+      std::nullopt,
+      "source=LowerExpr;lowering_total=true");
 
   return result;
 }

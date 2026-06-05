@@ -52,9 +52,14 @@ namespace {
 static inline void SpecDefsAssignStmt() {
   SPEC_DEF("T-Assign", "5.2.11");
   SPEC_DEF("Assign-NotPlace", "5.2.11");
+  SPEC_DEF("rule.18.Assign-NotPlace", "18.4.4");
   SPEC_DEF("Assign-Immutable-Err", "5.2.11");
+  SPEC_DEF("rule.18.Assign-Immutable-Err", "18.4.4");
   SPEC_DEF("Assign-Type-Err", "5.2.11");
+  SPEC_DEF("rule.18.Assign-Type-Err", "18.4.4");
   SPEC_DEF("PlaceRoot", "5.2.11");
+  SPEC_DEF("diag.18.AssignmentStatements", "18.4.7");
+  SPEC_DEF("diag.18.StatementDiagnosticsSupplement", "18.11");
 }
 
 static std::optional<std::string_view> PlaceRootName(const ast::ExprPtr& expr) {
@@ -713,6 +718,9 @@ StmtTypeResult TypeAssignStmt(const ScopeContext& ctx,
   // Check that the target is a place expression (lvalue)
   if (!IsPlaceExprLocal(node.place)) {
     SPEC_RULE("Assign-NotPlace");
+    SPEC_RULE("rule.18.Assign-NotPlace");
+    SPEC_RULE("diag.18.AssignmentStatements");
+    SPEC_RULE("diag.18.StatementDiagnosticsSupplement");
     return {false, "E-SEM-3131", {}, {}};
   }
 
@@ -775,6 +783,8 @@ StmtTypeResult TypeAssignStmt(const ScopeContext& ctx,
                 : type_ctx.key_mode;
         if (read_then_write_same_path) {
           SPEC_RULE("K-Read-Write-Reject");
+          SPEC_RULE("rule.19.K-Read-Write-Reject");
+          SPEC_RULE("requirement.19.ReadThenWriteDiagnosticSurface");
           return {false, "E-CON-0060", {}, {}};
         }
         if (covering_mode.has_value()) {
@@ -798,8 +808,11 @@ StmtTypeResult TypeAssignStmt(const ScopeContext& ctx,
     }
     if (!shared_write_with_key &&
         root_mut.mut.has_value() &&
-        *root_mut.mut == ast::Mutability::Let) {
+      *root_mut.mut == ast::Mutability::Let) {
       SPEC_RULE("Assign-Immutable-Err");
+      SPEC_RULE("rule.18.Assign-Immutable-Err");
+      SPEC_RULE("diag.18.AssignmentStatements");
+      SPEC_RULE("diag.18.StatementDiagnosticsSupplement");
       return {false, "E-MOD-2401", {}, {}};
     }
   }
@@ -858,6 +871,9 @@ StmtTypeResult TypeAssignStmt(const ScopeContext& ctx,
     }
     if (!check.diag_id.has_value() || *check.diag_id == "E-SEM-2526") {
       SPEC_RULE("Assign-Type-Err");
+      SPEC_RULE("rule.18.Assign-Type-Err");
+      SPEC_RULE("diag.18.AssignmentStatements");
+      SPEC_RULE("diag.18.StatementDiagnosticsSupplement");
       return {false, "E-SEM-3133", {}, {}};
     }
     return {false, check.diag_id, {}, {}};
@@ -865,11 +881,12 @@ StmtTypeResult TypeAssignStmt(const ScopeContext& ctx,
 
   if (shared_write_with_key && read_then_write_same_path && type_ctx.diags) {
     SPEC_RULE("K-RMW-Permitted");
+    const bool compound_candidate =
+        IsCompoundRewriteCandidate(node, *place_key_path);
+    SPEC_RULE(compound_candidate ? "rule.19.K-RMW-Explicit-Warn"
+                                 : "rule.19.K-RMW-Contention-Warn");
     if (auto diag = core::MakeDiagnosticById(
-            IsCompoundRewriteCandidate(node, *place_key_path)
-                ? "W-CON-0006"
-                : "W-CON-0004",
-            node.span)) {
+            compound_candidate ? "W-CON-0006" : "W-CON-0004", node.span)) {
       core::Emit(*type_ctx.diags, *diag);
     }
   }

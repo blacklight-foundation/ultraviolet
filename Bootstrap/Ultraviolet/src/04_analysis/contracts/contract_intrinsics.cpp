@@ -973,6 +973,7 @@ ForeignContractResult ResolveForeignEnsures(
 
   if (clause.kind == ast::ForeignContractKind::EnsuresError &&
       IsUnitTypeForForeignContracts(return_type)) {
+    SPEC_RULE("requirement.23.ErrorPredicateWellFormedness");
     result.ok = false;
     result.diag_id = "E-SEM-2855";
     return result;
@@ -980,9 +981,18 @@ ForeignContractResult ResolveForeignEnsures(
 
   if (clause.kind == ast::ForeignContractKind::EnsuresNullResult &&
       !IsNullableForeignPtrType(return_type)) {
+    SPEC_RULE("requirement.23.NullResultWellFormedness");
+    SPEC_RULE("rule.23.ForeignEnsures-NullResult-Err");
     result.ok = false;
     result.diag_id = "E-SEM-2856";
     return result;
+  }
+  if (clause.kind == ast::ForeignContractKind::EnsuresNullResult) {
+    core::Conformance::Record(
+        "def.23.NullableFfiResult",
+        std::nullopt,
+        "source=ResolveForeignEnsures;predicate=NullableFfiResult;"
+        "return=nullable_pointer;null_result_ensures=accepted");
   }
 
   // Collect all predicates as guarantees

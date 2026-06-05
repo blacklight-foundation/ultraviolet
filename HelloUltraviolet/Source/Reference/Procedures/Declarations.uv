@@ -10,9 +10,18 @@ internal procedure declarationReferenceMoveParameter(move value: RecordReference
     return value.is_active
 }
 
+internal procedure declarationReferenceCallProc(left: i32, right: i32) -> i32 {
+    return (left * 2) + right
+}
+
+internal procedure evalSigmaCallProcedureReference() -> bool {
+    return declarationReferenceCallProc(3, 4) == 10
+}
+
 /// Exercises the Procedures Declarations reference surface.
 public procedure runProceduresDeclarationsReference() -> bool {
     let reference: RecordReference = recordReference("procedure-declaration", 1usize, true)
     return declarationReferenceNoParameters() == 1 &&
+        evalSigmaCallProcedureReference() &&
         declarationReferenceMoveParameter(move reference)
 }

@@ -9,7 +9,7 @@ public procedure validatedModuleLevelFormsExternBlockShellObligations() -> usize
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.ExternBlockShellSyntax",
-        31523usize,
+        31525usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesExternBlocksReference",
         "Source/Reference/Modules/ExternBlocks.uv"
@@ -18,7 +18,7 @@ public procedure validatedModuleLevelFormsExternBlockShellObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "req.ExternProcedureDeclSyntaxOwnedByFfiChapter",
-        31543usize,
+        31545usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesExternBlocksReference",
         "Source/Reference/Modules/ExternBlocks.uv"
@@ -27,7 +27,7 @@ public procedure validatedModuleLevelFormsExternBlockShellObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "Parse-ExternBlock",
-        31559usize,
+        31561usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesExternBlocksReference",
         "Source/Reference/Modules/ExternBlocks.uv"
@@ -36,34 +36,34 @@ public procedure validatedModuleLevelFormsExternBlockShellObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "Parse-ExternAbiOpt-None",
-        31577usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesExternBlocksReference",
-        "Source/Reference/Modules/ExternBlocks.uv"
+        31579usize,
+        "HelloUltraviolet::Audit",
+        "moduleSourceProjectExternAbiFormsExecute",
+        "Source/Audit/ModuleSourceProjectInfrastructureExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "Parse-ExternAbiOpt-String",
-        31595usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesExternBlocksReference",
-        "Source/Reference/Modules/ExternBlocks.uv"
+        31597usize,
+        "HelloUltraviolet::Audit",
+        "moduleSourceProjectExternAbiFormsExecute",
+        "Source/Audit/ModuleSourceProjectInfrastructureExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "Parse-ExternAbiOpt-Ident",
-        31613usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesExternBlocksReference",
-        "Source/Reference/Modules/ExternBlocks.uv"
+        31615usize,
+        "HelloUltraviolet::Audit",
+        "moduleSourceProjectExternAbiFormsExecute",
+        "Source/Audit/ModuleSourceProjectInfrastructureExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "Parse-ExternItemList-End",
-        31631usize,
+        31633usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesExternBlocksReference",
         "Source/Reference/Modules/ExternBlocks.uv"
@@ -72,7 +72,7 @@ public procedure validatedModuleLevelFormsExternBlockShellObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "Parse-ExternItemList-Cons",
-        31649usize,
+        31651usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesExternBlocksReference",
         "Source/Reference/Modules/ExternBlocks.uv"
@@ -81,7 +81,7 @@ public procedure validatedModuleLevelFormsExternBlockShellObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "def.ExternBlockAst",
-        31667usize,
+        31669usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesExternBlocksReference",
         "Source/Reference/Modules/ExternBlocks.uv"
@@ -90,7 +90,7 @@ public procedure validatedModuleLevelFormsExternBlockShellObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "req.ExternBlockStaticSemanticsScope",
-        31688usize,
+        31690usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesExternBlocksReference",
         "Source/Reference/Modules/ExternBlocks.uv"
@@ -99,7 +99,7 @@ public procedure validatedModuleLevelFormsExternBlockShellObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "Bind-ExternBlock",
-        31704usize,
+        31706usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesExternBlocksReference",
         "Source/Reference/Modules/ExternBlocks.uv"
@@ -108,25 +108,25 @@ public procedure validatedModuleLevelFormsExternBlockShellObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "WF-ExternBlock",
-        31722usize,
+        31724usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesExternBlocksReference",
         "Source/Reference/Modules/ExternBlocks.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "ExternAbi-Unknown-Err",
-        31740usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesExternBlocksReference",
-        "Source/Reference/Modules/ExternBlocks.uv"
+        31742usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/UnsupportedExternABI/Source/Main.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "ResolveItem-ExternBlock",
-        31758usize,
+        31760usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesExternBlocksReference",
         "Source/Reference/Modules/ExternBlocks.uv"
@@ -135,7 +135,7 @@ public procedure validatedModuleLevelFormsExternBlockShellObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "conformance.ExternBlockDynamicSemantics",
-        31776usize,
+        31778usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesExternBlocksReference",
         "Source/Reference/Modules/ExternBlocks.uv"
@@ -144,16 +144,16 @@ public procedure validatedModuleLevelFormsExternBlockShellObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "conformance.ExternBlockLowering",
-        31792usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesExternBlocksReference",
-        "Source/Reference/Modules/ExternBlocks.uv"
+        31794usize,
+        "HelloUltraviolet::Audit",
+        "moduleSourceProjectExternAbiFormsExecute",
+        "Source/Audit/ModuleSourceProjectInfrastructureExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "req.ExternBlockDiagnosticOwnership",
-        31808usize,
+        31810usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesExternBlocksReference",
         "Source/Reference/Modules/ExternBlocks.uv"

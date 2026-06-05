@@ -456,6 +456,7 @@ MainSignatureResult ValidateMainSignature(const ScopeContext& ctx,
 
   // Must take exactly one parameter
   if (proc.params.size() != 1) {
+    SPEC_RULE("NAA-2");
     result.error_code = "E-MOD-2431";
     result.error_message =
         "main procedure must take exactly one parameter";
@@ -474,12 +475,14 @@ MainSignatureResult ValidateMainSignature(const ScopeContext& ctx,
   // Parameter type must be a Context bundle.
   if (param.type) {
     if (!IsContextBundleType(ctx, *param.type)) {
+      SPEC_RULE("NAA-2");
       result.error_code = "E-MOD-2431";
       result.error_message =
           "main procedure parameter must have a Context bundle type";
       return result;
     }
   } else {
+    SPEC_RULE("NAA-2");
     result.error_code = "E-MOD-2431";
     result.error_message = "main procedure parameter must have a Context bundle type";
     return result;
@@ -558,8 +561,7 @@ bool IsCapabilityClassPath(const ast::ClassPath& path) {
          PathMatchesBuiltinName(path, "Reactor") ||
          PathMatchesBuiltinName(path, "Time") ||
          PathMatchesBuiltinName(path, "MonotonicTime") ||
-         PathMatchesBuiltinName(path, "WallTime") ||
-         PathMatchesBuiltinName(path, "System");
+         PathMatchesBuiltinName(path, "WallTime");
 }
 
 // =============================================================================

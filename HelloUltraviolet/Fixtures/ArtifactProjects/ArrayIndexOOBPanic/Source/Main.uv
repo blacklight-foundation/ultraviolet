@@ -1,0 +1,14 @@
+//! Artifact fixture for runtime array scalar-index out-of-bounds panic behavior.
+
+/// Reads an array through a runtime parameter so the bounds failure is exercised at runtime.
+#dynamic
+public procedure arrayIndexOOBPanicValue(index: usize) -> i32 {
+    let values: [i32; 3] = [10, 20, 30]
+    return values[index]
+}
+
+/// Runs the out-of-bounds array access; the parent audit observes the panic exit code.
+public procedure main(context: Context) -> i32 {
+    let _ = context
+    return arrayIndexOOBPanicValue(3usize)
+}

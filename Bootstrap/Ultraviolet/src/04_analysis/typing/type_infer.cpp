@@ -82,6 +82,7 @@
 #include <vector>
 
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 #include "04_analysis/caps/cap_concurrency.h"
 #include "04_analysis/typing/literals.h"
 #include "04_analysis/caps/cap_heap.h"
@@ -114,13 +115,23 @@ static inline void SpecDefsTypeInfer() {
   SPEC_DEF("ConstraintSet", "5.2.9");
   SPEC_DEF("Solve", "5.2.9");
   SPEC_DEF("Syn-Call-Err", "5.2.9");
+  SPEC_DEF("Unify-Prim-Fail", "5.2.9");
+  SPEC_DEF("rule.16.Call-ArgCount-Err", "16.4");
+  SPEC_DEF("rule.16.Call-ArgType-Err", "16.4");
+  SPEC_DEF("rule.16.Call-Move-Unexpected", "16.4");
+  SPEC_DEF("rule.16.Call-Arg-NotPlace", "16.4");
   SPEC_DEF("StripPerm", "5.2.12");
   SPEC_DEF("UnsafeSpan", "5.2.12");
   SPEC_DEF("PtrNullExpected", "5.2.9");
+  SPEC_DEF("def.16.PtrNullExpected", "16.1.4");
+  SPEC_DEF("rule.16.Chk-Null-Ptr", "16.1.4");
+  SPEC_DEF("rule.16.Syn-PtrNull-Err", "16.1.4");
+  SPEC_DEF("rule.16.Chk-PtrNull-Err", "16.1.4");
   SPEC_DEF("NicheCompatible", "5.7");
   SPEC_DEF("GpuPtr-AddrSpace-Err", "20.2.4");
   SPEC_DEF("Chk-Subsumption-Err", "5.2.12");
   SPEC_DEF("ValueUse-NonBitcopyPlace", "5.2.12");
+  SPEC_DEF("rule.16.ValueUse-NonBitcopyPlace", "16.2.4");
   SpecDefsSafePtr();
 }
 
@@ -171,6 +182,7 @@ static bool PtrNullExpected(const TypeRef& type) {
   if (!type) {
     return false;
   }
+  SPEC_RULE("def.16.PtrNullExpected");
   if (const auto* perm = std::get_if<TypePerm>(&type->node)) {
     return PtrNullExpected(perm->base);
   }
@@ -194,6 +206,18 @@ static bool IsNonBitcopyPlaceValueUse(const ScopeContext& ctx,
   (void)expr;
   (void)type;
   return false;
+}
+
+static bool IsMismatchedPrimitiveSurface(const TypeRef& lhs,
+                                         const TypeRef& rhs) {
+  const TypeRef lhs_surface = StripPerm(lhs);
+  const TypeRef rhs_surface = StripPerm(rhs);
+  if (!lhs_surface || !rhs_surface) {
+    return false;
+  }
+  const auto* lhs_prim = std::get_if<TypePrim>(&lhs_surface->node);
+  const auto* rhs_prim = std::get_if<TypePrim>(&rhs_surface->node);
+  return lhs_prim && rhs_prim && lhs_prim->name != rhs_prim->name;
 }
 
 static const ast::TypeAliasDecl* LookupTypeAliasDecl(const ScopeContext& ctx,
@@ -523,19 +547,25 @@ static ast::ExprPtr SubstituteIdent(const ast::ExprPtr& expr,
 
 static bool ProveRefinePredicate(const ast::ExprPtr& value,
                                  const TypeRefine& refine,
+                                 const StaticProofContext* active_proof_ctx,
                                  std::optional<std::string_view>& diag_id) {
   if (!refine.predicate) {
     return false;
   }
   const auto substituted =
       SubstituteIdent(refine.predicate, "self", value);
-  StaticProofContext proof_ctx;
+  StaticProofContext empty_proof_ctx;
+  const StaticProofContext& proof_ctx =
+      active_proof_ctx ? *active_proof_ctx : empty_proof_ctx;
   const auto proof = StaticProofAt(proof_ctx, value ? value->span : substituted->span,
                                    substituted);
   if (!proof.provable) {
+    SPEC_RULE("rule.14.T-Refine-Intro");
+    SPEC_RULE("req.14.RefinementStaticDefaultDynamicFallback");
     diag_id = "E-TYP-1953";
     return false;
   }
+  SPEC_RULE("rule.14.T-Refine-Intro");
   return true;
 }
 
@@ -779,6 +809,21 @@ static bool UnifyEq(const ScopeContext& ctx,
   }
   if (eq.equiv) {
     return true;
+  }
+
+  if (const auto* lprim = std::get_if<TypePrim>(&lhs->node)) {
+    const auto* rprim = std::get_if<TypePrim>(&rhs->node);
+    if (rprim && lprim->name != rprim->name) {
+      SPEC_RULE("Unify-Prim-Fail");
+      core::Conformance::Record(
+          "Unify-Prim-Fail",
+          std::nullopt,
+          "source=UnifyEq;lhs=TypePrim(" + lprim->name +
+              ");rhs=TypePrim(" + rprim->name +
+              ");result=UnifyFail;diag=Syn-Call-Err");
+      diag_id = "Syn-Call-Err";
+      return false;
+    }
   }
 
   if (const auto* lperm = std::get_if<TypePerm>(&lhs->node)) {
@@ -1169,7 +1214,8 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
                       const ExprTypeFn& type_expr,
                       const PlaceTypeFn* type_place,
                       const IdentTypeFn& type_ident,
-                      const IfCaseCheckFn* if_case_check);
+                      const IfCaseCheckFn* if_case_check,
+                      const StaticProofContext* proof_ctx);
 
 static ExprTypeResult InferExprImpl(const ScopeContext& ctx,
                          const ast::ExprPtr& expr,
@@ -1196,6 +1242,7 @@ static ExprTypeResult InferExprImpl(const ScopeContext& ctx,
 
   if (std::holds_alternative<ast::PtrNullExpr>(expr->node)) {
     SPEC_RULE("Syn-PtrNull-Err");
+    SPEC_RULE("rule.16.Syn-PtrNull-Err");
     result.diag_id = "PtrNull-Infer-Err";
     return result;
   }
@@ -1265,6 +1312,8 @@ static ExprTypeResult InferExprImpl(const ScopeContext& ctx,
       SPEC_RULE("Syn-Call-Err");
       result.diag_id = typed_call.diag_id;
       result.diag_detail = typed_call.diag_detail;
+      result.diagnostic_obligation_ids =
+          typed_call.diagnostic_obligation_ids;
       return result;
     }
     SPEC_RULE("Syn-Call");
@@ -1277,6 +1326,9 @@ static ExprTypeResult InferExprImpl(const ScopeContext& ctx,
   if (!fallback.ok) {
     result.diag_id = fallback.diag_id;
     result.diag_detail = fallback.diag_detail;
+    result.diag_span = fallback.diag_span;
+    result.diagnostic_obligation_ids =
+        fallback.diagnostic_obligation_ids;
     return result;
   }
   SPEC_RULE("Syn-Expr");
@@ -1291,7 +1343,8 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
                       const ExprTypeFn& type_expr,
                       const PlaceTypeFn* type_place,
                       const IdentTypeFn& type_ident,
-                      const IfCaseCheckFn* if_case_check) {
+                      const IfCaseCheckFn* if_case_check,
+                      const StaticProofContext* proof_ctx) {
   SpecDefsTypeInfer();
   CheckResult result;
   struct CheckExprRecorder {
@@ -1346,7 +1399,7 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
 
     const auto checked_inner =
         CheckExprImpl(ctx, attributed->expr, expected, type_expr, type_place,
-                      type_ident, if_case_check);
+                      type_ident, if_case_check, proof_ctx);
     if (!checked_inner.ok) {
       result.diag_id = checked_inner.diag_id;
       return result;
@@ -1390,10 +1443,12 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
   if (std::holds_alternative<ast::PtrNullExpr>(expr->node)) {
     if (PtrNullExpected(expected)) {
       SPEC_RULE("Chk-Null-Ptr");
+      SPEC_RULE("rule.16.Chk-Null-Ptr");
       result.ok = true;
       return result;
     }
     SPEC_RULE("Chk-PtrNull-Err");
+    SPEC_RULE("rule.16.Chk-PtrNull-Err");
     result.diag_id = "PtrNull-Infer-Err";
     return result;
   }
@@ -1421,7 +1476,7 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
         if (const auto* elem = std::get_if<ast::ArrayElemSegment>(&segment)) {
           const auto elem_check =
               CheckExprImpl(ctx, elem->value, expected_array->element, type_expr,
-                            type_place, type_ident, if_case_check);
+                            type_place, type_ident, if_case_check, proof_ctx);
           if (!elem_check.ok) {
             result.diag_id = elem_check.diag_id;
             return result;
@@ -1452,7 +1507,8 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
         }
         const auto value_check =
             CheckExprImpl(ctx, repeat->value, expected_array->element,
-                          type_expr, type_place, type_ident, if_case_check);
+                          type_expr, type_place, type_ident, if_case_check,
+                          proof_ctx);
         if (!value_check.ok) {
           result.diag_id = value_check.diag_id;
           return result;
@@ -1479,7 +1535,7 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
         if (const auto* elem = std::get_if<ast::ArrayElemSegment>(&segment)) {
           const auto elem_check =
               CheckExprImpl(ctx, elem->value, expected_slice->element, type_expr,
-                            type_place, type_ident, if_case_check);
+                            type_place, type_ident, if_case_check, proof_ctx);
           if (!elem_check.ok) {
             result.diag_id = elem_check.diag_id;
             return result;
@@ -1510,7 +1566,8 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
         (void)repeat_len;
         const auto value_check =
             CheckExprImpl(ctx, repeat->value, expected_slice->element,
-                          type_expr, type_place, type_ident, if_case_check);
+                          type_expr, type_place, type_ident, if_case_check,
+                          proof_ctx);
         if (!value_check.ok) {
           result.diag_id = value_check.diag_id;
           return result;
@@ -1554,7 +1611,8 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
       }
       const auto value_check =
           CheckExprImpl(ctx, array_repeat->value, expected_array->element,
-                        type_expr, type_place, type_ident, if_case_check);
+                        type_expr, type_place, type_ident, if_case_check,
+                        proof_ctx);
       if (!value_check.ok) {
         result.diag_id = value_check.diag_id;
         return result;
@@ -1574,7 +1632,8 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
     if (expected_slice) {
       const auto value_check =
           CheckExprImpl(ctx, array_repeat->value, expected_slice->element,
-                        type_expr, type_place, type_ident, if_case_check);
+                        type_expr, type_place, type_ident, if_case_check,
+                        proof_ctx);
       if (!value_check.ok) {
         result.diag_id = value_check.diag_id;
         return result;
@@ -1597,7 +1656,8 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
                              : nullptr;
       if (prim && IsSignedIntOrFloatType(prim->name)) {
         const auto inner = CheckExprImpl(ctx, unary->value, expected, type_expr,
-                                         type_place, type_ident, if_case_check);
+                                         type_place, type_ident, if_case_check,
+                                         proof_ctx);
         if (inner.ok) {
           SPEC_RULE("T-Neg");
           result.ok = true;
@@ -1636,7 +1696,10 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
                                    : nullptr;
         if (recv_dyn && IsHeapAllocatorClassPath(recv_dyn->path)) {
           if (!IsInUnsafeSpan(ctx, expr->span)) {
+            SPEC_RULE("diag.14.CapabilityClasses");
+            SPEC_RULE("req.14.HeapAllocatorRawCallsRequireUnsafe");
             SPEC_RULE("AllocRaw-Unsafe-Err");
+            SPEC_RULE("rule.14.AllocRaw-Unsafe-Err");
             result.diag_id = "E-MEM-3030";
             return result;
           }
@@ -1660,17 +1723,20 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
           }
           if (method->args.size() != 1) {
             SPEC_RULE("Call-ArgCount-Err");
+            SPEC_RULE("rule.16.Call-ArgCount-Err");
             result.diag_id = "E-SEM-2532";
             return result;
           }
           const auto& arg = method->args[0];
           if (ast::IsMoveArg(arg)) {
             SPEC_RULE("Call-Move-Unexpected");
+            SPEC_RULE("rule.16.Call-Move-Unexpected");
             result.diag_id = "E-SEM-2535";
             return result;
           }
           if (HasSourceProvenance(arg.value) && !IsPlaceExprForCall(arg.value)) {
             SPEC_RULE("Call-Arg-NotPlace");
+            SPEC_RULE("rule.16.Call-Arg-NotPlace");
             result.diag_id = "E-TYP-1603";
             return result;
           }
@@ -1687,6 +1753,7 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
           }
           if (!count_sub.subtype) {
             SPEC_RULE("Call-ArgType-Err");
+            SPEC_RULE("rule.16.Call-ArgType-Err");
             result.diag_id = "E-SEM-2533";
             return result;
           }
@@ -1731,10 +1798,13 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
     result.diag_id = inferred.diag_id;
     result.diag_detail = inferred.diag_detail;
     result.diag_span = inferred.diag_span;
+    result.diagnostic_obligation_ids =
+        inferred.diagnostic_obligation_ids;
     return result;
   }
   if (IsNonBitcopyPlaceValueUse(ctx, expr, inferred.type)) {
     SPEC_RULE("ValueUse-NonBitcopyPlace");
+    SPEC_RULE("rule.16.ValueUse-NonBitcopyPlace");
     result.diag_id = "ValueUse-NonBitcopyPlace";
     return result;
   }
@@ -1873,6 +1943,7 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
     }
     if (IsGpuPtrAddrSpaceMismatch(inferred.type, expected)) {
       SPEC_RULE("GpuPtr-AddrSpace-Err");
+      SPEC_RULE("rule.20.GpuPtr-AddrSpace-Err");
       result.diag_id = "E-TYP-2641";
       return result;
     }
@@ -1899,17 +1970,28 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
       }
       const auto base_check =
           CheckExprImpl(ctx, expr, refine->base, type_expr, type_place,
-                        type_ident, if_case_check);
+                        type_ident, if_case_check, proof_ctx);
       if (!base_check.ok) {
         result.diag_id = base_check.diag_id;
         return result;
       }
-      if (!ProveRefinePredicate(expr, *refine, result.diag_id)) {
+      if (!ProveRefinePredicate(expr, *refine, proof_ctx, result.diag_id)) {
         return result;
       }
       SPEC_RULE("T-Refine-Intro");
+      SPEC_RULE("rule.14.T-Refine-Intro");
       result.ok = true;
       return result;
+    }
+    if (IsMismatchedPrimitiveSurface(inferred.type, expected_norm)) {
+      TypeSubstitution subst;
+      std::optional<std::string_view> diag_id;
+      (void)UnifyEq(
+          ctx,
+          StripPerm(expected_norm),
+          StripPerm(inferred.type),
+          subst,
+          diag_id);
     }
     SPEC_RULE("Chk-Subsumption-Err");
     result.diag_id = "E-SEM-2526";
@@ -2038,7 +2120,7 @@ CheckResult CheckExpr(const ScopeContext& ctx,
                       const PlaceTypeFn& type_place,
                       const IdentTypeFn& type_ident) {
   return CheckExprImpl(ctx, expr, expected, type_expr, &type_place, type_ident,
-                       nullptr);
+                       nullptr, nullptr);
 }
 
 CheckResult CheckExpr(const ScopeContext& ctx,
@@ -2049,7 +2131,19 @@ CheckResult CheckExpr(const ScopeContext& ctx,
                       const IdentTypeFn& type_ident,
                       const IfCaseCheckFn& if_case_check) {
   return CheckExprImpl(ctx, expr, expected, type_expr, &type_place, type_ident,
-                       &if_case_check);
+                       &if_case_check, nullptr);
+}
+
+CheckResult CheckExpr(const ScopeContext& ctx,
+                      const ast::ExprPtr& expr,
+                      const TypeRef& expected,
+                      const ExprTypeFn& type_expr,
+                      const PlaceTypeFn& type_place,
+                      const IdentTypeFn& type_ident,
+                      const IfCaseCheckFn& if_case_check,
+                      const std::shared_ptr<StaticProofContext>& proof_ctx) {
+  return CheckExprImpl(ctx, expr, expected, type_expr, &type_place, type_ident,
+                       &if_case_check, proof_ctx.get());
 }
 
 }  // namespace ultraviolet::analysis

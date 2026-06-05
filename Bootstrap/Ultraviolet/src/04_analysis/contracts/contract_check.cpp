@@ -99,6 +99,11 @@ namespace ultraviolet::analysis
       SPEC_DEF("LSP", "UVX.5.W");
     }
 
+    static inline void RecordContractNeverPureForm()
+    {
+      SPEC_RULE("req.15.ContractNeverPureForms");
+    }
+
     // Check if expression contains @result
     bool ContainsResult(const ast::ExprPtr &expr)
     {
@@ -1795,8 +1800,12 @@ namespace ultraviolet::analysis
             }
             else if constexpr (std::is_same_v<T, ast::MoveExpr>)
             {
-              return !ctx || !ctx->allow_responsibility_moves ||
-                     IsImpureExpr(ctx, node.place, purity_stack);
+              if (!ctx || !ctx->allow_responsibility_moves)
+              {
+                RecordContractNeverPureForm();
+                return true;
+              }
+              return IsImpureExpr(ctx, node.place, purity_stack);
             }
             else if constexpr (std::is_same_v<T, ast::AttributedExpr>)
             {
@@ -1982,6 +1991,7 @@ namespace ultraviolet::analysis
                                std::is_same_v<T, ast::FenceExpr> ||
                                std::is_same_v<T, ast::PropagateExpr>)
             {
+              RecordContractNeverPureForm();
               return true;
             }
             return false;
@@ -2005,6 +2015,7 @@ namespace ultraviolet::analysis
   {
     SpecDefsContractCheck();
     SPEC_RULE("WF-Contract");
+    SPEC_RULE("rule.15.WF-Contract");
 
     ContractCheckResult result;
 
@@ -2183,6 +2194,11 @@ namespace ultraviolet::analysis
   {
     SpecDefsContractCheck();
     SPEC_RULE("LSP");
+    SPEC_RULE("def.15.BehavioralSubtypingRelationship");
+    SPEC_RULE("req.15.BehavioralSubtypingVerificationStrategy");
+    SPEC_RULE("req.15.BehavioralSubtypingNoRuntimeChecks");
+    SPEC_RULE("req.15.BehavioralSubtypingNoAdditionalRuntimeSemantics");
+    SPEC_RULE("req.15.BehavioralSubtypingLoweringNoExtraChecks");
 
     BehavioralSubtypingResult result;
 
@@ -2193,6 +2209,8 @@ namespace ultraviolet::analysis
         PredicateImplies(class_contract.precondition, impl_contract.precondition);
     if (!result.precondition_weaker)
     {
+      SPEC_RULE("req.15.BehavioralSubtypingLiskovRequirement");
+      SPEC_RULE("req.15.BehavioralSubtypingPreconditionRule");
       result.ok = false;
       result.diag_id = "E-SEM-2803";
       return result;
@@ -2202,6 +2220,8 @@ namespace ultraviolet::analysis
         PredicateImplies(impl_contract.postcondition, class_contract.postcondition);
     if (!result.postcondition_stronger)
     {
+      SPEC_RULE("req.15.BehavioralSubtypingLiskovRequirement");
+      SPEC_RULE("req.15.BehavioralSubtypingPostconditionRule");
       result.ok = false;
       result.diag_id = "E-SEM-2804";
       return result;

@@ -340,12 +340,12 @@ public procedure validatedSourceTextAndLexicalStructureSourceLoadingAndNormaliza
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if artifactBehaviorObligationEntryMatches(
         "def.TokenizeOutputConstraints",
         7449usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLogicalLinesReference",
-        "Source/Reference/SourceText/LogicalLines.uv"
+        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
+        "validatedArtifactProjectFixtureCount",
+        "Fixtures/ArtifactProjects/LexerTokenizerOutput/Source/Library.uv"
     ) {
         count = count + 1usize
     }

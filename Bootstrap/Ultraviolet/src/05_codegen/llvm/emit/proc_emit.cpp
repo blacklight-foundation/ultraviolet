@@ -4,13 +4,106 @@
 // =============================================================================
 #include "05_codegen/llvm/emit/llvm_emit_helpers.h"
 
+#include "00_core/spec_trace.h"
+
+#include <optional>
+#include <string>
+
 namespace ultraviolet::codegen {
 
 using namespace emit_detail;
 
+namespace {
+
+void RecordCallSignatureHelpers(bool generated_proc,
+                                bool has_proc_module,
+                                std::size_t ir_param_count,
+                                std::size_t llvm_param_count)
+{
+  if (!core::Conformance::Enabled())
+  {
+    return;
+  }
+
+  std::string payload = "source=LLVMEmitter::EmitProc";
+  payload += ";helpers=ProcModule,SigOf,LoweredSigOf,LLVMCallSig";
+  payload += ";proc_module=";
+  payload += has_proc_module && !generated_proc ? "defined" : "undefined";
+  payload += ";ir_param_count=";
+  payload += std::to_string(ir_param_count);
+  payload += ";llvm_param_count=";
+  payload += std::to_string(llvm_param_count);
+  core::Conformance::Record("def.24.CallSignatureHelpers", std::nullopt, payload);
+}
+
+void RecordParamInitHelpers(std::size_t param_count,
+                            std::size_t bound_params,
+                            std::size_t bound_params_by_ref,
+                            std::size_t bound_params_by_value)
+{
+  if (!core::Conformance::Enabled())
+  {
+    return;
+  }
+
+  std::string payload = "source=LLVMEmitter::EmitProc";
+  payload += ";helper=ParamInitIR;cases=ByValueStore,ZeroSizeStore,ByRefEmpty";
+  payload += ";param_count=";
+  payload += std::to_string(param_count);
+  payload += ";bound_params=";
+  payload += std::to_string(bound_params);
+  payload += ";bound_by_ref=";
+  payload += std::to_string(bound_params_by_ref);
+  payload += ";bound_by_value=";
+  payload += std::to_string(bound_params_by_value);
+  core::Conformance::Record("def.24.ParamInitHelpers", std::nullopt, payload);
+}
+
+void RecordProcDeclLowering(bool generated_proc,
+                            bool has_proc_module,
+                            bool needs_entry_panic_clear)
+{
+  if (generated_proc)
+  {
+    SPEC_RULE("rule.24.LowerIRDecl-Proc-Gen");
+  }
+  else if (has_proc_module)
+  {
+    SPEC_RULE("rule.24.LowerIRDecl-Proc-User");
+  }
+  else
+  {
+    return;
+  }
+
+  if (!core::Conformance::Enabled())
+  {
+    return;
+  }
+
+  const char *rule_id = generated_proc ? "rule.24.LowerIRDecl-Proc-Gen"
+                                       : "rule.24.LowerIRDecl-Proc-User";
+  std::string payload = "source=LLVMEmitter::EmitProc;decl=ProcIR";
+  payload += ";proc_module=";
+  payload += generated_proc ? "undefined" : "defined";
+  payload += ";call_sig=LLVMCallSig;param_init=ParamInitIR";
+  payload += ";clear_panic=";
+  payload += needs_entry_panic_clear ? "present" : "absent";
+  payload += ";poison_check=";
+  payload += generated_proc ? "not-required" : "CheckPoison";
+  payload += ";body=LowerIRInstr;result=LLVMDefine";
+  core::Conformance::Record(rule_id, std::nullopt, payload);
+}
+
+} // namespace
+
   void LLVMEmitter::EmitProc(const ProcIR &proc)
   {
     const bool generated_proc = emit_detail::IsGeneratedProcSymbol(proc.symbol);
+    const bool has_proc_module =
+        !generated_proc && !proc.defining_module_path.empty();
+    SPEC_RULE("def.24.CallSignatureHelpers");
+    SPEC_RULE("def.24.ParamInitHelpers");
     if (generated_proc)
     {
       SPEC_RULE("LowerIRDecl-Proc-Gen");
@@ -102,6 +195,11 @@ using namespace emit_detail;
       }
       return;
     }
+    RecordCallSignatureHelpers(
+        generated_proc,
+        has_proc_module,
+        abi_params.size(),
+        func->arg_size());
     if (perf_enabled)
     {
       const auto now = Clock::now();
@@ -323,6 +421,11 @@ using namespace emit_detail;
       bind_params_ms = ElapsedMs(phase_start, now);
       phase_start = now;
     }
+    RecordParamInitHelpers(
+        abi_params.size(),
+        bound_params,
+        bound_params_by_ref,
+        bound_params_by_value);
 
     // Some procedures (for example exported ABI-entry procedures) intentionally
     // omit the hidden panic out-parameter. Cleanup/panic IR still refers to the
@@ -413,10 +516,23 @@ using namespace emit_detail;
         current_ctx_ ? current_ctx_->LookupAsyncProc(proc.symbol) : nullptr;
     if (async_info)
     {
+      SPEC_RULE("def.21.AsyncStateMachineLoweringJudgements");
+      SPEC_RULE("def.21.AsyncStateMachineFrameHelpers");
       async_state_storage.info = async_info;
       async_state_active = true;
       async_resume_mode = async_info->is_resume;
       async_state_storage.emitting_resume_prelude = async_info->is_resume;
+      if (async_info->is_resume)
+      {
+        SPEC_RULE("rule.21.Lower-Async-Resume");
+        SPEC_RULE("requirement.21.AsyncResumeRuntimeSemantics");
+      }
+      else
+      {
+        SPEC_RULE("rule.21.Lower-Async-Proc");
+        SPEC_RULE("requirement.21.AsyncProcedureCallRuntimeSemantics");
+        SPEC_RULE("requirement.21.AsyncFrameInitIRSemantics");
+      }
 
       llvm::IRBuilder<> entry_builder(&func->getEntryBlock(), func->getEntryBlock().begin());
       for (const auto &slot_name : async_info->slot_order)
@@ -523,6 +639,7 @@ using namespace emit_detail;
               llvm::BasicBlock::Create(context_, "async.resume.invalid", func);
           llvm::BasicBlock *start_bb =
               llvm::BasicBlock::Create(context_, "async.resume.start", func);
+          SPEC_RULE("requirement.21.AsyncResumeSwitchIRSemantics");
           async_state_storage.resume_switch =
               builder->CreateSwitch(resume_state, invalid_resume_bb);
           builder->SetInsertPoint(invalid_resume_bb);
@@ -605,6 +722,11 @@ using namespace emit_detail;
       terminator_fix_ms = ElapsedMs(phase_start, now);
       phase_start = now;
     }
+
+    RecordProcDeclLowering(
+        generated_proc,
+        has_proc_module,
+        needs_entry_panic_clear);
 
     ClearLocals();
     ClearTempValues();

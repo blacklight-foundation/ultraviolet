@@ -209,6 +209,7 @@ ParseElemResult<ExprPtr> ParsePlace(Parser parser, bool allow_brace) {
     return expr;
   }
   SPEC_RULE("Parse-Place-Err");
+  SPEC_RULE("rule.16.Parse-Place-Err");
   EmitParseSyntaxErr(expr.parser, TokSpan(parser));
   Parser sync = expr.parser;
   SyncStmt(sync);
@@ -243,11 +244,14 @@ ParseElemResult<ExprPtr> ParseUnary(Parser parser, bool allow_brace,
   // Dereference (*)
   if (IsOp(parser, "*")) {
     SPEC_RULE("Parse-Unary-Deref");
+    SPEC_RULE("rule.16.Parse-Unary-Deref");
+    SPEC_RULE("grammar.16.EffectfulCoreExpressions");
     Parser next = parser;
     Advance(next);
     ParseElemResult<ExprPtr> rhs = ParseUnary(next, allow_brace, allow_bracket);
     DerefExpr deref;
     deref.value = rhs.elem;
+    SPEC_RULE("def.16.EffectfulCoreExprAst");
     return {rhs.parser,
             MakeExpr(SpanCover(TokSpan(parser), rhs.elem->span), deref)};
   }
@@ -255,11 +259,14 @@ ParseElemResult<ExprPtr> ParseUnary(Parser parser, bool allow_brace,
   // Address-of (&)
   if (IsOp(parser, "&")) {
     SPEC_RULE("Parse-Unary-AddressOf");
+    SPEC_RULE("rule.16.Parse-Unary-AddressOf");
+    SPEC_RULE("grammar.16.EffectfulCoreExpressions");
     Parser next = parser;
     Advance(next);
     ParseElemResult<ExprPtr> place = ParsePlace(next, allow_brace);
     AddressOfExpr addr;
     addr.place = place.elem;
+    SPEC_RULE("def.16.EffectfulCoreExprAst");
     return {place.parser,
             MakeExpr(SpanCover(TokSpan(parser), place.elem->span), addr)};
   }
@@ -267,11 +274,14 @@ ParseElemResult<ExprPtr> ParseUnary(Parser parser, bool allow_brace,
   // Move keyword
   if (IsKw(parser, "move")) {
     SPEC_RULE("Parse-Unary-Move");
+    SPEC_RULE("rule.16.Parse-Unary-Move");
+    SPEC_RULE("grammar.16.EffectfulCoreExpressions");
     Parser next = parser;
     Advance(next);
     ParseElemResult<ExprPtr> place = ParsePlace(next, allow_brace);
     MoveExpr move;
     move.place = place.elem;
+    SPEC_RULE("def.16.EffectfulCoreExprAst");
     return {place.parser,
             MakeExpr(SpanCover(TokSpan(parser), place.elem->span), move)};
   }
@@ -279,11 +289,14 @@ ParseElemResult<ExprPtr> ParseUnary(Parser parser, bool allow_brace,
   // Copy keyword
   if (IsKw(parser, "copy")) {
     SPEC_RULE("Parse-Unary-Copy");
+    SPEC_RULE("rule.16.Parse-Unary-Copy");
+    SPEC_RULE("grammar.16.EffectfulCoreExpressions");
     Parser next = parser;
     Advance(next);
     ParseElemResult<ExprPtr> rhs = ParseUnary(next, allow_brace, allow_bracket);
     CopyExpr copy;
     copy.value = rhs.elem;
+    SPEC_RULE("def.16.EffectfulCoreExprAst");
     return {rhs.parser,
             MakeExpr(SpanCover(TokSpan(parser), rhs.elem->span), copy)};
   }

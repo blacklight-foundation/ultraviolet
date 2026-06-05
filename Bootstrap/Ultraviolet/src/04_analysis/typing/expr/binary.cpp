@@ -9,6 +9,7 @@
 
 #include "00_core/assert_spec.h"
 #include "04_analysis/generics/monomorphize.h"
+#include "04_analysis/resolve/scopes.h"
 #include "04_analysis/resolve/scopes_lookup.h"
 #include "04_analysis/typing/expr/expr_common.h"
 #include "04_analysis/typing/subtyping.h"
@@ -35,6 +36,7 @@ static inline void SpecDefsBinary() {
   SPEC_DEF("T-Compare-Ord", "5.2.12");
   SPEC_DEF("T-Logical", "5.2.12");
   SPEC_DEF("Binary-Operand-Type-Err", "16.4.7");
+  SPEC_DEF("rule.15.Result-Generic-Constraint", "15.5.7");
 }
 
 struct PrimResolveResult {
@@ -140,6 +142,47 @@ static bool IsNullLiteralExpr(const ast::ExprPtr& expr) {
   }
   const auto* literal = std::get_if<ast::LiteralExpr>(&expr->node);
   return literal && literal->literal.kind == lexer::TokenKind::NullLiteral;
+}
+
+static bool IsResultExpr(const ast::ExprPtr& expr) {
+  return expr && std::holds_alternative<ast::ResultExpr>(expr->node);
+}
+
+static TypeRef StripPermAndRefine(const TypeRef& type);
+
+static bool TypeIsScopeTypeParameter(const ScopeContext& ctx,
+                                     const TypeRef& type) {
+  const auto stripped = StripPermAndRefine(type);
+  if (!stripped) {
+    return false;
+  }
+  const auto* path = std::get_if<TypePathType>(&stripped->node);
+  if (!path || path->path.size() != 1) {
+    return false;
+  }
+
+  const auto key = IdKeyOf(path->path[0]);
+  for (const auto& scope : ctx.scopes) {
+    const auto it = scope.find(key);
+    if (it == scope.end()) {
+      continue;
+    }
+    const Entity& entity = it->second;
+    return entity.kind == EntityKind::Type &&
+           entity.source == EntitySource::Decl &&
+           !entity.origin_opt.has_value() &&
+           entity.target_opt.has_value() &&
+           IdEq(*entity.target_opt, path->path[0]);
+  }
+  return false;
+}
+
+static bool ResultGenericConstraintApplies(const ScopeContext& ctx,
+                                           const StmtTypeContext& type_ctx,
+                                           const ast::BinaryExpr& expr) {
+  return type_ctx.contract_phase == ContractPhase::Postcondition &&
+         (IsResultExpr(expr.lhs) || IsResultExpr(expr.rhs)) &&
+         TypeIsScopeTypeParameter(ctx, type_ctx.return_type);
 }
 
 static TypeRef StripPermAndRefine(const TypeRef& type) {
@@ -640,26 +683,29 @@ ExprTypeResult TypeBinaryExprImpl(const ScopeContext& ctx,
     if (!TryAliasTransparentEquiv(ctx, lhs.core, rhs.core, result, equiv)) {
       return result;
     }
+    if (ResultGenericConstraintApplies(ctx, type_ctx, expr)) {
+      SPEC_RULE("rule.15.Result-Generic-Constraint");
+    }
 
-    if (equiv && EqType(ctx, lhs.core)) {
+    const bool lhs_eq = EqType(ctx, lhs.core);
+    if (equiv && lhs_eq) {
       SPEC_RULE("T-Compare-Eq");
       result.ok = true;
       result.type = MakeTypePrim("bool");
       return result;
     }
 
-    if (EqType(ctx, lhs.core) &&
-        TryCheckOperandAgainst(ctx, type_ctx, expr.rhs, rhs.core, lhs.core,
-                               env)) {
+    if (lhs_eq && TryCheckOperandAgainst(ctx, type_ctx, expr.rhs, rhs.core,
+                                         lhs.core, env)) {
       SPEC_RULE("T-Compare-Eq");
       result.ok = true;
       result.type = MakeTypePrim("bool");
       return result;
     }
 
-    if (EqType(ctx, rhs.core) &&
-        TryCheckOperandAgainst(ctx, type_ctx, expr.lhs, lhs.core, rhs.core,
-                               env)) {
+    const bool rhs_eq = EqType(ctx, rhs.core);
+    if (rhs_eq && TryCheckOperandAgainst(ctx, type_ctx, expr.lhs, lhs.core,
+                                         rhs.core, env)) {
       SPEC_RULE("T-Compare-Eq");
       result.ok = true;
       result.type = MakeTypePrim("bool");

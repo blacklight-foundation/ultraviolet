@@ -22,6 +22,9 @@ static inline void SpecDefsCast() {
   SPEC_DEF("T-Cast", "16.5.4");
   SPEC_DEF("CastValid", "16.5.4");
   SPEC_DEF("T-Cast-Invalid", "16.5.4");
+  SPEC_DEF("def.16.CastValidity", "16.5.4");
+  SPEC_DEF("rule.16.T-Cast", "16.5.4");
+  SPEC_DEF("rule.16.T-Cast-Invalid", "16.5.4");
   SPEC_DEF("T-Dynamic-Form", "14.6.4");
   SPEC_DEF("Dynamic-NonDispatchable", "5.3.1");
 }
@@ -60,6 +63,8 @@ ExprTypeResult TypeCastExprImpl(const ScopeContext& ctx,
       if (const auto diag_id =
               ClassDispatchabilityDiagnostic(ctx, target_dynamic->path)) {
         SPEC_RULE("Dynamic-NonDispatchable");
+        SPEC_RULE("rule.14.Dynamic-NonDispatchable");
+        SPEC_RULE("req.14.DynamicDispatchDispatchableClassesOnly");
         result.diag_id = *diag_id;
         return result;
       }
@@ -72,14 +77,16 @@ ExprTypeResult TypeCastExprImpl(const ScopeContext& ctx,
     }
   }
 
-  // Check if cast is valid
+  SPEC_RULE("def.16.CastValidity");
   if (!CastValid(value_result.type, target.type)) {
     SPEC_RULE("T-Cast-Invalid");
+    SPEC_RULE("rule.16.T-Cast-Invalid");
     result.diag_id = "T-Cast-Invalid";
     return result;
   }
 
   SPEC_RULE("T-Cast");
+  SPEC_RULE("rule.16.T-Cast");
   result.ok = true;
   result.type = target.type;
   return result;

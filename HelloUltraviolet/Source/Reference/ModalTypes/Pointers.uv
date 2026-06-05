@@ -11,12 +11,45 @@ internal procedure rawPointerReferenceIdentity(pointer: *mut i32) -> *mut i32 {
 }
 
 internal procedure pointerReferenceLayoutMatches() -> bool {
+    return layoutSafePointerReference() && layoutRawPointerReference()
+}
+
+/// Exercises safe pointer size equations for all pointer states.
+public procedure sizeSafePointerReference() -> bool {
     return sizeof(Ptr<i32>) == sizeof(usize) &&
-        alignof(Ptr<i32>) == alignof(usize) &&
         sizeof(Ptr<i32>@Null) == sizeof(usize) &&
         sizeof(Ptr<i32>@Valid) == sizeof(usize) &&
-        sizeof(*imm i32) == sizeof(usize) &&
+        sizeof(Ptr<i32>@Expired) == sizeof(usize)
+}
+
+/// Exercises safe pointer alignment equations for all pointer states.
+public procedure alignSafePointerReference() -> bool {
+    return alignof(Ptr<i32>) == alignof(usize) &&
+        alignof(Ptr<i32>@Null) == alignof(usize) &&
+        alignof(Ptr<i32>@Valid) == alignof(usize) &&
+        alignof(Ptr<i32>@Expired) == alignof(usize)
+}
+
+/// Exercises the safe pointer layout tuple for all pointer states.
+public procedure layoutSafePointerReference() -> bool {
+    return sizeSafePointerReference() && alignSafePointerReference()
+}
+
+/// Exercises raw pointer size equations for immutable and mutable raw pointers.
+public procedure sizeRawPointerReference() -> bool {
+    return sizeof(*imm i32) == sizeof(usize) &&
         sizeof(*mut i32) == sizeof(usize)
+}
+
+/// Exercises raw pointer alignment equations for immutable and mutable raw pointers.
+public procedure alignRawPointerReference() -> bool {
+    return alignof(*imm i32) == alignof(usize) &&
+        alignof(*mut i32) == alignof(usize)
+}
+
+/// Exercises the raw pointer layout tuple.
+public procedure layoutRawPointerReference() -> bool {
+    return sizeRawPointerReference() && alignRawPointerReference()
 }
 
 /// Exercises the ModalTypes Pointers reference surface.

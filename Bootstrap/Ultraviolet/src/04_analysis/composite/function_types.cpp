@@ -423,6 +423,11 @@ struct FunctionTypeAnalysisCache {
       statics;
 };
 
+static ModuleStaticLookupResult LookupModuleStaticInModuleUncached(
+    const ScopeContext& ctx,
+    const ast::ASTModule& module,
+    std::string_view name);
+
 static bool FunctionTypeAnalysisCacheValid(
     const ScopeContext& ctx,
     const FunctionTypeAnalysisCache& cache) {
@@ -486,6 +491,15 @@ static ModuleStaticLookupResult LookupModuleStaticInModule(
     return cached->second;
   }
 
+  const auto result = LookupModuleStaticInModuleUncached(ctx, module, name);
+  cache.statics.emplace(std::move(cache_key), result);
+  return result;
+}
+
+static ModuleStaticLookupResult LookupModuleStaticInModuleUncached(
+    const ScopeContext& ctx,
+    const ast::ASTModule& module,
+    std::string_view name) {
   ModuleStaticLookupResult result{true, std::nullopt, {}, false};
   for (const auto& item : module.items) {
     const auto* decl = std::get_if<ast::StaticDecl>(&item);
@@ -510,29 +524,21 @@ static ModuleStaticLookupResult LookupModuleStaticInModule(
 
     const auto lowered = LowerTypeLocal(ctx, ann_type);
     if (!lowered.ok) {
-      result = {false, lowered.diag_id, {}, false};
-      cache.statics.emplace(std::move(cache_key), result);
-      return result;
+      return {false, lowered.diag_id, {}, false};
     }
 
-    const auto pattern_result =
-        TypePatternAgainstType(ctx, decl->binding.pat, lowered.type);
+    const auto pattern_result = TypePattern(ctx, decl->binding.pat, lowered.type);
     if (!pattern_result.ok) {
-      result = {false, pattern_result.diag_id, {}, false};
-      cache.statics.emplace(std::move(cache_key), result);
-      return result;
+      return {false, pattern_result.diag_id, {}, false};
     }
 
     for (const auto& binding : pattern_result.bindings) {
       if (IdEq(binding.first, name)) {
-        result = {true, std::nullopt, binding.second,
-                  decl->mut == ast::Mutability::Var};
-        cache.statics.emplace(std::move(cache_key), result);
-        return result;
+        return {true, std::nullopt, binding.second,
+                decl->mut == ast::Mutability::Var};
       }
     }
   }
-  cache.statics.emplace(std::move(cache_key), result);
   return result;
 }
 
@@ -752,10 +758,16 @@ ModuleStaticLookupResult LookupModuleStatic(const ScopeContext& ctx,
                                             const ast::ModulePath& path,
                                             std::string_view name) {
   const auto* module = FindModule(ctx, path);
-  if (!module) {
-    return {true, std::nullopt, {}, false};
+  if (module) {
+    return LookupModuleStaticInModule(ctx, *module, name);
   }
-  return LookupModuleStaticInModule(ctx, *module, name);
+
+  const auto* context_module = FindContextModuleByPath(ctx, path);
+  if (context_module) {
+    return LookupModuleStaticInModuleUncached(ctx, *context_module, name);
+  }
+
+  return {true, std::nullopt, {}, false};
 }
 
 }  // namespace ultraviolet::analysis

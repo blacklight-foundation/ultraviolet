@@ -19,12 +19,14 @@
 #include <algorithm>
 #include <map>
 #include <set>
+#include <string>
 #include <type_traits>
 #include <unordered_map>
 
 #include "00_core/assert_spec.h"
 #include "00_core/diagnostic_messages.h"
 #include "00_core/diagnostics.h"
+#include "00_core/spec_trace.h"
 #include "00_core/symbols.h"
 #include "04_analysis/resolve/scopes.h"
 #include "04_analysis/resolve/visibility.h"
@@ -59,6 +61,46 @@ static inline void SpecDefsCollect() {
 
 static inline void SpecDefsPatNames() {
   SPEC_DEF("PatNames", "5.1.5");
+}
+
+std::string ModulePathText(const ast::ModulePath& path) {
+  std::string text;
+  for (std::size_t i = 0; i < path.size(); ++i) {
+    if (i != 0) {
+      text.append("::");
+    }
+    text.append(path[i]);
+  }
+  return text;
+}
+
+void RecordImportDeclarationLowering(const ast::ImportDecl& decl,
+                                     const ast::Identifier& alias_name,
+                                     const ast::ModulePath& resolved_path) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload = "source=ItemBindings;decl=import;alias=";
+  payload.append(alias_name);
+  payload.append(";resolved_path=");
+  payload.append(ModulePathText(resolved_path));
+  payload.append(";binding_kind=ModuleAlias;binding_source=Import");
+  core::Conformance::Record(
+      "conformance.ImportDeclarationLowering", decl.span, payload);
+}
+
+void RecordUsingDeclarationLowering(const ast::UsingDecl& decl,
+                                    const BindingList& bindings) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload = "source=ItemBindings;decl=using;bindings=";
+  payload.append(std::to_string(bindings.size()));
+  payload.append(";binding_source=Using");
+  core::Conformance::Record(
+      "conformance.UsingDeclarationLowering", decl.span, payload);
 }
 
 Entity MakeEntityWithVisibility(
@@ -258,6 +300,62 @@ bool NameMapTableEquals(const NameMapTable& lhs, const NameMapTable& rhs) {
     }
   }
   return true;
+}
+
+void RecordReferenceEnvironmentAliases(
+    const ast::ASTModule& module,
+    const NameMap& names,
+    const source::ModuleNames& module_names) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::size_t alias_count = 0;
+  std::size_t using_type_count = 0;
+  std::size_t using_value_count = 0;
+  for (const auto& entry : names) {
+    const Entity& entity = entry.second;
+    if (entity.kind == EntityKind::ModuleAlias &&
+        entity.source == EntitySource::Import) {
+      ++alias_count;
+      continue;
+    }
+    if (entity.source != EntitySource::Using) {
+      continue;
+    }
+    if (entity.kind == EntityKind::Type || entity.kind == EntityKind::Class) {
+      ++using_type_count;
+    } else if (entity.kind == EntityKind::Value) {
+      ++using_value_count;
+    }
+  }
+
+  std::string payload = "source=CollectNames;module=";
+  payload.append(ModulePathText(module.path));
+  payload.append(";modules=");
+  payload.append(std::to_string(module_names.size()));
+  payload.append(";name_map_entries=");
+  payload.append(std::to_string(names.size()));
+  payload.append(";alias_map_entries=");
+  payload.append(std::to_string(alias_count));
+  payload.append(";using_type_map_entries=");
+  payload.append(std::to_string(using_type_count));
+  payload.append(";using_value_map_entries=");
+  payload.append(std::to_string(using_value_count));
+  payload.append(";env_fields=self,Modules,Alias,UsingValueMap,UsingTypeMap");
+
+  core::Conformance::Record(
+      "def.ModuleInitializationDependencyEnvironment",
+      std::nullopt,
+      payload);
+  core::Conformance::Record(
+      "def.TypeReferenceEnvironmentAliases",
+      std::nullopt,
+      payload);
+  core::Conformance::Record(
+      "def.ValueReferenceEnvironmentAliases",
+      std::nullopt,
+      payload);
 }
 
 std::optional<std::string_view> CodeForCollectDiag(std::string_view diag_id) {
@@ -652,11 +750,13 @@ BindingsResult ItemBindings(const ScopeContext& ctx,
             return {false, names.diag_id, names.span, {}};
           }
           SPEC_RULE("Bind-Using");
+          RecordUsingDeclarationLowering(node, names.bindings);
           return {true, std::nullopt, std::nullopt, names.bindings};
         } else if constexpr (std::is_same_v<T, ast::ImportDecl>) {
           SPEC_RULE("Bind-Import");
           if (node.path.empty()) {
             SPEC_RULE("Import-Path-Err");
+            SPEC_RULE("Bind-Import-Err");
             return {false, "Import-Using-Missing", node.span, {}};
           }
           const auto resolved_path =
@@ -665,12 +765,14 @@ BindingsResult ItemBindings(const ScopeContext& ctx,
                                              node.path);
           if (!resolved_path.has_value()) {
             SPEC_RULE("Import-Path-Err");
+            SPEC_RULE("Bind-Import-Err");
             return {false, "Resolve-Import-Err", node.span, {}};
           }
           const ast::Identifier alias_name = node.alias_opt.value_or(
               resolved_path->empty() ? ast::Identifier{} : resolved_path->back());
           if (alias_name.empty()) {
             SPEC_RULE("Import-Path-Err");
+            SPEC_RULE("Bind-Import-Err");
             return {false, "Import-Using-Missing", node.span, {}};
           }
           SPEC_RULE("Import-Path");
@@ -681,6 +783,7 @@ BindingsResult ItemBindings(const ScopeContext& ctx,
                      EntitySource::Import},
               node.span,
           });
+          RecordImportDeclarationLowering(node, alias_name, *resolved_path);
           return {true, std::nullopt, std::nullopt, bindings};
         } else if constexpr (std::is_same_v<T, ast::ProcedureDecl> ||
                              std::is_same_v<T, ast::ComptimeProcedureDecl>) {
@@ -839,6 +942,8 @@ CollectNamesResult CollectNames(const ScopeContext& ctx,
       if (is_main_procedure(item) &&
           names.find(IdKeyOf("main")) != names.end()) {
         SPEC_RULE("Main-Multiple");
+        SPEC_RULE("rule.15.Main-Multiple");
+        SPEC_RULE("def.15.MainDiagRefs");
         return {false, "E-MOD-2430", SpanOfItem(item), {}};
       }
       if (UsingImportConflict(bindings.bindings, names)) {
@@ -859,6 +964,7 @@ CollectNamesResult CollectNames(const ScopeContext& ctx,
     }
   }
   SPEC_RULE("Collect-Ok");
+  RecordReferenceEnvironmentAliases(module, names, module_names);
   return {true, std::nullopt, std::nullopt, names, std::move(name_spans)};
 }
 
@@ -947,6 +1053,8 @@ NamesState NamesStep(const ScopeContext& ctx,
     next.kind = NamesState::Kind::Error;
     if (duplicate_main_procedure) {
       SPEC_RULE("Main-Multiple");
+      SPEC_RULE("rule.15.Main-Multiple");
+      SPEC_RULE("def.15.MainDiagRefs");
       next.diag_id = "E-MOD-2430";
     } else if (UsingImportConflict(bindings.bindings, state.names)) {
       SPEC_RULE("Names-Step-Using-Import-Dup");

@@ -49,8 +49,15 @@ static inline void SpecDefsReturnStmt() {
   SPEC_DEF("Return-Async-Type-Err", "5.2.11");
   SPEC_DEF("Return-Async-Unit-Err", "5.2.11");
   SPEC_DEF("Return-Unit-Err", "5.2.11");
+  SPEC_DEF("rule.18.Return-Type-Err", "18.4.5");
+  SPEC_DEF("rule.18.Return-Async-Type-Err", "18.4.5");
+  SPEC_DEF("rule.18.Return-Async-Unit-Err", "18.4.5");
+  SPEC_DEF("rule.18.Return-Unit-Err", "18.4.5");
+  SPEC_DEF("diag.18.ControlTransferStatements", "18.9.7");
+  SPEC_DEF("diag.18.StatementDiagnosticsSupplement", "18.11");
   SPEC_DEF("T-Opaque-Return", "5.2.11");
   SPEC_DEF("FFI-Return-RegionLocalRawPtr-Err", "23.5.4");
+  SPEC_DEF("rule.15.Contract-Static-Fail", "15.8.4");
 }
 
 static ast::ExprPtr MakeUnitExpr(const core::Span& span) {
@@ -633,6 +640,7 @@ CheckFfiBoundaryRegionLocalRawPointerReturn(const ScopeContext& ctx,
   if (const auto binding = BindingForFfiBoundaryExpr(env, ret_expr);
       binding.has_value() && BindingProvenanceIsLocalFfi(*binding)) {
     SPEC_RULE("FFI-Return-RegionLocalRawPtr-Err");
+    SPEC_RULE("rule.23.FFI-Return-RegionLocalRawPtr-Err");
     return "E-SYS-3360";
   }
 
@@ -645,6 +653,7 @@ CheckFfiBoundaryRegionLocalRawPointerReturn(const ScopeContext& ctx,
   }
 
   SPEC_RULE("FFI-Return-RegionLocalRawPtr-Err");
+  SPEC_RULE("rule.23.FFI-Return-RegionLocalRawPtr-Err");
   return "E-SYS-3360";
 }
 
@@ -690,6 +699,7 @@ static std::optional<std::string_view> CheckEscapingClosureReturn(
   }
   if (ClosureTypeHasSharedDeps(expected_closure_type) && info->contains_spawn) {
     SPEC_RULE("Parallel-Escaping-Closure-Spawn-Err");
+    SPEC_RULE("rule.20.Parallel-Escaping-Closure-Spawn-Err");
     return "E-CON-0131";
   }
   if (info->captures_shared && !info->has_shared_deps) {
@@ -1012,6 +1022,7 @@ static std::optional<std::string_view> VerifyPostconditionAtReturn(
                                                            : simplified->span,
                                    simplified);
   if (!proof.provable && !type_ctx.contract_dynamic) {
+    SPEC_RULE("rule.15.Contract-Static-Fail");
     return "E-SEM-2801";
   }
   return std::nullopt;
@@ -1227,10 +1238,13 @@ StmtTypeResult TypeReturnStmt(const ScopeContext& ctx,
       if (!check.ok) {
         if (!check.diag_id.has_value() || *check.diag_id == "E-SEM-2526") {
           SPEC_RULE("Return-Async-Type-Err");
-          return {false, "E-CON-0203", {}, {}};
+          SPEC_RULE("rule.18.Return-Async-Type-Err");
+          SPEC_RULE("diag.18.ControlTransferStatements");
+          return {false, "E-CON-0203", {}, {}, check.diag_detail,
+                  check.diag_span};
         }
         return {false, check.diag_id, {}, {}, check.diag_detail,
-                check.diag_span};
+                check.diag_span, check.diagnostic_obligation_ids};
       }
       if (const auto diag =
               CheckEscapingClosureReturn(node.value_opt, env, async_sig->result);
@@ -1257,6 +1271,8 @@ StmtTypeResult TypeReturnStmt(const ScopeContext& ctx,
     }
     if (!IsPrimType(async_sig->result, "()")) {
       SPEC_RULE("Return-Async-Unit-Err");
+      SPEC_RULE("rule.18.Return-Async-Unit-Err");
+      SPEC_RULE("diag.18.ControlTransferStatements");
       return {false, "E-CON-0203", {}, {}};
     }
     if (const auto diag = verify_post(ret_value); diag.has_value()) {
@@ -1330,10 +1346,14 @@ StmtTypeResult TypeReturnStmt(const ScopeContext& ctx,
     if (!check.ok) {
       if (!check.diag_id.has_value() || *check.diag_id == "E-SEM-2526") {
         SPEC_RULE("Return-Type-Err");
-        return {false, "E-SEM-3161", {}, {}};
+        SPEC_RULE("rule.18.Return-Type-Err");
+        SPEC_RULE("diag.18.ControlTransferStatements");
+        SPEC_RULE("diag.18.StatementDiagnosticsSupplement");
+        return {false, "E-SEM-3161", {}, {}, check.diag_detail,
+                check.diag_span};
       }
       return {false, check.diag_id, {}, {}, check.diag_detail,
-              check.diag_span};
+              check.diag_span, check.diagnostic_obligation_ids};
     }
     if (const auto diag =
             CheckEscapingClosureReturn(node.value_opt, env, type_ctx.return_type);
@@ -1362,6 +1382,9 @@ StmtTypeResult TypeReturnStmt(const ScopeContext& ctx,
   // Return without value - procedure must have () return type
   if (!IsPrimType(type_ctx.return_type, "()")) {
     SPEC_RULE("Return-Unit-Err");
+    SPEC_RULE("rule.18.Return-Unit-Err");
+    SPEC_RULE("diag.18.ControlTransferStatements");
+    SPEC_RULE("diag.18.StatementDiagnosticsSupplement");
     return {false, "E-SEM-3161", {}, {}};
   }
   if (const auto diag = verify_post(ret_value); diag.has_value()) {

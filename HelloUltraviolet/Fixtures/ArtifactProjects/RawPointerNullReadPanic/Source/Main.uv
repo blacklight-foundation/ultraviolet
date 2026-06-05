@@ -1,0 +1,14 @@
+//! Artifact fixture for runtime null raw-pointer read panic behavior.
+
+/// Reads through a raw pointer parameter so the null-address failure is dynamic.
+#dynamic
+public procedure rawPointerNullReadPanicValue(pointer: *mut i32) -> i32 {
+    return unsafe { *pointer }
+}
+
+/// Runs the null raw-pointer read; the parent audit observes the panic exit code.
+public procedure main(context: Context) -> i32 {
+    let _ = context
+    let pointer: *mut i32 = null
+    return rawPointerNullReadPanicValue(pointer)
+}

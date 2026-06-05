@@ -1277,80 +1277,60 @@ UVUnion_DirIter_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fdir(
   uv_rt_find_data_t data;
   uv_rt_handle_t find = uv_rt_directory_scan_first_wide(pattern, &data);
   uv_heap_free_raw(pattern);
-  if (find == UV_RT_INVALID_HANDLE) {
-    UVIoError err = uv_last_io_error();
-    uv_heap_free_raw(wide);
-    uv_heap_free_raw(canon);
-    return uv_dir_err(err);
-  }
 
-  uint32_t cap = 16;
+  uint32_t cap = 0;
   uint32_t count = 0;
-  DirEntryTmp* entries = (DirEntryTmp*)uv_heap_alloc_raw(sizeof(DirEntryTmp) * cap);
-  if (!entries) {
-    uv_rt_directory_scan_close(find);
-    uv_heap_free_raw(wide);
-    uv_heap_free_raw(canon);
-    return uv_dir_err(UV_IO_FAILURE);
-  }
+  DirEntryTmp* entries = NULL;
 
-  do {
-    const wchar_t* name = data.file_name;
-    if (name[0] == L'.' && name[1] == 0) {
-      continue;
-    }
-    if (name[0] == L'.' && name[1] == L'.' && name[2] == 0) {
-      continue;
-    }
-
-    uint32_t name_len = (uint32_t)uv_wcslen(name);
-    wchar_t* name_copy = (wchar_t*)uv_heap_alloc_raw(sizeof(wchar_t) * (name_len + 1));
-    if (!name_copy) {
-      uv_rt_directory_scan_close(find);
-      for (uint32_t i = 0; i < count; ++i) {
-        uv_heap_free_raw(entries[i].name_w);
-        uv_heap_free_raw(entries[i].name_utf8);
-        uv_heap_free_raw(entries[i].key_utf8);
-      }
-      uv_heap_free_raw(entries);
+  if (find == UV_RT_INVALID_HANDLE) {
+    uv_rt_u32_t scan_error = uv_rt_last_error_get();
+    if (scan_error != UV_RT_ERROR_NO_MORE_FILES) {
+      UVIoError err =
+          scan_error == 0 ? UV_IO_FAILURE : uv_map_platform_error(scan_error);
       uv_heap_free_raw(wide);
       uv_heap_free_raw(canon);
-      return uv_dir_err(UV_IO_FAILURE);
+      return uv_dir_err(err);
     }
-    uv_memcpy(name_copy, name, sizeof(wchar_t) * name_len);
-    name_copy[name_len] = 0;
-
-    uint32_t name_utf8_len = 0;
-    uint8_t* name_utf8 = uv_wide_to_utf8(name_copy, name_len, &name_utf8_len);
-    if (!name_utf8) {
-      uv_heap_free_raw(name_copy);
+    uv_rt_last_error_set(UV_RT_ERROR_SUCCESS);
+  } else {
+    cap = 16;
+    entries = (DirEntryTmp*)uv_heap_alloc_raw(sizeof(DirEntryTmp) * cap);
+    if (!entries) {
       uv_rt_directory_scan_close(find);
-      for (uint32_t i = 0; i < count; ++i) {
-        uv_heap_free_raw(entries[i].name_w);
-        uv_heap_free_raw(entries[i].name_utf8);
-        uv_heap_free_raw(entries[i].key_utf8);
-      }
-      uv_heap_free_raw(entries);
       uv_heap_free_raw(wide);
       uv_heap_free_raw(canon);
       return uv_dir_err(UV_IO_FAILURE);
     }
 
-    uint32_t key_utf8_len = 0;
-    uint8_t* key_utf8 = uv_entry_key_utf8(name_copy, name_len, &key_utf8_len);
-    if (!key_utf8) {
-      key_utf8 = name_utf8;
-      key_utf8_len = name_utf8_len;
-    }
+    do {
+      const wchar_t* name = data.file_name;
+      if (name[0] == L'.' && name[1] == 0) {
+        continue;
+      }
+      if (name[0] == L'.' && name[1] == L'.' && name[2] == 0) {
+        continue;
+      }
 
-    if (count == cap) {
-      uint32_t new_cap = cap * 2;
-      DirEntryTmp* resized = (DirEntryTmp*)uv_heap_alloc_raw(sizeof(DirEntryTmp) * new_cap);
-      if (!resized) {
-        if (key_utf8 != name_utf8) {
-          uv_heap_free_raw(key_utf8);
+      uint32_t name_len = (uint32_t)uv_wcslen(name);
+      wchar_t* name_copy = (wchar_t*)uv_heap_alloc_raw(sizeof(wchar_t) * (name_len + 1));
+      if (!name_copy) {
+        uv_rt_directory_scan_close(find);
+        for (uint32_t i = 0; i < count; ++i) {
+          uv_heap_free_raw(entries[i].name_w);
+          uv_heap_free_raw(entries[i].name_utf8);
+          uv_heap_free_raw(entries[i].key_utf8);
         }
-        uv_heap_free_raw(name_utf8);
+        uv_heap_free_raw(entries);
+        uv_heap_free_raw(wide);
+        uv_heap_free_raw(canon);
+        return uv_dir_err(UV_IO_FAILURE);
+      }
+      uv_memcpy(name_copy, name, sizeof(wchar_t) * name_len);
+      name_copy[name_len] = 0;
+
+      uint32_t name_utf8_len = 0;
+      uint8_t* name_utf8 = uv_wide_to_utf8(name_copy, name_len, &name_utf8_len);
+      if (!name_utf8) {
         uv_heap_free_raw(name_copy);
         uv_rt_directory_scan_close(find);
         for (uint32_t i = 0; i < count; ++i) {
@@ -1363,25 +1343,55 @@ UVUnion_DirIter_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fdir(
         uv_heap_free_raw(canon);
         return uv_dir_err(UV_IO_FAILURE);
       }
-      for (uint32_t i = 0; i < count; ++i) {
-        resized[i] = entries[i];
+
+      uint32_t key_utf8_len = 0;
+      uint8_t* key_utf8 = uv_entry_key_utf8(name_copy, name_len, &key_utf8_len);
+      if (!key_utf8) {
+        key_utf8 = name_utf8;
+        key_utf8_len = name_utf8_len;
       }
-      uv_heap_free_raw(entries);
-      entries = resized;
-      cap = new_cap;
-    }
 
-    entries[count].name_w = name_copy;
-    entries[count].name_w_len = name_len;
-    entries[count].name_utf8 = name_utf8;
-    entries[count].name_utf8_len = name_utf8_len;
-    entries[count].key_utf8 = key_utf8;
-    entries[count].key_utf8_len = key_utf8_len;
-    entries[count].kind = uv_file_kind_from_attrs(data.file_attributes);
-    ++count;
-  } while (uv_rt_directory_scan_next(find, &data));
+      if (count == cap) {
+        uint32_t new_cap = cap * 2;
+        DirEntryTmp* resized =
+            (DirEntryTmp*)uv_heap_alloc_raw(sizeof(DirEntryTmp) * new_cap);
+        if (!resized) {
+          if (key_utf8 != name_utf8) {
+            uv_heap_free_raw(key_utf8);
+          }
+          uv_heap_free_raw(name_utf8);
+          uv_heap_free_raw(name_copy);
+          uv_rt_directory_scan_close(find);
+          for (uint32_t i = 0; i < count; ++i) {
+            uv_heap_free_raw(entries[i].name_w);
+            uv_heap_free_raw(entries[i].name_utf8);
+            uv_heap_free_raw(entries[i].key_utf8);
+          }
+          uv_heap_free_raw(entries);
+          uv_heap_free_raw(wide);
+          uv_heap_free_raw(canon);
+          return uv_dir_err(UV_IO_FAILURE);
+        }
+        for (uint32_t i = 0; i < count; ++i) {
+          resized[i] = entries[i];
+        }
+        uv_heap_free_raw(entries);
+        entries = resized;
+        cap = new_cap;
+      }
 
-  uv_rt_directory_scan_close(find);
+      entries[count].name_w = name_copy;
+      entries[count].name_w_len = name_len;
+      entries[count].name_utf8 = name_utf8;
+      entries[count].name_utf8_len = name_utf8_len;
+      entries[count].key_utf8 = key_utf8;
+      entries[count].key_utf8_len = key_utf8_len;
+      entries[count].kind = uv_file_kind_from_attrs(data.file_attributes);
+      ++count;
+    } while (uv_rt_directory_scan_next(find, &data));
+
+    uv_rt_directory_scan_close(find);
+  }
 
   if (count > 1) {
     uv_sort_entries(entries, count);
@@ -1534,29 +1544,32 @@ UVUnion_Unit_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aensure_x5fdir(
   buf[wide_len] = 0;
 
   uint32_t start = 0;
-  if (wide_len >= 3 && wide[1] == L':' && wide[2] == L'\\') {
+  if (wide_len >= 3 && wide[1] == L':' &&
+      (wide[2] == L'\\' || wide[2] == L'/')) {
     start = 3;
-  } else if (wide_len >= 2 && wide[0] == L'\\' && wide[1] == L'\\') {
+  } else if (wide_len >= 2 &&
+             (wide[0] == L'\\' || wide[0] == L'/') &&
+             (wide[1] == L'\\' || wide[1] == L'/')) {
     uint32_t idx = 2;
-    while (idx < wide_len && wide[idx] != L'\\') {
+    while (idx < wide_len && wide[idx] != L'\\' && wide[idx] != L'/') {
       ++idx;
     }
     if (idx < wide_len) {
       ++idx;
     }
-    while (idx < wide_len && wide[idx] != L'\\') {
+    while (idx < wide_len && wide[idx] != L'\\' && wide[idx] != L'/') {
       ++idx;
     }
     if (idx < wide_len) {
       ++idx;
     }
     start = idx;
-  } else if (wide[0] == L'\\') {
+  } else if (wide[0] == L'\\' || wide[0] == L'/') {
     start = 1;
   }
 
   for (uint32_t i = start; i <= wide_len; ++i) {
-    if (i == wide_len || buf[i] == L'\\') {
+    if (i == wide_len || buf[i] == L'\\' || buf[i] == L'/') {
       wchar_t saved = buf[i];
       buf[i] = 0;
       if (buf[0] != 0) {

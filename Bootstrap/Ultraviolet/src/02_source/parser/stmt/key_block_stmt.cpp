@@ -15,6 +15,8 @@
 #include <vector>
 
 #include "00_core/assert_spec.h"
+#include "00_core/diagnostic_messages.h"
+#include "00_core/diagnostics.h"
 #include "02_source/lexer/keyword_policy.h"
 
 namespace ultraviolet::ast {
@@ -280,9 +282,19 @@ KeyBlockHeadResult ParseKeyBlockHead(Parser parser) {
     if (!mode || mode->kind != TokenKind::Identifier ||
         mode->lexeme != "write") {
       SPEC_RULE("Parse-KeyBlockHead-Err");
-      EmitParseSyntaxErr(after_speculative, TokSpan(after_speculative));
-      return {after_speculative, KeyBlockKind::SpeculativeWrite,
-              KeyMode::Write};
+      SPEC_RULE("rule.19.K-Spec-Write-Required");
+      auto diag = core::MakeDiagnosticById("E-CON-0095",
+                                           TokSpan(after_speculative));
+      if (diag) {
+        core::Emit(after_speculative.diags, *diag);
+      } else {
+        EmitParseSyntaxErr(after_speculative, TokSpan(after_speculative));
+      }
+      Parser recovery = after_speculative;
+      if (mode) {
+        Advance(recovery);
+      }
+      return {recovery, KeyBlockKind::SpeculativeWrite, KeyMode::Write};
     }
     Parser next = after_speculative;
     Advance(next);
@@ -351,6 +363,19 @@ ParseElemResult<Stmt> ParseKeyBlockStmt(Parser parser) {
   // Parse key path list
   ParseElemResult<std::vector<KeyPathExpr>> paths = ParseKeyPathList(head.parser);
 
+  if (head.kind == KeyBlockKind::Release) {
+    const Token* release_tail = Tok(paths.parser);
+    if (release_tail && release_tail->kind == TokenKind::Identifier &&
+        release_tail->lexeme == "speculative") {
+      SPEC_RULE("rule.19.K-Spec-No-Release");
+      auto diag = core::MakeDiagnosticById("E-CON-0094", release_tail->span);
+      if (diag) {
+        core::Emit(paths.parser.diags, *diag);
+      }
+      Advance(paths.parser);
+    }
+  }
+
   ParseElemResult<KeyBlockOptions> options = ParseKeyOptionsOpt(paths.parser);
 
   // Parse block body
@@ -363,6 +388,28 @@ ParseElemResult<Stmt> ParseKeyBlockStmt(Parser parser) {
   stmt.options = options.elem;
   stmt.body = body.elem;
   stmt.span = SpanBetween(start, body.parser);
+  core::Conformance::Record(
+      "requirement.19.ConflictDetectionNoAdditionalSyntax",
+      stmt.span,
+      "source=ParseKeyBlockStmt;surface=key_block_stmt;"
+      "additional_syntax=false");
+  core::Conformance::Record(
+      "requirement.19.ConflictDetectionNoAdditionalParsingRules",
+      stmt.span,
+      "source=ParseKeyBlockStmt;parser=key_block_stmt;"
+      "additional_parsing_rules=false");
+  if (stmt.kind == KeyBlockKind::Release) {
+    core::Conformance::Record(
+        "requirement.19.NestedReleaseNoAdditionalSyntax",
+        stmt.span,
+        "source=ParseKeyBlockStmt;head=release;"
+        "additional_syntax=false");
+    core::Conformance::Record(
+        "requirement.19.NestedReleaseNoAdditionalParsingRules",
+        stmt.span,
+        "source=ParseKeyBlockStmt;head=release;"
+        "additional_parsing_rules=false");
+  }
   return {body.parser, stmt};
 }
 

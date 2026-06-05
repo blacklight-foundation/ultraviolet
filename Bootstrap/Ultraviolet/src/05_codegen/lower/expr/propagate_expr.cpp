@@ -20,6 +20,7 @@
 #include "04_analysis/typing/subtyping.h"
 #include "04_analysis/typing/outcome.h"
 #include "04_analysis/typing/type_predicates.h"
+#include "04_analysis/typing/type_stmt.h"
 #include "04_analysis/typing/type_equiv.h"
 #include "04_analysis/layout/layout.h"
 #include "00_core/assert_spec.h"
@@ -105,7 +106,7 @@ std::optional<analysis::TypeRef> SuccessMemberType(const analysis::ScopeContext&
         return std::nullopt;
     }
     analysis::TypeRef propagate_target = ret_type;
-    if (const auto async_sig = analysis::GetAsyncSig(ret_type)) {
+    if (const auto async_sig = analysis::AsyncSigOf(scope, ret_type)) {
         propagate_target = async_sig->err;
     }
     if (!propagate_target) {
@@ -291,13 +292,18 @@ LowerResult LowerPropagateExpr(const ast::PropagateExpr& expr, LowerCtx& ctx) {
     }
 
     const analysis::ScopeContext& scope = ScopeForLowering(ctx);
+    analysis::TypeRef return_type =
+        ResolvePropagateAliasType(ctx.proc_ret_type, ctx);
+    if (!return_type) {
+        return_type = ctx.proc_ret_type;
+    }
     const std::optional<analysis::OutcomeSig> outcome_sig =
         analysis::OutcomeSigOf(stripped_expr);
     if (outcome_sig.has_value()) {
-        const auto async_sig = analysis::GetAsyncSig(ctx.proc_ret_type);
+        const auto async_sig = analysis::AsyncSigOf(scope, return_type);
         std::optional<analysis::OutcomeSig> return_outcome_sig;
         if (!async_sig.has_value()) {
-            return_outcome_sig = analysis::OutcomeSigOf(ctx.proc_ret_type);
+            return_outcome_sig = analysis::OutcomeSigOf(return_type);
             if (!return_outcome_sig.has_value()) {
                 ctx.ReportCodegenFailure();
                 return inner_result;
@@ -315,6 +321,7 @@ LowerResult LowerPropagateExpr(const ast::PropagateExpr& expr, LowerCtx& ctx) {
         IRIfCaseClause value_arm;
         value_arm.pattern = OutcomeStatePattern("Value");
         value_arm.body = EmptyIR();
+        SPEC_RULE("rule.16.Lower-Expr-Propagate-Success");
         value_arm.value = RegisterOutcomeFieldValue(
             inner_result.value,
             "Value",
@@ -335,7 +342,9 @@ LowerResult LowerPropagateExpr(const ast::PropagateExpr& expr, LowerCtx& ctx) {
 
         IRIfCaseClause error_arm;
         error_arm.pattern = OutcomeStatePattern("Error");
+        SPEC_RULE("rule.16.Lower-Expr-Propagate-Return");
         if (async_sig.has_value()) {
+            SPEC_RULE("requirement.21.AsyncErrorPropagationTypingReference");
             const std::string saved_error_name = "__uv_async_error_outcome";
             IRBindVar save_error;
             save_error.name = saved_error_name;
@@ -400,7 +409,7 @@ LowerResult LowerPropagateExpr(const ast::PropagateExpr& expr, LowerCtx& ctx) {
         return inner_result;
     }
 
-    auto success_type = SuccessMemberType(scope, ctx.proc_ret_type, stripped_expr);
+    auto success_type = SuccessMemberType(scope, return_type, stripped_expr);
     if (!success_type.has_value()) {
         if (debug_propagate) {
             std::cerr << "[propagate-debug] fallback: could not determine success member"
@@ -444,7 +453,7 @@ LowerResult LowerPropagateExpr(const ast::PropagateExpr& expr, LowerCtx& ctx) {
     IRValue result_value = ctx.FreshTempValue("propagate_result");
     if_case_ir.result = result_value;
     ctx.RegisterValueType(result_value, *success_type);
-    const auto async_sig = analysis::GetAsyncSig(ctx.proc_ret_type);
+    const auto async_sig = analysis::AsyncSigOf(scope, return_type);
 
     for (std::size_t i = 0; i < members.size(); ++i) {
         const bool is_success = i == *success_index;
@@ -475,11 +484,13 @@ LowerResult LowerPropagateExpr(const ast::PropagateExpr& expr, LowerCtx& ctx) {
 
         if (is_success) {
             arm.body = EmptyIR();
+            SPEC_RULE("rule.16.Lower-Expr-Propagate-Success");
             arm.value = case_value;
         } else {
             CleanupPlan cleanup_plan = ComputeCleanupPlanToFunctionRoot(ctx);
             IRPtr cleanup_ir = EmitCleanup(cleanup_plan, ctx);
             if (async_sig.has_value()) {
+                SPEC_RULE("requirement.21.AsyncErrorPropagationTypingReference");
                 if (IsNeverType(async_sig->err) || IsNeverType(member_type)) {
                     // Infallible asyncs have no concrete Failed arm. Preserve
                     // the impossible-path semantics without synthesizing
@@ -519,6 +530,7 @@ LowerResult LowerPropagateExpr(const ast::PropagateExpr& expr, LowerCtx& ctx) {
 
                 IRReturn ret;
                 ret.value = async_fail.result;
+                SPEC_RULE("rule.16.Lower-Expr-Propagate-Return");
                 arm.body = SeqIR({
                     MakeIR(std::move(save_error)),
                     cleanup_ir,
@@ -528,6 +540,7 @@ LowerResult LowerPropagateExpr(const ast::PropagateExpr& expr, LowerCtx& ctx) {
             } else {
                 IRReturn ret;
                 ret.value = case_value;
+                SPEC_RULE("rule.16.Lower-Expr-Propagate-Return");
                 arm.body = SeqIR({cleanup_ir, MakeIR(std::move(ret))});
             }
             arm.value = ctx.FreshTempValue("propagate_unreach");

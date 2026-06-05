@@ -6,6 +6,8 @@
 
 #include <variant>
 
+#include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 #include "04_analysis/typing/type_expr.h"
 #include "05_codegen/checks/checks.h"
 
@@ -165,6 +167,24 @@ IRPtr EmitDynamicRefinementChecksImpl(const ast::Expr& expr,
     const auto predicate = SubstituteRefinementSelfWithResult(refine->predicate);
     if (!predicate) {
       continue;
+    }
+
+    SPEC_RULE("req.14.RefinementRuntimeRepresentationAndPanic");
+    SPEC_RULE("req.14.RefinementRuntimeCheckLowering");
+    if (core::Conformance::Enabled()) {
+      core::Conformance::Record(
+          "req.14.RefinementRuntimeRepresentationAndPanic",
+          std::optional<core::Span>{expr.span},
+          "source=EmitDynamicRefinementChecksForExpr;"
+          "representation=underlying_value;check=dynamic_refinement_predicate;"
+          "failure=panic");
+      core::Conformance::Record(
+          "req.14.RefinementRuntimeCheckLowering",
+          std::optional<core::Span>{expr.span},
+          "source=EmitDynamicRefinementChecksForExpr;"
+          "feature_local_lowering=runtime_predicate_check;"
+          "trigger=failed_static_refinement_proof_inside_dynamic;"
+          "additional_lowering=none");
     }
 
     const auto prev_result = ctx.contract_result_value;

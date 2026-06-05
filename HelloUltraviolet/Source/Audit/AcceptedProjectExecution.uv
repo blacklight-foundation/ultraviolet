@@ -1,6 +1,21 @@
 //! Source-native compiler execution checks for accepted project fixtures.
 
-internal let ACCEPTED_PROJECT_EXECUTED_OBLIGATION_COUNT: usize = 44usize
+internal let ACCEPTED_PROJECT_EXECUTED_OBLIGATION_COUNT: usize = 291usize
+
+internal procedure acceptedProjectTargetIsWindows(authority: TestAuthority) -> bool {
+    return auditTextEquals(authority.target_profile, "x86_64-win64")
+}
+
+internal procedure acceptedProjectTargetPath(
+    authority: TestAuthority,
+    windows_path: string@View,
+    sysv_path: string@View
+) -> string@View {
+    if acceptedProjectTargetIsWindows(authority) {
+        return windows_path
+    }
+    return sysv_path
+}
 
 internal procedure acceptedProjectTempFileExists(
     authority: TestAuthority,
@@ -15,6 +30,29 @@ internal procedure acceptedProjectTempFileExists(
                 diagnosticBuildPath(value, file_suffix, authority.heap) {
                 let path: string@View = string::as_view(value)
                 authority.io~>exists(path)
+            } else {
+                false
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure acceptedProjectTempFileDoesNotExist(
+    authority: TestAuthority,
+    out_dir_suffix: string@View,
+    file_suffix: string@View
+) -> bool {
+    let path_result: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move path_result is {
+        @Value { value } {
+            if diagnosticBuildPath(value, out_dir_suffix, authority.heap) &&
+                diagnosticBuildPath(value, file_suffix, authority.heap) {
+                let path: string@View = string::as_view(value)
+                !authority.io~>exists(path)
             } else {
                 false
             }
@@ -75,6 +113,68 @@ internal procedure acceptedProjectConformanceContains(
     }
 }
 
+internal procedure acceptedProjectConformanceTextContainsLine(
+    text: string@View,
+    required_marker: string@View,
+    required_payload: string@View
+) -> bool {
+    let text_length: usize = string::length(text)
+    var line_start: usize = 0usize
+    var index: usize = 0usize
+    loop index <= text_length {
+        if index == text_length || auditTextByte(text, index) == 10u8 {
+            let line: string@View = string::slice(text, line_start, index)
+            if auditTextContains(line, required_marker) &&
+                auditTextContains(line, required_payload) {
+                return true
+            }
+            line_start = index + 1usize
+        }
+        index = index + 1usize
+    }
+    return false
+}
+
+internal procedure acceptedProjectConformanceLineContains(
+    authority: TestAuthority,
+    out_dir_suffix: string@View,
+    log_name: string@View,
+    required_marker: string@View,
+    required_payload: string@View
+) -> bool {
+    let path_result: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move path_result is {
+        @Value { value } {
+            if !diagnosticBuildPath(value, out_dir_suffix, authority.heap) ||
+                !diagnosticBuildPath(value, "Logs", authority.heap) ||
+                !diagnosticBuildPath(value, "Conformance", authority.heap) ||
+                !diagnosticBuildPath(value, log_name, authority.heap) {
+                false
+            } else {
+                let path: string@View = string::as_view(value)
+                let read_result: Outcome<unique string@Managed, IoError> =
+                    authority.io~>read_file(path)
+                if move read_result is {
+                    @Value { value: text } {
+                        acceptedProjectConformanceTextContainsLine(
+                            string::as_view(text),
+                            required_marker,
+                            required_payload
+                        )
+                    }
+                    @Error {
+                        false
+                    }
+                }
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
 internal procedure acceptedProjectRunBuildCommand(
     authority: TestAuthority,
     fixture_path: string@View,
@@ -94,7 +194,7 @@ internal procedure acceptedProjectRunBuildCommand(
                 diagnosticAppendText(value, " build ", authority.heap) &&
                 command_ready
             command_ready =
-                diagnosticAppendQuoted(value, fixture_path, authority.heap) &&
+                diagnosticAppendQuotedProjectPath(value, authority, fixture_path) &&
                 command_ready
             if !string::is_empty(assembly_name) {
                 command_ready =
@@ -314,13 +414,32 @@ internal procedure acceptedProjectStaticLibraryExercise(
         acceptedProjectTempFileExists(
             authority,
             "AcceptedProjectStaticBuild",
-            "Library/StaticLibrary.lib"
+            acceptedProjectTargetPath(
+                authority,
+                "Intermediate/Obj/Source/StaticLibrary.obj",
+                "Intermediate/Obj/Source/StaticLibrary.o"
+            )
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "AcceptedProjectStaticBuild",
+            acceptedProjectTargetPath(
+                authority,
+                "Library/StaticLibrary.lib",
+                "Library/libStaticLibrary.a"
+            )
         ) &&
         acceptedProjectConformanceContains(
             authority,
             "AcceptedProjectStaticBuild",
             "static.conformance.log",
             "\tArchive-Ok\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectStaticBuild",
+            "static.conformance.log",
+            "\tFinalize-Archive\t"
         ) &&
         acceptedProjectConformanceContains(
             authority,
@@ -337,7 +456,7 @@ internal procedure acceptedProjectStaticLibraryExercise(
     if !passed {
         return diagnosticFixtureExecutionResult(false, 0usize)
     }
-    return diagnosticFixtureExecutionResult(true, 2usize)
+    return diagnosticFixtureExecutionResult(true, 3usize)
 }
 
 internal procedure acceptedProjectExecutableExercise(
@@ -359,7 +478,52 @@ internal procedure acceptedProjectExecutableExercise(
         acceptedProjectTempFileExists(
             authority,
             "AcceptedProjectExecutableBuild",
-            "Binary/ExecutableMain.exe"
+            "Intermediate"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "AcceptedProjectExecutableBuild",
+            "Logs"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "AcceptedProjectExecutableBuild",
+            "Intermediate/Obj"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "AcceptedProjectExecutableBuild",
+            acceptedProjectTargetPath(
+                authority,
+                "Intermediate/Obj/Source/ExecutableMain.obj",
+                "Intermediate/Obj/Source/ExecutableMain.o"
+            )
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "AcceptedProjectExecutableBuild",
+            "Binary"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "AcceptedProjectExecutableBuild",
+            acceptedProjectTargetPath(
+                authority,
+                "Binary/ExecutableMain.exe",
+                "Binary/ExecutableMain"
+            )
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExecutableBuild",
+            "executable.conformance.log",
+            "\tOut-Dirs-Ok\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExecutableBuild",
+            "executable.conformance.log",
+            "\tOut-IR-None-Finalize\t"
         ) &&
         acceptedProjectConformanceContains(
             authority,
@@ -371,7 +535,19 @@ internal procedure acceptedProjectExecutableExercise(
             authority,
             "AcceptedProjectExecutableBuild",
             "executable.conformance.log",
+            "\tFinalize-Link\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExecutableBuild",
+            "executable.conformance.log",
             "\tOut-Final-Link-Ok\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExecutableBuild",
+            "executable.conformance.log",
+            "\tOutput-Pipeline-Linkable\t"
         ) &&
         acceptedProjectTempFileContains(
             authority,
@@ -382,7 +558,7 @@ internal procedure acceptedProjectExecutableExercise(
     if !passed {
         return diagnosticFixtureExecutionResult(false, 0usize)
     }
-    return diagnosticFixtureExecutionResult(true, 2usize)
+    return diagnosticFixtureExecutionResult(true, 6usize)
 }
 
 internal procedure acceptedProjectCrossAssemblyExercise(
@@ -404,23 +580,47 @@ internal procedure acceptedProjectCrossAssemblyExercise(
         acceptedProjectTempFileExists(
             authority,
             "AcceptedProjectCrossBuild",
-            "Binary/CrossAssemblyImplementation.dll"
+            acceptedProjectTargetPath(
+                authority,
+                "Binary/CrossAssemblyImplementation.dll",
+                "Binary/libCrossAssemblyImplementation.so"
+            )
         ) &&
         acceptedProjectTempFileExists(
             authority,
             "AcceptedProjectCrossBuild",
-            "Intermediate/Obj/Source/ExternalContracts/ExternalContracts.obj"
+            acceptedProjectTargetPath(
+                authority,
+                "Intermediate/Obj/Source/ExternalContracts/ExternalContracts.obj",
+                "Intermediate/Obj/Source/ExternalContracts/ExternalContracts.o"
+            )
         ) &&
         acceptedProjectTempFileExists(
             authority,
             "AcceptedProjectCrossBuild",
-            "Intermediate/Obj/Source/CrossAssemblyImplementation/CrossAssemblyImplementation.obj"
+            acceptedProjectTargetPath(
+                authority,
+                "Intermediate/Obj/Source/CrossAssemblyImplementation/CrossAssemblyImplementation.obj",
+                "Intermediate/Obj/Source/CrossAssemblyImplementation/CrossAssemblyImplementation.o"
+            )
         ) &&
         acceptedProjectConformanceContains(
             authority,
             "AcceptedProjectCrossBuild",
             "cross.conformance.log",
             "\tT-Orphan-Rule\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectCrossBuild",
+            "cross.conformance.log",
+            "\treq.14.ImplementationOrphanRequirement\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectCrossBuild",
+            "cross.conformance.log",
+            "source%3DCheckOrphanRule%3Btype%3DCrossAssemblyImplementation::LocalImplementation%3Bclass%3DExternalContracts::ExternalRequiredClass%3Bcurrent_assembly%3DCrossAssemblyImplementation%3Btype_declared%3Dtrue%3Bclass_declared%3Dtrue%3Btype_local%3Dtrue%3Bclass_local%3Dfalse%3Bresult%3Daccepted"
         ) &&
         acceptedProjectTempFileContains(
             authority,
@@ -438,6 +638,1688 @@ internal procedure acceptedProjectCrossAssemblyExercise(
         return diagnosticFixtureExecutionResult(false, 0usize)
     }
     return diagnosticFixtureExecutionResult(true, 1usize)
+}
+
+internal procedure acceptedProjectPtrNullReturnExercise(
+    authority: TestAuthority
+) -> DiagnosticFixtureExecutionResult {
+    if !acceptedProjectRunCase(
+        authority,
+        "Fixtures/AcceptedProjects/PtrNullReturn",
+        "",
+        "AcceptedProjectPtrNullReturn.out",
+        "AcceptedProjectPtrNullReturn.err",
+        "AcceptedProjectPtrNullReturnBuild",
+        "ptrnull.conformance.log"
+    ) {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+
+    let passed: bool =
+        acceptedProjectTempFileExists(
+            authority,
+            "AcceptedProjectPtrNullReturnBuild",
+            acceptedProjectTargetPath(
+                authority,
+                "Library/PtrNullReturn.lib",
+                "Binary/libPtrNullReturn.so"
+            )
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectPtrNullReturnBuild",
+            "ptrnull.conformance.log",
+            "\trule.16.Chk-Null-Ptr\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectPtrNullReturnBuild",
+            "ptrnull.conformance.log",
+            "\tLower-Expr-PtrNull\t"
+        )
+    if !passed {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+    return diagnosticFixtureExecutionResult(true, 2usize)
+}
+
+internal procedure acceptedProjectLoweringChecksJudgementSetExercise(
+    authority: TestAuthority
+) -> DiagnosticFixtureExecutionResult {
+    if !acceptedProjectRunCase(
+        authority,
+        "Fixtures/AcceptedProjects/LoweringChecksJudgementSet",
+        "",
+        "AcceptedProjectLoweringChecksJudgementSet.out",
+        "AcceptedProjectLoweringChecksJudgementSet.err",
+        "AcceptedProjectLoweringChecksJudgementSetBuild",
+        "lowering-checks-judgement-set.conformance.log"
+    ) {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+
+    let passed: bool =
+        acceptedProjectTempFileExists(
+            authority,
+            "AcceptedProjectLoweringChecksJudgementSetBuild",
+            acceptedProjectTargetPath(
+                authority,
+                "Library/LoweringChecksJudgementSet.lib",
+                "Binary/libLoweringChecksJudgementSet.so"
+            )
+        ) &&
+        acceptedProjectConformanceLineContains(
+            authority,
+            "AcceptedProjectLoweringChecksJudgementSetBuild",
+            "lowering-checks-judgement-set.conformance.log",
+            "\tdef.LoweringChecksJudgementSet\t",
+            "source%3DLoweringChecksJudgementSet%3Bmembers%3D{LowerRangeExpr,CheckIndex,CheckRange,LowerTransmute,LowerRawDeref}%3Bexact%3Dtrue%3Bcount%3D5"
+        )
+    if !passed {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+    return diagnosticFixtureExecutionResult(true, 1usize)
+}
+
+internal procedure acceptedProjectExpressionSemanticsExercise(
+    authority: TestAuthority
+) -> DiagnosticFixtureExecutionResult {
+    if !acceptedProjectRunCase(
+        authority,
+        "Fixtures/AcceptedProjects/ExpressionSemantics",
+        "",
+        "AcceptedProjectExpressionSemantics.out",
+        "AcceptedProjectExpressionSemantics.err",
+        "AcceptedProjectExpressionSemanticsBuild",
+        "expression-semantics.conformance.log"
+    ) {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+
+    let passed: bool =
+        acceptedProjectTempFileExists(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            acceptedProjectTargetPath(
+                authority,
+                "Library/ExpressionSemantics.lib",
+                "Binary/libExpressionSemantics.so"
+            )
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.RuntimeScopePushPop\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "operation%3DPushScope_sigma"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "operation%3DPopScope_sigma"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.AppendCleanup\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "operation%3DAppendCleanup%3Bitem%3DDropBinding"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.CleanupList\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "operation%3DCleanupList%3Bsource%3Dscope.cleanup_items"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.SetCleanupList\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "operation%3DSetCleanupList%3Brepresentation%3Dlinearized_cleanup_plan"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.PoisonedModule\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "operation%3DPoisonedModule"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "addr_source%3DAddrOfSym(PoisonFlag(module))"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "reads_poison_flag%3Dtrue"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "predicate%3Dflag_nonzero%3Bpanic_on_poison%3Dtrue"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.PoisonedModules\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "operation%3DPoisonedModules%3Bsource%3DStoreInitPanicRecord"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "predicate%3DPoisonedModule%3Bflag_value%3Dnonzero"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "flags_written%3Dtrue"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "contains_module%3Dtrue"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.RuntimeBindingIdentityAndValue\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "operation%3DBinding%3Bidentity%3Dscope_id+bind_id+name"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "value_variant%3DValue%3Bstate%3DValid"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "value_variant%3DAlias(addr)%3Baddr_source%3Dlocal_addr_alias"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.RuntimeBindingValueLookup\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "operation%3DBindingValue%3Bsource%3DGetBindingState"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "scope_lookup%3Dscope_runtime_id"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.RuntimeBindingStateLookup\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "operation%3DBindState%3Bsource%3DGetBindingState"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "state%3DValid"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.UpdateRuntimeBindingValue\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "operation%3DUpdateVal%3Bsource%3DLowerWritePlace%3Bbranch%3Ddirect"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "branch%3Dalias"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "ir%3DIRStoreVar%3Bscope_value_updated%3Dtrue"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.SetRuntimeBindingState\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "operation%3DSetState%3Bsource%3DMarkFieldMoved"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "scope_state_updated%3Dtrue%3Bpreserves_value%3Dtrue"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.RuntimeBindingTypeAndInfo\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "operation%3DTypeOfBindInfo%3Bsource%3DBindingState"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "type_present%3Dtrue"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "bind_info_responsibility%3D"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.BindRuntimeValue\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "operation%3DBindVal%3Bscope_stack%3Dnonempty%3Bfresh_bind_id%3Dtrue"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "names_updated%3Dtrue%3Bvals_updated%3Dtrue%3Bstate%3DValid"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "binding_returned%3Dtrue"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.BindRuntimeList\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "operation%3DBindList%3Bsource%3DEmitOrderedPatternBindings"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "order%3Dpattern_order%3Bemits_bind_ir%3Dtrue"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "recurses_via_bindval%3Dtrue"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.ProvenanceEnvironmentShape\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "definition%3DProvenanceEnvironment%3Bscope_stack%3Dparam_scope"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "scope_map%3Dident_to_provenance%3Bregion_entries%3Dinitialized"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.CasePatternProvenanceEnvironment\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "operation%3DCaseEnv%3Bsource%3DPatNames+BindProv+IntroAll_pi"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "pattern_names%3Dintroduced%3Bregion_entries%3Dpreserved"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.BindingEnvironment\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "definition%3DBindingEnvironment%3Bscopes%3Dstatic+params"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.PermissionEnvironment\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "definition%3DPermissionEnvironment%3Bscopes%3Dstatic+params"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.BindingEnvironmentJoin\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "operation%3DJoin_B%3Bresult%3Dsuccess"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.PermissionEnvironmentJoin\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "operation%3DJoinPerm%3Bresult%3Dsuccess"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.BindingMovabilityOperator\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "operator%3Dassign%3Bresult%3Dmov"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "operator%3Dcolon_assign%3Bresult%3Dimmov"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.EffectiveMovability\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "responsibility%3Dresp%3Binput%3Dmov%3Bresult%3Dmov"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "responsibility%3Dresp%3Binput%3Dimmov%3Bresult%3Dimmov"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "responsibility%3Dalias%3Binput%3Dmov%3Bresult%3Dimmov"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.InitialBindingEnvironment\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "definition%3DInitialBindingEnvironment%3Bstatic_scope%3Dpresent%3Bparam_scope%3Dpresent"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.InitialPermissionEnvironment\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "definition%3DInitialPermissionEnvironment%3Bstatic_scope%3Dpresent%3Bparam_scope%3Dpresent"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tgrammar.16.EffectfulCoreExpressions\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\treq.16.RegionAliasAllocRewrite\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Parse-Unary-Deref\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Parse-Unary-AddressOf\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Parse-Unary-Move\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Parse-Unary-Copy\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Postfix-Propagate\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Parse-Alloc-Implicit\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Parse-Unsafe-Expr\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.16.EffectfulCoreExprAst\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.ResolveExpr-Alloc-Explicit-ByAlias\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.T-Unsafe-Expr\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Chk-Unsafe-Expr\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.T-Deref-Ptr\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.T-Move\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.T-Alloc-Explicit\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.T-Alloc-Implicit\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.16.SuccessMember\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.T-Propagate\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.16.SuccessMemberAsync\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.T-Async-Try\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trequirement.21.AsyncIterationSyntax\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trequirement.21.AsyncMethodCallSurfaces\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trequirement.21.UntilMethodCallSurface\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trequirement.21.AsyncKeySyntaxSurface\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trequirement.21.AsyncKeyParsingSurface\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.21.AsyncKeyExistingAstForms\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trequirement.21.AsyncKeyNoAdditionalAstVariants\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trequirements.21.AsyncCapabilityRequirements\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trequirement.21.AsyncSuspensionAccessRights\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trequirement.21.YieldReleaseRuntimeReference\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trequirement.21.AsyncKeyFailureHandlingReference\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.21.Lower-Yield-Release-Keys\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.21.Lower-YieldFrom-Release-Keys\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Chk-Float-Literal-Explicit\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Chk-Int-Literal\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.13.T-Deref-Raw\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.13.P-Deref-Raw-Imm\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.13.P-Deref-Raw-Mut\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.T-Deref-Raw\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.DerefPlaceTypingFamily\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-Expr-Literal\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-Expr-Ident-Local\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-Expr-Ident-Path\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Expr-Path\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-Args-Empty\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-Args-Cons-Ref\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-Args-Cons-Move\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-Expr-Call-PanicOut\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-Expr-CallFamily\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-Expr-Call-Closure\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-MethodCallFamily\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\treq.16.CallTypeArgsLoweringElaboration\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "explicit_type_args%3Dtrue%3Belaborated_to%3Dmonomorphic_call"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tconformance.GenericParamsNoRuntimeSemantics\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "generic_forms%3Deliminated_before_runtime%3Bruntime_representation%3Dnone"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tconformance.GenericParamsLoweringInputsOnly\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "lowering_consumes%3Delaborated_substitution%3Bgeneric_forms_lowered_directly%3Dfalse"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\treq.GenericProcedureCallLowering\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "callee_kind%3Ddirect_static_symbol%3Btarget%3Dspecialized_instantiation"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\treq.GenericInstantiationIndependentLowering\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "action%3DLowerProcInstantiated%3Bstatus%3Dcreated%3Btype_arg_count%3D1%3Btype_arg_0%3Di32"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "action%3DLowerProcInstantiated%3Bstatus%3Dcreated%3Btype_arg_count%3D1%3Btype_arg_0%3Dbool"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-Expr-Cast\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\treq.16.IntToFloatLoweringPreservesSignedness\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "instruction%3DSIToFP%3Bsource_signed%3Dtrue"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "instruction%3DUIToFP%3Bsource_signed%3Dfalse"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-Expr-Transmute\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.LowerCastTransmuteFamily\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-Expr-Record\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Expr-Record\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLowerFieldInits-Empty\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLowerFieldInits-Cons\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-CallIR-RecordCtor\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Expr-Tuple\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-Expr-Tuple\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Expr-Array\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-Expr-Array\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.LowerEnumConstructionFamily\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Expr-Enum-Unit\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Expr-Enum-Tuple\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Expr-Enum-Record\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-Expr-Move\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-Expr-Copy\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-Expr-AddressOf\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-Expr-Deref\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-Expr-UnsafeBlock\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-Expr-Alloc\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-Expr-Propagate-Success\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-Expr-Propagate-Return\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\treq.16.EffectfulCoreLoweringMechanics\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tT-Range-Lift\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tRange-Full\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tRange-To\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tRange-ToInclusive\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tRange-From\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tRange-Exclusive\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tRange-Inclusive\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tT-Not-Bool\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tT-Not-Int\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tT-Neg\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tT-Arith\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tT-Bitwise\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tT-Shift\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tT-Compare-Eq\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tT-Compare-Ord\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tT-Logical\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Expr-Unary\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Expr-Bin-And\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Expr-Bin-Or\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Expr-Binary\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Expr-Range\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-UnOp-Ok\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.16.Lower-UnOp-Panic\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.16.UnaryOperatorLoweringPanicCheck\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "predicate%3DNeedsUnOpPanicCheck%3Bop%3D-%3Btype%3Di32%3Bresult%3Dtrue"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "predicate%3DNeedsUnOpPanicCheck%3Bop%3D-%3Btype%3Df64%3Bresult%3Dfalse"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\treq.16.UnaryNegationLoweringOverflowChecks\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "requirement%3DUnaryNegationLoweringOverflowChecks%3Bop%3D-%3Btype%3Di32%3Bcheck%3Dpresent"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "requirement%3DUnaryNegationLoweringOverflowChecks%3Bop%3D-%3Btype%3Df64%3Bcheck%3Dabsent"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-BinOp-Ok\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-BinOp-Panic\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Expr-If\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Expr-If-Is\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Expr-If-Cases\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Expr-LoopInf\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Expr-LoopCond\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Expr-LoopIter\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Expr-Block\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLowerBlock\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Block-Tail\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Block-Unit\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Loop-Infinite\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Loop-Cond\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Loop-Iter\t"
+        ) &&
+        acceptedProjectConformanceLineContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-Block-Correctness\t",
+            "source%3DLowerBlock%3Bir_form%3DIRBlock%3Bpreserves_block_result%3Dtrue"
+        ) &&
+        acceptedProjectConformanceLineContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-Block-Tail\t",
+            "source%3DLowerBlock%3Bir_form%3DIRBlock%3Btail%3Dtrue%3Bcomponents%3DLowerStmtList,LowerExpr%3Blowered%3Dtrue"
+        ) &&
+        acceptedProjectConformanceLineContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-Block-Unit\t",
+            "source%3DLowerBlock%3Bir_form%3DIRBlock%3Btail%3Dfalse%3Bcomponents%3DLowerStmtList,UnitValue%3Blowered%3Dtrue"
+        ) &&
+        acceptedProjectConformanceLineContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.18.BlockLoopLoweringTotality\t",
+            "source%3DLowerBlock%3Bform%3DBlockExpr%3Bir_form%3DIRBlock"
+        ) &&
+        acceptedProjectConformanceLineContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.18.BlockLoopLoweringTotality\t",
+            "source%3DLowerLoopInfinite%3Bform%3DLoopInfinite%3Bir_form%3DIRLoop"
+        ) &&
+        acceptedProjectConformanceLineContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.18.BlockLoopLoweringTotality\t",
+            "source%3DLowerLoopConditional%3Bform%3DLoopConditional%3Bir_form%3DIRLoop"
+        ) &&
+        acceptedProjectConformanceLineContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.18.BlockLoopLoweringTotality\t",
+            "source%3DLowerLoopIter%3Bform%3DLoopIter%3Bir_form%3DIRLoop"
+        ) &&
+        acceptedProjectConformanceLineContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-Loop-Infinite\t",
+            "source%3DLowerLoopInfinite%3Bir_form%3DIRLoop%3Bkind%3DInfinite%3Bbody_lowered%3Dtrue"
+        ) &&
+        acceptedProjectConformanceLineContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-Loop-Cond\t",
+            "source%3DLowerLoopConditional%3Bir_form%3DIRLoop%3Bkind%3DConditional%3Bcondition_lowered%3Dtrue%3Bbody_lowered%3Dtrue"
+        ) &&
+        acceptedProjectConformanceLineContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-Loop-Iter\t",
+            "source%3DLowerLoopIter%3Bir_form%3DIRLoop%3Bkind%3DIter%3Biterator_lowered%3Dtrue%3Bbody_lowered%3Dtrue%3Bpattern_lowered%3Dtrue"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.18.BindingEnvironmentHelpers\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.18.LowerStatementJudgements\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-Stmt-Correctness\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.18.StatementLoweringTotality\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-StmtList-Empty\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-StmtList-Cons\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\treq.18.TemporaryCleanupLowering\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tdef.18.BindPatternRuntimeHelpers\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\treq.18.VarExecutionMirrorsLet\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-Stmt-Let\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-Stmt-Var\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-Stmt-Assign\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-Stmt-CompoundAssign\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-Stmt-Expr\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\treq.18.UsingLocalNoRuntimeEffect\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-Stmt-UsingLocal\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\treq.18.UsingLocalNoRuntimeIR\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-Stmt-Region\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-Stmt-Frame-Implicit\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-Stmt-Frame-Explicit\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-Stmt-UnsafeBlock\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-Stmt-Return\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-Stmt-Return-Unit\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-Stmt-Break\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-Stmt-Break-Unit\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\trule.18.Lower-Stmt-Continue\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\treq.18.ControlTransferTemporaryCleanupLowering\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-IfCases\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Range-Full\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Range-To\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Range-ToInclusive\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Range-From\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Range-Inclusive\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLower-Range-Exclusive\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLayout-Record-Cons\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tSize-Record\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tAlign-Record\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLayout-Record\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLayout-Tuple-Cons\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tSize-Tuple\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tAlign-Tuple\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExpressionSemanticsBuild",
+            "expression-semantics.conformance.log",
+            "\tLayout-Tuple\t"
+        )
+    if !passed {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+    return diagnosticFixtureExecutionResult(true, 229usize)
 }
 
 internal procedure acceptedProjectHostedConformanceMatches(
@@ -496,6 +2378,12 @@ internal procedure acceptedProjectHostedConformanceMatches(
             "AcceptedProjectHostedBuild",
             "hosted.conformance.log",
             "\trequirement.23.HostedExportForeignVisiblePassKind\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostExportAttributeSemantics\t"
         ) &&
         acceptedProjectConformanceContains(
             authority,
@@ -579,32 +2467,9 @@ internal procedure acceptedProjectHostedConformanceMatches(
             authority,
             "AcceptedProjectHostedBuild",
             "hosted.conformance.log",
-            "\trule.23.HostThunkParamCarrier-Win64-DirectAgg\t"
-        ) &&
-        acceptedProjectConformanceContains(
-            authority,
-            "AcceptedProjectHostedBuild",
-            "hosted.conformance.log",
-            "\trule.23.HostThunkParamCarrier-Win64-IndirectAgg\t"
-        ) &&
-        acceptedProjectConformanceContains(
-            authority,
-            "AcceptedProjectHostedBuild",
-            "hosted.conformance.log",
             "\trule.23.HostThunkRetCarrier-Default\t"
         ) &&
-        acceptedProjectConformanceContains(
-            authority,
-            "AcceptedProjectHostedBuild",
-            "hosted.conformance.log",
-            "\trule.23.HostThunkRetCarrier-Win64-DirectAgg\t"
-        ) &&
-        acceptedProjectConformanceContains(
-            authority,
-            "AcceptedProjectHostedBuild",
-            "hosted.conformance.log",
-            "\trule.23.HostThunkRetCarrier-Win64-SRetAgg\t"
-        ) &&
+        acceptedProjectHostedTargetCarrierConformanceMatches(authority) &&
         acceptedProjectConformanceContains(
             authority,
             "AcceptedProjectHostedBuild",
@@ -622,6 +2487,42 @@ internal procedure acceptedProjectHostedConformanceMatches(
             "AcceptedProjectHostedBuild",
             "hosted.conformance.log",
             "\trequirement.23.HostedExportNoExtraAbiRewriting\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\tdef.24.LinkName\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\tdef.24.ScopedRawAndHostBodySymbols\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "source%3DHostBodySym%3Bhost_export%3Dtrue%3Bsymbol%3D"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "source%3DHostExportAbiFor%3Battribute%3Dhost_export%3Babi%3DC"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\tdef.24.HostThunkLinkNameAndItemName\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trule.24.Mangle-HostExport-Proc\t"
         ) &&
         acceptedProjectConformanceContains(
             authority,
@@ -676,112 +2577,356 @@ internal procedure acceptedProjectHostedConformanceMatches(
             "AcceptedProjectHostedBuild",
             "hosted.conformance.log",
             "\trequirement.23.HostedExportThunkEmissionAndEntrypoint\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\treq.24.HostedPoisonFlagTemplate\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\treq.24.HostedPoisonStateIsolation\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\treq.HostedSessionPoisonFlagLocalization\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "symbol%3Dultraviolet_x3a_x3aruntime_x3a_x3apoison_x3a_x3aHostedExportLibrary"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "poison_flag%3Dtrue%3Blocalization%3Dhosted_session_slot"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "session_context_owned%3Dtrue"
+        ) &&
+        acceptedProjectHostedFfiBoundaryDefinitionMatches(authority) &&
+        acceptedProjectHostedLifecycle24ConformanceMatches(authority)
+}
+
+internal procedure acceptedProjectHostedConformanceContains(
+    authority: TestAuthority,
+    required_text: string@View
+) -> bool {
+    return acceptedProjectConformanceContains(
+        authority,
+        "AcceptedProjectHostedBuild",
+        "hosted.conformance.log",
+        required_text
+    )
+}
+
+internal procedure acceptedProjectHostedTargetCarrierConformanceMatches(
+    authority: TestAuthority
+) -> bool {
+    if !acceptedProjectTargetIsWindows(authority) {
+        return acceptedProjectHostedConformanceContains(
+                authority,
+                "\trule.23.HostThunkParamCarrier-ByValue-Default\t"
+            ) &&
+            acceptedProjectHostedConformanceContains(
+                authority,
+                "\trule.23.HostThunkRetCarrier-Default\t"
+            )
+    }
+
+    return acceptedProjectHostedConformanceContains(
+            authority,
+            "\trule.23.HostThunkParamCarrier-Win64-DirectAgg\t"
+        ) &&
+        acceptedProjectHostedConformanceContains(
+            authority,
+            "\trule.23.HostThunkParamCarrier-Win64-IndirectAgg\t"
+        ) &&
+        acceptedProjectHostedConformanceContains(
+            authority,
+            "\trule.23.HostThunkRetCarrier-Win64-DirectAgg\t"
+        ) &&
+        acceptedProjectHostedConformanceContains(
+            authority,
+            "\trule.23.HostThunkRetCarrier-Win64-SRetAgg\t"
         )
+}
+
+internal procedure acceptedProjectHostedFfiBoundaryDefinitionMatches(
+    authority: TestAuthority
+) -> bool {
+    return acceptedProjectHostedConformanceContains(
+        authority,
+        "\trequirement.23.FFIBoundaryDefinition\t"
+    ) &&
+        acceptedProjectHostedConformanceContains(
+            authority,
+            "boundary%3Dhosted_export"
+        ) &&
+        acceptedProjectHostedConformanceContains(
+            authority,
+            "thunk_symbol%3Duv_hosted_reference_increment"
+        ) &&
+        acceptedProjectHostedConformanceContains(
+            authority,
+            "omits_first_source_param%3Dtrue"
+        )
+}
+
+internal procedure acceptedProjectHostedLifecycle24ConformanceMatches(
+    authority: TestAuthority
+) -> bool {
+    return acceptedProjectHostedConformanceContains(
+            authority,
+            "\tdef.24.HostedStateAddressDefinitions\t"
+        ) &&
+        acceptedProjectHostedConformanceContains(
+            authority,
+            "state_address%3Dsession_context_slot%3Baddress_expression%3Dhosted_env_base_plus_slot_offset"
+        ) &&
+        acceptedProjectHostedConformanceContains(
+            authority,
+            "\treq.24.HostedLibraryStateAddressInterpretation\t"
+        ) &&
+        acceptedProjectHostedConformanceContains(authority, "\tdef.24.HostedStateJudg\t") &&
+        acceptedProjectHostedConformanceContains(
+            authority,
+            "\treq.24.SessionStateInitDefinesHostedCells\t"
+        ) &&
+        acceptedProjectHostedConformanceContains(
+            authority,
+            "\treq.24.SessionStateDestroyRemovesHostedCells\t"
+        ) &&
+        acceptedProjectHostedConformanceContains(
+            authority,
+            "\treq.24.SharedLibraryImageStateInterpretation\t"
+        ) &&
+        acceptedProjectHostedConformanceContains(
+            authority,
+            "\treq.24.SharedLibraryLinkedCallImageLifecycle\t"
+        ) &&
+        acceptedProjectHostedConformanceContains(
+            authority,
+            "\treq.24.SharedLibraryLoaderEntrypoint\t"
+        ) &&
+        acceptedProjectHostedConformanceContains(authority, "\tdef.24.HostedSessionJudg\t") &&
+        acceptedProjectHostedConformanceContains(
+            authority,
+            "\tdef.24.HostedSessionStateDefinitions\t"
+        ) &&
+        acceptedProjectHostedConformanceContains(authority, "\treq.24.DistinctHostedState\t") &&
+        acceptedProjectHostedConformanceContains(
+            authority,
+            "\treq.24.HostedSessionLifecycleState\t"
+        ) &&
+        acceptedProjectHostedConformanceContains(
+            authority,
+            "\treq.24.HostedSessionNoConcurrentReentry\t"
+        ) &&
+        acceptedProjectHostedConformanceContains(authority, "\trule.24.HostSessionInitSigma\t") &&
+        acceptedProjectHostedConformanceContains(authority, "\trule.24.HostedCallSigma-Ok\t") &&
+        acceptedProjectHostedConformanceContains(
+            authority,
+            "\trule.24.HostSessionDestroySigma\t"
+        ) &&
+        acceptedProjectHostedConformanceContains(
+            authority,
+            "\treq.24.PartialInitPanicCleanupPrefix\t"
+        ) &&
+        acceptedProjectHostedConformanceContains(
+            authority,
+            "cleanup_prefix_reverse_order%3Dtrue"
+        )
+}
+
+internal procedure acceptedProjectHostedMapFileContains(
+    authority: TestAuthority,
+    required_text: string@View
+) -> bool {
+    return acceptedProjectTempFileContains(
+        authority,
+        "AcceptedProjectHostedBuild",
+        acceptedProjectTargetPath(
+            authority,
+            "Binary/HostedExportLibrary.map",
+            "Binary/libHostedExportLibrary.so.exports.map"
+        ),
+        required_text
+    )
+}
+
+internal procedure acceptedProjectHostedMapInternalSymbolsMatch(
+    authority: TestAuthority
+) -> bool {
+    if !acceptedProjectTargetIsWindows(authority) {
+        return acceptedProjectHostedMapFileContains(
+                authority,
+                "ultraviolet_x3a_x3aruntime_x3a_x3apoison_x3a_x3aHostedExportLibrary"
+            ) &&
+            acceptedProjectHostedMapFileContains(authority, "local:") &&
+            acceptedProjectHostedMapFileContains(authority, "*;")
+    }
+
+    return acceptedProjectHostedMapFileContains(
+            authority,
+            "hostedReferenceTripleEcho_x3a_x3a_x5f_x5fhost_x5fbody"
+        ) &&
+        acceptedProjectHostedMapFileContains(authority, "uv_host_session_try_enter") &&
+        acceptedProjectHostedMapFileContains(authority, "uv_host_session_leave") &&
+        acceptedProjectHostedMapFileContains(authority, "uv_host_session_register") &&
+        acceptedProjectHostedMapFileContains(authority, "uv_host_session_try_retire")
 }
 
 internal procedure acceptedProjectHostedMapMatches(authority: TestAuthority) -> bool {
     return acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            "Binary/HostedExportLibrary.map",
+            acceptedProjectTargetPath(
+                authority,
+                "Binary/HostedExportLibrary.map",
+                "Binary/libHostedExportLibrary.so.exports.map"
+            ),
             "__ultraviolet_host_abi_version"
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            "Binary/HostedExportLibrary.map",
+            acceptedProjectTargetPath(
+                authority,
+                "Binary/HostedExportLibrary.map",
+                "Binary/libHostedExportLibrary.so.exports.map"
+            ),
             "__ultraviolet_host_session_create"
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            "Binary/HostedExportLibrary.map",
+            acceptedProjectTargetPath(
+                authority,
+                "Binary/HostedExportLibrary.map",
+                "Binary/libHostedExportLibrary.so.exports.map"
+            ),
             "__ultraviolet_host_session_destroy"
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            "Binary/HostedExportLibrary.map",
+            acceptedProjectTargetPath(
+                authority,
+                "Binary/HostedExportLibrary.map",
+                "Binary/libHostedExportLibrary.so.exports.map"
+            ),
             "uv_hosted_reference_increment"
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            "Binary/HostedExportLibrary.map",
+            acceptedProjectTargetPath(
+                authority,
+                "Binary/HostedExportLibrary.map",
+                "Binary/libHostedExportLibrary.so.exports.map"
+            ),
             "uv_hosted_reference_pair_sum"
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            "Binary/HostedExportLibrary.map",
+            acceptedProjectTargetPath(
+                authority,
+                "Binary/HostedExportLibrary.map",
+                "Binary/libHostedExportLibrary.so.exports.map"
+            ),
             "uv_hosted_reference_pair_echo"
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            "Binary/HostedExportLibrary.map",
+            acceptedProjectTargetPath(
+                authority,
+                "Binary/HostedExportLibrary.map",
+                "Binary/libHostedExportLibrary.so.exports.map"
+            ),
             "uv_hosted_reference_triple_sum"
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            "Binary/HostedExportLibrary.map",
+            acceptedProjectTargetPath(
+                authority,
+                "Binary/HostedExportLibrary.map",
+                "Binary/libHostedExportLibrary.so.exports.map"
+            ),
             "uv_hosted_reference_triple_echo"
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            "Binary/HostedExportLibrary.map",
+            acceptedProjectTargetPath(
+                authority,
+                "Binary/HostedExportLibrary.map",
+                "Binary/libHostedExportLibrary.so.exports.map"
+            ),
             "uv_hosted_reference_large_echo"
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            "Binary/HostedExportLibrary.map",
+            acceptedProjectTargetPath(
+                authority,
+                "Binary/HostedExportLibrary.map",
+                "Binary/libHostedExportLibrary.so.exports.map"
+            ),
             "uv_hosted_reference_io_probe"
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            "Binary/HostedExportLibrary.map",
+            acceptedProjectTargetPath(
+                authority,
+                "Binary/HostedExportLibrary.map",
+                "Binary/libHostedExportLibrary.so.exports.map"
+            ),
             "uv_hosted_reference_state_increment"
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            "Binary/HostedExportLibrary.map",
+            acceptedProjectTargetPath(
+                authority,
+                "Binary/HostedExportLibrary.map",
+                "Binary/libHostedExportLibrary.so.exports.map"
+            ),
             "uv_hosted_reference_catch_value"
         ) &&
-        acceptedProjectTempFileContains(
+        acceptedProjectHostedMapInternalSymbolsMatch(authority)
+}
+
+internal procedure acceptedProjectHostedImportLibraryMatches(
+    authority: TestAuthority
+) -> bool {
+    if acceptedProjectTargetIsWindows(authority) {
+        return acceptedProjectTempFileExists(
             authority,
             "AcceptedProjectHostedBuild",
-            "Binary/HostedExportLibrary.map",
-            "hostedReferenceTripleEcho_x3a_x3a_x5f_x5fhost_x5fbody"
-        ) &&
-        acceptedProjectTempFileContains(
-            authority,
-            "AcceptedProjectHostedBuild",
-            "Binary/HostedExportLibrary.map",
-            "uv_host_session_try_enter"
-        ) &&
-        acceptedProjectTempFileContains(
-            authority,
-            "AcceptedProjectHostedBuild",
-            "Binary/HostedExportLibrary.map",
-            "uv_host_session_leave"
-        ) &&
-        acceptedProjectTempFileContains(
-            authority,
-            "AcceptedProjectHostedBuild",
-            "Binary/HostedExportLibrary.map",
-            "uv_host_session_register"
-        ) &&
-        acceptedProjectTempFileContains(
-            authority,
-            "AcceptedProjectHostedBuild",
-            "Binary/HostedExportLibrary.map",
-            "uv_host_session_try_retire"
+            "Library/HostedExportLibrary.lib"
         )
+    }
+
+    return acceptedProjectTempFileDoesNotExist(
+        authority,
+        "AcceptedProjectHostedBuild",
+        "Library/libHostedExportLibrary.so.import"
+    )
 }
 
 internal procedure acceptedProjectHostedExercise(
@@ -803,17 +2948,21 @@ internal procedure acceptedProjectHostedExercise(
         acceptedProjectTempFileExists(
             authority,
             "AcceptedProjectHostedBuild",
-            "Binary/HostedExportLibrary.dll"
+            acceptedProjectTargetPath(
+                authority,
+                "Binary/HostedExportLibrary.dll",
+                "Binary/libHostedExportLibrary.so"
+            )
         ) &&
+        acceptedProjectHostedImportLibraryMatches(authority) &&
         acceptedProjectTempFileExists(
             authority,
             "AcceptedProjectHostedBuild",
-            "Library/HostedExportLibrary.lib"
-        ) &&
-        acceptedProjectTempFileExists(
-            authority,
-            "AcceptedProjectHostedBuild",
-            "Binary/HostedExportLibrary.map"
+            acceptedProjectTargetPath(
+                authority,
+                "Binary/HostedExportLibrary.map",
+                "Binary/libHostedExportLibrary.so.exports.map"
+            )
         ) &&
         acceptedProjectTempFileContains(
             authority,
@@ -844,7 +2993,51 @@ internal procedure acceptedProjectHostedExercise(
     if !passed {
         return diagnosticFixtureExecutionResult(false, 0usize)
     }
-    return diagnosticFixtureExecutionResult(true, 39usize)
+    return diagnosticFixtureExecutionResult(true, 50usize)
+}
+
+internal procedure acceptedProjectReportNamedResult(
+    authority: TestAuthority,
+    name: string@View,
+    result: DiagnosticFixtureExecutionResult
+) -> DiagnosticFixtureExecutionResult {
+    if !result.passed {
+        let _ = diagnosticReportFixtureFailure(
+            authority,
+            "accepted project exercise failed: ",
+            name
+        )
+    }
+    return result
+}
+
+internal procedure acceptedProjectMergeNamedResult(
+    authority: TestAuthority,
+    accumulated: DiagnosticFixtureExecutionResult,
+    name: string@View,
+    next: DiagnosticFixtureExecutionResult
+) -> DiagnosticFixtureExecutionResult {
+    return outputDiagnosticMergeResult(
+        accumulated,
+        acceptedProjectReportNamedResult(authority, name, next)
+    )
+}
+
+#test(name: "accepted project lowering checks judgement set obligation")
+internal procedure acceptedProjectLoweringChecksJudgementSetObligation(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+
+    let result: DiagnosticFixtureExecutionResult =
+        acceptedProjectLoweringChecksJudgementSetExercise(authority)
+    return result.passed && result.count == 1usize
 }
 
 #test(name: "accepted project fixtures build and exercise artifact obligations")
@@ -860,17 +3053,39 @@ internal procedure acceptedProjectFixturesBuildAndExerciseArtifactObligations(
     }
 
     var result: DiagnosticFixtureExecutionResult =
-        acceptedProjectStaticLibraryExercise(authority)
-    result = outputDiagnosticMergeResult(
+        acceptedProjectReportNamedResult(
+            authority,
+            "acceptedProjectStaticLibraryExercise",
+            acceptedProjectStaticLibraryExercise(authority)
+        )
+    result = acceptedProjectMergeNamedResult(
+        authority,
         result,
+        "acceptedProjectExecutableExercise",
         acceptedProjectExecutableExercise(authority)
     )
-    result = outputDiagnosticMergeResult(
+    result = acceptedProjectMergeNamedResult(
+        authority,
         result,
+        "acceptedProjectCrossAssemblyExercise",
         acceptedProjectCrossAssemblyExercise(authority)
     )
-    result = outputDiagnosticMergeResult(
+    result = acceptedProjectMergeNamedResult(
+        authority,
         result,
+        "acceptedProjectPtrNullReturnExercise",
+        acceptedProjectPtrNullReturnExercise(authority)
+    )
+    result = acceptedProjectMergeNamedResult(
+        authority,
+        result,
+        "acceptedProjectExpressionSemanticsExercise",
+        acceptedProjectExpressionSemanticsExercise(authority)
+    )
+    result = acceptedProjectMergeNamedResult(
+        authority,
+        result,
+        "acceptedProjectHostedExercise",
         acceptedProjectHostedExercise(authority)
     )
     return result.passed &&

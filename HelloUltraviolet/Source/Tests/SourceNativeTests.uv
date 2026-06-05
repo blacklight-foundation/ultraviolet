@@ -35,6 +35,32 @@ internal procedure sourceNativeReadTextEquals(
     }
 }
 
+internal procedure sourceNativeDurationOutcomeSucceeded(
+    result: Outcome<Duration, TimeError>
+) -> bool {
+    return if result is {
+        @Value { value } {
+            value.nanoseconds >= 0u128
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure sourceNativeUtcInstantOutcomeSucceeded(
+    result: Outcome<UtcInstant, TimeError>
+) -> bool {
+    return if result is {
+        @Value {
+            true
+        }
+        @Error {
+            false
+        }
+    }
+}
+
 internal procedure sourceNativeWriteOrderFile(
     authority: TestAuthority,
     text: string@View
@@ -43,7 +69,7 @@ internal procedure sourceNativeWriteOrderFile(
     return sourceNativeIoUnitSucceeded(authority.io~>write_file(SOURCE_NATIVE_ORDER_FILE, data))
 }
 
-#test(name: "source native order 01", covers("def.TestDiscoveryOrder@L28962"))
+#test(name: "source native order 01", covers("def.TestDiscoveryOrder@L28964"))
 internal procedure sourceNativeOrderFirst(authority: TestAuthority) -> bool
 |: |= @result
 {
@@ -52,7 +78,7 @@ internal procedure sourceNativeOrderFirst(authority: TestAuthority) -> bool
         sourceNativeWriteOrderFile(authority, "1")
 }
 
-#test(name: "source native order 02", covers("def.TestDiscoveryOrder@L28962"))
+#test(name: "source native order 02", covers("def.TestDiscoveryOrder@L28964"))
 internal procedure sourceNativeOrderSecond(authority: TestAuthority) -> bool
 |: |= @result
 {
@@ -62,7 +88,7 @@ internal procedure sourceNativeOrderSecond(authority: TestAuthority) -> bool
         sourceNativeWriteOrderFile(authority, "12")
 }
 
-#test(name: "source native order 03", covers("def.TestDiscoveryOrder@L28962"))
+#test(name: "source native order 03", covers("def.TestDiscoveryOrder@L28964"))
 internal procedure sourceNativeOrderThird(authority: TestAuthority) -> bool
 |: |= @result
 {
@@ -105,7 +131,19 @@ internal procedure sourceNativeNamedCoveredTest() -> bool
 internal procedure sourceNativeAuthorityTest(authority: TestAuthority) -> bool
 |: |= @result
 {
-    return true
+    let time: $Time = authority.time
+    let monotonic: $MonotonicTime = time~>monotonic()
+    let wall: $WallTime = time~>wall()
+    let start: MonotonicInstant = monotonic~>now()
+    let end: MonotonicInstant = monotonic~>now()
+    let monotonic_resolution: Duration = monotonic~>resolution()
+    let elapsed: Outcome<Duration, TimeError> = monotonic~>elapsed(start, end)
+    let wall_now: Outcome<UtcInstant, TimeError> = wall~>now_utc()
+    let wall_resolution: Outcome<Duration, TimeError> = wall~>resolution()
+    return monotonic_resolution.nanoseconds > 0u128 &&
+        sourceNativeDurationOutcomeSucceeded(elapsed) &&
+        sourceNativeUtcInstantOutcomeSucceeded(wall_now) &&
+        sourceNativeDurationOutcomeSucceeded(wall_resolution)
 }
 
 #test(covers("req.TestProcedureShape@L28842"))
@@ -115,7 +153,7 @@ internal procedure sourceNativeShapeTest() -> bool
     return true
 }
 
-#test(covers("conformance.TestAttributeDynamicSemantics@L28882"))
+#test(covers("conformance.TestAttributeDynamicSemantics@L28884"))
 internal procedure sourceNativeDynamicSemanticsTest() -> bool
 |: |= @result
 {

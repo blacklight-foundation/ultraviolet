@@ -12,10 +12,33 @@ public procedure asyncYieldReleaseFromReference(value: i32) -> AsyncReferenceCom
     return resumed + 1
 }
 
+/// Suspends with release while a read key is held.
+public procedure asyncYieldReleaseHeldKeyReference(value: i32) -> AsyncReferenceComputation {
+    var shared_value: shared i32 = 1
+    %read shared_value {
+        let resumed: i32 = yield release value
+        return resumed
+    }
+}
+
+/// Delegates with release while a read key is held.
+public procedure asyncYieldReleaseFromHeldKeyReference(value: i32) -> AsyncReferenceComputation {
+    var shared_value: shared i32 = 1
+    %read shared_value {
+        let resumed: i32 = yield release from asyncSuspendsReference(value)
+        return resumed + 1
+    }
+}
+
 /// Exercises the Async AsyncKeyIntegration reference surface.
 public procedure runAsyncAsyncKeyIntegrationReference() -> bool {
     let released: AsyncReferenceComputation = asyncYieldReleaseReference(41)
     let delegated: AsyncReferenceComputation = asyncYieldReleaseFromReference(42)
+    let held_release: AsyncReferenceComputation = asyncYieldReleaseHeldKeyReference(43)
+    let held_delegated: AsyncReferenceComputation =
+        asyncYieldReleaseFromHeldKeyReference(44)
     return asyncSuspendedOutputIs(released, 41) &&
-        asyncSuspendedOutputIs(delegated, 42)
+        asyncSuspendedOutputIs(delegated, 42) &&
+        asyncSuspendedOutputIs(held_release, 43) &&
+        asyncSuspendedOutputIs(held_delegated, 44)
 }

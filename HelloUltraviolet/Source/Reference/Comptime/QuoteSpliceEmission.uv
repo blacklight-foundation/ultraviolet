@@ -40,8 +40,41 @@ public procedure runComptimeQuoteSpliceEmissionReference() -> bool {
         emitter~>emit(fourth_ast)
     }
 
+    return ctPendingEmitsTransferReference() &&
+        stringSpliceIdentifierHygieneReference() &&
+        hygienizeAstPropertiesReference() &&
+        hygienicInternalReferencesReference() &&
+        quoteBuildSpliceOrderReference()
+}
+
+/// Exercises transfer of pending emitted items into the expanded program.
+public procedure ctPendingEmitsTransferReference() -> bool {
     return emittedQuoteReferenceValue() == 47 &&
         emittedSplicedReferenceValue() == 42 &&
         emittedIdentifierAndPatternSpliceReferenceValue() == 53 &&
         emittedParameterIdentifierSpliceReferenceValue(59) == 61
+}
+
+/// Exercises string splice hygiene in identifier positions.
+public procedure stringSpliceIdentifierHygieneReference() -> bool {
+    return emittedIdentifierAndPatternSpliceReferenceValue() == 53 &&
+        emittedParameterIdentifierSpliceReferenceValue(59) == 61
+}
+
+/// Exercises AST hygienization for spliced type, expression, pattern, and statement nodes.
+public procedure hygienizeAstPropertiesReference() -> bool {
+    return emittedSplicedReferenceValue() == 42 &&
+        emittedIdentifierAndPatternSpliceReferenceValue() == 53
+}
+
+/// Exercises that hygienized emitted code keeps internal references valid.
+public procedure hygienicInternalReferencesReference() -> bool {
+    return emittedQuoteReferenceValue() == 47 &&
+        emittedSplicedReferenceValue() == 42
+}
+
+/// Exercises quote building before splice rendering and emission.
+public procedure quoteBuildSpliceOrderReference() -> bool {
+    return emittedSplicedReferenceValue() == 42 &&
+        emittedIdentifierAndPatternSpliceReferenceValue() == 53
 }

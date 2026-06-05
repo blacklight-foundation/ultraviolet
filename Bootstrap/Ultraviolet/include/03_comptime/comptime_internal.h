@@ -207,6 +207,7 @@ struct CtEnv {
   std::optional<CtValue> contract_result_value;
   std::shared_ptr<const ProjectFileSnapshot> files;
   std::optional<ast::QuoteKind> return_quote_kind;
+  std::vector<std::string> quote_splice_trace;
 };
 
 void AppendDiags(core::DiagnosticStream& out, const core::DiagnosticStream& add);

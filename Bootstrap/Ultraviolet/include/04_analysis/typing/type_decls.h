@@ -83,6 +83,7 @@ struct RecordDeclResult {
   std::vector<MethodInfo> methods;
   bool default_constructible = false;
   std::string diag_detail;
+  std::vector<std::string_view> diagnostic_obligation_ids;
 };
 
 // =============================================================================
@@ -101,6 +102,7 @@ struct EnumDeclResult {
   TypeRef self_type;
   std::vector<VariantInfo> variants;
   std::vector<MethodInfo> methods;
+  std::vector<std::string_view> diagnostic_obligation_ids;
 };
 
 // =============================================================================
@@ -200,6 +202,7 @@ struct ProcedureDeclResult {
   std::vector<std::string> generic_params;
   std::string diag_detail;
   std::optional<core::Span> diag_span;
+  std::vector<std::string_view> diagnostic_obligation_ids;
 };
 
 // =============================================================================
@@ -221,6 +224,7 @@ struct TypeAliasDeclResult {
   std::vector<std::string> generic_params;
   TypeRef aliased_type;
   bool has_refinement = false;
+  std::vector<std::string_view> diagnostic_obligation_ids;
 };
 
 // =============================================================================

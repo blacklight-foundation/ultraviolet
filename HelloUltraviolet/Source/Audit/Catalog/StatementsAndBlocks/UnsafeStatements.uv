@@ -9,7 +9,7 @@ public procedure validatedStatementsAndBlocksUnsafeStatementsObligations() -> us
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.18.UnsafeStatements",
-        72292usize,
+        72294usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsUnsafeReference",
         "Source/Reference/Statements/Unsafe.uv"
@@ -18,7 +18,7 @@ public procedure validatedStatementsAndBlocksUnsafeStatementsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.18.Parse-Unsafe-Block",
-        72309usize,
+        72311usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsUnsafeReference",
         "Source/Reference/Statements/Unsafe.uv"
@@ -27,7 +27,7 @@ public procedure validatedStatementsAndBlocksUnsafeStatementsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "def.18.UnsafeBlockStmtAst",
-        72327usize,
+        72329usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsUnsafeReference",
         "Source/Reference/Statements/Unsafe.uv"
@@ -36,7 +36,7 @@ public procedure validatedStatementsAndBlocksUnsafeStatementsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.18.T-UnsafeStmt",
-        72342usize,
+        72344usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsUnsafeReference",
         "Source/Reference/Statements/Unsafe.uv"
@@ -45,7 +45,7 @@ public procedure validatedStatementsAndBlocksUnsafeStatementsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "req.18.UnsafeStatementStateAndProvenance",
-        72358usize,
+        72360usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsUnsafeReference",
         "Source/Reference/Statements/Unsafe.uv"
@@ -54,7 +54,7 @@ public procedure validatedStatementsAndBlocksUnsafeStatementsObligations() -> us
     }
     if rejectedSourceObligationEntryMatches(
         "diag.18.UnsafeRequiredOperationOwnership",
-        72371usize,
+        72373usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/UnsafeRequiredOperationOwnershipDiagnostic/Source/Main.uv"
@@ -63,7 +63,7 @@ public procedure validatedStatementsAndBlocksUnsafeStatementsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.18.ExecSigma-UnsafeStmt",
-        72386usize,
+        72388usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsUnsafeReference",
         "Source/Reference/Statements/Unsafe.uv"
@@ -72,16 +72,16 @@ public procedure validatedStatementsAndBlocksUnsafeStatementsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.18.Lower-Stmt-UnsafeBlock",
-        72404usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsUnsafeReference",
-        "Source/Reference/Statements/Unsafe.uv"
+        72406usize,
+        "HelloUltraviolet::Audit",
+        "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+        "Source/Audit/AcceptedProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if rejectedSourceObligationEntryMatches(
         "diag.18.UnsafeStatements",
-        72422usize,
+        72424usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/UnsafeStatementsDiagnostic/Source/Main.uv"

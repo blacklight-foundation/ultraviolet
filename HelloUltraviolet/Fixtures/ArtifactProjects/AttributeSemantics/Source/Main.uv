@@ -1,0 +1,63 @@
+//! Artifact fixture for attribute layout and optimization lowering.
+
+#layout(packed)
+public record AttributePackedRecord {
+    public first: u8
+    public second: i32
+}
+
+#layout(C, align(16))
+public record AttributeAlignedRecord {
+    public value: i64
+}
+
+#layout(u8)
+public enum AttributeSmallEnum {
+    First
+    Second
+}
+
+public procedure attributePackedSize() -> usize {
+    return sizeof(AttributePackedRecord)
+}
+
+public procedure attributePackedAlign() -> usize {
+    return alignof(AttributePackedRecord)
+}
+
+public procedure attributeAlignedSize() -> usize {
+    return sizeof(AttributeAlignedRecord)
+}
+
+public procedure attributeAlignedAlign() -> usize {
+    return alignof(AttributeAlignedRecord)
+}
+
+public procedure attributeSmallEnumSize() -> usize {
+    return sizeof(AttributeSmallEnum)
+}
+
+public procedure attributeSmallEnumAlign() -> usize {
+    return alignof(AttributeSmallEnum)
+}
+
+#inline(always)
+public procedure attributeAlwaysInlineValue(value: i32) -> i32 {
+    return value + 1
+}
+
+#inline(never)
+public procedure attributeNeverInlineValue(value: i32) -> i32 {
+    return value + 2
+}
+
+#cold
+public procedure attributeColdValue(value: i32) -> i32 {
+    return value - 1
+}
+
+public procedure attributeOptimizationUse(value: i32) -> i32 {
+    return attributeAlwaysInlineValue(value) +
+        attributeNeverInlineValue(value) +
+        attributeColdValue(value)
+}

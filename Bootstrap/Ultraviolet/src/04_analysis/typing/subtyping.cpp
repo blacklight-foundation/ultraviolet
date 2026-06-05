@@ -65,21 +65,28 @@ static bool IsFloatType(std::string_view name) {
   return false;
 }
 
-static bool IsNumericMismatch(const TypeRef& lhs, const TypeRef& rhs) {
+enum class NumericMismatchKind {
+  None,
+  Integer,
+  Float,
+};
+
+static NumericMismatchKind NumericMismatchKindOf(const TypeRef& lhs,
+                                                 const TypeRef& rhs) {
   const auto* lprim = std::get_if<TypePrim>(&lhs->node);
   const auto* rprim = std::get_if<TypePrim>(&rhs->node);
   if (!lprim || !rprim) {
-    return false;
+    return NumericMismatchKind::None;
   }
   if (IsIntType(lprim->name) && IsIntType(rprim->name) &&
       lprim->name != rprim->name) {
-    return true;
+    return NumericMismatchKind::Integer;
   }
   if (IsFloatType(lprim->name) && IsFloatType(rprim->name) &&
       lprim->name != rprim->name) {
-    return true;
+    return NumericMismatchKind::Float;
   }
-  return false;
+  return NumericMismatchKind::None;
 }
 
 static bool IsNeverType(const TypeRef& type) {
@@ -830,6 +837,11 @@ static SubtypingResult SubtypingUncached(const ScopeContext& ctx,
     return {true, std::nullopt, true};
   }
 
+  if (IsNeverType(lhs)) {
+    SPEC_RULE("Sub-Never");
+    return {true, std::nullopt, true};
+  }
+
   if (const auto* lref = std::get_if<TypeRefine>(&lhs->node)) {
     if (const auto* rref = std::get_if<TypeRefine>(&rhs->node)) {
       const auto base_eq = TypeEquiv(lref->base, rref->base);
@@ -873,13 +885,15 @@ static SubtypingResult SubtypingUncached(const ScopeContext& ctx,
     return {true, std::nullopt, false};
   }
 
-  if (IsNumericMismatch(lhs, rhs)) {
-    return {true, std::nullopt, false};
-  }
-
-  if (IsNeverType(lhs)) {
-    SPEC_RULE("Sub-Never");
-    return {true, std::nullopt, true};
+  switch (NumericMismatchKindOf(lhs, rhs)) {
+    case NumericMismatchKind::Integer:
+      SPEC_RULE("req.NoIntegerNumericSubtyping");
+      return {true, std::nullopt, false};
+    case NumericMismatchKind::Float:
+      SPEC_RULE("req.NoFloatNumericSubtyping");
+      return {true, std::nullopt, false};
+    case NumericMismatchKind::None:
+      break;
   }
 
   if (const auto lpath = GetAppliedTypeView(lhs)) {

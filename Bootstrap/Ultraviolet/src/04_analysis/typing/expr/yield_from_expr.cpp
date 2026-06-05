@@ -20,6 +20,11 @@ namespace {
 
 static inline void SpecDefsYieldFrom() {
   SPEC_DEF("T-Yield-From", "17.3.3");
+  SPEC_DEF("rule.21.T-Yield-From", "21.2.4");
+  SPEC_DEF("rule.21.YieldFrom-NotAsync-Err", "21.2.4");
+  SPEC_DEF("rule.21.YieldFrom-Out-Err", "21.2.4");
+  SPEC_DEF("rule.21.YieldFrom-In-Err", "21.2.4");
+  SPEC_DEF("rule.21.YieldFrom-ErrType-Err", "21.2.4");
 }
 
 }  // namespace
@@ -56,12 +61,13 @@ ExprTypeResult TypeYieldFromExpr(const ScopeContext& ctx,
                                  const ExprTypeFn& type_expr,
                                  const IdentTypeFn& /*type_ident*/,
                                  const PlaceTypeFn& /*type_place*/) {
-  SPEC_RULE("T-Yield-From");
+  SpecDefsYieldFrom();
   ExprTypeResult result;
 
   // Verify we're in an async procedure by extracting async signature
   const auto async_sig = AsyncSigOf(ctx, type_ctx.return_type);
   if (!async_sig.has_value()) {
+    SPEC_RULE("rule.21.YieldFrom-NotAsync-Err");
     result.diag_id = "E-CON-0220";  // yield from outside async context
     return result;
   }
@@ -76,6 +82,7 @@ ExprTypeResult TypeYieldFromExpr(const ScopeContext& ctx,
   // Extract async signature from delegated expression
   const auto child_sig = AsyncSigOf(ctx, value_result.type);
   if (!child_sig.has_value()) {
+    SPEC_RULE("rule.21.YieldFrom-Out-Err");
     result.diag_id = "E-CON-0221";  // not an async type
     return result;
   }
@@ -87,6 +94,7 @@ ExprTypeResult TypeYieldFromExpr(const ScopeContext& ctx,
     return result;
   }
   if (!out_eq.equiv) {
+    SPEC_RULE("rule.21.YieldFrom-Out-Err");
     result.diag_id = "E-CON-0221";  // out type mismatch
     return result;
   }
@@ -98,6 +106,7 @@ ExprTypeResult TypeYieldFromExpr(const ScopeContext& ctx,
     return result;
   }
   if (!in_eq.equiv) {
+    SPEC_RULE("rule.21.YieldFrom-In-Err");
     result.diag_id = "E-CON-0222";  // in type mismatch
     return result;
   }
@@ -109,18 +118,27 @@ ExprTypeResult TypeYieldFromExpr(const ScopeContext& ctx,
     return result;
   }
   if (!err_sub.subtype) {
+    SPEC_RULE("rule.21.YieldFrom-ErrType-Err");
     result.diag_id = "E-CON-0225";  // error type mismatch
     return result;
   }
 
   // Check key constraint
   // yield from is ill-formed when keys are held, unless release modifier
+  SPEC_RULE("requirement.21.SuspensionKeyRestrictionsReference");
   if (type_ctx.keys_held && !expr.release) {
+    SPEC_RULE("requirement.21.AsyncKeyRestrictions");
     result.diag_id = "E-CON-0224";  // yield from inside key block without release
     return result;
   }
+  if (expr.release && type_ctx.env_ref) {
+    MarkSharedDerivedBindingsStale(*type_ctx.env_ref);
+  }
 
   // Result type is the Result type from the delegated async
+  SPEC_RULE("requirements.21.AsyncCapabilityRequirements");
+  SPEC_RULE("T-Yield-From");
+  SPEC_RULE("rule.21.T-Yield-From");
   result.ok = true;
   result.type = child_sig->result;
   return result;

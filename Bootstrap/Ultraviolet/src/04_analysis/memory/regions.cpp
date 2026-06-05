@@ -237,6 +237,10 @@ static inline void SpecDefsRegions() {
   SPEC_DEF("BindProv", "5.2.17");
   SPEC_DEF("StaticBindProv", "5.2.17");
   SPEC_DEF("AssignProvOk", "5.2.17");
+  SPEC_DEF("def.ProvenanceEnvironmentShape", "6.4.3");
+  SPEC_DEF("def.CasePatternProvenanceEnvironment", "6.4.3");
+  SPEC_DEF("req.18.AssignmentProvenanceEscapeFailures", "18.4.4");
+  SPEC_DEF("diag.18.AssignmentStatements", "18.4.7");
   SPEC_DEF("AllocTag", "5.2.17");
   SPEC_DEF("P-Pipeline", "5.2.17");
   SPEC_DEF("Warn-Async-LargeCapture", "5.2.17");
@@ -882,6 +886,7 @@ static ProvTag BindProv(const ProvEnv& env, const ProvTag& init) {
 static ProvEnv InitProvEnv(const std::vector<std::string>& params,
                            const std::vector<ProvTag>& tags,
                            const std::vector<RegionEntry>& regions) {
+  SpecDefsRegions();
   ProvEnv env;
   ProvScope scope;
   scope.id = env.next_scope_id++;
@@ -890,7 +895,30 @@ static ProvEnv InitProvEnv(const std::vector<std::string>& params,
   }
   env.scopes.push_back(std::move(scope));
   env.regions = regions;
+  core::Conformance::Record(
+      "def.ProvenanceEnvironmentShape", std::nullopt,
+      "definition=ProvenanceEnvironment;scope_stack=param_scope;"
+      "scope_map=ident_to_provenance;region_entries=initialized");
   return env;
+}
+
+static ProvEnv CasePatternProvenanceEnvironment(const ProvEnv& env,
+                                                const ast::Pattern& pattern) {
+  SpecDefsRegions();
+  const auto names = PatNames(pattern);
+  std::vector<std::string> bind_names;
+  bind_names.reserve(names.size());
+  for (const auto& name : names) {
+    bind_names.push_back(name);
+  }
+  ProvEnv case_env = env;
+  const auto bind_pi = BindProv(case_env, BottomTag());
+  IntroAll_pi_inplace(case_env, bind_names, bind_pi);
+  core::Conformance::Record(
+      "def.CasePatternProvenanceEnvironment", std::nullopt,
+      "operation=CaseEnv;source=PatNames+BindProv+IntroAll_pi;"
+      "pattern_names=introduced;region_entries=preserved");
+  return case_env;
 }
 
 static std::optional<IdKey> AllocTag(const ProvEnv& env,
@@ -2318,15 +2346,8 @@ static ProvExprResult ProvExpr(const ScopeContext& ctx,
       if (!case_clause.pattern) {
         continue;
       }
-      const auto names = PatNames(*case_clause.pattern);
-      std::vector<std::string> bind_names;
-      bind_names.reserve(names.size());
-      for (const auto& name : names) {
-        bind_names.push_back(name);
-      }
-      ProvEnv arm_env = env;
-      const auto bind_pi = BindProv(arm_env, BottomTag());
-      IntroAll_pi_inplace(arm_env, bind_names, bind_pi);
+      ProvEnv arm_env =
+          CasePatternProvenanceEnvironment(env, *case_clause.pattern);
       auto body = ProvExpr(ctx, case_clause.body, arm_env, gamma, expr_map);
       if (!body.ok) {
         return finish(body);
@@ -2354,15 +2375,8 @@ static ProvExprResult ProvExpr(const ScopeContext& ctx,
     std::vector<ProvTag> branch_provs;
     branch_provs.reserve(if_is->else_expr ? 2u : 1u);
     if (if_is->pattern && if_is->then_expr) {
-      const auto names = PatNames(*if_is->pattern);
-      std::vector<std::string> bind_names;
-      bind_names.reserve(names.size());
-      for (const auto& name : names) {
-        bind_names.push_back(name);
-      }
-      ProvEnv then_env = env;
-      const auto bind_pi = BindProv(then_env, BottomTag());
-      IntroAll_pi_inplace(then_env, bind_names, bind_pi);
+      ProvEnv then_env =
+          CasePatternProvenanceEnvironment(env, *if_is->pattern);
       auto then_res = ProvExpr(ctx, if_is->then_expr, then_env, gamma, expr_map);
       if (!then_res.ok) {
         return finish(then_res);
@@ -2538,6 +2552,7 @@ static ProvExprResult ProvExpr(const ScopeContext& ctx,
       if (escaping) {
         if (IsCapturedLocalSharedBinding(gamma, capture)) {
           SPEC_RULE("P-Closure-Escape-Err");
+          SPEC_RULE("requirement.19.EscapingClosureSharedLifetime");
           ProvExprResult err;
           err.ok = false;
           err.diag_id = "E-CON-0086";
@@ -2547,6 +2562,7 @@ static ProvExprResult ProvExpr(const ScopeContext& ctx,
       }
       if (ProvLess(env, *prov, target)) {
         SPEC_RULE("P-Closure-Escape-Err");
+        SPEC_RULE("requirement.19.EscapingClosureSharedLifetime");
         ProvExprResult err;
         err.ok = false;
         err.diag_id = "E-CON-0086";
@@ -2572,6 +2588,7 @@ static ProvExprResult ProvExpr(const ScopeContext& ctx,
       }
       if (ProvLess(env, arg_res.prov, frame_prov)) {
         SPEC_RULE("Async-Capture-Err");
+        SPEC_RULE("rule.21.Async-Capture-Err");
         ProvExprResult err;
         err.ok = false;
         err.diag_id = "E-CON-0280";
@@ -2581,11 +2598,15 @@ static ProvExprResult ProvExpr(const ScopeContext& ctx,
     }
     if (WarnAsyncCapture(ctx, gamma, args)) {
       SPEC_RULE("Warn-Async-LargeCapture");
+      SPEC_RULE("rule.21.Warn-Async-LargeCapture");
+      SPEC_RULE("requirement.21.AsyncLargeCaptureWarningEmission");
       EmitProvenanceDiagnostic("W-CON-0201", expr->span);
     } else {
       SPEC_RULE("Warn-Async-LargeCapture-Ok");
+      SPEC_RULE("rule.21.Warn-Async-LargeCapture-Ok");
     }
     SPEC_RULE("P-Async-Create");
+    SPEC_RULE("rule.21.P-Async-Create");
     result.ok = true;
     result.prov = frame_prov;
     return finish(result);
@@ -2836,10 +2857,15 @@ static ProvStmtResult ProvStmt(const ScopeContext& ctx,
             if (AsyncSigForExpr(ctx, gamma, node.value, expr_map == nullptr)
                     .has_value()) {
               SPEC_RULE("Prov-Async-Escape-Err");
+              SPEC_RULE("req.18.AssignmentProvenanceEscapeFailures");
+              SPEC_RULE("diag.18.AssignmentStatements");
+              SPEC_RULE("rule.21.Prov-Async-Escape-Err");
               return {false, "E-CON-0281", node.span,
                       env, gamma, {}};
             }
             SPEC_RULE("Prov-Escape-Err");
+            SPEC_RULE("req.18.AssignmentProvenanceEscapeFailures");
+            SPEC_RULE("diag.18.AssignmentStatements");
             return {false, "E-MEM-3020", node.span, env,
                     gamma, {}};
           }
@@ -2861,10 +2887,15 @@ static ProvStmtResult ProvStmt(const ScopeContext& ctx,
             if (AsyncSigForExpr(ctx, gamma, node.value, expr_map == nullptr)
                     .has_value()) {
               SPEC_RULE("Prov-Async-Escape-Err");
+              SPEC_RULE("req.18.AssignmentProvenanceEscapeFailures");
+              SPEC_RULE("diag.18.AssignmentStatements");
+              SPEC_RULE("rule.21.Prov-Async-Escape-Err");
               return {false, "E-CON-0281", node.span,
                       env, gamma, {}};
             }
             SPEC_RULE("Prov-Escape-Err");
+            SPEC_RULE("req.18.AssignmentProvenanceEscapeFailures");
+            SPEC_RULE("diag.18.AssignmentStatements");
             return {false, "E-MEM-3020", node.span, env,
                     gamma, {}};
           }

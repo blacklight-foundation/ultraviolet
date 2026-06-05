@@ -105,6 +105,9 @@ inline std::optional<std::string> LookupTypecheckDiagCode(std::string_view diag_
   if (diag_id == "NullLiteral-Infer-Err") {
     return "E-TYP-1530";
   }
+  if (diag_id == "Syn-Call-Err") {
+    return "E-TYP-1530";
+  }
   if (diag_id == "FieldAccess-NotVisible") {
     return "E-TYP-1905";
   }

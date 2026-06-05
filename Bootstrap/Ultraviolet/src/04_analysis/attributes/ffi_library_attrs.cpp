@@ -6,6 +6,8 @@
 #include <unordered_set>
 #include <variant>
 
+#include "00_core/assert_spec.h"
+
 namespace ultraviolet::analysis {
 
 namespace {
@@ -17,6 +19,29 @@ std::string NormalizeAttributeStringLiteral(std::string value) {
     return value.substr(1, value.size() - 2);
   }
   return value;
+}
+
+void RecordLibraryAttributeConformance(const ast::AttributeItem& attr,
+                                       const project::FfiLibrarySpec& spec,
+                                       bool used_default_kind) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload;
+  payload.reserve(spec.name.size() + spec.kind.size() + 160);
+  payload += "source=NormalizeLibraryAttribute;link_kinds=dylib,static,"
+             "framework,raw-dylib;name=";
+  payload += spec.name;
+  payload += ";kind=";
+  payload += spec.kind;
+  payload += ";default_kind=";
+  payload += used_default_kind ? "true" : "false";
+  payload += ";target=extern_block;manifest_link_kind_independent=true";
+
+  core::Conformance::Record("def.23.LibraryLinkKinds", attr.span, payload);
+  core::Conformance::Record(
+      "requirement.23.LibraryAttributeSemantics", attr.span, payload);
 }
 
 }  // namespace
@@ -60,7 +85,9 @@ std::optional<project::FfiLibrarySpec> NormalizeLibraryAttribute(
     return std::nullopt;
   }
 
-  return project::FfiLibrarySpec{*name, kind.value_or("dylib")};
+  project::FfiLibrarySpec spec{*name, kind.value_or("dylib")};
+  RecordLibraryAttributeConformance(attr, spec, !kind.has_value());
+  return spec;
 }
 
 std::vector<project::FfiLibrarySpec> CollectExternLibrarySpecs(

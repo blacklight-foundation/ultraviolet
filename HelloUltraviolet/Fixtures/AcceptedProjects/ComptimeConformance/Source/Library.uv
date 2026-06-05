@@ -1,0 +1,409 @@
+//! Accepted project fixture for compile-time execution and metaprogramming.
+
+internal let QUOTE_CAPTURED_VALUE: i32 = 17
+
+internal record ComptimeLiteralRecord {
+    internal value: usize
+    internal flag: bool
+}
+
+internal enum ComptimeLiteralEnum {
+    Empty
+    Count(usize)
+    Named {
+        value: usize
+    }
+}
+
+internal modal ComptimeLiteralModal {
+    @Ready {
+        internal value: usize
+    }
+}
+
+#reflect
+internal record ComptimeConformanceRecord {
+    internal first: i32
+    internal second: bool
+}
+
+#reflect
+internal enum ComptimeConformanceEnum {
+    Empty
+    Value(i32)
+    Named {
+        value: usize
+    }
+}
+
+#reflect
+internal modal ComptimeConformanceModal {
+    @Ready {
+        internal value: i32
+
+        internal procedure readValue(~) -> i32 {
+            return self.value
+        }
+
+        internal transition finish() -> @Done {
+            return ComptimeConformanceModal@Done {}
+        }
+    }
+
+    @Done {}
+}
+
+internal class ComptimeConformanceForm {}
+
+internal record ComptimeConformanceImplementation <: ComptimeConformanceForm {
+    internal value: i32
+}
+
+internal class EmittedDeriveClass {}
+internal class RequiredDeriveClass {}
+
+comptime internal procedure requireComptimeConformance(condition: bool) -> bool {
+    return if condition {
+        true
+    } else {
+        diagnostics~>error("compile-time conformance assertion failed")
+        false
+    }
+}
+
+comptime internal procedure addComptimeConformanceValue(value: usize) -> usize
+|: value > 0usize |= @result > value
+{
+    return value + 2usize
+}
+
+comptime internal procedure chooseComptimeConformanceValue<TValue>(
+    first: TValue,
+    second: TValue,
+    choose_first: bool
+) -> TValue
+{
+    return if choose_first {
+        first
+    } else {
+        second
+    }
+}
+
+comptime internal procedure sourceSpanHasExtent(span: SourceSpan) -> bool {
+    return span.file != "" &&
+        span.start_line > 0usize &&
+        span.start_col > 0usize &&
+        (
+            span.end_line > span.start_line ||
+            (
+                span.end_line == span.start_line &&
+                span.end_col >= span.start_col
+            )
+        )
+}
+
+derive target EmitComptimeConformanceDerive(target: Type) |: emits EmittedDeriveClass {
+    requireComptimeConformance(
+        introspect~>category(target) == TypeCategory::Record &&
+            diagnostics~>current_module() != ""
+    )
+    let ast: Ast::Item = quote {
+        internal procedure emittedComptimeConformanceDeriveValue() -> i32 {
+            return 37
+        }
+    }
+    emitter~>emit(ast)
+}
+
+derive target RequireComptimeConformanceDerive(
+    target: Type
+) |: requires EmittedDeriveClass, emits RequiredDeriveClass
+{
+    requireComptimeConformance(
+        introspect~>category(target) == TypeCategory::Record &&
+            diagnostics~>current_module() != ""
+    )
+    let ast: Ast::Item = quote {
+        internal procedure emittedRequiredComptimeConformanceDeriveValue() -> i32 {
+            return 41
+        }
+    }
+    emitter~>emit(ast)
+}
+
+derive target FirstTieComptimeConformanceDerive(target: Type) {
+    requireComptimeConformance(introspect~>category(target) == TypeCategory::Record)
+    let ast: Ast::Item = quote {
+        internal procedure emittedFirstTieComptimeConformanceDeriveValue() -> i32 {
+            return 43
+        }
+    }
+    emitter~>emit(ast)
+}
+
+derive target SecondTieComptimeConformanceDerive(target: Type) {
+    requireComptimeConformance(introspect~>category(target) == TypeCategory::Record)
+    let ast: Ast::Item = quote {
+        internal procedure emittedSecondTieComptimeConformanceDeriveValue() -> i32 {
+            return 47
+        }
+    }
+    emitter~>emit(ast)
+}
+
+#derive(
+    EmitComptimeConformanceDerive,
+    RequireComptimeConformanceDerive,
+    FirstTieComptimeConformanceDerive,
+    SecondTieComptimeConformanceDerive
+)
+internal record DerivedComptimeConformance <: EmittedDeriveClass, RequiredDeriveClass {
+    internal value: i32
+}
+
+internal procedure compileTimeCapabilityAndReflectionChecks() -> bool {
+    comptime {
+        requireComptimeConformance(diagnostics~>current_module() != "")
+        requireComptimeConformance(sourceSpanHasExtent(diagnostics~>current_span()))
+        requireComptimeConformance(
+            introspect~>category(Type::<ComptimeConformanceRecord>) ==
+                TypeCategory::Record
+        )
+        requireComptimeConformance(
+            introspect~>category(Type::<ComptimeConformanceEnum>) ==
+                TypeCategory::Enum
+        )
+        requireComptimeConformance(
+            introspect~>category(Type::<ComptimeConformanceModal>) ==
+                TypeCategory::Modal
+        )
+        requireComptimeConformance(
+            introspect~>implements_form(
+                Type::<ComptimeConformanceImplementation>,
+                Type::<ComptimeConformanceForm>
+            )
+        )
+        requireComptimeConformance(
+            introspect~>type_name(Type::<ComptimeConformanceRecord>) != ""
+        )
+        requireComptimeConformance(
+            introspect~>module_path(Type::<ComptimeConformanceRecord>) ==
+                introspect~>module_path(Type::<ComptimeConformanceRecord>)
+        )
+    }
+
+    #files
+    comptime {
+        let manifest_text = files~>read("Ultraviolet.toml")
+        let manifest_text_again = files~>read("Ultraviolet.toml")
+        let invalid_listing = files~>list_dir("../outside-project")
+        files~>read_bytes("Ultraviolet.toml")
+        files~>list_dir("Source")
+        let invalid_listing_is_invalid_path: bool = if invalid_listing is {
+            @Value { value } {
+                false
+            }
+            @Error { error } {
+                if error is {
+                    @NotFound {
+                        false
+                    }
+                    @PermissionDenied {
+                        false
+                    }
+                    @AlreadyExists {
+                        false
+                    }
+                    @InvalidPath {
+                        true
+                    }
+                    @Busy {
+                        false
+                    }
+                    @IoFailure {
+                        false
+                    }
+                }
+            }
+        }
+        requireComptimeConformance(files~>project_root() != "")
+        requireComptimeConformance(files~>exists("Ultraviolet.toml").value == true)
+        requireComptimeConformance(invalid_listing_is_invalid_path)
+        requireComptimeConformance(manifest_text.value != "")
+        requireComptimeConformance(manifest_text_again.value != "")
+        requireComptimeConformance(manifest_text.value == manifest_text_again.value)
+    }
+
+    var reflected_field_count: usize = 0usize
+    var reflected_field_index_total: usize = 0usize
+    comptime loop field in introspect~>fields(Type::<ComptimeConformanceRecord>) {
+        reflected_field_count = reflected_field_count + 1usize
+        reflected_field_index_total = reflected_field_index_total + comptime { field.index }
+    }
+
+    var reflected_variant_count: usize = 0usize
+    comptime loop variant in introspect~>variants(Type::<ComptimeConformanceEnum>) {
+        reflected_variant_count = reflected_variant_count + 1usize
+        reflected_variant_count = reflected_variant_count +
+            comptime if variant.name == "Named" { 1usize } else { 0usize }
+    }
+
+    var reflected_state_count: usize = 0usize
+    comptime loop state in introspect~>states(Type::<ComptimeConformanceModal>) {
+        reflected_state_count = reflected_state_count + 1usize
+        reflected_state_count = reflected_state_count +
+            comptime if state.name == "Ready" { 1usize } else { 0usize }
+    }
+
+    return reflected_field_count == 2usize &&
+        reflected_field_index_total == 1usize &&
+        reflected_variant_count == 4usize &&
+        reflected_state_count == 3usize
+}
+
+internal procedure compileTimeFormsChecks() -> usize {
+    var total: usize = comptime { addComptimeConformanceValue(5usize) }
+    let selected: usize = comptime if true { 7usize } else { missingRejectedBranch() }
+    let else_if_selected: usize =
+        comptime if false { missingFirstBranch() } else comptime if true {
+            11usize
+        } else {
+            13usize
+        }
+    let false_else_selected: usize =
+        comptime if false { missingFalseElseBranch() } else { 17usize }
+
+    comptime if false {
+        total = total + missingFalseNoElseBranch()
+    }
+
+    comptime loop value: usize in [1usize, 2usize, 3usize] {
+        total = total + comptime { value }
+    }
+
+    comptime loop value in [4usize, 5usize] {
+        total = total + comptime { value }
+    }
+
+    comptime loop value: usize in [0usize; 0] {
+        total = total + comptime { value }
+    }
+
+    let chosen: usize = comptime { addComptimeConformanceValue(17usize) }
+    let generic_chosen: usize =
+        comptime { chooseComptimeConformanceValue(31usize, 37usize, true) }
+    let literal_number: usize = comptime { 3usize }
+    let literal_bool: bool = comptime { true }
+    let literal_tuple: (usize, bool) = comptime { (29usize, true) }
+    let literal_array: [usize; 3] = comptime { [2usize, 4usize, 6usize] }
+    let literal_record: ComptimeLiteralRecord =
+        comptime { ComptimeLiteralRecord { value: 43usize, flag: true } }
+    let literal_enum: ComptimeLiteralEnum =
+        comptime { ComptimeLiteralEnum::Named { value: 7usize } }
+    let literal_modal_state: ComptimeLiteralModal@Ready =
+        comptime { ComptimeLiteralModal@Ready { value: 11usize } }
+    let enum_value: usize = if literal_enum is {
+        ComptimeLiteralEnum::Empty {
+            0usize
+        }
+        ComptimeLiteralEnum::Count(value) {
+            value
+        }
+        ComptimeLiteralEnum::Named { value } {
+            value
+        }
+    }
+
+    if literal_bool && literal_tuple.1 && literal_record.flag {
+        return total + selected + else_if_selected + false_else_selected +
+            chosen + generic_chosen + literal_number + literal_tuple.0 +
+            literal_array[0usize] + literal_array[1usize] + literal_array[2usize] +
+            literal_record.value + enum_value + literal_modal_state.value
+    }
+    return 0usize
+}
+
+internal procedure emitQuoteSpliceConformanceItems() -> bool {
+    #emit
+    comptime {
+        let first_ast: Ast::Item = quote {
+            internal procedure emittedQuoteCaptureConformanceValue() -> i32 {
+                return QUOTE_CAPTURED_VALUE
+            }
+        }
+        emitter~>emit(first_ast)
+
+        let return_type: Ast::Type = quote type { i32 }
+        let return_expr: Ast::Expr = quote { 19 + 23 }
+        let second_ast: Ast::Item = quote {
+            internal procedure emittedSplicedConformanceValue() -> $(return_type) {
+                return $(return_expr)
+            }
+        }
+        emitter~>emit(second_ast)
+
+        let binding_name = "spliced_conformance_value"
+        let binding_pattern: Ast::Pattern = quote pattern { $binding_name: i32 }
+        let binding_expr: Ast::Expr = quote { $binding_name + 1 }
+        let return_statement: Ast::Stmt = quote { return $(binding_expr) }
+        let third_ast: Ast::Item = quote {
+            internal procedure emittedIdentifierSpliceConformanceValue() -> i32 {
+                let $(binding_pattern) = 52
+                $(return_statement);
+            }
+        }
+        emitter~>emit(third_ast)
+
+        let parameter_name = "input_value"
+        let fourth_ast: Ast::Item = quote {
+            internal procedure emittedParameterSpliceConformanceValue(
+                $parameter_name: i32
+            ) -> i32 {
+                return $parameter_name + 2
+            }
+        }
+        emitter~>emit(fourth_ast)
+
+        let fifth_ast: Ast::Item = quote {
+            internal procedure emittedUsingAliasConformanceValue() -> i32 {
+                return 71
+            }
+        }
+        emitter~>emit(fifth_ast)
+
+        let sixth_ast: Ast::Item = quote {
+            internal procedure emittedHygienicInternalReferenceConformanceValue() -> i32 {
+                let local_value: i32 = 83
+                return local_value
+            }
+        }
+        emitter~>emit(sixth_ast)
+
+        let using_alias_ast: Ast::Item = quote {
+            using ComptimeConformance::ComptimeLiteralEnum as ComptimeLiteralRecord
+        }
+        emitter~>emit(using_alias_ast)
+    }
+
+    return true
+}
+
+public procedure compileTimeConformanceEntryPoint() -> i32 {
+    let emitted: bool = emitQuoteSpliceConformanceItems()
+    let capabilities_ok: bool = compileTimeCapabilityAndReflectionChecks()
+    let forms_value: usize = compileTimeFormsChecks()
+    if emitted && capabilities_ok && forms_value == 212usize {
+        return emittedQuoteCaptureConformanceValue() +
+            emittedSplicedConformanceValue() +
+            emittedIdentifierSpliceConformanceValue() +
+            emittedParameterSpliceConformanceValue(59) +
+            emittedUsingAliasConformanceValue() +
+            emittedHygienicInternalReferenceConformanceValue() +
+            emittedComptimeConformanceDeriveValue() +
+            emittedRequiredComptimeConformanceDeriveValue() +
+            emittedFirstTieComptimeConformanceDeriveValue() +
+            emittedSecondTieComptimeConformanceDeriveValue()
+    }
+    return 0
+}

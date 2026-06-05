@@ -254,6 +254,13 @@ public procedure runAsyncCompositionAllSingleReference() -> bool {
     return singleBoolUnionIsValue(all_single, 59)
 }
 
+/// Exercises all-expression runtime completion, failure, suspension, and tuple ordering.
+public procedure runAsyncCompositionAllRuntimeReference() -> bool {
+    return runAsyncCompositionAllReference() &&
+        runAsyncCompositionAllSuspendedReference() &&
+        runAsyncCompositionAllSingleReference()
+}
+
 /// Exercises return-mode race completion and failure propagation.
 public procedure runAsyncCompositionReturnRaceReference() -> bool {
     let race_success: i32 | bool = race {
@@ -286,6 +293,13 @@ public procedure runAsyncCompositionRaceTuplePatternReference() -> bool {
     return i32BoolUnionIsValue(race_tuple, 125)
 }
 
+/// Exercises return-mode race runtime completion, failure, suspended resume, and handlers.
+public procedure runAsyncCompositionReturnRaceRuntimeReference() -> bool {
+    return runAsyncCompositionReturnRaceReference() &&
+        runAsyncCompositionReturnRaceSuspendedReference() &&
+        runAsyncCompositionRaceTuplePatternReference()
+}
+
 /// Exercises streaming race yield output and failure propagation.
 public procedure runAsyncCompositionStreamingRaceSuccessReference() -> bool {
     let stream_success: Stream<i32, bool> = race {
@@ -302,6 +316,15 @@ public procedure runAsyncCompositionStreamingRaceFailureReference() -> bool {
         asyncCompositionStreamMayFail(true, 46) -> |output| yield output,
     }
     return streamBoolIsFailure(stream_failure)
+}
+
+/// Exercises streaming race completion when every arm completes without yielding.
+public procedure runAsyncCompositionStreamingRaceAllCompleteReference() -> bool {
+    let stream_complete: Stream<i32, bool> = race {
+        asyncCompositionCompletes(71) -> |unit_output| yield 71,
+        asyncCompositionCompletes(72) -> |unit_output| yield 72,
+    }
+    return streamBoolIsCompleted(stream_complete)
 }
 
 /// Exercises streaming race resumption after the first yielded arm.
@@ -335,10 +358,49 @@ public procedure runAsyncCompositionStreamingRaceResumeReference() -> bool {
     }
 }
 
-/// Exercises streaming race yield output and failure propagation.
-public procedure runAsyncCompositionStreamingRaceReference() -> bool {
+/// Exercises streaming race resumption with the yielded arm before later live arms.
+public procedure runAsyncCompositionStreamingRaceResumeOrderReference() -> bool {
+    let stream: unique Stream<i32, bool> = race {
+        asyncCompositionCompletes(74) -> |unit_output| yield 74,
+        asyncCompositionTwoOutputs(75, 76) -> |output| yield output,
+        asyncCompositionTwoOutputs(77, 78) -> |output| yield output,
+    }
+    return if stream is {
+        @Suspended { output } {
+            let resumed = stream~>resume(())
+            let resumed_ok: bool = if resumed is {
+                @Suspended { output: resumed_output } {
+                    resumed_output == 76
+                }
+                @Completed {
+                    false
+                }
+                @Failed {
+                    false
+                }
+            }
+            output == 75 && resumed_ok
+        }
+        @Completed {
+            false
+        }
+        @Failed {
+            false
+        }
+    }
+}
+
+/// Exercises streaming race runtime yield, completion, failure, and resume-order branches.
+public procedure runAsyncCompositionStreamingRaceRuntimeReference() -> bool {
     return runAsyncCompositionStreamingRaceSuccessReference() &&
         runAsyncCompositionStreamingRaceFailureReference() &&
+        runAsyncCompositionStreamingRaceAllCompleteReference() &&
+        runAsyncCompositionStreamingRaceResumeOrderReference()
+}
+
+/// Exercises streaming race yield output, completion, failure, and resumption.
+public procedure runAsyncCompositionStreamingRaceReference() -> bool {
+    return runAsyncCompositionStreamingRaceRuntimeReference() &&
         runAsyncCompositionStreamingRaceResumeReference()
 }
 
@@ -392,11 +454,77 @@ public procedure runAsyncCompositionUntilReference() -> bool {
     return result == 52
 }
 
+/// Exercises until runtime behavior over a shared receiver and action closure.
+public procedure runAsyncCompositionUntilRuntimeReference() -> bool {
+    var cell: shared AsyncUntilCell = AsyncUntilCell { value: 52 }
+    let completed: Async<(), (), i32, !> = cell~>until(
+        |value: const AsyncUntilCell| -> bool value.value == 52,
+        |value: unique AsyncUntilCell| -> i32 value.value + 2
+    )
+    let result: i32 = sync completed
+    return result == 54
+}
+
 /// Exercises async iteration over an async value that yields multiple outputs.
 public procedure runAsyncCompositionLoopIterationReference() -> bool {
     let iterated: Async<(), (), i32, bool> = asyncCompositionIterates(69, 70)
     let result: i32 | bool = sync iterated
     return i32BoolUnionIsValue(result, 139)
+}
+
+internal procedure asyncCompositionIteratesFailure() -> Async<(), (), i32, bool> {
+    var total: i32 = 0
+    loop value in asyncCompositionStreamMayFail(true, 79) {
+        total = total + value
+    }
+    return total
+}
+
+/// Exercises async iteration completion and failed-source propagation.
+public procedure runAsyncCompositionAsyncIterationRuntimeReference() -> bool {
+    let failed: i32 | bool = sync asyncCompositionIteratesFailure()
+    return runAsyncCompositionLoopIterationReference() &&
+        i32BoolUnionIsFailure(failed)
+}
+
+/// Exercises manual async stepping by matching modal state and resuming suspended values.
+public procedure runAsyncCompositionManualSteppingReference() -> bool {
+    let state: unique Async<i32, (), (), bool> = asyncCompositionTwoOutputs(80, 81)
+    return if state is {
+        @Suspended { output } {
+            let resumed = state~>resume(())
+            let resumed_ok: bool = if resumed is {
+                @Suspended { output: resumed_output } {
+                    let completed = resumed~>resume(())
+                    let completed_ok: bool = if completed is {
+                        @Suspended {
+                            false
+                        }
+                        @Completed {
+                            true
+                        }
+                        @Failed {
+                            false
+                        }
+                    }
+                    resumed_output == 81 && completed_ok
+                }
+                @Completed {
+                    false
+                }
+                @Failed {
+                    false
+                }
+            }
+            output == 80 && resumed_ok
+        }
+        @Completed {
+            false
+        }
+        @Failed {
+            false
+        }
+    }
 }
 
 /// Exercises Async built-in combinator method lookup and runtime wrappers.
@@ -412,14 +540,11 @@ public procedure runAsyncCompositionCombinatorsReference() -> bool {
 /// Exercises the Async CompositionForms reference surface.
 public procedure runAsyncCompositionFormsReference() -> bool {
     return runAsyncCompositionSyncReference() &&
-        runAsyncCompositionAllReference() &&
-        runAsyncCompositionAllSuspendedReference() &&
-        runAsyncCompositionAllSingleReference() &&
-        runAsyncCompositionReturnRaceReference() &&
-        runAsyncCompositionReturnRaceSuspendedReference() &&
-        runAsyncCompositionRaceTuplePatternReference() &&
+        runAsyncCompositionAllRuntimeReference() &&
+        runAsyncCompositionReturnRaceRuntimeReference() &&
         runAsyncCompositionStreamingRaceReference() &&
-        runAsyncCompositionUntilReference() &&
-        runAsyncCompositionLoopIterationReference() &&
+        runAsyncCompositionUntilRuntimeReference() &&
+        runAsyncCompositionAsyncIterationRuntimeReference() &&
+        runAsyncCompositionManualSteppingReference() &&
         runAsyncCompositionCombinatorsReference()
 }

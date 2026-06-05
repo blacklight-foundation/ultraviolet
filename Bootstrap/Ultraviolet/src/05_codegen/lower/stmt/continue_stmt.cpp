@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 #include "05_codegen/cleanup/cleanup.h"
 #include "05_codegen/ir/ir_model.h"
 #include "05_codegen/lower/lower_stmt.h"
@@ -56,6 +57,17 @@ IRPtr LowerContinueStmt(const ast::ContinueStmt& /*stmt*/,
   // Emit the continue
   IRContinue cont;
   ir_parts.push_back(MakeIR(std::move(cont)));
+
+  core::Conformance::Record(
+      "rule.18.Lower-Stmt-Continue",
+      std::nullopt,
+      "source=LowerContinueStmt;ir_form=SeqIR;cleanup_before_transfer=true;"
+      "transfer_ir=IRContinue");
+  core::Conformance::Record(
+      "req.18.ControlTransferTemporaryCleanupLowering",
+      std::nullopt,
+      "source=LowerContinueStmt;transfer=continue;"
+      "statement_temp_cleanup_before_transfer=true;scope_cleanup_before_transfer=true");
 
   return SeqIR(std::move(ir_parts));
 }

@@ -30,6 +30,7 @@
 #include "04_analysis/typing/type_equiv.h"
 #include "04_analysis/typing/type_infer.h"
 #include "04_analysis/typing/type_lower.h"
+#include "04_analysis/typing/type_predicates.h"
 #include "04_analysis/typing/types.h"
 
 #include <cstdio>
@@ -47,6 +48,8 @@ static inline void SpecDefsVarStmt() {
   SPEC_DEF("T-VarStmt-Infer", "5.2.11");
   SPEC_DEF("T-VarStmt-Infer-Err", "5.2.11");
   SPEC_DEF("Pat-Dup-Err", "5.2.11");
+  SPEC_DEF("req.18.VarStmtTypingMirrorsLet", "18.2.3");
+  SPEC_DEF("diag.18.BindingStatements", "18.2.7");
 }
 
 std::string PatternName(const ast::PatternPtr& pat) {
@@ -115,6 +118,22 @@ bool IsUniqueMoveInitCompatible(const TypeRef& annotated,
   }
 
   return false;
+}
+
+bool IsSharedMaterializedInitCompatible(const ScopeContext& ctx,
+                                        const StmtTypeContext& read_ctx,
+                                        const TypeEnv& env,
+                                        const TypeRef& annotated,
+                                        const ast::ExprPtr& init) {
+  if (!init || PermOfType(annotated) != Permission::Shared) {
+    return false;
+  }
+  const TypeRef base = StripPerm(annotated);
+  if (!base || !BitcopyType(ctx, base)) {
+    return false;
+  }
+  const auto check = CheckExprAgainst(ctx, read_ctx, init, base, env);
+  return check.ok;
 }
 
 std::optional<std::string_view> ValidateBindingAttributes(
@@ -247,6 +266,7 @@ StmtTypeResult TypeVarStmt(const ScopeContext& ctx,
   };
   const IdentTypeFn read_type_ident = [&](std::string_view name) {
     if (const auto binding = BindOf(env, name)) {
+      EmitStaleBindingReferenceWarning(*binding, read_ctx, std::nullopt);
       ExprTypeResult local;
       local.ok = true;
       local.type = binding->type;
@@ -268,7 +288,10 @@ StmtTypeResult TypeVarStmt(const ScopeContext& ctx,
         CheckExprAgainst(ctx, read_ctx, binding.init, ann.type, env);
     const bool unique_move_ok =
         IsUniqueMoveInitCompatible(ann.type, binding.init, type_place);
-    if (!check.ok && !unique_move_ok) {
+    const bool shared_materialized_ok =
+        IsSharedMaterializedInitCompatible(ctx, read_ctx, env, ann.type,
+                                           binding.init);
+    if (!check.ok && !unique_move_ok && !shared_materialized_ok) {
       if (core::IsDebugEnabled("sema") || core::IsDebugEnabled("pipeline")) {
         const auto inferred_dbg =
             InferExpr(ctx, binding.init, read_type_expr, read_type_place,
@@ -294,7 +317,24 @@ StmtTypeResult TypeVarStmt(const ScopeContext& ctx,
       }
       if (!check.diag_id.has_value() || *check.diag_id == "E-SEM-2526") {
         SPEC_RULE("T-VarStmt-Ann-Mismatch");
-        return {false, "E-MOD-2402", {}, {}};
+        SPEC_RULE("req.18.VarStmtTypingMirrorsLet");
+        SPEC_RULE("diag.18.BindingStatements");
+        StmtTypeResult result;
+        result.diag_id = "E-MOD-2402";
+        result.diag_detail = check.diag_detail.empty()
+                                 ? "initializer failed checking against annotation " +
+                                       TypeToString(ann.type)
+                                 : check.diag_detail;
+        result.diag_span =
+            check.diag_span.has_value()
+                ? check.diag_span
+                : (binding.init ? std::optional<core::Span>(binding.init->span)
+                                : std::nullopt);
+        result.diagnostic_obligation_ids = {
+            "req.18.VarStmtTypingMirrorsLet",
+            "diag.18.BindingStatements",
+        };
+        return result;
       }
       return {false, check.diag_id, {}, {}};
     }
@@ -314,6 +354,9 @@ StmtTypeResult TypeVarStmt(const ScopeContext& ctx,
     CollectPatNames(*binding.pat, names);
     if (!DistinctNames(names)) {
       SPEC_RULE("Pat-Dup-Err");
+      SPEC_RULE("Pat-Dup-R-Err");
+      SPEC_RULE("rule.17.Pat-Dup-R-Err");
+      SPEC_RULE("diag.18.BindingStatements");
       return {false, "Pat-Dup-Err", {}, {}};
     }
 
@@ -321,10 +364,15 @@ StmtTypeResult TypeVarStmt(const ScopeContext& ctx,
         AnalyzeClosureCaptureInfo(binding.init, env, ann.type);
 
     // Introduce bindings with 'var' mutability
-    const auto intro = IntroAll(env, pat.bindings, ast::Mutability::Var, false);
+    const TypeEnv& intro_env = type_ctx.env_ref ? *type_ctx.env_ref : env;
+    const auto intro =
+        IntroAll(intro_env, pat.bindings, ast::Mutability::Var, false);
     if (!intro.ok) {
       if (!intro.diag_id.has_value()) {
         SPEC_RULE("Pat-Dup-Err");
+        SPEC_RULE("Pat-Dup-R-Err");
+        SPEC_RULE("rule.17.Pat-Dup-R-Err");
+        SPEC_RULE("diag.18.BindingStatements");
         return {false, "Pat-Dup-Err", {}, {}};
       }
       return {false, intro.diag_id, {}, {}};
@@ -355,10 +403,12 @@ StmtTypeResult TypeVarStmt(const ScopeContext& ctx,
                                   read_type_place, read_type_ident,
                                   &constraints);
   if (!inferred.ok) {
+    SPEC_RULE("T-VarStmt-Infer-Err");
+    SPEC_RULE("req.18.VarStmtTypingMirrorsLet");
+    SPEC_RULE("diag.18.BindingStatements");
     if (inferred.diag_id.has_value()) {
       return {false, inferred.diag_id, {}, {}, inferred.diag_detail};
     }
-    SPEC_RULE("T-VarStmt-Infer-Err");
     {
       std::string detail;
       const auto name = PatternName(binding.pat);
@@ -370,15 +420,19 @@ StmtTypeResult TypeVarStmt(const ScopeContext& ctx,
   }
   const auto solved = Solve(ctx, constraints);
   if (!solved.ok) {
+    SPEC_RULE("T-VarStmt-Infer-Err");
+    SPEC_RULE("req.18.VarStmtTypingMirrorsLet");
+    SPEC_RULE("diag.18.BindingStatements");
     if (solved.diag_id.has_value()) {
       return {false, solved.diag_id, {}, {}, inferred.diag_detail};
     }
-    SPEC_RULE("T-VarStmt-Infer-Err");
     return {false, "T-VarStmt-Infer-Err", {}, {}, inferred.diag_detail};
   }
   const auto inferred_type = ApplySubstitution(inferred.type, solved.subst);
   if (!inferred_type) {
     SPEC_RULE("T-VarStmt-Infer-Err");
+    SPEC_RULE("req.18.VarStmtTypingMirrorsLet");
+    SPEC_RULE("diag.18.BindingStatements");
     return {false, "T-VarStmt-Infer-Err", {}, {}, inferred.diag_detail};
   }
 
@@ -393,6 +447,9 @@ StmtTypeResult TypeVarStmt(const ScopeContext& ctx,
   CollectPatNames(*binding.pat, names);
   if (!DistinctNames(names)) {
     SPEC_RULE("Pat-Dup-Err");
+    SPEC_RULE("Pat-Dup-R-Err");
+    SPEC_RULE("rule.17.Pat-Dup-R-Err");
+    SPEC_RULE("diag.18.BindingStatements");
     return {false, "Pat-Dup-Err", {}, {}};
   }
 
@@ -400,10 +457,15 @@ StmtTypeResult TypeVarStmt(const ScopeContext& ctx,
       AnalyzeClosureCaptureInfo(binding.init, env, inferred_type);
 
   // Introduce bindings with 'var' mutability
-  const auto intro = IntroAll(env, pat.bindings, ast::Mutability::Var, false);
+  const TypeEnv& intro_env = type_ctx.env_ref ? *type_ctx.env_ref : env;
+  const auto intro =
+      IntroAll(intro_env, pat.bindings, ast::Mutability::Var, false);
   if (!intro.ok) {
     if (!intro.diag_id.has_value()) {
       SPEC_RULE("Pat-Dup-Err");
+      SPEC_RULE("Pat-Dup-R-Err");
+      SPEC_RULE("rule.17.Pat-Dup-R-Err");
+      SPEC_RULE("diag.18.BindingStatements");
       return {false, "Pat-Dup-Err", {}, {}};
     }
     return {false, intro.diag_id, {}, {}};

@@ -652,6 +652,7 @@ ParseElemResult<PatternPtr> ParsePattern(Parser parser) {
   const Token* tok = Tok(parser);
   if (!tok || !IsPatternStart(*tok)) {
     SPEC_RULE("Parse-Pattern-Err");
+    SPEC_RULE("rule.17.Parse-Pattern-Err");
     EmitGenericParseSyntaxErr(parser, TokSpan(parser));
     return {parser, MakePattern(TokSpan(parser), WildcardPattern{})};
   }

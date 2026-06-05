@@ -130,6 +130,7 @@ static CallTypeArgsSubstResult BuildCallTypeArgsSubstChecked(
   const auto required = RequiredTypeArgCount(params);
   if (type_args.size() < required || type_args.size() > params.size()) {
     SPEC_RULE("Generic-Call-ArgCount-Err");
+    SPEC_RULE("rule.14.Generic-Call-ArgCount-Err");
     result.diag_id = "E-TYP-2303";
     return result;
   }
@@ -208,7 +209,8 @@ ExprTypeResult TypeCallTypeArgsExprImpl(const ScopeContext& ctx,
                               const TypeRef& expected) -> ArgCheckResult {
     const auto checked =
         CheckExprAgainst(ctx, arg_ctx_for(expected), inner, expected, env);
-    return ArgCheckResult{checked.ok, checked.diag_id};
+    return ArgCheckResult{checked.ok, checked.diag_id, checked.diag_detail,
+                          checked.diag_span};
   };
 
   // Type the call with the type substitution applied

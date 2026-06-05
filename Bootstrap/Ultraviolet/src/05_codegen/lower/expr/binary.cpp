@@ -30,13 +30,13 @@
 
 #include <algorithm>
 #include <initializer_list>
+#include <string_view>
 #include <utility>
 #include <unordered_set>
 #include <vector>
-#include <iostream>
 
 #include "00_core/assert_spec.h"
-#include "00_core/process_config.h"
+#include "04_analysis/typing/type_predicates.h"
 #include "05_codegen/checks/checks.h"
 
 namespace ultraviolet::codegen {
@@ -181,8 +181,10 @@ LowerResult LowerShortCircuitChain(const std::string& op,
                                    LowerCtx& ctx) {
   if (op == "&&") {
     SPEC_RULE("Lower-Expr-Bin-And");
+    SPEC_RULE("rule.16.Lower-Expr-Bin-And");
   } else {
     SPEC_RULE("Lower-Expr-Bin-Or");
+    SPEC_RULE("rule.16.Lower-Expr-Bin-Or");
   }
 
   if (operands.empty()) {
@@ -250,6 +252,60 @@ bool IsBoolBinOp(const std::string& op) {
          op == ">=" || op == "&&" || op == "||";
 }
 
+analysis::TypeRef StripPermType(const analysis::TypeRef& type) {
+  if (!type) {
+    return nullptr;
+  }
+  if (analysis::TypeRef stripped = analysis::StripPerm(type)) {
+    return stripped;
+  }
+  return type;
+}
+
+const analysis::TypePrim* PrimType(const analysis::TypeRef& type) {
+  const analysis::TypeRef stripped = StripPermType(type);
+  if (!stripped) {
+    return nullptr;
+  }
+  return std::get_if<analysis::TypePrim>(&stripped->node);
+}
+
+bool IsIntegerOperandType(const analysis::TypeRef& type) {
+  const analysis::TypePrim* prim = PrimType(type);
+  if (!prim) {
+    return false;
+  }
+  const std::string_view name = prim->name;
+  return name == "i8" || name == "i16" || name == "i32" || name == "i64" ||
+         name == "i128" || name == "isize" || name == "u8" || name == "u16" ||
+         name == "u32" || name == "u64" || name == "u128" || name == "usize";
+}
+
+bool IsFloatOperandType(const analysis::TypeRef& type) {
+  const analysis::TypePrim* prim = PrimType(type);
+  if (!prim) {
+    return false;
+  }
+  const std::string_view name = prim->name;
+  return name == "f16" || name == "f32" || name == "f64";
+}
+
+bool NeedsBinaryPanicCheck(const std::string& op,
+                           const analysis::TypeRef& lhs_type,
+                           const analysis::TypeRef& rhs_type) {
+  if (op == "<<" || op == ">>") {
+    return true;
+  }
+  if (op == "/" || op == "%" || op == "+" || op == "-" || op == "*" || op == "**") {
+    if (IsFloatOperandType(lhs_type) || IsFloatOperandType(rhs_type)) {
+      return false;
+    }
+    return IsIntegerOperandType(lhs_type) || IsIntegerOperandType(rhs_type) ||
+           !lhs_type || !rhs_type;
+  }
+  return false;
+}
+
 }  // namespace
 
 // =============================================================================
@@ -271,9 +327,6 @@ LowerResult LowerBinOp(const std::string& op,
                        const ast::Expr& lhs,
                        const ast::Expr& rhs,
                        LowerCtx& ctx) {
-  SPEC_RULE("Lower-BinOp-Ok");
-  SPEC_RULE("Lower-BinOp-Panic");
-
   auto lhs_result = LowerExpr(lhs, ctx);
   auto rhs_result = LowerExpr(rhs, ctx);
 
@@ -283,19 +336,33 @@ LowerResult LowerBinOp(const std::string& op,
   parts.push_back(lhs_result.ir);
   parts.push_back(rhs_result.ir);
 
-  // Check if this operator can panic and needs a runtime check
-  bool needs_check =
-      (op == "/" || op == "%" || op == "<<" || op == ">>" || op == "+" ||
-       op == "-" || op == "*" || op == "**");
+  analysis::TypeRef lhs_type = ctx.LookupValueType(lhs_result.value);
+  if (!lhs_type && ctx.expr_type) {
+    lhs_type = ctx.expr_type(lhs);
+  }
+  analysis::TypeRef rhs_type = ctx.LookupValueType(rhs_result.value);
+  if (!rhs_type && ctx.expr_type) {
+    rhs_type = ctx.expr_type(rhs);
+  }
+  const bool needs_check = NeedsBinaryPanicCheck(op, lhs_type, rhs_type);
 
   if (needs_check) {
+    SPEC_RULE("Lower-BinOp-Panic");
+    const PanicReason panic_reason = BinOpPanicReason(op);
+    if (panic_reason == PanicReason::Overflow) {
+      RecordRuntimeCheckPanicBehavior("IntegerOverflow", "LowerBinOp");
+    } else if (panic_reason == PanicReason::DivZero) {
+      RecordRuntimeCheckPanicBehavior("IntDivisionByZero", "LowerBinOp");
+    }
     IRCheckOp check;
     check.op = op;
-    check.reason = PanicReasonString(BinOpPanicReason(op));
+    check.reason = PanicReasonString(panic_reason);
     check.lhs = lhs_result.value;
     check.rhs = rhs_result.value;
     parts.push_back(MakeIR(std::move(check)));
     parts.push_back(PanicFollowup(ctx));
+  } else {
+    SPEC_RULE("Lower-BinOp-Ok");
   }
 
   IRBinaryOp binop;
@@ -384,14 +451,9 @@ LowerResult LowerBinaryExpr(const ast::BinaryExpr& expr, LowerCtx& ctx) {
 
   // All other operators use LowerBinOp
   SPEC_RULE("Lower-Expr-Binary");
+  SPEC_RULE("rule.16.Lower-Expr-Binary");
   return LowerBinOp(op, *expr.lhs, *expr.rhs, ctx);
 }
 
 }  // namespace ultraviolet::codegen
-
-
-
-
-
-
 

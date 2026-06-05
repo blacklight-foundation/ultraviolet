@@ -152,6 +152,10 @@ IRPtr EmitDynamicPostconditionCheckForReturn(const IRValue& return_value,
       ctx.lowering_contract_postcondition;
   ctx.contract_result_value = return_value;
   ctx.lowering_contract_postcondition = true;
+  SPEC_RULE("def.15.ContractEnvironments");
+  SPEC_RULE("req.15.PostconditionResultRuntimeBinding");
+  SPEC_RULE("req.15.PostconditionLoweringRepresentation");
+  SPEC_RULE("def.15.RuntimeCheckInsertionPointsIntro");
   auto post_result = LowerExpr(*ctx.active_contract_postcondition, ctx);
   ctx.lowering_contract_postcondition = prev_lowering_contract_postcondition;
   ctx.contract_result_value = prev_result;
@@ -165,7 +169,7 @@ IRPtr EmitDynamicPostconditionCheckForReturn(const IRValue& return_value,
 
   IRIf check;
   check.cond = post_result.value;
-  check.then_ir = nullptr;
+  check.then_ir = EmptyIR();
   check.else_ir = LowerContractViolation(ContractKind::Post,
                                          ctx,
                                          ctx.active_contract_postcondition,
@@ -275,6 +279,22 @@ IRPtr LowerReturnStmt(const ast::ReturnStmt& stmt,
   IRReturn ret;
   ret.value = return_value;
   ir_parts.push_back(MakeIR(std::move(ret)));
+
+  core::Conformance::Record(
+      stmt.value_opt ? "rule.18.Lower-Stmt-Return"
+                     : "rule.18.Lower-Stmt-Return-Unit",
+      std::nullopt,
+      stmt.value_opt
+          ? "source=LowerReturnStmt;ir_form=SeqIR;has_value=true;"
+            "cleanup_before_transfer=true;transfer_ir=IRReturn"
+          : "source=LowerReturnStmt;ir_form=SeqIR;has_value=false;"
+            "unit_value_materialized=true;cleanup_before_transfer=true;"
+            "transfer_ir=IRReturn");
+  core::Conformance::Record(
+      "req.18.ControlTransferTemporaryCleanupLowering",
+      std::nullopt,
+      "source=LowerReturnStmt;transfer=return;statement_temp_cleanup_before_transfer=true;"
+      "scope_cleanup_before_transfer=true");
 
   return SeqIR(std::move(ir_parts));
 }

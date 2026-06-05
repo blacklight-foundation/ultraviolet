@@ -26,6 +26,7 @@
 #include "04_analysis/caps/authority_model.h"
 
 #include <sstream>
+#include <unordered_map>
 #include <unordered_set>
 #include <utility>
 
@@ -690,6 +691,688 @@ bool CheckBlockForAmbientAuthority(const ast::Block& block,
   return false;
 }
 
+struct AttenuationOrigin {
+  std::string parent;
+  core::Span span;
+};
+
+struct AttenuationBindingInfo {
+  int depth = 0;
+  bool parameter = false;
+  std::optional<std::string> parent;
+  core::Span span;
+};
+
+struct AttenuationValidationContext {
+  const ExprTypeMap* expr_types = nullptr;
+  std::vector<std::vector<std::string>> scopes;
+  std::unordered_map<std::string, AttenuationBindingInfo> bindings;
+  AuthorityValidationResult result;
+};
+
+TypeRef StripPermAndRefineForAuthority(const TypeRef& type) {
+  TypeRef current = type;
+  bool changed = true;
+  while (current && changed) {
+    changed = false;
+    if (const auto* perm = std::get_if<TypePerm>(&current->node)) {
+      current = perm->base;
+      changed = true;
+      continue;
+    }
+    if (const auto* refine = std::get_if<TypeRefine>(&current->node)) {
+      current = refine->base;
+      changed = true;
+      continue;
+    }
+  }
+  return current;
+}
+
+bool TypePathEquals(const TypePath& path, std::string_view name) {
+  return path.size() == 1 && IdEq(path.front(), name);
+}
+
+bool IsDynamicTypeNamed(const TypeRef& type, std::string_view name) {
+  const TypeRef stripped = StripPermAndRefineForAuthority(type);
+  if (!stripped) {
+    return false;
+  }
+  if (const auto* dyn = std::get_if<TypeDynamic>(&stripped->node)) {
+    return TypePathEquals(dyn->path, name);
+  }
+  if (const auto* path = std::get_if<TypePathType>(&stripped->node)) {
+    return TypePathEquals(path->path, name);
+  }
+  return false;
+}
+
+bool IsCancelTokenActiveType(const TypeRef& type) {
+  const TypeRef stripped = StripPermAndRefineForAuthority(type);
+  if (!stripped) {
+    return false;
+  }
+  const auto* modal = std::get_if<TypeModalState>(&stripped->node);
+  return modal && TypePathEquals(modal->path, "CancelToken") &&
+         IdEq(modal->state, "Active");
+}
+
+bool IsAttenuationMethod(std::string_view name, const TypeRef& receiver_type) {
+  const TypeRef stripped = StripPermAndRefineForAuthority(receiver_type);
+  if (!stripped) {
+    return false;
+  }
+  if (name == "restrict") {
+    return CapabilityKindFromTypeRef(stripped) == CapabilityKind::IO;
+  }
+  if (name == "restrict_to_host") {
+    return CapabilityKindFromTypeRef(stripped) == CapabilityKind::Network;
+  }
+  if (name == "with_quota") {
+    return CapabilityKindFromTypeRef(stripped) == CapabilityKind::HeapAllocator;
+  }
+  if (name == "monotonic" || name == "wall") {
+    return CapabilityKindFromTypeRef(stripped) == CapabilityKind::Time;
+  }
+  if (name == "coarsen") {
+    return IsDynamicTypeNamed(stripped, "MonotonicTime") ||
+           IsDynamicTypeNamed(stripped, "WallTime");
+  }
+  if (name == "cpu" || name == "gpu" || name == "inline") {
+    return IsContextType(stripped);
+  }
+  if (name == "child") {
+    return IsCancelTokenActiveType(stripped);
+  }
+  return false;
+}
+
+const TypeRef* ExprTypeForAttenuation(const ast::Expr& expr,
+                                      const ExprTypeMap* expr_types) {
+  if (!expr_types) {
+    return nullptr;
+  }
+  const auto it = expr_types->find(&expr);
+  if (it == expr_types->end()) {
+    return nullptr;
+  }
+  return &it->second;
+}
+
+std::optional<std::string> DirectIdentifierName(const ast::ExprPtr& expr) {
+  if (!expr) {
+    return std::nullopt;
+  }
+  if (const auto* ident = std::get_if<ast::IdentifierExpr>(&expr->node)) {
+    return ident->name;
+  }
+  if (const auto* attributed = std::get_if<ast::AttributedExpr>(&expr->node)) {
+    return DirectIdentifierName(attributed->expr);
+  }
+  if (const auto* move_expr = std::get_if<ast::MoveExpr>(&expr->node)) {
+    return DirectIdentifierName(move_expr->place);
+  }
+  return std::nullopt;
+}
+
+int CurrentAttenuationDepth(const AttenuationValidationContext& ctx) {
+  return ctx.scopes.empty() ? 0 : static_cast<int>(ctx.scopes.size()) - 1;
+}
+
+bool AttenuationFailed(const AttenuationValidationContext& ctx) {
+  return !ctx.result.valid;
+}
+
+void ReportAttenuationEscape(AttenuationValidationContext& ctx,
+                             const core::Span& span,
+                             std::string_view parent) {
+  if (AttenuationFailed(ctx)) {
+    return;
+  }
+  SPEC_RULE("req.AttenuationParentDropRejectedWithLiveChildren");
+  ctx.result.valid = false;
+  ctx.result.error_code = "E-MEM-3020";
+  ctx.result.span = span;
+  ctx.result.error_message =
+      "Derived capability escapes the lifetime of parent capability '" +
+      std::string(parent) +
+      "'; dropping a parent capability while a derived child remains live is "
+      "ill-formed";
+}
+
+bool ParentIsLocalToDepth(const AttenuationValidationContext& ctx,
+                          std::string_view parent,
+                          int depth) {
+  const auto it = ctx.bindings.find(std::string(parent));
+  return it != ctx.bindings.end() && !it->second.parameter &&
+         it->second.depth >= depth;
+}
+
+void CheckOriginEscapesScope(AttenuationValidationContext& ctx,
+                             const std::optional<AttenuationOrigin>& origin,
+                             int scope_depth) {
+  if (!origin.has_value()) {
+    return;
+  }
+  if (ParentIsLocalToDepth(ctx, origin->parent, scope_depth)) {
+    ReportAttenuationEscape(ctx, origin->span, origin->parent);
+  }
+}
+
+void PushAttenuationScope(AttenuationValidationContext& ctx) {
+  ctx.scopes.emplace_back();
+}
+
+void PopAttenuationScope(AttenuationValidationContext& ctx) {
+  if (ctx.scopes.empty()) {
+    return;
+  }
+  const int depth = CurrentAttenuationDepth(ctx);
+  for (const auto& local : ctx.scopes.back()) {
+    const auto parent_it = ctx.bindings.find(local);
+    if (parent_it == ctx.bindings.end()) {
+      continue;
+    }
+    for (const auto& [child_name, child] : ctx.bindings) {
+      if (!child.parent.has_value() || *child.parent != local) {
+        continue;
+      }
+      if (child.depth < depth) {
+        ReportAttenuationEscape(ctx, child.span, local);
+        break;
+      }
+    }
+  }
+  for (const auto& local : ctx.scopes.back()) {
+    ctx.bindings.erase(local);
+  }
+  ctx.scopes.pop_back();
+}
+
+void BindAttenuationName(
+    AttenuationValidationContext& ctx,
+    const std::string& name,
+    std::optional<AttenuationOrigin> origin,
+    bool parameter,
+    const core::Span& span) {
+  if (ctx.scopes.empty()) {
+    PushAttenuationScope(ctx);
+  }
+  ctx.scopes.back().push_back(name);
+  AttenuationBindingInfo info;
+  info.depth = CurrentAttenuationDepth(ctx);
+  info.parameter = parameter;
+  info.span = span;
+  if (origin.has_value()) {
+    info.parent = origin->parent;
+  }
+  ctx.bindings[name] = std::move(info);
+}
+
+void CollectPatternBindingNames(const ast::Pattern& pattern,
+                                std::vector<std::string>& names);
+
+void CollectFieldPatternBindingNames(const ast::FieldPattern& field,
+                                     std::vector<std::string>& names) {
+  if (field.pattern_opt) {
+    CollectPatternBindingNames(*field.pattern_opt, names);
+  } else if (field.name != "_") {
+    names.push_back(field.name);
+  }
+}
+
+void CollectPatternBindingNames(const ast::Pattern& pattern,
+                                std::vector<std::string>& names) {
+  std::visit(
+      [&names](const auto& node) {
+        using T = std::decay_t<decltype(node)>;
+        if constexpr (std::is_same_v<T, ast::IdentifierPattern>) {
+          if (node.name != "_") {
+            names.push_back(node.name);
+          }
+        } else if constexpr (std::is_same_v<T, ast::TypedPattern>) {
+          if (node.name != "_") {
+            names.push_back(node.name);
+          }
+        } else if constexpr (std::is_same_v<T, ast::TuplePattern>) {
+          for (const auto& element : node.elements) {
+            if (element) {
+              CollectPatternBindingNames(*element, names);
+            }
+          }
+        } else if constexpr (std::is_same_v<T, ast::RecordPattern>) {
+          for (const auto& field : node.fields) {
+            CollectFieldPatternBindingNames(field, names);
+          }
+        } else if constexpr (std::is_same_v<T, ast::EnumPattern>) {
+          if (!node.payload_opt.has_value()) {
+            return;
+          }
+          std::visit(
+              [&names](const auto& payload) {
+                using P = std::decay_t<decltype(payload)>;
+                if constexpr (std::is_same_v<P, ast::TuplePayloadPattern>) {
+                  for (const auto& element : payload.elements) {
+                    if (element) {
+                      CollectPatternBindingNames(*element, names);
+                    }
+                  }
+                } else if constexpr (std::is_same_v<P, ast::RecordPayloadPattern>) {
+                  for (const auto& field : payload.fields) {
+                    CollectFieldPatternBindingNames(field, names);
+                  }
+                }
+              },
+              *node.payload_opt);
+        } else if constexpr (std::is_same_v<T, ast::ModalPattern>) {
+          if (!node.fields_opt.has_value()) {
+            return;
+          }
+          for (const auto& field : node.fields_opt->fields) {
+            CollectFieldPatternBindingNames(field, names);
+          }
+        } else if constexpr (std::is_same_v<T, ast::RangePattern>) {
+          if (node.lo) {
+            CollectPatternBindingNames(*node.lo, names);
+          }
+          if (node.hi) {
+            CollectPatternBindingNames(*node.hi, names);
+          }
+        }
+      },
+      pattern.node);
+}
+
+std::optional<AttenuationOrigin> AnalyzeAttenuationExpr(
+    AttenuationValidationContext& ctx,
+    const ast::ExprPtr& expr);
+std::optional<AttenuationOrigin> AnalyzeAttenuationBlock(
+    AttenuationValidationContext& ctx,
+    const ast::Block& block);
+void AnalyzeAttenuationStmt(AttenuationValidationContext& ctx,
+                            const ast::Stmt& stmt);
+
+void AnalyzeAttenuationArgs(AttenuationValidationContext& ctx,
+                            const std::vector<ast::Arg>& args) {
+  for (const auto& arg : args) {
+    (void)AnalyzeAttenuationExpr(ctx, arg.value);
+  }
+}
+
+std::optional<AttenuationOrigin> FirstOrigin(
+    std::optional<AttenuationOrigin> left,
+    std::optional<AttenuationOrigin> right) {
+  return left.has_value() ? left : right;
+}
+
+std::optional<AttenuationOrigin> AnalyzeAttenuationExpr(
+    AttenuationValidationContext& ctx,
+    const ast::ExprPtr& expr) {
+  if (!expr || AttenuationFailed(ctx)) {
+    return std::nullopt;
+  }
+
+  return std::visit(
+      [&ctx, &expr](const auto& node) -> std::optional<AttenuationOrigin> {
+        using T = std::decay_t<decltype(node)>;
+
+        if constexpr (std::is_same_v<T, ast::IdentifierExpr>) {
+          const auto it = ctx.bindings.find(node.name);
+          if (it != ctx.bindings.end() && it->second.parent.has_value()) {
+            return AttenuationOrigin{*it->second.parent, expr->span};
+          }
+          return std::nullopt;
+        } else if constexpr (std::is_same_v<T, ast::CastExpr>) {
+          return AnalyzeAttenuationExpr(ctx, node.value);
+        } else if constexpr (std::is_same_v<T, ast::UnaryExpr>) {
+          return AnalyzeAttenuationExpr(ctx, node.value);
+        } else if constexpr (std::is_same_v<T, ast::DerefExpr>) {
+          return AnalyzeAttenuationExpr(ctx, node.value);
+        } else if constexpr (std::is_same_v<T, ast::AddressOfExpr>) {
+          return AnalyzeAttenuationExpr(ctx, node.place);
+        } else if constexpr (std::is_same_v<T, ast::MoveExpr>) {
+          return AnalyzeAttenuationExpr(ctx, node.place);
+        } else if constexpr (std::is_same_v<T, ast::CopyExpr>) {
+          return AnalyzeAttenuationExpr(ctx, node.value);
+        } else if constexpr (std::is_same_v<T, ast::AllocExpr>) {
+          return AnalyzeAttenuationExpr(ctx, node.value);
+        } else if constexpr (std::is_same_v<T, ast::AttributedExpr>) {
+          return AnalyzeAttenuationExpr(ctx, node.expr);
+        } else if constexpr (std::is_same_v<T, ast::TransmuteExpr>) {
+          return AnalyzeAttenuationExpr(ctx, node.value);
+        } else if constexpr (std::is_same_v<T, ast::PropagateExpr>) {
+          return AnalyzeAttenuationExpr(ctx, node.value);
+        } else if constexpr (std::is_same_v<T, ast::TupleExpr>) {
+          std::optional<AttenuationOrigin> origin;
+          for (const auto& element : node.elements) {
+            origin = FirstOrigin(origin, AnalyzeAttenuationExpr(ctx, element));
+          }
+          return origin;
+        } else if constexpr (std::is_same_v<T, ast::ArrayExpr>) {
+          std::optional<AttenuationOrigin> origin;
+          ast::ForEachArrayExprSubexpr(node, [&](const ast::ExprPtr& element) {
+            origin = FirstOrigin(origin, AnalyzeAttenuationExpr(ctx, element));
+          });
+          return origin;
+        } else if constexpr (std::is_same_v<T, ast::ArrayRepeatExpr>) {
+          return FirstOrigin(AnalyzeAttenuationExpr(ctx, node.value),
+                             AnalyzeAttenuationExpr(ctx, node.count));
+        } else if constexpr (std::is_same_v<T, ast::RecordExpr>) {
+          std::optional<AttenuationOrigin> origin;
+          for (const auto& field : node.fields) {
+            origin = FirstOrigin(origin,
+                                 AnalyzeAttenuationExpr(ctx, field.value));
+          }
+          return origin;
+        } else if constexpr (std::is_same_v<T, ast::EnumLiteralExpr>) {
+          std::optional<AttenuationOrigin> origin;
+          if (!node.payload_opt.has_value()) {
+            return origin;
+          }
+          std::visit(
+              [&ctx, &origin](const auto& payload) {
+                using P = std::decay_t<decltype(payload)>;
+                if constexpr (std::is_same_v<P, ast::EnumPayloadParen>) {
+                  for (const auto& element : payload.elements) {
+                    origin =
+                        FirstOrigin(origin, AnalyzeAttenuationExpr(ctx, element));
+                  }
+                } else if constexpr (std::is_same_v<P, ast::EnumPayloadBrace>) {
+                  for (const auto& field : payload.fields) {
+                    origin = FirstOrigin(
+                        origin, AnalyzeAttenuationExpr(ctx, field.value));
+                  }
+                }
+              },
+              *node.payload_opt);
+          return origin;
+        } else if constexpr (std::is_same_v<T, ast::BinaryExpr>) {
+          return FirstOrigin(AnalyzeAttenuationExpr(ctx, node.lhs),
+                             AnalyzeAttenuationExpr(ctx, node.rhs));
+        } else if constexpr (std::is_same_v<T, ast::RangeExpr>) {
+          return FirstOrigin(AnalyzeAttenuationExpr(ctx, node.lhs),
+                             AnalyzeAttenuationExpr(ctx, node.rhs));
+        } else if constexpr (std::is_same_v<T, ast::IfExpr>) {
+          (void)AnalyzeAttenuationExpr(ctx, node.cond);
+          return FirstOrigin(AnalyzeAttenuationExpr(ctx, node.then_expr),
+                             AnalyzeAttenuationExpr(ctx, node.else_expr));
+        } else if constexpr (std::is_same_v<T, ast::IfIsExpr>) {
+          (void)AnalyzeAttenuationExpr(ctx, node.scrutinee);
+          return FirstOrigin(AnalyzeAttenuationExpr(ctx, node.then_expr),
+                             AnalyzeAttenuationExpr(ctx, node.else_expr));
+        } else if constexpr (std::is_same_v<T, ast::IfCaseExpr>) {
+          std::optional<AttenuationOrigin> origin =
+              AnalyzeAttenuationExpr(ctx, node.scrutinee);
+          for (const auto& clause : node.cases) {
+            origin =
+                FirstOrigin(origin, AnalyzeAttenuationExpr(ctx, clause.body));
+          }
+          return FirstOrigin(origin, AnalyzeAttenuationExpr(ctx, node.else_expr));
+        } else if constexpr (std::is_same_v<T, ast::BlockExpr>) {
+          if (!node.block) {
+            return std::nullopt;
+          }
+          return AnalyzeAttenuationBlock(ctx, *node.block);
+        } else if constexpr (std::is_same_v<T, ast::UnsafeBlockExpr>) {
+          if (!node.block) {
+            return std::nullopt;
+          }
+          return AnalyzeAttenuationBlock(ctx, *node.block);
+        } else if constexpr (std::is_same_v<T, ast::LoopInfiniteExpr>) {
+          if (node.body) {
+            (void)AnalyzeAttenuationBlock(ctx, *node.body);
+          }
+          return std::nullopt;
+        } else if constexpr (std::is_same_v<T, ast::LoopConditionalExpr>) {
+          (void)AnalyzeAttenuationExpr(ctx, node.cond);
+          if (node.body) {
+            (void)AnalyzeAttenuationBlock(ctx, *node.body);
+          }
+          return std::nullopt;
+        } else if constexpr (std::is_same_v<T, ast::LoopIterExpr>) {
+          (void)AnalyzeAttenuationExpr(ctx, node.iter);
+          if (node.body) {
+            (void)AnalyzeAttenuationBlock(ctx, *node.body);
+          }
+          return std::nullopt;
+        } else if constexpr (std::is_same_v<T, ast::ClosureExpr>) {
+          return AnalyzeAttenuationExpr(ctx, node.body);
+        } else if constexpr (std::is_same_v<T, ast::PipelineExpr>) {
+          return FirstOrigin(AnalyzeAttenuationExpr(ctx, node.lhs),
+                             AnalyzeAttenuationExpr(ctx, node.rhs));
+        } else if constexpr (std::is_same_v<T, ast::FieldAccessExpr>) {
+          return AnalyzeAttenuationExpr(ctx, node.base);
+        } else if constexpr (std::is_same_v<T, ast::TupleAccessExpr>) {
+          return AnalyzeAttenuationExpr(ctx, node.base);
+        } else if constexpr (std::is_same_v<T, ast::IndexAccessExpr>) {
+          return FirstOrigin(AnalyzeAttenuationExpr(ctx, node.base),
+                             AnalyzeAttenuationExpr(ctx, node.index));
+        } else if constexpr (std::is_same_v<T, ast::CallExpr>) {
+          (void)AnalyzeAttenuationExpr(ctx, node.callee);
+          AnalyzeAttenuationArgs(ctx, node.args);
+          return std::nullopt;
+        } else if constexpr (std::is_same_v<T, ast::CallTypeArgsExpr>) {
+          (void)AnalyzeAttenuationExpr(ctx, node.callee);
+          AnalyzeAttenuationArgs(ctx, node.args);
+          return std::nullopt;
+        } else if constexpr (std::is_same_v<T, ast::MethodCallExpr>) {
+          (void)AnalyzeAttenuationExpr(ctx, node.receiver);
+          AnalyzeAttenuationArgs(ctx, node.args);
+          const TypeRef* receiver_type =
+              node.receiver ? ExprTypeForAttenuation(*node.receiver,
+                                                     ctx.expr_types)
+                            : nullptr;
+          if (receiver_type &&
+              IsAttenuationMethod(node.name, *receiver_type)) {
+            if (const auto parent = DirectIdentifierName(node.receiver)) {
+              if (ctx.bindings.find(*parent) != ctx.bindings.end()) {
+                return AttenuationOrigin{*parent, expr->span};
+              }
+            }
+          }
+          return std::nullopt;
+        } else if constexpr (std::is_same_v<T, ast::ReturnStmt>) {
+          return AnalyzeAttenuationExpr(ctx, node.value_opt);
+        } else if constexpr (std::is_same_v<T, ast::YieldExpr>) {
+          return AnalyzeAttenuationExpr(ctx, node.value);
+        } else if constexpr (std::is_same_v<T, ast::YieldFromExpr>) {
+          return AnalyzeAttenuationExpr(ctx, node.value);
+        } else if constexpr (std::is_same_v<T, ast::SyncExpr>) {
+          return AnalyzeAttenuationExpr(ctx, node.value);
+        } else if constexpr (std::is_same_v<T, ast::RaceExpr>) {
+          std::optional<AttenuationOrigin> origin;
+          for (const auto& arm : node.arms) {
+            origin = FirstOrigin(origin, AnalyzeAttenuationExpr(ctx, arm.expr));
+            origin = FirstOrigin(origin,
+                                 AnalyzeAttenuationExpr(ctx, arm.handler.value));
+          }
+          return origin;
+        } else if constexpr (std::is_same_v<T, ast::AllExpr>) {
+          std::optional<AttenuationOrigin> origin;
+          for (const auto& value : node.exprs) {
+            origin = FirstOrigin(origin, AnalyzeAttenuationExpr(ctx, value));
+          }
+          return origin;
+        } else if constexpr (std::is_same_v<T, ast::ParallelExpr>) {
+          (void)AnalyzeAttenuationExpr(ctx, node.domain);
+          for (const auto& opt : node.opts) {
+            (void)AnalyzeAttenuationExpr(ctx, opt.value);
+          }
+          if (node.body) {
+            (void)AnalyzeAttenuationBlock(ctx, *node.body);
+          }
+          return std::nullopt;
+        } else if constexpr (std::is_same_v<T, ast::SpawnExpr>) {
+          for (const auto& opt : node.opts) {
+            (void)AnalyzeAttenuationExpr(ctx, opt.value);
+          }
+          if (node.body) {
+            (void)AnalyzeAttenuationBlock(ctx, *node.body);
+          }
+          return std::nullopt;
+        } else if constexpr (std::is_same_v<T, ast::WaitExpr>) {
+          return AnalyzeAttenuationExpr(ctx, node.handle);
+        } else if constexpr (std::is_same_v<T, ast::DispatchExpr>) {
+          (void)AnalyzeAttenuationExpr(ctx, node.range);
+          for (const auto& opt : node.opts) {
+            (void)AnalyzeAttenuationExpr(ctx, opt.chunk_expr);
+            (void)AnalyzeAttenuationExpr(ctx, opt.workgroup_expr);
+          }
+          if (node.body) {
+            (void)AnalyzeAttenuationBlock(ctx, *node.body);
+          }
+          return std::nullopt;
+        } else {
+          return std::nullopt;
+        }
+      },
+      expr->node);
+}
+
+void AnalyzeAttenuationBinding(AttenuationValidationContext& ctx,
+                               const ast::Binding& binding) {
+  std::optional<AttenuationOrigin> origin =
+      AnalyzeAttenuationExpr(ctx, binding.init);
+  std::vector<std::string> names;
+  if (binding.pat) {
+    CollectPatternBindingNames(*binding.pat, names);
+  }
+  for (const auto& name : names) {
+    BindAttenuationName(ctx, name, origin, false, binding.span);
+  }
+}
+
+void AnalyzeAttenuationStmt(AttenuationValidationContext& ctx,
+                            const ast::Stmt& stmt) {
+  if (AttenuationFailed(ctx)) {
+    return;
+  }
+  std::visit(
+      [&ctx](const auto& node) {
+        using T = std::decay_t<decltype(node)>;
+        if constexpr (std::is_same_v<T, ast::LetStmt> ||
+                      std::is_same_v<T, ast::VarStmt>) {
+          AnalyzeAttenuationBinding(ctx, node.binding);
+        } else if constexpr (std::is_same_v<T, ast::AssignStmt>) {
+          const auto origin = AnalyzeAttenuationExpr(ctx, node.value);
+          if (!origin.has_value()) {
+            return;
+          }
+          const auto target = DirectIdentifierName(node.place);
+          if (!target.has_value()) {
+            return;
+          }
+          const auto target_it = ctx.bindings.find(*target);
+          const auto parent_it = ctx.bindings.find(origin->parent);
+          if (target_it != ctx.bindings.end() &&
+              parent_it != ctx.bindings.end() &&
+              !parent_it->second.parameter &&
+              target_it->second.depth < parent_it->second.depth) {
+            ReportAttenuationEscape(ctx, origin->span, origin->parent);
+          }
+        } else if constexpr (std::is_same_v<T, ast::CompoundAssignStmt>) {
+          (void)AnalyzeAttenuationExpr(ctx, node.place);
+          (void)AnalyzeAttenuationExpr(ctx, node.value);
+        } else if constexpr (std::is_same_v<T, ast::ExprStmt>) {
+          (void)AnalyzeAttenuationExpr(ctx, node.value);
+        } else if constexpr (std::is_same_v<T, ast::DeferStmt>) {
+          if (node.body) {
+            (void)AnalyzeAttenuationBlock(ctx, *node.body);
+          }
+        } else if constexpr (std::is_same_v<T, ast::RegionStmt>) {
+          (void)AnalyzeAttenuationExpr(ctx, node.opts_opt);
+          if (node.body) {
+            (void)AnalyzeAttenuationBlock(ctx, *node.body);
+          }
+        } else if constexpr (std::is_same_v<T, ast::FrameStmt>) {
+          if (node.body) {
+            (void)AnalyzeAttenuationBlock(ctx, *node.body);
+          }
+        } else if constexpr (std::is_same_v<T, ast::ReturnStmt>) {
+          const auto origin = AnalyzeAttenuationExpr(ctx, node.value_opt);
+          if (origin.has_value()) {
+            const auto parent_it = ctx.bindings.find(origin->parent);
+            if (parent_it != ctx.bindings.end() &&
+                !parent_it->second.parameter) {
+              ReportAttenuationEscape(ctx, origin->span, origin->parent);
+            }
+          }
+        } else if constexpr (std::is_same_v<T, ast::BreakStmt>) {
+          const auto origin = AnalyzeAttenuationExpr(ctx, node.value_opt);
+          if (origin.has_value()) {
+            const auto parent_it = ctx.bindings.find(origin->parent);
+            if (parent_it != ctx.bindings.end() &&
+                !parent_it->second.parameter) {
+              ReportAttenuationEscape(ctx, origin->span, origin->parent);
+            }
+          }
+        } else if constexpr (std::is_same_v<T, ast::UnsafeBlockStmt> ||
+                             std::is_same_v<T, ast::CtStmt>) {
+          if (node.body) {
+            (void)AnalyzeAttenuationBlock(ctx, *node.body);
+          }
+        } else if constexpr (std::is_same_v<T, ast::KeyBlockStmt>) {
+          if (node.body) {
+            (void)AnalyzeAttenuationBlock(ctx, *node.body);
+          }
+        }
+      },
+      stmt);
+}
+
+std::optional<AttenuationOrigin> AnalyzeAttenuationBlock(
+    AttenuationValidationContext& ctx,
+    const ast::Block& block) {
+  PushAttenuationScope(ctx);
+  const int scope_depth = CurrentAttenuationDepth(ctx);
+  for (const auto& stmt : block.stmts) {
+    AnalyzeAttenuationStmt(ctx, stmt);
+    if (AttenuationFailed(ctx)) {
+      PopAttenuationScope(ctx);
+      return std::nullopt;
+    }
+  }
+  const auto origin = AnalyzeAttenuationExpr(ctx, block.tail_opt);
+  CheckOriginEscapesScope(ctx, origin, scope_depth);
+  PopAttenuationScope(ctx);
+  if (AttenuationFailed(ctx)) {
+    return std::nullopt;
+  }
+  return origin;
+}
+
+AuthorityValidationResult CheckAttenuationParentLiveness(
+    const ast::ProcedureDecl& proc,
+    const ExprTypeMap* expr_types) {
+  AuthorityValidationResult result{};
+  result.valid = true;
+  result.span = proc.span;
+  if (!proc.body) {
+    return result;
+  }
+
+  AttenuationValidationContext ctx;
+  ctx.expr_types = expr_types;
+  ctx.result.valid = true;
+  PushAttenuationScope(ctx);
+  for (const auto& param : proc.params) {
+    BindAttenuationName(ctx, param.name, std::nullopt, true, param.span);
+  }
+  for (const auto& stmt : proc.body->stmts) {
+    AnalyzeAttenuationStmt(ctx, stmt);
+    if (AttenuationFailed(ctx)) {
+      return ctx.result;
+    }
+  }
+  const auto tail = AnalyzeAttenuationExpr(ctx, proc.body->tail_opt);
+  CheckOriginEscapesScope(ctx, tail, CurrentAttenuationDepth(ctx));
+  if (AttenuationFailed(ctx)) {
+    return ctx.result;
+  }
+  PopAttenuationScope(ctx);
+  return result;
+}
+
 }  // namespace
 
 // =============================================================================
@@ -1142,6 +1825,12 @@ ModuleAuthorityResult ValidateModuleAuthority(const ast::ASTModule& module,
               result.valid = false;
               result.errors.push_back(proc_result);
             }
+            auto attenuation_result =
+                CheckAttenuationParentLiveness(node, expr_types);
+            if (!attenuation_result.valid) {
+              result.valid = false;
+              result.errors.push_back(attenuation_result);
+            }
           }
           // Check extern blocks for capability isolation
           else if constexpr (std::is_same_v<T, ast::ExternBlock>) {
@@ -1199,6 +1888,12 @@ ModuleAuthorityResult ValidateModuleAuthority(const ScopeContext& ctx,
               result.valid = false;
               result.errors.push_back(proc_result);
             }
+            auto attenuation_result =
+                CheckAttenuationParentLiveness(node, expr_types);
+            if (!attenuation_result.valid) {
+              result.valid = false;
+              result.errors.push_back(attenuation_result);
+            }
           } else if constexpr (std::is_same_v<T, ast::ExternBlock>) {
             auto extern_result =
                 CheckExternBlockIsolation(ctx, module.path, node);
@@ -1240,4 +1935,3 @@ ModuleAuthorityResult ValidateModuleAuthority(
 }
 
 }  // namespace ultraviolet::analysis
-

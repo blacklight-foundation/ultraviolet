@@ -1,0 +1,71 @@
+//! Source-native tests that execute HUV audit fixture gates.
+
+using HelloUltraviolet::Audit::{ acceptedProjectFixturesBuildAndExerciseArtifactObligations }
+using HelloUltraviolet::Audit::{ artifactProjectFixturesBuildAndExerciseOutputObligations }
+using HelloUltraviolet::Audit::{ artifactProjectEmitLlExercise }
+using HelloUltraviolet::Audit::{ artifactProjectGpuRuntimeEvidenceExercise }
+using HelloUltraviolet::Audit::{ artifactProjectStructuredParallelLoweringEvidenceExercise }
+using HelloUltraviolet::Audit::{ diagnosticSourceFixturesEmitExpectedDiagnostics }
+using HelloUltraviolet::Audit::{ outputDiagnosticFixturesExecuteAndEmitExpectedDiagnostics }
+using HelloUltraviolet::Audit::{ rejectedSourceFixturesCompileAndEmitExpectedDiagnostics }
+
+#test(name: "audit rejected-source fixtures execute")
+internal procedure auditRejectedSourceFixturesExecute(authority: TestAuthority) -> bool
+|: |= @result
+{
+    return rejectedSourceFixturesCompileAndEmitExpectedDiagnostics(authority)
+}
+
+#test(name: "audit diagnostic-source fixtures execute")
+internal procedure auditDiagnosticSourceFixturesExecute(authority: TestAuthority) -> bool
+|: |= @result
+{
+    return diagnosticSourceFixturesEmitExpectedDiagnostics(authority)
+}
+
+#test(name: "audit output-diagnostic fixtures execute")
+internal procedure auditOutputDiagnosticFixturesExecute(authority: TestAuthority) -> bool
+|: |= @result
+{
+    return outputDiagnosticFixturesExecuteAndEmitExpectedDiagnostics(authority)
+}
+
+#test(name: "audit accepted-project fixtures execute")
+internal procedure auditAcceptedProjectFixturesExecute(authority: TestAuthority) -> bool
+|: |= @result
+{
+    return acceptedProjectFixturesBuildAndExerciseArtifactObligations(authority)
+}
+
+#test(name: "audit artifact-project fixtures execute")
+internal procedure auditArtifactProjectFixturesExecute(authority: TestAuthority) -> bool
+|: |= @result
+{
+    return artifactProjectFixturesBuildAndExerciseOutputObligations(authority)
+}
+
+#test(name: "artifact project structured parallel lowering evidence obligations")
+internal procedure auditStructuredParallelLoweringEvidenceExecute(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let result = artifactProjectStructuredParallelLoweringEvidenceExercise(authority)
+    return result.passed && result.count == 11usize
+}
+
+#test(name: "artifact project gpu runtime evidence obligations")
+internal procedure auditGpuRuntimeEvidenceExecute(authority: TestAuthority) -> bool
+|: |= @result
+{
+    let result = artifactProjectGpuRuntimeEvidenceExercise(authority)
+    return result.passed && result.count == 19usize
+}
+
+#test(name: "artifact project emit ll backend evidence obligations")
+internal procedure auditEmitLlBackendEvidenceExecute(authority: TestAuthority) -> bool
+|: |= @result
+{
+    let result = artifactProjectEmitLlExercise(authority)
+    return result.passed && result.count == 429usize
+}

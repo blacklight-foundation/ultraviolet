@@ -2,12 +2,7 @@
 
 using HelloUltraviolet::Reference::Authority::{ runAuthorityBindingRuntimeStateReference }
 using HelloUltraviolet::Reference::Authority::{ runAuthorityBuiltinTypeNamesReference }
-using HelloUltraviolet::Reference::Authority::{ runAuthorityCapabilitiesReference }
-using HelloUltraviolet::Reference::Authority::{ runAuthorityIOReference }
-using HelloUltraviolet::Reference::Authority::{ runAuthorityNetworkReference }
 using HelloUltraviolet::Reference::Authority::{ runAuthorityRegionsAndFramesReference }
-using HelloUltraviolet::Reference::Authority::{ runAuthoritySystemReference }
-using HelloUltraviolet::Reference::Authority::{ runAuthorityTimeReference }
 
 public procedure catalogCompiledSymbolsExecuteReferenceAuthority(context: Context) -> bool {
     var passed: bool = true
@@ -23,33 +18,8 @@ public procedure catalogCompiledSymbolsExecuteReferenceAuthority(context: Contex
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
-        "runAuthorityCapabilitiesReference",
-        runAuthorityCapabilitiesReference()
-    ) && passed
-    passed = recordCatalogSymbolExecution(
-        context,
-        "runAuthorityIOReference",
-        runAuthorityIOReference(context)
-    ) && passed
-    passed = recordCatalogSymbolExecution(
-        context,
-        "runAuthorityNetworkReference",
-        runAuthorityNetworkReference()
-    ) && passed
-    passed = recordCatalogSymbolExecution(
-        context,
         "runAuthorityRegionsAndFramesReference",
         runAuthorityRegionsAndFramesReference()
-    ) && passed
-    passed = recordCatalogSymbolExecution(
-        context,
-        "runAuthoritySystemReference",
-        runAuthoritySystemReference(context)
-    ) && passed
-    passed = recordCatalogSymbolExecution(
-        context,
-        "runAuthorityTimeReference",
-        runAuthorityTimeReference(context)
     ) && passed
     return passed
 }

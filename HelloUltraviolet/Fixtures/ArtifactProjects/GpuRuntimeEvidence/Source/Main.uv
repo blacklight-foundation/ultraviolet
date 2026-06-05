@@ -1,0 +1,88 @@
+//! Artifact fixture for GPU runtime topology, status, and barrier evidence.
+
+
+internal procedure gpuRuntimeEvidence(context: Context) -> bool {
+    let observed: usize = parallel context~>gpu() [
+        workgroup: (2usize, 2usize, 2usize),
+        workgroups: (2usize, 1usize, 1usize)
+    ] {
+        dispatch index in 0usize..16usize [reduce: +, workgroup: (2usize, 2usize, 2usize)] {
+            let global_id: (usize, usize, usize) = gpu_global_id()
+            let local_id: (usize, usize, usize) = gpu_local_id()
+            let workgroup_id: (usize, usize, usize) = gpu_workgroup_id()
+            let workgroup_size: (usize, usize, usize) = gpu_workgroup_size()
+            let global_size: (usize, usize, usize) = gpu_global_size()
+            let num_workgroups: (usize, usize, usize) = gpu_num_workgroups()
+            let relative_index: usize = index
+            let expected_local_linear: usize = relative_index % 8usize
+            let expected_local_x: usize = expected_local_linear % 2usize
+            let expected_local_y: usize = (expected_local_linear / 2usize) % 2usize
+            let expected_local_z: usize = expected_local_linear / 4usize
+            let expected_workgroup_x: usize = relative_index / 8usize
+            let expected_global_x: usize = expected_local_x + expected_workgroup_x * 2usize
+            var private_value: i32 = 41
+            let forms_have_pointer_layout: bool =
+                sizeof(GpuPtr<i32, Global>) == sizeof(Ptr<i32>) &&
+                sizeof(GpuPtr<i32, Shared>) == sizeof(Ptr<i32>) &&
+                sizeof(GpuPtr<i32, Private>) == sizeof(Ptr<i32>)
+            let private_read: i32 = unsafe {
+                let private_pointer: GpuPtr<i32, Private> =
+                    transmute<Ptr<i32>, GpuPtr<i32, Private>>(&private_value)
+                *private_pointer
+            }
+
+            gpu_memory_barrier()
+            gpu_workgroup_barrier()
+            gpu_barrier()
+
+            let matches_topology: bool =
+                global_id.0 == expected_global_x &&
+                global_id.1 == expected_local_y &&
+                global_id.2 == expected_local_z &&
+                local_id.0 == expected_local_x &&
+                local_id.1 == expected_local_y &&
+                local_id.2 == expected_local_z &&
+                workgroup_id.0 == expected_workgroup_x &&
+                workgroup_id.1 == 0usize &&
+                workgroup_id.2 == 0usize &&
+                workgroup_size.0 == 2usize &&
+                workgroup_size.1 == 2usize &&
+                workgroup_size.2 == 2usize &&
+                global_size.0 == 4usize &&
+                global_size.1 == 2usize &&
+                global_size.2 == 2usize &&
+                num_workgroups.0 == 2usize &&
+                num_workgroups.1 == 1usize &&
+                num_workgroups.2 == 1usize &&
+                gpu_linear_id() == relative_index &&
+                forms_have_pointer_layout &&
+                private_read == 41
+
+            if matches_topology {
+                relative_index + 1usize
+            } else {
+                1000usize + relative_index
+            }
+        }
+    }
+
+    return observed == 136usize
+}
+
+internal procedure domainLoweringEvidence(context: Context) -> bool {
+    let inline_value: i32 = parallel context~>inline() {
+        7
+    }
+    let cpu_value: i32 = parallel context~>cpu() {
+        11
+    }
+
+    return inline_value == 7 && cpu_value == 11
+}
+
+public procedure main(context: Context) -> i32 {
+    if gpuRuntimeEvidence(context) && domainLoweringEvidence(context) {
+        return 0
+    }
+    return 1
+}

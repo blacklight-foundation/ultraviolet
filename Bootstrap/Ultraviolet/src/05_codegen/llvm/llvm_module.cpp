@@ -37,6 +37,7 @@
 #include "05_codegen/llvm/llvm_module.h"
 
 #include "00_core/spec_trace.h"
+#include "01_project/llvm_toolchain.h"
 #include "00_core/symbols.h"
 #include "01_project/language_profile.h"
 #include "05_codegen/globals/literal_emit.h"
@@ -56,8 +57,44 @@
 
 #include <mutex>
 #include <string>
+#include <string_view>
 
 namespace ultraviolet::codegen {
+namespace {
+
+std::string_view TargetArchTraceName(project::TargetArch arch) {
+  switch (arch) {
+    case project::TargetArch::X86_64:
+      return "x86_64";
+    case project::TargetArch::AArch64:
+      return "aarch64";
+  }
+  return "unknown";
+}
+
+std::string TargetMachinePayload(project::TargetProfile profile) {
+  std::string payload = "target_profile=";
+  payload += project::TargetProfileName(profile);
+  payload += ";endianness=little;ptr_size_bytes=";
+  payload += std::to_string(project::PtrSizeBytes(profile));
+  return payload;
+}
+
+std::string LLVMToolchainPayload() {
+  const bool matches =
+      std::string_view(LLVM_VERSION_STRING) == project::kLLVMToolchainVersion;
+  std::string payload = "required_version=";
+  payload.append(
+      project::kLLVMToolchainVersion.data(),
+      project::kLLVMToolchainVersion.size());
+  payload += ";llvm_version=";
+  payload += LLVM_VERSION_STRING;
+  payload += ";in_process_backend=true;matches=";
+  payload += matches ? "true" : "false";
+  return payload;
+}
+
+}  // namespace
 
 static_assert(LLVM_VERSION_MAJOR == 21, "Ultraviolet requires LLVM 21.1.8");
 static_assert(LLVM_VERSION_MINOR == 1, "Ultraviolet requires LLVM 21.1.8");
@@ -76,6 +113,38 @@ void SetupModuleHeader(llvm::Module& module,
       llvm::Triple(std::string(project::LLVMTripleOf(profile))));
 
   module.setDataLayout(std::string(project::LLVMDataLayoutOf(profile)));
+
+  if (core::Conformance::Enabled()) {
+    std::string arch_payload = "target_profile=";
+    arch_payload += project::TargetProfileName(profile);
+    arch_payload += ";arch=";
+    arch_payload += TargetArchTraceName(project::TargetArchOf(profile));
+    core::Conformance::Record("def.TargetArch", std::nullopt, arch_payload);
+    core::Conformance::Record(
+        "def.TargetMachineModel", std::nullopt, TargetMachinePayload(profile));
+
+    std::string triple_payload = "target_profile=";
+    triple_payload += project::TargetProfileName(profile);
+    triple_payload += ";triple=";
+    triple_payload += project::LLVMTripleOf(profile);
+    triple_payload += ";data_layout=";
+    triple_payload += project::LLVMDataLayoutOf(profile);
+    core::Conformance::Record("def.TargetTriple", std::nullopt, triple_payload);
+    SPEC_RULE("def.LLVMTargetConstants");
+    core::Conformance::Record(
+        "def.LLVMTargetConstants", std::nullopt, triple_payload);
+
+    const std::string toolchain_payload = LLVMToolchainPayload();
+    core::Conformance::Record(
+        "def.24.LLVMToolchain", std::nullopt, toolchain_payload);
+    core::Conformance::Record(
+        "req.24.HostedCompilerLLVMVersion", std::nullopt, toolchain_payload);
+
+    core::Conformance::Record(
+        "conformance.LayoutAndABIOwnerSections",
+        std::nullopt,
+        "canonical_sections=12,13,14.6,23.2,24;layout_spec_normative=false");
+  }
 }
 
 // =============================================================================

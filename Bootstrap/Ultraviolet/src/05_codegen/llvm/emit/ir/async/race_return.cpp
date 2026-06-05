@@ -38,6 +38,11 @@ void IRInstructionVisitor::operator()(const IRRaceReturn &r) const
     return;
   }
 
+  SPEC_RULE("requirement.21.RaceInitIRSemantics");
+  SPEC_RULE("requirement.21.RaceResumeIRSemantics");
+  SPEC_RULE("requirement.21.RaceReturnRuntimeSemantics");
+  SPEC_RULE("rule.21.EvalSigma-Race-Return");
+
   llvm::IRBuilder<> entry_builder(
       &func->getEntryBlock(),
       func->getEntryBlock().begin());
@@ -115,12 +120,12 @@ void IRInstructionVisitor::operator()(const IRRaceReturn &r) const
     const std::uint64_t copy_size = std::min(src_size, dst_size);
     if (copy_size > 0)
     {
-      builder.CreateMemCpy(
+      EmitAggMemcpy(
+          emitter,
           dst_i8,
-          llvm::Align(1),
           src_i8,
-          llvm::Align(1),
-          llvm::ConstantInt::get(i64_ty, copy_size));
+          llvm::ConstantInt::get(i64_ty, copy_size),
+          1);
     }
     return builder.CreateLoad(dst_ty, dst_slot);
   };

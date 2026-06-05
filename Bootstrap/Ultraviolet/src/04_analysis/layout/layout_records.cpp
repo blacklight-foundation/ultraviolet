@@ -46,8 +46,10 @@
 #include "04_analysis/layout/layout.h"
 
 #include <algorithm>
+#include <sstream>
 
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 
 namespace ultraviolet::analysis::layout {
 namespace {
@@ -63,6 +65,50 @@ std::uint64_t AlignUp(std::uint64_t value, std::uint64_t align) {
   return value + (align - rem);
 }
 
+std::string OffsetListPayload(const std::vector<std::uint64_t>& offsets) {
+  std::ostringstream out;
+  for (std::size_t i = 0; i < offsets.size(); ++i) {
+    if (i != 0) {
+      out << ",";
+    }
+    out << offsets[i];
+  }
+  return out.str();
+}
+
+void RecordRecordLayoutAttributeConformance(
+    const RecordLayoutOptions& options,
+    const RecordLayout& layout,
+    std::size_t field_count) {
+  if (!options.packed && !options.min_align.has_value()) {
+    return;
+  }
+
+  std::string payload = "source=RecordLayoutOf;fields=" +
+      std::to_string(field_count) + ";packed=" +
+      (options.packed ? "true" : "false") + ";min_align=" +
+      (options.min_align.has_value() ? std::to_string(*options.min_align)
+                                     : std::string("none")) +
+      ";size=" + std::to_string(layout.layout.size) + ";align=" +
+      std::to_string(layout.layout.align) + ";offsets=" +
+      OffsetListPayload(layout.offsets) +
+      ";runtime=none;static_only=true;lowering=record-layout";
+
+  core::Conformance::Record(
+      "def.ValidLayoutAttributeCombinations", std::nullopt, payload);
+  core::Conformance::Record(
+      "conformance.LayoutAttributeDynamicSemantics", std::nullopt, payload);
+  core::Conformance::Record(
+      "conformance.LayoutAttributeLowering", std::nullopt, payload);
+  if (options.packed) {
+    core::Conformance::Record(
+        "req.LayoutPackedRecordSemantics", std::nullopt, payload);
+  }
+  if (options.min_align.has_value()) {
+    core::Conformance::Record("req.LayoutAlignSemantics", std::nullopt, payload);
+  }
+}
+
 }  // namespace
 
 std::optional<RecordLayout> RecordLayoutOf(
@@ -76,7 +122,9 @@ std::optional<RecordLayout> RecordLayoutOf(
     if (!packed && options.min_align.has_value()) {
       record_align = std::max(record_align, *options.min_align);
     }
-    return RecordLayout{Layout{0, record_align}, {}};
+    RecordLayout layout{Layout{0, record_align}, {}};
+    RecordRecordLayoutAttributeConformance(options, layout, fields.size());
+    return layout;
   }
   SPEC_RULE("Layout-Record-Cons");
   std::vector<std::uint64_t> offsets;
@@ -105,7 +153,9 @@ std::optional<RecordLayout> RecordLayoutOf(
     max_align = std::max(max_align, *options.min_align);
   }
   const std::uint64_t size = AlignUp(offset, max_align);
-  return RecordLayout{Layout{size, max_align}, offsets};
+  RecordLayout layout{Layout{size, max_align}, offsets};
+  RecordRecordLayoutAttributeConformance(options, layout, fields.size());
+  return layout;
 }
 
 }  // namespace ultraviolet::analysis::layout

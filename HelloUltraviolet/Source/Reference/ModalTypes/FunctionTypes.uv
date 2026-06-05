@@ -27,14 +27,48 @@ internal procedure functionTypeReferenceMoveCall(
     return callable(move payload)
 }
 
-/// Exercises the ModalTypes FunctionTypes reference surface.
-public procedure runModalTypesFunctionTypesReference() -> bool {
+/// Exercises procedure-call evaluation through first-class function values.
+public procedure evalSigmaCallProcReference() -> bool {
     let callable: (i32) -> i32 = functionTypeReferenceApply
     let no_arg_callable: () -> i32 = functionTypeReferenceNoArgs
     let consumer: (move FunctionTypeMovePayload) -> i32 = functionTypeReferenceConsume
     return functionTypeReferenceCall(callable, 6) == 8 &&
         no_arg_callable() == 5 &&
-        functionTypeReferenceMoveCall(consumer) == 13 &&
-        sizeof((i32) -> i32) == sizeof(usize) &&
+        functionTypeReferenceMoveCall(consumer) == 13
+}
+
+/// Exercises named procedures as first-class function values.
+public procedure namedProceduresFirstClassReference() -> bool {
+    let callable: (i32) -> i32 = functionTypeReferenceApply
+    let no_arg_callable: () -> i32 = functionTypeReferenceNoArgs
+    let consumer: (move FunctionTypeMovePayload) -> i32 = functionTypeReferenceConsume
+    return callable(7) == 9 &&
+        no_arg_callable() == 5 &&
+        functionTypeReferenceMoveCall(consumer) == 13
+}
+
+/// Exercises the function value size equation.
+public procedure sizeFuncReference() -> bool {
+    return sizeof((i32) -> i32) == sizeof(usize) &&
+        sizeof(() -> i32) == sizeof(usize) &&
+        sizeof((move FunctionTypeMovePayload) -> i32) == sizeof(usize)
+}
+
+/// Exercises the function value alignment equation.
+public procedure alignFuncReference() -> bool {
+    return alignof((i32) -> i32) == alignof(usize) &&
+        alignof(() -> i32) == alignof(usize) &&
         alignof((move FunctionTypeMovePayload) -> i32) == alignof(usize)
+}
+
+/// Exercises the function value layout tuple.
+public procedure layoutFuncReference() -> bool {
+    return sizeFuncReference() && alignFuncReference()
+}
+
+/// Exercises the ModalTypes FunctionTypes reference surface.
+public procedure runModalTypesFunctionTypesReference() -> bool {
+    return evalSigmaCallProcReference() &&
+        namedProceduresFirstClassReference() &&
+        layoutFuncReference()
 }

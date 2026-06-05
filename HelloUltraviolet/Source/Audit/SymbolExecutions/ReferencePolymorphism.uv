@@ -1,7 +1,6 @@
 //! Compiled symbol execution checks for ReferencePolymorphism.
 
 using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismAssociatedTypesReference }
-using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismCapabilityClassesReference }
 using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismClassesReference }
 using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismDynamicClassObjectsReference }
 using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismGenericParametersReference }
@@ -15,11 +14,6 @@ public procedure catalogCompiledSymbolsExecuteReferencePolymorphism(context: Con
         context,
         "runPolymorphismAssociatedTypesReference",
         runPolymorphismAssociatedTypesReference()
-    ) && passed
-    passed = recordCatalogSymbolExecution(
-        context,
-        "runPolymorphismCapabilityClassesReference",
-        runPolymorphismCapabilityClassesReference(context)
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,

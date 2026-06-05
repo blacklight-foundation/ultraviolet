@@ -1,9 +1,12 @@
 #include "03_comptime/comptime_internal.h"
 
 #include <optional>
+#include <string>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
+#include "00_core/assert_spec.h"
 #include "00_core/diagnostic_messages.h"
 #include "00_core/ident.h"
 
@@ -60,15 +63,66 @@ PatternPtr MakePattern(const core::Span& span, Node node) {
 struct ScopedQuoteCtx {
   CtEnv& env;
   std::optional<CtQuoteCtx> saved;
+  std::vector<std::string> saved_splice_trace;
 
-  ScopedQuoteCtx(CtEnv& env, ast::QuoteKind kind) : env(env), saved(env.quote_ctx) {
+  ScopedQuoteCtx(CtEnv& env, ast::QuoteKind kind)
+      : env(env),
+        saved(env.quote_ctx),
+        saved_splice_trace(env.quote_splice_trace) {
     env.quote_ctx = CtQuoteCtx{kind, CtSiteOf(env)};
+    env.quote_splice_trace.clear();
   }
 
   ~ScopedQuoteCtx() {
     env.quote_ctx = saved;
+    env.quote_splice_trace = std::move(saved_splice_trace);
   }
 };
+
+std::string QuoteSpliceTraceName(const ExprPtr& expr) {
+  if (expr) {
+    if (const auto* ident = std::get_if<ast::IdentifierExpr>(&expr->node)) {
+      return ident->name;
+    }
+  }
+  return "splice";
+}
+
+std::string JoinQuoteSpliceTracePayload(
+    const std::vector<std::string>& trace) {
+  std::string payload = "splices:";
+  for (std::size_t i = 0; i < trace.size(); ++i) {
+    if (i != 0) {
+      payload += ",";
+    }
+    payload += trace[i];
+  }
+  return payload;
+}
+
+std::optional<core::Span> QuoteTraceSpan(const QuoteExpr& quote) {
+  if (quote.tokens.empty()) {
+    return std::nullopt;
+  }
+  return quote.tokens.front().span;
+}
+
+std::optional<CtAst> RecordQuoteBuildResult(std::optional<CtAst> result,
+                                            const QuoteExpr& quote,
+                                            CtEnv& env) {
+  if (result.has_value() && !env.quote_splice_trace.empty()) {
+    core::Conformance::Record(
+        "requirement.22.QuoteBuildSpliceOrder",
+        QuoteTraceSpan(quote),
+        JoinQuoteSpliceTracePayload(env.quote_splice_trace));
+  }
+  return result;
+}
+
+void EmitSpliceContextDiag(CtEnv& env, const core::Span& span) {
+  SPEC_RULE_AT("requirement.22.SpliceContextAndTypeCompatibility", span);
+  EmitComptimeDiag(env, "E-CTE-0230", span);
+}
 
 bool IsQuotedStatementForm(const ast::Stmt& stmt) {
   return std::visit(
@@ -149,6 +203,7 @@ bool QuoteParsesAsKind(const QuoteExpr& quote, ast::QuoteKind kind) {
 
 std::optional<CtValue> EvalSpliceValue(const ExprPtr& expr, CtEnv& env,
                                        const core::Span& span) {
+  env.quote_splice_trace.push_back(QuoteSpliceTraceName(expr));
   const EvalResult value = EvalExpr(expr, env);
   if (!value.ok) {
     EmitComptimeDiag(env, "E-CTE-0231", span);
@@ -273,9 +328,11 @@ bool BuildSplicedIdentifierInPlace(std::optional<ast::SpliceIdentNode>& splice_o
   }
   switch (RenderIdentifierSplice(*value, name)) {
     case RenderIdentifierStatus::Ok:
+      SPEC_RULE_AT("requirement.22.StringSpliceIdentifierHygiene",
+                   splice_opt->span);
       return true;
     case RenderIdentifierStatus::Incompatible:
-      EmitComptimeDiag(env, "E-CTE-0230", splice_opt->span);
+      EmitSpliceContextDiag(env, splice_opt->span);
       return false;
     case RenderIdentifierStatus::Invalid:
       EmitComptimeDiag(env, "E-CTE-0232", splice_opt->span);
@@ -451,7 +508,7 @@ std::optional<TypePtr> BuildType(const TypePtr& type, CtEnv& env) {
           }
           TypePtr rendered;
           if (!RenderTypeSplice(*value, rendered)) {
-            EmitComptimeDiag(env, "E-CTE-0230", node.span);
+            EmitSpliceContextDiag(env, node.span);
             return std::nullopt;
           }
           return rendered;
@@ -592,7 +649,7 @@ std::optional<PatternPtr> BuildPattern(const PatternPtr& pattern, CtEnv& env) {
           }
           PatternPtr rendered;
           if (!RenderPatternSplice(*value, rendered)) {
-            EmitComptimeDiag(env, "E-CTE-0230", node.span);
+            EmitSpliceContextDiag(env, node.span);
             return std::nullopt;
           }
           return rendered;
@@ -722,7 +779,7 @@ std::optional<Stmt> BuildStmt(const Stmt& stmt, CtEnv& env) {
               }
               Stmt rendered;
               if (!RenderStmtSplice(*value, rendered)) {
-                EmitComptimeDiag(env, "E-CTE-0230", splice->span);
+                EmitSpliceContextDiag(env, splice->span);
                 return std::nullopt;
               }
               return rendered;
@@ -831,7 +888,7 @@ std::optional<Block> BuildBlock(const Block& block, CtEnv& env) {
       }
       Stmt rendered;
       if (!RenderStmtSplice(*value, rendered)) {
-        EmitComptimeDiag(env, "E-CTE-0230", splice->span);
+        EmitSpliceContextDiag(env, splice->span);
         return std::nullopt;
       }
       out.stmts.push_back(std::move(rendered));
@@ -1235,7 +1292,7 @@ std::optional<ExprPtr> BuildExpr(const ExprPtr& expr, CtEnv& env) {
           }
           ExprPtr rendered;
           if (!RenderExprSplice(*value, node.span, rendered)) {
-            EmitComptimeDiag(env, "E-CTE-0230", node.span);
+            EmitSpliceContextDiag(env, node.span);
             return std::nullopt;
           }
           return rendered;
@@ -1253,7 +1310,7 @@ std::optional<ExprPtr> BuildExpr(const ExprPtr& expr, CtEnv& env) {
               return MakeExpr(expr->span, std::move(ident));
             }
             case RenderIdentifierStatus::Incompatible:
-              EmitComptimeDiag(env, "E-CTE-0230", node.span);
+              EmitSpliceContextDiag(env, node.span);
               return std::nullopt;
             case RenderIdentifierStatus::Invalid:
               EmitComptimeDiag(env, "E-CTE-0232", node.span);
@@ -1727,44 +1784,54 @@ std::optional<CtAst> ParseQuotedAstAsKind(const QuoteExpr& quote,
       case ast::QuoteKind::Expr: {
         ExprPtr rendered;
         if (!RenderExprSplice(*value, splice_span, rendered)) {
-          EmitComptimeDiag(env, "E-CTE-0230", splice_span);
+          EmitSpliceContextDiag(env, splice_span);
           return std::nullopt;
         }
-        return AstOf(CtAstKind::Expr, rendered);
+        return RecordQuoteBuildResult(AstOf(CtAstKind::Expr, rendered),
+                                      quote,
+                                      env);
       }
       case ast::QuoteKind::Stmt: {
         Stmt rendered;
         if (!RenderStmtSplice(*value, rendered)) {
-          EmitComptimeDiag(env, "E-CTE-0230", splice_span);
+          EmitSpliceContextDiag(env, splice_span);
           return std::nullopt;
         }
-        return AstOf(CtAstKind::Stmt, rendered);
+        return RecordQuoteBuildResult(AstOf(CtAstKind::Stmt, rendered),
+                                      quote,
+                                      env);
       }
       case ast::QuoteKind::Unspecified:
         return std::nullopt;
       case ast::QuoteKind::Item: {
         ASTItem rendered;
         if (!RenderItemSplice(*value, rendered)) {
-          EmitComptimeDiag(env, "E-CTE-0230", splice_span);
+          EmitSpliceContextDiag(env, splice_span);
           return std::nullopt;
         }
-        return AstOf(CtAstKind::Item, rendered);
+        return RecordQuoteBuildResult(AstOf(CtAstKind::Item, rendered),
+                                      quote,
+                                      env);
       }
       case ast::QuoteKind::Type: {
         TypePtr rendered;
         if (!RenderTypeSplice(*value, rendered)) {
-          EmitComptimeDiag(env, "E-CTE-0230", splice_span);
+          EmitSpliceContextDiag(env, splice_span);
           return std::nullopt;
         }
-        return AstOf(CtAstKind::Type, rendered);
+        return RecordQuoteBuildResult(AstOf(CtAstKind::Type, rendered),
+                                      quote,
+                                      env);
       }
       case ast::QuoteKind::Pattern: {
         PatternPtr rendered;
         if (!RenderPatternSplice(*value, rendered)) {
-          EmitComptimeDiag(env, "E-CTE-0230", splice_span);
+          EmitSpliceContextDiag(env, splice_span);
           return std::nullopt;
         }
-        return AstOf(CtAstKind::Pattern, rendered);
+        return RecordQuoteBuildResult(AstOf(CtAstKind::Pattern, rendered),
+                                      quote,
+                                      env);
       }
     }
   }
@@ -1784,7 +1851,8 @@ std::optional<CtAst> ParseQuotedAstAsKind(const QuoteExpr& quote,
       if (!payload.has_value()) {
         return std::nullopt;
       }
-      return AstOf(CtAstKind::Expr, std::move(*payload));
+      return RecordQuoteBuildResult(
+          AstOf(CtAstKind::Expr, std::move(*payload)), quote, env);
     }
     case ast::QuoteKind::Stmt: {
       auto parsed = ast::ParseStmt(parser);
@@ -1798,7 +1866,8 @@ std::optional<CtAst> ParseQuotedAstAsKind(const QuoteExpr& quote,
       if (!payload.has_value()) {
         return std::nullopt;
       }
-      return AstOf(CtAstKind::Stmt, std::move(*payload));
+      return RecordQuoteBuildResult(
+          AstOf(CtAstKind::Stmt, std::move(*payload)), quote, env);
     }
     case ast::QuoteKind::Unspecified:
       parse_failed = true;
@@ -1816,7 +1885,8 @@ std::optional<CtAst> ParseQuotedAstAsKind(const QuoteExpr& quote,
       if (!payload.has_value()) {
         return std::nullopt;
       }
-      return AstOf(CtAstKind::Item, std::move(*payload));
+      return RecordQuoteBuildResult(
+          AstOf(CtAstKind::Item, std::move(*payload)), quote, env);
     }
     case ast::QuoteKind::Type: {
       auto parsed = ast::ParseType(parser);
@@ -1830,7 +1900,8 @@ std::optional<CtAst> ParseQuotedAstAsKind(const QuoteExpr& quote,
       if (!payload.has_value()) {
         return std::nullopt;
       }
-      return AstOf(CtAstKind::Type, std::move(*payload));
+      return RecordQuoteBuildResult(
+          AstOf(CtAstKind::Type, std::move(*payload)), quote, env);
     }
     case ast::QuoteKind::Pattern: {
       auto parsed = ast::ParsePattern(parser);
@@ -1844,7 +1915,8 @@ std::optional<CtAst> ParseQuotedAstAsKind(const QuoteExpr& quote,
       if (!payload.has_value()) {
         return std::nullopt;
       }
-      return AstOf(CtAstKind::Pattern, std::move(*payload));
+      return RecordQuoteBuildResult(
+          AstOf(CtAstKind::Pattern, std::move(*payload)), quote, env);
     }
   }
   return std::nullopt;
@@ -1857,10 +1929,16 @@ std::optional<CtAst> ParseQuotedAst(const QuoteExpr& quote,
                                     core::DiagnosticStream& diags,
                                     std::optional<ast::QuoteKind> expected_kind) {
   auto emit_invalid_quote = [&]() -> std::optional<CtAst> {
+    const std::optional<core::Span> span =
+        quote.tokens.empty() ? std::nullopt
+                             : std::optional<core::Span>(quote.tokens.front().span);
+    if (span.has_value()) {
+      SPEC_RULE_AT("requirement.22.QuotedContentValidity", *span);
+    } else {
+      SPEC_RULE("requirement.22.QuotedContentValidity");
+    }
     if (auto diag = core::MakeDiagnosticById(
-            "E-CTE-0220",
-            quote.tokens.empty() ? std::nullopt
-                                 : std::optional<core::Span>(quote.tokens.front().span))) {
+            "E-CTE-0220", span)) {
       core::Emit(diags, *diag);
     }
     return std::nullopt;

@@ -34,6 +34,8 @@ namespace {
 static inline void SpecDefsMoveExpr() {
   SPEC_DEF("T-Move", "5.6");
   SPEC_DEF("T-Copy", "16.8.4");
+  SPEC_DEF("rule.16.T-Copy", "16.8.4");
+  SPEC_DEF("rule.16.ValueUse-NonBitcopyPlace", "16.2.4");
   SPEC_DEF("Move-Immovable-Err", "5.6");
   SPEC_DEF("Move-AlreadyMoved-Err", "5.6");
   SPEC_DEF("Move-NotPlace-Err", "5.6");
@@ -96,6 +98,7 @@ ExprTypeResult TypeMoveExprImpl(const ScopeContext& ctx,
   }
 
   SPEC_RULE("T-Move");
+  SPEC_RULE("rule.16.T-Move");
   result.ok = true;
   result.type = place.type;
   return result;
@@ -115,12 +118,16 @@ ExprTypeResult TypeCopyExprImpl(const ScopeContext& ctx,
     return result;
   }
   if (!BitcopyType(ctx, value.type)) {
+    SPEC_RULE("T-Copy");
+    SPEC_RULE("rule.16.T-Copy");
     SPEC_RULE("ValueUse-NonBitcopyPlace");
+    SPEC_RULE("rule.16.ValueUse-NonBitcopyPlace");
     result.diag_id = "E-UNS-0107";
     result.diag_span = expr.value ? std::optional<core::Span>(expr.value->span) : std::nullopt;
     return result;
   }
   SPEC_RULE("T-Copy");
+  SPEC_RULE("rule.16.T-Copy");
   result.ok = true;
   result.type = value.type;
   return result;
@@ -166,6 +173,7 @@ ExprTypeResult TypeMoveExpr(const ScopeContext& ctx,
 
   // 5. Result type is the place's type
   SPEC_RULE("T-Move");
+  SPEC_RULE("rule.16.T-Move");
   result.ok = true;
   result.type = place_result.type;
   return result;

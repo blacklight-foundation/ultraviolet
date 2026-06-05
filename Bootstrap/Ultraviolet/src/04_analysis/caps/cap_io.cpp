@@ -1,8 +1,13 @@
 #include "04_analysis/caps/cap_io.h"
 
+#include <cstddef>
+#include <initializer_list>
+#include <string>
 #include <utility>
+#include <variant>
 
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 #include "04_analysis/caps/builtin_paths.h"
 #include "04_analysis/resolve/scopes.h"
 #include "04_analysis/typing/outcome.h"
@@ -148,6 +153,148 @@ static ast::TransitionDecl MakeTransition(std::string_view name,
   trans.span = core::Span{};
   trans.doc_opt = std::nullopt;
   return trans;
+}
+
+static bool PathMatches(std::initializer_list<std::string_view> expected,
+                        const ast::TypePath& path) {
+  if (path.size() != expected.size()) {
+    return false;
+  }
+
+  std::size_t index = 0;
+  for (const std::string_view segment : expected) {
+    if (path[index] != segment) {
+      return false;
+    }
+    ++index;
+  }
+  return true;
+}
+
+static bool TypePrimMatches(const std::shared_ptr<ast::Type>& type,
+                            std::string_view name) {
+  if (!type) {
+    return false;
+  }
+  const auto* prim = std::get_if<ast::TypePrim>(&type->node);
+  return prim != nullptr && prim->name == name;
+}
+
+static bool TypePathMatches(const std::shared_ptr<ast::Type>& type,
+                            std::initializer_list<std::string_view> path) {
+  if (!type) {
+    return false;
+  }
+  const auto* path_type = std::get_if<ast::TypePathType>(&type->node);
+  return path_type != nullptr && path_type->generic_args.empty() &&
+         PathMatches(path, path_type->path);
+}
+
+static bool TypeIsDirEntryOrUnitUnion(
+    const std::shared_ptr<ast::Type>& type) {
+  if (!type) {
+    return false;
+  }
+  const auto* union_type = std::get_if<ast::TypeUnion>(&type->node);
+  if (union_type == nullptr || union_type->types.size() != 2) {
+    return false;
+  }
+
+  bool has_dir_entry = false;
+  bool has_unit = false;
+  for (const auto& member : union_type->types) {
+    has_dir_entry = has_dir_entry || TypePathMatches(member, {"DirEntry"});
+    has_unit = has_unit || TypePrimMatches(member, "()");
+  }
+  return has_dir_entry && has_unit;
+}
+
+static bool TypeIsDirIterNextOutcome(
+    const std::shared_ptr<ast::Type>& type) {
+  if (!type) {
+    return false;
+  }
+  const auto* path_type = std::get_if<ast::TypePathType>(&type->node);
+  if (path_type == nullptr || !PathMatches({"Outcome"}, path_type->path) ||
+      path_type->generic_args.size() != 2) {
+    return false;
+  }
+
+  return TypeIsDirEntryOrUnitUnion(path_type->generic_args[0]) &&
+         TypePathMatches(path_type->generic_args[1], {"IoError"});
+}
+
+static bool DirIterOpenMemberSurfaceMatches(const ast::StateBlock& state) {
+  bool has_handle_field = false;
+  bool has_next_method = false;
+  bool has_close_transition = false;
+
+  for (const auto& member : state.members) {
+    if (const auto* field = std::get_if<ast::StateFieldDecl>(&member)) {
+      has_handle_field = has_handle_field ||
+                         (field->vis == ast::Visibility::Public &&
+                          field->name == "handle" &&
+                          TypePrimMatches(field->type, "usize"));
+      continue;
+    }
+
+    if (const auto* method = std::get_if<ast::StateMethodDecl>(&member)) {
+      has_next_method = has_next_method ||
+                        (method->vis == ast::Visibility::Public &&
+                         method->name == "next" &&
+                         method->params.empty() &&
+                         TypeIsDirIterNextOutcome(method->return_type_opt));
+      continue;
+    }
+
+    if (const auto* transition = std::get_if<ast::TransitionDecl>(&member)) {
+      has_close_transition = has_close_transition ||
+                             (transition->vis == ast::Visibility::Public &&
+                              transition->name == "close" &&
+                              transition->params.empty() &&
+                              transition->target_state == "Closed");
+    }
+  }
+
+  return has_handle_field && has_next_method && has_close_transition;
+}
+
+static void RecordDirIterMembersAndDecl(const ast::ModalDecl& decl) {
+  SPEC_RULE("def.DirIterMembersAndDecl");
+  if (!core::Conformance::Enabled() || decl.vis != ast::Visibility::Public ||
+      decl.name != "DirIter") {
+    return;
+  }
+
+  bool has_open_state = false;
+  bool has_closed_state = false;
+  bool open_surface_matches = false;
+  bool closed_members_empty = false;
+
+  for (const auto& state : decl.states) {
+    if (state.name == "Open") {
+      has_open_state = true;
+      open_surface_matches = DirIterOpenMemberSurfaceMatches(state);
+      continue;
+    }
+    if (state.name == "Closed") {
+      has_closed_state = true;
+      closed_members_empty = state.members.empty();
+    }
+  }
+
+  if (!has_open_state || !has_closed_state || !open_surface_matches ||
+      !closed_members_empty) {
+    return;
+  }
+
+  core::Conformance::Record(
+      "def.DirIterMembersAndDecl",
+      std::nullopt,
+      "source=BuildDirIterModalDecl;modal=DirIter;visibility=public;"
+      "states=Open,Closed;open_field=handle:usize;"
+      "next_return=Outcome<DirEntry|(),IoError>;close_target=Closed;"
+      "closed_members=empty");
 }
 
 static TypeRef TypeStringView() {
@@ -422,6 +569,8 @@ ast::ModalDecl BuildDirIterModalDecl() {
       make_state("Open", std::move(open_members)),
       make_state("Closed", std::move(closed_members)),
   };
+
+  RecordDirIterMembersAndDecl(decl);
 
   return decl;
 }

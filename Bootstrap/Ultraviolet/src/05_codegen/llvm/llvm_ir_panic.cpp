@@ -44,7 +44,9 @@
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Module.h"
 
+#include <mutex>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -53,6 +55,100 @@ namespace ultraviolet::codegen {
 namespace {
 
 using emit_detail::BuildScope;
+
+void RecordPanicConformanceOnce(std::once_flag& flag,
+                                std::string_view rule_id,
+                                std::string payload) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  std::call_once(flag, [rule_id = std::string(rule_id),
+                        payload = std::move(payload)]() {
+    core::Conformance::Record(rule_id, std::nullopt, payload);
+  });
+}
+
+void AppendPanicPayloadField(std::string& payload,
+                             std::string_view key,
+                             std::string_view value) {
+  if (!payload.empty()) {
+    payload.push_back(';');
+  }
+  payload.append(key);
+  payload.push_back('=');
+  payload.append(value);
+}
+
+void AppendPanicPayloadField(std::string& payload,
+                             std::string_view key,
+                             const std::string& value) {
+  AppendPanicPayloadField(payload, key, std::string_view(value));
+}
+
+void AppendPanicPayloadField(std::string& payload,
+                             std::string_view key,
+                             const char* value) {
+  AppendPanicPayloadField(payload, key, std::string_view(value ? value : "-"));
+}
+
+void AppendPanicPayloadField(std::string& payload,
+                             std::string_view key,
+                             bool value) {
+  AppendPanicPayloadField(payload, key, std::string_view(value ? "true" : "false"));
+}
+
+void AppendPanicPayloadField(std::string& payload,
+                             std::string_view key,
+                             std::uint64_t value) {
+  AppendPanicPayloadField(payload, key, std::to_string(value));
+}
+
+bool ContainsModulePath(const std::vector<std::string>& paths,
+                        const std::string& module_name) {
+  for (const auto& path : paths) {
+    if (path == module_name) {
+      return true;
+    }
+  }
+  return false;
+}
+
+std::string PoisonedModulePayload(const std::string& module_name) {
+  std::string payload;
+  AppendPanicPayloadField(payload, "operation", "PoisonedModule");
+  AppendPanicPayloadField(payload, "path", module_name);
+  AppendPanicPayloadField(payload, "addr_source", "AddrOfSym(PoisonFlag(module))");
+  AppendPanicPayloadField(payload, "reads_poison_flag", true);
+  AppendPanicPayloadField(payload, "predicate", "flag_nonzero");
+  AppendPanicPayloadField(payload, "panic_on_poison", true);
+  return payload;
+}
+
+std::string PoisonedModulesPayload(const std::string& module_name,
+                                   const std::vector<std::string>& paths) {
+  std::string payload;
+  AppendPanicPayloadField(payload, "operation", "PoisonedModules");
+  AppendPanicPayloadField(payload, "source", "StoreInitPanicRecord");
+  AppendPanicPayloadField(payload, "module", module_name);
+  AppendPanicPayloadField(payload, "set_size",
+                          static_cast<std::uint64_t>(paths.size()));
+  AppendPanicPayloadField(payload, "predicate", "PoisonedModule");
+  AppendPanicPayloadField(payload, "flag_value", "nonzero");
+  AppendPanicPayloadField(payload, "flags_written", true);
+  AppendPanicPayloadField(payload, "contains_module",
+                          ContainsModulePath(paths, module_name));
+  return payload;
+}
+
+std::once_flag g_poisoned_module_obligation_once;
+std::once_flag g_poisoned_modules_obligation_once;
+std::once_flag g_poison_judg_obligation_once;
+std::once_flag g_panic_record_init_obligation_once;
+std::once_flag g_panic_record_of_flag_obligation_once;
+std::once_flag g_panic_record_of_code_obligation_once;
+std::once_flag g_write_panic_record_clear_obligation_once;
+std::once_flag g_write_panic_record_set_obligation_once;
+std::once_flag g_init_panic_obligation_once;
 
 llvm::AllocaInst* CreatePanicRuntimeAlloca(llvm::IRBuilder<>* builder,
                                            llvm::Type* type,
@@ -167,12 +263,46 @@ void ClearPanicRecordAt(LLVMEmitter& emitter,
     return;
   }
 
+  std::string payload;
+  AppendPanicPayloadField(payload, "operation", "ClearPanicRecord");
+  AppendPanicPayloadField(payload, "flag_offset", offsets->first);
+  AppendPanicPayloadField(payload, "code_offset", offsets->second);
+  AppendPanicPayloadField(payload, "flag_value", std::uint64_t{0});
+  AppendPanicPayloadField(payload, "code_value", std::uint64_t{0});
+  RecordPanicConformanceOnce(
+      g_panic_record_init_obligation_once,
+      "def.24.PanicRecordInit",
+      std::move(payload));
+
   llvm::Value* panic_val =
       llvm::ConstantInt::get(llvm::Type::getInt8Ty(emitter.GetContext()), 0);
   llvm::Value* code_val =
       llvm::ConstantInt::get(llvm::Type::getInt32Ty(emitter.GetContext()), 0);
   StoreAtOffset(emitter, builder, panic_ptr, offsets->first, panic_val);
   StoreAtOffset(emitter, builder, panic_ptr, offsets->second, code_val);
+
+  std::string write_payload;
+  AppendPanicPayloadField(write_payload, "operation", "WritePanicRecord");
+  AppendPanicPayloadField(write_payload, "source", "ClearPanicRecordAt");
+  AppendPanicPayloadField(write_payload, "panic_out_addr", "PanicOutAddr");
+  AppendPanicPayloadField(write_payload, "panic_field_addr",
+                          "FieldAddr(PanicRecord,PanicOutAddr,panic)");
+  AppendPanicPayloadField(write_payload, "code_field_addr",
+                          "FieldAddr(PanicRecord,PanicOutAddr,code)");
+  AppendPanicPayloadField(write_payload, "flag_offset", offsets->first);
+  AppendPanicPayloadField(write_payload, "code_offset", offsets->second);
+  AppendPanicPayloadField(write_payload, "flag_value", std::uint64_t{0});
+  AppendPanicPayloadField(write_payload, "code_value", std::uint64_t{0});
+  AppendPanicPayloadField(write_payload, "writes", "panic,code");
+  AppendPanicPayloadField(write_payload, "order", "panic_then_code");
+  AppendPanicPayloadField(write_payload, "llvm_ops",
+                          "StoreAtOffset,StoreAtOffset");
+  AppendPanicPayloadField(write_payload, "emitted_paths",
+                          "IRClearPanic,EmitCatchExportPanicReturn");
+  RecordPanicConformanceOnce(
+      g_write_panic_record_clear_obligation_once,
+      "def.24.WritePanicRecord",
+      std::move(write_payload));
 }
 
 void StorePanicRecordValue(LLVMEmitter& emitter,
@@ -213,6 +343,30 @@ void StorePanicRecordValue(LLVMEmitter& emitter,
       llvm::ConstantInt::get(llvm::Type::getInt8Ty(emitter.GetContext()), 1);
   StoreAtOffset(emitter, builder, panic_ptr, offsets->first, panic_val);
   StoreAtOffset(emitter, builder, panic_ptr, offsets->second, code);
+
+  std::string payload;
+  AppendPanicPayloadField(payload, "operation", "WritePanicRecord");
+  AppendPanicPayloadField(payload, "source", "StorePanicRecordValue");
+  AppendPanicPayloadField(payload, "panic_out_addr", "PanicOutAddr");
+  AppendPanicPayloadField(payload, "panic_field_addr",
+                          "FieldAddr(PanicRecord,PanicOutAddr,panic)");
+  AppendPanicPayloadField(payload, "code_field_addr",
+                          "FieldAddr(PanicRecord,PanicOutAddr,code)");
+  AppendPanicPayloadField(payload, "flag_offset", offsets->first);
+  AppendPanicPayloadField(payload, "code_offset", offsets->second);
+  AppendPanicPayloadField(payload, "flag_value", std::uint64_t{1});
+  AppendPanicPayloadField(payload, "code_value", "dynamic_i32");
+  AppendPanicPayloadField(payload, "writes", "panic,code");
+  AppendPanicPayloadField(payload, "order", "panic_then_code");
+  AppendPanicPayloadField(payload, "llvm_ops", "StoreAtOffset,StoreAtOffset");
+  AppendPanicPayloadField(payload, "emitted_paths",
+                          "IRLowerPanic,EmitPanicIfFalse,"
+                          "EmitPanicReturnIfFalse,EmitPoisonCheck,"
+                          "CodeGen-UnwindCatch-Import");
+  RecordPanicConformanceOnce(
+      g_write_panic_record_set_obligation_once,
+      "def.24.WritePanicRecord",
+      std::move(payload));
 }
 
 }  // namespace
@@ -295,6 +449,27 @@ llvm::Value* LoadPanicFlag(LLVMEmitter& emitter,
   if (!flag) {
     return nullptr;
   }
+
+  std::string payload;
+  AppendPanicPayloadField(payload, "operation", "PanicRecordOf");
+  AppendPanicPayloadField(payload, "source", "LoadPanicFlag");
+  AppendPanicPayloadField(payload, "panic_out_addr", "PanicOutAddr");
+  AppendPanicPayloadField(payload, "read_addr",
+                          "FieldAddr(PanicRecord,PanicOutAddr,panic)");
+  AppendPanicPayloadField(payload, "field", "panic");
+  AppendPanicPayloadField(payload, "record_fields", "panic,code");
+  AppendPanicPayloadField(payload, "reads", "panic");
+  AppendPanicPayloadField(payload, "llvm_ops", "LoadAtOffset,ICmpNE");
+  AppendPanicPayloadField(payload, "emitted_paths",
+                          "IRPanicCheck,IRCleanupPanicCheck,"
+                          "IRInitPanicHandle,EmitCatchExportPanicReturn,"
+                          "HostedDestroyDeinitCheck");
+  AppendPanicPayloadField(payload, "flag_offset", offsets->first);
+  AppendPanicPayloadField(payload, "code_offset", offsets->second);
+  RecordPanicConformanceOnce(
+      g_panic_record_of_flag_obligation_once,
+      "def.24.PanicRecordOf",
+      std::move(payload));
   return builder->CreateICmpNE(flag, llvm::ConstantInt::get(flag_ty, 0));
 }
 
@@ -316,7 +491,30 @@ llvm::Value* LoadPanicCodeValue(LLVMEmitter& emitter,
   }
 
   llvm::Type* code_ty = llvm::Type::getInt32Ty(emitter.GetContext());
-  return LoadAtOffset(emitter, builder, ptr, offsets->second, code_ty);
+  llvm::Value* code = LoadAtOffset(emitter, builder, ptr, offsets->second, code_ty);
+  if (!code) {
+    return nullptr;
+  }
+
+  std::string payload;
+  AppendPanicPayloadField(payload, "operation", "PanicRecordOf");
+  AppendPanicPayloadField(payload, "source", "LoadPanicCodeValue");
+  AppendPanicPayloadField(payload, "panic_out_addr", "PanicOutAddr");
+  AppendPanicPayloadField(payload, "read_addr",
+                          "FieldAddr(PanicRecord,PanicOutAddr,code)");
+  AppendPanicPayloadField(payload, "field", "code");
+  AppendPanicPayloadField(payload, "record_fields", "panic,code");
+  AppendPanicPayloadField(payload, "reads", "code");
+  AppendPanicPayloadField(payload, "llvm_ops", "LoadAtOffset");
+  AppendPanicPayloadField(payload, "emitted_paths",
+                          "EntryStubPanicCheck,EmitReturn");
+  AppendPanicPayloadField(payload, "flag_offset", offsets->first);
+  AppendPanicPayloadField(payload, "code_offset", offsets->second);
+  RecordPanicConformanceOnce(
+      g_panic_record_of_code_obligation_once,
+      "def.24.PanicRecordOf",
+      std::move(payload));
+  return code;
 }
 
 bool IsInitFunction(LLVMEmitter& emitter, llvm::Function* func) {
@@ -348,6 +546,11 @@ std::vector<std::string> SplitModulePathString(const std::string& module) {
 llvm::GlobalVariable* GetOrCreatePoisonFlag(LLVMEmitter& emitter,
                                             const std::vector<std::string>& module_path) {
   SPEC_RULE("PoisonFlag-Decl");
+  SPEC_RULE("rule.24.PoisonFlag-Decl");
+  core::Conformance::Record(
+      "def.24.PoisonFlagStorage",
+      std::nullopt,
+      "storage=global_bool;linkage=external;mutable=true");
   std::vector<std::string> full = {
       std::string(project::ActiveLanguageProfile().runtime_root),
       "runtime",
@@ -382,6 +585,7 @@ llvm::GlobalVariable* GetOrCreatePoisonFlag(LLVMEmitter& emitter,
   auto* bool_ty = emitter.GetLLVMType(analysis::MakeTypePrim("bool"));
   if (!bool_ty) {
     SPEC_RULE("PoisonFlag-Err");
+    SPEC_RULE("rule.24.PoisonFlag-Err");
     if (ctx) {
       ctx->ReportCodegenFailure();
     }
@@ -519,11 +723,18 @@ void StoreInitPanicRecord(LLVMEmitter& emitter,
       llvm::Value* flag = GetPoisonFlagPtr(emitter, path);
       if (!flag) {
         SPEC_RULE("SetPoison-Err");
+        SPEC_RULE("rule.24.SetPoison-Err");
         ctx->ReportCodegenFailure();
         return;
       }
+      SPEC_RULE("rule.24.SetPoison-OnInitFail");
       builder->CreateStore(val, flag);
     }
+    RecordPanicConformanceOnce(
+        g_poisoned_modules_obligation_once,
+        "def.PoisonedModules",
+        PoisonedModulesPayload(core::StringOfPath(ctx->module_path),
+                               *poison_modules));
   }
 
   llvm::Value* ptr = LoadPanicOutPtr(emitter, builder);
@@ -544,6 +755,21 @@ void StoreInitPanicRecord(LLVMEmitter& emitter,
                                                  PanicCode(PanicReason::InitPanic));
   StoreAtOffset(emitter, builder, ptr, layout->offsets[0], panic_val);
   StoreAtOffset(emitter, builder, ptr, layout->offsets[1], code_val);
+
+  std::string payload;
+  AppendPanicPayloadField(payload, "operation", "StoreInitPanicRecord");
+  AppendPanicPayloadField(payload, "module", core::StringOfPath(ctx->module_path));
+  AppendPanicPayloadField(payload, "panic_flag", true);
+  AppendPanicPayloadField(payload,
+                          "panic_code",
+                          static_cast<std::uint64_t>(
+                              PanicCode(PanicReason::InitPanic)));
+  AppendPanicPayloadField(payload, "flag_offset", layout->offsets[0]);
+  AppendPanicPayloadField(payload, "code_offset", layout->offsets[1]);
+  RecordPanicConformanceOnce(
+      g_init_panic_obligation_once,
+      "rule.24.Init-Panic",
+      std::move(payload));
 }
 
 void StorePanicRecord(LLVMEmitter& emitter,
@@ -577,6 +803,21 @@ void EmitReturn(LLVMEmitter& emitter, llvm::IRBuilder<>* builder) {
 
   if (export_unwind_mode.has_value() &&
       *export_unwind_mode == LowerCtx::ExportUnwindMode::Abort) {
+    core::Conformance::Record(
+        "rule.23.CodeGen-UnwindAbort-Export",
+        std::nullopt,
+        "source=EmitReturn;boundary=export;mode=abort;"
+        "effect=call_runtime_panic;return=unreachable");
+    core::Conformance::Record(
+        "requirement.23.BoundaryUnwindDynamicEffects",
+        std::nullopt,
+        "source=EmitReturn;boundary=export;mode=abort;"
+        "dynamic_effect=abort_on_ultraviolet_panic");
+    core::Conformance::Record(
+        "def.23.BoundaryUnwindCodeGenerationEffects",
+        std::nullopt,
+        "source=EmitReturn;boundary=export;mode=abort;"
+        "lowering=runtime_panic_then_unreachable");
     llvm::Value* panic_code = LoadPanicCode(emitter, builder);
     llvm::Type* i32_ty = llvm::Type::getInt32Ty(emitter.GetContext());
     if (!panic_code) {
@@ -617,6 +858,21 @@ void EmitReturn(LLVMEmitter& emitter, llvm::IRBuilder<>* builder) {
 
   if (export_unwind_mode.has_value() &&
       *export_unwind_mode == LowerCtx::ExportUnwindMode::Catch) {
+    core::Conformance::Record(
+        "rule.23.CodeGen-UnwindCatch-Export",
+        std::nullopt,
+        "source=EmitReturn;boundary=export;mode=catch;"
+        "effect=catch_ultraviolet_panic;return=null_value");
+    core::Conformance::Record(
+        "requirement.23.BoundaryUnwindDynamicEffects",
+        std::nullopt,
+        "source=EmitReturn;boundary=export;mode=catch;"
+        "dynamic_effect=catch_ultraviolet_panic");
+    core::Conformance::Record(
+        "def.23.BoundaryUnwindCodeGenerationEffects",
+        std::nullopt,
+        "source=EmitReturn;boundary=export;mode=catch;"
+        "lowering=return_null_value");
     builder->CreateRet(llvm::Constant::getNullValue(ret_ty));
     return;
   }
@@ -679,6 +935,8 @@ using namespace emit_detail;
   void LLVMEmitter::EmitPoisonCheck(const std::string &module_name)
   {
     SPEC_RULE("LowerIRInstr-CheckPoison");
+    SPEC_RULE("rule.24.LowerIRInstr-CheckPoison");
+    SPEC_RULE("rule.24.CheckPoison-Use");
     auto *builder = static_cast<llvm::IRBuilder<> *>(builder_.get());
     if (!builder || !builder->GetInsertBlock() ||
         builder->GetInsertBlock()->getTerminator())
@@ -690,6 +948,7 @@ using namespace emit_detail;
     llvm::Value *flag_ptr = GetPoisonFlagPtr(*this, module_path);
     if (!flag_ptr)
     {
+      SPEC_RULE("rule.24.CheckPoison-Err");
       if (current_ctx_)
       {
         current_ctx_->ReportCodegenFailure();
@@ -700,6 +959,7 @@ using namespace emit_detail;
     llvm::Type *bool_ty = GetLLVMType(analysis::MakeTypePrim("bool"));
     if (!bool_ty)
     {
+      SPEC_RULE("rule.24.CheckPoison-Err");
       if (current_ctx_)
       {
         current_ctx_->ReportCodegenFailure();
@@ -714,6 +974,23 @@ using namespace emit_detail;
     llvm::BasicBlock *cont_bb =
         llvm::BasicBlock::Create(context_, "poison.cont", func);
     builder->CreateCondBr(AsBool(builder, poisoned), panic_bb, cont_bb);
+    core::Conformance::Record(
+        "rule.24.LowerIRInstr-CheckPoison",
+        std::nullopt,
+        "source=EmitPoisonCheck;ir_form=CheckPoison;"
+        "lower_form=poison-flag-load+conditional-branch;result=LLResult");
+    RecordPanicConformanceOnce(
+        g_poison_judg_obligation_once,
+        "def.24.PoisonJudg",
+        "judgements=PoisonFlag,CheckPoison,SetPoison;source=EmitPoisonCheck");
+    core::Conformance::Record(
+        "sem.24.CheckPoisonBehavior",
+        std::nullopt,
+        "source=EmitPoisonCheck;reads_poison_flag=true;predicate=flag_nonzero;"
+        "panic_on_poison=true");
+    RecordPanicConformanceOnce(g_poisoned_module_obligation_once,
+                               "def.PoisonedModule",
+                               PoisonedModulePayload(module_name));
 
     builder->SetInsertPoint(panic_bb);
     StorePanicRecord(*this, builder, PanicCode(PanicReason::InitPanic));

@@ -19,11 +19,7 @@
 
 #include "02_source/parser/parser.h"
 
-#include <cstdint>
-#include <cstdlib>
-#include <iomanip>
 #include <iostream>
-#include <string_view>
 #include <utility>
 
 #include "00_core/assert_spec.h"
@@ -226,33 +222,7 @@ static ParseItemsResult ParseItemsInternal(
     }
 
     SPEC_RULE("ParseItems-Cons");
-    if (core::IsDebugEnabled("parse")) {
-      const Token* tok = Tok(cur);
-      std::string_view lex = tok ? tok->lexeme : "<eof>";
-      std::uint8_t b0 = 0;
-      std::uint8_t b1 = 0;
-      if (tok && !tok->lexeme.empty()) {
-        b0 = static_cast<std::uint8_t>(tok->lexeme[0]);
-        if (tok->lexeme.size() > 1) {
-          b1 = static_cast<std::uint8_t>(tok->lexeme[1]);
-        }
-      }
-      std::cerr << "[uv] parse-items: index=" << cur.index
-                << " tok=" << lex << " kind="
-                << (tok ? static_cast<int>(tok->kind) : -1)
-                << " b0=0x" << std::hex << std::uppercase << std::setw(2)
-                << std::setfill('0') << static_cast<int>(b0)
-                << " b1=0x" << std::setw(2) << static_cast<int>(b1)
-                << std::dec << "\n";
-    }
-
     ParseItemResult item = ParseItem(cur);
-    if (core::IsDebugEnabled("parse")) {
-      std::cerr << "[uv] parse-items: next_index=" << item.parser.index
-                << " advanced="
-                << (item.parser.index > cur.index ? "yes" : "no")
-                << " diags=" << item.parser.diags.size() << "\n";
-    }
 
     result.items.push_back(std::move(item.item));
     cur = std::move(item.parser);

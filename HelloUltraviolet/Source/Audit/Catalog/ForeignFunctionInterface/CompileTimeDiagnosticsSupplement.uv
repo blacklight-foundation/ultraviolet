@@ -2,23 +2,14 @@
 
 
 public procedure countForeignFunctionInterfaceCompileTimeDiagnosticsSupplementObligations() -> usize {
-    return 2usize
+    return 1usize
 }
 
 public procedure validatedForeignFunctionInterfaceCompileTimeDiagnosticsSupplementObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
-        "requirement.23.FFIBoundaryDefinition",
-        86615usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIFfiSafeReference",
-        "Source/Reference/FFI/FfiSafe.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "def.23.FFIBoundary",
-        86628usize,
+        86630usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIFfiSafeReference",
         "Source/Reference/FFI/FfiSafe.uv"

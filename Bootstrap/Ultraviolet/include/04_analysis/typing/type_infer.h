@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -16,11 +17,14 @@
 
 namespace ultraviolet::analysis {
 
+struct StaticProofContext;
+
 struct CheckResult {
   bool ok = false;
   std::optional<std::string_view> diag_id;
   std::string diag_detail;
   std::optional<core::Span> diag_span;
+  std::vector<std::string_view> diagnostic_obligation_ids;
 };
 
 struct Constraint {
@@ -88,6 +92,15 @@ CheckResult CheckExpr(const ScopeContext& ctx,
                       const PlaceTypeFn& type_place,
                       const IdentTypeFn& type_ident,
                       const IfCaseCheckFn& if_case_check);
+
+CheckResult CheckExpr(const ScopeContext& ctx,
+                      const ast::ExprPtr& expr,
+                      const TypeRef& expected,
+                      const ExprTypeFn& type_expr,
+                      const PlaceTypeFn& type_place,
+                      const IdentTypeFn& type_ident,
+                      const IfCaseCheckFn& if_case_check,
+                      const std::shared_ptr<StaticProofContext>& proof_ctx);
 
 SolveResult Solve(const ScopeContext& ctx, const ConstraintSet& constraints);
 TypeRef ApplySubstitution(const TypeRef& type, const TypeSubstitution& subst);

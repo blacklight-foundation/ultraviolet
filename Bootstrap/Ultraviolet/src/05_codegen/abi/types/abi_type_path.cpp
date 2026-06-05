@@ -113,6 +113,7 @@ std::optional<ABIType> ABITyPathType(const analysis::ScopeContext& ctx,
   // ABITy(TypePath(p)) => tau when AliasBody(p) = ty and ABITy(ty) => tau
   if (IsAliasDecl(ctx, path_type.path)) {
     SPEC_RULE("ABI-Alias");
+    SPEC_RULE("rule.24.ABI-Alias");
     const auto resolved = ResolveAliasBody(ctx, path_type.path);
     if (!resolved.has_value()) {
       return std::nullopt;
@@ -144,6 +145,7 @@ std::optional<ABIType> ABITyPathType(const analysis::ScopeContext& ctx,
   // ABITy(TypePath(p)) => <size, align> when RecordDecl(p) = R
   if (IsRecordDecl(ctx, path_type.path)) {
     SPEC_RULE("ABI-Record");
+    SPEC_RULE("rule.24.ABI-Record");
     const auto layout = ::ultraviolet::analysis::layout::LayoutOf(ctx, type);
     if (!layout.has_value()) {
       return std::nullopt;
@@ -155,6 +157,7 @@ std::optional<ABIType> ABITyPathType(const analysis::ScopeContext& ctx,
   // ABITy(TypePath(p)) => <size, align> when EnumDecl(p) = E
   if (IsEnumDecl(ctx, path_type.path)) {
     SPEC_RULE("ABI-Enum");
+    SPEC_RULE("rule.24.ABI-Enum");
     const auto layout = ::ultraviolet::analysis::layout::LayoutOf(ctx, type);
     if (!layout.has_value()) {
       return std::nullopt;
@@ -166,6 +169,7 @@ std::optional<ABIType> ABITyPathType(const analysis::ScopeContext& ctx,
   // ABITy(TypePath(p)) => <size, align> when Sigma.Types[p] = modal M
   if (IsModalDecl(ctx, path_type.path)) {
     SPEC_RULE("ABI-Modal");
+    SPEC_RULE("rule.24.ABI-Modal");
     const auto layout = ::ultraviolet::analysis::layout::LayoutOf(ctx, type);
     if (!layout.has_value()) {
       return std::nullopt;

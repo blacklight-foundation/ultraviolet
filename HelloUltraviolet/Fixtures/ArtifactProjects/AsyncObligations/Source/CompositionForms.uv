@@ -1,0 +1,381 @@
+//! Artifact fixture coverage for async composition runtime obligations.
+
+internal procedure asyncCompositionOutcome(should_fail: bool, value: i32) -> i32 | bool {
+    if should_fail {
+        return true
+    }
+    return value
+}
+
+internal procedure asyncCompositionCompletes(value: i32) -> Async<(), (), i32, bool> {
+    return value
+}
+
+internal procedure asyncCompositionMayFail(
+    should_fail: bool,
+    value: i32
+) -> Async<(), (), i32, bool> {
+    let result: i32 = asyncCompositionOutcome(should_fail, value)?
+    return result
+}
+
+internal procedure asyncCompositionStreamMayFail(
+    should_fail: bool,
+    value: i32
+) -> Async<i32, (), i32, bool> {
+    let result: i32 = asyncCompositionOutcome(should_fail, value)?
+    yield result
+    return result
+}
+
+internal procedure asyncCompositionSingleOutput(value: i32) -> Async<i32, (), (), bool> {
+    yield value
+    return ()
+}
+
+internal procedure asyncCompositionTwoOutputs(
+    first: i32,
+    second: i32
+) -> Async<i32, (), (), bool> {
+    yield first
+    yield second
+    return ()
+}
+
+internal procedure asyncCompositionSharedCompletion(value: i32) -> Async<(), (), i32, bool> {
+    return value
+}
+
+internal procedure asyncCompositionUnitSuspends(value: i32) -> Async<(), (), i32, bool> {
+    yield ()
+    return value
+}
+
+internal procedure asyncCompositionCompletesPair(
+    left: i32,
+    right: i32
+) -> Async<(), (), (i32, i32), bool> {
+    return (left, right)
+}
+
+internal procedure asyncCompositionIterates(
+    first: i32,
+    second: i32
+) -> Async<(), (), i32, bool> {
+    var total: i32 = 0
+    loop value in asyncCompositionTwoOutputs(first, second) {
+        total = total + value
+    }
+    return total
+}
+
+internal record AsyncUntilCell {
+    internal value: i32
+}
+
+internal procedure i32BoolUnionIsValue(value: i32 | bool, expected: i32) -> bool {
+    return if value is {
+        actual: i32 {
+            actual == expected
+        }
+        failed: bool {
+            false
+        }
+    }
+}
+
+internal procedure i32BoolUnionIsFailure(value: i32 | bool) -> bool {
+    return if value is {
+        actual: i32 {
+            false
+        }
+        failed: bool {
+            failed
+        }
+    }
+}
+
+internal procedure asyncBoolFailureStateIs(state: Async<(), (), i32, bool>) -> bool {
+    return if state is {
+        @Completed {
+            false
+        }
+        @Suspended {
+            false
+        }
+        @Failed { error } {
+            error
+        }
+    }
+}
+
+internal procedure pairBoolUnionIsValue(
+    value: (i32, i32) | bool,
+    expected_left: i32,
+    expected_right: i32
+) -> bool {
+    return if value is {
+        actual: (i32, i32) {
+            actual.0 == expected_left && actual.1 == expected_right
+        }
+        failed: bool {
+            false
+        }
+    }
+}
+
+internal procedure pairBoolUnionIsFailure(value: (i32, i32) | bool) -> bool {
+    return if value is {
+        actual: (i32, i32) {
+            false
+        }
+        failed: bool {
+            failed
+        }
+    }
+}
+
+internal procedure singleBoolUnionIsValue(value: (i32;) | bool, expected: i32) -> bool {
+    return if value is {
+        actual: (i32;) {
+            actual.0 == expected
+        }
+        failed: bool {
+            false
+        }
+    }
+}
+
+internal procedure streamBoolIsSuspendedOutput(
+    state: Stream<i32, bool>,
+    expected: i32
+) -> bool {
+    return if state is {
+        @Suspended { output } {
+            output == expected
+        }
+        @Completed {
+            false
+        }
+        @Failed {
+            false
+        }
+    }
+}
+
+internal procedure streamBoolIsFailure(state: Stream<i32, bool>) -> bool {
+    return if state is {
+        @Suspended {
+            false
+        }
+        @Completed {
+            false
+        }
+        @Failed { error } {
+            error
+        }
+    }
+}
+
+internal procedure runAsyncCompositionSyncExistingFutureReference() -> bool {
+    let completed_value: i32 | bool = sync asyncCompositionCompletes(31)
+    return i32BoolUnionIsValue(completed_value, 31)
+}
+
+internal procedure runAsyncCompositionSyncSuccessReference() -> bool {
+    let sync_success: i32 | bool = sync asyncCompositionMayFail(false, 32)
+    return i32BoolUnionIsValue(sync_success, 32)
+}
+
+internal procedure runAsyncCompositionOutcomeFailureReference() -> bool {
+    let outcome: i32 | bool = asyncCompositionOutcome(true, 33)
+    return i32BoolUnionIsFailure(outcome)
+}
+
+internal procedure runAsyncCompositionAsyncFailureStateReference() -> bool {
+    let failed: Async<(), (), i32, bool> = asyncCompositionMayFail(true, 33)
+    return asyncBoolFailureStateIs(failed)
+}
+
+internal procedure runAsyncCompositionSyncFailureReference() -> bool {
+    let sync_failure: i32 | bool = sync asyncCompositionMayFail(true, 33)
+    return i32BoolUnionIsFailure(sync_failure)
+}
+
+internal procedure runAsyncCompositionSyncSuspendedUnitReference() -> bool {
+    let sync_resumed: i32 | bool = sync asyncCompositionUnitSuspends(56)
+    return i32BoolUnionIsValue(sync_resumed, 56)
+}
+
+internal procedure runAsyncCompositionSyncReference() -> bool {
+    return runAsyncCompositionSyncExistingFutureReference() &&
+        runAsyncCompositionSyncSuccessReference() &&
+        runAsyncCompositionSyncFailureReference() &&
+        runAsyncCompositionSyncSuspendedUnitReference()
+}
+
+internal procedure runAsyncCompositionAllReference() -> bool {
+    let all_success: (i32, i32) | bool = all {
+        asyncCompositionMayFail(false, 34),
+        asyncCompositionMayFail(false, 35),
+    }
+    let all_failure: (i32, i32) | bool = all {
+        asyncCompositionMayFail(true, 36),
+        asyncCompositionMayFail(false, 37),
+    }
+    return pairBoolUnionIsValue(all_success, 34, 35) &&
+        pairBoolUnionIsFailure(all_failure)
+}
+
+internal procedure runAsyncCompositionAllSuspendedReference() -> bool {
+    let all_suspended: (i32, i32) | bool = all {
+        asyncCompositionUnitSuspends(57),
+        asyncCompositionUnitSuspends(58),
+    }
+    return pairBoolUnionIsValue(all_suspended, 57, 58)
+}
+
+internal procedure runAsyncCompositionAllSingleReference() -> bool {
+    let all_single: (i32;) | bool = all {
+        asyncCompositionMayFail(false, 59),
+    }
+    return singleBoolUnionIsValue(all_single, 59)
+}
+
+internal procedure runAsyncCompositionAllRuntimeReference() -> bool {
+    return runAsyncCompositionAllReference() &&
+        runAsyncCompositionAllSuspendedReference() &&
+        runAsyncCompositionAllSingleReference()
+}
+
+internal procedure runAsyncCompositionReturnRaceReference() -> bool {
+    let race_success: i32 | bool = race {
+        asyncCompositionMayFail(false, 38) -> |value| value + 1,
+        asyncCompositionMayFail(false, 40) -> |value| value + 1,
+    }
+    let race_failure: i32 | bool = race {
+        asyncCompositionMayFail(true, 41) -> |value| value,
+        asyncCompositionMayFail(true, 42) -> |value| value,
+    }
+    return i32BoolUnionIsValue(race_success, 39) &&
+        i32BoolUnionIsFailure(race_failure)
+}
+
+internal procedure runAsyncCompositionReturnRaceSuspendedReference() -> bool {
+    let race_suspended: i32 | bool = race {
+        asyncCompositionUnitSuspends(60) -> |value| value + 1,
+        asyncCompositionUnitSuspends(61) -> |value| value + 1,
+    }
+    return i32BoolUnionIsValue(race_suspended, 61)
+}
+
+internal procedure runAsyncCompositionRaceTuplePatternReference() -> bool {
+    let race_tuple: i32 | bool = race {
+        asyncCompositionCompletesPair(62, 63) -> |(left, right)| left + right,
+        asyncCompositionCompletesPair(61, 64) -> |(left, right)| left + right,
+    }
+    return i32BoolUnionIsValue(race_tuple, 125)
+}
+
+internal procedure runAsyncCompositionReturnRaceRuntimeReference() -> bool {
+    return runAsyncCompositionReturnRaceReference() &&
+        runAsyncCompositionReturnRaceSuspendedReference() &&
+        runAsyncCompositionRaceTuplePatternReference()
+}
+
+internal procedure runAsyncCompositionStreamingRaceSuccessReference() -> bool {
+    let stream_success: Stream<i32, bool> = race {
+        asyncCompositionStreamMayFail(false, 43) -> |output| yield output,
+        asyncCompositionStreamMayFail(false, 44) -> |output| yield output + 1,
+    }
+    return streamBoolIsSuspendedOutput(stream_success, 43)
+}
+
+internal procedure runAsyncCompositionStreamingRaceFailureReference() -> bool {
+    let stream_failure: Stream<i32, bool> = race {
+        asyncCompositionStreamMayFail(true, 45) -> |output| yield output,
+        asyncCompositionStreamMayFail(true, 46) -> |output| yield output,
+    }
+    return streamBoolIsFailure(stream_failure)
+}
+
+internal procedure runAsyncCompositionStreamingRaceAllCompleteReference() -> bool {
+    let stream_complete: Stream<i32, bool> = race {
+        asyncCompositionCompletes(71) -> |unit_output| yield 71,
+        asyncCompositionCompletes(72) -> |unit_output| yield 72,
+    }
+    return streamBoolIsCompleted(stream_complete)
+}
+
+internal procedure runAsyncCompositionStreamingRaceResumeReference() -> bool {
+    let stream: unique Stream<i32, bool> = race {
+        asyncCompositionTwoOutputs(65, 66) -> |output| yield output,
+        asyncCompositionTwoOutputs(67, 68) -> |output| yield output,
+    }
+    return if stream is {
+        @Suspended { output } {
+            let resumed = stream~>resume(())
+            let resumed_ok: bool = if resumed is {
+                @Suspended { output: resumed_output } {
+                    resumed_output == 66
+                }
+                @Completed {
+                    false
+                }
+                @Failed {
+                    false
+                }
+            }
+            output == 65 && resumed_ok
+        }
+        @Completed {
+            false
+        }
+        @Failed {
+            false
+        }
+    }
+}
+
+internal procedure runAsyncCompositionStreamingRaceResumeOrderReference() -> bool {
+    let stream: unique Stream<i32, bool> = race {
+        asyncCompositionCompletes(74) -> |unit_output| yield 74,
+        asyncCompositionTwoOutputs(75, 76) -> |output| yield output,
+        asyncCompositionTwoOutputs(77, 78) -> |output| yield output,
+    }
+    return if stream is {
+        @Suspended { output } {
+            let resumed = stream~>resume(())
+            let resumed_ok: bool = if resumed is {
+                @Suspended { output: resumed_output } {
+                    resumed_output == 76
+                }
+                @Completed {
+                    false
+                }
+                @Failed {
+                    false
+                }
+            }
+            output == 75 && resumed_ok
+        }
+        @Completed {
+            false
+        }
+        @Failed {
+            false
+        }
+    }
+}
+
+internal procedure runAsyncCompositionStreamingRaceRuntimeReference() -> bool {
+    return runAsyncCompositionStreamingRaceSuccessReference() &&
+        runAsyncCompositionStreamingRaceFailureReference() &&
+        runAsyncCompositionStreamingRaceAllCompleteReference() &&
+        runAsyncCompositionStreamingRaceResumeOrderReference()
+}
+
+internal procedure runAsyncCompositionStreamingRaceReference() -> bool {
+    return runAsyncCompositionStreamingRaceRuntimeReference() &&
+        runAsyncCompositionStreamingRaceResumeReference()
+}

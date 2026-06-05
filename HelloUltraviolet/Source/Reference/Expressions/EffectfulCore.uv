@@ -1,5 +1,268 @@
 //! Reference specimens for Expressions / EffectfulCore.
 
+internal record EffectfulCoreMovePayload {
+    internal value: unique i32
+}
+
+internal let EFFECTFUL_CORE_STATE_EXPR: i32 = 0
+internal let EFFECTFUL_CORE_STATE_VAL: i32 = 1
+internal let EFFECTFUL_CORE_STATE_CTRL: i32 = 2
+
+internal procedure effectfulCoreOutcome(should_fail: bool, value: i32) -> i32 | bool {
+    if should_fail {
+        return true
+    }
+    return value
+}
+
+internal procedure effectfulCoreUnionIsValue(value: i32 | bool, expected: i32) -> bool {
+    return if value is {
+        actual: i32 {
+            actual == expected
+        }
+        failed: bool {
+            false
+        }
+    }
+}
+
+internal procedure effectfulCoreAsyncPropagation(
+    should_fail: bool,
+    value: i32
+) -> Async<(), (), i32, bool> {
+    let propagated: i32 = effectfulCoreOutcome(should_fail, value)?
+    return propagated + 1
+}
+
+internal procedure effectfulCoreAsyncFailedWithBool(
+    state: Async<(), (), i32, bool>
+) -> bool {
+    return if state is {
+        @Completed {
+            false
+        }
+        @Suspended {
+            false
+        }
+        @Failed { error } {
+            error
+        }
+    }
+}
+
+internal procedure effectfulCoreTerminalExpr(state: i32) -> bool {
+    return state == EFFECTFUL_CORE_STATE_VAL ||
+        state == EFFECTFUL_CORE_STATE_CTRL
+}
+
+internal procedure exprStateAndTerminalExprReference() -> bool {
+    return !effectfulCoreTerminalExpr(EFFECTFUL_CORE_STATE_EXPR) &&
+        effectfulCoreTerminalExpr(EFFECTFUL_CORE_STATE_VAL) &&
+        effectfulCoreTerminalExpr(EFFECTFUL_CORE_STATE_CTRL)
+}
+
+internal procedure stepSigmaPureReference() -> bool {
+    let sigma_before: i32 = 17
+    let stepped_value: i32 = 3 + 4
+    let sigma_after: i32 = sigma_before
+    return stepped_value == 7 && sigma_after == sigma_before
+}
+
+/// Exercises EvalSigma-UnsafeBlock by evaluating an unsafe block and preserving its state effect.
+public procedure evalSigmaUnsafeBlockReference() -> bool {
+    var state: i32 = 0
+    let value: i32 = unsafe {
+        state = state + 1
+        state + 11
+    }
+    return state == 1 && value == 12
+}
+
+/// Exercises EvalSigma-AddressOf by materializing a valid pointer to a mutable place.
+public procedure evalSigmaAddressOfReference() -> bool {
+    var value: i32 = 17
+    let pointer: Ptr<i32> = &value
+    return *pointer == 17
+}
+
+/// Exercises EvalSigma-Deref by evaluating the pointer operand once and reading through it.
+public procedure evalSigmaDerefReference() -> bool {
+    var value: i32 = 19
+    var pointer_evaluations: i32 = 0
+    let read_value: i32 = *{
+        pointer_evaluations = pointer_evaluations + 1
+        &value
+    }
+    return pointer_evaluations == 1 && read_value == 19
+}
+
+/// Exercises EvalSigma-Move by moving a unique payload from a place.
+public procedure evalSigmaMoveReference() -> bool {
+    let source: EffectfulCoreMovePayload = EffectfulCoreMovePayload { value: 23 }
+    let moved: EffectfulCoreMovePayload = move source
+    let moved_value: i32 = move moved.value
+    return moved_value == 23
+}
+
+/// Exercises EvalSigma-Copy by copying a bitcopy aggregate independently from its source.
+public procedure evalSigmaCopyReference() -> bool {
+    var source: [i32; 2] = [29, 31]
+    let copied: [i32; 2] = copy source
+    source[0usize] = 37
+    return source[0usize] == 37 &&
+        source[1usize] == 31 &&
+        copied[0usize] == 29 &&
+        copied[1usize] == 31
+}
+
+/// Exercises EvalSigma-Alloc-Implicit by allocating an evaluated operand into the active region.
+public procedure evalSigmaAllocImplicitReference() -> bool {
+    var operand_evaluations: i32 = 0
+    var score: i32 = 0
+    region {
+        let allocated_value: i32 = ^{
+            operand_evaluations = operand_evaluations + 1
+            41
+        }
+        if allocated_value == 41 {
+            score = score + 1
+        }
+    }
+    return operand_evaluations == 1 && score == 1
+}
+
+internal procedure evalSigmaAllocImplicitCtrlValue() -> i32 {
+    region {
+        let skipped: i32 = ^if true { return 43 } else { 0 }
+    }
+    return 0
+}
+
+/// Exercises EvalSigma-Alloc-Implicit-Ctrl by propagating control from the allocated operand.
+public procedure evalSigmaAllocImplicitCtrlReference() -> bool {
+    return evalSigmaAllocImplicitCtrlValue() == 43
+}
+
+internal procedure stepSigmaAllocImplicitReference() -> bool {
+    return evalSigmaAllocImplicitReference()
+}
+
+internal procedure stepSigmaAllocImplicitCtrlReference() -> bool {
+    return evalSigmaAllocImplicitCtrlReference()
+}
+
+/// Exercises EvalSigma-Alloc-Explicit by allocating an evaluated operand into a named region.
+public procedure evalSigmaAllocExplicitReference() -> bool {
+    var operand_evaluations: i32 = 0
+    var score: i32 = 0
+    region as scratch {
+        let allocated_value: i32 = scratch ^ {
+            operand_evaluations = operand_evaluations + 1
+            47
+        }
+        if allocated_value == 47 {
+            score = score + 1
+        }
+    }
+    return operand_evaluations == 1 && score == 1
+}
+
+internal procedure evalSigmaAllocExplicitCtrlValue() -> i32 {
+    region as scratch {
+        let skipped: i32 = scratch ^ if true { return 53 } else { 0 }
+    }
+    return 0
+}
+
+/// Exercises EvalSigma-Alloc-Explicit-Ctrl by propagating control from an explicit allocation operand.
+public procedure evalSigmaAllocExplicitCtrlReference() -> bool {
+    return evalSigmaAllocExplicitCtrlValue() == 53
+}
+
+internal procedure stepSigmaAllocExplicitReference() -> bool {
+    return evalSigmaAllocExplicitReference()
+}
+
+internal procedure stepSigmaAllocExplicitCtrlReference() -> bool {
+    return evalSigmaAllocExplicitCtrlReference()
+}
+
+internal procedure evalSigmaPropagateSuccessValue() -> bool {
+    let propagated: i32 = effectfulCoreOutcome(false, 59)?
+    return propagated == 59
+}
+
+/// Exercises EvalSigma-Propagate-Success by unwrapping the success value of a propagation operand.
+public procedure evalSigmaPropagateSuccessReference() -> bool {
+    return evalSigmaPropagateSuccessValue()
+}
+
+/// Exercises EvalSigma-Propagate-Success-Async by unwrapping a successful async propagation.
+public procedure evalSigmaPropagateSuccessAsyncReference() -> bool {
+    let result: i32 | bool = sync effectfulCoreAsyncPropagation(false, 61)
+    return effectfulCoreUnionIsValue(result, 62)
+}
+
+internal procedure evalSigmaPropagateErrorValue() -> bool {
+    let propagated: i32 = effectfulCoreOutcome(true, 0)?
+    return false
+}
+
+/// Exercises EvalSigma-Propagate-Error by converting a failing operand into return control.
+public procedure evalSigmaPropagateErrorReference() -> bool {
+    return evalSigmaPropagateErrorValue()
+}
+
+/// Exercises EvalSigma-Propagate-Error-Async by converting a failing operand into async failure.
+public procedure evalSigmaPropagateErrorAsyncReference() -> bool {
+    let state: Async<(), (), i32, bool> = effectfulCoreAsyncPropagation(true, 0)
+    return effectfulCoreAsyncFailedWithBool(state)
+}
+
+internal procedure evalSigmaPropagateCtrlValue() -> bool {
+    let propagated: i32 = (if true {
+        return true
+    } else {
+        effectfulCoreOutcome(false, 0)
+    })?
+    return false
+}
+
+/// Exercises EvalSigma-Propagate-Ctrl by propagating nonlocal control from the operand.
+public procedure evalSigmaPropagateCtrlReference() -> bool {
+    return evalSigmaPropagateCtrlValue()
+}
+
+internal procedure stepSigmaBlockReference() -> bool {
+    var state: i32 = 0
+    let value: i32 = {
+        state = state + 1
+        state + 70
+    }
+    return state == 1 && value == 71
+}
+
+internal procedure stepSigmaUnsafeBlockReference() -> bool {
+    return evalSigmaUnsafeBlockReference()
+}
+
+internal procedure stepSigmaLoopReference() -> bool {
+    var count: i32 = 0
+    loop {
+        count = count + 1
+        if count == 3 {
+            break
+        }
+    }
+    return count == 3
+}
+
+internal procedure stepSigmaStatefulOtherReference() -> bool {
+    return evalSigmaDerefReference() &&
+        evalSigmaMoveReference() &&
+        evalSigmaPropagateSuccessReference()
+}
+
 /// Exercises the Expressions EffectfulCore reference surface.
 public procedure runExpressionsEffectfulCoreReference() -> bool {
     let source_value: i32 = 11
@@ -9,5 +272,31 @@ public procedure runExpressionsEffectfulCoreReference() -> bool {
     unsafe {
         unsafe_value = moved_value + 1
     }
-    return moved_value == 11 && copied_value == 11 && unsafe_value == 12
+    return moved_value == 11 &&
+        copied_value == 11 &&
+        unsafe_value == 12 &&
+        evalSigmaUnsafeBlockReference() &&
+        evalSigmaAddressOfReference() &&
+        evalSigmaDerefReference() &&
+        evalSigmaMoveReference() &&
+        evalSigmaCopyReference() &&
+        evalSigmaAllocImplicitReference() &&
+        evalSigmaAllocImplicitCtrlReference() &&
+        evalSigmaAllocExplicitReference() &&
+        evalSigmaAllocExplicitCtrlReference() &&
+        evalSigmaPropagateSuccessReference() &&
+        evalSigmaPropagateSuccessAsyncReference() &&
+        evalSigmaPropagateErrorReference() &&
+        evalSigmaPropagateErrorAsyncReference() &&
+        evalSigmaPropagateCtrlReference() &&
+        exprStateAndTerminalExprReference() &&
+        stepSigmaPureReference() &&
+        stepSigmaAllocImplicitReference() &&
+        stepSigmaAllocImplicitCtrlReference() &&
+        stepSigmaAllocExplicitReference() &&
+        stepSigmaAllocExplicitCtrlReference() &&
+        stepSigmaBlockReference() &&
+        stepSigmaUnsafeBlockReference() &&
+        stepSigmaLoopReference() &&
+        stepSigmaStatefulOtherReference()
 }

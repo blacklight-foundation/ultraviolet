@@ -1,0 +1,18 @@
+[[assembly]]
+name = "SharedLibraryImageLifecycleProvider"
+kind = "library"
+link_kind = "shared"
+root = "Source/SharedLibraryImageLifecycleProvider"
+
+[[assembly]]
+name = "SharedLibraryImageLifecycleConsumer"
+kind = "library"
+link_kind = "shared"
+root = "Source/SharedLibraryImageLifecycleConsumer"
+
+[toolchain]
+target_profile = "x86_64-win64"
+
+[build]
+incremental = true
+progress = false

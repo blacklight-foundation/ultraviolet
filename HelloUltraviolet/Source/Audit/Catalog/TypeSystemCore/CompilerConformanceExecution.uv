@@ -1,0 +1,34 @@
+//! Type-system core compiler conformance checks.
+
+internal let TYPE_INFERENCE_PRIMITIVE_UNIFY_FIXTURE_PATH: string@View =
+    "Fixtures/RejectedSource/Expressions/CallArgType"
+internal let TYPE_INFERENCE_PRIMITIVE_UNIFY_EXPECTED_PATH: string@View =
+    "Fixtures/RejectedSource/Expressions/CallArgType/Expected.uv"
+internal let TYPE_INFERENCE_PRIMITIVE_UNIFY_LOG_NAME: string@View =
+    "DiagnosticFixture.conformance.log"
+internal let TYPE_INFERENCE_PRIMITIVE_UNIFY_MARKER: string@View =
+    "\tUnify-Prim-Fail\t"
+internal let TYPE_INFERENCE_PRIMITIVE_UNIFY_PAYLOAD: string@View =
+    "source%3DUnifyEq%3Blhs%3DTypePrim(i32)%3Brhs%3DTypePrim(bool)%3Bresult%3DUnifyFail%3Bdiag%3DSyn-Call-Err"
+
+#test(name: "type inference primitive unification conformance matches")
+internal procedure typeInferencePrimitiveUnificationConformanceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let exercise_result = diagnosticExerciseFixture(
+        authority,
+        TYPE_INFERENCE_PRIMITIVE_UNIFY_FIXTURE_PATH,
+        TYPE_INFERENCE_PRIMITIVE_UNIFY_EXPECTED_PATH,
+        true
+    )
+    return exercise_result.passed &&
+        acceptedProjectConformanceLineContains(
+            authority,
+            "DiagnosticFixtureBuild",
+            TYPE_INFERENCE_PRIMITIVE_UNIFY_LOG_NAME,
+            TYPE_INFERENCE_PRIMITIVE_UNIFY_MARKER,
+            TYPE_INFERENCE_PRIMITIVE_UNIFY_PAYLOAD
+        )
+}

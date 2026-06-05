@@ -1,11 +1,83 @@
 //! Reference specimens for ModalTypes / Strings.
 
 internal procedure stringReferenceLayoutMatches() -> bool {
-    return sizeof(string@View) == 2usize * sizeof(usize) &&
-        sizeof(string@Managed) == 3usize * sizeof(usize) &&
-        sizeof(string) >= sizeof(string@View) &&
-        alignof(string@View) == alignof(usize) &&
-        alignof(string@Managed) == alignof(usize)
+    return layoutStringViewReference() &&
+        layoutStringManagedReference() &&
+        sizeStringModalReference() &&
+        alignStringModalReference()
+}
+
+internal procedure managedStringRuntimeLengthResultMatches(
+    move result: Outcome<unique string@Managed, AllocationError>,
+    expected_length: usize
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            string::length(string::as_view(value)) == expected_length
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+/// Exercises the managed string size equation.
+public procedure sizeStringManagedReference() -> bool {
+    return sizeof(string@Managed) == 3usize * sizeof(usize)
+}
+
+/// Exercises the managed string alignment equation.
+public procedure alignStringManagedReference() -> bool {
+    return alignof(string@Managed) == alignof(usize)
+}
+
+/// Exercises the managed string layout tuple.
+public procedure layoutStringManagedReference() -> bool {
+    return sizeStringManagedReference() && alignStringManagedReference()
+}
+
+/// Exercises the string view size equation.
+public procedure sizeStringViewReference() -> bool {
+    return sizeof(string@View) == 2usize * sizeof(usize)
+}
+
+/// Exercises the string view alignment equation.
+public procedure alignStringViewReference() -> bool {
+    return alignof(string@View) == alignof(usize)
+}
+
+/// Exercises the string view layout tuple.
+public procedure layoutStringViewReference() -> bool {
+    return sizeStringViewReference() && alignStringViewReference()
+}
+
+/// Exercises the general string modal size equation.
+public procedure sizeStringModalReference() -> bool {
+    return sizeof(string) == 4usize * sizeof(usize)
+}
+
+/// Exercises the general string modal alignment equation.
+public procedure alignStringModalReference() -> bool {
+    return alignof(string) == alignof(usize)
+}
+
+/// Exercises the string runtime length semantics for view and managed values.
+public procedure stringRuntimeLengthReference(heap: $HeapAllocator) -> bool {
+    let text: string@View = "ultraviolet"
+    let empty_text: string@View = ""
+    let slice: string@View = string::slice(text, 2usize, 7usize)
+    let text_result: Outcome<unique string@Managed, AllocationError> =
+        string::to_managed(text, heap)
+    let to_managed_result: Outcome<unique string@Managed, AllocationError> =
+        string::to_managed(slice, heap)
+    let empty_result: Outcome<unique string@Managed, AllocationError> =
+        string::to_managed(empty_text, heap)
+    return string::length(text) == 11usize &&
+        string::length(slice) == 5usize &&
+        string::length(empty_text) == 0usize &&
+        managedStringRuntimeLengthResultMatches(move text_result, 11usize) &&
+        managedStringRuntimeLengthResultMatches(move to_managed_result, 5usize) &&
+        managedStringRuntimeLengthResultMatches(move empty_result, 0usize)
 }
 
 /// Exercises the ModalTypes Strings reference surface.

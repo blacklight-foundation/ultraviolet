@@ -23,6 +23,16 @@ namespace {
 static inline void SpecDefsRace() {
   SPEC_DEF("T-Race", "17.3.6");
   SPEC_DEF("T-Race-Stream", "17.3.6");
+  SPEC_DEF("def.21.RaceMode", "21.3.4");
+  SPEC_DEF("rule.21.T-Race", "21.3.4");
+  SPEC_DEF("rule.21.T-Race-Stream", "21.3.4");
+  SPEC_DEF("rule.21.Race-Arity-Err", "21.3.4");
+  SPEC_DEF("rule.21.Race-Handler-Mix-Err", "21.3.4");
+  SPEC_DEF("rule.21.Race-Operand-Out-Err", "21.3.4");
+  SPEC_DEF("rule.21.Race-Operand-Err", "21.3.4");
+  SPEC_DEF("rule.21.Race-Stream-Operand-Err", "21.3.4");
+  SPEC_DEF("rule.21.Race-Handler-Type-Err", "21.3.4");
+  SPEC_DEF("rule.21.Race-Stream-Handler-Type-Err", "21.3.4");
 }
 
 // Helper to check type equality across multiple types
@@ -102,11 +112,12 @@ ExprTypeResult TypeRaceExpr(const ScopeContext& ctx,
                             const ExprTypeFn& type_expr,
                             const IdentTypeFn& type_ident,
                             const PlaceTypeFn& type_place) {
-  SPEC_RULE("T-Race");
+  SpecDefsRace();
   ExprTypeResult result;
 
   // Race requires at least 2 arms
   if (expr.arms.size() < 2) {
+    SPEC_RULE("rule.21.Race-Arity-Err");
     result.diag_id = "E-CON-0260";
     return result;
   }
@@ -121,7 +132,9 @@ ExprTypeResult TypeRaceExpr(const ScopeContext& ctx,
       any_return = true;
     }
   }
+  SPEC_RULE("def.21.RaceMode");
   if (any_return && any_yield) {
+    SPEC_RULE("rule.21.Race-Handler-Mix-Err");
     result.diag_id = "E-CON-0263";  // Mixed handler types
     return result;
   }
@@ -143,6 +156,8 @@ ExprTypeResult TypeRaceExpr(const ScopeContext& ctx,
     // Extract async signature
     const auto async_sig = AsyncSigOf(ctx, expr_result.type);
     if (!async_sig.has_value()) {
+      SPEC_RULE(yield_mode ? "rule.21.Race-Stream-Operand-Err"
+                           : "rule.21.Race-Operand-Err");
       result.diag_id = "E-CON-0261";  // Not an async type
       return result;
     }
@@ -151,16 +166,19 @@ ExprTypeResult TypeRaceExpr(const ScopeContext& ctx,
     if (!yield_mode) {
       // Return mode: async must have Out = ()
       if (!IsPrimType(async_sig->out, "()")) {
+        SPEC_RULE("rule.21.Race-Operand-Out-Err");
         result.diag_id = "E-CON-0262";
         return result;
       }
       if (!IsPrimType(async_sig->in, "()")) {
+        SPEC_RULE("rule.21.Race-Operand-Err");
         result.diag_id = "E-CON-0261";
         return result;
       }
     } else {
       // Yield mode: async must have In = ()
       if (!IsPrimType(async_sig->in, "()")) {
+        SPEC_RULE("rule.21.Race-Stream-Operand-Err");
         result.diag_id = "E-CON-0261";
         return result;
       }
@@ -202,6 +220,8 @@ ExprTypeResult TypeRaceExpr(const ScopeContext& ctx,
       result.diag_id = eq_diag;
       return result;
     }
+    SPEC_RULE(yield_mode ? "rule.21.Race-Stream-Handler-Type-Err"
+                         : "rule.21.Race-Handler-Type-Err");
     result.diag_id = "E-CON-0261";
     return result;
   }
@@ -209,6 +229,8 @@ ExprTypeResult TypeRaceExpr(const ScopeContext& ctx,
   if (!yield_mode) {
     // T-Race: Return mode
     // Result type is handler type | all error types
+    SPEC_RULE("T-Race");
+    SPEC_RULE("rule.21.T-Race");
     std::vector<TypeRef> members;
     members.reserve(1 + error_types.size());
     members.push_back(handler_types.front());
@@ -231,6 +253,7 @@ ExprTypeResult TypeRaceExpr(const ScopeContext& ctx,
   // T-Race-Stream: Yield mode
   // Result type is Stream<T, E_union>
   SPEC_RULE("T-Race-Stream");
+  SPEC_RULE("rule.21.T-Race-Stream");
   std::vector<TypeRef> err_members;
   err_members.reserve(error_types.size());
   for (const auto& err : error_types) {

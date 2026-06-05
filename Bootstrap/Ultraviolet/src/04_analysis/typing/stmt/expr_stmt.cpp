@@ -32,6 +32,8 @@ namespace {
 static inline void SpecDefsExprStmt() {
   SPEC_DEF("T-ExprStmt", "5.2.11");
   SPEC_DEF("S_ExprStmt", "5.2.11");
+  SPEC_DEF("rule.18.T-ExprStmt", "18.5.4");
+  SPEC_DEF("diag.18.ExpressionStatements", "18.5.7");
 }
 
 static std::string ExprKindName(const ast::ExprPtr& expr) {
@@ -348,6 +350,7 @@ StmtTypeResult TypeExprStmt(const ScopeContext& ctx,
   // Type the expression - the result value is discarded
   const auto typed = TypeExprWithCurrentEnv(ctx, type_ctx, env, type_expr, node.value);
   if (!typed.ok) {
+    SPEC_RULE("diag.18.ExpressionStatements");
     std::string detail = typed.diag_detail;
     if (detail.empty()) {
       detail = "expr-kind=" + ExprKindName(node.value);
@@ -369,7 +372,7 @@ StmtTypeResult TypeExprStmt(const ScopeContext& ctx,
     return {false, typed.diag_id, {}, {}, detail};
   }
 
-  TypeEnv out_env = env;
+  TypeEnv out_env = type_ctx.env_ref ? *type_ctx.env_ref : env;
   if (node.value) {
     if (const auto* method = std::get_if<ast::MethodCallExpr>(&node.value->node)) {
       const ast::ExprPtr* receiver = &method->receiver;
@@ -398,6 +401,7 @@ StmtTypeResult TypeExprStmt(const ScopeContext& ctx,
   // Expression statement executes for side effects only
   // The result value is discarded
   SPEC_RULE("T-ExprStmt");
+  SPEC_RULE("rule.18.T-ExprStmt");
   StmtTypeResult result{true, std::nullopt, out_env, {}};
   result.flow = CollectExprStmtFlow(ctx, type_ctx, out_env, type_expr, node.value);
   return result;

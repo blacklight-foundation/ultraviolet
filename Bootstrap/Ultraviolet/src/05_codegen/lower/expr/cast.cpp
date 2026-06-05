@@ -56,6 +56,8 @@ LowerResult LowerCast(const ast::Expr& expr,
                       LowerCtx& ctx) {
   SPEC_RULE("Lower-Cast");
   SPEC_RULE("Lower-Cast-Panic");
+  SPEC_RULE("rule.16.EvalSigma-Cast-Panic");
+  SPEC_RULE("rule.16.LowerCastTransmuteFamily");
 
   // Check if target type is a dynamic class type ($ClassName)
   // In that case, we need to pack the value into a fat pointer (data + vtable)
@@ -155,6 +157,7 @@ LowerResult LowerCast(const ast::Expr& expr,
 
 LowerResult LowerCastExpr(const ast::CastExpr& expr, LowerCtx& ctx) {
   SPEC_RULE("Lower-Expr-Cast");
+  SPEC_RULE("rule.16.Lower-Expr-Cast");
 
   // Determine the target type from the AST type annotation
   analysis::TypeRef target_type;

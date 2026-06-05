@@ -1,0 +1,14 @@
+//! Artifact fixture for dynamic refinement-check panic behavior.
+
+public type RuntimePositiveI32 = i32 |: { self > 0 }
+
+#dynamic
+public procedure refinementRuntimePanicValue(value: i32) -> i32 {
+    let refined_value: RuntimePositiveI32 = value
+    return refined_value
+}
+
+public procedure main(context: Context) -> i32 {
+    let _ = context
+    return refinementRuntimePanicValue(0)
+}

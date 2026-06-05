@@ -103,6 +103,7 @@
 #include "00_core/diagnostic_messages.h"
 #include "00_core/diagnostics.h"
 #include "00_core/host_primitives.h"
+#include "00_core/path.h"
 #include "01_project/language_profile.h"
 
 namespace ultraviolet::project {
@@ -123,9 +124,12 @@ std::filesystem::path StartDirForInput(const std::filesystem::path& input_path) 
   }
   dir = dir.lexically_normal();
   ec.clear();
-  const bool exists = std::filesystem::exists(dir, ec);
+  const std::filesystem::path host_dir = core::HostFilesystemPath(dir);
+  const bool exists = std::filesystem::exists(host_dir, ec);
+  bool input_is_directory = false;
   if (!ec && exists) {
-    if (!std::filesystem::is_directory(dir, ec) && dir.has_filename()) {
+    input_is_directory = std::filesystem::is_directory(host_dir, ec);
+    if (!ec && !input_is_directory && dir.has_filename()) {
       dir = dir.parent_path();
     }
   }
@@ -137,6 +141,9 @@ std::filesystem::path StartDirForInput(const std::filesystem::path& input_path) 
   }
   if (dir.empty()) {
     dir = ".";
+  }
+  if (input_is_directory) {
+    SPEC_RULE("req.ProjectRootDirectoryInputStartsAtResolvedPath");
   }
   return dir;
 }
@@ -173,7 +180,8 @@ std::filesystem::path FindProjectRoot(const std::filesystem::path& input_path,
   for (;;) {
     std::error_code ec;
     const auto manifest_path = current / std::string(language.manifest_name);
-    const bool exists = std::filesystem::exists(manifest_path, ec);
+    const auto host_manifest_path = core::HostFilesystemPath(manifest_path);
+    const bool exists = std::filesystem::exists(host_manifest_path, ec);
     if (ec) {
       return current;
     }
@@ -198,24 +206,27 @@ ManifestParseResult ParseManifest(const std::filesystem::path& project_root,
                                   const LanguageProfile& language) {
   ManifestParseResult result;
   const auto manifest_path = project_root / std::string(language.manifest_name);
+  const auto host_manifest_path = core::HostFilesystemPath(manifest_path);
+  SPEC_RULE("req.ManifestHostPathResolution");
 
   std::error_code ec;
-  const bool exists = std::filesystem::exists(manifest_path, ec);
-	  if (ec) {
-	    SPEC_RULE("Parse-Manifest-Err");
-	    EmitManifestDiagnostic(result.diags, "E-PRJ-0102", language);
+  const bool exists = std::filesystem::exists(host_manifest_path, ec);
+  if (ec) {
+    SPEC_RULE("Parse-Manifest-Err");
+    EmitManifestDiagnostic(result.diags, "E-PRJ-0102", language);
     core::HostPrimFail(core::HostPrim::ParseTOML, true);
     return result;
   }
 
-	  if (!exists) {
-	    SPEC_RULE("Parse-Manifest-Missing");
-	    EmitManifestDiagnostic(result.diags, "E-PRJ-0101", language);
+  if (!exists) {
+    SPEC_RULE("Parse-Manifest-Missing");
+    SPEC_RULE("conformance.ManifestRequired");
+    EmitManifestDiagnostic(result.diags, "E-PRJ-0101", language);
     return result;
   }
 
   try {
-    result.table = toml::parse_file(manifest_path.string());
+    result.table = toml::parse_file(host_manifest_path.string());
     SPEC_RULE("Parse-Manifest-Ok");
     return result;
   } catch (const toml::parse_error&) {
@@ -224,8 +235,8 @@ ManifestParseResult ParseManifest(const std::filesystem::path& project_root,
     // Fall through to error handling.
   }
 
-	  SPEC_RULE("Parse-Manifest-Err");
-	  EmitManifestDiagnostic(result.diags, "E-PRJ-0102", language);
+  SPEC_RULE("Parse-Manifest-Err");
+  EmitManifestDiagnostic(result.diags, "E-PRJ-0102", language);
   core::HostPrimFail(core::HostPrim::ParseTOML, true);
   return result;
 }

@@ -49,6 +49,8 @@
 #include "05_codegen/ir/ir_model.h"
 
 #include <algorithm>
+#include <optional>
+#include <string>
 #include <type_traits>
 
 #include "00_core/assert_spec.h"
@@ -253,6 +255,12 @@ bool ValidateIR(const IR& ir) {
               !ValidateValue(node.result)) {
             return false;
           }
+          if ((node.invariant_entry_ir &&
+               !ValidateIRPtr(node.invariant_entry_ir)) ||
+              (node.invariant_backedge_ir &&
+               !ValidateIRPtr(node.invariant_backedge_ir))) {
+            return false;
+          }
           switch (node.kind) {
             case IRLoopKind::Infinite:
               return true;
@@ -354,23 +362,65 @@ bool ValidateIR(const IR& ir) {
           if (node.priority.has_value() && !ValidateValue(*node.priority)) {
             return false;
           }
+          if (node.runtime_receiver.has_value() &&
+              !ValidateValue(*node.runtime_receiver)) {
+            return false;
+          }
           return true;
         } else if constexpr (std::is_same_v<T, IRWait>) {
           // Validate wait expression
           return ValidateValue(node.handle) && ValidateValue(node.result);
+        } else if constexpr (std::is_same_v<T, IRCancelCreate>) {
+          return ValidateValue(node.result);
+        } else if constexpr (std::is_same_v<T, IRCancelRequest>) {
+          return ValidateValue(node.token) && ValidateValue(node.result);
+        } else if constexpr (std::is_same_v<T, IRCancelWait>) {
+          return ValidateValue(node.token) && ValidateValue(node.result);
+        } else if constexpr (std::is_same_v<T, IRCancelSuppress>) {
+          return true;
+        } else if constexpr (std::is_same_v<T, IRCancelCheck>) {
+          return ValidateValue(node.token) && ValidateValue(node.result);
+        } else if constexpr (std::is_same_v<T, IRGpuBarrier>) {
+          return ValidateValue(node.result);
         } else if constexpr (std::is_same_v<T, IRDispatch>) {
           // Validate dispatch expression
           return ValidateValue(node.range) && ValidateIRPtr(node.body) &&
-                 ValidateValue(node.body_result) && ValidateValue(node.result);
+                 ValidateValue(node.body_result) && ValidateValue(node.result) &&
+                 ValidateValue(node.workgroup_size);
         } else if constexpr (std::is_same_v<T, IRYield>) {
           // Validate yield expression
           return ValidateValue(node.value) && ValidateValue(node.result);
         } else if constexpr (std::is_same_v<T, IRYieldFrom>) {
           // Validate yield-from expression
           return ValidateValue(node.source) && ValidateValue(node.result);
+        } else if constexpr (std::is_same_v<T, IRSpecSnapshot>) {
+          return ValidateValue(node.result);
+        } else if constexpr (std::is_same_v<T, IRSpecValidate>) {
+          return ValidateValue(node.result);
+        } else if constexpr (std::is_same_v<T, IRSpecCommit>) {
+          return ValidateValue(node.value) && ValidateValue(node.result);
+        } else if constexpr (std::is_same_v<T, IRSpecRetry>) {
+          return ValidateValue(node.result);
+        } else if constexpr (std::is_same_v<T, IRSpecFallback>) {
+          return ValidateIRPtr(node.body) && ValidateValue(node.result);
+        } else if constexpr (std::is_same_v<T, IRSpecLoop>) {
+          return ValidateIRPtr(node.snapshot_ir) &&
+                 ValidateIRPtr(node.body_ir) &&
+                 ValidateIRPtr(node.validate_ir) &&
+                 ValidateIRPtr(node.commit_ir) &&
+                 ValidateIRPtr(node.retry_ir) &&
+                 ValidateIRPtr(node.fallback_ir) &&
+                 ValidateValue(node.result);
         } else if constexpr (std::is_same_v<T, IRSync>) {
           // Validate sync expression
-          return ValidateValue(node.async_value) && ValidateValue(node.result);
+          if (!ValidateValue(node.async_value) || !ValidateValue(node.result)) {
+            return false;
+          }
+          if (node.runtime_receiver.has_value() &&
+              !ValidateValue(*node.runtime_receiver)) {
+            return false;
+          }
+          return true;
         } else if constexpr (std::is_same_v<T, IRRaceReturn>) {
           // Validate race return expression
           for (const auto& arm : node.arms) {
@@ -467,6 +517,7 @@ bool ValidateDecl(const IRDecl& decl) {
 }
 
 bool ValidateModuleIR(const IRDecls& decls) {
+  AnchorIRExecRules();
   for (const auto& decl : decls) {
     if (!ValidateDecl(decl)) {
       return false;
@@ -497,54 +548,106 @@ void AnchorCodegenModelRules() {
   SPEC_RULE("CG-Stmt");
   SPEC_RULE("CG-Block");
   SPEC_RULE("CG-Place");
-  SPEC_RULE("CG-Place");
+  SPEC_RULE("rule.24.CG-Place");
+  SPEC_RULE("requirement.24.NoAdditionalFeatureLocalCodegenItemRules");
+  core::Conformance::Record(
+      "requirement.24.NoAdditionalFeatureLocalCodegenItemRules",
+      std::nullopt,
+      "source=AnchorCodegenModelRules;chapter24_item_rules=none;"
+      "feature_local_codegen_item_rules=delegated");
 }
 
 void AnchorIRExecRules() {
   // Section 6.4 ExecIR semantics
+  SPEC_RULE("def.24.ExecIRJudgements");
+  SPEC_RULE("def.24.AllocTarget");
+  SPEC_RULE("def.24.ExecIRControlResults");
+  SPEC_RULE("def.24.ExecIRBlockHelpers");
+  SPEC_RULE("def.24.LoopIterIRJudgement");
   SPEC_RULE("ExecIR-Alloc");
+  SPEC_RULE("rule.24.ExecIR-Alloc");
   SPEC_RULE("ExecIR-BindVar");
+  SPEC_RULE("rule.24.ExecIR-BindVar");
   SPEC_RULE("ExecIR-Block");
+  SPEC_RULE("rule.24.ExecIR-Block");
   SPEC_RULE("ExecIR-Break");
   SPEC_RULE("ExecIR-Continue");
   SPEC_RULE("ExecIR-Defer");
+  SPEC_RULE("rule.24.ExecIR-Defer");
   SPEC_RULE("ExecIR-Frame-Explicit");
+  SPEC_RULE("rule.24.ExecIR-Frame-Explicit");
   SPEC_RULE("ExecIR-Frame-Implicit");
+  SPEC_RULE("rule.24.ExecIR-Frame-Implicit");
   SPEC_RULE("ExecIR-If-False");
+  SPEC_RULE("rule.24.ExecIR-If-False");
   SPEC_RULE("ExecIR-If-True");
+  SPEC_RULE("rule.24.ExecIR-If-True");
   SPEC_RULE("ExecIR-Loop-Cond-Body-Ctrl");
+  SPEC_RULE("rule.24.ExecIR-Loop-Cond-Body-Ctrl");
   SPEC_RULE("ExecIR-Loop-Cond-Break");
+  SPEC_RULE("rule.24.ExecIR-Loop-Cond-Break");
   SPEC_RULE("ExecIR-Loop-Cond-Continue");
+  SPEC_RULE("rule.24.ExecIR-Loop-Cond-Continue");
   SPEC_RULE("ExecIR-Loop-Cond-Ctrl");
+  SPEC_RULE("rule.24.ExecIR-Loop-Cond-Ctrl");
   SPEC_RULE("ExecIR-Loop-Cond-False");
+  SPEC_RULE("rule.24.ExecIR-Loop-Cond-False");
   SPEC_RULE("ExecIR-Loop-Cond-True-Step");
+  SPEC_RULE("rule.24.ExecIR-Loop-Cond-True-Step");
   SPEC_RULE("ExecIR-Loop-Infinite-Break");
+  SPEC_RULE("rule.24.ExecIR-Loop-Infinite-Break");
   SPEC_RULE("ExecIR-Loop-Infinite-Continue");
+  SPEC_RULE("rule.24.ExecIR-Loop-Infinite-Continue");
   SPEC_RULE("ExecIR-Loop-Infinite-Ctrl");
+  SPEC_RULE("rule.24.ExecIR-Loop-Infinite-Ctrl");
   SPEC_RULE("ExecIR-Loop-Infinite-Step");
+  SPEC_RULE("rule.24.ExecIR-Loop-Infinite-Step");
   SPEC_RULE("ExecIR-Loop-Iter");
+  SPEC_RULE("rule.24.ExecIR-Loop-Iter");
   SPEC_RULE("ExecIR-Loop-Iter-Ctrl");
+  SPEC_RULE("rule.24.ExecIR-Loop-Iter-Ctrl");
   SPEC_RULE("ExecIR-IfCase");
+  SPEC_RULE("rule.24.ExecIR-IfCase");
   SPEC_RULE("ExecIR-MoveState");
+  SPEC_RULE("rule.24.ExecIR-MoveState");
   SPEC_RULE("ExecIR-ReadPath");
+  SPEC_RULE("rule.24.ExecIR-ReadPath");
   SPEC_RULE("ExecIR-ReadPtr");
+  SPEC_RULE("rule.24.ExecIR-ReadPtr");
   SPEC_RULE("ExecIR-ReadVar");
+  SPEC_RULE("rule.24.ExecIR-ReadVar");
   SPEC_RULE("ExecIR-Region");
+  SPEC_RULE("rule.24.ExecIR-Region");
   SPEC_RULE("ExecIR-Result");
   SPEC_RULE("ExecIR-Return");
   SPEC_RULE("ExecIR-StoreVar");
+  SPEC_RULE("rule.24.ExecIR-StoreVar");
   SPEC_RULE("ExecIR-StoreVarNoDrop");
+  SPEC_RULE("rule.24.ExecIR-StoreVarNoDrop");
   SPEC_RULE("ExecIR-WritePtr");
+  SPEC_RULE("rule.24.ExecIR-WritePtr");
   SPEC_RULE("LoopIterIR-Done");
+  SPEC_RULE("rule.24.LoopIterIR-Done");
   SPEC_RULE("LoopIterIR-Step-Break");
+  SPEC_RULE("rule.24.LoopIterIR-Step-Break");
   SPEC_RULE("LoopIterIR-Step-Continue");
+  SPEC_RULE("rule.24.LoopIterIR-Step-Continue");
   SPEC_RULE("LoopIterIR-Step-Ctrl");
+  SPEC_RULE("rule.24.LoopIterIR-Step-Ctrl");
   SPEC_RULE("LoopIterIR-Step-Val");
+  SPEC_RULE("rule.24.LoopIterIR-Step-Val");
   SPEC_RULE("MoveState-Field");
+  SPEC_RULE("rule.24.MoveState-Field");
   SPEC_RULE("MoveState-Root");
+  SPEC_RULE("rule.24.MoveState-Root");
 }
 
 IRPtr SeqIR(std::vector<IRPtr> items) {
+  SPEC_RULE("def.24.SeqIR");
+  core::Conformance::Record(
+      "def.24.SeqIR",
+      std::nullopt,
+      "source=SeqIR;input_count=" + std::to_string(items.size()));
   // Remove null items
   items.erase(std::remove_if(items.begin(), items.end(),
                              [](const IRPtr& p) { return p == nullptr; }),

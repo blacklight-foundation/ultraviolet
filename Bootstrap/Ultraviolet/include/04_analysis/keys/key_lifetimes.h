@@ -156,18 +156,6 @@ struct SuspensionCheck {
 };
 
 // =============================================================================
-// Staleness Tracking
-// =============================================================================
-
-/// A binding that may be stale after yield release
-struct StalenessWarning {
-  std::string binding_name;    // Name of the potentially stale binding
-  core::Span binding_span;     // Where the binding was created
-  core::Span yield_span;       // Where the yield release occurred
-  bool suppressed = false;     // True if #stale_ok present
-};
-
-// =============================================================================
 // Key Lifetime Tracking Functions
 // =============================================================================
 
@@ -245,19 +233,6 @@ std::vector<KeyPath> ProcessYieldRelease(KeyContext& ctx);
 void ReacquireAfterYieldRelease(const std::vector<KeyPath>& paths,
                                 KeyAccessMode mode,
                                 KeyContext& ctx);
-
-// =============================================================================
-// Staleness Analysis
-// =============================================================================
-
-/// Check for bindings that may be stale after yield release
-/// Returns warnings for bindings derived from shared data
-std::vector<StalenessWarning> CheckStaleness(const ast::Block& block,
-                                             const std::vector<core::Span>& yield_release_points);
-
-/// Check if a binding has #stale_ok attribute
-bool HasStaleOkAttribute(const ast::LetStmt& stmt);
-bool HasStaleOkAttribute(const ast::VarStmt& stmt);
 
 // =============================================================================
 // Helper Functions

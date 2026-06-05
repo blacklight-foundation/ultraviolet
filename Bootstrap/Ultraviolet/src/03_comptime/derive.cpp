@@ -601,6 +601,8 @@ std::optional<CtEnv> BindDeriveTargetInputs(const CtEnv& env,
   }
   CtEnv derive_env = WithCtCaps(env, {}, true);
   derive_env.values["target"] = CtType{*target_type};
+  SPEC_RULE_AT("requirement.22.DeriveTargetBodyBindings",
+               SpanOfItem(item));
   return derive_env;
 }
 
@@ -631,6 +633,7 @@ bool ValidateDeriveContracts(const ASTItem& item,
   for (const auto& request : requests) {
     for (const auto& req : DeriveReqs(*request.target)) {
       if (!declared.contains(req)) {
+        SPEC_RULE_AT("requirement.22.DeriveRequiresValidation", span);
         if (auto diag = core::MakeDiagnosticById("E-CTE-0330", span)) {
           core::Emit(diags, *diag);
         }
@@ -639,12 +642,16 @@ bool ValidateDeriveContracts(const ASTItem& item,
     }
     for (const auto& emit : DeriveEmits(*request.target)) {
       if (!declared.contains(emit)) {
+        SPEC_RULE_AT("requirement.22.DeriveEmitsValidation", span);
         if (auto diag = core::MakeDiagnosticById("E-CTE-0331", span)) {
           core::Emit(diags, *diag);
         }
         return false;
       }
     }
+  }
+  if (!requests.empty()) {
+    SPEC_RULE_AT("requirement.22.DeriveRequiresEmitsScope", span);
   }
   return true;
 }
@@ -674,6 +681,17 @@ bool HasErrorsSince(const core::DiagnosticStream* diags, std::size_t baseline) {
   return false;
 }
 
+std::string JoinDeriveOrderPayload(const std::vector<std::string>& order) {
+  std::string payload = "order:";
+  for (std::size_t i = 0; i < order.size(); ++i) {
+    if (i != 0) {
+      payload += ",";
+    }
+    payload += order[i];
+  }
+  return payload;
+}
+
 std::optional<std::vector<DeriveRequest>> ResolveDeriveRequests(
     const ASTItem& item, const CtEnv& env) {
   const auto names_opt = std::visit(
@@ -696,6 +714,7 @@ std::optional<std::vector<DeriveRequest>> ResolveDeriveRequests(
   for (const auto& name : *names_opt) {
     const ast::DeriveTargetDecl* target = VisibleDeriveTarget(name, env);
     if (target == nullptr) {
+      SPEC_RULE_AT("requirement.22.DeriveTargetNameResolution", SpanOfItem(item));
       if (auto diag = core::MakeDiagnosticById("E-CTE-0310", SpanOfItem(item))) {
         core::Emit(*env.diags, *diag);
       }
@@ -713,6 +732,7 @@ std::optional<RunDeriveResult> RunDeriveTarget(const ASTItem& item,
                                                const ast::DeriveTargetDecl& target,
                                                const CtEnv& env) {
   SPEC_RULE_AT("RunDeriveTarget", target.span);
+  SPEC_RULE_AT("requirement.22.DeriveTargetExecutionTiming", target.span);
   const std::size_t diag_count_before =
       env.diags == nullptr ? 0 : env.diags->size();
   auto derive_env_opt = BindDeriveTargetInputs(env, item);
@@ -724,6 +744,7 @@ std::optional<RunDeriveResult> RunDeriveTarget(const ASTItem& item,
   CtEnv derive_env = std::move(*derive_env_opt);
   derive_env.pending_emits = &target_emits;
   if (const auto span = DeriveBodyRestrictionFinder{}.Find(*target.body)) {
+    SPEC_RULE_AT("requirement.22.DeriveTargetBodyRestrictions", *span);
     if (auto diag = core::MakeDiagnosticById("E-CTE-0320", *span)) {
       core::Emit(*env.diags, *diag);
     }
@@ -731,6 +752,7 @@ std::optional<RunDeriveResult> RunDeriveTarget(const ASTItem& item,
   }
   const EvalResult exec = EvalBlock(*target.body, derive_env);
   if (!exec.ok || HasErrorsSince(env.diags, diag_count_before)) {
+    SPEC_RULE_AT("requirement.22.DeriveTargetFailureSemantics", target.span);
     return std::nullopt;
   }
 
@@ -748,6 +770,7 @@ std::optional<RunDeriveResult> RunDeriveSet(const ASTItem& item,
     SPEC_RULE_AT("RunDeriveSet-Cons", SpanOfItem(item));
     const ast::DeriveTargetDecl* target = VisibleDeriveTarget(name, result.env);
     if (target == nullptr) {
+      SPEC_RULE_AT("requirement.22.DeriveTargetNameResolution", SpanOfItem(item));
       if (auto diag = core::MakeDiagnosticById("E-CTE-0310", SpanOfItem(item))) {
         core::Emit(*result.env.diags, *diag);
       }
@@ -777,11 +800,13 @@ std::optional<std::vector<std::string>> DeriveOrderFor(const ASTItem& item,
   const std::size_t n = requests.size();
   std::vector<std::vector<std::size_t>> outgoing(n);
   std::vector<std::size_t> indegree(n, 0);
+  bool has_dependency_edge = false;
   for (std::size_t i = 0; i < n; ++i) {
     for (std::size_t j = 0; j < n; ++j) {
       if (i == j || !DeriveEdge(requests[i], requests[j])) {
         continue;
       }
+      has_dependency_edge = true;
       outgoing[i].push_back(j);
       ++indegree[j];
     }
@@ -790,7 +815,18 @@ std::optional<std::vector<std::string>> DeriveOrderFor(const ASTItem& item,
   std::vector<bool> emitted(n, false);
   std::vector<std::string> order;
   order.reserve(n);
+  bool tie_breaker_observed = false;
   while (order.size() < n) {
+    std::size_t eligible_count = 0;
+    for (std::size_t i = 0; i < n; ++i) {
+      if (!emitted[i] && indegree[i] == 0) {
+        ++eligible_count;
+      }
+    }
+    if (eligible_count > 1) {
+      tie_breaker_observed = true;
+    }
+
     bool progressed = false;
     for (std::size_t i = 0; i < n; ++i) {
       if (emitted[i] || indegree[i] != 0) {
@@ -812,6 +848,16 @@ std::optional<std::vector<std::string>> DeriveOrderFor(const ASTItem& item,
       }
       return std::nullopt;
     }
+  }
+
+  const std::string order_payload = JoinDeriveOrderPayload(order);
+  if (has_dependency_edge) {
+    core::Conformance::Record(
+        "requirement.22.DeriveExecutionOrder", SpanOfItem(item), order_payload);
+  }
+  if (tie_breaker_observed) {
+    core::Conformance::Record(
+        "requirement.22.DeriveOrderTieBreaker", SpanOfItem(item), order_payload);
   }
 
   return order;

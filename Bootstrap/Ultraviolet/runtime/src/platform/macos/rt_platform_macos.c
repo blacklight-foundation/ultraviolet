@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+#include <sys/file.h>
 #include <sys/mman.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
@@ -2253,6 +2254,31 @@ static int uv_rt_macos_open_flags_from_access(DWORD desired_access, DWORD creati
   return flags;
 }
 
+static BOOL uv_rt_macos_apply_file_share_mode(int fd,
+                                              DWORD desired_access,
+                                              DWORD share_mode)
+{
+  int wants_write = (desired_access & GENERIC_WRITE) != 0u ||
+                    (desired_access & FILE_APPEND_DATA) != 0u;
+  if (!wants_write || (share_mode & FILE_SHARE_WRITE) != 0u)
+  {
+    return TRUE;
+  }
+  if (flock(fd, LOCK_EX | LOCK_NB) == 0)
+  {
+    return TRUE;
+  }
+  if (errno == EWOULDBLOCK || errno == EAGAIN || errno == EACCES)
+  {
+    SetLastError(ERROR_SHARING_VIOLATION);
+  }
+  else
+  {
+    uv_rt_macos_set_errno_error(errno);
+  }
+  return FALSE;
+}
+
 static int uv_rt_macos_console_fd_from_name(LPCWSTR path)
 {
   if (!path)
@@ -2290,8 +2316,8 @@ HANDLE CreateFileW(LPCWSTR path,
 {
   char *utf8_path;
   int fd;
+  struct stat st;
   HANDLE handle;
-  (void)share_mode;
   (void)security_attributes;
   (void)flags_and_attributes;
   (void)template_file;
@@ -2311,6 +2337,23 @@ HANDLE CreateFileW(LPCWSTR path,
   if (fd < 0)
   {
     uv_rt_macos_set_errno_error(errno);
+    return INVALID_HANDLE_VALUE;
+  }
+  if (fstat(fd, &st) != 0)
+  {
+    uv_rt_macos_set_errno_error(errno);
+    close(fd);
+    return INVALID_HANDLE_VALUE;
+  }
+  if (S_ISDIR(st.st_mode))
+  {
+    SetLastError(ERROR_ACCESS_DENIED);
+    close(fd);
+    return INVALID_HANDLE_VALUE;
+  }
+  if (!uv_rt_macos_apply_file_share_mode(fd, desired_access, share_mode))
+  {
+    close(fd);
     return INVALID_HANDLE_VALUE;
   }
   handle = uv_rt_macos_alloc_handle(UV_RT_HANDLE_FILE);

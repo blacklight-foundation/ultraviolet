@@ -2141,7 +2141,7 @@ ReservedIdentPrefix = {`gen_`}
 ReservedNamespacePhase = Phase3
 
 **Universe-Protected Bindings.**
-UniverseProtected = {`i8`, `i16`, `i32`, `i64`, `i128`, `u8`, `u16`, `u32`, `u64`, `u128`, `f16`, `f32`, `f64`, `bool`, `char`, `usize`, `isize`, `Self`, `Drop`, `Bitcopy`, `Clone`, `Eq`, `Hash`, `Hasher`, `Iterator`, `Step`, `FfiSafe`, `string`, `bytes`, `Modal`, `Region`, `RegionOptions`, `CancelToken`, `Context`, `TestAuthority`, `System`, `IO`, `HeapAllocator`, `Network`, `ExecutionDomain`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`, `Duration`, `MonotonicInstant`, `UtcInstant`, `TimeError`, `CpuSet`, `Priority`, `Async`, `Future`, `Sequence`, `Stream`, `Pipe`, `Exchange`, `Tracked`, `Spawned`}
+UniverseProtected = {`i8`, `i16`, `i32`, `i64`, `i128`, `u8`, `u16`, `u32`, `u64`, `u128`, `f16`, `f32`, `f64`, `bool`, `char`, `usize`, `isize`, `Self`, `Drop`, `Bitcopy`, `Clone`, `Eq`, `Hash`, `Hasher`, `Iterator`, `Discrete`, `FfiSafe`, `string`, `bytes`, `Modal`, `Region`, `RegionOptions`, `CancelToken`, `Context`, `TestAuthority`, `System`, `IO`, `HeapAllocator`, `Network`, `ExecutionDomain`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`, `Duration`, `MonotonicInstant`, `UtcInstant`, `TimeError`, `CpuSet`, `Priority`, `Async`, `Future`, `Sequence`, `Stream`, `Pipe`, `Exchange`, `Tracked`, `Spawned`}
 UniverseProtectedPhase = Phase3
 
 `Drop`, `Bitcopy`, `Clone`, and `FfiSafe` are reserved predicate names. They MUST NOT be declared as classes or used as user-defined type/value bindings.
@@ -4734,7 +4734,7 @@ ReservedModulePath(path) ⇔ (|path| ≥ 1 ∧ IdEq(path[0], `ultraviolet`)) ∨
 <!-- Source: "The `ultraviolet::...` namespace prefix is reserved for specification-defined features. User programs and vendor extensions MUST NOT use this namespace." -->
 
 PrimTypeNames = {`i8`, `i16`, `i32`, `i64`, `i128`, `u8`, `u16`, `u32`, `u64`, `u128`, `f16`, `f32`, `f64`, `bool`, `char`, `usize`, `isize`}
-SpecialTypeNames = {`Self`, `Drop`, `Bitcopy`, `Clone`, `Eq`, `Hash`, `Hasher`, `Iterator`, `Step`, `FfiSafe`, `string`, `bytes`, `Modal`, `Region`, `RegionOptions`, `CancelToken`, `Context`, `TestAuthority`, `System`, `IO`, `HeapAllocator`, `Network`, `ExecutionDomain`, `CpuSet`, `Priority`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`, `Duration`, `MonotonicInstant`, `UtcInstant`, `TimeError`}
+SpecialTypeNames = {`Self`, `Drop`, `Bitcopy`, `Clone`, `Eq`, `Hash`, `Hasher`, `Iterator`, `Discrete`, `FfiSafe`, `string`, `bytes`, `Modal`, `Region`, `RegionOptions`, `CancelToken`, `Context`, `TestAuthority`, `System`, `IO`, `HeapAllocator`, `Network`, `ExecutionDomain`, `CpuSet`, `Priority`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`, `Duration`, `MonotonicInstant`, `UtcInstant`, `TimeError`}
 AsyncTypeNames = {`Async`, `Future`, `Sequence`, `Stream`, `Pipe`, `Exchange`, `Tracked`}
 
 `Drop`, `Bitcopy`, `Clone`, and `FfiSafe` are reserved predicate names and are included in `SpecialTypeNames`. Reuse of these names at any scope is an error via `(Intro-Outer-Err)` (§7.2), since `UniverseBindings` is the outermost scope and contains these names.
@@ -7125,8 +7125,10 @@ A `#test` procedure MUST:
    toolchain-provided `TestAuthority` type.
 
 The `TestAuthority` parameter is the only runner-injected value. It carries the
-filesystem, process, temporary-directory, target-profile, and compiler-invocation
-authority needed by effectful compiler tests.
+filesystem, process, temporary-directory, target-profile, compiler-invocation,
+and time authority needed by effectful compiler tests and benchmark-style tests.
+Its `time` field has type `$Time`; tests that measure elapsed time SHOULD use
+`time~>monotonic()`; `time~>wall()` is for UTC behavior, not benchmarks.
 
 #### 9.6.5 Dynamic Semantics
 
@@ -14063,7 +14065,7 @@ Diagnostics are defined for capability operations that require `unsafe`, includi
 
 #### 14.10.1 Syntax
 
-Foundational classes use ordinary class syntax from §14.3. The foundational names `Bitcopy`, `Clone`, `Drop`, `FfiSafe`, `Eq`, `Hasher`, `Hash`, `Iterator`, and `Step` are reserved.
+Foundational classes use ordinary class syntax from §14.3. The foundational names `Bitcopy`, `Clone`, `Drop`, `FfiSafe`, `Eq`, `Hasher`, `Hash`, `Iterator`, and `Discrete` are reserved.
 
 #### 14.10.2 Parsing
 
@@ -14071,7 +14073,7 @@ Foundational classes and predicates have no feature-specific parse form beyond o
 
 #### 14.10.3 AST Representation / Form
 
-FoundationalClassName = {`Bitcopy`, `Clone`, `Drop`, `FfiSafe`, `Eq`, `Hasher`, `Hash`, `Iterator`, `Step`}
+FoundationalClassName = {`Bitcopy`, `Clone`, `Drop`, `FfiSafe`, `Eq`, `Hasher`, `Hash`, `Iterator`, `Discrete`}
 
 BitcopyDropJudg = {Γ ⊢ T : BitcopyDropOk}
 BitcopyJudg = {BitcopyType}
@@ -14084,16 +14086,16 @@ HasDropMethod(T) ⇔ ∃ p, R, m. T = TypePath(p) ∧ RecordDecl(p) = R ∧ m �
 CloneType(T) ⇔ BuiltinCloneType(T) ∨ HasCloneMethod(StripPerm(T)) ∨ BitcopyType(T)
 DropType(T) ⇔ BuiltinDropType(T) ∨ HasDropMethod(StripPerm(T))
 
-BuiltinStepType(T) ⇔ StripPerm(T) = TypePrim(t) ∧ t ∈ IntTypes ∪ UnsignedIntTypes ∪ {`char`}
+BuiltinDiscreteType(T) ⇔ StripPerm(T) = TypePrim(t) ∧ t ∈ IntTypes ∪ UnsignedIntTypes ∪ {`char`}
 ImplementsEq(T) ⇔ EqType(T) ∨ `Eq` ∈ Implements(T)
 ImplementsHash(T) ⇔ `Hash` ∈ Implements(T)
 ImplementsIterator(T) ⇔ `Iterator` ∈ Implements(T)
-ImplementsStep(T) ⇔ BuiltinStepType(T) ∨ `Step` ∈ Implements(T)
+ImplementsDiscrete(T) ⇔ BuiltinDiscreteType(T) ∨ `Discrete` ∈ Implements(T)
 ImplementsHasher(T) ⇔ `Hasher` ∈ Implements(T)
 
 #### 14.10.4 Static Semantics
 
-Foundational class bounds for `Bitcopy`, `Clone`, `Drop`, and `FfiSafe` are interpreted by intrinsic satisfaction judgments, not by user-defined class implementation lookup. `Eq` is satisfied intrinsically when `EqType(T)` holds. `Step` is satisfied intrinsically when `BuiltinStepType(T)` holds. Other `Eq` and `Step` obligations are discharged through ordinary class implementation lookup.
+Foundational class bounds for `Bitcopy`, `Clone`, `Drop`, and `FfiSafe` are interpreted by intrinsic satisfaction judgments, not by user-defined class implementation lookup. `Eq` is satisfied intrinsically when `EqType(T)` holds. `Discrete` is satisfied intrinsically when `BuiltinDiscreteType(T)` holds. Other `Eq` and `Discrete` obligations are discharged through ordinary class implementation lookup.
 
 **(BitcopyDrop-Ok)**
 ¬(BitcopyType(T) ∧ DropType(T))
@@ -14148,7 +14150,7 @@ The built-in class signatures are:
 - `Hasher`: `write(~!, data: bytes@View) -> ()`; `finish(~) -> u64`
 - `Hash`: `hash(~, hasher: unique Hasher) -> ()`
 - `Iterator`: associated type `Item`; `next(~!) -> Self::Item | ()`
-- `Step`: `successor(~) -> Self | ()`; `predecessor(~) -> Self | ()`
+- `Discrete`: `successor(~) -> Self | ()`; `predecessor(~) -> Self | ()`
 
 `Eq::eq` MUST be reflexive, symmetric, and transitive.
 
@@ -14156,7 +14158,7 @@ The built-in class signatures are:
 
 `Iterator::next` returns `Self::Item` while iteration remains, or `()` when exhausted.
 
-`Step::successor` and `Step::predecessor` define a discrete stepping relation and are partial inverses when both are defined.
+`Discrete::successor` and `Discrete::predecessor` define a discrete stepping relation and are partial inverses when both are defined.
 
 #### 14.10.5 Dynamic Semantics
 
@@ -14168,15 +14170,15 @@ Scope exit runs the cleanup actions for bindings that still own their provenance
 
 `Hasher` maintains an internal `u64` state. `write` appends bytes to the input stream. `finish` returns the FNV-1a 64-bit hash of the concatenated byte stream using `FNVOffset64` and `FNVPrime64`.
 
-For `BuiltinStepType(T)` with `StripPerm(T) = TypePrim(t)` and `t ∈ IntTypes ∪ UnsignedIntTypes`, `Step::successor` returns the least representable value greater than the receiver when one exists, or `()` otherwise; `Step::predecessor` returns the greatest representable value smaller than the receiver when one exists, or `()` otherwise.
+For `BuiltinDiscreteType(T)` with `StripPerm(T) = TypePrim(t)` and `t ∈ IntTypes ∪ UnsignedIntTypes`, `Discrete::successor` returns the least representable value greater than the receiver when one exists, or `()` otherwise; `Discrete::predecessor` returns the greatest representable value smaller than the receiver when one exists, or `()` otherwise.
 
-For `BuiltinStepType(T)` with `StripPerm(T) = TypePrim(`char`)`, `Step::successor` returns `CharVal(u')` where `u' = min { v ∈ UnicodeScalar | v > u }` for receiver `CharVal(u)` when such `u'` exists, or `()` otherwise; `Step::predecessor` returns `CharVal(u')` where `u' = max { v ∈ UnicodeScalar | v < u }` when such `u'` exists, or `()` otherwise.
+For `BuiltinDiscreteType(T)` with `StripPerm(T) = TypePrim(`char`)`, `Discrete::successor` returns `CharVal(u')` where `u' = min { v ∈ UnicodeScalar | v > u }` for receiver `CharVal(u)` when such `u'` exists, or `()` otherwise; `Discrete::predecessor` returns `CharVal(u')` where `u' = max { v ∈ UnicodeScalar | v < u }` when such `u'` exists, or `()` otherwise.
 
 #### 14.10.6 Lowering
 
-`Eq::eq` on `EqType(T)` lowers intrinsically to the built-in equality relation for `T`. `Step::successor` and `Step::predecessor` on `BuiltinStepType(T)` lower intrinsically to the built-in stepping relation for `T`. Other `Eq` and `Step` calls lower through ordinary method-call lowering.
+`Eq::eq` on `EqType(T)` lowers intrinsically to the built-in equality relation for `T`. `Discrete::successor` and `Discrete::predecessor` on `BuiltinDiscreteType(T)` lower intrinsically to the built-in stepping relation for `T`. Other `Eq` and `Discrete` calls lower through ordinary method-call lowering.
 
-These predicates and built-in classes do not introduce a separate representation. They influence lowering indirectly through copy semantics, drop-glue generation, built-in `Eq`/`Step` call selection, and whether a dynamic-class-object vtable header carries a non-null drop entry.
+These predicates and built-in classes do not introduce a separate representation. They influence lowering indirectly through copy semantics, drop-glue generation, built-in `Eq`/`Discrete` call selection, and whether a dynamic-class-object vtable header carries a non-null drop entry.
 
 #### 14.10.7 Diagnostics
 
@@ -17160,7 +17162,7 @@ LoopInvOk(inv_opt)    Γ; R; `loop` ⊢ BlockInfo(body) ⇓ ⟨T_b, Brk, BrkVoid
 Γ ⊢ LoopConditional(cond, inv_opt, body) : T
 
 **(T-Loop-Iter)**
-(Γ; R; L ⊢ iter : T_iter)    LoopIterableType(T_iter, T)    (RangeLoopType(T_iter, T) ⇒ ImplementsStep(T))    (BoundedRangeLoopType(T_iter, T) ⇒ ImplementsEq(T))    (ty_opt = ⊥ ⇒ T_p = T)    (ty_opt = T_a ⇒ Γ ⊢ T <: T_a ∧ T_p = T_a)    Γ ⊢ pat ⇐ T_p ⊣ B    Distinct(PatNames(pat))    LoopInvOk(inv_opt)    Γ_0 = PushScope(Γ)    IntroAll(Γ_0, B) ⇓ Γ_1    Γ_1; R; `loop` ⊢ BlockInfo(body) ⇓ ⟨T_b, Brk, BrkVoid⟩    LoopTypeFin(Brk, BrkVoid) = T_r
+(Γ; R; L ⊢ iter : T_iter)    LoopIterableType(T_iter, T)    (RangeLoopType(T_iter, T) ⇒ ImplementsDiscrete(T))    (BoundedRangeLoopType(T_iter, T) ⇒ ImplementsEq(T))    (ty_opt = ⊥ ⇒ T_p = T)    (ty_opt = T_a ⇒ Γ ⊢ T <: T_a ∧ T_p = T_a)    Γ ⊢ pat ⇐ T_p ⊣ B    Distinct(PatNames(pat))    LoopInvOk(inv_opt)    Γ_0 = PushScope(Γ)    IntroAll(Γ_0, B) ⇓ Γ_1    Γ_1; R; `loop` ⊢ BlockInfo(body) ⇓ ⟨T_b, Brk, BrkVoid⟩    LoopTypeFin(Brk, BrkVoid) = T_r
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ LoopIter(pat, ty_opt, iter, inv_opt, body) : T_r
 
@@ -17224,7 +17226,7 @@ BoundedRangeLoopType(TypePerm(p, T_iter), T) ⇔ BoundedRangeLoopType(T_iter, T)
 
 IterJudg = {IterInit(v) ⇓ it, IterNext(it) ⇓ (opt(v), it')}
 Iter = {SeqIter(v, i) | Len(v) defined ∧ i ∈ ℕ} ∪ {RangeIterExclusive(cur, hi)} ∪ {RangeIterInclusive(cur, hi)} ∪ {RangeIterFrom(cur)} ∪ {IterDone}
-Successor(v) ⇓ v' ⇔ `Step::successor` applied to v returns v'
+Successor(v) ⇓ v' ⇔ `Discrete::successor` applied to v returns v'
 EqHolds(v_1, v_2) ⇔ `Eq::eq` applied to ⟨v_1, v_2⟩ returns `true`
 
 IterInit(v) ⇓ SeqIter(v, 0) ⇔ Len(v) defined

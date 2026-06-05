@@ -32,9 +32,46 @@ internal procedure gpuSafeCaptureReference(context: Context) -> usize {
     }
 }
 
+internal procedure uniqueOuterMoveCaptureReference(context: Context) -> i32 {
+    return parallel context~>inline() {
+        let value: unique i32 = 19
+        let handle: Spawned<i32> = spawn {
+            let consumed: unique i32 = move value
+            let result: i32 = move consumed
+            result
+        }
+        wait handle
+    }
+}
+
+internal procedure captureSetComputationReference(context: Context) -> bool {
+    return spawnConstCaptureReference(context) == 7 &&
+        dispatchSharedCaptureReference(context) == 6 &&
+        uniqueOuterMoveCaptureReference(context) == 19
+}
+
+internal procedure parallelCapturePermissionsReference(context: Context) -> bool {
+    return spawnConstCaptureReference(context) == 7 &&
+        dispatchSharedCaptureReference(context) == 6 &&
+        uniqueOuterMoveCaptureReference(context) == 19
+}
+
+internal procedure parallelClosuresLocalForKeysReference(context: Context) -> bool {
+    return dispatchSharedCaptureReference(context) == 6
+}
+
+internal procedure movedBindingValidityReference(context: Context) -> bool {
+    return uniqueOuterMoveCaptureReference(context) == 19
+}
+
 /// Exercises the Parallelism CaptureSemantics reference surface.
 public procedure runParallelismCaptureSemanticsReference(context: Context) -> bool {
     return spawnConstCaptureReference(context) == 7 &&
         dispatchSharedCaptureReference(context) == 6 &&
-        gpuSafeCaptureReference(context) == 3usize
+        gpuSafeCaptureReference(context) == 3usize &&
+        uniqueOuterMoveCaptureReference(context) == 19 &&
+        captureSetComputationReference(context) &&
+        parallelCapturePermissionsReference(context) &&
+        parallelClosuresLocalForKeysReference(context) &&
+        movedBindingValidityReference(context)
 }

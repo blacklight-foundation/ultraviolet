@@ -37,6 +37,10 @@ namespace {
 
 static inline void SpecDefsQualifiedName() {
   SPEC_DEF("Expr-Unresolved-Err", "5.1");
+  SPEC_DEF("def.16.QualifiedNameResolution", "16.1.3");
+  SPEC_DEF("rule.16.Expr-Unresolved-Err", "16.1.4");
+  SPEC_DEF("req.16.QualifiedNameEliminatedBeforeTyping", "16.1.4");
+  SPEC_DEF("diag.16.LiteralAndNameExpressions", "16.1.7");
 }
 
 }  // namespace
@@ -52,6 +56,10 @@ ExprTypeResult TypeQualifiedNameExprImpl(const ScopeContext& /*ctx*/,
                                          const ast::QualifiedNameExpr& /*expr*/,
                                          const TypeEnv& /*env*/) {
   SPEC_RULE("Expr-Unresolved-Err");
+  SPEC_RULE("def.16.QualifiedNameResolution");
+  SPEC_RULE("rule.16.Expr-Unresolved-Err");
+  SPEC_RULE("req.16.QualifiedNameEliminatedBeforeTyping");
+  SPEC_RULE("diag.16.LiteralAndNameExpressions");
   ExprTypeResult result;
   result.diag_id = "ResolveExpr-Ident-Err";
   return result;

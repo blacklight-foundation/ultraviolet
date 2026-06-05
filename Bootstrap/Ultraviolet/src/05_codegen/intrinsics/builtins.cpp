@@ -27,6 +27,7 @@
 #include "00_core/symbols.h"
 #include "01_project/language_profile.h"
 #include "04_analysis/modal/builtin_modal_intrinsics.h"
+#include "05_codegen/symbols/linkage.h"
 
 namespace ultraviolet::codegen {
 
@@ -648,14 +649,14 @@ std::string BuiltinSymEqEq() {
   return project::LanguagePathSig({"intrinsic", "eq", "eq"});
 }
 
-std::string BuiltinSymStepSuccessor() {
-  SPEC_DEF("BuiltinSym-Step-successor", "Section 14.10.6");
-  return project::LanguagePathSig({"intrinsic", "step", "successor"});
+std::string BuiltinSymDiscreteSuccessor() {
+  SPEC_DEF("BuiltinSym-Discrete-successor", "Section 14.10.6");
+  return project::LanguagePathSig({"intrinsic", "discrete", "successor"});
 }
 
-std::string BuiltinSymStepPredecessor() {
-  SPEC_DEF("BuiltinSym-Step-predecessor", "Section 14.10.6");
-  return project::LanguagePathSig({"intrinsic", "step", "predecessor"});
+std::string BuiltinSymDiscretePredecessor() {
+  SPEC_DEF("BuiltinSym-Discrete-predecessor", "Section 14.10.6");
+  return project::LanguagePathSig({"intrinsic", "discrete", "predecessor"});
 }
 
 // =============================================================================
@@ -663,12 +664,12 @@ std::string BuiltinSymStepPredecessor() {
 // =============================================================================
 
 std::string BuiltinSymReactorRun() {
-  SPEC_DEF("BuiltinSym-Reactor-Run", "Section 19");
+  SPEC_RULE("BuiltinSym-Reactor-Run");
   return project::RuntimePathSig({"reactor", "run"});
 }
 
 std::string BuiltinSymReactorRegister() {
-  SPEC_DEF("BuiltinSym-Reactor-Register", "Section 19");
+  SPEC_RULE("BuiltinSym-Reactor-Register");
   return project::RuntimePathSig({"reactor", "register"});
 }
 
@@ -737,6 +738,7 @@ std::string BuiltinSymAsyncTake() {
 
 std::string RuntimePanicSym() {
   SPEC_RULE("PanicSym");
+  (void)LinkageOfPanicSym();
   return project::RuntimePathSig({"panic"});
 }
 
@@ -1043,6 +1045,12 @@ std::vector<std::string> RuntimeLinkRequiredSyms() {
   }};
   AppendRuntimeSymbols(syms, kHeapSymbols);
 
+  static const std::array<BuiltinSymbolFactory, 2> kReactorLinkSymbols = {{
+      &BuiltinSymReactorRun,
+      &BuiltinSymReactorRegister,
+  }};
+  AppendRuntimeSymbols(syms, kReactorLinkSymbols);
+
   static const std::array<BuiltinSymbolFactory, 7> kSystemSymbols = {{
       &BuiltinSymSystemExit,
       &BuiltinSymSystemGetEnv,
@@ -1118,6 +1126,12 @@ std::vector<std::string> RuntimeBuiltinNoPanicOutSyms() {
 
 std::string BuiltinSym(const std::string& qualified_name) {
   SPEC_DEF("BuiltinSym", "");
+  auto record_builtin_linkage = [](std::string sym) {
+    if (!sym.empty()) {
+      (void)LinkageOfBuiltinSym();
+    }
+    return sym;
+  };
 
   static const std::array<BuiltinSymbolEntry, 16> kIOBuiltins = {{
       {"IO::open_read", &BuiltinSymIOOpenRead},
@@ -1221,8 +1235,8 @@ std::string BuiltinSym(const std::string& qualified_name) {
   }};
   static const std::array<BuiltinSymbolEntry, 3> kFoundationalBuiltins = {{
       {"Eq::eq", &BuiltinSymEqEq},
-      {"Step::successor", &BuiltinSymStepSuccessor},
-      {"Step::predecessor", &BuiltinSymStepPredecessor},
+      {"Discrete::successor", &BuiltinSymDiscreteSuccessor},
+      {"Discrete::predecessor", &BuiltinSymDiscretePredecessor},
   }};
   static const std::array<BuiltinSymbolEntry, 8> kRegionBuiltins = {{
       {"Region::new_scoped", &BuiltinModalSymRegionNewScoped},
@@ -1238,31 +1252,31 @@ std::string BuiltinSym(const std::string& qualified_name) {
   // IO methods
   if (const auto sym = LookupBuiltinSymbol(qualified_name, kIOBuiltins);
       !sym.empty()) {
-    return sym;
+    return record_builtin_linkage(sym);
   }
 
   // Network methods
   if (const auto sym = LookupBuiltinSymbol(qualified_name, kNetworkBuiltins);
       !sym.empty()) {
-    return sym;
+    return record_builtin_linkage(sym);
   }
 
   // HeapAllocator methods
   if (const auto sym = LookupBuiltinSymbol(qualified_name, kHeapBuiltins);
       !sym.empty()) {
-    return sym;
+    return record_builtin_linkage(sym);
   }
 
   // System methods
   if (const auto sym = LookupBuiltinSymbol(qualified_name, kSystemBuiltins);
       !sym.empty()) {
-    return sym;
+    return record_builtin_linkage(sym);
   }
 
   // Time methods
   if (const auto sym = LookupBuiltinSymbol(qualified_name, kTimeBuiltins);
       !sym.empty()) {
-    return sym;
+    return record_builtin_linkage(sym);
   }
 
   // ExecutionDomain methods
@@ -1293,19 +1307,19 @@ std::string BuiltinSym(const std::string& qualified_name) {
   // Reactor builtins (Section 19)
   if (const auto sym = LookupBuiltinSymbol(qualified_name, kReactorBuiltins);
       !sym.empty()) {
-    return sym;
+    return record_builtin_linkage(sym);
   }
 
   // String builtins
   if (const auto sym = LookupBuiltinSymbol(qualified_name, kStringBuiltins);
       !sym.empty()) {
-    return sym;
+    return record_builtin_linkage(sym);
   }
 
   // Bytes builtins
   if (const auto sym = LookupBuiltinSymbol(qualified_name, kBytesBuiltins);
       !sym.empty()) {
-    return sym;
+    return record_builtin_linkage(sym);
   }
 
   // Foundational intrinsic-call methods
@@ -1371,6 +1385,8 @@ void AnchorBuiltinSymRules() {
   SPEC_RULE("BuiltinSym-HeapAllocator-WithQuota");
   SPEC_RULE("BuiltinSym-HeapAllocator-AllocRaw");
   SPEC_RULE("BuiltinSym-HeapAllocator-DeallocRaw");
+  SPEC_RULE("BuiltinSym-Reactor-Run");
+  SPEC_RULE("BuiltinSym-Reactor-Register");
   SPEC_RULE("BuiltinSym-System-Exit");
   SPEC_RULE("BuiltinSym-System-GetEnv");
   SPEC_RULE("BuiltinSym-System-Run");

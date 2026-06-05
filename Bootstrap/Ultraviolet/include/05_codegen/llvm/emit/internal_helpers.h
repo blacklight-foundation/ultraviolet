@@ -222,8 +222,15 @@ class ProcModuleContextScope {
 
 inline llvm::GlobalValue::LinkageTypes ProcLLVMLinkageFor(const LowerCtx* ctx,
                                                           std::string_view symbol) {
-  if (IsRuntimeLifecycleSymbol(symbol) || IsHostedInternalBodySymbol(ctx, symbol)) {
+  if (IsHostedInternalBodySymbol(ctx, symbol)) {
     return llvm::GlobalValue::ExternalLinkage;
+  }
+  const auto& language = project::ActiveLanguageProfile();
+  if (symbol.rfind(language.runtime_init_mangle_prefix, 0) == 0) {
+    return LLVMLinkageFor(LinkageOfInitFn());
+  }
+  if (symbol.rfind(language.runtime_deinit_mangle_prefix, 0) == 0) {
+    return LLVMLinkageFor(LinkageOfDeinitFn());
   }
   if (IsDropGlueSymbol(symbol)) {
     return LLVMLinkageFor(LinkageOfDropGlue());

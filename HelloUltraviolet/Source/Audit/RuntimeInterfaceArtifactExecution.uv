@@ -1,0 +1,1026 @@
+//! Artifact checks for runtime interface symbol and declaration coverage.
+
+internal let RUNTIME_INTERFACE_SYMBOL_EXECUTED_OBLIGATION_COUNT: usize = 110usize
+
+internal procedure artifactProjectRuntimeInterfaceIrContains(
+    authority: TestAuthority,
+    required_text: string@View
+) -> bool {
+    return acceptedProjectTempFileContains(
+        authority,
+        "ArtifactProjectRuntimeInterfaceBuild",
+        "Intermediate/IR/Source/RuntimeInterfaceSymbols.ll",
+        required_text
+    )
+}
+
+internal procedure artifactProjectRuntimeInterfaceSymbolsMatch(
+    authority: TestAuthority
+) -> bool {
+    let required_symbols: [string@View; 64] = [
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3anew_x5fscoped",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aalloc",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3amark",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5fto",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5funchecked",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afreeze",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3athaw",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afree_x5funchecked",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aaddr_x5fis_x5factive",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aaddr_x5ftag_x5ffrom",
+        "@CancelToken_x3a_x3anew",
+        "@CancelToken_x3a_x3aActive_x3a_x3acancel",
+        "@CancelToken_x3a_x3aActive_x3a_x3ais_x5fcancelled",
+        "@CancelToken_x3a_x3aActive_x3a_x3achild",
+        "@CancelToken_x3a_x3aActive_x3a_x3await_x5fcancelled",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fread",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fwrite",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fappend",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aread_x5ffile",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aread_x5fbytes",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3awrite_x5ffile",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3awrite_x5fstdout",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3awrite_x5fstderr",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aexists",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aremove",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fdir",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fdir",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aensure_x5fdir",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3akind",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3arestrict",
+        "@File_x3a_x3aRead_x3a_x3aclose",
+        "@File_x3a_x3aRead_x3a_x3aread_x5fall",
+        "@File_x3a_x3aRead_x3a_x3aread_x5fall_x5fbytes",
+        "@File_x3a_x3aWrite_x3a_x3aclose",
+        "@File_x3a_x3aWrite_x3a_x3awrite",
+        "@File_x3a_x3aWrite_x3a_x3aflush",
+        "@File_x3a_x3aAppend_x3a_x3aclose",
+        "@File_x3a_x3aAppend_x3a_x3awrite",
+        "@File_x3a_x3aAppend_x3a_x3aflush",
+        "@DirIter_x3a_x3aOpen_x3a_x3anext",
+        "@DirIter_x3a_x3aOpen_x3a_x3aclose",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3anet_x3a_x3arestrict_x5fto_x5fhost",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3awith_x5fquota",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3aalloc_x5fraw",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3adealloc_x5fraw",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3areactor_x3a_x3arun",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3areactor_x3a_x3aregister",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexit",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aget_x5fenv",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexecutable_x5fpath",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument_x5fcount",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3acurrent_x5fdirectory",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3arun",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fnow",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fresolution",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5felapsed",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fcoarsen",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall_x5fnow_x5futc",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall_x5fresolution",
+        "@ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall_x5fcoarsen"
+    ]
+
+    loop symbol: string@View in required_symbols {
+        if !artifactProjectRuntimeInterfaceIrContains(authority, symbol) {
+            return false
+        }
+    }
+    return true
+}
+
+internal procedure artifactProjectRuntimeInterfaceSignaturesMatch(
+    authority: TestAuthority
+) -> bool {
+    let required_fragments: [string@View; 64] = [
+        artifactProjectTargetText(
+            authority,
+            "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3anew_x5fscoped(ptr noalias noundef nonnull sret({ i8, [7 x i8], [8 x i8], [0 x i64] }) align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(40))",
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3anew_x5fscoped("
+        ),
+        "declare ptr @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aalloc(ptr, ptr, ptr)",
+        "declare i64 @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3amark(ptr noundef nonnull align 8 dereferenceable(16))",
+        "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5fto(ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(8))",
+        artifactProjectTargetText(
+            authority,
+            "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5funchecked(ptr noalias noundef nonnull sret({ i8, [7 x i8], [8 x i8], [0 x i64] }) align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5funchecked("
+        ),
+        artifactProjectTargetText(
+            authority,
+            "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afreeze(ptr noalias noundef nonnull sret({ i8, [7 x i8], [8 x i8], [0 x i64] }) align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afreeze("
+        ),
+        artifactProjectTargetText(
+            authority,
+            "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3athaw(ptr noalias noundef nonnull sret({ i8, [7 x i8], [8 x i8], [0 x i64] }) align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3athaw("
+        ),
+        artifactProjectTargetText(
+            authority,
+            "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afree_x5funchecked(ptr noalias noundef nonnull sret({ i8, [7 x i8], [8 x i8], [0 x i64] }) align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afree_x5funchecked("
+        ),
+        "declare i8 @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aaddr_x5fis_x5factive(ptr)",
+        "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aaddr_x5ftag_x5ffrom(ptr, ptr)",
+        "declare i64 @CancelToken_x3a_x3anew()",
+        "declare void @CancelToken_x3a_x3aActive_x3a_x3acancel(ptr)",
+        "declare i8 @CancelToken_x3a_x3aActive_x3a_x3ais_x5fcancelled(ptr)",
+        "declare i64 @CancelToken_x3a_x3aActive_x3a_x3achild(ptr)",
+        "declare void @CancelToken_x3a_x3aActive_x3a_x3await_x5fcancelled(ptr noundef nonnull align 8 dereferenceable(24), ptr)",
+        artifactProjectTargetText(
+            authority,
+            "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fread(ptr noalias noundef nonnull sret(",
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fread("
+        ),
+        artifactProjectTargetText(
+            authority,
+            "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fwrite(ptr noalias noundef nonnull sret(",
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fwrite("
+        ),
+        artifactProjectTargetText(
+            authority,
+            "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fappend(ptr noalias noundef nonnull sret(",
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fappend("
+        ),
+        artifactProjectTargetText(
+            authority,
+            "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite(ptr noalias noundef nonnull sret(",
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite("
+        ),
+        "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aread_x5ffile(ptr noundef nonnull align 8 dereferenceable(32), ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
+        "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aread_x5fbytes(ptr noundef nonnull align 8 dereferenceable(32), ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
+        "declare i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3awrite_x5ffile(ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
+        "declare i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3awrite_x5fstdout(ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
+        "declare i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3awrite_x5fstderr(ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
+        "declare i8 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aexists(ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
+        "declare i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aremove(ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
+        artifactProjectTargetText(
+            authority,
+            "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fdir(ptr noalias noundef nonnull sret(",
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fdir("
+        ),
+        "declare i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fdir(ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
+        "declare i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aensure_x5fdir(ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
+        "declare i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3akind(ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
+        artifactProjectTargetText(
+            authority,
+            "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3arestrict(ptr noalias noundef nonnull sret(",
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3arestrict("
+        ),
+        "declare void @DirIter_x3a_x3aOpen_x3a_x3aclose(ptr noundef nonnull align 8 dereferenceable(8))",
+        "declare void @DirIter_x3a_x3aOpen_x3a_x3anext(ptr noalias noundef nonnull sret(",
+        "declare void @File_x3a_x3aAppend_x3a_x3aclose(ptr noundef nonnull align 8 dereferenceable(8))",
+        "declare i16 @File_x3a_x3aAppend_x3a_x3aflush(ptr noundef nonnull align 8 dereferenceable(8))",
+        "declare i16 @File_x3a_x3aAppend_x3a_x3awrite(ptr noundef nonnull align 8 dereferenceable(8), ptr noundef nonnull align 8 dereferenceable(16))",
+        "declare void @File_x3a_x3aRead_x3a_x3aclose(ptr noundef nonnull align 8 dereferenceable(8))",
+        "declare void @File_x3a_x3aRead_x3a_x3aread_x5fall(ptr noalias noundef nonnull sret(",
+        "declare void @File_x3a_x3aRead_x3a_x3aread_x5fall_x5fbytes(ptr noalias noundef nonnull sret(",
+        "declare void @File_x3a_x3aWrite_x3a_x3aclose(ptr noundef nonnull align 8 dereferenceable(8))",
+        "declare i16 @File_x3a_x3aWrite_x3a_x3aflush(ptr noundef nonnull align 8 dereferenceable(8))",
+        "declare i16 @File_x3a_x3aWrite_x3a_x3awrite(ptr noundef nonnull align 8 dereferenceable(8), ptr noundef nonnull align 8 dereferenceable(16))",
+        artifactProjectTargetText(
+            authority,
+            "declare void @ultraviolet_x3a_x3aruntime_x3a_x3anet_x3a_x3arestrict_x5fto_x5fhost(ptr noalias noundef nonnull sret(",
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3anet_x3a_x3arestrict_x5fto_x5fhost("
+        ),
+        artifactProjectTargetText(
+            authority,
+            "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3awith_x5fquota(ptr noalias noundef nonnull sret(",
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3awith_x5fquota("
+        ),
+        "declare ptr @ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3aalloc_x5fraw(ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(8))",
+        "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3adealloc_x5fraw(ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(8), ptr noundef nonnull align 8 dereferenceable(8))",
+        "declare void @ultraviolet_x3a_x3aruntime_x3a_x3areactor_x3a_x3arun(ptr noalias noundef nonnull sret(",
+        "declare ptr @ultraviolet_x3a_x3aruntime_x3a_x3areactor_x3a_x3aregister(ptr, ptr)",
+        "declare void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexit(ptr noundef nonnull align 1, ptr noundef nonnull align 4 dereferenceable(4))",
+        artifactProjectTargetText(
+            authority,
+            "declare void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aget_x5fenv(ptr noalias noundef nonnull sret(",
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aget_x5fenv("
+        ),
+        artifactProjectTargetText(
+            authority,
+            "declare void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexecutable_x5fpath(ptr noalias noundef nonnull sret(",
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexecutable_x5fpath("
+        ),
+        "declare i64 @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument_x5fcount(ptr noundef nonnull align 1)",
+        artifactProjectTargetText(
+            authority,
+            "declare void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument(ptr noalias noundef nonnull sret(",
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument("
+        ),
+        artifactProjectTargetText(
+            authority,
+            "declare void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3acurrent_x5fdirectory(ptr noalias noundef nonnull sret(",
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3acurrent_x5fdirectory("
+        ),
+        "declare i32 @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3arun(ptr noundef nonnull align 1, ptr noundef nonnull align 8 dereferenceable(16))",
+        artifactProjectTargetText(
+            authority,
+            "declare void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic(ptr noalias noundef nonnull sret(",
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic("
+        ),
+        artifactProjectTargetText(
+            authority,
+            "declare void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall(ptr noalias noundef nonnull sret(",
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall("
+        ),
+        "declare void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fnow(ptr noundef nonnull align 16 dereferenceable(32), ptr noundef nonnull align 8 dereferenceable(16))",
+        "declare void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fresolution(ptr noundef nonnull align 16 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
+        "declare void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5felapsed(ptr noundef nonnull align 16 dereferenceable(32), ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 16 dereferenceable(32), ptr noundef nonnull align 16 dereferenceable(32))",
+        "declare void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fcoarsen(ptr noundef nonnull align 8 dereferenceable(24), ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 16 dereferenceable(16))",
+        "declare void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall_x5fnow_x5futc(ptr noundef nonnull align 16 dereferenceable(32), ptr noundef nonnull align 8 dereferenceable(16))",
+        "declare void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall_x5fresolution(ptr noundef nonnull align 16 dereferenceable(32), ptr noundef nonnull align 8 dereferenceable(16))",
+        "declare void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall_x5fcoarsen(ptr noundef nonnull align 8 dereferenceable(24), ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 16 dereferenceable(16))"
+    ]
+
+    loop fragment: string@View in required_fragments {
+        if !artifactProjectRuntimeInterfaceIrContains(authority, fragment) {
+            return false
+        }
+    }
+    return true
+}
+
+internal procedure artifactProjectRuntimeInterfaceIOHostCallsMatch(
+    authority: TestAuthority
+) -> bool {
+    let required_call_fragments: [string@View; 27] = [
+        artifactProjectTargetText(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3arestrict(",
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3arestrict("
+        ),
+        "call i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aensure_x5fdir(",
+        "call i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fdir(",
+        "call i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3awrite_x5ffile(",
+        "call void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aread_x5ffile(",
+        "call void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aread_x5fbytes(",
+        "call i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3awrite_x5fstdout(",
+        "call i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3awrite_x5fstderr(",
+        "call i8 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aexists(",
+        "call i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3akind(",
+        artifactProjectTargetText(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fread(",
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fread("
+        ),
+        artifactProjectTargetText(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fwrite(",
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fwrite("
+        ),
+        artifactProjectTargetText(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fappend(",
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fappend("
+        ),
+        artifactProjectTargetText(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite(",
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite("
+        ),
+        artifactProjectTargetText(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fdir(",
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fdir("
+        ),
+        "call i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aremove(",
+        "call void @File_x3a_x3aRead_x3a_x3aread_x5fall(",
+        "call void @File_x3a_x3aRead_x3a_x3aread_x5fall_x5fbytes(",
+        "call void @File_x3a_x3aRead_x3a_x3aclose(",
+        "call i16 @File_x3a_x3aWrite_x3a_x3awrite(",
+        "call i16 @File_x3a_x3aWrite_x3a_x3aflush(",
+        "call void @File_x3a_x3aWrite_x3a_x3aclose(",
+        "call i16 @File_x3a_x3aAppend_x3a_x3awrite(",
+        "call i16 @File_x3a_x3aAppend_x3a_x3aflush(",
+        "call void @File_x3a_x3aAppend_x3a_x3aclose(",
+        "call void @DirIter_x3a_x3aOpen_x3a_x3anext(",
+        "call void @DirIter_x3a_x3aOpen_x3a_x3aclose("
+    ]
+
+    loop fragment: string@View in required_call_fragments {
+        if !artifactProjectRuntimeInterfaceIrContains(authority, fragment) {
+            return false
+        }
+    }
+    return true
+}
+
+internal procedure artifactProjectRuntimeInterfaceTimeCallsMatch(
+    authority: TestAuthority
+) -> bool {
+    let required_call_fragments: [string@View; 9] = [
+        artifactProjectTargetText(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic(",
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic("
+        ),
+        artifactProjectTargetText(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall(",
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall("
+        ),
+        "call void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fnow(",
+        "call void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fresolution(",
+        "call void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5felapsed(",
+        "call void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fcoarsen(",
+        "call void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall_x5fnow_x5futc(",
+        "call void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall_x5fresolution(",
+        "call void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall_x5fcoarsen("
+    ]
+
+    loop fragment: string@View in required_call_fragments {
+        if !artifactProjectRuntimeInterfaceIrContains(authority, fragment) {
+            return false
+        }
+    }
+    return true
+}
+
+internal procedure artifactProjectRuntimeInterfaceReactorCallsMatch(
+    authority: TestAuthority
+) -> bool {
+    return acceptedProjectConformanceContains(
+        authority,
+        "ArtifactProjectRuntimeInterfaceBuild",
+        "runtimeinterface.conformance.log",
+        "\trule.24.Prim-Reactor-Run\t"
+    ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "\trule.24.Prim-Reactor-Register\t"
+        ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3areactor_x3a_x3arun("
+        ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "call ptr @ultraviolet_x3a_x3aruntime_x3a_x3areactor_x3a_x3aregister("
+        )
+}
+
+internal procedure artifactProjectRuntimeInterfaceOtherHostCallsMatch(
+    authority: TestAuthority
+) -> bool {
+    let required_call_fragments: [string@View; 16] = [
+        artifactProjectTargetText(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3anet_x3a_x3arestrict_x5fto_x5fhost(",
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3anet_x3a_x3arestrict_x5fto_x5fhost("
+        ),
+        artifactProjectTargetText(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3awith_x5fquota(",
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3awith_x5fquota("
+        ),
+        "call ptr @ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3aalloc_x5fraw(",
+        "call void @ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3adealloc_x5fraw(",
+        "call void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexit(",
+        artifactProjectTargetText(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aget_x5fenv(",
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aget_x5fenv("
+        ),
+        artifactProjectTargetText(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexecutable_x5fpath(",
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexecutable_x5fpath("
+        ),
+        "call i64 @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument_x5fcount(",
+        artifactProjectTargetText(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument(",
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument("
+        ),
+        artifactProjectTargetText(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3acurrent_x5fdirectory(",
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3acurrent_x5fdirectory("
+        ),
+        "call i32 @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3arun(",
+        "call i64 @CancelToken_x3a_x3anew(",
+        "call i64 @CancelToken_x3a_x3aActive_x3a_x3achild(",
+        "call void @CancelToken_x3a_x3aActive_x3a_x3await_x5fcancelled(",
+        "call void @CancelToken_x3a_x3aActive_x3a_x3acancel(",
+        "call i8 @CancelToken_x3a_x3aActive_x3a_x3ais_x5fcancelled("
+    ]
+
+    loop fragment: string@View in required_call_fragments {
+        if !artifactProjectRuntimeInterfaceIrContains(authority, fragment) {
+            return false
+        }
+    }
+    return artifactProjectRuntimeInterfaceReactorCallsMatch(authority) &&
+        artifactProjectRuntimeInterfaceTimeCallsMatch(authority)
+}
+
+internal procedure artifactProjectRuntimeInterfaceRegionRuntimeCallsMatch(
+    authority: TestAuthority
+) -> bool {
+    let required_call_fragments: [string@View; 10] = [
+        artifactProjectTargetText(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3anew_x5fscoped(",
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3anew_x5fscoped("
+        ),
+        "call ptr @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aalloc(",
+        "call i64 @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3amark(",
+        "call void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5fto(",
+        artifactProjectTargetText(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5funchecked(",
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5funchecked("
+        ),
+        artifactProjectTargetText(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afreeze(",
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afreeze("
+        ),
+        artifactProjectTargetText(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3athaw(",
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3athaw("
+        ),
+        artifactProjectTargetText(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afree_x5funchecked(",
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afree_x5funchecked("
+        ),
+        "call void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aaddr_x5ftag_x5ffrom(",
+        "call i8 @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aaddr_x5fis_x5factive("
+    ]
+
+    loop fragment: string@View in required_call_fragments {
+        if !artifactProjectRuntimeInterfaceIrContains(authority, fragment) {
+            return false
+        }
+    }
+    return true
+}
+
+internal procedure artifactProjectRuntimeInterfaceScalarRuntimeValuesMatch(
+    authority: TestAuthority
+) -> bool {
+    return artifactProjectRuntimeInterfaceIrContains(
+        authority,
+        "define i8 @RuntimeInterfaceSymbols_x3a_x3aruntimeInterfaceScalarValueProbe("
+    ) &&
+        artifactProjectRuntimeInterfaceIrContains(authority, "%truth = alloca i8") &&
+        artifactProjectRuntimeInterfaceIrContains(authority, "%letter = alloca i32") &&
+        artifactProjectRuntimeInterfaceIrContains(authority, "%unit_value = alloca {}") &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "store i32 -41, ptr %signed_value"
+        ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "store i128 1200, ptr %wide_value"
+        ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "store double 3.750000e+00, ptr %ratio"
+        ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "store float 2.500000e+00, ptr %narrow_ratio"
+        )
+}
+
+internal procedure artifactProjectRuntimeInterfacePointerRuntimeValuesMatch(
+    authority: TestAuthority
+) -> bool {
+    return artifactProjectRuntimeInterfaceIrContains(
+        authority,
+        "define i8 @RuntimeInterfaceSymbols_x3a_x3aruntimeInterfacePointerValueProbe("
+    ) &&
+        artifactProjectRuntimeInterfaceIrContains(authority, "%safe_pointer = alloca ptr") &&
+        artifactProjectRuntimeInterfaceIrContains(authority, "%safe_null = alloca ptr") &&
+        artifactProjectRuntimeInterfaceIrContains(authority, "%raw_null = alloca ptr") &&
+        artifactProjectRuntimeInterfaceIrContains(authority, "%same_raw_null = alloca ptr") &&
+        artifactProjectRuntimeInterfaceIrContains(authority, "icmp eq ptr")
+}
+
+internal procedure artifactProjectRuntimeInterfaceAggregateRuntimeValuesMatch(
+    authority: TestAuthority
+) -> bool {
+    return artifactProjectRuntimeInterfaceIrContains(
+        authority,
+        "define i8 @RuntimeInterfaceSymbols_x3a_x3aruntimeInterfaceAggregateValueProbe("
+    ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "%tuple_value = alloca { i32, i8"
+        ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "%array_value = alloca [3 x i32]"
+        ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "%range_value = alloca { i64, i64 }"
+        ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "%slice_value = alloca { ptr, i64 }"
+        ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "%record_value = alloca { i32, i8"
+        ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "%enum_value = alloca { i8, [3 x i8], [4 x i8]"
+        ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "%modal_value = alloca { i8, [3 x i8], [4 x i8]"
+        )
+}
+
+internal procedure artifactProjectRuntimeInterfaceRuntimeValueDomainMatch(
+    authority: TestAuthority
+) -> bool {
+    return artifactProjectRuntimeInterfaceScalarRuntimeValuesMatch(authority) &&
+        artifactProjectRuntimeInterfacePointerRuntimeValuesMatch(authority) &&
+        artifactProjectRuntimeInterfaceAggregateRuntimeValuesMatch(authority) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "define i8 @RuntimeInterfaceSymbols_x3a_x3aruntimeInterfaceRuntimeValueDomainProbe("
+        ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "call i8 @RuntimeInterfaceSymbols_x3a_x3aruntimeInterfaceScalarValueProbe("
+        ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "call i8 @RuntimeInterfaceSymbols_x3a_x3aruntimeInterfacePointerValueProbe("
+        ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "call i8 @RuntimeInterfaceSymbols_x3a_x3aruntimeInterfaceAggregateValueProbe("
+        ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "store ptr @RuntimeInterfaceSymbols_x3a_x3aruntimeInterfaceValueFunction"
+        ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "runtimeInterfaceRuntimeValueDomainProbe_x3a_x3a_x5fclosure0"
+        ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3ato_x5fmanaged("
+        ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3ato_x5fmanaged("
+        ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "@vtable_x3a_x3aRuntimeInterfaceSymbols_x3a_x3aRuntimeInterfaceDynamicValueOwner"
+        ) &&
+        artifactProjectRuntimeInterfaceIrContains(authority, "%dynamic_value = alloca { ptr, ptr }")
+}
+
+internal procedure artifactProjectRuntimeInterfaceAddressTagRuntimeMatch(
+    authority: TestAuthority
+) -> bool {
+    return artifactProjectRuntimeInterfaceIrContains(
+        authority,
+        "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aaddr_x5ftag_x5ffrom(ptr, ptr)"
+    ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "declare i8 @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aaddr_x5fis_x5factive(ptr)"
+        ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aaddr_x5ftag_x5ffrom("
+        ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aaddr_x5ftag_x5fscope("
+        ) &&
+        artifactProjectRuntimeInterfaceIrContains(
+            authority,
+            "call i8 @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aaddr_x5fis_x5factive("
+        )
+}
+
+internal procedure artifactProjectRuntimeInterfaceRuntimeHostCallsMatch(
+    authority: TestAuthority
+) -> bool {
+    return artifactProjectRuntimeInterfaceIOHostCallsMatch(authority) &&
+        artifactProjectRuntimeInterfaceOtherHostCallsMatch(authority) &&
+        artifactProjectRuntimeInterfaceRegionRuntimeCallsMatch(authority)
+}
+
+internal procedure artifactProjectRuntimeInterfaceCapabilityLoweringPayloadsMatch(
+    authority: TestAuthority
+) -> bool {
+    let required_payloads: [string@View; 31] = [
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DIO%3Bmethod%3Dopen_read",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DIO%3Bmethod%3Dopen_write",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DIO%3Bmethod%3Dopen_append",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DIO%3Bmethod%3Dcreate_write",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DIO%3Bmethod%3Dread_file",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DIO%3Bmethod%3Dread_bytes",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DIO%3Bmethod%3Dwrite_file",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DIO%3Bmethod%3Dwrite_stdout",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DIO%3Bmethod%3Dwrite_stderr",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DIO%3Bmethod%3Dexists",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DIO%3Bmethod%3Dremove",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DIO%3Bmethod%3Dopen_dir",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DIO%3Bmethod%3Dcreate_dir",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DIO%3Bmethod%3Densure_dir",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DIO%3Bmethod%3Dkind",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DIO%3Bmethod%3Drestrict",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DNetwork%3Bmethod%3Drestrict_to_host",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DHeapAllocator%3Bmethod%3Dwith_quota",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DHeapAllocator%3Bmethod%3Dalloc_raw",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DHeapAllocator%3Bmethod%3Ddealloc_raw",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DReactor%3Bmethod%3Drun",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DReactor%3Bmethod%3Dregister",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DTime%3Bmethod%3Dmonotonic",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DTime%3Bmethod%3Dwall",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DMonotonicTime%3Bmethod%3Dnow",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DMonotonicTime%3Bmethod%3Dresolution",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DMonotonicTime%3Bmethod%3Delapsed",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DMonotonicTime%3Bmethod%3Dcoarsen",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DWallTime%3Bmethod%3Dnow_utc",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DWallTime%3Bmethod%3Dresolution",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DWallTime%3Bmethod%3Dcoarsen"
+    ]
+
+    loop payload: string@View in required_payloads {
+        if !acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            payload
+        ) {
+            return false
+        }
+    }
+    return true
+}
+
+internal procedure artifactProjectRuntimeInterfaceCapabilityClassConformanceMatches(
+    authority: TestAuthority
+) -> bool {
+    return acceptedProjectConformanceContains(
+        authority,
+        "ArtifactProjectRuntimeInterfaceBuild",
+        "runtimeinterface.conformance.log",
+        "\tdef.14.CapabilityLoweringSupport\t"
+    ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "\treq.14.CapabilityClassesUseDynamicDispatchModel\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "\treq.14.CapabilityBuiltinMethodLowering\t"
+        ) &&
+        artifactProjectRuntimeInterfaceCapabilityLoweringPayloadsMatch(authority) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "builtin_method_symbol%3Dtrue%3Blower_recv_arg%3Dtrue%3Blower_args%3Dtrue%3Bvtable_call%3Dfalse"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "dynamic_class_object_model%3Dtrue%3Bprimitive_implementation%3Dtrue"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "builtin_capability%3Dfalse%3Bordinary_dynamic_dispatch_path%3Dtrue%3Bvtable_call%3Dtrue"
+        )
+}
+
+internal procedure artifactProjectRuntimeInterfaceConformanceMatches(
+    authority: TestAuthority
+) -> bool {
+    return acceptedProjectConformanceContains(
+        authority,
+        "ArtifactProjectRuntimeInterfaceBuild",
+        "runtimeinterface.conformance.log",
+        "\tRuntimeDecls\t"
+    ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "\tRuntimeDeclsCover\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "\tRuntimeDeclsOk\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "\tdef.20.CancelRuntimeHelpers\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "\tdef.20.CancelIR\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "\trule.20.Lower-Cancel-New\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "\trule.20.Lower-Cancel-Request\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "\trule.20.Lower-Cancel-Wait\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "\trequirement.20.CancellationCheckpointLowering\t"
+    )
+}
+
+internal procedure artifactProjectRuntimeInterfaceRegionRuntimeConformanceMatches(
+    authority: TestAuthority
+) -> bool {
+    return acceptedProjectConformanceContains(
+        authority,
+        "ArtifactProjectRuntimeInterfaceBuild",
+        "runtimeinterface.conformance.log",
+        "\tdef.RuntimeRegionEntry\t"
+    ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "operation%3DRegionEntry%3Bsource%3DIRRegionEmission"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "runtime_symbol%3DRegion::mark"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "\tdef.RuntimeAddressTags\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "operation%3DAddrTags%3Bsource%3DIRAllocEmission"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "tag_set_by%3Duv_region_addr_tag_set"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "\tdef.RuntimeRegionStack\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "operation%3DUpdateRegionStack%3Bsource%3DIRRegionEmission"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "entry%3Dframe_tag,target,scope,mark"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "\tdef.FreshRuntimeAddress\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "operation%3DFreshAddr%3Bsource%3DIRAllocEmission"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "reuse_guard%3Darena_bump_and_free_quarantine"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "\tdef.ResolveRuntimeRegionEntry\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "runtime_resolver%3Duv_region_resolve_entry"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "\tdef.ActiveRuntimeRegion\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "operation%3DActiveTarget%3Bsource%3DLowerAllocExpr%3Bbranch%3Dimplicit"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "\tdef.ResolveRuntimeRegionTargetAndTag\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "tag_source%3DUVRegionEntry.tag"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "\tdef.FreshRuntimeRegionTagAndArena\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "operation%3DFreshTagFreshArena%3Bsource%3DIRRegionEmission"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "handle_used_as_tag_and_target%3Dtrue"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "\tdef.FreshRuntimeRegionTags\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "operation%3DFreshTags%3Bsource%3DLowerMethodCall"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "retags_matching_target%3Dtrue"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "\treq.RegionRuntimeOwnershipBoundary\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "requirement%3DRegionRuntimeOwnershipBoundary%3Bsource%3DEmitCleanupAction"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "\treq.RegionReleaseCleanupBeforeArenaReclaim\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "release_action%3DReleaseRegion"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log",
+            "arena_reclaim_symbol%3DRegion::reset_to"
+        )
+}
+
+internal procedure artifactProjectRuntimeInterfaceSymbolsExercise(
+    authority: TestAuthority
+) -> DiagnosticFixtureExecutionResult {
+    if !artifactProjectRunCase(
+        authority,
+        "Fixtures/ArtifactProjects/RuntimeInterfaceSymbols",
+        authority.target_profile,
+        "off",
+        "ArtifactProjectRuntimeInterface.out",
+        "ArtifactProjectRuntimeInterface.err",
+        "ArtifactProjectRuntimeInterfaceBuild",
+        "runtimeinterface.conformance.log"
+    ) {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+
+    let passed: bool =
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "Intermediate/IR/Source/RuntimeInterfaceSymbols.ll"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            artifactProjectTargetText(
+                authority,
+                "Intermediate/Obj/Source/RuntimeInterfaceSymbols.obj",
+                "Intermediate/Obj/Source/RuntimeInterfaceSymbols.o"
+            )
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            artifactProjectTargetText(
+                authority,
+                "Library/RuntimeInterfaceSymbols.lib",
+                "Library/libRuntimeInterfaceSymbols.a"
+            )
+        ) &&
+        artifactProjectArchiveConformanceMatches(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "runtimeinterface.conformance.log"
+        ) &&
+        artifactProjectRuntimeInterfaceConformanceMatches(authority) &&
+        artifactProjectRuntimeInterfaceRegionRuntimeConformanceMatches(authority) &&
+        artifactProjectRuntimeInterfaceCapabilityClassConformanceMatches(authority) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "ArtifactProjectRuntimeInterfaceBuild",
+            "Logs/BuildTelemetry.tsv",
+            artifactProjectTargetText(
+                authority,
+                "output-start\tRuntimeInterfaceSymbols\tkind=library;modules=1;emit_ir=ll;target=x86_64-win64",
+                "output-start\tRuntimeInterfaceSymbols\tkind=library;modules=1;emit_ir=ll;target=x86_64-sysv"
+            )
+        ) &&
+        artifactProjectRuntimeInterfaceSymbolsMatch(authority) &&
+        artifactProjectRuntimeInterfaceSignaturesMatch(authority) &&
+        artifactProjectRuntimeInterfaceRuntimeValueDomainMatch(authority) &&
+        artifactProjectRuntimeInterfaceAddressTagRuntimeMatch(authority) &&
+        artifactProjectRuntimeInterfaceRuntimeHostCallsMatch(authority)
+    if !passed {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+    return diagnosticFixtureExecutionResult(
+        true,
+        RUNTIME_INTERFACE_SYMBOL_EXECUTED_OBLIGATION_COUNT
+    )
+}

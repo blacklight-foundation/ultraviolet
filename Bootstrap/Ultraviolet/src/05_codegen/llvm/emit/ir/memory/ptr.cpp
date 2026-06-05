@@ -321,7 +321,7 @@ llvm::Value *ResolveAddrTuplePointer(LLVMEmitter &emitter,
     if (!field_offset.has_value())
     {
       if (const auto layout =
-              ::ultraviolet::analysis::layout::RecordLayoutOf(scope, tuple->elements))
+              ::ultraviolet::analysis::layout::TupleLayoutOf(scope, tuple->elements))
       {
         if (derived.tuple_index < layout->offsets.size())
         {

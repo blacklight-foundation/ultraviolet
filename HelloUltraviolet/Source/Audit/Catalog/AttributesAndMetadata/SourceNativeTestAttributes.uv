@@ -90,25 +90,25 @@ public procedure validatedAttributesAndMetadataSourceNativeTestAttributesObligat
     }
     if acceptedObligationEntryMatches(
         "conformance.TestAttributeDynamicSemantics",
-        28882usize,
+        28884usize,
         "HelloUltraviolet::Tests",
         "runAttributesSourceNativeTestsReference",
         "Source/Tests/SourceNativeTests.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if artifactBehaviorObligationEntryMatches(
         "lowering.TestHarnessGeneration",
-        28903usize,
-        "HelloUltraviolet::Tests",
-        "runAttributesSourceNativeTestsReference",
-        "Source/Tests/SourceNativeTests.uv"
+        28905usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
+        "validatedArtifactProjectFixtureCount",
+        "Fixtures/ArtifactProjects/AttributeTestHarness/Source/Tests/Harness.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.TestDiscoveryOrder",
-        28962usize,
+        28964usize,
         "HelloUltraviolet::Tests",
         "runAttributesSourceNativeTestsReference",
         "Source/Tests/SourceNativeTests.uv"
@@ -117,7 +117,7 @@ public procedure validatedAttributesAndMetadataSourceNativeTestAttributesObligat
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.TestAttributes",
-        28980usize,
+        28982usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedAttributesRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Attributes/TestAttributeWrongTarget/Source/Main.uv"

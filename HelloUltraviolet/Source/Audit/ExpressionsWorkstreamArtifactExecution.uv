@@ -1,0 +1,216 @@
+//! Narrow artifact execution gates for Expressions workstream 18.
+
+internal let EXPRESSIONS_WORKSTREAM_SEMANTICS_BUILD: string@View =
+    "ExpressionsWorkstreamExpressionSemanticsBuild"
+internal let EXPRESSIONS_WORKSTREAM_SEMANTICS_LOG: string@View =
+    "expressions-workstream-expression-semantics.conformance.log"
+internal let EXPRESSIONS_WORKSTREAM_PTR_NULL_BUILD: string@View =
+    "ExpressionsWorkstreamPtrNullBuild"
+internal let EXPRESSIONS_WORKSTREAM_PTR_NULL_LOG: string@View =
+    "expressions-workstream-ptr-null.conformance.log"
+
+internal procedure expressionsWorkstreamExpressionSemanticsBuild(
+    authority: TestAuthority
+) -> bool {
+    return acceptedProjectRunCase(
+        authority,
+        "Fixtures/AcceptedProjects/ExpressionSemantics",
+        "",
+        "ExpressionsWorkstreamExpressionSemantics.out",
+        "ExpressionsWorkstreamExpressionSemantics.err",
+        EXPRESSIONS_WORKSTREAM_SEMANTICS_BUILD,
+        EXPRESSIONS_WORKSTREAM_SEMANTICS_LOG
+    )
+}
+
+internal procedure expressionsWorkstreamPtrNullBuild(
+    authority: TestAuthority
+) -> bool {
+    return acceptedProjectRunCase(
+        authority,
+        "Fixtures/AcceptedProjects/PtrNullReturn",
+        "",
+        "ExpressionsWorkstreamPtrNull.out",
+        "ExpressionsWorkstreamPtrNull.err",
+        EXPRESSIONS_WORKSTREAM_PTR_NULL_BUILD,
+        EXPRESSIONS_WORKSTREAM_PTR_NULL_LOG
+    )
+}
+
+internal procedure expressionsWorkstreamSemanticsConformanceContains(
+    authority: TestAuthority,
+    required_text: string@View
+) -> bool {
+    return acceptedProjectConformanceContains(
+        authority,
+        EXPRESSIONS_WORKSTREAM_SEMANTICS_BUILD,
+        EXPRESSIONS_WORKSTREAM_SEMANTICS_LOG,
+        required_text
+    )
+}
+
+internal procedure expressionsWorkstreamPtrNullConformanceContains(
+    authority: TestAuthority,
+    required_text: string@View
+) -> bool {
+    return acceptedProjectConformanceContains(
+        authority,
+        EXPRESSIONS_WORKSTREAM_PTR_NULL_BUILD,
+        EXPRESSIONS_WORKSTREAM_PTR_NULL_LOG,
+        required_text
+    )
+}
+
+#test(name: "expressions workstream lowering conformance exercise")
+internal procedure expressionsWorkstreamLoweringConformanceExercise(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+    return expressionsWorkstreamExpressionSemanticsBuild(authority) &&
+        expressionsWorkstreamPtrNullBuild(authority) &&
+        expressionsWorkstreamSemanticsConformanceContains(
+            authority,
+            "\trule.16.Lower-Expr-FieldAccess\t"
+        ) &&
+        expressionsWorkstreamSemanticsConformanceContains(
+            authority,
+            "\trule.16.Lower-Expr-TupleAccess\t"
+        ) &&
+        expressionsWorkstreamSemanticsConformanceContains(
+            authority,
+            "\trule.16.Lower-Expr-IndexFamily\t"
+        ) &&
+        expressionsWorkstreamSemanticsConformanceContains(
+            authority,
+            "\trule.16.Lower-Place-Ident\t"
+        ) &&
+        expressionsWorkstreamSemanticsConformanceContains(
+            authority,
+            "\trule.16.Lower-Place-Field\t"
+        ) &&
+        expressionsWorkstreamSemanticsConformanceContains(
+            authority,
+            "\trule.16.Lower-Place-Tuple\t"
+        ) &&
+        expressionsWorkstreamSemanticsConformanceContains(
+            authority,
+            "\trule.16.Lower-Place-Index\t"
+        ) &&
+        expressionsWorkstreamSemanticsConformanceContains(
+            authority,
+            "\trule.16.Lower-Place-Deref\t"
+        ) &&
+        expressionsWorkstreamSemanticsConformanceContains(
+            authority,
+            "\treq.16.PlaceReadWriteLoweringPreservesAccessBehavior\t"
+        ) &&
+        expressionsWorkstreamSemanticsConformanceContains(
+            authority,
+            "\trule.16.Lower-Expr-Literal\t"
+        ) &&
+        expressionsWorkstreamPtrNullConformanceContains(
+            authority,
+            "\trule.16.Lower-Expr-PtrNull\t"
+        ) &&
+        expressionsWorkstreamSemanticsConformanceContains(
+            authority,
+            "\trule.16.Lower-Expr-Ident-Local\t"
+        ) &&
+        expressionsWorkstreamSemanticsConformanceContains(
+            authority,
+            "\trule.16.Lower-Expr-Ident-Path\t"
+        ) &&
+        expressionsWorkstreamSemanticsConformanceContains(
+            authority,
+            "\trule.16.Lower-Expr-Unary\t"
+        ) &&
+        expressionsWorkstreamSemanticsConformanceContains(
+            authority,
+            "\trule.16.Lower-Expr-Bin-And\t"
+        ) &&
+        expressionsWorkstreamSemanticsConformanceContains(
+            authority,
+            "\trule.16.Lower-Expr-Bin-Or\t"
+        ) &&
+        expressionsWorkstreamSemanticsConformanceContains(
+            authority,
+            "\trule.16.Lower-Expr-Binary\t"
+        ) &&
+        expressionsWorkstreamSemanticsConformanceContains(
+            authority,
+            "\trule.16.Lower-Expr-Range\t"
+        )
+}
+
+#test(name: "expressions workstream index diagnostics and runtime panic exercise")
+internal procedure expressionsWorkstreamIndexDiagnosticsAndRuntimePanicExercise(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+    var result: DiagnosticFixtureExecutionResult =
+        diagnosticExerciseProjectFixtureDirectory(
+            authority,
+            "Fixtures/RejectedSource/Expressions/ArraySliceIndexDiagnostics",
+            true
+        )
+    result = outputDiagnosticMergeResult(
+        result,
+        artifactProjectArrayIndexOOBPanicExercise(authority)
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        artifactProjectSliceRangeOOBPanicExercise(authority)
+    )
+    return result.passed && result.count == 3usize &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectArrayIndexOOBPanicBuild",
+            "array_index_oob.conformance.log",
+            "\treq.16.IndexAccessRuntimeFailuresAndControlPropagation\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectSliceRangeOOBPanicBuild",
+            "slice_range_oob.conformance.log",
+            "\treq.16.IndexAccessRuntimeFailuresAndControlPropagation\t"
+        )
+}
+
+#test(name: "expressions workstream cast panic exercise")
+internal procedure expressionsWorkstreamCastPanicExercise(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+    let result: DiagnosticFixtureExecutionResult =
+        artifactProjectRuntimePanicNonZeroExercise(
+            authority,
+            "Fixtures/ArtifactProjects/CastPanic",
+            "ArtifactProjectCastPanic.out",
+            "ArtifactProjectCastPanic.err",
+            "ArtifactProjectCastPanicBuild",
+            "cast_panic.conformance.log",
+            "Binary/CastPanic.exe",
+            "Binary/CastPanic.map",
+            "Intermediate/Obj/Source/CastPanic.obj",
+            "\trule.16.EvalSigma-Cast-Panic\t"
+        )
+    return result.passed && result.count == 1usize
+}

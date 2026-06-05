@@ -5,6 +5,9 @@
 #include "05_codegen/lower/expr/expr_common.h"
 
 #include <functional>
+#include <mutex>
+#include <string_view>
+#include <utility>
 #include <variant>
 
 #include "00_core/assert_spec.h"
@@ -15,6 +18,7 @@
 #include "05_codegen/cleanup/cleanup.h"
 #include "05_codegen/globals/globals.h"
 #include "05_codegen/intrinsics/builtins.h"
+#include "05_codegen/lower/expr/field_access.h"
 #include "05_codegen/lower/expr/identifier.h"
 #include "05_codegen/lower/expr/range.h"
 #include "05_codegen/lower/pattern/ir_pattern.h"
@@ -40,6 +44,174 @@ std::string ModulePathString(const std::vector<std::string>& path) {
     out += path[i];
   }
   return out;
+}
+
+void AppendRuntimeBindingUpdateField(std::string& payload,
+                                     std::string_view key,
+                                     std::string_view value) {
+  if (!payload.empty()) {
+    payload.push_back(';');
+  }
+  payload.append(key);
+  payload.push_back('=');
+  payload.append(value);
+}
+
+void AppendRuntimeBindingUpdateField(std::string& payload,
+                                     std::string_view key,
+                                     const std::string& value) {
+  AppendRuntimeBindingUpdateField(payload, key, std::string_view(value));
+}
+
+void AppendRuntimeBindingUpdateField(std::string& payload,
+                                     std::string_view key,
+                                     const char* value) {
+  AppendRuntimeBindingUpdateField(payload, key, std::string_view(value ? value : "-"));
+}
+
+void AppendRuntimeBindingUpdateField(std::string& payload,
+                                     std::string_view key,
+                                     std::uint64_t value) {
+  AppendRuntimeBindingUpdateField(payload, key, std::to_string(value));
+}
+
+void AppendRuntimeBindingUpdateField(std::string& payload,
+                                     std::string_view key,
+                                     bool value) {
+  AppendRuntimeBindingUpdateField(payload, key,
+                                  std::string_view(value ? "true" : "false"));
+}
+
+std::string RuntimeBindingUpdatePayload(const BindingState& state,
+                                        std::string_view name,
+                                        std::string_view branch,
+                                        std::string_view ir_node) {
+  std::string payload;
+  AppendRuntimeBindingUpdateField(payload, "operation", "UpdateVal");
+  AppendRuntimeBindingUpdateField(payload, "source", "LowerWritePlace");
+  AppendRuntimeBindingUpdateField(payload, "branch", branch);
+  AppendRuntimeBindingUpdateField(payload, "scope_id", state.scope_runtime_id);
+  AppendRuntimeBindingUpdateField(payload, "bind_id", state.binding_id);
+  AppendRuntimeBindingUpdateField(payload, "name", name);
+  AppendRuntimeBindingUpdateField(payload, "ir", ir_node);
+  AppendRuntimeBindingUpdateField(payload, "scope_value_updated", true);
+  AppendRuntimeBindingUpdateField(payload, "preserves_state", true);
+  return payload;
+}
+
+void RecordRuntimeBindingUpdateOnce(std::once_flag& flag,
+                                    std::string payload) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  std::call_once(flag, [payload = std::move(payload)]() {
+    core::Conformance::Record("def.UpdateRuntimeBindingValue",
+                              std::nullopt,
+                              payload);
+  });
+}
+
+std::once_flag g_update_runtime_binding_direct_obligation_once;
+std::once_flag g_update_runtime_binding_alias_obligation_once;
+
+std::string_view RawPtrQualName(analysis::RawPtrQual qual) {
+  return qual == analysis::RawPtrQual::Mut ? "mut" : "imm";
+}
+
+std::once_flag g_raw_pointer_write_mut_obligation_once;
+std::once_flag g_raw_pointer_write_imm_obligation_once;
+std::once_flag g_safe_pointer_expired_write_valid_obligation_once;
+std::once_flag g_safe_pointer_expired_write_static_obligation_once;
+std::once_flag g_safe_pointer_expired_write_unspecified_obligation_once;
+std::once_flag g_safe_pointer_expired_write_path_obligation_once;
+std::once_flag g_safe_pointer_expired_write_fallback_obligation_once;
+std::once_flag g_safe_pointer_null_write_valid_obligation_once;
+std::once_flag g_safe_pointer_null_write_static_obligation_once;
+std::once_flag g_safe_pointer_null_write_unspecified_obligation_once;
+std::once_flag g_safe_pointer_null_write_path_obligation_once;
+std::once_flag g_safe_pointer_null_write_fallback_obligation_once;
+
+std::once_flag& RawPointerWriteFlag(analysis::RawPtrQual qual) {
+  return qual == analysis::RawPtrQual::Mut
+      ? g_raw_pointer_write_mut_obligation_once
+      : g_raw_pointer_write_imm_obligation_once;
+}
+
+std::once_flag& SafePointerExpiredWriteFlag(std::string_view branch) {
+  if (branch == "valid-active-check") {
+    return g_safe_pointer_expired_write_valid_obligation_once;
+  }
+  if (branch == "static-expired") {
+    return g_safe_pointer_expired_write_static_obligation_once;
+  }
+  if (branch == "unspecified-active-check") {
+    return g_safe_pointer_expired_write_unspecified_obligation_once;
+  }
+  if (branch == "path-active-check") {
+    return g_safe_pointer_expired_write_path_obligation_once;
+  }
+  return g_safe_pointer_expired_write_fallback_obligation_once;
+}
+
+std::once_flag& SafePointerNullWriteFlag(std::string_view branch) {
+  if (branch == "valid-null-check") {
+    return g_safe_pointer_null_write_valid_obligation_once;
+  }
+  if (branch == "static-null") {
+    return g_safe_pointer_null_write_static_obligation_once;
+  }
+  if (branch == "unspecified-null-check") {
+    return g_safe_pointer_null_write_unspecified_obligation_once;
+  }
+  if (branch == "path-null-check") {
+    return g_safe_pointer_null_write_path_obligation_once;
+  }
+  return g_safe_pointer_null_write_fallback_obligation_once;
+}
+
+void RecordRawPointerWriteLowering(analysis::RawPtrQual qual) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  std::call_once(RawPointerWriteFlag(qual), [qual]() {
+    std::string payload =
+        "source=LowerWritePlaceDeref;operation=WritePtrSigma;runtime_value=RawPtr;qual=";
+    payload += RawPtrQualName(qual);
+    payload += ";check=nonnull;panic=NullDeref;ir=IRWritePtr;state_metadata=none";
+    core::Conformance::Record("def.RawPointerRuntimeValue", std::nullopt, payload);
+    core::Conformance::Record("req.RawPointerLowering", std::nullopt, payload);
+    core::Conformance::Record("rule.13.WritePtr-Raw-Invalid", std::nullopt, payload);
+  });
+}
+
+void RecordSafePointerNullWriteLowering(std::string_view branch) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  std::string branch_name(branch);
+  std::call_once(SafePointerNullWriteFlag(branch),
+                 [branch_name = std::move(branch_name)]() {
+    std::string payload =
+        "source=LowerWritePlaceDeref;operation=WritePtrSigma;branch=";
+    payload += branch_name;
+    payload += ";ptr_state=Null;check=nonnull;panic=NullDeref";
+    core::Conformance::Record("rule.13.WritePtr-Null", std::nullopt, payload);
+  });
+}
+
+void RecordSafePointerExpiredWriteLowering(std::string_view branch) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  std::string branch_name(branch);
+  std::call_once(SafePointerExpiredWriteFlag(branch),
+                 [branch_name = std::move(branch_name)]() {
+    std::string payload =
+        "source=LowerWritePlaceDeref;operation=WritePtrSigma;branch=";
+    payload += branch_name;
+    payload += ";ptr_state=Expired;check=addr_active;panic=ExpiredDeref";
+    core::Conformance::Record("rule.13.WritePtr-Expired", std::nullopt, payload);
+  });
 }
 
 analysis::TypeRef IndexedElementType(const ast::Expr& access,
@@ -83,6 +255,8 @@ analysis::TypeRef IndexedElementType(const ast::Expr& access,
 }  // namespace
 
 LowerResult LowerReadPlace(const ast::Expr& place, LowerCtx& ctx) {
+  SPEC_RULE("req.16.PlaceReadWriteLoweringPreservesAccessBehavior");
+
   return std::visit(
       [&](const auto& node) -> LowerResult {
         using T = std::decay_t<decltype(node)>;
@@ -232,6 +406,7 @@ LowerResult LowerReadPlace(const ast::Expr& place, LowerCtx& ctx) {
         } else if constexpr (std::is_same_v<T, ast::IndexAccessExpr>) {
           if (std::holds_alternative<ast::RangeExpr>(node.index->node)) {
             SPEC_RULE("Lower-ReadPlace-Index-Range");
+            SPEC_RULE("req.16.IndexAccessRuntimeFailuresAndControlPropagation");
             auto base_result = LowerReadPlace(*node.base, ctx);
             const auto& range_node = std::get<ast::RangeExpr>(node.index->node);
             auto range_result = LowerRangeExpr(range_node, ctx);
@@ -259,6 +434,7 @@ LowerResult LowerReadPlace(const ast::Expr& place, LowerCtx& ctx) {
 
           if (IsRangeIndexExpr(*node.index, ctx)) {
             SPEC_RULE("Lower-ReadPlace-Index-Range");
+            SPEC_RULE("req.16.IndexAccessRuntimeFailuresAndControlPropagation");
             auto base_result = LowerReadPlace(*node.base, ctx);
             auto range_result = LowerExpr(*node.index, ctx);
             const auto range_kind = RangeIndexKindOf(*node.index, ctx);
@@ -325,6 +501,7 @@ LowerResult LowerReadPlace(const ast::Expr& place, LowerCtx& ctx) {
           seq.push_back(index_result.ir);
           seq.push_back(LowerImplicitKeyAccess(place, ast::KeyMode::Read, ctx));
           if (needs_check) {
+            SPEC_RULE("req.16.IndexAccessRuntimeFailuresAndControlPropagation");
             seq.push_back(MakeIR(std::move(check)));
             seq.push_back(PanicFollowup(ctx));
           }
@@ -453,6 +630,8 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
                           const IRValue& value,
                           LowerCtx& ctx,
                           bool allow_drop) {
+  SPEC_RULE("req.16.PlaceReadWriteLoweringPreservesAccessBehavior");
+
   auto register_ptr_type = [&](IRValue& ptr_value,
                                const analysis::TypeRef& elem_type) {
     if (!elem_type) {
@@ -564,6 +743,12 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
                   IRStoreVar store;
                   store.name = store_name;
                   store.value = value;
+                  RecordRuntimeBindingUpdateOnce(
+                      g_update_runtime_binding_alias_obligation_once,
+                      RuntimeBindingUpdatePayload(*state,
+                                                  alias->binding_name,
+                                                  "alias",
+                                                  "IRStoreVar"));
                   IRPtr key_ir = LowerImplicitKeyAccess(place, ast::KeyMode::Write, ctx);
                   return SeqIR({key_ir, MakeIR(std::move(store))});
                 }
@@ -605,7 +790,7 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
             }
           }
 
-          if (ctx.GetBindingState(node.name)) {
+          if (const BindingState* local_state = ctx.GetBindingState(node.name)) {
             SPEC_RULE(allow_drop ? "Lower-WritePlace-Ident-Local"
                                  : "LowerWriteSub-Ident-Local");
             if (allow_drop) {
@@ -621,6 +806,12 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
             if (allow_drop) {
               store.name = node.name;
               store.value = value;
+              RecordRuntimeBindingUpdateOnce(
+                  g_update_runtime_binding_direct_obligation_once,
+                  RuntimeBindingUpdatePayload(*local_state,
+                                              node.name,
+                                              "direct",
+                                              "IRStoreVar"));
               IRPtr key_ir = LowerImplicitKeyAccess(place, ast::KeyMode::Write, ctx);
               return SeqIR({key_ir, MakeIR(std::move(store))});
             }
@@ -761,6 +952,13 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
           IRWritePtr write;
           write.ptr = ptr_value;
           write.value = value;
+          RecordStateFieldLowering(
+              "write",
+              *node.base,
+              node.name,
+              "AddrField",
+              "IRWritePtr",
+              ctx);
 
           if (allow_drop) {
             UpdateBindingAfterFieldAssign(place, ctx);
@@ -827,6 +1025,7 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
           if (std::holds_alternative<ast::RangeExpr>(node.index->node)) {
             SPEC_RULE(allow_drop ? "Lower-WritePlace-Index-Range"
                                  : "LowerWriteSub-Index-Range");
+            SPEC_RULE("req.16.IndexAccessRuntimeFailuresAndControlPropagation");
             const auto& range_node = std::get<ast::RangeExpr>(node.index->node);
             auto range_result = LowerRangeExpr(range_node, ctx);
 
@@ -871,6 +1070,7 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
           if (IsRangeIndexExpr(*node.index, ctx)) {
             SPEC_RULE(allow_drop ? "Lower-WritePlace-Index-Range"
                                  : "LowerWriteSub-Index-Range");
+            SPEC_RULE("req.16.IndexAccessRuntimeFailuresAndControlPropagation");
             auto range_result = LowerExpr(*node.index, ctx);
             const auto range_kind = RangeIndexKindOf(*node.index, ctx);
 
@@ -968,6 +1168,7 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
           seq.push_back(index_result.ir);
           seq.push_back(LowerImplicitKeyAccess(place, ast::KeyMode::Write, ctx));
           if (needs_check) {
+            SPEC_RULE("req.16.IndexAccessRuntimeFailuresAndControlPropagation");
             seq.push_back(MakeIR(std::move(check)));
             seq.push_back(PanicFollowup(ctx));
           }
@@ -1007,9 +1208,11 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
             if (const auto* ptr = std::get_if<analysis::TypePtr>(&ptr_type->node)) {
               if (ptr->state.has_value()) {
                 if (*ptr->state == analysis::PtrState::Null) {
+                  RecordSafePointerNullWriteLowering("static-null");
                   return SeqIR({ptr_result.ir, LowerPanic(PanicReason::NullDeref, ctx)});
                 }
                 if (*ptr->state == analysis::PtrState::Expired) {
+                  RecordSafePointerExpiredWriteLowering("static-expired");
                   return SeqIR({ptr_result.ir, LowerPanic(PanicReason::ExpiredDeref, ctx)});
                 }
                 if (*ptr->state == analysis::PtrState::Valid) {
@@ -1017,6 +1220,7 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
                   null_check.op = "nonnull";
                   null_check.reason = PanicReasonString(PanicReason::NullDeref);
                   null_check.lhs = ptr_result.value;
+                  RecordSafePointerNullWriteLowering("valid-null-check");
 
                   IRCall active_call;
                   active_call.callee.kind = IRValue::Kind::Symbol;
@@ -1030,6 +1234,7 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
                   active_check.op = "addr_active";
                   active_check.reason = PanicReasonString(PanicReason::ExpiredDeref);
                   active_check.lhs = active_value;
+                  RecordSafePointerExpiredWriteLowering("valid-active-check");
 
                   IRWritePtr write;
                   write.ptr = ptr_result.value;
@@ -1049,6 +1254,7 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
                 null_check.op = "nonnull";
                 null_check.reason = PanicReasonString(PanicReason::NullDeref);
                 null_check.lhs = ptr_result.value;
+                RecordSafePointerNullWriteLowering("unspecified-null-check");
 
                 IRCall active_call;
                 active_call.callee.kind = IRValue::Kind::Symbol;
@@ -1062,6 +1268,7 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
                 active_check.op = "addr_active";
                 active_check.reason = PanicReasonString(PanicReason::ExpiredDeref);
                 active_check.lhs = active_value;
+                RecordSafePointerExpiredWriteLowering("unspecified-active-check");
 
                 IRWritePtr write;
                 write.ptr = ptr_result.value;
@@ -1080,12 +1287,29 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
               if (raw->qual == analysis::RawPtrQual::Imm) {
                 return SeqIR({ptr_result.ir, LowerPanic(PanicReason::Other, ctx)});
               }
+              RecordRawPointerWriteLowering(raw->qual);
+
+              IRCheckOp null_check;
+              null_check.op = "nonnull";
+              null_check.reason = PanicReasonString(PanicReason::NullDeref);
+              null_check.lhs = ptr_result.value;
+
+              IRWritePtr write;
+              write.ptr = ptr_result.value;
+              write.value = value;
+              return SeqIR({
+                  ptr_result.ir,
+                  MakeIR(std::move(null_check)),
+                  PanicFollowup(ctx),
+                  MakeIR(std::move(write)),
+              });
             } else if (const auto* path = std::get_if<analysis::TypePathType>(&ptr_type->node)) {
               if (!path->path.empty() && path->path.back() == "Ptr") {
                 IRCheckOp null_check;
                 null_check.op = "nonnull";
                 null_check.reason = PanicReasonString(PanicReason::NullDeref);
                 null_check.lhs = ptr_result.value;
+                RecordSafePointerNullWriteLowering("path-null-check");
 
                 IRCall active_call;
                 active_call.callee.kind = IRValue::Kind::Symbol;
@@ -1099,6 +1323,7 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
                 active_check.op = "addr_active";
                 active_check.reason = PanicReasonString(PanicReason::ExpiredDeref);
                 active_check.lhs = active_value;
+                RecordSafePointerExpiredWriteLowering("path-active-check");
 
                 IRWritePtr write;
                 write.ptr = ptr_result.value;
@@ -1119,6 +1344,7 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
           null_check.op = "nonnull";
           null_check.reason = PanicReasonString(PanicReason::NullDeref);
           null_check.lhs = ptr_result.value;
+          RecordSafePointerNullWriteLowering("fallback-null-check");
 
           IRCall active_call;
           active_call.callee.kind = IRValue::Kind::Symbol;
@@ -1132,6 +1358,7 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
           active_check.op = "addr_active";
           active_check.reason = PanicReasonString(PanicReason::ExpiredDeref);
           active_check.lhs = active_value;
+          RecordSafePointerExpiredWriteLowering("fallback-active-check");
 
           IRWritePtr write;
           write.ptr = ptr_result.value;
@@ -1168,10 +1395,15 @@ IRPtr LowerWritePlaceSub(const ast::Expr& place,
 
 IRPlace LowerPlace(const ast::Expr& place, LowerCtx& /*ctx*/) {
   SPEC_RULE("Lower-Place-Ident");
+  SPEC_RULE("rule.16.Lower-Place-Ident");
   SPEC_RULE("Lower-Place-Field");
+  SPEC_RULE("rule.16.Lower-Place-Field");
   SPEC_RULE("Lower-Place-Tuple");
+  SPEC_RULE("rule.16.Lower-Place-Tuple");
   SPEC_RULE("Lower-Place-Index");
+  SPEC_RULE("rule.16.Lower-Place-Index");
   SPEC_RULE("Lower-Place-Deref");
+  SPEC_RULE("rule.16.Lower-Place-Deref");
 
   IRPlace result;
   result.repr = BuildPlaceRepr(place);

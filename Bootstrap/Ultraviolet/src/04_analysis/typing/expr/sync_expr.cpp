@@ -22,6 +22,13 @@ namespace {
 
 static inline void SpecDefsSync() {
   SPEC_DEF("T-Sync", "17.3.5");
+  SPEC_DEF("def.21.SyncYieldContainment", "21.3.4");
+  SPEC_DEF("rule.21.Sync-Yield-Err", "21.3.4");
+  SPEC_DEF("rule.21.Sync-YieldFrom-Err", "21.3.4");
+  SPEC_DEF("rule.21.T-Sync", "21.3.4");
+  SPEC_DEF("rule.21.Sync-Async-Context-Err", "21.3.4");
+  SPEC_DEF("rule.21.Sync-Out-Err", "21.3.4");
+  SPEC_DEF("rule.21.Sync-In-Err", "21.3.4");
 }
 
 struct YieldUsage {
@@ -340,19 +347,22 @@ ExprTypeResult TypeSyncExpr(const ScopeContext& ctx,
                             const ExprTypeFn& type_expr,
                             const IdentTypeFn& /*type_ident*/,
                             const PlaceTypeFn& /*type_place*/) {
-  SPEC_RULE("T-Sync");
+  SpecDefsSync();
   ExprTypeResult result;
 
   const auto yield_usage = AnalyzeYieldUsage(expr.value);
+  SPEC_RULE("def.21.SyncYieldContainment");
 
   // Check for yield inside sync expression (disallowed)
   if (yield_usage.has_yield) {
+    SPEC_RULE("rule.21.Sync-Yield-Err");
     result.diag_id = "E-CON-0212";
     return result;
   }
 
   // Check for yield from inside sync expression (disallowed)
   if (yield_usage.has_yield_from) {
+    SPEC_RULE("rule.21.Sync-YieldFrom-Err");
     result.diag_id = "E-CON-0223";
     return result;
   }
@@ -360,6 +370,7 @@ ExprTypeResult TypeSyncExpr(const ScopeContext& ctx,
   // Check that we're not in an async context
   // sync is only valid in non-async procedures
   if (AsyncSigOf(ctx, type_ctx.return_type).has_value()) {
+    SPEC_RULE("rule.21.Sync-Async-Context-Err");
     result.diag_id = "E-CON-0250";  // sync in async context
     return result;
   }
@@ -374,16 +385,20 @@ ExprTypeResult TypeSyncExpr(const ScopeContext& ctx,
   // Extract async signature
   const auto async_sig = AsyncSigOf(ctx, value_result.type);
   if (!async_sig.has_value() || !IsPrimType(async_sig->out, "()")) {
+    SPEC_RULE("rule.21.Sync-Out-Err");
     result.diag_id = "E-CON-0251";  // not a valid async for sync
     return result;
   }
 
   // Async must have In = ()
   if (!IsPrimType(async_sig->in, "()")) {
+    SPEC_RULE("rule.21.Sync-In-Err");
     result.diag_id = "E-CON-0252";  // async requires input
     return result;
   }
 
+  SPEC_RULE("T-Sync");
+  SPEC_RULE("rule.21.T-Sync");
   result.ok = true;
   // If error type is ! (never), the union simplifies to just the result type
   // because T | ! is equivalent to T (! contributes no inhabitants)

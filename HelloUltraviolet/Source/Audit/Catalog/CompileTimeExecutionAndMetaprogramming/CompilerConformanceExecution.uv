@@ -1,0 +1,553 @@
+//! Compile-time accepted-project compiler conformance checks.
+
+internal let COMPTIME_CONFORMANCE_PROJECT_PATH: string@View =
+    "Fixtures/AcceptedProjects/ComptimeConformance"
+internal let COMPTIME_CONFORMANCE_LOG_NAME: string@View =
+    "comptime.conformance.log"
+
+internal procedure comptimeConformanceProjectRuns(
+    authority: TestAuthority,
+    output_suffix: string@View,
+    error_suffix: string@View,
+    out_dir_suffix: string@View
+) -> bool {
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+    return acceptedProjectRunCase(
+        authority,
+        COMPTIME_CONFORMANCE_PROJECT_PATH,
+        "",
+        output_suffix,
+        error_suffix,
+        out_dir_suffix,
+        COMPTIME_CONFORMANCE_LOG_NAME
+    )
+}
+
+internal procedure comptimeConformanceContains(
+    authority: TestAuthority,
+    out_dir_suffix: string@View,
+    required_text: string@View
+) -> bool {
+    return acceptedProjectConformanceContains(
+        authority,
+        out_dir_suffix,
+        COMPTIME_CONFORMANCE_LOG_NAME,
+        required_text
+    )
+}
+
+internal procedure comptimeConformanceArtifactsExist(
+    authority: TestAuthority,
+    out_dir_suffix: string@View
+) -> bool {
+    return acceptedProjectTempFileExists(
+            authority,
+            out_dir_suffix,
+            "Intermediate/Obj/Source/ComptimeConformance.obj"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            out_dir_suffix,
+            "Library/ComptimeConformance.lib"
+        )
+}
+
+#test(name: "comptime accepted project emits phase execution conformance")
+internal procedure comptimeAcceptedProjectPhaseExecutionConformanceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let out_dir: string@View = "ComptimePhaseExecutionBuild"
+    return comptimeConformanceProjectRuns(
+            authority,
+            "ComptimePhaseExecution.out",
+            "ComptimePhaseExecution.err",
+            out_dir
+        ) &&
+        comptimeConformanceArtifactsExist(authority, out_dir) &&
+        comptimeConformanceContains(authority, out_dir, "\tExecuteComptime\t") &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\tExecuteComptime-By-ComptimePass\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.Phase2ExecutionPosition\t"
+        ) &&
+        comptimeConformanceContains(authority, out_dir, "\tComptimePass\t") &&
+        comptimeConformanceContains(authority, out_dir, "\tComptimePass-Cons\t") &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\tPhase2-Deterministic-Dependency-Order\t"
+        ) &&
+        comptimeConformanceContains(authority, out_dir, "\tCtExecModule\t")
+}
+
+#test(name: "comptime accepted project emits capability conformance")
+internal procedure comptimeAcceptedProjectCapabilitiesConformanceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let out_dir: string@View = "ComptimeCapabilitiesBuild"
+    return comptimeConformanceProjectRuns(
+            authority,
+            "ComptimeCapabilities.out",
+            "ComptimeCapabilities.err",
+            out_dir
+        ) &&
+        comptimeConformanceArtifactsExist(authority, out_dir) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.CompileTimeCapabilitiesSyntaxSurface\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.CtCapMethodCallParsing\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\tdef.22.CtCapabilitiesAndBuiltinTypes\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.IntrospectAndDiagnosticsAvailability\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.TypeEmitterAvailability\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.ProjectFilesAvailability\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.ProjectFilesPathRestrictions\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\tdef.22.CtCapabilityDynamicHelpers\t"
+        ) &&
+        comptimeConformanceContains(authority, out_dir, "\tParse-CtCapRef\t") &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trule.22.CtBuiltin-Diagnostics-CurrentModule\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trule.22.CtBuiltin-Diagnostics-CurrentSpan\t"
+        ) &&
+        comptimeConformanceContains(authority, out_dir, "\tCtBuiltin-ProjectRoot\t") &&
+        comptimeConformanceContains(authority, out_dir, "\tCtBuiltin-Read\t") &&
+        comptimeConformanceContains(authority, out_dir, "\tCtBuiltin-ReadBytes\t") &&
+        comptimeConformanceContains(authority, out_dir, "\tCtBuiltin-Exists\t") &&
+        comptimeConformanceContains(authority, out_dir, "\tCtBuiltin-ListDir\t") &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trule.22.CtBuiltin-ListDir\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\tCtBuiltin-ListDir-InvalidPath\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trule.22.CtBuiltin-ListDir-InvalidPath\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.ProjectFileSnapshotStability\t"
+        ) &&
+        comptimeConformanceContains(authority, out_dir, "\tCtBuiltin-Emit\t")
+}
+
+#test(name: "comptime accepted project emits forms conformance")
+internal procedure comptimeAcceptedProjectFormsConformanceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let out_dir: string@View = "ComptimeFormsBuild"
+    return comptimeConformanceProjectRuns(
+            authority,
+            "ComptimeForms.out",
+            "ComptimeForms.err",
+            out_dir
+        ) &&
+        comptimeConformanceArtifactsExist(authority, out_dir) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\tdef.22.CompileTimeTypingEnvironment\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.ComptimePassExecutionRequirements\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.CtEvalOrdinarySemantics\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.CtExpandOrdinaryTraversal\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.ComptimeIfSelectedBranchOnly\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.ComptimeLoopIterationSemantics\t"
+        ) &&
+        comptimeConformanceContains(authority, out_dir, "\tParse-CtProc\t") &&
+        comptimeConformanceContains(authority, out_dir, "\tParse-CtStmt\t") &&
+        comptimeConformanceContains(authority, out_dir, "\tParse-CtExpr\t") &&
+        comptimeConformanceContains(authority, out_dir, "\tParse-CtIf\t") &&
+        comptimeConformanceContains(authority, out_dir, "\tParse-CtLoopIter\t") &&
+        comptimeConformanceContains(authority, out_dir, "\tCtExpandItem-CtProc\t") &&
+        comptimeConformanceContains(authority, out_dir, "\tCtExpandStmt-CtStmt\t") &&
+        comptimeConformanceContains(authority, out_dir, "\tCtExpandExpr-CtExpr\t") &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\tCtExpandExpr-CtIf-True\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\tCtExpandExpr-CtIf-False\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\tCtExpandExpr-CtLoopIter\t"
+        ) &&
+        comptimeConformanceContains(authority, out_dir, "\tCtLoopIterUnroll-Cons\t") &&
+        comptimeConformanceContains(authority, out_dir, "\tCtLoopIterUnroll-Empty\t") &&
+        comptimeConformanceContains(authority, out_dir, "\tCtEval-TypeLiteral\t")
+}
+
+#test(name: "comptime type availability conformance matches")
+internal procedure comptimeTypeAvailabilityConformanceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let out_dir: string@View = "ComptimeTypeAvailabilityBuild"
+    return comptimeConformanceProjectRuns(
+            authority,
+            "ComptimeTypeAvailability.out",
+            "ComptimeTypeAvailability.err",
+            out_dir
+        ) &&
+        comptimeConformanceArtifactsExist(authority, out_dir) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\tdef.22.CtAvailabilityAndForbiddenTypes\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "source=CtAvailType;result=available"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "positive=TypePrim,TypeStringView,TypeStringManaged,TypeBytesView"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "TypePathAstExpr,TypePathAstStmt,TypePathAstItem"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "TypePathRecordFields,TypePathEnumPayloads,TypePerm"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "forbidden=Capability,ModalState,Dynamic,Ptr,RawPtr,Func,Context"
+        ) &&
+        comptimePointerParameterRejectsWithExactDiagnostic(authority) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "DiagnosticFixtureBuild",
+            "DiagnosticFixture.conformance.log",
+            "\trequirement.22.CompileTimeTypeAvailabilityRejection\t"
+        )
+}
+
+#test(name: "comptime accepted project emits derive conformance")
+internal procedure comptimeAcceptedProjectDeriveConformanceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let out_dir: string@View = "ComptimeDeriveBuild"
+    return comptimeConformanceProjectRuns(
+            authority,
+            "ComptimeDerive.out",
+            "ComptimeDerive.err",
+            out_dir
+        ) &&
+        comptimeConformanceArtifactsExist(authority, out_dir) &&
+        comptimeConformanceContains(authority, out_dir, "\tParse-DeriveTargetDecl\t") &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.DeriveAttributeParsingReference\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "source=ParseAttributeItem;parser=attribute_list;args=4;attribute=derive"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "source=ValidateDeriveAttributeArgs;attribute=derive;args=validated"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\tParse-DeriveClause-Requires\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trule.22.Parse-DeriveClause-Requires\t"
+        ) &&
+        comptimeConformanceContains(authority, out_dir, "\tParse-DeriveClause-Emits\t") &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\tParse-DeriveContractOpt-Yes\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\tCtExpandItem-DeriveTargetDecl\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\tCtExpandItem-DeriveAnnotatedDecl\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.DeriveTargetBodyBindings\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.DeriveRequiresEmitsScope\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.DeriveTargetDeclPhase2Lifetime\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.DeriveTargetExecutionTiming\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.DeriveExecutionOrder\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "order:RequireComptimeConformanceDerive,EmitComptimeConformanceDerive"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.DeriveOrderTieBreaker\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "FirstTieComptimeConformanceDerive,SecondTieComptimeConformanceDerive"
+        ) &&
+        comptimeConformanceContains(authority, out_dir, "\tRunDeriveSet-Cons\t") &&
+        comptimeConformanceContains(authority, out_dir, "\tRunDeriveTarget\t")
+}
+
+#test(name: "comptime accepted project emits quote splice conformance")
+internal procedure comptimeAcceptedProjectQuoteSpliceConformanceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let out_dir: string@View = "ComptimeQuoteSpliceBuild"
+    return comptimeConformanceProjectRuns(
+            authority,
+            "ComptimeQuoteSplice.out",
+            "ComptimeQuoteSplice.err",
+            out_dir
+        ) &&
+        comptimeConformanceArtifactsExist(authority, out_dir) &&
+        comptimeConformanceContains(authority, out_dir, "\tParse-Quote-Raw\t") &&
+        comptimeConformanceContains(authority, out_dir, "\tParse-Quote-Type\t") &&
+        comptimeConformanceContains(authority, out_dir, "\tParse-Quote-Pattern\t") &&
+        comptimeConformanceContains(authority, out_dir, "\tCtEval-Quote\t") &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.CtPendingEmitsTransfer\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.StringSpliceIdentifierHygiene\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.HygienizeAstProperties\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.HygienicInternalReferences\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.ImportUsingHygiene\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.QuoteBuildSpliceOrder\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "splices:return_type,return_expr"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.EmissionOrder\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "items:emittedQuoteCaptureConformanceValue,emittedSplicedConformanceValue"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "emittedIdentifierSpliceConformanceValue,emittedParameterSpliceConformanceValue"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "emittedParameterSpliceConformanceValue,emittedUsingAliasConformanceValue"
+        ) &&
+        comptimeConformanceContains(authority, out_dir, "\tCtBuiltin-Emit\t")
+}
+
+#test(name: "comptime accepted project emits reflection conformance")
+internal procedure comptimeAcceptedProjectReflectionConformanceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let out_dir: string@View = "ComptimeReflectionBuild"
+    return comptimeConformanceProjectRuns(
+            authority,
+            "ComptimeReflection.out",
+            "ComptimeReflection.err",
+            out_dir
+        ) &&
+        comptimeConformanceArtifactsExist(authority, out_dir) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\tCtBuiltin-Reflect-Category\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.IntrospectCategoryValidity\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\tCtBuiltin-Reflect-TypeName\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\tCtBuiltin-Reflect-ModulePath\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\tCtBuiltin-Reflect-Fields\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.ReflectionCanonicalOrder\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\tCtBuiltin-Reflect-Variants\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\tCtBuiltin-Reflect-States\t"
+        ) &&
+        comptimeConformanceContains(authority, out_dir, "\tCtBuiltin-Reflect-Form\t") &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.IntrospectImplementsFormSemantics\t"
+        ) &&
+        comptimeConformanceContains(
+            authority,
+            out_dir,
+            "\trequirement.22.ReflectionPurityAndImmutability\t"
+        )
+}

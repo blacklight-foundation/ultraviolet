@@ -1,0 +1,12 @@
+//! Rejected compile-time specimen for a false compile-time procedure contract.
+
+comptime procedure contractCheckedValue(value: usize) -> usize
+|: value > 0usize |= @result > value
+{
+    return value + 1usize
+}
+
+public procedure compileTimeProcedureContractFailureReference() -> usize {
+    let value: usize = comptime { contractCheckedValue(0usize) }
+    return value
+}

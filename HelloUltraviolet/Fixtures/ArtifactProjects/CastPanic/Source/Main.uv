@@ -1,0 +1,12 @@
+//! Artifact fixture for runtime cast panic behavior.
+
+public procedure castPanicValue(value: u32) -> char {
+    return value as char
+}
+
+public procedure main(context: Context) -> i32 {
+    let _ = context
+    let invalid: char = castPanicValue(1114112u32)
+    let _ = invalid
+    return 0
+}

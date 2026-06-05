@@ -1,0 +1,14 @@
+//! Rejected authority specimen for direct calls without source capability inclusion.
+
+public procedure authorityDirectCallRequiresIO(io: $IO) -> bool {
+    return io~>exists("HelloUltraviolet")
+}
+
+public procedure authorityRecursiveIOProvider() -> $IO {
+    return authorityRecursiveIOProvider()
+}
+
+public procedure directCallCapabilityInclusionReference() -> bool {
+    let io: $IO = authorityRecursiveIOProvider()
+    return authorityDirectCallRequiresIO(io)
+}

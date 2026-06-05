@@ -78,6 +78,33 @@ using core::Severity;
 using analysis::ConformanceInput;
 using analysis::PhaseOrderResult;
 
+namespace {
+
+void RecordOutputBackendDiagnostic(std::string_view code,
+                                   std::string_view source) {
+  if (!core::Conformance::Enabled() || code.rfind("E-OUT-04", 0) != 0) {
+    return;
+  }
+
+  std::string payload;
+  payload += "source=";
+  payload += source;
+  payload += ";code=";
+  payload += code;
+  payload += ";phase=diagnostics;diagnostic_family=output-backend;"
+             "spec_section=24.8";
+  core::Conformance::Record(
+      "req.24.OutputBackendDiagnosticsOwnership",
+      std::nullopt,
+      payload);
+  core::Conformance::Record(
+      "diag.24.OutputBackendDiagnostics",
+      std::nullopt,
+      payload);
+}
+
+}  // namespace
+
 // ============================================================================
 // Source Inspection
 // ============================================================================
@@ -114,34 +141,32 @@ void EnsureLLVMInit() {
 namespace {
 
 std::filesystem::path HostFilesystemPath(const std::filesystem::path& path) {
-#ifdef _WIN32
-  std::error_code ec;
-  std::filesystem::path absolute =
-      path.is_absolute() ? path : std::filesystem::absolute(path, ec);
-  if (ec) {
-    absolute = path;
-  }
-  absolute.make_preferred();
+  return core::HostFilesystemPath(path);
+}
 
-  std::wstring value = absolute.native();
-  if (value.size() < 240) {
-    return absolute;
-  }
+std::string RenderBool(bool value) {
+  return value ? "true" : "false";
+}
 
-  constexpr std::wstring_view extended_prefix = LR"(\\?\)";
-  constexpr std::wstring_view unc_prefix = LR"(\\)";
-  if (value.rfind(extended_prefix, 0) == 0) {
-    return absolute;
+void RecordEnsureDir(const std::filesystem::path& path,
+                     const std::filesystem::path& host_path,
+                     bool existed_before,
+                     bool created,
+                     bool is_dir,
+                     bool ok) {
+  if (!core::Conformance::Enabled()) {
+    return;
   }
-  if (value.rfind(unc_prefix, 0) == 0) {
-    value = LR"(\\?\UNC\)" + value.substr(2);
-  } else {
-    value = LR"(\\?\)" + value;
-  }
-  return std::filesystem::path(value);
-#else
-  return path;
-#endif
+  SPEC_RULE("def.EnsureDir");
+  core::Conformance::Record(
+      "def.EnsureDir",
+      std::nullopt,
+      "path=" + path.generic_string() +
+          ";host_path=" + host_path.generic_string() +
+          ";existed_before=" + RenderBool(existed_before) +
+          ";created=" + RenderBool(created) +
+          ";is_dir=" + RenderBool(is_dir) +
+          ";result=" + (ok ? std::string("ok") : std::string("error")));
 }
 
 }  // namespace
@@ -149,17 +174,24 @@ std::filesystem::path HostFilesystemPath(const std::filesystem::path& path) {
 bool EnsureDir(const std::filesystem::path& path) {
   const std::filesystem::path host_path = HostFilesystemPath(path);
   std::error_code ec;
-  if (std::filesystem::exists(host_path, ec)) {
+  const bool existed_before = std::filesystem::exists(host_path, ec);
+  if (existed_before) {
     if (ec) {
+      RecordEnsureDir(path, host_path, true, false, false, false);
       return false;
     }
-    return std::filesystem::is_directory(host_path, ec) && !ec;
+    const bool is_dir = std::filesystem::is_directory(host_path, ec) && !ec;
+    RecordEnsureDir(path, host_path, true, false, is_dir, is_dir);
+    return is_dir;
   }
   std::filesystem::create_directories(host_path, ec);
   if (ec) {
+    RecordEnsureDir(path, host_path, false, false, false, false);
     return false;
   }
-  return std::filesystem::is_directory(host_path, ec) && !ec;
+  const bool is_dir = std::filesystem::is_directory(host_path, ec) && !ec;
+  RecordEnsureDir(path, host_path, false, true, is_dir, is_dir);
+  return is_dir;
 }
 
 bool WriteFile(const std::filesystem::path& path, std::string_view bytes) {
@@ -259,6 +291,7 @@ std::optional<RenderedLLVMArtifact> RenderLLVMText(
     SPEC_RULE("EmitLLVM-Err");
     return std::nullopt;
   }
+  SPEC_RULE("rule.24.EmitLLVM-Ok");
 
   return RenderedLLVMArtifact{std::move(text), std::move(*bitcode)};
 }
@@ -397,6 +430,8 @@ void ResetLowerContextForModule(codegen::LowerCtx& ctx,
   ctx.module_path = module_path;
   ctx.resolve_failed = false;
   ctx.codegen_failed = false;
+  ctx.codegen_failure_kind.reset();
+  ctx.llvm_type_mapping_diagnostic_emitted = false;
   ctx.resolve_failures.clear();
   ctx.proc_ret_type = nullptr;
   ctx.main_symbol.reset();
@@ -405,14 +440,6 @@ void ResetLowerContextForModule(codegen::LowerCtx& ctx,
   ctx.expr_region_tags.reset();
   ctx.dynamic_checks = false;
   ctx.current_access_order.reset();
-  ctx.log_enabled = false;
-  ctx.log_to_console = false;
-  ctx.log_to_file = false;
-  ctx.trace = false;
-  ctx.trace_filter_mask.reset();
-  ctx.trace_min_level.reset();
-  ctx.trace_root.clear();
-  ctx.log_file_path.clear();
   ctx.active_contract_postcondition = nullptr;
   ctx.contract_result_value.reset();
   ctx.contract_entry_values.clear();
@@ -803,9 +830,15 @@ struct CachedLLVMArtifacts {
   std::optional<std::string> bitcode;
 };
 
+void ResetThreadLocalMutableLowerCaches(codegen::LowerCtx& ctx) {
+  ctx.values.drop_need_cache =
+      std::make_shared<std::unordered_map<std::string, bool>>();
+}
+
 codegen::LowerCtx& AcquireThreadLocalLowerCtx(const CodegenCache& cache) {
   thread_local codegen::LowerCtx ctx;
   ctx = cache.ctx;
+  ResetThreadLocalMutableLowerCaches(ctx);
   if (cache.name_maps != nullptr) {
     ConfigureResolveCallbacks(ctx, *cache.name_maps);
   }
@@ -825,6 +858,7 @@ codegen::LowerCtx& AcquireThreadLocalEmitCtx(const CodegenCache& cache) {
     // every module emission in full non-incremental builds. The epoch changes
     // when later-lowered modules publish static metadata needed by emission.
     state.ctx = cache.ctx;
+    ResetThreadLocalMutableLowerCaches(state.ctx);
     if (cache.name_maps != nullptr) {
       ConfigureResolveCallbacks(state.ctx, *cache.name_maps);
     }
@@ -882,6 +916,8 @@ std::optional<LLVMModuleBundle> EmitLLVMModule(
   }
   emit_ctx.resolve_failed = false;
   emit_ctx.codegen_failed = false;
+  emit_ctx.codegen_failure_kind.reset();
+  emit_ctx.llvm_type_mapping_diagnostic_emitted = false;
 
   LLVMModuleBundle bundle;
   bundle.ctx = std::make_unique<llvm::LLVMContext>();
@@ -1281,6 +1317,12 @@ std::optional<CodegenObjectAndIR> EmitObjAndOptionalIRForModule(
   pass.run(*bundle.module);
   const std::int64_t emit_pass_ms = ElapsedMs(emit_pass_start);
   SPEC_RULE("EmitObj-Ok");
+  SPEC_RULE("rule.24.EmitObj-Ok");
+  core::Conformance::Record(
+      "def.24.LLVMEmitObj21",
+      std::nullopt,
+      "source=EmitObjAndOptionalIRForModule;object_bytes=" +
+          std::to_string(buffer.size()));
   CodegenObjectAndIR emitted;
   const auto object_copy_start = std::chrono::steady_clock::now();
   emitted.object.assign(buffer.begin(), buffer.end());
@@ -1369,9 +1411,13 @@ std::shared_ptr<CodegenCache> BuildCodegenCache(
     const project::Project& project,
     const analysis::ScopeContext& sema_ctx,
     const analysis::NameMapBuildResult& name_maps,
-    const analysis::TypecheckResult& typechecked) {
+    const analysis::TypecheckResult& typechecked,
+    core::DiagnosticStream* diags) {
   auto cache = std::make_shared<CodegenCache>();
+  cache->diagnostics = diags;
   cache->ctx.sigma = &sema_ctx.sigma;
+  cache->ctx.diagnostics = diags;
+  cache->ctx.diagnostics_mu = &cache->diagnostics_mu;
   cache->ctx.target_profile = sema_ctx.target_profile;
   cache->name_maps = &name_maps;
   LogCodegenProgress("cache-build-start modules=" +
@@ -1477,6 +1523,8 @@ std::shared_ptr<CodegenCache> BuildCodegenCache(
         cache->ctx.module_path = module.path;
         cache->ctx.resolve_failed = false;
         cache->ctx.codegen_failed = false;
+        cache->ctx.codegen_failure_kind.reset();
+        cache->ctx.llvm_type_mapping_diagnostic_emitted = false;
         cache->ctx.resolve_failures.clear();
         for (const auto& item : module.items) {
           if (const auto* static_decl =
@@ -1561,6 +1609,11 @@ bool PopulateCodegenModules(CodegenCache& cache, const project::Project& project
   if (!cache.ok.load()) {
     return false;
   }
+  core::Conformance::Record(
+      "rule.24.CG-Project",
+      std::nullopt,
+      "source=PopulateCodegenModules;project=" + project.assembly.name +
+          ";modules=" + std::to_string(project.modules.size()));
 
   struct ModuleLowerJob {
     std::size_t project_index = 0;
@@ -1777,16 +1830,25 @@ bool ValidateLowerability(const project::Project& cache_project,
                      " modules=" +
                      std::to_string(target_project.modules.size()));
 
-  auto cache = BuildCodegenCache(cache_project, sema_ctx, name_maps, typechecked);
+  auto cache =
+      BuildCodegenCache(cache_project, sema_ctx, name_maps, typechecked, &diags);
   if (!cache || !cache->ok.load()) {
-    core::EmitDiagnosticById(diags, "E-OUT-0411");
+    if (!core::HasError(diags)) {
+      RecordOutputBackendDiagnostic("E-OUT-0411",
+                                    "ValidateLowerability/cache-build");
+      core::EmitDiagnosticById(diags, "E-OUT-0411");
+    }
     LogCodegenProgress("lowerability-finish ok=false stage=cache-build");
     return false;
   }
 
   ConfigureCodegenContextForProject(*cache, target_project);
   if (!PopulateCodegenModules(*cache, target_project)) {
-    core::EmitDiagnosticById(diags, "E-OUT-0411");
+    if (!core::HasError(diags)) {
+      RecordOutputBackendDiagnostic("E-OUT-0411",
+                                    "ValidateLowerability/module-populate");
+      core::EmitDiagnosticById(diags, "E-OUT-0411");
+    }
     LogCodegenProgress("lowerability-finish ok=false stage=module-populate");
     return false;
   }

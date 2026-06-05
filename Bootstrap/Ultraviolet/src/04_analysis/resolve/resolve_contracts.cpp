@@ -178,6 +178,17 @@ ResolveResult<ast::ForeignContractClause> ResolveForeignContract(
   for (const auto& pred : contract.predicates) {
     const auto resolved = ResolveExpr(ctx, pred);
     if (!resolved.ok) {
+      if (resolved.diag_id.has_value() &&
+          (*resolved.diag_id == "ResolveExpr-Ident-Err" ||
+           *resolved.diag_id == "Expr-Unresolved-Err" ||
+           *resolved.diag_id == "E-MOD-1301")) {
+        if (contract.kind == ast::ForeignContractKind::Assumes) {
+          SPEC_RULE("requirement.23.ForeignPredicateContext");
+        } else {
+          SPEC_RULE("requirement.23.ForeignPostconditionPredicateBindings");
+        }
+        return {false, "E-SEM-2852", resolved.span, {}};
+      }
       return {false, resolved.diag_id, resolved.span, {}};
     }
     result.value.predicates.push_back(resolved.value);

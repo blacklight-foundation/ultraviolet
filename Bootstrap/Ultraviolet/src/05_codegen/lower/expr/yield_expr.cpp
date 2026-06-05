@@ -38,6 +38,12 @@ namespace ultraviolet::codegen {
 
 LowerResult LowerYieldExpr(const ast::YieldExpr& expr, LowerCtx& ctx) {
     SPEC_RULE("Lower-Expr-Yield");
+    SPEC_RULE("def.21.SuspensionLoweringForms");
+    SPEC_RULE("rule.21.Lower-Yield");
+    if (expr.release) {
+        SPEC_RULE("rule.21.Lower-Yield-Release");
+        SPEC_RULE("requirement.21.YieldReleaseReacquireLowering");
+    }
 
     // Lower the value to yield
     auto value_result = LowerExpr(*expr.value, ctx);

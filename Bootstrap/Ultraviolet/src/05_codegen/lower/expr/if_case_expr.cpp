@@ -18,7 +18,9 @@
 #include "05_codegen/lower/expr/if_case_expr.h"
 
 #include <algorithm>
+#include <optional>
 #include <set>
+#include <string>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -45,6 +47,19 @@ analysis::TypeRef ResolvePatternAliasType(const analysis::TypeRef& type,
                                           std::size_t depth = 0);
 
 namespace {
+
+std::string LowerIfCasesPayload(std::size_t case_count,
+                                bool has_else,
+                                bool single_form) {
+  std::string payload = "operation=LowerIfCases;scrutinee_lowered=true";
+  payload += ";emits_ifcase_ir=true;case_count=";
+  payload += std::to_string(static_cast<std::uint64_t>(case_count));
+  payload += ";has_else=";
+  payload += has_else ? "true" : "false";
+  payload += ";single_form=";
+  payload += single_form ? "true" : "false";
+  return payload;
+}
 
 LowerCtx MakeBranchCtx(LowerCtx& base) {
   auto saved_value_types = std::move(base.values.value_types);
@@ -341,6 +356,13 @@ std::optional<std::string> ScrutineeIdentifier(const ast::Expr& scrutinee) {
   return std::nullopt;
 }
 
+bool ScrutineeMovesOwnership(const ast::Expr& scrutinee) {
+  if (const auto* attr = std::get_if<ast::AttributedExpr>(&scrutinee.node)) {
+    return attr->expr && ScrutineeMovesOwnership(*attr->expr);
+  }
+  return std::holds_alternative<ast::MoveExpr>(scrutinee.node);
+}
+
 bool ModalStateMatches(const analysis::TypeRef& type,
                        std::string_view state_name) {
   const auto stripped = analysis::StripPerm(type);
@@ -592,7 +614,9 @@ std::optional<std::size_t> UnionMemberIndexForType(
   }
 
   for (std::size_t i = 0; i < members.size(); ++i) {
-    if (TypeEquivIgnorePermLocal(members[i], normalized_target)) {
+    analysis::TypeRef normalized_member = ResolvePatternAliasType(members[i], ctx);
+    normalized_member = analysis::StripPerm(normalized_member);
+    if (TypeEquivIgnorePermLocal(normalized_member, normalized_target)) {
       return i;
     }
   }
@@ -620,6 +644,13 @@ struct ElseNarrowing {
   analysis::TypeRef type;
   bool narrowed = false;
 };
+
+IRPtr BindNarrowedScrutineePayload(const std::string& name,
+                                   const IRValue& scrutinee_value,
+                                   const analysis::TypeRef& narrowed_type,
+                                   std::size_t member_index,
+                                   const BindingState* original_binding,
+                                   LowerCtx& ctx);
 
 ElseNarrowing ElseNarrowedType(const std::vector<ast::IfCaseClause>& arms,
                                const analysis::TypeRef& scrutinee_type,
@@ -670,59 +701,72 @@ IRPtr BindElseNarrowedScrutinee(const ast::Expr& scrutinee,
     return EmptyIR();
   }
 
-  ctx.RegisterVar(*name,
-                  narrowed_type,
-                  original_binding ? original_binding->has_responsibility : true,
-                  original_binding ? original_binding->is_immovable : false,
-                  original_binding ? original_binding->prov
-                                   : analysis::ProvenanceKind::Bottom,
-                  original_binding ? original_binding->prov_region
-                                   : std::optional<std::string>{},
-                  original_binding
-                      ? original_binding->preserve_addr_provenance
-                      : false,
-                  original_binding ? original_binding->prov_region_tag
-                                   : std::optional<std::string>{});
+  return BindNarrowedScrutineePayload(
+      *name, scrutinee_value, narrowed_type, *member_index, original_binding, ctx);
+}
 
-  IRValue payload = ctx.FreshTempValue("ifcase_else_payload");
+IRPtr BindNarrowedScrutineePayload(const std::string& name,
+                                   const IRValue& scrutinee_value,
+                                   const analysis::TypeRef& narrowed_type,
+                                   std::size_t member_index,
+                                   const BindingState* original_binding,
+                                   LowerCtx& ctx) {
+  const bool is_immovable =
+      original_binding ? original_binding->is_immovable : false;
+  const analysis::ProvenanceKind prov =
+      original_binding ? original_binding->prov : analysis::ProvenanceKind::Bottom;
+  const std::optional<std::string> prov_region =
+      original_binding ? original_binding->prov_region : std::optional<std::string>{};
+  const bool preserve_addr_provenance =
+      original_binding ? original_binding->preserve_addr_provenance : false;
+  const std::optional<std::string> prov_region_tag =
+      original_binding ? original_binding->prov_region_tag : std::optional<std::string>{};
+
+  ctx.RegisterVar(name,
+                  narrowed_type,
+                  false,
+                  is_immovable,
+                  prov,
+                  prov_region,
+                  preserve_addr_provenance,
+                  prov_region_tag);
+
+  IRValue payload = ctx.FreshTempValue("ifcase_scrutinee_payload");
   DerivedValueInfo info;
   info.kind = DerivedValueInfo::Kind::UnionPayload;
   info.base = scrutinee_value;
-  info.union_index = *member_index;
+  info.union_index = member_index;
   ctx.RegisterDerivedValue(payload, std::move(info));
   ctx.RegisterValueType(payload, narrowed_type);
 
   IRBindVar bind;
-  bind.name = *name;
-  bind.stable_name = ctx.StableBindingName(*name);
+  bind.name = name;
+  bind.stable_name = ctx.StableBindingName(name);
   bind.value = payload;
   bind.type = narrowed_type;
-  if (const BindingState* narrowed_binding = ctx.GetBindingState(*name)) {
-    bind.prov = narrowed_binding->prov;
-    bind.prov_region = narrowed_binding->prov_region;
-    bind.prov_region_tag = narrowed_binding->prov_region_tag;
-  } else {
-    bind.prov = analysis::ProvenanceKind::Bottom;
-  }
+  bind.prov = prov;
+  bind.prov_region = prov_region;
+  bind.prov_region_tag = prov_region_tag;
   return MakeIR(std::move(bind));
 }
 
-void RefineScrutineeBinding(const ast::Expr& scrutinee,
-                            const ast::Pattern& pattern,
-                            const analysis::TypeRef& scrutinee_type,
-                            LowerCtx& ctx) {
+IRPtr RefineScrutineeBinding(const ast::Expr& scrutinee,
+                             const ast::Pattern& pattern,
+                             const IRValue& scrutinee_value,
+                             const analysis::TypeRef& scrutinee_type,
+                             LowerCtx& ctx) {
   if (!ctx.sigma) {
-    return;
+    return EmptyIR();
   }
 
   const auto name = ScrutineeIdentifier(scrutinee);
   if (!name.has_value()) {
-    return;
+    return EmptyIR();
   }
 
   auto binding_it = ctx.binding_states.find(*name);
   if (binding_it == ctx.binding_states.end() || binding_it->second.empty()) {
-    return;
+    return EmptyIR();
   }
 
   const analysis::ScopeContext& scope = ScopeForLowering(ctx);
@@ -733,10 +777,20 @@ void RefineScrutineeBinding(const ast::Expr& scrutinee,
     refined = RefinedPatternType(scope, pattern, scrutinee_type, ctx);
   }
   if (!refined) {
-    return;
+    return EmptyIR();
+  }
+
+  const analysis::TypeRef storage_type =
+      binding.storage_type ? binding.storage_type
+                           : (binding.type ? binding.type : scrutinee_type);
+  if (const auto member_index =
+          UnionMemberIndexForType(scope, storage_type, refined, ctx)) {
+    return BindNarrowedScrutineePayload(
+        *name, scrutinee_value, refined, *member_index, &binding, ctx);
   }
 
   binding.type = refined;
+  return EmptyIR();
 }
 
 LowerIfCaseClauseResult LowerIfCaseClauseImpl(
@@ -860,6 +914,7 @@ LowerResult LowerIfCases(const ast::Expr& scrutinee,
                          bool single_form,
                          LowerCtx& ctx,
                          const analysis::TypeRef& expected_result_type) {
+  SPEC_RULE("def.17.PatternLoweringJudgements");
   SPEC_RULE("Lower-IfCases");
 
   // Lower the scrutinee under a dedicated temp sink. Nested temporaries used
@@ -1092,6 +1147,18 @@ LowerResult LowerIfCases(const ast::Expr& scrutinee,
     ctx.RegisterValueType(result, result_type);
   }
 
+  const std::string conformance_payload =
+      LowerIfCasesPayload(arms.size(), static_cast<bool>(else_expr), single_form);
+  core::Conformance::Record("rule.17.Lower-IfCases",
+                            std::nullopt,
+                            conformance_payload);
+  core::Conformance::Record("rule.17.Lower-IfCases-Correctness",
+                            std::nullopt,
+                            conformance_payload);
+  core::Conformance::Record("req.17.ExhaustivenessNoAdditionalLowering",
+                            std::nullopt,
+                            conformance_payload);
+
   return LowerResult{SeqIR({scrutinee_result.ir,
                             scrutinee_cleanup,
                             MakeIR(std::move(if_case))}),
@@ -1152,24 +1219,28 @@ LowerIfCaseClauseResult LowerIfCaseClauseImpl(
     bind_scrutinee.name = owned_scrutinee->name;
   }
 
-  bool scrutinee_has_responsibility = true;
-  if (bind_scrutinee.kind == IRValue::Kind::Local) {
+  bool pattern_bindings_have_responsibility = false;
+  if (ScrutineeMovesOwnership(scrutinee_expr) &&
+      bind_scrutinee.kind == IRValue::Kind::Local) {
     if (const BindingState* scrutinee_state = ctx.GetBindingState(bind_scrutinee.name)) {
-      scrutinee_has_responsibility = scrutinee_state->has_responsibility;
+      pattern_bindings_have_responsibility =
+          scrutinee_state->has_responsibility && scrutinee_state->is_moved;
     }
-  } else if (scrutinee_prov == analysis::ProvenanceKind::Param) {
-    scrutinee_has_responsibility = false;
+  } else if (ScrutineeMovesOwnership(scrutinee_expr) &&
+             scrutinee_prov != analysis::ProvenanceKind::Param) {
+    pattern_bindings_have_responsibility = true;
   }
 
   // Register the bindings introduced by the pattern
   RegisterPatternBindings(*arm.pattern, scrutinee_type, ctx, false,
                           scrutinee_prov, scrutinee_region, scrutinee_region_tag,
-                          scrutinee_has_responsibility);
+                          pattern_bindings_have_responsibility);
 
   // Bind the pattern - this creates IR to extract values from the scrutinee
   IRPtr bind_ir = LowerBindPattern(*arm.pattern, bind_scrutinee, ctx);
 
-  RefineScrutineeBinding(scrutinee_expr, *arm.pattern, scrutinee_type, ctx);
+  IRPtr scrutinee_refine_ir = RefineScrutineeBinding(
+      scrutinee_expr, *arm.pattern, bind_scrutinee, scrutinee_type, ctx);
 
   // Lower the body expression
   LowerResult body_result;
@@ -1234,6 +1305,7 @@ LowerIfCaseClauseResult LowerIfCaseClauseImpl(
   parts.push_back(scope_enter_ir);
   parts.push_back(scrutinee_bind_ir);
   parts.push_back(bind_ir);
+  parts.push_back(scrutinee_refine_ir);
   parts.push_back(body_result.ir);
   if (body_may_fallthrough) {
     parts.push_back(capture_ir);

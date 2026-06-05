@@ -1,5 +1,6 @@
 #include "05_codegen/lower/pattern/ir_pattern.h"
 
+#include "00_core/assert_spec.h"
 #include "04_analysis/layout/layout.h"
 #include "05_codegen/lower/lower_expr.h"
 
@@ -108,15 +109,19 @@ IRPatternPtr LowerIRPattern(const ast::Pattern& pattern, LowerCtx& ctx) {
       [&](const auto& node) {
         using T = std::decay_t<decltype(node)>;
         if constexpr (std::is_same_v<T, ast::LiteralPattern>) {
+          SPEC_RULE("req.17.BasicPatternLoweringShared");
           out->node = IRLiteralPattern{
               IRLiteral{ToIRLiteralKind(node.literal.kind), node.literal.lexeme}};
         } else if constexpr (std::is_same_v<T, ast::WildcardPattern>) {
+          SPEC_RULE("req.17.BasicPatternLoweringShared");
           out->node = IRWildcardPattern{};
         } else if constexpr (std::is_same_v<T, ast::IdentifierPattern>) {
+          SPEC_RULE("req.17.BasicPatternLoweringShared");
           const std::string stable_name = ctx.StableBindingName(node.name);
           out->node = IRIdentifierPattern{
               stable_name.empty() ? node.name : stable_name};
         } else if constexpr (std::is_same_v<T, ast::TypedPattern>) {
+          SPEC_RULE("req.17.BasicPatternLoweringShared");
           analysis::TypeRef type;
           if (node.type) {
             if (const auto lowered = ::ultraviolet::analysis::layout::LowerTypeForLayout(ScopeForLowering(ctx),
@@ -129,11 +134,14 @@ IRPatternPtr LowerIRPattern(const ast::Pattern& pattern, LowerCtx& ctx) {
               stable_name.empty() ? node.name : stable_name,
               type};
         } else if constexpr (std::is_same_v<T, ast::TuplePattern>) {
+          SPEC_RULE("req.17.TupleRecordPatternLoweringShared");
           out->node = IRTuplePattern{LowerIRPatternList(node.elements, ctx)};
         } else if constexpr (std::is_same_v<T, ast::RecordPattern>) {
+          SPEC_RULE("req.17.TupleRecordPatternLoweringShared");
           out->node = IRRecordPattern{node.path,
                                       LowerIRFieldPatterns(node.fields, ctx)};
         } else if constexpr (std::is_same_v<T, ast::EnumPattern>) {
+          SPEC_RULE("req.17.EnumModalPatternLoweringShared");
           IREnumPattern enum_pattern;
           enum_pattern.path = node.path;
           enum_pattern.name = node.name;
@@ -153,6 +161,7 @@ IRPatternPtr LowerIRPattern(const ast::Pattern& pattern, LowerCtx& ctx) {
           }
           out->node = std::move(enum_pattern);
         } else if constexpr (std::is_same_v<T, ast::ModalPattern>) {
+          SPEC_RULE("req.17.EnumModalPatternLoweringShared");
           IRModalPattern modal;
           modal.state = node.state;
           if (node.fields_opt.has_value()) {
@@ -162,6 +171,7 @@ IRPatternPtr LowerIRPattern(const ast::Pattern& pattern, LowerCtx& ctx) {
           }
           out->node = std::move(modal);
         } else if constexpr (std::is_same_v<T, ast::RangePattern>) {
+          SPEC_RULE("req.17.RangePatternLoweringShared");
           out->node = IRRangePattern{ToIRRangeKind(node.kind),
                                      LowerIRPatternPtr(node.lo, ctx),
                                      LowerIRPatternPtr(node.hi, ctx)};

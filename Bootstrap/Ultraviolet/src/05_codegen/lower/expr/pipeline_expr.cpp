@@ -26,9 +26,12 @@
 
 #include "05_codegen/lower/expr/pipeline_expr.h"
 
+#include <optional>
+#include <string>
 #include <variant>
 
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 #include "04_analysis/typing/type_expr.h"
 #include "04_analysis/typing/types.h"
 #include "05_codegen/abi/abi.h"
@@ -52,6 +55,51 @@ bool IsFunc(const analysis::TypeRef& type) {
     return false;
   }
   return std::holds_alternative<analysis::TypeFunc>(stripped->node);
+}
+
+void RecordFunctionTypeCallLowering(const IRCall& call, bool needs_panic_out) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload =
+      "source=LowerPipelineExpr;operation=FunctionTypeCallLowering";
+  payload += ";call_ir=IRCall;ordinary_call_lowering=true";
+  payload += ";abi_rules=chapter16+chapter23;rhs_type=TypeFunc";
+  payload += ";callee_kind=";
+  payload += call.callee.kind == IRValue::Kind::Symbol ? "Symbol" : "Value";
+  payload += ";source_arg_count=1;ir_arg_count=";
+  payload += std::to_string(call.args.size());
+  payload += ";panic_out=";
+  payload += needs_panic_out ? "present" : "absent";
+  core::Conformance::Record(
+      "req.FunctionTypeCallLowering",
+      std::nullopt,
+      payload);
+  core::Conformance::Record("rule.16.Lower-Expr-Pipeline", std::nullopt, payload);
+  core::Conformance::Record(
+      "def.16.LowerPipelineCallablePredicates",
+      std::nullopt,
+      payload);
+}
+
+void RecordClosurePipelineLowering(const IRCall& call) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload =
+      "source=LowerPipelineExpr;operation=ClosurePipelineLowering";
+  payload += ";call_ir=IRCall;indirect_call=true";
+  payload += ";rhs_type=TypeClosure;env_arg=prepended";
+  payload += ";code_ptr=tuple_index_1;source_arg_count=1;ir_arg_count=";
+  payload += std::to_string(call.args.size());
+  payload += ";panic_out=present";
+  core::Conformance::Record("rule.16.Lower-Expr-Pipeline", std::nullopt, payload);
+  core::Conformance::Record(
+      "def.16.LowerPipelineCallablePredicates",
+      std::nullopt,
+      payload);
 }
 
 analysis::TypeRef PipelineResultType(const analysis::TypeRef& type) {
@@ -197,6 +245,7 @@ LowerResult LowerPipelineExpr(const ast::BinaryExpr& expr, LowerCtx& ctx) {
     panic_out.name = std::string(kPanicOutName);
     call.args.push_back(panic_out);
     call.result = result_value;
+    RecordClosurePipelineLowering(call);
     return LowerResult{SeqIR({lhs_ir, rhs_ir, MakeIR(std::move(call)), PanicFollowup(ctx)}),
                        result_value};
   }
@@ -222,6 +271,10 @@ LowerResult LowerPipelineExpr(const ast::BinaryExpr& expr, LowerCtx& ctx) {
       panic_out.kind = IRValue::Kind::Local;
       panic_out.name = std::string(kPanicOutName);
       call.args.push_back(panic_out);
+    }
+
+    if (IsFunc(rhs_type)) {
+      RecordFunctionTypeCallLowering(call, needs_panic_out);
     }
 
     if (needs_panic_out) {
@@ -336,6 +389,7 @@ LowerResult LowerPipelineExpr(const ast::PipelineExpr& expr, LowerCtx& ctx) {
     panic_out.name = std::string(kPanicOutName);
     call.args.push_back(panic_out);
     call.result = result_value;
+    RecordClosurePipelineLowering(call);
     return LowerResult{SeqIR({lhs_ir, rhs_ir, MakeIR(std::move(call)), PanicFollowup(ctx)}),
                        result_value};
   }
@@ -359,6 +413,10 @@ LowerResult LowerPipelineExpr(const ast::PipelineExpr& expr, LowerCtx& ctx) {
       panic_out.kind = IRValue::Kind::Local;
       panic_out.name = std::string(kPanicOutName);
       call.args.push_back(panic_out);
+    }
+
+    if (IsFunc(rhs_type)) {
+      RecordFunctionTypeCallLowering(call, needs_panic_out);
     }
 
     if (needs_panic_out) {

@@ -406,14 +406,14 @@ public procedure validatedKeysRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering",
             "Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering/Source/Main.uv",
             "Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering/Expected.uv",
-            expectedDiagnostic("E-CON-0133", "rule.21.Lower-Wait-Key-Illegal")
+            expectedDiagnostic("E-CON-0133", "requirement.21.AsyncKeyRestrictions")
         ),
         "WaitWhileKeyHeldLowering",
         "Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering",
         "Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering/Source/Main.uv",
         "Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering/Expected.uv",
         "E-CON-0133",
-        "rule.21.Lower-Wait-Key-Illegal"
+        "requirement.21.AsyncKeyRestrictions"
     ) {
         count = count + 1usize
     }

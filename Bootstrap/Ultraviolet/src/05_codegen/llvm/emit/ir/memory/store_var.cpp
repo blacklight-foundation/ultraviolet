@@ -4,7 +4,31 @@
 // =============================================================================
 #include "../../ir_instruction_visitor.h"
 
+#include "00_core/spec_trace.h"
+
+#include <optional>
+#include <string>
+
 namespace ultraviolet::codegen::emit_detail {
+
+namespace {
+
+void RecordStoreMemoryHelper(const char *source)
+{
+  SPEC_RULE("def.24.MemoryInstructionHelpers");
+  if (!core::Conformance::Enabled())
+  {
+    return;
+  }
+
+  std::string payload = "source=";
+  payload += source;
+  payload += ";helper=Store;lower_form=llvm.store";
+  core::Conformance::Record(
+      "def.24.MemoryInstructionHelpers", std::nullopt, payload);
+}
+
+} // namespace
 
 void IRInstructionVisitor::operator()(const IRStoreVar &store) const
 {
@@ -114,6 +138,7 @@ void IRInstructionVisitor::operator()(const IRStoreVar &store) const
       }
     }
 
+    RecordStoreMemoryHelper("IRStoreVar.new_slot");
     builder.CreateStore(value, new_slot);
     emitter.ReleaseTempStorage(store.value);
     return;
@@ -169,6 +194,7 @@ void IRInstructionVisitor::operator()(const IRStoreVar &store) const
       value = llvm::Constant::getNullValue(alloca->getAllocatedType());
     }
   }
+  RecordStoreMemoryHelper("IRStoreVar.existing_slot");
   builder.CreateStore(value, slot);
   emitter.ReleaseTempStorage(store.value);
 }

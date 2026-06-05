@@ -31,9 +31,9 @@ namespace ultraviolet::codegen {
 //   - env_ptr: Pointer to the captured environment (null for non-capturing)
 //   - code_sym: Symbol name of the closure code procedure
 //
-// The closure code procedure has signature:
-//   For non-capturing: (params...) -> ret
-//   For capturing: (env_ptr, params...) -> ret
+// The closure code procedure for TypeClosure values has signature:
+//   (env_ptr, params...) -> ret
+// Non-capturing closures that type as TypeFunc use the ordinary function ABI.
 //
 // =============================================================================
 
@@ -82,13 +82,19 @@ LowerResult LowerClosureExpr(
     const std::vector<analysis::TypeRef>* inferred_param_types = nullptr,
     const std::vector<std::optional<analysis::ParamMode>>* inferred_param_modes =
         nullptr,
-    analysis::TypeRef inferred_ret_type = nullptr);
+    analysis::TypeRef inferred_ret_type = nullptr,
+    bool lower_as_closure_value = false,
+    analysis::TypeRef inferred_closure_type = nullptr);
 
 // Overload accepting the AST ClosureExpr node directly
 LowerResult LowerClosureExpr(const ast::ClosureExpr& expr, LowerCtx& ctx);
 LowerResult LowerClosureExpr(const ast::Expr& expr,
                              const ast::ClosureExpr& closure,
                              LowerCtx& ctx);
+LowerResult LowerClosureExpr(const ast::Expr& expr,
+                             const ast::ClosureExpr& closure,
+                             LowerCtx& ctx,
+                             analysis::TypeRef expected_type);
 
 // =============================================================================
 // LowerClosureCall - Lower a call to a closure value

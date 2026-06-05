@@ -28,9 +28,24 @@
 
 #include "05_codegen/abi/abi.h"
 #include "04_analysis/layout/layout.h"
+#include "04_analysis/resolve/scopes.h"
 #include "00_core/spec_trace.h"
+#include "00_core/symbols.h"
+
+#include <string>
+#include <string_view>
 
 namespace ultraviolet::codegen {
+
+namespace {
+
+void RecordABIDefinition(std::string_view rule_id, std::string payload) {
+  if (core::Conformance::Enabled()) {
+    core::Conformance::Record(rule_id, std::nullopt, payload);
+  }
+}
+
+}  // namespace
 
 // Forward declarations for type-specific handlers.
 std::optional<ABIType> ABITyPrim(const analysis::ScopeContext& ctx,
@@ -65,14 +80,33 @@ std::optional<ABIType> ABITyPathType(const analysis::ScopeContext& ctx,
 
 std::optional<ABIType> ABITy(const analysis::ScopeContext& ctx,
                              const analysis::TypeRef& type) {
+  SPEC_DEF("def.24.ABITypeAndABITyJudgement", "");
+  if (type) {
+    RecordABIDefinition(
+        "def.24.ABITypeAndABITyJudgement",
+        "source=ABITy;type=" + analysis::TypeToString(type));
+  } else {
+    RecordABIDefinition(
+        "def.24.ABITypeAndABITyJudgement",
+        "source=ABITy;type=null");
+  }
   if (!type) {
     return std::nullopt;
+  }
+  if (core::Conformance::Enabled()) {
+    (void)::ultraviolet::analysis::layout::SizeOf(ctx, type);
+    (void)::ultraviolet::analysis::layout::AlignOf(ctx, type);
   }
 
   // (ABI-Perm)
   // Strip permission wrapper - ABI type is the same as the base type.
   if (const auto* perm = std::get_if<analysis::TypePerm>(&type->node)) {
     SPEC_RULE("ABI-Perm");
+    SPEC_RULE("rule.24.ABI-Perm");
+    SPEC_RULE("conformance.AliasExclusivityLowering");
+    SPEC_RULE("conformance.BindingActivityLowering");
+    SPEC_RULE("conformance.PermissionAdmissibilityLowering");
+    SPEC_RULE("req.PermissionFormsLoweringDiagnostics");
     return ABITy(ctx, perm->base);
   }
 
@@ -97,6 +131,7 @@ std::optional<ABIType> ABITy(const analysis::ScopeContext& ctx,
   }
   if (std::holds_alternative<analysis::TypeClosure>(type->node)) {
     SPEC_RULE("ABI-Func");
+    SPEC_RULE("rule.24.ABI-Func");
     return ABIType{2 * ::ultraviolet::analysis::layout::PtrSize(ctx),
                    ::ultraviolet::analysis::layout::PtrAlign(ctx)};
   }
@@ -109,6 +144,39 @@ std::optional<ABIType> ABITy(const analysis::ScopeContext& ctx,
   // (ABI-Dynamic)
   if (const auto* dyn = std::get_if<analysis::TypeDynamic>(&type->node)) {
     return ABITyDynamic(ctx, *dyn);
+  }
+
+  if (const auto* opaque = std::get_if<analysis::TypeOpaque>(&type->node)) {
+    const auto it = ctx.sigma.opaque_underlying_by_class_path.find(
+        analysis::PathKeyOf(opaque->class_path));
+    if (it == ctx.sigma.opaque_underlying_by_class_path.end() || !it->second ||
+        it->second.get() == type.get()) {
+      return std::nullopt;
+    }
+
+    SPEC_RULE("req.14.OpaqueTypesLowerAsConcrete");
+    const auto abi_type = ABITy(ctx, it->second);
+    if (abi_type.has_value() && core::Conformance::Enabled()) {
+      const std::string class_path = core::PathString(opaque->class_path);
+      const std::string underlying_type = analysis::TypeToString(it->second);
+
+      std::string payload;
+      payload.reserve(176 + class_path.size() + underlying_type.size());
+      payload += "source=ABITy";
+      payload += ";abi=underlying_concrete";
+      payload += ";distinct_abi_form=false";
+      payload += ";class=";
+      payload += class_path;
+      payload += ";underlying=";
+      payload += underlying_type;
+      payload += ";size=";
+      payload += std::to_string(abi_type->size);
+      payload += ";align=";
+      payload += std::to_string(abi_type->align);
+      core::Conformance::Record(
+          "req.14.OpaqueTypesLowerAsConcrete", std::nullopt, payload);
+    }
+    return abi_type;
   }
 
   // (ABI-Range)

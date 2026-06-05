@@ -24,9 +24,50 @@ void EmitRuntimeCtProcedureReferenceIfNeeded(CtEnv& env, const ExprPtr& expr) {
   }
   if (const auto* ident = std::get_if<ast::IdentifierExpr>(&expr->node)) {
     if (IsKnownCtProcedureName(env, ident->name)) {
+      SPEC_RULE_AT("requirement.22.CompileTimeProcedureContextRestriction",
+                   expr->span);
       EmitComptimeDiag(env, "E-CTE-0034", expr->span);
     }
   }
+}
+
+std::string EmittedItemName(const ASTItem& item) {
+  return std::visit(
+      [](const auto& node) -> std::string {
+        using T = std::decay_t<decltype(node)>;
+        if constexpr (std::is_same_v<T, ast::ProcedureDecl> ||
+                      std::is_same_v<T, ast::ComptimeProcedureDecl> ||
+                      std::is_same_v<T, ast::RecordDecl> ||
+                      std::is_same_v<T, ast::EnumDecl> ||
+                      std::is_same_v<T, ast::ModalDecl> ||
+                      std::is_same_v<T, ast::ClassDecl> ||
+                      std::is_same_v<T, ast::TypeAliasDecl> ||
+                      std::is_same_v<T, ast::DeriveTargetDecl>) {
+          return node.name;
+        }
+        return "item";
+      },
+      item);
+}
+
+std::string JoinEmissionOrderPayload(const std::vector<ASTItem>& emitted) {
+  std::string payload = "items:";
+  for (std::size_t i = 0; i < emitted.size(); ++i) {
+    if (i != 0) {
+      payload += ",";
+    }
+    payload += EmittedItemName(emitted[i]);
+  }
+  return payload;
+}
+
+void RecordEmissionOrder(const core::Span& span,
+                         const std::vector<ASTItem>& emitted) {
+  if (emitted.empty()) {
+    return;
+  }
+  core::Conformance::Record(
+      "requirement.22.EmissionOrder", span, JoinEmissionOrderPayload(emitted));
 }
 
 class CtProhibitedConstructFinder {
@@ -235,6 +276,11 @@ bool ValidatePhase2AttributeList(CtEnv& env,
 
   const auto validation = analysis::ValidateAttributes(attrs, target);
   if (validation.ok) {
+    if (analysis::HasAttribute(attrs, "emit") ||
+        analysis::HasAttribute(attrs, "files")) {
+      SPEC_RULE_AT("requirement.22.CompileTimeCapabilitiesSyntaxSurface",
+                   attrs.front().span);
+    }
     return true;
   }
 
@@ -270,6 +316,7 @@ bool RejectInvalidDeriveAttributeTargetKind(CtEnv& env, const ASTItem& item) {
   }
 
   if (core::DiagnosticStream* diags = CtDiags(env)) {
+    SPEC_RULE_AT("requirement.22.DeriveAttributeTargetKinds", SpanOfItem(item));
     if (auto diag = core::MakeDiagnosticById("E-CTE-0311", SpanOfItem(item))) {
       core::Emit(*diags, *diag);
     }
@@ -416,6 +463,7 @@ bool BindCtPatternValue(CtEnv& env,
 }
 
 ast::Stmt RewriteStmt(const ast::Stmt& stmt, CtEnv& env) {
+  SPEC_RULE("requirement.22.CtExpandOrdinaryTraversal");
   return std::visit(
       [&](const auto& node) -> ast::Stmt {
         using T = std::decay_t<decltype(node)>;
@@ -469,6 +517,7 @@ Block RewriteBlock(const Block& block, CtEnv& env) {
       }
       SPEC_RULE_AT("CtExpandStmt-CtStmt", comptime->span);
       if (const auto span = CtProhibitedConstructFinder{}.Find(*comptime->body)) {
+        SPEC_RULE_AT("requirement.22.CompileTimeProhibitedConstructs", *span);
         EmitComptimeDiag(env, "E-CTE-0020", *span);
         continue;
       }
@@ -476,6 +525,11 @@ Block RewriteBlock(const Block& block, CtEnv& env) {
       CtEnv stmt_env = WithCtCaps(env, comptime->attrs);
       stmt_env.pending_emits = &emitted;
       if (EvalBlock(*comptime->body, stmt_env).ok && env.pending_emits) {
+        RecordEmissionOrder(comptime->span, emitted);
+        if (!emitted.empty()) {
+          SPEC_RULE_AT("requirement.22.CtPendingEmitsTransfer",
+                       comptime->span);
+        }
         env.pending_emits->insert(env.pending_emits->end(), emitted.begin(),
                                   emitted.end());
       }
@@ -508,6 +562,11 @@ ExprPtr RewriteExpr(const ExprPtr& expr, CtEnv& env) {
             auto value = EvalExpr(expr, ct_env);
             if (value.ok) {
               if (env.pending_emits) {
+                RecordEmissionOrder(expr->span, emitted);
+                if (!emitted.empty()) {
+                  SPEC_RULE_AT("requirement.22.CtPendingEmitsTransfer",
+                               expr->span);
+                }
                 env.pending_emits->insert(env.pending_emits->end(), emitted.begin(),
                                           emitted.end());
               }
@@ -544,6 +603,11 @@ ExprPtr RewriteExpr(const ExprPtr& expr, CtEnv& env) {
           auto value = EvalExpr(expr, ct_env);
           if (value.ok) {
             if (env.pending_emits) {
+              RecordEmissionOrder(expr->span, emitted);
+              if (!emitted.empty()) {
+                SPEC_RULE_AT("requirement.22.CtPendingEmitsTransfer",
+                             expr->span);
+              }
               env.pending_emits->insert(env.pending_emits->end(), emitted.begin(),
                                         emitted.end());
             }
@@ -583,6 +647,8 @@ ExprPtr RewriteExpr(const ExprPtr& expr, CtEnv& env) {
           } else {
             SPEC_RULE_AT("CtExpandExpr-CtIf-False", expr->span);
           }
+          SPEC_RULE_AT("requirement.22.ComptimeIfSelectedBranchOnly",
+                       expr->span);
           const Block* selected =
               cond_bool ? node.then_block.get() : node.else_block_opt.get();
           Block rewritten =
@@ -590,6 +656,8 @@ ExprPtr RewriteExpr(const ExprPtr& expr, CtEnv& env) {
           return MakeBlockExpr(rewritten, expr->span);
         } else if constexpr (std::is_same_v<T, ast::CtLoopIterExpr>) {
           SPEC_RULE_AT("CtExpandExpr-CtLoopIter", expr->span);
+          SPEC_RULE_AT("requirement.22.ComptimeLoopIterationSemantics",
+                       expr->span);
           CtEnv ct_env = env;
           auto iter = EvalExpr(node.iter, ct_env);
           if (!iter.ok) {
@@ -685,6 +753,7 @@ ExprPtr RewriteExpr(const ExprPtr& expr, CtEnv& env) {
 }
 
 ASTItem RewriteItem(const ASTItem& item, CtEnv& env) {
+  SPEC_RULE("requirement.22.CtExpandOrdinaryTraversal");
   return std::visit(
       [&](const auto& node) -> ASTItem {
         using T = std::decay_t<decltype(node)>;
@@ -754,6 +823,8 @@ std::optional<std::vector<ASTItem>> ExpandModuleItems(
 
     if (const auto* derive = std::get_if<ast::DeriveTargetDecl>(&item)) {
       SPEC_RULE_AT("CtExpandItem-DeriveTargetDecl", derive->span);
+      SPEC_RULE_AT("requirement.22.DeriveTargetDeclPhase2Lifetime",
+                   derive->span);
       continue;
     }
 
@@ -766,6 +837,8 @@ std::optional<std::vector<ASTItem>> ExpandModuleItems(
     std::vector<ASTItem> emitted;
     if (IsDeriveAnnotatedItem(item)) {
       SPEC_RULE_AT("CtExpandItem-DeriveAnnotatedDecl", SpanOfItem(item));
+      SPEC_RULE_AT("requirement.22.DeriveTargetExecutionTiming",
+                   SpanOfItem(item));
       auto derive_emits = ExpandDerives(item, env);
       if (!derive_emits.has_value()) {
         return std::nullopt;
@@ -775,6 +848,7 @@ std::optional<std::vector<ASTItem>> ExpandModuleItems(
     emitted.insert(emitted.end(), explicit_emits.begin(), explicit_emits.end());
 
     if (!emitted.empty()) {
+      SPEC_RULE_AT("requirement.22.CtPendingEmitsTransfer", SpanOfItem(item));
       queue.insert(queue.begin() + static_cast<std::ptrdiff_t>(i + 1),
                    emitted.begin(), emitted.end());
       visible_current_items.insert(visible_current_items.end(), emitted.begin(),

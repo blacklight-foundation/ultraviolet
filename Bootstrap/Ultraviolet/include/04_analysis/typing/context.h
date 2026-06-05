@@ -26,6 +26,7 @@ enum class ProvenanceKind;
 using IdKey = std::string;
 using PathKey = std::vector<IdKey>;
 using ExprTypeMap = std::unordered_map<const ast::Expr*, TypeRef>;
+using ExprValueTypeMap = std::unordered_map<const ast::Expr*, TypeRef>;
 using DynamicRefineExprMap =
     std::unordered_map<const ast::Expr*, std::vector<TypeRef>>;
 using GenericCallSubstMap = std::unordered_map<const ast::CallExpr*, TypeSubst>;
@@ -104,6 +105,7 @@ struct ScopeContext {
   Sigma sigma;
   mutable core::DiagnosticStream* diagnostics = nullptr;
   ExprTypeMap* expr_types = nullptr;
+  ExprValueTypeMap* expr_value_types = nullptr;
   DynamicRefineExprMap* dynamic_refine_checks = nullptr;
   GenericCallSubstMap* generic_call_substs = nullptr;
   SelectedCallTargetMap* selected_call_targets = nullptr;

@@ -29,7 +29,7 @@ public procedure invalidStringEscapeExpectedDiagnosticFileMatches(context: Conte
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/SourceText/InvalidStringEscape/Expected.uv",
-        "//! Expected diagnostic metadata for the InvalidStringEscape rejected-source specimen.\n\nexpectedDiagnostic(\"E-SRC-0302\", \"Lex-String-BadEscape\")\n"
+        "//! Expected diagnostic metadata for the InvalidStringEscape rejected-source specimen.\n\nexpectedDiagnostic(\"E-SRC-0302\", \"Lex-String-BadEscape\")\nexpectedDiagnostic(\"E-SRC-0302\", \"def.FirstBadStringEscape\")\nexpectedDiagnostic(\"E-SRC-0302\", \"Lex-Char-BadEscape\")\nexpectedDiagnostic(\"E-SRC-0302\", \"def.FirstBadCharEscape\")\n"
     )
 }
 
@@ -71,7 +71,7 @@ public procedure invalidUTF8ExpectedDiagnosticFileMatches(context: Context) -> b
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/SourceText/InvalidUTF8/Expected.uv",
-        "//! Expected diagnostic metadata for the InvalidUTF8 rejected-source specimen.\n\nexpectedDiagnostic(\"E-SRC-0101\", \"NoSpan-Decode\")\nexpectedDiagnostic(\"E-SRC-0101\", \"diagnostics.SourceLexicalDiagnostics\")\n"
+        "//! Expected diagnostic metadata for the InvalidUTF8 rejected-source specimen.\n\nexpectedDiagnostic(\"E-SRC-0101\", \"NoSpan-Decode\")\nexpectedDiagnostic(\"E-SRC-0101\", \"req.LoadSourceShortCircuit\")\nexpectedDiagnostic(\"E-SRC-0101\", \"diagnostics.SourceLexicalDiagnostics\")\n"
     )
 }
 
@@ -179,7 +179,7 @@ public procedure reservedVendorNamespaceExpectedDiagnosticFileMatches(context: C
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Attributes/ReservedVendorNamespace/Expected.uv",
-        "//! Expected diagnostic metadata for the ReservedVendorNamespace rejected-source specimen.\n\nexpectedDiagnostic(\"E-CNF-0402\", \"diagnostics.VendorAttributeDiagnostics\")\n"
+        "//! Expected diagnostic metadata for the ReservedVendorNamespace rejected-source specimen.\n\nexpectedDiagnostic(\"E-CNF-0402\", \"diagnostics.VendorAttributeDiagnostics\")\nexpectedDiagnostic(\"E-CNF-0402\", \"conformance.VendorAttributeLowering\")\n"
     )
 }
 
@@ -188,6 +188,16 @@ public procedure typeAliasCycleExpectedDiagnosticFileMatches(context: Context) -
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Expected.uv",
         "//! Expected diagnostic metadata for the TypeAliasCycle rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1506\", \"def.AliasCycle\")\nexpectedDiagnostic(\"E-TYP-1506\", \"TypeAlias-Recursive-Err\")\nexpectedDiagnostic(\"E-TYP-1506\", \"req.TypeAliasDiagnosticOwnership\")\nexpectedDiagnostic(\"E-TYP-1506\", \"diagnostics.CoreTypeDiagnostics\")\n"
+    )
+}
+
+public procedure recordDiagnosticsOwnershipExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/RecordDiagnosticsOwnership/Expected.uv",
+        "//! Expected diagnostic metadata for the RecordDiagnosticsOwnership rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1901\", \"diagnostics.Records\")\n"
     )
 }
 
@@ -279,7 +289,7 @@ public procedure reservedModuleKeywordExpectedDiagnosticFileMatches(context: Con
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Modules/ReservedModuleKeyword/Expected.uv",
-        "//! Expected diagnostic metadata for the ReservedModuleKeyword rejected-source specimen.\n\nexpectedDiagnostic(\"E-MOD-1105\", \"WF-Module-Path-Reserved\")\nexpectedDiagnostic(\"E-MOD-1105\", \"diagnostics.ModuleAggregation\")\n"
+        "//! Expected diagnostic metadata for the ReservedModuleKeyword rejected-source specimen.\n\nexpectedDiagnostic(\"E-MOD-1105\", \"WF-Module-Path-Reserved\")\nexpectedDiagnostic(\"E-MOD-1105\", \"Disc-Invalid-Component\")\nexpectedDiagnostic(\"E-MOD-1105\", \"diagnostics.ModuleAggregation\")\n"
     )
 }
 
@@ -327,7 +337,7 @@ public procedure mainSignatureExpectedDiagnosticFileMatches(context: Context) ->
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MainSignature/Expected.uv",
-        "//! Expected diagnostic metadata for the MainSignature rejected-source specimen.\n\nexpectedDiagnostic(\"E-MOD-2431\", \"rule.15.Main-Signature-Err\")\n"
+        "//! Expected diagnostic metadata for the MainSignature rejected-source specimen.\n\nexpectedDiagnostic(\"E-MOD-2431\", \"rule.15.Main-Signature-Err\")\nexpectedDiagnostic(\"E-MOD-2431\", \"NAA-2\")\n"
     )
 }
 
@@ -409,7 +419,7 @@ public procedure missingRequiredTerminatorExpectedDiagnosticFileMatches(context:
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Statements/MissingRequiredTerminator/Expected.uv",
-        "//! Expected diagnostic metadata for the MissingRequiredTerminator rejected-source specimen.\n\nexpectedDiagnostic(\"E-SRC-0510\", \"rule.18.ConsumeTerminatorOpt-Req-No\")\n"
+        "//! Expected diagnostic metadata for the MissingRequiredTerminator rejected-source specimen.\n\nexpectedDiagnostic(\"E-SRC-0510\", \"rule.18.ConsumeTerminatorOpt-Req-No\")\nexpectedDiagnostic(\"E-SRC-0510\", \"req.16.ControlExpressionDiagnosticOwnership\")\nexpectedDiagnostic(\"E-SRC-0510\", \"def.18.RequiredStatementTerminators\")\n"
     )
 }
 
@@ -481,7 +491,7 @@ public procedure blocksDiagnosticExpectedDiagnosticFileMatches(context: Context)
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Statements/BlocksDiagnostic/Expected.uv",
-        "//! Expected diagnostic metadata for the BlocksDiagnostic rejected-source specimen.\n\nexpectedDiagnostic(\"E-SRC-0520\", \"diag.18.Blocks\")\n"
+        "//! Expected diagnostic metadata for the BlocksDiagnostic rejected-source specimen.\n\nexpectedDiagnostic(\"E-SRC-0520\", \"diag.18.Blocks\")\nexpectedDiagnostic(\"E-SRC-0520\", \"req.16.ControlExpressionDiagnosticOwnership\")\n"
     )
 }
 
@@ -605,7 +615,7 @@ public procedure missingReturnTypeExpectedDiagnosticFileMatches(context: Context
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MissingReturnType/Expected.uv",
-        "//! Expected diagnostic metadata for the MissingReturnType rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"rule.15.WF-ProcedureDecl-MissingReturnType\")\n"
+        "//! Expected diagnostic metadata for the MissingReturnType rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1508\", \"rule.15.WF-ProcedureDecl-MissingReturnType\")\n"
     )
 }
 
@@ -667,7 +677,7 @@ public procedure indexNonIndexableExpectedDiagnosticFileMatches(context: Context
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/IndexNonIndexable/Expected.uv",
-        "//! Expected diagnostic metadata for the IndexNonIndexable rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2527\", \"Index-NonIndexable\")\n"
+        "//! Expected diagnostic metadata for the IndexNonIndexable rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2527\", \"Index-NonIndexable\")\nexpectedDiagnostic(\"E-SEM-2527\", \"req.SliceDiagnosticOwnership\")\n"
     )
 }
 
@@ -692,6 +702,14 @@ public procedure arrayIndexNonUsizeExpectedDiagnosticFileMatches(context: Contex
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ArrayIndexNonUsize/Expected.uv",
         "//! Expected diagnostic metadata for the ArrayIndexNonUsize rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1812\", \"Index-Array-NonUsize\")\n"
+    )
+}
+
+public procedure sliceIndexNonUsizeExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/SliceIndexNonUsize/Expected.uv",
+        "//! Expected diagnostic metadata for the SliceIndexNonUsize rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1820\", \"Index-Slice-NonUsize\")\nexpectedDiagnostic(\"E-TYP-1820\", \"req.SliceDiagnosticOwnership\")\n"
     )
 }
 
@@ -723,7 +741,7 @@ public procedure callArgTypeExpectedDiagnosticFileMatches(context: Context) -> b
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallArgType/Expected.uv",
-        "//! Expected diagnostic metadata for the CallArgType rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2533\", \"rule.16.Call-ArgType-Err\")\n"
+        "//! Expected diagnostic metadata for the CallArgType rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2533\", \"rule.16.Call-ArgType-Err\")\nexpectedDiagnostic(\"E-SEM-2533\", \"Unify-Prim-Fail\")\n"
     )
 }
 
@@ -739,7 +757,7 @@ public procedure unionDirectAccessExpectedDiagnosticFileMatches(context: Context
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/UnionDirectAccess/Expected.uv",
-        "//! Expected diagnostic metadata for the UnionDirectAccess rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2202\", \"rule.16.Union-DirectAccess-Err\")\nexpectedDiagnostic(\"E-TYP-2202\", \"diagnostics.DataTypesSupplement\")\n"
+        "//! Expected diagnostic metadata for the UnionDirectAccess rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2202\", \"Union-DirectAccess-Err\")\nexpectedDiagnostic(\"E-TYP-2202\", \"rule.16.Union-DirectAccess-Err\")\nexpectedDiagnostic(\"E-TYP-2202\", \"diagnostics.DataTypesSupplement\")\n"
     )
 }
 
@@ -805,7 +823,7 @@ public procedure tupleAccessNonTupleExpectedDiagnosticFileMatches(context: Conte
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TupleAccessNonTuple/Expected.uv",
-        "//! Expected diagnostic metadata for the TupleAccessNonTuple rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2524\", \"diag.16.AccessAndPlaceExpressions\")\n"
+        "//! Expected diagnostic metadata for the TupleAccessNonTuple rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2524\", \"diag.16.AccessAndPlaceExpressions\")\nexpectedDiagnostic(\"E-SEM-2524\", \"TupleAccess-NotTuple\")\n"
     )
 }
 
@@ -955,7 +973,7 @@ public procedure unsupportedExternABIExpectedDiagnosticFileMatches(context: Cont
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/FFI/UnsupportedExternABI/Expected.uv",
-        "//! Expected diagnostic metadata for the UnsupportedExternABI rejected-source specimen.\n\nexpectedDiagnostic(\"E-SYS-3352\", \"diagnostics.23.FfiDiagnosticsSupplement\")\n"
+        "//! Expected diagnostic metadata for the UnsupportedExternABI rejected-source specimen.\n\nexpectedDiagnostic(\"E-SYS-3352\", \"diagnostics.23.FfiDiagnosticsSupplement\")\nexpectedDiagnostic(\"E-SYS-3352\", \"ExternAbi-Unknown-Err\")\n"
     )
 }
 
@@ -999,7 +1017,7 @@ public procedure boundaryUnwindingNoAdditionalDiagnosticsExpectedDiagnosticFileM
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/FFI/BoundaryUnwindingNoAdditionalDiagnostics/Expected.uv",
-        "//! Expected diagnostic metadata for the BoundaryUnwindingNoAdditionalDiagnostics rejected-source specimen.\n\nexpectedDiagnostic(\"E-SYS-3355\", \"diagnostics.23.BoundaryUnwindingNoAdditionalDiagnostics\")\n"
+        "//! Expected diagnostic metadata for the BoundaryUnwindingNoAdditionalDiagnostics rejected-source specimen.\n\nexpectedDiagnosticOnly(\"E-SYS-3355\", \"diagnostics.23.BoundaryUnwindingNoAdditionalDiagnostics\")\n"
     )
 }
 
@@ -1121,7 +1139,7 @@ public procedure capabilityIsolationDiagnosticsExpectedDiagnosticFileMatches(con
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnostics/Expected.uv",
-        "//! Expected diagnostic metadata for the CapabilityIsolationDiagnostics rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2623\", \"diagnostics.23.CapabilityIsolationDiagnostics\")\n"
+        "//! Expected diagnostic metadata for the CapabilityIsolationDiagnostics rejected-source specimen.\n\nexpectedDiagnostic(\"E-SYS-3360\", \"diagnostics.23.CapabilityIsolationDiagnostics\")\n"
     )
 }
 
@@ -1469,7 +1487,7 @@ public procedure asyncTryInfallibleExpectedDiagnosticFileMatches(context: Contex
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncTryInfallible/Expected.uv",
-        "//! Expected diagnostic metadata for the AsyncTryInfallible rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0230\", \"rule.16.Async-Try-Infallible-Err\")\n"
+        "//! Expected diagnostic metadata for the AsyncTryInfallible rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0230\", \"rule.16.Async-Try-Infallible-Err\")\nexpectedDiagnostic(\"E-CON-0230\", \"diag.16.EffectfulCoreExpressions\")\n"
     )
 }
 
@@ -1835,7 +1853,7 @@ public procedure exhaustivenessAndReachabilityDiagnosticExpectedDiagnosticFileMa
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Patterns/ExhaustivenessAndReachabilityDiagnostic/Expected.uv",
-        "//! Expected diagnostic metadata for the ExhaustivenessAndReachabilityDiagnostic rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2751\", \"diag.17.ExhaustivenessAndReachability\")\n"
+        "//! Expected diagnostic metadata for the ExhaustivenessAndReachabilityDiagnostic rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2751\", \"diag.17.ExhaustivenessAndReachability\")\nexpectedDiagnostic(\"E-SEM-2751\", \"req.16.ControlExpressionDiagnosticOwnership\")\n"
     )
 }
 
@@ -1905,7 +1923,7 @@ public procedure contractPredicateNonBoolExpectedDiagnosticFileMatches(
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractPredicateNonBool/Expected.uv",
-        "//! Expected diagnostic metadata for the ContractPredicateNonBool rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"rule.15.WF-Contract\")\n"
+        "//! Expected diagnostic metadata for the ContractPredicateNonBool rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2808\", \"rule.15.WF-Contract\")\n"
     )
 }
 
@@ -2099,7 +2117,7 @@ public procedure intLiteralCheckRangeExpectedDiagnosticFileMatches(context: Cont
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/IntLiteralCheckRange/Expected.uv",
-        "//! Expected diagnostic metadata for the IntLiteralCheckRange rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-3161\", \"rule.16.Chk-Int-Literal\")\n"
+        "//! Expected diagnostic metadata for the IntLiteralCheckRange rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-3161\", \"diag.16.LiteralAndNameExpressions\")\nexpectedDiagnostic(\"E-SEM-3161\", \"rule.16.Chk-Int-Literal\")\n"
     )
 }
 
@@ -2109,7 +2127,7 @@ public procedure floatLiteralExplicitRequirementExpectedDiagnosticFileMatches(
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/FloatLiteralExplicitRequirement/Expected.uv",
-        "//! Expected diagnostic metadata for the FloatLiteralExplicitRequirement rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1531\", \"rule.16.Chk-Float-Literal-Explicit\")\n"
+        "//! Expected diagnostic metadata for the FloatLiteralExplicitRequirement rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1531\", \"diagnostics.CoreTypeDiagnostics\")\nexpectedDiagnostic(\"E-TYP-1531\", \"rule.16.Chk-Float-Literal-Explicit\")\n"
     )
 }
 
@@ -2145,7 +2163,7 @@ public procedure controlExpressionDiagnosticOwnershipExpectedDiagnosticFileMatch
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ControlExpressionDiagnosticOwnership/Expected.uv",
-        "//! Expected diagnostic metadata for the ControlExpressionDiagnosticOwnership rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2526\", \"req.16.ControlExpressionDiagnosticOwnership\")\n"
+        "//! Expected diagnostic metadata for the ControlExpressionDiagnosticOwnership rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2830\", \"req.16.ControlExpressionDiagnosticOwnership\")\n"
     )
 }
 
@@ -2171,7 +2189,7 @@ public procedure enumEmptyExpectedDiagnosticFileMatches(context: Context) -> boo
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/EnumEmpty/Expected.uv",
-        "//! Expected diagnostic metadata for the EnumEmpty rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2001\", \"Enum-Empty-Err\")\n"
+        "//! Expected diagnostic metadata for the EnumEmpty rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2001\", \"Enum-Empty-Err\")\nexpectedDiagnostic(\"E-TYP-2001\", \"diagnostics.Enums\")\n"
     )
 }
 
@@ -2233,7 +2251,7 @@ public procedure addressOfStaticHelpersExpectedDiagnosticFileMatches(context: Co
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AddressOfStaticHelpers/Expected.uv",
-        "//! Expected diagnostic metadata for the AddressOfStaticHelpers rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2105\", \"def.16.AddressOfStaticHelpers\")\n"
+        "//! Expected diagnostic metadata for the AddressOfStaticHelpers rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2105\", \"def.16.AddressOfStaticHelpers\")\nexpectedDiagnostic(\"E-TYP-2105\", \"diag.16.EffectfulCoreExpressions\")\n"
     )
 }
 
@@ -2241,7 +2259,7 @@ public procedure addressOfIndexTypingExpectedDiagnosticFileMatches(context: Cont
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AddressOfIndexTyping/Expected.uv",
-        "//! Expected diagnostic metadata for the AddressOfIndexTyping rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1812\", \"rule.16.T-AddrOf\")\n"
+        "//! Expected diagnostic metadata for the AddressOfIndexTyping rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1812\", \"rule.16.T-AddrOf\")\nexpectedDiagnostic(\"E-TYP-1812\", \"diag.16.EffectfulCoreExpressions\")\n"
     )
 }
 
@@ -2251,7 +2269,7 @@ public procedure rawDerefUnsafeRequirementExpectedDiagnosticFileMatches(
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement/Expected.uv",
-        "//! Expected diagnostic metadata for the RawDerefUnsafeRequirement rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2103\", \"rule.16.T-Deref-Raw\")\n"
+        "//! Expected diagnostic metadata for the RawDerefUnsafeRequirement rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2103\", \"rule.13.Deref-Raw-Unsafe\")\nexpectedDiagnostic(\"E-TYP-2103\", \"diag.16.EffectfulCoreExpressions\")\n"
     )
 }
 
@@ -2261,7 +2279,7 @@ public procedure rawDerefPlaceTypingFamilyExpectedDiagnosticFileMatches(
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily/Expected.uv",
-        "//! Expected diagnostic metadata for the RawDerefPlaceTypingFamily rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2103\", \"rule.16.DerefPlaceTypingFamily\")\n"
+        "//! Expected diagnostic metadata for the RawDerefPlaceTypingFamily rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2103\", \"rule.13.Deref-Raw-Unsafe\")\nexpectedDiagnostic(\"E-TYP-2103\", \"diag.16.EffectfulCoreExpressions\")\n"
     )
 }
 
@@ -2281,7 +2299,7 @@ public procedure widenTypingDiagnosticsOwnershipExpectedDiagnosticFileMatches(
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership/Expected.uv",
-        "//! Expected diagnostic metadata for the WidenTypingDiagnosticsOwnership rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2071\", \"req.16.WidenTypingDiagnosticsOwnershipForCastTransmute\")\n"
+        "//! Expected diagnostic metadata for the WidenTypingDiagnosticsOwnership rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2071\", \"rule.13.Widen-NonModal\")\nexpectedDiagnostic(\"E-TYP-2071\", \"req.16.WidenTypingDiagnosticsOwnershipForCastTransmute\")\nexpectedDiagnostic(\"E-TYP-2071\", \"diag.ModalWidening\")\nexpectedDiagnostic(\"E-TYP-2071\", \"diagnostics.ModalPointerSupplement\")\n"
     )
 }
 
@@ -2297,7 +2315,7 @@ public procedure returnAnnotationPresenceExpectedDiagnosticFileMatches(context: 
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ReturnAnnotationPresence/Expected.uv",
-        "//! Expected diagnostic metadata for the ReturnAnnotationPresence rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"def.15.ReturnAnnOk\")\n"
+        "//! Expected diagnostic metadata for the ReturnAnnotationPresence rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1508\", \"def.15.ReturnAnnOk\")\n"
     )
 }
 
@@ -2773,6 +2791,14 @@ public procedure foundationalClassNameReservedExpectedDiagnosticFileMatches(
     )
 }
 
+public procedure hashWithoutEqExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/HashWithoutEq/Expected.uv",
+        "//! Expected diagnostic metadata for the HashWithoutEq rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2503\", \"req.14.HashRequiresEqAndEqualValuesHashEqual\")\n"
+    )
+}
+
 public procedure refinementPredicateNonBoolExpectedDiagnosticFileMatches(
     context: Context
 ) -> bool {
@@ -2860,6 +2886,26 @@ public procedure duplicateClassProcedureNameExpectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/DuplicateClassProcedureName/Expected.uv",
         "//! Expected diagnostic metadata for the DuplicateClassProcedureName rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2500\", \"rule.14.WF-Class\")\n"
+    )
+}
+
+public procedure inheritedMethodSignatureConflictExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/InheritedMethodSignatureConflict/Expected.uv",
+        "//! Expected diagnostic metadata for the InheritedMethodSignatureConflict rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2505\", \"rule.14.EffMethods-Conflict\")\n"
+    )
+}
+
+public procedure inheritedFieldSignatureConflictExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/InheritedFieldSignatureConflict/Expected.uv",
+        "//! Expected diagnostic metadata for the InheritedFieldSignatureConflict rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2505\", \"rule.14.EffFields-Conflict\")\n"
     )
 }
 
@@ -3117,7 +3163,7 @@ public procedure waitWhileKeyHeldLoweringExpectedDiagnosticFileMatches(
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering/Expected.uv",
-        "//! Expected diagnostic metadata for the WaitWhileKeyHeldLowering rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0133\", \"rule.21.Lower-Wait-Key-Illegal\")\n"
+        "//! Expected diagnostic metadata for the WaitWhileKeyHeldLowering rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0133\", \"requirement.21.AsyncKeyRestrictions\")\n"
     )
 }
 
@@ -3557,6 +3603,16 @@ public procedure runtimeCallsComptimeProcedureExpectedDiagnosticFileMatches(
     )
 }
 
+public procedure comptimeProcedureContractFailureExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Comptime/ComptimeProcedureContractFailure/Expected.uv",
+        "//! Expected diagnostic metadata for the ComptimeProcedureContractFailure rejected-source specimen.\n\nexpectedDiagnostic(\"E-CTE-0033\", \"requirement.22.CompileTimeProcedureContracts\")\n"
+    )
+}
+
 public procedure introspectFieldsNonRecordExpectedDiagnosticFileMatches(
     context: Context
 ) -> bool {
@@ -3690,5 +3746,35 @@ public procedure receiverPermissionMismatchExpectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Permissions/ReceiverPermissionMismatch/Expected.uv",
         "//! Expected diagnostic metadata for the ReceiverPermissionMismatch rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1605\", \"diagnostics.PermissionAdmissibility\")\n"
+    )
+}
+
+public procedure directCallCapabilityInclusionExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion/Expected.uv",
+        "//! Expected diagnostic metadata for the DirectCallCapabilityInclusion rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0020\", \"conformance.NoAmbientAuthorityDiscipline\")\nexpectedDiagnostic(\"E-CON-0020\", \"NAA-3\")\nexpectedDiagnostic(\"E-CON-0020\", \"req.DirectCallCapabilityInclusion\")\n"
+    )
+}
+
+public procedure noAmbientCapabilityGlobalExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Permissions/NoAmbientCapabilityGlobal/Expected.uv",
+        "//! Expected diagnostic metadata for the NoAmbientCapabilityGlobal rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0020\", \"NAA-1\")\n"
+    )
+}
+
+public procedure attenuationParentDropWithLiveChildExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Permissions/AttenuationParentDropWithLiveChild/Expected.uv",
+        "//! Expected diagnostic metadata for the AttenuationParentDropWithLiveChild rejected-source specimen.\n\nexpectedDiagnostic(\"E-MEM-3020\", \"req.AttenuationParentDropRejectedWithLiveChildren\")\n"
     )
 }

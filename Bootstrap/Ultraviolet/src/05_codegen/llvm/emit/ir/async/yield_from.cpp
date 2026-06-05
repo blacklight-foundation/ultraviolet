@@ -6,6 +6,28 @@
 
 namespace ultraviolet::codegen::emit_detail {
 
+namespace {
+
+void RecordAsyncKeyIRComponent(
+    const char *component,
+    const char *operation)
+{
+  if (!core::Conformance::Enabled())
+  {
+    return;
+  }
+
+  std::string payload = "source=EmitYieldFrom;operation=";
+  payload += operation;
+  payload += ";component=";
+  payload += component;
+  payload += ";component_set=SnapshotHeldKeysIR,ReleaseHeldKeysIR,";
+  payload += "ReacquireHeldKeysIR,StaleValueMarkIR";
+  core::Conformance::Record("def.21.AsyncKeyIR", std::nullopt, payload);
+}
+
+}  // namespace
+
 void IRInstructionVisitor::operator()(const IRYieldFrom &y) const
 {
   const LowerCtx *active_ctx = emitter.GetCurrentCtx();
@@ -121,6 +143,10 @@ void IRInstructionVisitor::operator()(const IRYieldFrom &y) const
   }
 
   const LowerCtx::AsyncProcInfo &info = *async_state->info;
+  SPEC_RULE("requirement.21.YieldFromRuntimeSemantics");
+  SPEC_RULE("def.21.ResumptionHelpers");
+  SPEC_RULE("def.21.EvalYieldFromContinueSignature");
+
   const AsyncStateDiscs source_discs =
       LoweredAsyncStateDiscs(scope, *source_sig);
   const std::uint64_t suspended_disc = source_discs.suspended;
@@ -186,12 +212,12 @@ void IRInstructionVisitor::operator()(const IRYieldFrom &y) const
     const std::uint64_t copy_size = std::min(src_size, dst_size);
     if (copy_size > 0)
     {
-      builder.CreateMemCpy(
+      EmitAggMemcpy(
+          emitter,
           dst_i8,
-          llvm::Align(1),
           src_i8,
-          llvm::Align(1),
-          llvm::ConstantInt::get(i64_ty, copy_size));
+          llvm::ConstantInt::get(i64_ty, copy_size),
+          1);
     }
     return builder.CreateLoad(dst_ty, dst_slot);
   };
@@ -509,8 +535,13 @@ void IRInstructionVisitor::operator()(const IRYieldFrom &y) const
     llvm::Value *frame_ptr = ensure_async_frame();
     if (y.release && frame_ptr)
     {
+      SPEC_RULE("rule.21.Lower-YieldFrom-Release-Keys");
+      SPEC_RULE("requirement.21.AsyncSuspensionAccessRights");
+      SPEC_RULE("requirement.21.YieldReleaseRuntimeReference");
       llvm::Value *released = EmitKeyReleaseAll(emitter, &builder);
       StoreAsyncFrameKeySnapshot(emitter, &builder, frame_ptr, released);
+      RecordAsyncKeyIRComponent("ReleaseHeldKeysIR", "release-held-keys");
+      RecordAsyncKeyIRComponent("SnapshotHeldKeysIR", "snapshot-held-keys");
     }
     if (frame_ptr)
     {
@@ -524,6 +555,8 @@ void IRInstructionVisitor::operator()(const IRYieldFrom &y) const
           i64_ty);
       if (state_ptr)
       {
+        SPEC_RULE("requirement.21.AsyncFrameStoredState");
+        SPEC_RULE("rule.21.Lower-Async-Suspend");
         builder.CreateStore(
             llvm::ConstantInt::get(i64_ty, y.state_index),
             state_ptr);
@@ -542,7 +575,7 @@ void IRInstructionVisitor::operator()(const IRYieldFrom &y) const
       builder.CreateStore(llvm::Constant::getNullValue(outer_struct), outer_slot);
 
       llvm::Type *disc_ty = outer_struct->getElementType(0);
-      llvm::Value *disc_ptr = builder.CreateStructGEP(outer_struct, outer_slot, 0);
+      llvm::Value *disc_ptr = outer_slot;
       builder.CreateStore(
           llvm::ConstantInt::get(disc_ty, outer_discs.suspended),
           disc_ptr);
@@ -601,12 +634,12 @@ void IRInstructionVisitor::operator()(const IRYieldFrom &y) const
               static_cast<std::uint64_t>(dl.getTypeAllocSize(out_ll));
           if (copy_size > 0)
           {
-            builder.CreateMemCpy(
+            EmitAggMemcpy(
+                emitter,
                 payload_i8,
-                llvm::Align(1),
                 src_i8,
-                llvm::Align(1),
-                llvm::ConstantInt::get(i64_ty, copy_size));
+                llvm::ConstantInt::get(i64_ty, copy_size),
+                1);
           }
         }
       }
@@ -647,12 +680,113 @@ void IRInstructionVisitor::operator()(const IRYieldFrom &y) const
     emit_async_return(suspended_value, info.async_type);
   };
 
+  auto materialize_outer_failed = [&](llvm::Value *failed_payload,
+                                      const analysis::TypeRef &failed_type)
+      -> llvm::Value *
+  {
+    SPEC_RULE("requirement.21.AsyncFailureRuntimeSemantics");
+    SPEC_RULE("requirement.21.AsyncFailStateIRSemantics");
+
+    if (!outer_discs.failed.has_value() || !info.async_type)
+    {
+      return nullptr;
+    }
+
+    llvm::Type *outer_layout_ty = emitter.GetLLVMType(info.async_type);
+    auto *outer_struct = llvm::dyn_cast_or_null<llvm::StructType>(outer_layout_ty);
+    if (!outer_struct || outer_struct->getNumElements() < 1 ||
+        !outer_struct->getElementType(0)->isIntegerTy())
+    {
+      return nullptr;
+    }
+
+    llvm::AllocaInst *outer_slot = entry_builder.CreateAlloca(outer_struct);
+    builder.CreateStore(llvm::Constant::getNullValue(outer_struct), outer_slot);
+
+    llvm::Type *disc_ty = outer_struct->getElementType(0);
+    llvm::Value *disc_ptr = outer_slot;
+    builder.CreateStore(
+        llvm::ConstantInt::get(disc_ty, *outer_discs.failed),
+        disc_ptr);
+
+    const analysis::TypeRef outer_error_type =
+        info.err_type ? info.err_type : failed_type;
+    if (outer_error_type &&
+        !IsUnitTypeRef(outer_error_type) &&
+        !IsNeverTypeRef(outer_error_type))
+    {
+      llvm::Type *outer_error_ll = emitter.GetLLVMType(outer_error_type);
+      if (outer_error_ll && !outer_error_ll->isVoidTy())
+      {
+        llvm::Value *outer_error_value = failed_payload;
+        if (!outer_error_value)
+        {
+          outer_error_value = llvm::Constant::getNullValue(outer_error_ll);
+        }
+        else if (outer_error_value->getType() != outer_error_ll)
+        {
+          if (llvm::Value *coerced = CoerceToTyped(
+                  emitter,
+                  &builder,
+                  outer_error_value,
+                  outer_error_ll,
+                  failed_type,
+                  outer_error_type))
+          {
+            outer_error_value = coerced;
+          }
+          else if (llvm::Value *plain =
+                       CoerceTo(&builder, outer_error_value, outer_error_ll))
+          {
+            outer_error_value = plain;
+          }
+          else
+          {
+            outer_error_value = llvm::Constant::getNullValue(outer_error_ll);
+          }
+        }
+
+        llvm::Value *payload_i8 = CreateTaggedPayloadI8Ptr(
+            emitter,
+            &builder,
+            outer_struct,
+            outer_slot,
+            ::ultraviolet::analysis::layout::kPtrAlign);
+        if (payload_i8)
+        {
+          llvm::AllocaInst *src_slot = entry_builder.CreateAlloca(outer_error_ll);
+          builder.CreateStore(outer_error_value, src_slot);
+          llvm::Type *i8_ty = llvm::Type::getInt8Ty(emitter.GetContext());
+          llvm::Type *i64_ty = llvm::Type::getInt64Ty(emitter.GetContext());
+          llvm::Value *src_i8 = builder.CreateBitCast(
+              src_slot,
+              llvm::PointerType::get(i8_ty, 0));
+          const llvm::DataLayout &dl = emitter.GetModule().getDataLayout();
+          const std::uint64_t copy_size = static_cast<std::uint64_t>(
+              dl.getTypeAllocSize(outer_error_ll));
+          if (copy_size > 0)
+          {
+            EmitAggMemcpy(
+                emitter,
+                payload_i8,
+                src_i8,
+                llvm::ConstantInt::get(i64_ty, copy_size),
+                1);
+          }
+        }
+      }
+    }
+
+    return builder.CreateLoad(outer_struct, outer_slot);
+  };
+
   llvm::Type *i8_ty = llvm::Type::getInt8Ty(emitter.GetContext());
   llvm::Type *opaque_ptr_ty = emitter.GetOpaquePtr();
   auto *opaque_ptr_ptr_ty = llvm::cast<llvm::PointerType>(opaque_ptr_ty);
 
   llvm::BasicBlock *loop_bb =
       llvm::BasicBlock::Create(emitter.GetContext(), "yield_from.loop", func);
+  SPEC_RULE("requirement.21.YieldFromEnterLoweringLoop");
   llvm::BasicBlock *suspended_bb =
       llvm::BasicBlock::Create(emitter.GetContext(), "yield_from.suspended", func);
   llvm::BasicBlock *completed_bb =
@@ -715,11 +849,16 @@ void IRInstructionVisitor::operator()(const IRYieldFrom &y) const
   if (emit_resume_body && resume_entry_bb)
   {
     builder.SetInsertPoint(resume_entry_bb);
+    SPEC_RULE("rule.21.EvalSigma-YieldFrom-Resume");
     if (y.release && async_state->frame_ptr)
     {
+      SPEC_RULE("rule.21.Lower-YieldFrom-Release-Keys");
+      SPEC_RULE("requirement.21.AsyncSuspensionAccessRights");
+      SPEC_RULE("requirement.21.YieldReleaseRuntimeReference");
       llvm::Value *released =
           LoadAsyncFrameKeySnapshot(emitter, &builder, async_state->frame_ptr);
       EmitKeyReacquire(emitter, &builder, released);
+      RecordAsyncKeyIRComponent("ReacquireHeldKeysIR", "reacquire-held-keys");
       StoreAsyncFrameKeySnapshot(
           emitter,
           &builder,
@@ -823,6 +962,8 @@ void IRInstructionVisitor::operator()(const IRYieldFrom &y) const
   }
 
   builder.SetInsertPoint(suspended_bb);
+  SPEC_RULE("rule.21.EvalSigma-YieldFrom-Suspended");
+  SPEC_RULE("rule.21.EvalYieldFromContinue-Suspended");
   llvm::Value *yielded_value = extract_async_payload(source_sig->out);
   emit_outer_suspended(yielded_value, source_sig->out);
   if (!builder.GetInsertBlock()->getTerminator())
@@ -831,6 +972,8 @@ void IRInstructionVisitor::operator()(const IRYieldFrom &y) const
   }
 
   builder.SetInsertPoint(completed_bb);
+  SPEC_RULE("rule.21.EvalSigma-YieldFrom-Completed");
+  SPEC_RULE("rule.21.EvalYieldFromContinue-Completed");
   llvm::Value *completed_payload = extract_async_payload(source_sig->result);
   llvm::Value *completed_value = coerce_to_result(completed_payload, source_sig->result);
   if (!completed_value)
@@ -857,6 +1000,12 @@ void IRInstructionVisitor::operator()(const IRYieldFrom &y) const
   if (failed_bb)
   {
     builder.SetInsertPoint(failed_bb);
+    SPEC_RULE("rule.21.EvalSigma-YieldFrom-Failed");
+    SPEC_RULE("rule.21.EvalYieldFromContinue-Failed");
+    if (y.release)
+    {
+      SPEC_RULE("requirement.21.AsyncKeyFailureHandlingReference");
+    }
     llvm::Value *failed_payload = extract_async_payload(source_sig->err);
     if (!failed_payload &&
         source_sig->err &&
@@ -871,7 +1020,16 @@ void IRInstructionVisitor::operator()(const IRYieldFrom &y) const
         }
       }
     }
-    emit_async_return(failed_payload, source_sig->err);
+    llvm::Value *outer_failed =
+        materialize_outer_failed(failed_payload, source_sig->err);
+    if (outer_failed)
+    {
+      emit_async_return(outer_failed, info.async_type);
+    }
+    else
+    {
+      emit_async_return(failed_payload, source_sig->err);
+    }
     if (!builder.GetInsertBlock()->getTerminator())
     {
       builder.CreateBr(cont_bb);

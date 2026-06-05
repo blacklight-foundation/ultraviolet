@@ -6,10 +6,12 @@
 #include <optional>
 #include <source_location>
 #include <string>
+#include <mutex>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
+#include "00_core/diagnostics.h"
 #include "04_analysis/generics/monomorphize.h"
 #include "05_codegen/ir/ir_model.h"
 #include "05_codegen/symbols/linkage.h"
@@ -35,6 +37,7 @@ struct CleanupItem {
   enum class Kind {
     DropBinding,
     DeferBlock,
+    SpeculativeWriteRollback,
     ReleaseRegion,
     ReleaseKeyScope,
     ReacquireReleasedKey,
@@ -46,6 +49,7 @@ struct CleanupItem {
   std::string name;
   std::uint64_t binding_id = 0;
   IRPtr defer_ir;
+  IRPtr restore_ir;
   std::uint64_t scope_runtime_id = 0;
 };
 
@@ -148,6 +152,11 @@ struct BindingState {
   std::optional<std::string> prov_region_tag;
   std::uint64_t scope_runtime_id = 0;
   bool preserve_addr_provenance = false;
+};
+
+enum class BindingStateSetSource {
+  MarkMoved,
+  MarkFieldMoved,
 };
 
 struct DerivedArraySegment {
@@ -295,8 +304,17 @@ struct LowerCtx {
       resolve_type_name_in_module;
 
   // Track missing resolution or lowering failures.
+  enum class CodegenFailureKind : std::uint8_t {
+    Generic,
+    LLVMTypeMapping,
+  };
+
   bool resolve_failed = false;
   bool codegen_failed = false;
+  std::optional<CodegenFailureKind> codegen_failure_kind;
+  bool llvm_type_mapping_diagnostic_emitted = false;
+  core::DiagnosticStream* diagnostics = nullptr;
+  std::mutex* diagnostics_mu = nullptr;
   std::vector<std::string> resolve_failures;
 
   // Expression provenance map computed by analysis (per procedure). Shared
@@ -319,6 +337,15 @@ struct LowerCtx {
   // #dynamic verification scope for runtime checks (arrays, contracts, etc.)
   bool dynamic_checks = false;
   std::optional<AccessOrdering> current_access_order;
+  std::uint8_t lowering_checks_judgement_members = 0;
+  bool lowering_checks_judgement_recorded = false;
+
+  struct ActiveTransitionLowering {
+    analysis::TypePath modal_path;
+    std::string source_state;
+    std::string target_state;
+  };
+  std::optional<ActiveTransitionLowering> active_transition_lowering;
 
   bool log_enabled = false;
   bool log_to_console = false;
@@ -460,6 +487,9 @@ struct LowerCtx {
 
   void ReportResolveFailure(const std::string& name);
   void ReportCodegenFailure(
+      std::source_location loc = std::source_location::current());
+  void ReportCodegenFailure(
+      CodegenFailureKind kind,
       std::source_location loc = std::source_location::current());
 
   void RegisterValueType(
@@ -613,6 +643,10 @@ struct LowerCtx {
   
   // Mark a field of a variable as moved
   void MarkFieldMoved(const std::string& name, const std::string& field);
+
+  void RecordBindingStateSet(const BindingState& state,
+                             const std::string& name,
+                             BindingStateSetSource source);
   
   // Get binding state
   const BindingState* GetBindingState(const std::string& name) const;
@@ -632,6 +666,7 @@ struct LowerCtx {
   
   // Register a defer block in the current scope
   void RegisterDefer(const IRPtr& defer_ir);
+  void RegisterSpeculativeWriteRollback(const IRPtr& restore_ir);
   void RegisterRegionRelease(const std::string& name);
   void RegisterKeyScopeExit(const std::string& scope_name);
   void RegisterReleasedKeyReacquire(const std::string& handle_name);

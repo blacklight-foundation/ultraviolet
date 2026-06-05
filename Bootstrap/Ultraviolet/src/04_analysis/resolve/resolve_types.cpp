@@ -45,6 +45,7 @@ static inline void SpecDefsResolverTypes() {
   SPEC_DEF("ResolveParams", "5.1.7");
   SPEC_DEF("ResolveParam", "5.1.7");
   SPEC_DEF("FullPath", "5.12");
+  SPEC_DEF("req.15.VerificationFactsNoRuntimeRepresentation", "15.8.4");
 }
 
 
@@ -55,7 +56,7 @@ static bool IsFoundationalClassPath(const ast::ClassPath& path) {
   return IdEq(path[0], "Drop") || IdEq(path[0], "Bitcopy") ||
          IdEq(path[0], "Clone") || IdEq(path[0], "Eq") ||
          IdEq(path[0], "Hasher") || IdEq(path[0], "Hash") ||
-         IdEq(path[0], "Iterator") || IdEq(path[0], "Step") ||
+         IdEq(path[0], "Iterator") || IdEq(path[0], "Discrete") ||
          IdEq(path[0], "FfiSafe") ||
          // UVX Extension: Structured Concurrency (§18.2.4)
          IsExecutionDomainClassPath(path) ||
@@ -68,6 +69,10 @@ static bool IsSelfAssociatedTypePath(const ast::TypePath& path) {
 
 static bool IsGpuPtrPath(const ast::TypePath& path) {
   return path.size() == 1 && IdEq(path[0], "GpuPtr");
+}
+
+static bool IsVerificationFactFormalTypePath(const ast::TypePath& path) {
+  return path.size() == 1 && IdEq(path[0], "VerificationFact");
 }
 
 static bool IsGpuPtrAddressSpaceArg(const std::shared_ptr<ast::Type>& type) {
@@ -115,6 +120,9 @@ ResTypePathResult ResolveTypePath(ResolveContext& ctx,
     }
     const auto ent = ResolveTypeName(*ctx.ctx, path[0]);
     if (!ent.has_value()) {
+      if (IsVerificationFactFormalTypePath(path)) {
+        SPEC_RULE("req.15.VerificationFactsNoRuntimeRepresentation");
+      }
       return {false, "ResolveExpr-Ident-Err", std::nullopt, {},
               UnresolvedTypePathDetail(path)};
     }

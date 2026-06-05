@@ -1,0 +1,146 @@
+//! Output-diagnostic output-pipeline specimens.
+
+public procedure outputPipelineDiagnosticFixtureCount() -> usize {
+    return 8usize
+}
+
+public procedure validatedOutputPipelineDiagnosticFixtureCount() -> usize {
+    var count: usize = 0usize
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "DirectoryPreparationFailure",
+            "Fixtures/OutputDiagnostics/OutputPipeline/DirectoryPreparationFailure",
+            "Fixtures/OutputDiagnostics/OutputPipeline/DirectoryPreparationFailure/Source/Main.uv",
+            "Fixtures/OutputDiagnostics/OutputPipeline/DirectoryPreparationFailure/Expected.uv",
+            expectedDiagnostic("E-OUT-0401", "Out-Dirs-Err")
+        ),
+        "DirectoryPreparationFailure",
+        "Fixtures/OutputDiagnostics/OutputPipeline/DirectoryPreparationFailure",
+        "Fixtures/OutputDiagnostics/OutputPipeline/DirectoryPreparationFailure/Source/Main.uv",
+        "Fixtures/OutputDiagnostics/OutputPipeline/DirectoryPreparationFailure/Expected.uv",
+        "E-OUT-0401",
+        "Out-Dirs-Err"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "DirectoryPreparationFailure",
+            "Fixtures/OutputDiagnostics/OutputPipeline/DirectoryPreparationFailure",
+            "Fixtures/OutputDiagnostics/OutputPipeline/DirectoryPreparationFailure/Source/Main.uv",
+            "Fixtures/OutputDiagnostics/OutputPipeline/DirectoryPreparationFailure/Expected.uv",
+            expectedDiagnostic("E-OUT-0401", "Output-Pipeline-Err")
+        ),
+        "DirectoryPreparationFailure",
+        "Fixtures/OutputDiagnostics/OutputPipeline/DirectoryPreparationFailure",
+        "Fixtures/OutputDiagnostics/OutputPipeline/DirectoryPreparationFailure/Source/Main.uv",
+        "Fixtures/OutputDiagnostics/OutputPipeline/DirectoryPreparationFailure/Expected.uv",
+        "E-OUT-0401",
+        "Output-Pipeline-Err"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "ObjectWriteFailure",
+            "Fixtures/OutputDiagnostics/OutputPipeline/ObjectWriteFailure",
+            "Fixtures/OutputDiagnostics/OutputPipeline/ObjectWriteFailure/Source/Main.uv",
+            "Fixtures/OutputDiagnostics/OutputPipeline/ObjectWriteFailure/Expected.uv",
+            expectedDiagnostic("E-OUT-0402", "Out-Obj-Err")
+        ),
+        "ObjectWriteFailure",
+        "Fixtures/OutputDiagnostics/OutputPipeline/ObjectWriteFailure",
+        "Fixtures/OutputDiagnostics/OutputPipeline/ObjectWriteFailure/Source/Main.uv",
+        "Fixtures/OutputDiagnostics/OutputPipeline/ObjectWriteFailure/Expected.uv",
+        "E-OUT-0402",
+        "Out-Obj-Err"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "ObjectWriteFailure",
+            "Fixtures/OutputDiagnostics/OutputPipeline/ObjectWriteFailure",
+            "Fixtures/OutputDiagnostics/OutputPipeline/ObjectWriteFailure/Source/Main.uv",
+            "Fixtures/OutputDiagnostics/OutputPipeline/ObjectWriteFailure/Expected.uv",
+            expectedDiagnostic("E-OUT-0402", "Output-Pipeline-Err")
+        ),
+        "ObjectWriteFailure",
+        "Fixtures/OutputDiagnostics/OutputPipeline/ObjectWriteFailure",
+        "Fixtures/OutputDiagnostics/OutputPipeline/ObjectWriteFailure/Source/Main.uv",
+        "Fixtures/OutputDiagnostics/OutputPipeline/ObjectWriteFailure/Expected.uv",
+        "E-OUT-0402",
+        "Output-Pipeline-Err"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "IRWriteFailure",
+            "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure",
+            "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure/Source/Main.uv",
+            "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure/Expected.uv",
+            expectedDiagnostic("E-OUT-0403", "def.EmitIRFailLL")
+        ),
+        "IRWriteFailure",
+        "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure",
+        "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure/Source/Main.uv",
+        "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure/Expected.uv",
+        "E-OUT-0403",
+        "def.EmitIRFailLL"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "IRWriteFailure",
+            "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure",
+            "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure/Source/Main.uv",
+            "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure/Expected.uv",
+            expectedDiagnostic("E-OUT-0403", "Emit-IR-Err")
+        ),
+        "IRWriteFailure",
+        "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure",
+        "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure/Source/Main.uv",
+        "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure/Expected.uv",
+        "E-OUT-0403",
+        "Emit-IR-Err"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "IRWriteFailure",
+            "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure",
+            "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure/Source/Main.uv",
+            "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure/Expected.uv",
+            expectedDiagnostic("E-OUT-0403", "Out-IR-Err")
+        ),
+        "IRWriteFailure",
+        "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure",
+        "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure/Source/Main.uv",
+        "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure/Expected.uv",
+        "E-OUT-0403",
+        "Out-IR-Err"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "IRWriteFailure",
+            "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure",
+            "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure/Source/Main.uv",
+            "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure/Expected.uv",
+            expectedDiagnostic("E-OUT-0403", "Output-Pipeline-Err")
+        ),
+        "IRWriteFailure",
+        "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure",
+        "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure/Source/Main.uv",
+        "Fixtures/OutputDiagnostics/OutputPipeline/IRWriteFailure/Expected.uv",
+        "E-OUT-0403",
+        "Output-Pipeline-Err"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

@@ -2,7 +2,7 @@
 // Error Statement Lowering Implementation
 // =============================================================================
 //
-// SPEC REFERENCE: Docs/SPECIFICATION.md Lines 16701-16703 (Lower-Stmt-Error)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Lines 19438-19440 (Lower-Stmt-Error)
 //   - LowerPanic(ErrorStmt(span))
 //   - Error statements trigger panic IR
 //
@@ -25,7 +25,7 @@ namespace ultraviolet::codegen {
 // Lower-Stmt-Error
 // ============================================================================
 //
-// Per the spec (Lines 16701-16703):
+// Per the spec (Lines 19438-19440):
 //   LowerPanic(ErrorStmt(span))
 //
 // Error statements represent syntax errors that were recovered during parsing.
@@ -37,6 +37,11 @@ IRPtr LowerErrorStmt(const ast::ErrorStmt& /*stmt*/, LowerCtx& ctx) {
   ctx.codegen_failed = true;
 
   // Error statements emit a panic with the ErrorStmt reason
+  core::Conformance::Record(
+      "rule.18.Lower-Stmt-Error",
+      std::nullopt,
+      "source=LowerErrorStmt;ir_form=LowerPanic;panic_reason=ErrorStmt;"
+      "codegen_failed=true");
   return LowerPanic(PanicReason::ErrorStmt, ctx);
 }
 

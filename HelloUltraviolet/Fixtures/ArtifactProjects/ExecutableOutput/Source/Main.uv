@@ -1,13 +1,172 @@
 //! Artifact fixture for executable and map output.
 
-public record ExecutableTimeContext {
-    public time: $Time
+public record ExecutableDomainContext {
+    public cpu: $ExecutionDomain
+    public gpu: $ExecutionDomain
+    public inline: $ExecutionDomain
 }
 
-public procedure main(context: ExecutableTimeContext) -> i32 {
-    let monotonic: $MonotonicTime = context.time~>monotonic()
+public record ExecutableCapabilityFields {
+    public io: $IO
+    public net: $Network
+    public heap: $HeapAllocator
+    public sys: System
+    public reactor: $Reactor
+    public time: $Time
+    public domains: ExecutableDomainContext
+}
+
+public record ExecutableOutputContext {
+    public primary: ExecutableCapabilityFields
+    public secondary: ExecutableCapabilityFields
+}
+
+internal type ExecutableUnaryFunction = (i32) -> i32
+
+internal type ExecutableUnaryClosure = |i32| -> i32
+
+internal procedure executableOutputFuture(value: i32) -> Future<i32, bool> {
+    return value
+}
+
+internal procedure executableOutputFutureValue(value: i32 | bool, expected: i32) -> bool {
+    return if value is {
+        actual: i32 {
+            actual == expected
+        }
+        failure: bool {
+            false
+        }
+    }
+}
+
+internal procedure executableOutputDomainObserved(domain: $ExecutionDomain) -> bool {
+    return string::length(domain~>name()) > 0usize &&
+        domain~>max_concurrency() > 0usize
+}
+
+internal procedure executablePipelineIncrement(value: i32) -> i32 {
+    return value + 1
+}
+
+internal procedure executableEvalSigmaClosureNonCapturing() -> bool {
+    let closure: ExecutableUnaryClosure = |value: i32| -> i32 value + 3
+    return closure(4) == 7
+}
+
+internal procedure executableEvalSigmaClosureCapturing() -> bool {
+    let bias: i32 = 5
+    let closure: ExecutableUnaryClosure = |value: i32| -> i32 value + bias
+    let moved_value: i32 = 11
+    let move_capture = || -> i32 move moved_value
+    return closure(4) == 9 &&
+        move_capture() == 11
+}
+
+internal procedure executableEvalSigmaClosureCall() -> bool {
+    let closure: ExecutableUnaryClosure = |value: i32| -> i32 value + 1
+    return closure(4) == 5
+}
+
+internal procedure executableApplyClosure(
+    closure: ExecutableUnaryClosure,
+    value: i32
+) -> i32 {
+    return closure(value)
+}
+
+internal procedure executableEvalSigmaClosureRuntimeHelpers() -> bool {
+    let bias: i32 = 6
+    let closure: ExecutableUnaryClosure = |value: i32| -> i32 value + bias
+    return executableApplyClosure(closure, 4) == 10
+}
+
+internal procedure executableEvalSigmaClosureCallCalleeControlValue() -> i32 {
+    let fallback: ExecutableUnaryClosure = |value: i32| -> i32 value + 1
+    return (if true {
+        return 17
+    } else {
+        move fallback
+    })(4)
+}
+
+internal procedure executableEvalSigmaClosureCallArgsControlValue() -> i32 {
+    let closure: ExecutableUnaryClosure = |value: i32| -> i32 value + 1
+    return closure({ return 19 })
+}
+
+internal procedure executableEvalSigmaClosureCallResolvedInternalFormRuntime() -> bool {
+    let bias: i32 = 8
+    let closure: ExecutableUnaryClosure = |value: i32| -> i32 value + bias
+    return closure(4) == 12
+}
+
+internal procedure executableEvalSigmaPipelineFunc() -> bool {
+    let function_value: ExecutableUnaryFunction = executablePipelineIncrement
+    return (4 => function_value) == 5
+}
+
+internal procedure executableEvalSigmaPipelineClosure() -> bool {
+    let bias: i32 = 3
+    let closure: ExecutableUnaryClosure = |value: i32| -> i32 value + bias
+    return (4 => closure) == 7
+}
+
+internal procedure executableEvalSigmaPipelineCtrlLeftValue() -> i32 {
+    let function_value: ExecutableUnaryFunction = executablePipelineIncrement
+    let result: i32 = ({ return 23 }) => function_value
+    return result
+}
+
+internal procedure executableEvalSigmaPipelineCtrlRightValue() -> i32 {
+    let function_value: ExecutableUnaryFunction = executablePipelineIncrement
+    let result: i32 = 4 => (if true {
+        return 29
+    } else {
+        move function_value
+    })
+    return result
+}
+
+internal procedure executableClosureAndPipelineRuntimeOk() -> bool {
+    return executableEvalSigmaClosureNonCapturing() &&
+        executableEvalSigmaClosureCapturing() &&
+        executableEvalSigmaClosureCall() &&
+        executableEvalSigmaClosureRuntimeHelpers() &&
+        executableEvalSigmaClosureCallCalleeControlValue() == 17 &&
+        executableEvalSigmaClosureCallArgsControlValue() == 19 &&
+        executableEvalSigmaClosureCallResolvedInternalFormRuntime() &&
+        executableEvalSigmaPipelineFunc() &&
+        executableEvalSigmaPipelineClosure() &&
+        executableEvalSigmaPipelineCtrlLeftValue() == 23 &&
+        executableEvalSigmaPipelineCtrlRightValue() == 29
+}
+
+public procedure main(context: ExecutableOutputContext) -> i32 {
+    let net: $Network = context.primary.net~>restrict_to_host("localhost")
+    let heap: $HeapAllocator = context.primary.heap~>with_quota(64usize)
+    let _ = net
+    let _ = heap
+    let monotonic: $MonotonicTime = context.primary.time~>monotonic()
     let resolution: Duration = monotonic~>resolution()
-    if resolution.nanoseconds > 0u128 {
+    let reactor_value: i32 | bool =
+        context.primary.reactor~>run(executableOutputFuture(7))
+    let current_directory: string@View = context.primary.sys~>current_directory()
+    let io_ok: bool = context.primary.io~>exists(current_directory) &&
+        context.secondary.io~>exists(current_directory)
+    let system_ok: bool = string::length(current_directory) > 0usize &&
+        context.secondary.sys~>argument_count() >= 0usize
+    let domains_ok: bool =
+        executableOutputDomainObserved(context.primary.domains.cpu) &&
+        executableOutputDomainObserved(context.primary.domains.gpu) &&
+        executableOutputDomainObserved(context.primary.domains.inline) &&
+        executableOutputDomainObserved(context.secondary.domains.cpu)
+    if io_ok &&
+        system_ok &&
+        executableOutputFutureValue(reactor_value, 7) &&
+        resolution.nanoseconds > 0u128 &&
+        domains_ok &&
+        executableClosureAndPipelineRuntimeOk() {
         return 0
     }
     return 1

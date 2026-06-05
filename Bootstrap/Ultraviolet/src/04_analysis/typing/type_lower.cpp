@@ -14,7 +14,27 @@
 #include "02_source/ast/ast_dump.h"
 #include "04_analysis/typing/type_equiv.h"
 
+#include <mutex>
+
 namespace ultraviolet::analysis {
+
+namespace {
+
+std::once_flag g_safe_pointer_expired_constructor_obligation_once;
+
+void RecordSafePointerExpiredConstructorOnce() {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  std::call_once(g_safe_pointer_expired_constructor_obligation_once, []() {
+    core::Conformance::Record(
+        "def.SafePointerRuntimeConstructors",
+        std::nullopt,
+        "source=LowerType;state=Expired;constructor=Ptr@Expired;value=PtrVal;addr=preserved");
+  });
+}
+
+}  // namespace
 
 Permission LowerPermission(ast::TypePerm perm) {
   switch (perm) {
@@ -214,6 +234,9 @@ LowerTypeResult LowerType(const ScopeContext& ctx,
           const auto elem = LowerType(ctx, node.element);
           if (!elem.ok) {
             return elem;
+          }
+          if (node.state == ast::PtrState::Expired) {
+            RecordSafePointerExpiredConstructorOnce();
           }
           return {true, std::nullopt,
                   MakeTypePtr(elem.type, LowerPtrState(node.state))};

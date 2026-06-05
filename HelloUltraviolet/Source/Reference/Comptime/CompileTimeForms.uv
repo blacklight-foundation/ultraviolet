@@ -37,6 +37,11 @@ comptime internal procedure chooseComptimeReferenceValue<TValue>(
     return second
 }
 
+comptime internal procedure compileTimeLocalBindingEnvironmentReference() -> bool {
+    let local_value: usize = 13usize
+    return addComptimeReferenceValue(local_value) == 15usize
+}
+
 internal procedure compileTimeFormsValue() -> usize {
     var total: usize = comptime { addComptimeReferenceValue(5usize) }
     comptime {
@@ -131,7 +136,123 @@ internal procedure compileTimeFormsValue() -> usize {
     return 0usize
 }
 
+/// Exercises the compile-time typing environment and earlier comptime procedures.
+public procedure compileTimeTypingEnvironmentReference() -> bool {
+    let local_binding_ok: bool = comptime { compileTimeLocalBindingEnvironmentReference() }
+    let earlier_proc_ok: bool = comptime { addComptimeReferenceValue(5usize) == 7usize }
+    let generic_proc_ok: bool =
+        comptime { chooseComptimeReferenceValue(31usize, 37usize, true) == 31usize }
+    return local_binding_ok && earlier_proc_ok && generic_proc_ok
+}
+
+/// Exercises the compile-time available value forms.
+public procedure ctAvailabilityAndForbiddenTypesReference() -> bool {
+    let literal_bool: bool = comptime { true }
+    let literal_tuple: (usize, bool) = comptime { (29usize, true) }
+    let literal_array: [usize; 3] = comptime { [2usize, 4usize, 6usize] }
+    let literal_record: ComptimeLiteralRecord =
+        comptime { ComptimeLiteralRecord { value: 43usize, flag: true } }
+    let literal_enum: ComptimeLiteralEnum =
+        comptime { ComptimeLiteralEnum::Named { value: 7usize } }
+    let literal_modal_state: ComptimeLiteralModal@Ready =
+        comptime { ComptimeLiteralModal@Ready { value: 11usize } }
+    let enum_value: usize = if literal_enum is {
+        ComptimeLiteralEnum::Empty {
+            0usize
+        }
+        ComptimeLiteralEnum::Count(value) {
+            value
+        }
+        ComptimeLiteralEnum::Named { value } {
+            value
+        }
+    }
+
+    return literal_bool &&
+        literal_tuple.1 &&
+        literal_tuple.0 == 29usize &&
+        literal_array[0usize] == 2usize &&
+        literal_array[1usize] == 4usize &&
+        literal_array[2usize] == 6usize &&
+        literal_record.value == 43usize &&
+        literal_record.flag &&
+        enum_value == 7usize &&
+        literal_modal_state.value == 11usize
+}
+
+/// Exercises that only the selected compile-time if branch is expanded.
+public procedure comptimeIfSelectedBranchOnlyReference() -> bool {
+    let selected: usize = comptime if true { 7usize } else { missingRejectedBranch() }
+    let else_if_selected: usize =
+        comptime if false { missingFirstBranch() } else comptime if true {
+            11usize
+        } else {
+            13usize
+        }
+    let false_else_selected: usize =
+        comptime if false { missingFalseElseBranch() } else { 17usize }
+    var false_branch_total: usize = 0usize
+    comptime if false {
+        false_branch_total = missingFalseNoElseBranch()
+    }
+
+    return selected == 7usize &&
+        else_if_selected == 11usize &&
+        false_else_selected == 17usize &&
+        false_branch_total == 0usize
+}
+
+/// Exercises compile-time loop iteration, typed bindings, and empty loops.
+public procedure comptimeLoopIterationSemanticsReference() -> bool {
+    var total: usize = 0usize
+    comptime loop value: usize in [1usize, 2usize, 3usize] {
+        total = total + comptime { value }
+    }
+    comptime loop value in [4usize, 5usize] {
+        total = total + comptime { value }
+    }
+    comptime loop value: usize in [0usize; 0] {
+        total = total + comptime { value }
+    }
+    return total == 15usize
+}
+
+/// Exercises compile-time pass execution over statements and expressions.
+public procedure comptimePassExecutionRequirementsReference() -> bool {
+    let current_module_ok: bool = comptime { diagnostics~>current_module() != "" }
+    let expression_ok: bool = comptime { addComptimeReferenceValue(3usize) == 5usize }
+    var loop_total: usize = 0usize
+    comptime loop value in [1usize, 2usize] {
+        loop_total = loop_total + comptime { value }
+    }
+    return current_module_ok && expression_ok && loop_total == 3usize
+}
+
+/// Exercises ordinary evaluation semantics inside compile-time expressions.
+public procedure ctEvalOrdinarySemanticsReference() -> bool {
+    let arithmetic_ok: bool = comptime { (19usize + 23usize) == 42usize }
+    let call_ok: bool = comptime { addComptimeReferenceValue(17usize) == 19usize }
+    let generic_call_ok: bool =
+        comptime { chooseComptimeReferenceValue(31usize, 37usize, false) == 37usize }
+    return arithmetic_ok && call_ok && generic_call_ok
+}
+
+/// Exercises ordinary traversal while expanding compile-time nodes.
+public procedure ctExpandOrdinaryTraversalReference() -> bool {
+    let expanded_value: usize =
+        1usize + comptime { addComptimeReferenceValue(2usize) } +
+            comptime if true { 3usize } else { missingTraversalBranch() }
+    return expanded_value == 8usize
+}
+
 /// Exercises the Comptime CompileTimeForms reference surface.
 public procedure runComptimeCompileTimeFormsReference() -> bool {
-    return compileTimeFormsValue() == 230usize
+    return compileTimeFormsValue() == 230usize &&
+        compileTimeTypingEnvironmentReference() &&
+        ctAvailabilityAndForbiddenTypesReference() &&
+        comptimeIfSelectedBranchOnlyReference() &&
+        comptimeLoopIterationSemanticsReference() &&
+        comptimePassExecutionRequirementsReference() &&
+        ctEvalOrdinarySemanticsReference() &&
+        ctExpandOrdinaryTraversalReference()
 }

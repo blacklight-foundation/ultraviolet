@@ -1,0 +1,43 @@
+//! Artifact fixture for modal state field, state method, and transition lowering.
+
+public modal ModalSpecialLoweringState {
+    @Ready {
+        public value: i32
+
+        public procedure readValue(~) -> i32 {
+            return self.value
+        }
+
+        public procedure replaceValue(~!, value: i32) -> i32 {
+            self.value = value
+            return self.value
+        }
+
+        public transition finish(value: i32) -> @Done {
+            return ModalSpecialLoweringState@Done { value: value }
+        }
+    }
+
+    @Done {
+        public value: i32
+    }
+}
+
+public procedure modalSpecialStateFieldReadProbe(
+    value: ModalSpecialLoweringState@Ready
+) -> i32 {
+    return value.value
+}
+
+public procedure modalSpecialStateMethodProbe() -> i32 {
+    let ready: unique ModalSpecialLoweringState@Ready =
+        ModalSpecialLoweringState@Ready { value: 7 }
+    return ready~>replaceValue(11)
+}
+
+public procedure modalSpecialTransitionProbe() -> i32 {
+    let ready: unique ModalSpecialLoweringState@Ready =
+        ModalSpecialLoweringState@Ready { value: 13 }
+    let done: ModalSpecialLoweringState@Done = ready~>finish(17)
+    return done.value
+}

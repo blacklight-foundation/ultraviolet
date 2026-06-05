@@ -66,7 +66,9 @@
 
 #include "05_codegen/dyn_dispatch/dyn_dispatch.h"
 
+#include <string>
 #include <variant>
+#include <vector>
 
 #include "00_core/assert_spec.h"
 #include "04_analysis/composite/classes.h"
@@ -74,10 +76,44 @@
 #include "04_analysis/typing/type_predicates.h"
 #include "05_codegen/checks/checks.h"
 #include "05_codegen/cleanup/cleanup.h"
+#include "05_codegen/dyn_dispatch/vtable_emit.h"
 #include "04_analysis/layout/layout.h"
 #include "05_codegen/symbols/mangle.h"
 
 namespace ultraviolet::codegen {
+
+static bool VTableSlotsComplete(const GlobalVTable& vtable) {
+  for (const auto& slot : vtable.slots) {
+    if (slot.empty()) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static void RecordVTableEmissionErrorOracle() {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  GlobalVTable invalid_vtable;
+  invalid_vtable.header.align = 1;
+  invalid_vtable.slots.push_back("");
+
+  std::vector<std::string> error_messages;
+  const bool valid = ValidateVTable(invalid_vtable, error_messages);
+
+  std::string payload;
+  payload.reserve(128);
+  payload += "source=EmitVTable;check=vtable-emission-oracle;";
+  payload +=
+      "case=invalid-empty-symbol-and-slot;validator=ValidateVTable;result=";
+  payload += valid ? "unexpected-ok" : "error";
+  payload += ";error_count=";
+  payload += std::to_string(error_messages.size());
+  core::Conformance::Record(
+      "rule.24.EmitVTable-Err", std::nullopt, payload);
+}
 
 // ============================================================================
 // §5.4.1 SelfOccurs - Check if Self type occurs in a type
@@ -275,12 +311,29 @@ std::string DispatchSym(const analysis::TypeRef& type,
       return "";
     }
     SPEC_RULE("DispatchSym-Impl");
+    if (core::Conformance::Enabled()) {
+      std::string payload;
+      payload.reserve(96);
+      payload += "source=DispatchSym;branch=impl;method=";
+      payload += method_name;
+      payload += ";symbol=record-method";
+      core::Conformance::Record("rule.14.DispatchSym-Impl", std::nullopt, payload);
+    }
     return MangleMethod(lookup.record_path, *lookup.record_method);
   }
 
   // (DispatchSym-Default-None): No implementation -> use default impl symbol
   if (class_method->body_opt) {
     SPEC_RULE("DispatchSym-Default-None");
+    if (core::Conformance::Enabled()) {
+      std::string payload;
+      payload.reserve(96);
+      payload += "source=DispatchSym;branch=default-none;method=";
+      payload += method_name;
+      payload += ";symbol=default-method";
+      core::Conformance::Record(
+          "rule.14.DispatchSym-Default-None", std::nullopt, payload);
+    }
     return MangleDefaultImpl(stripped, class_path, class_method->name);
   }
 
@@ -326,6 +379,13 @@ VTableInfo VTable(const analysis::TypeRef& type,
     std::string sym = DispatchSym(type, class_path, method_name, class_decl, ctx);
     info.method_syms.push_back(std::move(sym));
   }
+  if (core::Conformance::Enabled()) {
+    std::string payload;
+    payload.reserve(80);
+    payload += "source=VTable;operation=VTableOrder;slot_count=";
+    payload += std::to_string(info.method_syms.size());
+    core::Conformance::Record("rule.14.VTable-Order", std::nullopt, payload);
+  }
 
   return info;
 }
@@ -336,6 +396,7 @@ GlobalVTable EmitVTable(const analysis::TypeRef& type,
                         LowerCtx& ctx) {
   SPEC_DEF("EmitVTable", "");
   SPEC_RULE("EmitVTable-Decl");
+  SPEC_RULE("req.14.ImplementationsNoAdditionalRuntimeState");
 
   VTableInfo info = VTable(type, class_path, class_decl, ctx);
 
@@ -345,6 +406,67 @@ GlobalVTable EmitVTable(const analysis::TypeRef& type,
   gvt.header.align = info.type_align;
   gvt.header.drop_sym = info.drop_sym;
   gvt.slots = std::move(info.method_syms);
+  if (core::Conformance::Enabled()) {
+    const bool slots_complete = VTableSlotsComplete(gvt);
+
+    std::string payload;
+    payload.reserve(96);
+    payload += "source=EmitVTable;operation=GlobalVTable;slot_count=";
+    payload += std::to_string(gvt.slots.size());
+    core::Conformance::Record("rule.14.EmitVTable-Decl", std::nullopt, payload);
+
+    std::string state_payload;
+    state_payload.reserve(gvt.symbol.size() + 160);
+    state_payload +=
+        "source=EmitVTable;instance_state_added=false;"
+        "runtime_state=vtable_metadata;methods_and_fields_source=implementing_type;"
+        "slot_count=";
+    state_payload += std::to_string(gvt.slots.size());
+    state_payload += ";symbol=";
+    state_payload += gvt.symbol;
+    core::Conformance::Record(
+        "req.14.ImplementationsNoAdditionalRuntimeState",
+        std::nullopt,
+        state_payload);
+
+    std::string judgement_payload;
+    judgement_payload.reserve(gvt.symbol.size() + 160);
+    judgement_payload +=
+        "source=EmitVTable;judgement=EmitVTable;result=GlobalVTable;";
+    judgement_payload += "symbol_present=";
+    judgement_payload += gvt.symbol.empty() ? "false" : "true";
+    judgement_payload += ";drop_glue_symbol_present=";
+    judgement_payload += gvt.header.drop_sym.empty() ? "false" : "true";
+    judgement_payload += ";slot_count=";
+    judgement_payload += std::to_string(gvt.slots.size());
+    judgement_payload += ";slots_complete=";
+    judgement_payload += slots_complete ? "true" : "false";
+    judgement_payload += ";header_size=";
+    judgement_payload += std::to_string(gvt.header.size);
+    judgement_payload += ";header_align=";
+    judgement_payload += std::to_string(gvt.header.align);
+    core::Conformance::Record(
+        "def.24.VTableJudg", std::nullopt, judgement_payload);
+
+    std::string helper_payload;
+    helper_payload.reserve(gvt.symbol.size() + 192);
+    helper_payload +=
+        "source=EmitVTable;"
+        "helper_set=VTableHeader,PtrTy,VTableTy,GlobalVTable,VTableSlots;";
+    helper_payload += "symbol_present=";
+    helper_payload += gvt.symbol.empty() ? "false" : "true";
+    helper_payload += ";drop_glue_symbol_present=";
+    helper_payload += gvt.header.drop_sym.empty() ? "false" : "true";
+    helper_payload += ";slot_count=";
+    helper_payload += std::to_string(gvt.slots.size());
+    helper_payload += ";slots_complete=";
+    helper_payload += slots_complete ? "true" : "false";
+    helper_payload += ";ptr_ty=ptr";
+    core::Conformance::Record(
+        "def.24.VTableEmissionHelpers", std::nullopt, helper_payload);
+
+    RecordVTableEmissionErrorOracle();
+  }
 
   return gvt;
 }
@@ -366,6 +488,15 @@ std::optional<std::size_t> VSlot(const ast::ClassDecl& class_decl,
 
   for (std::size_t i = 0; i < eligible.size(); ++i) {
     if (eligible[i] == method_name) {
+      if (core::Conformance::Enabled()) {
+        std::string payload;
+        payload.reserve(96);
+        payload += "source=VSlot;method=";
+        payload += method_name;
+        payload += ";slot=";
+        payload += std::to_string(i);
+        core::Conformance::Record("rule.14.VSlot-Entry", std::nullopt, payload);
+      }
       return i;
     }
   }
@@ -403,6 +534,17 @@ DynPackResult DynPack(const analysis::TypeRef& type,
   VTableInfo vtable_info = VTable(type, class_path, class_decl, ctx);
   result.vtable_sym = vtable_info.symbol;
   ctx.RegisterRequiredVTable(vtable_info.symbol, type, class_path);
+  if (core::Conformance::Enabled()) {
+    const std::string payload =
+        "source=DynPack;operation=DynPack;runtime_value=Dyn;data=RawPtrImm;"
+        "vtable=VTable;ir=IRDynPack";
+    core::Conformance::Record(
+        "def.14.DynamicClassRuntimeValue", std::nullopt, payload);
+    core::Conformance::Record(
+        "def.14.DynamicDispatchLoweringJudgements", std::nullopt, payload);
+    core::Conformance::Record(
+        "rule.14.Lower-Dynamic-Form", std::nullopt, payload);
+  }
 
   return result;
 }
@@ -432,6 +574,16 @@ LowerResult LowerDynCall(const IRValue& base_ptr,
   }
 
   std::size_t slot = *slot_opt;
+  if (core::Conformance::Enabled()) {
+    std::string payload;
+    payload.reserve(96);
+    payload += "source=LowerDynCall;operation=CallVTable;slot=";
+    payload += std::to_string(slot);
+    payload += ";panic_check=true";
+    core::Conformance::Record(
+        "def.14.DynamicDispatchLoweringJudgements", std::nullopt, payload);
+    core::Conformance::Record("rule.14.Lower-DynCall", std::nullopt, payload);
+  }
 
   // Look up the method's return type from the class declaration so the
   // LLVM emitter can generate the correct return type for the indirect call.
@@ -457,6 +609,7 @@ LowerResult LowerDynCall(const IRValue& base_ptr,
   call.slot = slot;
   call.args = args;
   call.ret_type = method_ret_type;
+  call.check_dynamic_receiver_addr_active = true;
 
   // Result value
   IRValue result_value = ctx.FreshTempValue("dyncall_result");
@@ -519,4 +672,3 @@ void AnchorDynDispatchRules() {
 }
 
 }  // namespace ultraviolet::codegen
-

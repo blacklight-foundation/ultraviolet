@@ -9,34 +9,34 @@ public procedure validatedStructuredParallelismCaptureSemanticsObligations() -> 
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "requirement.20.CaptureSemanticsNoAdditionalSyntax",
-        76964usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismCaptureSemanticsReference",
-        "Source/Reference/Parallelism/CaptureSemantics.uv"
+        76966usize,
+        "HelloUltraviolet::Audit::Catalog::StructuredParallelism",
+        "structuredParallelismCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/StructuredParallelism/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.20.CaptureSemanticsNoAdditionalParsingRules",
-        76979usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismCaptureSemanticsReference",
-        "Source/Reference/Parallelism/CaptureSemantics.uv"
+        76981usize,
+        "HelloUltraviolet::Audit::Catalog::StructuredParallelism",
+        "structuredParallelismCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/StructuredParallelism/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.20.CaptureSetComputationReference",
-        76994usize,
+        76996usize,
         "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismCaptureSemanticsReference",
+        "captureSetComputationReference",
         "Source/Reference/Parallelism/CaptureSemantics.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.20.GpuCaptureJudgments",
-        77016usize,
+        77018usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismCaptureSemanticsReference",
         "Source/Reference/Parallelism/CaptureSemantics.uv"
@@ -45,34 +45,34 @@ public procedure validatedStructuredParallelismCaptureSemanticsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "requirement.20.ParallelCapturePermissions",
-        77033usize,
+        77035usize,
         "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismCaptureSemanticsReference",
+        "parallelCapturePermissionsReference",
         "Source/Reference/Parallelism/CaptureSemantics.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.20.Parallel-Closure-Capture-Const",
-        77050usize,
+        77052usize,
         "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismCaptureSemanticsReference",
+        "spawnConstCaptureReference",
         "Source/Reference/Parallelism/CaptureSemantics.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.20.Parallel-Closure-Capture-Shared",
-        77066usize,
+        77068usize,
         "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismCaptureSemanticsReference",
+        "dispatchSharedCaptureReference",
         "Source/Reference/Parallelism/CaptureSemantics.uv"
     ) {
         count = count + 1usize
     }
     if rejectedSourceObligationEntryMatches(
         "rule.20.Parallel-Closure-Capture-Unique-Err",
-        77082usize,
+        77084usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedParallelismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Parallelism/ParallelClosureCaptureUnique/Source/Main.uv"
@@ -81,25 +81,25 @@ public procedure validatedStructuredParallelismCaptureSemanticsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "def.20.OuterParallelMoveSelection",
-        77098usize,
+        77100usize,
         "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismCaptureSemanticsReference",
+        "movedBindingValidityReference",
         "Source/Reference/Parallelism/CaptureSemantics.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.20.Parallel-Closure-Capture-Unique-Move-Ok",
-        77112usize,
+        77114usize,
         "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismCaptureSemanticsReference",
+        "movedBindingValidityReference",
         "Source/Reference/Parallelism/CaptureSemantics.uv"
     ) {
         count = count + 1usize
     }
     if rejectedSourceObligationEntryMatches(
         "rule.20.Parallel-Closure-Capture-OuterMove-Err",
-        77128usize,
+        77130usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedParallelismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Parallelism/ParallelClosureCaptureOuterMove/Source/Main.uv"
@@ -108,7 +108,7 @@ public procedure validatedStructuredParallelismCaptureSemanticsObligations() -> 
     }
     if rejectedSourceObligationEntryMatches(
         "rule.20.Parallel-Escaping-Closure-Spawn-Err",
-        77144usize,
+        77146usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedParallelismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Parallelism/ParallelEscapingClosureSpawn/Source/Main.uv"
@@ -117,25 +117,25 @@ public procedure validatedStructuredParallelismCaptureSemanticsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "requirement.20.ParallelClosuresLocalForKeys",
-        77160usize,
+        77162usize,
         "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismCaptureSemanticsReference",
+        "parallelClosuresLocalForKeysReference",
         "Source/Reference/Parallelism/CaptureSemantics.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.20.GpuCaptureOk-Const",
-        77173usize,
+        77175usize,
         "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismCaptureSemanticsReference",
+        "gpuSafeCaptureReference",
         "Source/Reference/Parallelism/CaptureSemantics.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.20.GpuCaptureOk-Unique-Move",
-        77189usize,
+        77191usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismCaptureSemanticsReference",
         "Source/Reference/Parallelism/CaptureSemantics.uv"
@@ -144,7 +144,7 @@ public procedure validatedStructuredParallelismCaptureSemanticsObligations() -> 
     }
     if rejectedSourceObligationEntryMatches(
         "rule.20.GpuCapture-Shared-Err",
-        77205usize,
+        77207usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedParallelismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Parallelism/GpuCaptureShared/Source/Main.uv"
@@ -153,7 +153,7 @@ public procedure validatedStructuredParallelismCaptureSemanticsObligations() -> 
     }
     if rejectedSourceObligationEntryMatches(
         "rule.20.GpuCapture-HeapProv-Err",
-        77221usize,
+        77223usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedParallelismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Parallelism/GpuCaptureHeapProvenance/Source/Main.uv"
@@ -162,7 +162,7 @@ public procedure validatedStructuredParallelismCaptureSemanticsObligations() -> 
     }
     if rejectedSourceObligationEntryMatches(
         "rule.20.GpuCapture-NonGpuSafe-Err",
-        77237usize,
+        77239usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedParallelismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Parallelism/GpuCaptureNonGpuSafe/Source/Main.uv"
@@ -171,34 +171,34 @@ public procedure validatedStructuredParallelismCaptureSemanticsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "requirement.20.MovedBindingValidityReference",
-        77253usize,
+        77255usize,
         "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismCaptureSemanticsReference",
+        "movedBindingValidityReference",
         "Source/Reference/Parallelism/CaptureSemantics.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.20.CaptureSemanticsNoAdditionalRuntimeMechanism",
-        77268usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismCaptureSemanticsReference",
-        "Source/Reference/Parallelism/CaptureSemantics.uv"
+        77270usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectStructuredParallelLoweringEvidenceExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.20.CaptureSemanticsGenericLowering",
-        77287usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismCaptureSemanticsReference",
-        "Source/Reference/Parallelism/CaptureSemantics.uv"
+        77289usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectStructuredParallelLoweringEvidenceExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.20.CaptureSemantics",
-        77302usize,
+        77304usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedParallelismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Parallelism/CaptureSemanticsDiagnostics/Source/Main.uv"

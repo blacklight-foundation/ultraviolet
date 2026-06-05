@@ -60,6 +60,7 @@ analysis::TypeRef TupleElementTypeForIndex(analysis::TypeRef base_type,
 
 LowerResult LowerTupleAccess(const ast::TupleAccessExpr& expr, LowerCtx& ctx) {
     SPEC_RULE("Lower-Expr-TupleAccess");
+    SPEC_RULE("rule.16.Lower-Expr-TupleAccess");
 
     // Lower the base expression
     auto base_result = LowerExpr(*expr.base, ctx);

@@ -8,7 +8,10 @@ using HelloUltraviolet::Reference::Expressions::{ runExpressionsClosuresAndPipel
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsConstructionReference }
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsControlReference }
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsControlSurfaceReference }
-using HelloUltraviolet::Reference::Expressions::{ runExpressionsEffectfulCoreReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsEvalSigmaIfCasesReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsEvalSigmaIfIsReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsEvalSigmaIfTrueReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsEvalSigmaLoopCondBreakReference }
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsIfCaseControlReference }
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsIfControlReference }
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsIfIsControlReference }
@@ -61,8 +64,23 @@ public procedure catalogCompiledSymbolsExecuteReferenceExpressions(context: Cont
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
-        "runExpressionsEffectfulCoreReference",
-        runExpressionsEffectfulCoreReference()
+        "runExpressionsEvalSigmaIfCasesReference",
+        runExpressionsEvalSigmaIfCasesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsEvalSigmaIfIsReference",
+        runExpressionsEvalSigmaIfIsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsEvalSigmaIfTrueReference",
+        runExpressionsEvalSigmaIfTrueReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsEvalSigmaLoopCondBreakReference",
+        runExpressionsEvalSigmaLoopCondBreakReference()
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,

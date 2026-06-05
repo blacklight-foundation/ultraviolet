@@ -1,5 +1,36 @@
 //! Reference specimens for Permissions / Admissibility.
 
+internal enum PermissionAdmissibilityReferencePermission {
+    Const
+    Shared
+    Unique
+}
+
+internal procedure permissionAdmitsReference(
+    caller: PermissionAdmissibilityReferencePermission,
+    required: PermissionAdmissibilityReferencePermission
+) -> bool {
+    return if caller is {
+        PermissionAdmissibilityReferencePermission::Const {
+            if required is PermissionAdmissibilityReferencePermission::Const {
+                true
+            } else {
+                false
+            }
+        }
+        PermissionAdmissibilityReferencePermission::Shared {
+            if required is PermissionAdmissibilityReferencePermission::Unique {
+                false
+            } else {
+                true
+            }
+        }
+        PermissionAdmissibilityReferencePermission::Unique {
+            true
+        }
+    }
+}
+
 internal procedure receiverAdmissibilityValue() -> i32 {
     let const_cell: const PermissionCell = PermissionCell { value: 1 }
     var shared_cell: shared PermissionCell = PermissionCell { value: 2 }
@@ -21,7 +52,63 @@ internal procedure receiverAdmissibilityValue() -> i32 {
     return observed
 }
 
+internal procedure permissionAdmissibilityPairsValue() -> i32 {
+    let const_cell: const PermissionCell = PermissionCell { value: 1 }
+    var shared_cell: shared PermissionCell = PermissionCell { value: 2 }
+    let unique_cell: unique PermissionCell = PermissionCell { value: 3 }
+    var observed: i32 = inspectConstPermissionCell(const_cell)
+    observed = observed + inspectConstPermissionCell(shared_cell)
+    observed = observed + inspectSharedPermissionCell(shared_cell)
+    observed = observed + inspectConstPermissionCell(unique_cell)
+    observed = observed + inspectSharedPermissionCell(unique_cell)
+    observed = observed + inspectUniquePermissionCell(unique_cell)
+    return observed
+}
+
+internal procedure permissionAdmissibilityRuntimeIdentityValue() -> i32 {
+    let const_cell: const PermissionCell = PermissionCell { value: 1 }
+    var shared_cell: shared PermissionCell = PermissionCell { value: 2 }
+    let unique_cell: unique PermissionCell = PermissionCell { value: 3 }
+    var observed: i32 = const_cell~>readConst()
+    %write shared_cell {
+        observed = observed + shared_cell~>readConst()
+        observed = observed + shared_cell~>readShared()
+    }
+    observed = observed + unique_cell~>readConst()
+    observed = observed + unique_cell~>readShared()
+    observed = observed + unique_cell~>readUnique()
+    return observed
+}
+
+/// Exercises the exact Permission Admissibility pair set.
+public procedure permissionAdmissibilityPairsReference() -> bool {
+    let const_permission: PermissionAdmissibilityReferencePermission =
+        PermissionAdmissibilityReferencePermission::Const
+    let shared_permission: PermissionAdmissibilityReferencePermission =
+        PermissionAdmissibilityReferencePermission::Shared
+    let unique_permission: PermissionAdmissibilityReferencePermission =
+        PermissionAdmissibilityReferencePermission::Unique
+    return permissionAdmissibilityPairsValue() == 14 &&
+        permissionAdmitsReference(const_permission, const_permission) &&
+        !permissionAdmitsReference(const_permission, shared_permission) &&
+        !permissionAdmitsReference(const_permission, unique_permission) &&
+        permissionAdmitsReference(shared_permission, const_permission) &&
+        permissionAdmitsReference(shared_permission, shared_permission) &&
+        !permissionAdmitsReference(shared_permission, unique_permission) &&
+        permissionAdmitsReference(unique_permission, const_permission) &&
+        permissionAdmitsReference(unique_permission, shared_permission) &&
+        permissionAdmitsReference(unique_permission, unique_permission)
+}
+
+/// Exercises that permission admissibility preserves observed runtime value identity.
+public procedure permissionAdmissibilityRuntimeIdentityReference() -> bool {
+    return permissionAdmissibilityRuntimeIdentityValue() == 14 &&
+        receiverAdmissibilityValue() == 28
+}
+
 /// Exercises the Permissions Admissibility reference surface.
 public procedure runPermissionsAdmissibilityReference() -> bool {
-    return receiverAdmissibilityValue() == 28
+    return receiverAdmissibilityValue() == 28 &&
+        permissionAdmissibilityPairsReference() &&
+        permissionAdmissibilityRuntimeIdentityReference()
 }

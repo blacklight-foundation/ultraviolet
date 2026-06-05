@@ -9,25 +9,25 @@ public procedure validatedStructuredParallelismDeterminismAndNestingObligations(
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "requirement.20.DeterminismNestingNoAdditionalSyntax",
-        78667usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismDeterminismReference",
-        "Source/Reference/Parallelism/Determinism.uv"
+        78669usize,
+        "HelloUltraviolet::Audit::Catalog::StructuredParallelism",
+        "structuredParallelismCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/StructuredParallelism/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.20.DeterminismNestingNoAdditionalParsingRules",
-        78682usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismDeterminismReference",
-        "Source/Reference/Parallelism/Determinism.uv"
+        78684usize,
+        "HelloUltraviolet::Audit::Catalog::StructuredParallelism",
+        "structuredParallelismCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/StructuredParallelism/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "ast.20.DeterminismNestingForms",
-        78697usize,
+        78699usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDeterminismReference",
         "Source/Reference/Parallelism/Determinism.uv"
@@ -36,25 +36,25 @@ public procedure validatedStructuredParallelismDeterminismAndNestingObligations(
     }
     if acceptedObligationEntryMatches(
         "requirement.20.DispatchDeterminismConditions",
-        78712usize,
+        78714usize,
         "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismDeterminismReference",
+        "dispatchDeterminismConditionsReference",
         "Source/Reference/Parallelism/Determinism.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.20.OrderedDispatchSequentialSideEffects",
-        78729usize,
+        78731usize,
         "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismDeterminismReference",
+        "orderedDispatchSequentialSideEffectsReference",
         "Source/Reference/Parallelism/Determinism.uv"
     ) {
         count = count + 1usize
     }
     if rejectedSourceObligationEntryMatches(
         "requirement.20.NoNestedGpuParallel",
-        78742usize,
+        78744usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedParallelismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Parallelism/NestedGpuParallel/Source/Main.uv"
@@ -63,16 +63,16 @@ public procedure validatedStructuredParallelismDeterminismAndNestingObligations(
     }
     if acceptedObligationEntryMatches(
         "requirement.20.NestedParallelRuntimeSemantics",
-        78757usize,
+        78759usize,
         "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismDeterminismReference",
+        "nestedParallelRuntimeSemanticsReference",
         "Source/Reference/Parallelism/Determinism.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.20.ParallelDeterministicOrdering",
-        78778usize,
+        78780usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDeterminismReference",
         "Source/Reference/Parallelism/Determinism.uv"
@@ -81,25 +81,25 @@ public procedure validatedStructuredParallelismDeterminismAndNestingObligations(
     }
     if acceptedObligationEntryMatches(
         "rule.20.Lower-Deterministic-Dispatch",
-        78804usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismDeterminismReference",
-        "Source/Reference/Parallelism/Determinism.uv"
+        78806usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectStructuredParallelLoweringEvidenceExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.20.Lower-Nested-Parallel",
-        78820usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismDeterminismReference",
-        "Source/Reference/Parallelism/Determinism.uv"
+        78822usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectStructuredParallelLoweringEvidenceExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.20.DeterminismAndNesting",
-        78836usize,
+        78838usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedParallelismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Parallelism/DeterminismAndNestingDiagnostics/Source/Main.uv"

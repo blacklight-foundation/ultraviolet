@@ -29,6 +29,12 @@ using HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics::{ llvmToolReso
 using HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics::{ llvmToolResolveOwnershipConformanceLogMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics::{ emitLLVMRenderFailureExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics::{ emitLLVMRenderFailureConformanceLogMatches }
+using HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics::{ llvmTypeMappingFailureExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics::{ linkerToolResolveFailureExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics::{ archiverToolResolveFailureExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics::{ runtimeLibMissingExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics::{ directoryPreparationFailureExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics::{ objectWriteFailureExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics::{ manifestParseErrorExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics::{ manifestParseErrorConformanceLogMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics::{ unknownCommandExpectedDiagnosticFileMatches }
@@ -42,6 +48,7 @@ using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ spliceTypeMisma
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ spliceIdentifierStructuralNameExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ comptimeIfConditionTypeExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ runtimeCallsComptimeProcedureExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ comptimeProcedureContractFailureExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ introspectFieldsNonRecordExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ comptimePointerParameterExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ comptimeProhibitedWaitExpectedDiagnosticFileMatches }
@@ -73,6 +80,7 @@ using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ testUnknownCove
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ packedLayoutOnEnumExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ reservedVendorNamespaceExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ typeAliasCycleExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ recordDiagnosticsOwnershipExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ noIntegerNumericSubtypingExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ noFloatNumericSubtypingExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ genericInvariantSubtypingExpectedDiagnosticFileMatches }
@@ -114,6 +122,9 @@ using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ constMutationEx
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ uniqueInactiveUseExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ sharedMutationWithoutKeyExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ receiverPermissionMismatchExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ directCallCapabilityInclusionExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ noAmbientCapabilityGlobalExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ attenuationParentDropWithLiveChildExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ frameNoActiveRegionExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ frameTargetNotActiveExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ blocksDiagnosticExpectedDiagnosticFileMatches }
@@ -199,6 +210,8 @@ using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ refinementDiagn
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ refinementDiagnosticsTableExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ duplicateTypeParameterNameExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ duplicateClassProcedureNameExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ inheritedMethodSignatureConflictExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ inheritedFieldSignatureConflictExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ classMemberNameConflictExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ superclassCycleExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ overrideNoConcreteExpectedDiagnosticFileMatches }
@@ -211,6 +224,7 @@ using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ indexNonIndexab
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ arrayIndexNonConstExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ arrayIndexOutOfBoundsExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ arrayIndexNonUsizeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ sliceIndexNonUsizeExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ ptrNullSynthesisExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ ptrNullCheckExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ callArgCountExpectedDiagnosticFileMatches }
@@ -557,6 +571,7 @@ using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismAssociatedType
 using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismDynamicClassObjectsReference }
 using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismOpaqueTypesReference }
 using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismCapabilityClassesReference }
+using HelloUltraviolet::Reference::Polymorphism::{ capabilityClassesGenericBoundsReference }
 using HelloUltraviolet::Reference::Procedures::{ runProceduresDeclarationsReference }
 using HelloUltraviolet::Reference::Procedures::{ runProceduresReceiversReference }
 using HelloUltraviolet::Reference::Procedures::{ runProceduresOverloadingReference }
@@ -988,6 +1003,36 @@ internal procedure runReferenceCorpusPart01(
         "emitLLVMRenderFailureConformanceLogMatches",
         emitLLVMRenderFailureConformanceLogMatches(context)
     ) && passed
+    passed = recordReferenceResult(
+        context,
+        "llvmTypeMappingFailureExpectedDiagnosticFileMatches",
+        llvmTypeMappingFailureExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "linkerToolResolveFailureExpectedDiagnosticFileMatches",
+        linkerToolResolveFailureExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "archiverToolResolveFailureExpectedDiagnosticFileMatches",
+        archiverToolResolveFailureExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "runtimeLibMissingExpectedDiagnosticFileMatches",
+        runtimeLibMissingExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "directoryPreparationFailureExpectedDiagnosticFileMatches",
+        directoryPreparationFailureExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "objectWriteFailureExpectedDiagnosticFileMatches",
+        objectWriteFailureExpectedDiagnosticFileMatches(context)
+    ) && passed
     return passed
 }
 
@@ -1060,6 +1105,11 @@ internal procedure runReferenceCorpusPart02(
         context,
         "runtimeCallsComptimeProcedureExpectedDiagnosticFileMatches",
         runtimeCallsComptimeProcedureExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "comptimeProcedureContractFailureExpectedDiagnosticFileMatches",
+        comptimeProcedureContractFailureExpectedDiagnosticFileMatches(context)
     ) && passed
     passed = recordReferenceResult(
         context,
@@ -1215,6 +1265,11 @@ internal procedure runReferenceCorpusPart02(
         context,
         "typeAliasCycleExpectedDiagnosticFileMatches",
         typeAliasCycleExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "recordDiagnosticsOwnershipExpectedDiagnosticFileMatches",
+        recordDiagnosticsOwnershipExpectedDiagnosticFileMatches(context)
     ) && passed
     passed = recordReferenceResult(
         context,
@@ -1428,6 +1483,21 @@ internal procedure runReferenceCorpusPart03(
         context,
         "receiverPermissionMismatchExpectedDiagnosticFileMatches",
         receiverPermissionMismatchExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "directCallCapabilityInclusionExpectedDiagnosticFileMatches",
+        directCallCapabilityInclusionExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "noAmbientCapabilityGlobalExpectedDiagnosticFileMatches",
+        noAmbientCapabilityGlobalExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "attenuationParentDropWithLiveChildExpectedDiagnosticFileMatches",
+        attenuationParentDropWithLiveChildExpectedDiagnosticFileMatches(context)
     ) && passed
     passed = recordReferenceResult(
         context,
@@ -1872,6 +1942,16 @@ internal procedure runReferenceCorpusPart05(
     ) && passed
     passed = recordReferenceResult(
         context,
+        "inheritedMethodSignatureConflictExpectedDiagnosticFileMatches",
+        inheritedMethodSignatureConflictExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "inheritedFieldSignatureConflictExpectedDiagnosticFileMatches",
+        inheritedFieldSignatureConflictExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
         "classMemberNameConflictExpectedDiagnosticFileMatches",
         classMemberNameConflictExpectedDiagnosticFileMatches(context)
     ) && passed
@@ -1929,6 +2009,11 @@ internal procedure runReferenceCorpusPart05(
         context,
         "arrayIndexNonUsizeExpectedDiagnosticFileMatches",
         arrayIndexNonUsizeExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "sliceIndexNonUsizeExpectedDiagnosticFileMatches",
+        sliceIndexNonUsizeExpectedDiagnosticFileMatches(context)
     ) && passed
     passed = recordReferenceResult(
         context,
@@ -3283,7 +3368,7 @@ internal procedure runReferenceCorpusPart10(
     passed = recordReferenceResult(
         context,
         "runAuthorityCapabilitiesReference",
-        runAuthorityCapabilitiesReference()
+        runAuthorityCapabilitiesReference(context)
     ) && passed
     passed = recordReferenceResult(
         context,
@@ -3590,6 +3675,11 @@ internal procedure runReferenceCorpusPart12(
         context,
         "runPolymorphismCapabilityClassesReference",
         runPolymorphismCapabilityClassesReference(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "capabilityClassesGenericBoundsReference",
+        capabilityClassesGenericBoundsReference()
     ) && passed
     passed = recordReferenceResult(
         context,

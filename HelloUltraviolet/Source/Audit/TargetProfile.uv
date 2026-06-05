@@ -1,0 +1,11 @@
+//! Target-profile helpers for HUV runtime audit references.
+
+/// Returns the target profile selected for this HUV verification run.
+public procedure auditTargetProfile(sys: System) -> string@View {
+    return sys~>get_env("HUV_TARGET_PROFILE")
+}
+
+/// Returns true when the selected HUV target profile uses the Windows target.
+public procedure auditTargetProfileIsWindows(target_profile: string@View) -> bool {
+    return auditTextEquals(target_profile, "x86_64-win64")
+}

@@ -47,8 +47,11 @@
 #include "04_analysis/layout/layout.h"
 
 #include <algorithm>
+#include <string>
+#include <vector>
 
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 #include "04_analysis/generics/monomorphize.h"
 #include "04_analysis/modal/modal_widen.h"
 #include "04_analysis/resolve/scopes.h"
@@ -150,6 +153,165 @@ std::optional<RecordLayout> StatePayloadLayout(
   return RecordLayoutOf(ctx, fields);
 }
 
+std::size_t ModalStateFieldCount(const ultraviolet::ast::StateBlock& state) {
+  std::size_t count = 0;
+  for (const auto& member : state.members) {
+    if (std::holds_alternative<ultraviolet::ast::StateFieldDecl>(member)) {
+      ++count;
+    }
+  }
+  return count;
+}
+
+struct ModalStateLayoutFact {
+  std::string name;
+  std::size_t field_count = 0;
+  Layout layout;
+};
+
+std::optional<std::vector<ModalStateLayoutFact>> ModalStateLayoutFacts(
+    const ultraviolet::analysis::ScopeContext& ctx,
+    const ultraviolet::ast::ModalDecl& decl,
+    const ultraviolet::analysis::TypeSubst& subst) {
+  std::vector<ModalStateLayoutFact> facts;
+  facts.reserve(decl.states.size());
+  for (const auto& state : decl.states) {
+    const auto layout = StatePayloadLayout(ctx, state, subst);
+    if (!layout.has_value()) {
+      return std::nullopt;
+    }
+    ModalStateLayoutFact fact;
+    fact.name = state.name;
+    fact.field_count = ModalStateFieldCount(state);
+    fact.layout = layout->layout;
+    facts.push_back(std::move(fact));
+  }
+  return facts;
+}
+
+std::string ModalLayoutFactsPayload(
+    const ultraviolet::ast::ModalDecl& decl,
+    const std::vector<ModalStateLayoutFact>& facts,
+    const ModalLayout& layout,
+    std::string_view kind,
+    const std::optional<std::string_view>& payload_state) {
+  std::string payload = "source=ModalLayoutOf";
+  payload += ";modal=";
+  payload += decl.name;
+  payload += ";kind=";
+  payload += kind;
+  payload += ";state_count=";
+  payload += std::to_string(facts.size());
+
+  std::string empty_states;
+  std::string single_field_states;
+  for (const auto& fact : facts) {
+    payload += ";state_";
+    payload += fact.name;
+    payload += "=size";
+    payload += std::to_string(fact.layout.size);
+    payload += "_align";
+    payload += std::to_string(fact.layout.align);
+    payload += "_fields";
+    payload += std::to_string(fact.field_count);
+
+    if (fact.field_count == 0) {
+      if (!empty_states.empty()) {
+        empty_states += ",";
+      }
+      empty_states += fact.name;
+    } else if (fact.field_count == 1) {
+      if (!single_field_states.empty()) {
+        single_field_states += ",";
+      }
+      single_field_states += fact.name;
+    }
+  }
+
+  payload += ";empty_states=";
+  payload += empty_states.empty() ? "none" : empty_states;
+  payload += ";single_field_states=";
+  payload += single_field_states.empty() ? "none" : single_field_states;
+  payload += ";payload_state=";
+  payload += payload_state.has_value() ? std::string(*payload_state) : "none";
+  payload += ";disc_type=";
+  payload += layout.disc_type.has_value() ? *layout.disc_type : "none";
+  payload += ";disc_size=";
+  if (layout.disc_type.has_value()) {
+    const auto disc_size = PrimSize(*layout.disc_type);
+    payload += std::to_string(disc_size.value_or(0));
+  } else {
+    payload += "0";
+  }
+  payload += ";payload_offset=";
+  if (layout.disc_type.has_value()) {
+    const auto disc_size = PrimSize(*layout.disc_type);
+    payload += std::to_string(
+        AlignUp(disc_size.value_or(0), layout.payload_align));
+  } else {
+    payload += "0";
+  }
+  payload += ";size=";
+  payload += std::to_string(layout.layout.size);
+  payload += ";align=";
+  payload += std::to_string(layout.layout.align);
+  payload += ";payload_size=";
+  payload += std::to_string(layout.payload_size);
+  payload += ";payload_align=";
+  payload += std::to_string(layout.payload_align);
+  if (layout.niche_payload_layout.has_value()) {
+    payload += ";niche_payload_size=";
+    payload += std::to_string(layout.niche_payload_layout->size);
+    payload += ";niche_payload_align=";
+    payload += std::to_string(layout.niche_payload_layout->align);
+  }
+  return payload;
+}
+
+void RecordModalLayoutFacts(
+    const ultraviolet::ast::ModalDecl& decl,
+    const std::vector<ModalStateLayoutFact>& facts,
+    const ModalLayout& layout,
+    std::string_view kind,
+    const std::optional<std::string_view>& payload_state) {
+  if (!ultraviolet::core::Conformance::Enabled()) {
+    return;
+  }
+
+  const std::string payload =
+      ModalLayoutFactsPayload(decl, facts, layout, kind, payload_state);
+  auto record = [&](std::string_view obligation) {
+    ultraviolet::core::Conformance::Record(obligation, std::nullopt, payload);
+  };
+
+  record("def.ModalStateLayoutMetrics");
+  record("def.ModalSingleFieldPayload");
+  record("def.ModalEmptyState");
+  record("def.ModalEmptyStates");
+  record("def.ModalAlign");
+  record("def.ModalSize");
+  record("def.ModalPayloadSize");
+  record("def.ModalPayloadAlign");
+  record("def.ModalLayoutJudgementSet");
+  record("rule.13.Size-Modal");
+  record("rule.13.Align-Modal");
+  record("rule.13.Layout-Modal");
+  record("rule.13.Size-ModalState");
+  record("rule.13.Align-ModalState");
+  record("rule.13.Layout-ModalState");
+  record("def.ModalStateLayoutEquation");
+  record("def.EmptyModalStateSizeEquation");
+  record("def.ModalBaseLayoutEquation");
+
+  if (layout.disc_type.has_value()) {
+    record("def.ModalDiscType");
+  }
+  if (payload_state.has_value()) {
+    record("def.ModalPayloadState");
+    record("def.ModalNicheApplies");
+  }
+}
+
 }  // namespace
 
 std::optional<ModalLayout> ModalLayoutOf(
@@ -238,22 +400,23 @@ std::optional<ModalLayout> ModalLayoutOf(
   if (!subst.has_value()) {
     return std::nullopt;
   }
+  const auto state_layouts = ModalStateLayoutFacts(ctx, decl, *subst);
+  if (!state_layouts.has_value()) {
+    return std::nullopt;
+  }
 
   const auto payload_state = ultraviolet::analysis::PayloadState(ctx, decl);
   if (payload_state.has_value()) {
-    for (const auto& state : decl.states) {
-      if (ultraviolet::analysis::IdEq(state.name, *payload_state)) {
-        const auto layout = StatePayloadLayout(ctx, state, *subst);
-        if (!layout.has_value()) {
-          return std::nullopt;
-        }
+    for (const auto& fact : *state_layouts) {
+      if (ultraviolet::analysis::IdEq(fact.name, *payload_state)) {
         SPEC_RULE("Layout-Modal-Niche");
         ModalLayout out;
         out.niche = true;
-        out.layout = layout->layout;
-        out.niche_payload_layout = layout->layout;
-        out.payload_size = layout->layout.size;
-        out.payload_align = layout->layout.align;
+        out.layout = fact.layout;
+        out.niche_payload_layout = fact.layout;
+        out.payload_size = fact.layout.size;
+        out.payload_align = fact.layout.align;
+        RecordModalLayoutFacts(decl, *state_layouts, out, "niche", payload_state);
         return out;
       }
     }
@@ -261,13 +424,9 @@ std::optional<ModalLayout> ModalLayoutOf(
 
   std::uint64_t max_size = 0;
   std::uint64_t max_align = 1;
-  for (const auto& state : decl.states) {
-    const auto layout = StatePayloadLayout(ctx, state, *subst);
-    if (!layout.has_value()) {
-      return std::nullopt;
-    }
-    max_size = std::max(max_size, layout->layout.size);
-    max_align = std::max(max_align, layout->layout.align);
+  for (const auto& fact : *state_layouts) {
+    max_size = std::max(max_size, fact.layout.size);
+    max_align = std::max(max_align, fact.layout.align);
   }
 
   const auto disc = DiscTypeLayout(decl.states.size() - 1);
@@ -284,6 +443,7 @@ std::optional<ModalLayout> ModalLayoutOf(
   out.payload_size = max_size;
   out.payload_align = max_align;
   out.disc_type = DiscTypeName(decl.states.size() - 1);
+  RecordModalLayoutFacts(decl, *state_layouts, out, "tagged", std::nullopt);
   return out;
 }
 

@@ -1,7 +1,7 @@
 //! Rejected data type specimens.
 
 public procedure dataTypesRejectedSourceFixtureCount() -> usize {
-    return 9usize
+    return 10usize
 }
 
 public procedure validatedDataTypesRejectedSourceFixtureCount() -> usize {
@@ -71,6 +71,23 @@ public procedure validatedDataTypesRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Expected.uv",
         "E-TYP-1506",
         "diagnostics.CoreTypeDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RecordDiagnosticsOwnership",
+            "Fixtures/RejectedSource/DataTypes/RecordDiagnosticsOwnership",
+            "Fixtures/RejectedSource/DataTypes/RecordDiagnosticsOwnership/Source/Main.uv",
+            "Fixtures/RejectedSource/DataTypes/RecordDiagnosticsOwnership/Expected.uv",
+            expectedDiagnostic("E-TYP-1901", "diagnostics.Records")
+        ),
+        "RecordDiagnosticsOwnership",
+        "Fixtures/RejectedSource/DataTypes/RecordDiagnosticsOwnership",
+        "Fixtures/RejectedSource/DataTypes/RecordDiagnosticsOwnership/Source/Main.uv",
+        "Fixtures/RejectedSource/DataTypes/RecordDiagnosticsOwnership/Expected.uv",
+        "E-TYP-1901",
+        "diagnostics.Records"
     ) {
         count = count + 1usize
     }

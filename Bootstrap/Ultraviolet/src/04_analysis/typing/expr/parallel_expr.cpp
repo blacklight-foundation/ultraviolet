@@ -198,12 +198,16 @@ static std::optional<std::string_view> ParallelDomainParamDiag(
 
   const auto sig = LookupContextMethodSig(call->name, call->args.size());
   if (!sig.has_value()) {
+    SPEC_RULE("Parallel-Domain-Param-Err");
+    SPEC_RULE("rule.20.Parallel-Domain-Param-Err");
     return "E-CON-0103";
   }
 
   for (std::size_t i = 0; i < call->args.size(); ++i) {
     const auto& arg = call->args[i];
     if (!arg.value) {
+      SPEC_RULE("Parallel-Domain-Param-Err");
+      SPEC_RULE("rule.20.Parallel-Domain-Param-Err");
       return "E-CON-0103";
     }
     const auto arg_type = type_expr(arg.value);
@@ -212,19 +216,19 @@ static std::optional<std::string_view> ParallelDomainParamDiag(
     }
     if (IdEq(call->name, "cpu")) {
       if (i == 0 && !IsNamedTypePathLocal(arg_type.type, "CpuSet")) {
+        SPEC_RULE("Parallel-Domain-Param-Err");
+        SPEC_RULE("rule.20.Parallel-Domain-Param-Err");
         return "E-CON-0103";
       }
       if (i == 1 && !IsNamedTypePathLocal(arg_type.type, "Priority")) {
+        SPEC_RULE("Parallel-Domain-Param-Err");
+        SPEC_RULE("rule.20.Parallel-Domain-Param-Err");
         return "E-CON-0103";
       }
     }
   }
 
   return std::nullopt;
-}
-
-static bool BindingHasHeapProvenance(const TypeBinding& binding) {
-  return binding.provenance_kind == BindingProvenanceSeedKind::Heap;
 }
 
 // Check if type is CancelToken
@@ -396,6 +400,16 @@ static void EmitSupplementalTypeDiag(const StmtTypeContext& type_ctx,
                                       std::string(code) + "'"));
 }
 
+static void RecordParallelPanicStaticTypingEvidence(
+    const ast::ParallelExpr& expr) {
+  core::Conformance::Record(
+      "requirement.20.PanicHandlingNoAdditionalStaticTypingRules",
+      expr.body ? std::optional<core::Span>{expr.body->span} : std::nullopt,
+      "source=TypeParallelExpr;typing=parallel_body,spawn,dispatch;"
+      "panic_handling_static_typing=none;"
+      "additional_static_typing_rules=false");
+}
+
 }  // namespace
 
 ExprTypeResult TypeParallelExpr(const ScopeContext& ctx,
@@ -436,6 +450,7 @@ ExprTypeResult TypeParallelExpr(const ScopeContext& ctx,
 
   if (GpuContext(env) && gpu_domain) {
     SPEC_RULE("T-GPU-Nested-Err");
+    SPEC_RULE("requirement.20.NoNestedGpuParallel");
     result.diag_id = "E-CON-0152";
     return result;
   }
@@ -460,6 +475,9 @@ ExprTypeResult TypeParallelExpr(const ScopeContext& ctx,
     switch (opt.kind) {
       case ast::ParallelOptionKind::Cancel:
         if (!IsCancelTokenType(opt_type.type)) {
+          SPEC_RULE("requirement.20.ParallelCancelOptionType");
+          SPEC_RULE("Parallel-Domain-Param-Err");
+          SPEC_RULE("rule.20.Parallel-Domain-Param-Err");
           result.diag_id = "E-CON-0103";
           return result;
         }
@@ -470,15 +488,17 @@ ExprTypeResult TypeParallelExpr(const ScopeContext& ctx,
         const auto dims = ExtractDim3Const(ctx, opt.value, type_expr);
         if (!dims.has_value()) {
           SPEC_RULE("Dim3Const-Err");
+          SPEC_RULE("rule.20.Dim3Const-Err");
           result.diag_id = "E-CON-0159";
           return result;
         }
         if (opt.kind == ast::ParallelOptionKind::Workgroup &&
             gpu_domain &&
             ExceedsMaxWorkgroupSize(*dims)) {
-            SPEC_RULE("WorkgroupSize-Err");
-            result.diag_id = "E-CON-0157";
-            return result;
+          SPEC_RULE("WorkgroupSize-Err");
+          SPEC_RULE("rule.20.WorkgroupSize-Err");
+          result.diag_id = "E-CON-0157";
+          return result;
         }
         break;
       }
@@ -558,6 +578,7 @@ ExprTypeResult TypeParallelExpr(const ScopeContext& ctx,
     result.diag_span = body_info.diag_span;
     return result;
   }
+  RecordParallelPanicStaticTypingEvidence(expr);
 
   // GPU domains have additional capture restrictions.
   if (gpu_domain) {
@@ -567,20 +588,13 @@ ExprTypeResult TypeParallelExpr(const ScopeContext& ctx,
       if (!binding.has_value()) {
         continue;
       }
-      if (PermOfType(binding->type) == Permission::Shared) {
-        result.diag_id = "E-CON-0151";
-        return result;
-      }
-      if (BindingHasHeapProvenance(*binding)) {
-        SPEC_RULE("GpuCapture-HeapProv-Err");
-        result.diag_id = "E-CON-0150";
-        return result;
-      }
-      if (const auto gpu_diag = GpuSafeDiagForType(ctx, binding->type);
-          gpu_diag.has_value()) {
-        SPEC_RULE("GpuCapture-NonGpuSafe-Err");
-        EmitSupplementalTypeDiag(type_ctx, *gpu_diag);
-        result.diag_id = "E-CON-0153";
+      const auto gpu_capture =
+          CheckGpuCapture(ctx, env, captured_name, false);
+      if (!gpu_capture.ok) {
+        if (gpu_capture.supplemental_diag_id.has_value()) {
+          EmitSupplementalTypeDiag(type_ctx, *gpu_capture.supplemental_diag_id);
+        }
+        result.diag_id = gpu_capture.diag_id;
         return result;
       }
     }

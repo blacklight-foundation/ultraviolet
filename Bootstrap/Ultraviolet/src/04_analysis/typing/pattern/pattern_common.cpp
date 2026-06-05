@@ -418,6 +418,7 @@ static PatternTypeResult TypePatternAgainstTypeImpl(const ScopeContext& ctx,
   const auto names = PatNames(pattern);
   if (!DistinctPatNames(names)) {
     SPEC_RULE("Pat-Dup-R-Err");
+    SPEC_RULE("rule.17.Pat-Dup-R-Err");
     result.diag_id = "Pat-Dup-Err";
     return result;
   }
@@ -585,6 +586,7 @@ static PatternTypeResult TypePatternAgainstTypeImpl(const ScopeContext& ctx,
           }
           if (tuple->elements.size() != node.elements.size()) {
             SPEC_RULE("Pat-Tuple-R-Arity-Err");
+            SPEC_RULE("rule.17.Pat-Tuple-R-Arity-Err");
             return {false, "E-TYP-1803", {}};
           }
           std::vector<std::pair<std::string, TypeRef>> binds;
@@ -597,6 +599,7 @@ static PatternTypeResult TypePatternAgainstTypeImpl(const ScopeContext& ctx,
             binds.insert(binds.end(), sub.bindings.begin(), sub.bindings.end());
           }
           SPEC_RULE("Pat-Tuple-R");
+          SPEC_RULE("rule.17.Pat-Tuple-R");
           return {true, std::nullopt, std::move(binds)};
         }
 
@@ -614,6 +617,7 @@ static PatternTypeResult TypePatternAgainstTypeImpl(const ScopeContext& ctx,
           for (const auto& field : node.fields) {
             if (!FieldExists(*record, field.name)) {
               SPEC_RULE("RecordPattern-UnknownField");
+              SPEC_RULE("rule.17.RecordPattern-UnknownField");
               return {false, "RecordPattern-UnknownField", {}};
             }
             if (!FieldVisible(ctx, *record, field.name, node.path)) {
@@ -637,6 +641,7 @@ static PatternTypeResult TypePatternAgainstTypeImpl(const ScopeContext& ctx,
             binds.insert(binds.end(), sub.bindings.begin(), sub.bindings.end());
           }
           SPEC_RULE("Pat-Record-R");
+          SPEC_RULE("rule.17.Pat-Record-R");
           return {true, std::nullopt, std::move(binds)};
         }
 
@@ -810,6 +815,7 @@ static PatternTypeResult TypePatternAgainstTypeImpl(const ScopeContext& ctx,
           const auto hi = ConstPatInt(node.hi);
           if (!lo.has_value() || !hi.has_value()) {
             SPEC_RULE("RangePattern-NonConst");
+            SPEC_RULE("rule.17.RangePattern-NonConst");
             return {false, "RangePattern-NonConst", {}};
           }
           const auto* prim = std::get_if<TypePrim>(&expected->node);
@@ -821,17 +827,20 @@ static PatternTypeResult TypePatternAgainstTypeImpl(const ScopeContext& ctx,
           if (node.kind == ast::RangeKind::Exclusive) {
             if (!less) {
               SPEC_RULE("RangePattern-Empty");
+              SPEC_RULE("rule.17.RangePattern-Empty");
               return {false, "RangePattern-Empty", {}};
             }
           } else if (node.kind == ast::RangeKind::Inclusive) {
             if (!leq) {
               SPEC_RULE("RangePattern-Empty");
+              SPEC_RULE("rule.17.RangePattern-Empty");
               return {false, "RangePattern-Empty", {}};
             }
           } else {
             return {false, std::nullopt, {}};
           }
           SPEC_RULE("Pat-Range-R");
+          SPEC_RULE("rule.17.Pat-Range-R");
           return {true, std::nullopt, {}};
         }
 
@@ -863,6 +872,9 @@ PatternTypeResult TypePatternAgainstType(const ScopeContext& ctx,
   if (result.ok && perm) {
     ApplyPermToBindings(expected, result.bindings);
     SPEC_RULE("Pat-StripPerm");
+  }
+  if (result.ok) {
+    SPEC_RULE("def.17.PatternBindingEnvironment");
   }
   return result;
 }

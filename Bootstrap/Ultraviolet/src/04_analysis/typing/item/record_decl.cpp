@@ -67,8 +67,11 @@ static inline void SpecDefsRecordDecl() {
   SPEC_DEF("TypeInvariant", "5.2.14");
   SPEC_DEF("Impl-Ok", "5.2.14");
   SPEC_DEF("WF-Record-Method", "5.3.2");
+  SPEC_DEF("rule.15.WF-Record-Method", "15.2.3");
   SPEC_DEF("T-Record-Method-Body", "5.3.2");
   SPEC_DEF("WF-Record-Methods", "5.3.2");
+  SPEC_DEF("rule.15.Record-Method-Dup", "15.2.3");
+  SPEC_DEF("diagnostics.Records", "12.6.7");
 }
 
 // =============================================================================
@@ -210,6 +213,8 @@ static bool CollectRecordAssociatedTypeBindings(
     }
     if (!assoc->default_type) {
       if (!record.implements.empty()) {
+        SPEC_RULE_AT("req.14.ImplementationAssociatedTypeBoundForm",
+                     assoc->span);
         diag_id = "E-TYP-2503";
         return false;
       }
@@ -251,6 +256,8 @@ static bool BuildClassAssociatedTypeBindings(
       binding_type = &assoc->default_type;
     } else {
       SPEC_RULE("Impl-AssocType-Missing");
+      SPEC_RULE_AT("req.14.AssociatedTypeAbstractAndDefaultBinding",
+                   assoc->span);
       diag_id = "E-TYP-2503";
       return false;
     }
@@ -323,6 +330,49 @@ static bool DistinctClassPaths(const std::vector<ast::ClassPath>& impls) {
   }
   std::sort(keys.begin(), keys.end());
   return std::adjacent_find(keys.begin(), keys.end()) == keys.end();
+}
+
+static bool HasDirectFoundationalImpl(const std::vector<ast::ClassPath>& impls,
+                                      std::string_view name) {
+  for (const auto& impl : impls) {
+    if (impl.size() == 1 && impl[0] == name) {
+      return true;
+    }
+  }
+  return false;
+}
+
+static void RecordHashRequiresEqCheck(std::string_view source,
+                                      bool implements_eq) {
+  SPEC_RULE("req.14.HashRequiresEqAndEqualValuesHashEqual");
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload;
+  payload += "source=";
+  payload += source;
+  payload += ";implements_hash=true;implements_eq=";
+  payload += implements_eq ? "true" : "false";
+  payload += ";equal_values_hash_equal=semantic_law";
+  core::Conformance::Record(
+      "req.14.HashRequiresEqAndEqualValuesHashEqual",
+      std::nullopt,
+      payload);
+}
+
+static bool HashImplementationSatisfiesEqRequirement(
+    const ScopeContext& ctx,
+    const TypeRef& self_type,
+    const std::vector<ast::ClassPath>& impls) {
+  if (!HasDirectFoundationalImpl(impls, "Hash")) {
+    return true;
+  }
+
+  const bool implements_eq =
+      EqType(ctx, self_type) || HasDirectFoundationalImpl(impls, "Eq");
+  RecordHashRequiresEqCheck("TypeRecordDecl", implements_eq);
+  return implements_eq;
 }
 
 // Check for conflicting implementations (Bitcopy + Drop)
@@ -466,6 +516,8 @@ RecordDeclResult TypeRecordDecl(
   // Check class implementations are distinct
   if (!DistinctClassPaths(decl.implements)) {
     SPEC_RULE("Impl-Duplicate-Err");
+    SPEC_RULE("rule.14.Impl-Coherence-Err");
+    SPEC_RULE("req.14.DuplicateClassImplementationForbidden");
     result.ok = false;
     result.diag_id = "E-TYP-2506";
     return result;
@@ -475,8 +527,16 @@ RecordDeclResult TypeRecordDecl(
   std::optional<std::string_view> impl_diag;
   if (!CheckImplConflicts(decl.implements, impl_diag)) {
     SPEC_RULE("BitcopyDrop-Conflict");
+    SPEC_RULE("rule.14.BitcopyDrop-Conflict");
     result.ok = false;
     result.diag_id = impl_diag;
+    return result;
+  }
+
+  if (!HashImplementationSatisfiesEqRequirement(
+          ctx, result.self_type, decl.implements)) {
+    result.ok = false;
+    result.diag_id = "E-TYP-2503";
     return result;
   }
 
@@ -495,13 +555,17 @@ RecordDeclResult TypeRecordDecl(
   // Check field names are distinct
   if (!DistinctFieldNames(fields)) {
     SPEC_RULE("WF-Record-DupField");
+    SPEC_RULE("diagnostics.Records");
     result.ok = false;
     result.diag_id = "E-TYP-1901";
+    result.diagnostic_obligation_ids = {"WF-Record-DupField",
+                                        "diagnostics.Records"};
     return result;
   }
 
   if (!DistinctMethodNames(methods)) {
     SPEC_RULE("Record-Method-Dup");
+    SPEC_RULE("rule.15.Record-Method-Dup");
     result.ok = false;
     result.diag_id = "Record-Method-Dup";
     return result;
@@ -620,6 +684,7 @@ RecordDeclResult TypeRecordDecl(
     }
     if (bitcopy_fields) {
       SPEC_RULE("BitcopyDrop-Conflict");
+      SPEC_RULE("rule.14.BitcopyDrop-Conflict");
       result.ok = false;
       result.diag_id = "E-TYP-2621";
       return result;
@@ -634,6 +699,7 @@ RecordDeclResult TypeRecordDecl(
     for (const auto& field : fields) {
       if (field.vis == ast::Visibility::Public) {
         SPEC_RULE("TypeInvariant-PublicMut-Err");
+        SPEC_RULE("req.15.TypeInvariantsForbidPublicMutableFields");
         result.ok = false;
         result.diag_id = "E-SEM-2824";
         return result;
@@ -674,6 +740,7 @@ RecordDeclResult TypeRecordDecl(
     }
     if (IsModalClass(class_it->second)) {
       SPEC_RULE("T-Modal-Class");
+      SPEC_RULE("req.14.ModalClassImplementationRequiresModalType");
       result.ok = false;
       result.diag_id = "E-TYP-2401";
       return result;
@@ -729,6 +796,7 @@ RecordDeclResult TypeRecordDecl(
       const auto* impl_field = find_record_field(class_field->name);
       if (!impl_field) {
         SPEC_RULE("Impl-Field-Missing");
+        SPEC_RULE("rule.14.Impl-Field-Missing");
         result.ok = false;
         result.diag_id = "E-TYP-2402";
         return result;
@@ -742,6 +810,7 @@ RecordDeclResult TypeRecordDecl(
       }
       const auto impl_field_type = FieldType(decl, impl_field->name, ctx);
       if (!impl_field_type.has_value()) {
+        SPEC_RULE("rule.14.Impl-Field-Type-Err");
         result.ok = false;
         result.diag_id = "E-TYP-2404";
         return result;
@@ -761,10 +830,12 @@ RecordDeclResult TypeRecordDecl(
       }
       if (!field_subtype.subtype) {
         SPEC_RULE("Impl-Field-Type-Err");
+        SPEC_RULE("rule.14.Impl-Field-Type-Err");
         result.ok = false;
         result.diag_id = "E-TYP-2404";
         return result;
       }
+      SPEC_RULE("rule.14.Impl-Field");
     }
 
     for (const auto& entry : method_table.methods) {
@@ -780,21 +851,27 @@ RecordDeclResult TypeRecordDecl(
       if (!entry.method->body_opt) {
         if (!impl_method) {
           SPEC_RULE("Impl-Missing-Method");
+          SPEC_RULE("rule.14.Impl-Missing-Method");
           result.ok = false;
           result.diag_id = "E-TYP-2503";
           return result;
         }
         if (impl_method->override_flag) {
           SPEC_RULE("Override-Abstract-Err");
+          SPEC_RULE("rule.14.Override-Abstract-Err");
           result.ok = false;
           result.diag_id = "E-TYP-2501";
           return result;
         }
       } else {
+        if (!impl_method) {
+          SPEC_RULE("rule.14.Impl-Concrete-Default");
+        }
         // Concrete class method: replacement is optional; if present it must
         // be marked `override`.
         if (impl_method && !impl_method->override_flag) {
           SPEC_RULE("Override-Missing-Err");
+          SPEC_RULE("rule.14.Override-Missing-Err");
           result.ok = false;
           result.diag_id = "E-TYP-2502";
           return result;
@@ -822,9 +899,19 @@ RecordDeclResult TypeRecordDecl(
         const auto equiv = TypeEquiv(class_sig.func_type, impl_sig.func_type);
         if (!equiv.ok || !equiv.equiv) {
           SPEC_RULE("Impl-Sig-Err");
+          if (entry.method->body_opt) {
+            SPEC_RULE("rule.14.Impl-Sig-Err-Concrete");
+          } else {
+            SPEC_RULE("rule.14.Impl-Sig-Err");
+          }
           result.ok = false;
           result.diag_id = "E-TYP-2503";
           return result;
+        }
+        if (entry.method->body_opt) {
+          SPEC_RULE("rule.14.Impl-Concrete-Override");
+        } else {
+          SPEC_RULE("rule.14.Impl-Abstract-Method");
         }
 
         ast::ContractClause empty_class_contract;
@@ -862,6 +949,7 @@ RecordDeclResult TypeRecordDecl(
     if (concrete_class_methods.find(IdKeyOf(method->name)) ==
         concrete_class_methods.end()) {
       SPEC_RULE("Override-NoConcrete");
+      SPEC_RULE("rule.14.Override-NoConcrete");
       result.ok = false;
       result.diag_id = "E-UNS-0105";
       return result;
@@ -871,6 +959,7 @@ RecordDeclResult TypeRecordDecl(
   // Process methods
   for (const auto* method : methods) {
     SPEC_RULE("WF-Record-Method");
+    SPEC_RULE("rule.15.WF-Record-Method");
     const auto method_attr_validation =
         ValidateAttributes(method->attrs, AttributeTarget::Method);
     if (!method_attr_validation.ok) {
@@ -949,8 +1038,11 @@ RecordDeclResult TypeRecordDecl(
     if (method->body) {
       const bool is_unit = TypeEquiv(sig.return_type, MakeTypePrim("()")).equiv;
       if (!is_unit && !HasExplicitReturn(*method->body)) {
+        SPEC_RULE("def.15.ExplicitReturn");
         SPEC_RULE("T-Record-Method-Body");
+        SPEC_RULE("rule.15.T-Record-Method-Body");
         SPEC_RULE("WF-ProcBody-ExplicitReturn-Err");
+        SPEC_RULE("rule.15.WF-ProcBody-ExplicitReturn-Err");
         result.ok = false;
         result.diag_id = "E-TYP-1507";
         return result;
@@ -1077,13 +1169,17 @@ RecordDeclResult TypeRecordDeclSignature(
   const auto methods = GetMethods(decl);
   if (!DistinctFieldNames(fields)) {
     SPEC_RULE("WF-Record-DupField");
+    SPEC_RULE("diagnostics.Records");
     result.ok = false;
     result.diag_id = "E-TYP-1901";
+    result.diagnostic_obligation_ids = {"WF-Record-DupField",
+                                        "diagnostics.Records"};
     return result;
   }
 
   if (!DistinctMethodNames(methods)) {
     SPEC_RULE("Record-Method-Dup");
+    SPEC_RULE("rule.15.Record-Method-Dup");
     result.ok = false;
     result.diag_id = "Record-Method-Dup";
     return result;
@@ -1126,6 +1222,7 @@ RecordDeclResult TypeRecordDeclSignature(
   // Process method signatures
   for (const auto* method : methods) {
     SPEC_RULE("WF-Record-Method");
+    SPEC_RULE("rule.15.WF-Record-Method");
     const auto method_attr_validation =
         ValidateAttributes(method->attrs, AttributeTarget::Method);
     if (!method_attr_validation.ok) {

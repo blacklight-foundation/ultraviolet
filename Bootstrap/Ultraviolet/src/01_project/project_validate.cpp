@@ -276,6 +276,126 @@ std::optional<std::string> AsmLinkKind(std::string_view kind,
   return std::nullopt;
 }
 
+std::string RenderBool(bool value) {
+  return value ? "true" : "false";
+}
+
+std::string RenderOptString(const std::optional<std::string>& value) {
+  return value.has_value() ? *value : "<bottom>";
+}
+
+std::string RenderOptTargetProfile(
+    const std::optional<TargetProfile>& value) {
+  return value.has_value() ? std::string(TargetProfileName(*value)) :
+                             "<bottom>";
+}
+
+bool HasToolchainTable(const TOMLTable& table) {
+  const toml::node* node = table.get("toolchain");
+  return node && node->is_table() && node->as_table();
+}
+
+void RecordToolchainKeys(bool toolchain_present,
+                         bool toolchain_table,
+                         bool has_llvm_bin,
+                         bool has_runtime_lib,
+                         bool has_target_profile,
+                         bool known_only) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  SPEC_RULE("def.ToolchainKeys");
+  core::Conformance::Record(
+      "def.ToolchainKeys",
+      std::nullopt,
+      "allowed=llvm_bin,runtime_lib,target_profile;toolchain_present=" +
+          RenderBool(toolchain_present) +
+          ";toolchain_table=" + RenderBool(toolchain_table) +
+          ";has_llvm_bin=" + RenderBool(has_llvm_bin) +
+          ";has_runtime_lib=" + RenderBool(has_runtime_lib) +
+          ";has_target_profile=" + RenderBool(has_target_profile) +
+          ";known_only=" + RenderBool(known_only));
+}
+
+void RecordToolchainTargetProfileOk(std::string_view value,
+                                    bool provided,
+                                    bool is_string,
+                                    bool ok) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  SPEC_RULE("def.ToolchainTargetProfileOk");
+  core::Conformance::Record(
+      "def.ToolchainTargetProfileOk",
+      std::nullopt,
+      "provided=" + RenderBool(provided) +
+          ";is_string=" + RenderBool(is_string) +
+          ";value=" + std::string(value) +
+          ";ok=" + RenderBool(ok));
+}
+
+void RecordWFToolchain(const TOMLTable& table,
+                       const ToolchainConfig& config) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  SPEC_RULE("WF-Toolchain");
+  core::Conformance::Record(
+      "WF-Toolchain",
+      std::nullopt,
+      "toolchain_present=" + RenderBool(table.get("toolchain") != nullptr) +
+          ";toolchain_table=" + RenderBool(HasToolchainTable(table)) +
+          ";llvm_bin=" + RenderOptString(config.llvm_bin) +
+          ";runtime_lib=" + RenderOptString(config.runtime_lib) +
+          ";target_profile=" + RenderOptTargetProfile(config.target_profile));
+}
+
+void RecordToolchainConfig(const TOMLTable& table,
+                           const ToolchainConfig& config) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  SPEC_RULE("def.ToolchainConfig");
+  core::Conformance::Record(
+      "def.ToolchainConfig",
+      std::nullopt,
+      "branch=" + std::string(HasToolchainTable(table) ? "provided" :
+                                                     "defaults") +
+          ";llvm_bin=" + RenderOptString(config.llvm_bin) +
+          ";runtime_lib=" + RenderOptString(config.runtime_lib) +
+          ";target_profile=" + RenderOptTargetProfile(config.target_profile));
+}
+
+void RecordAsmLinkKind(std::string_view kind,
+                       const std::optional<std::string>& link_kind,
+                       const std::optional<std::string>& effective_link_kind) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  SPEC_RULE("def.AsmLinkKind");
+  core::Conformance::Record(
+      "def.AsmLinkKind",
+      std::nullopt,
+      "kind=" + std::string(kind) +
+          ";link_kind=" + RenderOptString(link_kind) +
+          ";effective=" + RenderOptString(effective_link_kind));
+}
+
+void RecordFirstFail(std::string_view result,
+                     std::string_view first_obligation,
+                     std::string_view diagnostic_code) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  SPEC_RULE("def.FirstFail");
+  core::Conformance::Record(
+      "def.FirstFail",
+      std::nullopt,
+      "source=ValidateManifest;result=" + std::string(result) +
+          ";first=" + std::string(first_obligation) +
+          ";diagnostic=" + std::string(diagnostic_code));
+}
+
 bool IsKnownAssemblyKey(std::string_view key) {
   return key == "name" || key == "kind" || key == "root" ||
          key == "out_dir" || key == "emit_ir" || key == "link_kind";
@@ -289,6 +409,10 @@ enum class RelPathStatus {
 
 RelPathStatus CheckRelPath(std::string_view p, std::string_view root) {
   if (!core::IsRelative(p)) {
+    SPEC_RULE("WF-RelPath-Err");
+    return RelPathStatus::RelPathErr;
+  }
+  if (!core::Canon(p).has_value()) {
     SPEC_RULE("WF-RelPath-Err");
     return RelPathStatus::RelPathErr;
   }
@@ -355,7 +479,8 @@ ManifestValidationResult ValidateManifest(const std::filesystem::path& project_r
   result.toolchain = ToolchainConfigOf(table);
   result.build = BuildConfigOf(table);
 
-  auto fail = [&](std::string_view code) {
+  auto fail = [&](std::string_view code, std::string_view first_obligation) {
+    RecordFirstFail("error", first_obligation, code);
     SPEC_RULE("ValidateManifest-Err");
     EmitExternal(result.diags, code);
     return result;
@@ -363,81 +488,113 @@ ManifestValidationResult ValidateManifest(const std::filesystem::path& project_r
 
   if (!HasOnlyValidTopLevelKeys(table)) {
     SPEC_RULE("WF-TopKeys-Err");
-    return fail("E-PRJ-0104");
+    return fail("E-PRJ-0104", "WF-TopKeys-Err");
   }
   SPEC_RULE("WF-TopKeys");
 
   if (const toml::node* toolchain_node = table.get("toolchain")) {
     if (!toolchain_node->is_table()) {
+      RecordToolchainKeys(true, false, false, false, false, false);
+      RecordToolchainTargetProfileOk("<non-table>", true, false, false);
       SPEC_RULE("WF-Toolchain-Err");
-      return fail("E-PRJ-0110");
+      return fail("E-PRJ-0110", "WF-Toolchain-Err");
     }
     const auto* toolchain = toolchain_node->as_table();
     if (!toolchain) {
+      RecordToolchainKeys(true, false, false, false, false, false);
+      RecordToolchainTargetProfileOk("<non-table>", true, false, false);
       SPEC_RULE("WF-Toolchain-Err");
-      return fail("E-PRJ-0110");
+      return fail("E-PRJ-0110", "WF-Toolchain-Err");
     }
+    const bool has_llvm_bin = toolchain->get("llvm_bin") != nullptr;
+    const bool has_runtime_lib = toolchain->get("runtime_lib") != nullptr;
+    const bool has_target_profile =
+        toolchain->get("target_profile") != nullptr;
     for (const auto& [key, value] : *toolchain) {
       if (!IsKnownToolchainKey(key)) {
         (void)value;
+        RecordToolchainKeys(true,
+                            true,
+                            has_llvm_bin,
+                            has_runtime_lib,
+                            has_target_profile,
+                            false);
         SPEC_RULE("WF-Toolchain-Err");
-        return fail("E-PRJ-0110");
+        return fail("E-PRJ-0110", "WF-Toolchain-Err");
       }
     }
+    RecordToolchainKeys(true,
+                        true,
+                        has_llvm_bin,
+                        has_runtime_lib,
+                        has_target_profile,
+                        true);
     if (const toml::node* llvm_node = toolchain->get("llvm_bin");
         llvm_node && !llvm_node->is_string()) {
       SPEC_RULE("WF-Toolchain-Err");
-      return fail("E-PRJ-0110");
+      return fail("E-PRJ-0110", "WF-Toolchain-Err");
     }
     if (const toml::node* runtime_node = toolchain->get("runtime_lib");
         runtime_node && !runtime_node->is_string()) {
       SPEC_RULE("WF-Toolchain-Err");
-      return fail("E-PRJ-0110");
+      return fail("E-PRJ-0110", "WF-Toolchain-Err");
     }
     if (const toml::node* target_profile_node =
             toolchain->get("target_profile");
         target_profile_node) {
       if (!target_profile_node->is_string()) {
+        RecordToolchainTargetProfileOk("<non-string>", true, false, false);
         SPEC_RULE("WF-Toolchain-Err");
-        return fail("E-PRJ-0110");
+        return fail("E-PRJ-0110", "WF-Toolchain-Err");
       }
       const auto target_profile_value =
           target_profile_node->value<std::string>();
       if (!target_profile_value.has_value() ||
           !ParseTargetProfile(*target_profile_value).has_value()) {
+        RecordToolchainTargetProfileOk(target_profile_value.value_or(""),
+                                       true,
+                                       true,
+                                       false);
         SPEC_RULE("WF-Toolchain-Err");
-        return fail("E-PRJ-0110");
+        return fail("E-PRJ-0110", "WF-Toolchain-Err");
       }
+      RecordToolchainTargetProfileOk(*target_profile_value, true, true, true);
+    } else {
+      RecordToolchainTargetProfileOk("<bottom>", false, false, true);
     }
+  } else {
+    RecordToolchainKeys(false, false, false, false, false, true);
+    RecordToolchainTargetProfileOk("<bottom>", false, false, true);
   }
-  SPEC_RULE("WF-Toolchain");
+  RecordWFToolchain(table, result.toolchain);
+  RecordToolchainConfig(table, result.toolchain);
 
   if (const toml::node* build_node = table.get("build")) {
     if (!build_node->is_table()) {
       SPEC_RULE("WF-Build-Err");
-      return fail("E-PRJ-0111");
+      return fail("E-PRJ-0111", "WF-Build-Err");
     }
     const auto* build = build_node->as_table();
     if (!build) {
       SPEC_RULE("WF-Build-Err");
-      return fail("E-PRJ-0111");
+      return fail("E-PRJ-0111", "WF-Build-Err");
     }
     for (const auto& [key, value] : *build) {
       if (!IsKnownBuildKey(key)) {
         (void)value;
         SPEC_RULE("WF-Build-Err");
-        return fail("E-PRJ-0111");
+        return fail("E-PRJ-0111", "WF-Build-Err");
       }
     }
     if (const toml::node* incremental_node = build->get("incremental");
         incremental_node && !incremental_node->is_boolean()) {
       SPEC_RULE("WF-Build-Err");
-      return fail("E-PRJ-0111");
+      return fail("E-PRJ-0111", "WF-Build-Err");
     }
     if (const toml::node* progress_node = build->get("progress");
         progress_node && !progress_node->is_boolean()) {
       SPEC_RULE("WF-Build-Err");
-      return fail("E-PRJ-0111");
+      return fail("E-PRJ-0111", "WF-Build-Err");
     }
   }
   SPEC_RULE("WF-Build");
@@ -445,19 +602,19 @@ ManifestValidationResult ValidateManifest(const std::filesystem::path& project_r
   const toml::node* assembly_node = table.get("assembly");
   if (!assembly_node) {
     SPEC_RULE("WF-Assembly-Table-Err");
-    return fail("E-PRJ-0103");
+    return fail("E-PRJ-0103", "WF-Assembly-Table-Err");
   }
 
   const AsmTablesResult asm_tables = AsmTables(assembly_node);
   if (!asm_tables.ok) {
     SPEC_RULE("WF-Assembly-Table-Err");
-    return fail("E-PRJ-0103");
+    return fail("E-PRJ-0103", "WF-Assembly-Table-Err");
   }
   SPEC_RULE("WF-Assembly-Table");
 
   if (asm_tables.tables.empty()) {
     SPEC_RULE("WF-Assembly-Count-Err");
-    return fail("E-PRJ-0103");
+    return fail("E-PRJ-0103", "WF-Assembly-Count-Err");
   }
   SPEC_RULE("WF-Assembly-Count");
 
@@ -467,7 +624,7 @@ ManifestValidationResult ValidateManifest(const std::filesystem::path& project_r
     for (const auto* assembly : asm_tables.tables) {
       if (!assembly) {
         SPEC_RULE("WF-Assembly-Table-Err");
-        return fail("E-PRJ-0103");
+        return fail("E-PRJ-0103", "WF-Assembly-Table-Err");
       }
       const toml::node* name_node = assembly->get("name");
       if (!name_node || !name_node->is_string()) {
@@ -479,7 +636,7 @@ ManifestValidationResult ValidateManifest(const std::filesystem::path& project_r
       }
       if (!names.insert(*name_value).second) {
         SPEC_RULE("WF-Assembly-Name-Dup-Err");
-        return fail("E-PRJ-0202");
+        return fail("E-PRJ-0202", "WF-Assembly-Name-Dup-Err");
       }
     }
   }
@@ -490,14 +647,14 @@ ManifestValidationResult ValidateManifest(const std::filesystem::path& project_r
   for (const auto* assembly : asm_tables.tables) {
     if (!assembly) {
       SPEC_RULE("WF-Assembly-Table-Err");
-      return fail("E-PRJ-0103");
+      return fail("E-PRJ-0103", "WF-Assembly-Table-Err");
     }
 
     for (const auto& [key, value] : *assembly) {
       (void)value;
       if (!IsKnownAssemblyKey(key)) {
         SPEC_RULE("WF-Assembly-Keys-Err");
-        return fail("E-PRJ-0104");
+        return fail("E-PRJ-0104", "WF-Assembly-Keys-Err");
       }
     }
     SPEC_RULE("WF-Assembly-Keys");
@@ -509,7 +666,7 @@ ManifestValidationResult ValidateManifest(const std::filesystem::path& project_r
         !name_node->is_string() || !kind_node->is_string() ||
         !root_node->is_string()) {
       SPEC_RULE("WF-Assembly-Required-Types-Err");
-      return fail("E-PRJ-0103");
+      return fail("E-PRJ-0103", "WF-Assembly-Required-Types-Err");
     }
     SPEC_RULE("WF-Assembly-Required-Types");
 
@@ -518,14 +675,14 @@ ManifestValidationResult ValidateManifest(const std::filesystem::path& project_r
     const auto root_value = root_node->value<std::string>();
     if (!name_value || !kind_value || !root_value) {
       SPEC_RULE("WF-Assembly-Required-Types-Err");
-      return fail("E-PRJ-0103");
+      return fail("E-PRJ-0103", "WF-Assembly-Required-Types-Err");
     }
 
     std::optional<std::string> out_dir_value;
     if (const toml::node* out_dir_node = assembly->get("out_dir")) {
       if (!out_dir_node->is_string()) {
         SPEC_RULE("WF-Assembly-OutDirType-Err");
-        return fail("E-PRJ-0301");
+        return fail("E-PRJ-0301", "WF-Assembly-OutDirType-Err");
       }
       out_dir_value = out_dir_node->value<std::string>();
     }
@@ -534,7 +691,7 @@ ManifestValidationResult ValidateManifest(const std::filesystem::path& project_r
     if (const toml::node* emit_ir_node = assembly->get("emit_ir")) {
       if (!emit_ir_node->is_string()) {
         SPEC_RULE("WF-Assembly-EmitIRType-Err");
-        return fail("E-PRJ-0204");
+        return fail("E-PRJ-0204", "WF-Assembly-EmitIRType-Err");
       }
       emit_ir_value = emit_ir_node->value<std::string>();
     }
@@ -544,7 +701,7 @@ ManifestValidationResult ValidateManifest(const std::filesystem::path& project_r
     if (const toml::node* link_kind_node = assembly->get("link_kind")) {
       if (!link_kind_node->is_string()) {
         SPEC_RULE("WF-Assembly-LinkKindType-Err");
-        return fail("E-PRJ-0207");
+        return fail("E-PRJ-0207", "WF-Assembly-LinkKindType-Err");
       }
       link_kind_value = link_kind_node->value<std::string>();
     }
@@ -554,25 +711,25 @@ ManifestValidationResult ValidateManifest(const std::filesystem::path& project_r
 
     if (!core::IsName(*name_value)) {
       SPEC_RULE("WF-Assembly-Name-Err");
-      return fail("E-PRJ-0203");
+      return fail("E-PRJ-0203", "WF-Assembly-Name-Err");
     }
     SPEC_RULE("WF-Assembly-Name");
 
     if (!(*kind_value == "executable" || *kind_value == "library" ||
           *kind_value == "dependency")) {
       SPEC_RULE("WF-Assembly-Kind-Err");
-      return fail("E-PRJ-0201");
+      return fail("E-PRJ-0201", "WF-Assembly-Kind-Err");
     }
     SPEC_RULE("WF-Assembly-Kind");
 
     if (*kind_value != "library" && link_kind_value.has_value()) {
       SPEC_RULE("WF-Assembly-LinkKind-Use-Err");
-      return fail("E-PRJ-0208");
+      return fail("E-PRJ-0208", "WF-Assembly-LinkKind-Use-Err");
     }
     if (*kind_value == "library" && link_kind_value.has_value() &&
         !(*link_kind_value == "shared" || *link_kind_value == "static")) {
       SPEC_RULE("WF-Assembly-LinkKind-Err");
-      return fail("E-PRJ-0207");
+      return fail("E-PRJ-0207", "WF-Assembly-LinkKind-Err");
     }
     SPEC_RULE("WF-Assembly-LinkKind");
 
@@ -580,7 +737,7 @@ ManifestValidationResult ValidateManifest(const std::filesystem::path& project_r
       const auto& emit_ir = *emit_ir_value;
       if (!(emit_ir == "none" || emit_ir == "ll" || emit_ir == "bc")) {
         SPEC_RULE("WF-Assembly-EmitIR-Err");
-        return fail("E-PRJ-0204");
+        return fail("E-PRJ-0204", "WF-Assembly-EmitIR-Err");
       }
     }
     SPEC_RULE("WF-Assembly-EmitIR");
@@ -588,10 +745,10 @@ ManifestValidationResult ValidateManifest(const std::filesystem::path& project_r
     const RelPathStatus root_status = CheckRelPath(*root_value, root_str);
     if (root_status == RelPathStatus::RelPathErr) {
       SPEC_RULE("WF-Assembly-Root-Path-Err");
-      return fail("E-PRJ-0301");
+      return fail("E-PRJ-0301", "WF-Assembly-Root-Path-Err");
     }
     if (root_status == RelPathStatus::ResolveErr) {
-      return fail("E-PRJ-0304");
+      return fail("E-PRJ-0304", "WF-Assembly-Root-Path-Err");
     }
     SPEC_RULE("WF-Assembly-Root-Path");
 
@@ -600,16 +757,17 @@ ManifestValidationResult ValidateManifest(const std::filesystem::path& project_r
           CheckRelPath(*out_dir_value, root_str);
       if (out_dir_status == RelPathStatus::RelPathErr) {
         SPEC_RULE("WF-Assembly-OutDir-Path-Err");
-        return fail("E-PRJ-0301");
+        return fail("E-PRJ-0301", "WF-Assembly-OutDir-Path-Err");
       }
       if (out_dir_status == RelPathStatus::ResolveErr) {
-        return fail("E-PRJ-0304");
+        return fail("E-PRJ-0304", "WF-Assembly-OutDir-Path-Err");
       }
     }
     SPEC_RULE("WF-Assembly-OutDir-Path");
 
     const std::optional<std::string> asm_link_kind =
         AsmLinkKind(*kind_value, link_kind_value);
+    RecordAsmLinkKind(*kind_value, link_kind_value, asm_link_kind);
 
     ValidatedAssembly validated{*name_value,
                                 *kind_value,
@@ -622,6 +780,7 @@ ManifestValidationResult ValidateManifest(const std::filesystem::path& project_r
   }
 
   SPEC_RULE("ValidateManifest-Ok");
+  RecordFirstFail("ok", "<bottom>", "<bottom>");
   return result;
 }
 

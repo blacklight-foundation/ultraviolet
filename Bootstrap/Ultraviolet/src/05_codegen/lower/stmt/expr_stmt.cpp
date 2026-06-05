@@ -18,6 +18,7 @@
 #include <variant>
 
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 #include "04_analysis/caps/cap_concurrency.h"
 #include "04_analysis/modal/modal.h"
 #include "04_analysis/modal/modal_transitions.h"
@@ -309,6 +310,11 @@ IRPtr LowerExprStmt(const ast::ExprStmt& stmt, LowerCtx& ctx) {
       item.needs_wait = needs_wait;
       item.value_type = InferParallelCollectedType(*stmt.value, ctx, needs_wait);
       ctx.parallel_collect->push_back(std::move(item));
+      core::Conformance::Record(
+          "rule.18.Lower-Stmt-Expr",
+          std::nullopt,
+          "source=LowerExprStmt;ir_form=LowerExprIR;value_discarded=true;"
+          "parallel_collect=true");
       return expr_result.ir;
     }
   }
@@ -328,11 +334,21 @@ IRPtr LowerExprStmt(const ast::ExprStmt& stmt, LowerCtx& ctx) {
                           ctx);
     }
     ApplyModalTransitionUpdate(*modal_transition_update, ctx);
+    core::Conformance::Record(
+        "rule.18.Lower-Stmt-Expr",
+        std::nullopt,
+        "source=LowerExprStmt;ir_form=SeqIR;value_discarded=true;"
+        "modal_transition_writeback=true");
     return SeqIR({expr_result.ir, write_back});
   }
 
   // The expression is evaluated for side effects
   // The result value is discarded
+  core::Conformance::Record(
+      "rule.18.Lower-Stmt-Expr",
+      std::nullopt,
+      "source=LowerExprStmt;ir_form=LowerExprIR;value_discarded=true;"
+      "parallel_collect=false");
   return expr_result.ir;
 }
 

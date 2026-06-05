@@ -483,6 +483,7 @@ std::optional<std::string> BuiltinMethodSym(const analysis::TypePath& cap_path,
   }
 
   if (analysis::IsNetworkClassPath(cap_class)) {
+    SPEC_RULE("BuiltinMethodSym-Network");
     const std::string sym =
         BuiltinSym(std::string("Network::") + std::string(name));
     if (sym.empty()) {
@@ -703,10 +704,21 @@ void AnchorABIRules() {
 
   // Section 6.2.3 ABI Parameter and Return Passing Rules
   SPEC_RULE("ABI-Param-ByRef-Alias");
+  SPEC_RULE("rule.24.ABI-Param-ByRef-Alias");
   SPEC_RULE("ABI-Param-ByRef-Move");
+  SPEC_RULE("rule.24.ABI-Param-ByRef-Move");
   SPEC_RULE("ABI-Ret-ByValue");
+  SPEC_RULE("rule.24.ABI-Ret-ByValue");
   SPEC_RULE("ABI-Ret-ByRef");
+  SPEC_RULE("rule.24.ABI-Ret-ByRef");
   SPEC_RULE("ABI-Call");
+  SPEC_RULE("rule.24.ABI-Call");
+  SPEC_RULE("ABI-ForeignParam-ByValue");
+  SPEC_RULE("rule.24.ABI-ForeignParam-ByValue");
+  SPEC_RULE("ABI-ForeignParam-ByRef");
+  SPEC_RULE("rule.24.ABI-ForeignParam-ByRef");
+  SPEC_RULE("ABI-ForeignCall");
+  SPEC_RULE("rule.24.ABI-ForeignCall");
 
   // Section 6.2.4 Call Lowering Rules
   SPEC_RULE("MethodSymbol-Record");
@@ -715,6 +727,7 @@ void AnchorABIRules() {
   SPEC_RULE("MethodSymbol-ModalState-Transition");
   SPEC_RULE("BuiltinMethodSym-IO");
   SPEC_RULE("BuiltinMethodSym-HeapAllocator");
+  SPEC_RULE("BuiltinMethodSym-Network");
   SPEC_RULE("BuiltinMethodSym-ExecutionDomain");
   SPEC_RULE("BuiltinMethodSym-Reactor");
   SPEC_RULE("BuiltinMethodSym-System");

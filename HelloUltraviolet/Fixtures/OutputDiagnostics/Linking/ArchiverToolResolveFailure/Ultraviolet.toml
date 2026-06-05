@@ -1,0 +1,13 @@
+[[assembly]]
+name = "ArchiverToolResolveFailure"
+kind = "library"
+link_kind = "static"
+root = "Source"
+
+[toolchain]
+llvm_bin = "MissingArchiverTools"
+target_profile = "x86_64-win64"
+
+[build]
+incremental = true
+progress = false

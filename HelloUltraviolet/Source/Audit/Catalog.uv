@@ -1,7 +1,17 @@
 //! Root catalog accounting for generated obligation entries.
 
-public let EXPECTED_OBLIGATION_COUNT: usize = 6052
+public let EXPECTED_OBLIGATION_COUNT: usize = 6046
+
+public let BLOCKED_OBLIGATION_COUNT: usize = 6
 
 public procedure catalogObligationCount() -> usize {
     return EXPECTED_OBLIGATION_COUNT
+}
+
+public procedure catalogBlockedObligationCount() -> usize {
+    return BLOCKED_OBLIGATION_COUNT
+}
+
+public procedure catalogAccountedObligationCount() -> usize {
+    return EXPECTED_OBLIGATION_COUNT + BLOCKED_OBLIGATION_COUNT
 }

@@ -17,6 +17,7 @@ namespace ultraviolet::codegen {
 std::optional<ABIType> ABITyUnion(const analysis::ScopeContext& ctx,
                                   const analysis::TypeUnion& uni) {
   SPEC_RULE("ABI-Union");
+  SPEC_RULE("rule.24.ABI-Union");
   const auto layout = ::ultraviolet::analysis::layout::UnionLayoutOf(ctx, uni);
   if (!layout.has_value()) {
     return std::nullopt;

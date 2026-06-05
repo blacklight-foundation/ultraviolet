@@ -16,11 +16,39 @@
 #include "05_codegen/lower/pattern/identifier_pattern.h"
 
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 #include "05_codegen/ir/ir_model.h"
 #include "05_codegen/lower/expr/closure_expr.h"
 #include "05_codegen/lower/lower_pat.h"
 
+#include <optional>
+#include <string>
+#include <variant>
+
 namespace ultraviolet::codegen {
+
+namespace {
+
+void RecordNonCapturingClosureValue(const IRValue& code_value) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload =
+      "source=LowerIdentifierPatternBindings;operation=ClosureVal";
+  payload += ";capture_kind=noncapturing;env_ptr=null;code_ptr_symbol=";
+  payload += code_value.name;
+  payload += ";code_ptr_domain=Symbol;target=TypeClosure";
+  payload += ";closure_rep=env_ptr,code_ptr";
+  core::Conformance::Record("def.ClosureRuntimeValue", std::nullopt, payload);
+  core::Conformance::Record("req.ClosureOperationOwnership", std::nullopt, payload);
+  core::Conformance::Record("def.ClosureLoweringRep", std::nullopt, payload);
+  core::Conformance::Record("req.ClosureLoweringOwnership", std::nullopt, payload);
+  core::Conformance::Record("def.16.ClosureEnvironmentRuntimeModel", std::nullopt, payload);
+  core::Conformance::Record("rule.16.Lower-Expr-Closure-NonCapturing", std::nullopt, payload);
+}
+
+}  // namespace
 
 // ============================================================================
 // RegisterIdentifierPatternBindings
@@ -113,6 +141,7 @@ IRPtr LowerIdentifierPatternBindings(const ast::IdentifierPattern& pattern,
       local_value.kind = IRValue::Kind::Local;
       local_value.name = bind.stable_name.empty() ? pattern.name : bind.stable_name;
       ctx.RegisterDerivedValue(local_value, closure_info);
+      RecordNonCapturingClosureValue(value);
     }
   }
 

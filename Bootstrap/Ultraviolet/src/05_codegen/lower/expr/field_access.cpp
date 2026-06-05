@@ -28,6 +28,8 @@
 
 #include <algorithm>
 #include <cassert>
+#include <string>
+#include <string_view>
 #include <variant>
 #include <vector>
 
@@ -124,6 +126,102 @@ analysis::TypeRef StripFieldBaseType(analysis::TypeRef type) {
   return type;
 }
 
+std::string FieldAccessPathPayload(const analysis::TypePath& path) {
+  std::string result;
+  for (const auto& segment : path) {
+    if (!result.empty()) {
+      result += "::";
+    }
+    result += segment;
+  }
+  return result;
+}
+
+const analysis::TypeModalState* ModalStateFromFieldBase(
+    const ast::Expr& base_expr,
+    LowerCtx& ctx) {
+  if (!ctx.expr_type) {
+    return nullptr;
+  }
+  const analysis::TypeRef base_type =
+      StripFieldBaseType(ctx.expr_type(base_expr));
+  if (!base_type) {
+    return nullptr;
+  }
+  return std::get_if<analysis::TypeModalState>(&base_type->node);
+}
+
+void AppendStateFieldPayloadField(
+    std::string& payload,
+    std::string_view key,
+    std::string_view value) {
+  if (!payload.empty()) {
+    payload += ';';
+  }
+  payload += key;
+  payload += '=';
+  payload += value;
+}
+
+void AppendStateFieldPayloadField(
+    std::string& payload,
+    std::string_view key,
+    const char* value) {
+  AppendStateFieldPayloadField(
+      payload,
+      key,
+      std::string_view(value ? value : "-"));
+}
+
+void AppendStateFieldPayloadField(
+    std::string& payload,
+    std::string_view key,
+    bool value) {
+  AppendStateFieldPayloadField(
+      payload,
+      key,
+      std::string_view(value ? "true" : "false"));
+}
+
+void RecordStateFieldLoweringImpl(
+    std::string_view operation,
+    const ast::Expr& base_expr,
+    std::string_view field_name,
+    std::string_view derived_kind,
+    std::string_view ir_shape,
+    LowerCtx& ctx) {
+  const auto* modal_state = ModalStateFromFieldBase(base_expr, ctx);
+  if (!modal_state) {
+    return;
+  }
+
+  SPEC_RULE("req.StateFieldLowering");
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload;
+  const std::string modal_path = FieldAccessPathPayload(modal_state->path);
+  AppendStateFieldPayloadField(payload, "source", "LowerFieldAccess");
+  AppendStateFieldPayloadField(payload, "operation", operation);
+  AppendStateFieldPayloadField(payload, "modal", std::string_view(modal_path));
+  AppendStateFieldPayloadField(
+      payload,
+      "state",
+      std::string_view(modal_state->state));
+  AppendStateFieldPayloadField(payload, "field", field_name);
+  AppendStateFieldPayloadField(payload, "payload_layout", "record");
+  AppendStateFieldPayloadField(payload, "derived_kind", derived_kind);
+  AppendStateFieldPayloadField(payload, "ir_shape", ir_shape);
+  AppendStateFieldPayloadField(payload, "general_field_lowering", true);
+  AppendStateFieldPayloadField(payload, "modal_specific_lowering", false);
+
+  core::Conformance::Record(
+      "req.StateFieldLowering",
+      std::nullopt,
+      payload);
+}
+
 analysis::TypeRef InferRecordFieldTypeFromBase(
     const IRValue& base_value,
     std::string_view field_name,
@@ -152,6 +250,22 @@ analysis::TypeRef InferRecordFieldTypeFromBase(
 
 }  // namespace
 
+void RecordStateFieldLowering(
+    std::string_view operation,
+    const ast::Expr& base_expr,
+    std::string_view field_name,
+    std::string_view derived_kind,
+    std::string_view ir_shape,
+    LowerCtx& ctx) {
+  RecordStateFieldLoweringImpl(
+      operation,
+      base_expr,
+      field_name,
+      derived_kind,
+      ir_shape,
+      ctx);
+}
+
 // ============================================================================
 // LowerReadPlaceFieldAccess - Lower field access expression for reading
 // ============================================================================
@@ -170,6 +284,7 @@ LowerResult LowerReadPlaceFieldAccess(const ast::FieldAccessExpr& node,
                                        const ast::Expr& place,
                                        LowerCtx& ctx) {
   SPEC_RULE("Lower-ReadPlace-Field");
+  SPEC_RULE("rule.16.Lower-Expr-FieldAccess");
 
   // Field access in expressions is defined over arbitrary base expressions
   // (e.g. @result.value in postconditions), not just l-value places.
@@ -194,6 +309,13 @@ LowerResult LowerReadPlaceFieldAccess(const ast::FieldAccessExpr& node,
   info.base = base_result.value;
   info.field = node.name;
   ctx.RegisterDerivedValue(field_value, info);
+  RecordStateFieldLowering(
+      "read",
+      *node.base,
+      node.name,
+      "Field",
+      "DerivedValueInfo",
+      ctx);
 
   IRPtr key_ir = LowerImplicitKeyAccess(place, ast::KeyMode::Read, ctx);
   return LowerResult{SeqIR({base_result.ir, key_ir}), field_value};
@@ -276,6 +398,13 @@ IRPtr LowerWritePlaceFieldAccess(const ast::FieldAccessExpr& node,
   IRWritePtr write;
   write.ptr = ptr_value;
   write.value = value;
+  RecordStateFieldLowering(
+      "write",
+      *node.base,
+      node.name,
+      "AddrField",
+      "IRWritePtr",
+      ctx);
 
   // Update binding state after field assignment
   if (allow_drop) {

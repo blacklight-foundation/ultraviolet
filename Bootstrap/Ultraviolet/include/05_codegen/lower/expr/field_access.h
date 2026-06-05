@@ -21,7 +21,16 @@
 
 #include "05_codegen/lower/lower_expr.h"
 
+#include <string_view>
+
 namespace ultraviolet::codegen {
+
+void RecordStateFieldLowering(std::string_view operation,
+                              const ast::Expr& base_expr,
+                              std::string_view field_name,
+                              std::string_view derived_kind,
+                              std::string_view ir_shape,
+                              LowerCtx& ctx);
 
 // ============================================================================
 // LowerReadPlaceFieldAccess - Lower field access expression for reading

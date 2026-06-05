@@ -90,8 +90,13 @@ namespace
     {
       SPEC_DEF("T-CompoundAssign", "5.2.11");
       SPEC_DEF("Assign-NotPlace", "5.2.11");
+      SPEC_DEF("rule.18.Assign-NotPlace", "18.4.4");
       SPEC_DEF("Assign-Immutable-Err", "5.2.11");
+      SPEC_DEF("rule.18.Assign-Immutable-Err", "18.4.4");
       SPEC_DEF("Assign-Type-Err", "5.2.11");
+      SPEC_DEF("rule.18.Assign-Type-Err", "18.4.4");
+      SPEC_DEF("diag.18.AssignmentStatements", "18.4.7");
+      SPEC_DEF("diag.18.StatementDiagnosticsSupplement", "18.11");
     }
 
     static std::optional<std::string_view> PlaceRootName(const ast::ExprPtr &expr)
@@ -362,6 +367,9 @@ namespace
     if (!IsPlaceExpr(node.place))
     {
       SPEC_RULE("Assign-NotPlace");
+      SPEC_RULE("rule.18.Assign-NotPlace");
+      SPEC_RULE("diag.18.AssignmentStatements");
+      SPEC_RULE("diag.18.StatementDiagnosticsSupplement");
       return {false, "E-SEM-3131", {}, {}};
     }
 
@@ -436,6 +444,9 @@ namespace
           *root_mut.mut == ast::Mutability::Let)
       {
         SPEC_RULE("Assign-Immutable-Err");
+        SPEC_RULE("rule.18.Assign-Immutable-Err");
+        SPEC_RULE("diag.18.AssignmentStatements");
+        SPEC_RULE("diag.18.StatementDiagnosticsSupplement");
         return {false, "E-MOD-2401", {}, {}};
       }
     }
@@ -444,6 +455,9 @@ namespace
     if (!IsNumericType(assign_target_type))
     {
       SPEC_RULE("Assign-Type-Err");
+      SPEC_RULE("rule.18.Assign-Type-Err");
+      SPEC_RULE("diag.18.AssignmentStatements");
+      SPEC_RULE("diag.18.StatementDiagnosticsSupplement");
       return {false, "E-SEM-3133", {}, {}};
     }
 
@@ -464,12 +478,16 @@ namespace
     if (!sub.subtype)
     {
       SPEC_RULE("Assign-Type-Err");
+      SPEC_RULE("rule.18.Assign-Type-Err");
+      SPEC_RULE("diag.18.AssignmentStatements");
+      SPEC_RULE("diag.18.StatementDiagnosticsSupplement");
       return {false, "E-SEM-3133", {}, {}};
     }
 
     if (shared_write_with_key && type_ctx.diags)
     {
       SPEC_RULE("K-RMW-Permitted");
+      SPEC_RULE("rule.19.K-RMW-Contention-Warn");
       if (auto diag = core::MakeDiagnosticById("W-CON-0004", node.span))
       {
         core::Emit(*type_ctx.diags, *diag);

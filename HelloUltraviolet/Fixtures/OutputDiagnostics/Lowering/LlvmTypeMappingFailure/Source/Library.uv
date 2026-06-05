@@ -1,0 +1,11 @@
+//! Output-diagnostic specimen for undefined LLVM type mapping.
+
+internal class LlvmTypeMappingOpaqueClass {
+    internal procedure readTypeMappingValue(~) -> i32
+}
+
+public procedure llvmTypeMappingFailureReference(
+    value: opaque LlvmTypeMappingOpaqueClass
+) -> i32 {
+    return 24
+}

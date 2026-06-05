@@ -1,0 +1,38 @@
+//! Artifact fixture for expired dynamic receiver panic behavior.
+
+/// Dynamic class whose receiver evaluation must observe the underlying address state.
+public class DynamicReceiverExpiredReadable {
+    /// Reads the value through a dynamic receiver.
+    public procedure readExpiredDynamicValue(~) -> i32
+}
+
+/// Region-allocated owner used to force a dynamic receiver through an expired address.
+public record DynamicReceiverExpiredOwner <: DynamicReceiverExpiredReadable {
+    /// Value returned only if expired receiver evaluation fails to panic.
+    public value: i32
+
+    /// Reads the owner value.
+    public procedure readExpiredDynamicValue(~) -> i32 {
+        return self.value
+    }
+}
+
+/// Frees the region behind a dynamic receiver, then invokes the receiver.
+public procedure dynamicReceiverExpiredPanicValue() -> i32 {
+    let options: RegionOptions =
+        RegionOptions { stack_size: 0usize, name: "dynamic-receiver-expired" }
+    let opened: unique Region@Active = Region::new_scoped(options)
+    let owner: DynamicReceiverExpiredOwner =
+        opened~>alloc(DynamicReceiverExpiredOwner { value: 37 })
+    let dynamic_owner: $DynamicReceiverExpiredReadable =
+        owner as $DynamicReceiverExpiredReadable
+    let freed: unique Region@Freed = unsafe { opened~>free_unchecked() }
+    let _ = move freed
+    return dynamic_owner~>readExpiredDynamicValue()
+}
+
+/// Runs the expired receiver dispatch; the parent audit observes panic code 9.
+public procedure main(context: Context) -> i32 {
+    let _ = context
+    return dynamicReceiverExpiredPanicValue()
+}

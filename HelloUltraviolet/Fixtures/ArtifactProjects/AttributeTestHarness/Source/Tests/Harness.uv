@@ -1,0 +1,13 @@
+//! Artifact fixture for source-native test harness generation.
+
+#test(name: "attribute harness generation fixture")
+internal procedure attributeHarnessRecordsAuthority(authority: TestAuthority) -> bool
+|: |= @result
+{
+    let monotonic: $MonotonicTime = authority.time~>monotonic()
+    let resolution: Duration = monotonic~>resolution()
+    return !string::is_empty(authority.compiler_executable_path) &&
+        !string::is_empty(authority.temporary_directory) &&
+        !string::is_empty(authority.compiler_current_directory) &&
+        resolution.nanoseconds > 0u128
+}

@@ -1,7 +1,7 @@
 //! Rejected procedure specimens.
 
 public procedure proceduresRejectedSourceFixtureCount() -> usize {
-    return 47usize
+    return 48usize
 }
 
 public procedure validatedProceduresRejectedSourceFixtureCount() -> usize {
@@ -76,17 +76,34 @@ public procedure validatedProceduresRejectedSourceFixtureCount() -> usize {
     }
     if rejectedSpecimenMatches(
         rejectedSpecimen(
+            "MainSignature",
+            "Fixtures/RejectedSource/Procedures/MainSignature",
+            "Fixtures/RejectedSource/Procedures/MainSignature/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/MainSignature/Expected.uv",
+            expectedDiagnostic("E-MOD-2431", "NAA-2")
+        ),
+        "MainSignature",
+        "Fixtures/RejectedSource/Procedures/MainSignature",
+        "Fixtures/RejectedSource/Procedures/MainSignature/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/MainSignature/Expected.uv",
+        "E-MOD-2431",
+        "NAA-2"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
             "MissingReturnType",
             "Fixtures/RejectedSource/Procedures/MissingReturnType",
             "Fixtures/RejectedSource/Procedures/MissingReturnType/Source/Main.uv",
             "Fixtures/RejectedSource/Procedures/MissingReturnType/Expected.uv",
-            expectedDiagnostic("", "rule.15.WF-ProcedureDecl-MissingReturnType")
+            expectedDiagnostic("E-TYP-1508", "rule.15.WF-ProcedureDecl-MissingReturnType")
         ),
         "MissingReturnType",
         "Fixtures/RejectedSource/Procedures/MissingReturnType",
         "Fixtures/RejectedSource/Procedures/MissingReturnType/Source/Main.uv",
         "Fixtures/RejectedSource/Procedures/MissingReturnType/Expected.uv",
-        "",
+        "E-TYP-1508",
         "rule.15.WF-ProcedureDecl-MissingReturnType"
     ) {
         count = count + 1usize
@@ -318,13 +335,13 @@ public procedure validatedProceduresRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Procedures/ContractPredicateNonBool",
             "Fixtures/RejectedSource/Procedures/ContractPredicateNonBool/Source/Main.uv",
             "Fixtures/RejectedSource/Procedures/ContractPredicateNonBool/Expected.uv",
-            expectedDiagnostic("", "rule.15.WF-Contract")
+            expectedDiagnostic("E-SEM-2808", "rule.15.WF-Contract")
         ),
         "ContractPredicateNonBool",
         "Fixtures/RejectedSource/Procedures/ContractPredicateNonBool",
         "Fixtures/RejectedSource/Procedures/ContractPredicateNonBool/Source/Main.uv",
         "Fixtures/RejectedSource/Procedures/ContractPredicateNonBool/Expected.uv",
-        "",
+        "E-SEM-2808",
         "rule.15.WF-Contract"
     ) {
         count = count + 1usize
@@ -454,13 +471,13 @@ public procedure validatedProceduresRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Procedures/ReturnAnnotationPresence",
             "Fixtures/RejectedSource/Procedures/ReturnAnnotationPresence/Source/Main.uv",
             "Fixtures/RejectedSource/Procedures/ReturnAnnotationPresence/Expected.uv",
-            expectedDiagnostic("", "def.15.ReturnAnnOk")
+            expectedDiagnostic("E-TYP-1508", "def.15.ReturnAnnOk")
         ),
         "ReturnAnnotationPresence",
         "Fixtures/RejectedSource/Procedures/ReturnAnnotationPresence",
         "Fixtures/RejectedSource/Procedures/ReturnAnnotationPresence/Source/Main.uv",
         "Fixtures/RejectedSource/Procedures/ReturnAnnotationPresence/Expected.uv",
-        "",
+        "E-TYP-1508",
         "def.15.ReturnAnnOk"
     ) {
         count = count + 1usize

@@ -3,11 +3,15 @@
 // Canonical owner for LLVM IR async failure instruction lowering.
 // =============================================================================
 #include "../../ir_instruction_visitor.h"
+#include "04_analysis/typing/type_stmt.h"
 
 namespace ultraviolet::codegen::emit_detail {
 
 void IRInstructionVisitor::operator()(const IRAsyncFail &async_fail) const
 {
+  SPEC_RULE("rule.21.Lower-Async-Fail");
+  SPEC_RULE("requirement.21.AsyncFailureRuntimeSemantics");
+
   llvm::Value *wrapped_value = EvaluateOrDefault(async_fail.value);
   const LowerCtx *active_ctx = emitter.GetCurrentCtx();
   const analysis::ScopeContext &scope = BuildScope(active_ctx);
@@ -21,7 +25,7 @@ void IRInstructionVisitor::operator()(const IRAsyncFail &async_fail) const
   analysis::TypeRef error_type = async_fail.error_type;
   if (!error_type)
   {
-    if (const auto sig = analysis::GetAsyncSig(async_type))
+    if (const auto sig = analysis::AsyncSigOf(scope, async_type))
     {
       error_type = sig->err;
     }
@@ -50,9 +54,8 @@ void IRInstructionVisitor::operator()(const IRAsyncFail &async_fail) const
       builder.CreateStore(llvm::Constant::getNullValue(async_struct), async_slot);
 
       llvm::Type *disc_ty = async_struct->getElementType(0);
-      const auto lowered_async = ::ultraviolet::analysis::layout::LowerAsyncType(async_type);
       const AsyncStateDiscs async_discs =
-          LoweredAsyncStateDiscs(scope, lowered_async);
+          LoweredAsyncStateDiscs(scope, async_type);
       if (!async_discs.failed.has_value())
       {
         // Infallible asyncs have no concrete Failed arm. This path should
@@ -62,8 +65,9 @@ void IRInstructionVisitor::operator()(const IRAsyncFail &async_fail) const
                              llvm::Constant::getNullValue(async_struct));
         return;
       }
+      SPEC_RULE("requirement.21.AsyncFailStateIRSemantics");
       const std::uint64_t failed_disc = *async_discs.failed;
-      llvm::Value *disc_ptr = builder.CreateStructGEP(async_struct, async_slot, 0);
+      llvm::Value *disc_ptr = async_slot;
       llvm::Value *disc_val = llvm::ConstantInt::get(disc_ty, failed_disc);
       builder.CreateStore(disc_val, disc_ptr);
 
@@ -124,12 +128,12 @@ void IRInstructionVisitor::operator()(const IRAsyncFail &async_fail) const
                 dl.getTypeAllocSize(payload_value->getType()));
             if (copy_size > 0)
             {
-              builder.CreateMemCpy(
+              EmitAggMemcpy(
+                  emitter,
                   payload_i8,
-                  llvm::Align(1),
                   src_i8,
-                  llvm::Align(1),
-                  llvm::ConstantInt::get(i64_ty, copy_size));
+                  llvm::ConstantInt::get(i64_ty, copy_size),
+                  1);
             }
           }
         }

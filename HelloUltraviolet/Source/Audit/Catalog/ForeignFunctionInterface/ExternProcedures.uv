@@ -9,7 +9,7 @@ public procedure validatedForeignFunctionInterfaceExternProceduresObligations() 
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.23.ExternProcedureDecl",
-        87400usize,
+        87402usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIExternProceduresReference",
         "Source/Reference/FFI/ExternProcedures.uv"
@@ -18,7 +18,7 @@ public procedure validatedForeignFunctionInterfaceExternProceduresObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.23.Parse-ExternProcDecl",
-        87417usize,
+        87419usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIExternProceduresReference",
         "Source/Reference/FFI/ExternProcedures.uv"
@@ -27,7 +27,7 @@ public procedure validatedForeignFunctionInterfaceExternProceduresObligations() 
     }
     if acceptedObligationEntryMatches(
         "ast.23.ExternProcDeclForm",
-        87435usize,
+        87437usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIExternProceduresReference",
         "Source/Reference/FFI/ExternProcedures.uv"
@@ -36,7 +36,7 @@ public procedure validatedForeignFunctionInterfaceExternProceduresObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.23.ExternProcedureDerivedForms",
-        87452usize,
+        87454usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIExternProceduresReference",
         "Source/Reference/FFI/ExternProcedures.uv"
@@ -45,7 +45,7 @@ public procedure validatedForeignFunctionInterfaceExternProceduresObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.23.ExternProcedureMeaning",
-        87472usize,
+        87474usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIExternProceduresReference",
         "Source/Reference/FFI/ExternProcedures.uv"
@@ -54,34 +54,34 @@ public procedure validatedForeignFunctionInterfaceExternProceduresObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.23.ExternAbiStrings",
-        87485usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIExternProceduresReference",
-        "Source/Reference/FFI/ExternProcedures.uv"
+        87487usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.23.ExternSignatureRequirements",
-        87507usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIExternProceduresReference",
-        "Source/Reference/FFI/ExternProcedures.uv"
+        87509usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.23.ExternFfiConstraints",
-        87530usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIExternProceduresReference",
-        "Source/Reference/FFI/ExternProcedures.uv"
+        87532usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if rejectedSourceObligationEntryMatches(
         "requirement.23.ExternCallSafety",
-        87547usize,
+        87549usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedFFIRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/FFI/ExternCallSafety/Source/Main.uv"
@@ -90,25 +90,25 @@ public procedure validatedForeignFunctionInterfaceExternProceduresObligations() 
     }
     if acceptedObligationEntryMatches(
         "requirement.23.ExternDynamicSemantics",
-        87564usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIExternProceduresReference",
-        "Source/Reference/FFI/ExternProcedures.uv"
+        87566usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.23.ExternLowering",
-        87579usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIExternProceduresReference",
-        "Source/Reference/FFI/ExternProcedures.uv"
+        87581usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.23.ExternProcedureDiagnostics",
-        87594usize,
+        87596usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedFFIRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/FFI/ExternGenericSignature/Source/Main.uv"
@@ -117,7 +117,7 @@ public procedure validatedForeignFunctionInterfaceExternProceduresObligations() 
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.23.ExternProcedureDiagnosticOwnership",
-        87610usize,
+        87612usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedFFIRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/FFI/FfiPassByValueRequired/Source/Main.uv"

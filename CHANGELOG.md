@@ -2,11 +2,26 @@
 
 ## Unreleased
 
+- No unreleased changes.
+
+## 0.2.0-alpha - 2026-06-04
+
 - Added source-native diagnostic fixture execution checks so rejected-source and
   diagnostic-source coverage verifies real compiler results, not only fixture
   metadata.
 - Added source-native output-diagnostic fixture execution checks for command-line,
   project-manifest, and LLVM output failure diagnostics.
+- Added and repaired HelloUltraviolet obligation exercises across compiler
+  diagnostics, artifact generation, runtime execution, and reference-symbol
+  conformance surfaces.
+- Fixed target-platform aggregate ABI handling so compiler lowering delegates
+  platform-specific aggregate carriers to target policy instead of embedding
+  target conditionals in generic call lowering.
+- Fixed direct bitcode emission to follow the specification route: resolve
+  `llvm-as`, emit LLVM IR, assemble IR, and report the failing pipeline stage.
+- Fixed LLVM aggregate coercion alignment so emitted loads and stores preserve
+  Ultraviolet primitive and pointer alignment requirements on both Windows and
+  Linux targets.
 - Fixed unknown `uv` command handling so command-line parsing emits `E-CLI-0001`
   instead of treating the unknown command as a build input path.
 

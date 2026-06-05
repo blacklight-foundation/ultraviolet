@@ -118,6 +118,7 @@ RUNNABLE_EXECUTABLE_AUDIT_ARTIFACT_PROJECTS = frozenset({
 })
 CURRENT_TARGET_EXECUTABLE_AUDIT_ARTIFACT_PROJECTS = frozenset({
     "ExecutableOutput",
+    "EmitBcLibrary",
     "EmitLlLibrary",
 })
 EXECUTABLE_AUDIT_OUTPUT_DIAGNOSTICS = (
@@ -872,7 +873,50 @@ int main(int argc, char** argv) {
 """
 
 
-def build_windows_llvm_as_failure_shim(destination: Path) -> None:
+def cmake_cache_value(cache_path: Path, key: str) -> str | None:
+    if not cache_path.is_file():
+        return None
+
+    prefix = f"{key}:"
+    for line in cache_path.read_text(encoding="utf-8", errors="replace").splitlines():
+        if not line.startswith(prefix):
+            continue
+        _, _, value = line.partition("=")
+        return value.strip() or None
+    return None
+
+
+def windows_c_compiler(config: TargetConfig) -> str:
+    cache_path = config.compiler_path.parent.parent / "CMakeCache.txt"
+    configured = cmake_cache_value(cache_path, "CMAKE_C_COMPILER")
+    if configured:
+        return configured
+
+    discovered = shutil.which("cl")
+    if discovered:
+        return discovered
+
+    raise FileNotFoundError(
+        "could not find a Windows C compiler: CMAKE_C_COMPILER is missing from "
+        f"{cache_path} and cl.exe is not on PATH"
+    )
+
+
+def visual_studio_dev_command_for_compiler(compiler: str) -> Path | None:
+    compiler_path = Path(compiler)
+    for parent in compiler_path.parents:
+        if parent.name.lower() != "vc":
+            continue
+        candidate = parent.parent / "Common7" / "Tools" / "VsDevCmd.bat"
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def build_windows_llvm_as_failure_shim(
+    config: TargetConfig,
+    destination: Path,
+) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
     source_path = destination.with_name("llvm_as_failure_shim.c")
     object_path = destination.with_suffix(".obj")
@@ -881,25 +925,36 @@ def build_windows_llvm_as_failure_shim(destination: Path) -> None:
         encoding="utf-8",
         newline="\n",
     )
+    compiler = windows_c_compiler(config)
+    compile_command = [
+        compiler,
+        "/nologo",
+        "/O2",
+        f"/Fe:{destination}",
+        f"/Fo:{object_path}",
+        str(source_path),
+    ]
+    dev_command = visual_studio_dev_command_for_compiler(compiler)
+    if dev_command is not None:
+        compile_command = (
+            f'call "{dev_command}" -arch=x64 -host_arch=x64 >nul && '
+            f"{subprocess.list2cmdline(compile_command)}"
+        )
     result = subprocess.run(
-        [
-            "cl",
-            "/nologo",
-            "/O2",
-            f"/Fe:{destination}",
-            f"/Fo:{object_path}",
-            str(source_path),
-        ],
+        compile_command,
         cwd=destination.parent,
         check=False,
         capture_output=True,
+        shell=dev_command is not None,
         text=True,
         encoding="utf-8",
         errors="replace",
     )
     if result.returncode != 0:
         output = (result.stdout + result.stderr).strip()
-        raise RuntimeError(f"failed to build Windows llvm-as shim: {output}")
+        raise RuntimeError(
+            f"failed to build Windows llvm-as shim with {compiler}: {output}"
+        )
     remove_stale_tool(source_path)
     remove_stale_tool(object_path)
 
@@ -945,7 +1000,7 @@ def stage_emit_llvm_render_failure_tool(config: TargetConfig) -> list[Path]:
     if platform.system() == "Windows":
         remove_stale_tool(destination_dir / "llvm-as")
         destination = destination_dir / "llvm-as.exe"
-        build_windows_llvm_as_failure_shim(destination)
+        build_windows_llvm_as_failure_shim(config, destination)
         return [destination]
 
     destinations = (destination_dir / "llvm-as", destination_dir / "llvm-as.exe")
@@ -996,6 +1051,7 @@ def run_command(
     label: str,
     cwd: Path,
     command: Sequence[str],
+    target_profile: str,
 ) -> int:
     transcript.line()
     transcript.line(f"## Gate: {label}")
@@ -1003,10 +1059,13 @@ def run_command(
     transcript.line(f"## Command: {command_text(command)}")
 
     start = time.monotonic()
+    env = os.environ.copy()
+    env["HUV_TARGET_PROFILE"] = target_profile
     try:
         process = subprocess.Popen(
             command,
             cwd=cwd,
+            env=env,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
@@ -1035,7 +1094,13 @@ def run_verification_gate(
     config: TargetConfig,
 ) -> int:
     if gate.internal_action is None:
-        exit_code = run_command(transcript, gate.label, gate.cwd, gate.command)
+        exit_code = run_command(
+            transcript,
+            gate.label,
+            gate.cwd,
+            gate.command,
+            config.profile,
+        )
     else:
         exit_code = run_internal_gate(
             transcript,

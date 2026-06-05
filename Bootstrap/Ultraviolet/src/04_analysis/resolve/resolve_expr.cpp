@@ -250,6 +250,14 @@ static inline void SpecDefsResolverExpr() {
   SPEC_DEF("ResolveExprOpt", "5.1.7");
   SPEC_DEF("ResolveTypeOpt", "5.1.7");
   SPEC_DEF("ResolveTypeRef", "5.1.7");
+  SPEC_DEF("def.16.QualifiedNameResolution", "16.1.3");
+  SPEC_DEF("rule.16.Expr-Unresolved-Err", "16.1.4");
+  SPEC_DEF("req.16.QualifiedNameEliminatedBeforeTyping", "16.1.4");
+  SPEC_DEF("diag.16.LiteralAndNameExpressions", "16.1.7");
+  SPEC_DEF("diag.18.ExpressionStatements", "18.5.7");
+  SPEC_DEF("rule.18.T-UsingLocalStmt-Err", "18.3.4");
+  SPEC_DEF("diag.18.LocalUsingStatements", "18.3.7");
+  SPEC_DEF("diag.18.Region", "18.7.7");
 }
 
 struct ScopeGuard {
@@ -363,6 +371,8 @@ BindNamesResult BindPattern(ResolveContext& ctx,
     const auto key = IdKeyOf(name);
     if (!seen.insert(key).second) {
       SPEC_RULE("Pat-Dup-Err");
+      SPEC_RULE("Pat-Dup-R-Err");
+      SPEC_RULE("rule.17.Pat-Dup-R-Err");
       return {false, "Pat-Dup-Err", pat->span};
     }
   }
@@ -1075,6 +1085,12 @@ ResExprResult ResolveExpr(ResolveContext& ctx,
             const std::string detail =
                 QualifiedNameDetail(node.path, node.name);
             SPEC_RULE("ResolveExpr-Qualified-Err");
+            if constexpr (std::is_same_v<T, ast::QualifiedNameExpr>) {
+              SPEC_RULE("def.16.QualifiedNameResolution");
+              SPEC_RULE("rule.16.Expr-Unresolved-Err");
+              SPEC_RULE("req.16.QualifiedNameEliminatedBeforeTyping");
+              SPEC_RULE("diag.16.LiteralAndNameExpressions");
+            }
             return {false, diag, expr->span, {}, detail};
           }
           SPEC_RULE("ResolveExpr-Qualified");
@@ -1460,6 +1476,9 @@ ResExprResult ResolveExpr(ResolveContext& ctx,
                 alloc.region_opt = ident;
                 alloc.value = resolved_rhs.value;
                 SPEC_RULE("ResolveExpr-Alloc-Explicit-ByAlias");
+                SPEC_RULE("req.16.RegionAliasAllocRewrite");
+                SPEC_RULE("rule.16.ResolveExpr-Alloc-Explicit-ByAlias");
+                SPEC_RULE("def.16.EffectfulCoreExprAst");
                 return {true, std::nullopt, std::nullopt,
                         MakeExpr(expr->span, alloc)};
               }
@@ -2129,12 +2148,16 @@ ResolveStmtResult ResolveStmt(ResolveContext& ctx,
           auto out = node;
           const auto ent = ResolveValueName(*ctx.ctx, node.source);
           if (!ent.has_value()) {
+            SPEC_RULE("rule.18.T-UsingLocalStmt-Err");
+            SPEC_RULE("diag.18.LocalUsingStatements");
             return {false, "ResolveExpr-Ident-Err", node.span, {}};
           }
           RecordLanguageServiceReference(ctx.language_service, *ctx.ctx,
                                          node.source, node.span, *ent);
           const auto res = Intro(*ctx.ctx, node.alias, *ent);
           if (!res.ok) {
+            SPEC_RULE("rule.18.T-UsingLocalStmt-Err");
+            SPEC_RULE("diag.18.LocalUsingStatements");
             return {false, res.diag_id, node.span, {}};
           }
           SPEC_RULE("ResolveStmt-UsingLocal");
@@ -2178,6 +2201,7 @@ ResolveStmtResult ResolveStmt(ResolveContext& ctx,
           auto out = node;
           const auto opts = ResolveExprOpt(ctx, node.opts_opt);
           if (!opts.ok) {
+            SPEC_RULE("diag.18.Region");
             return {false, opts.diag_id, opts.span, {},
                     opts.diag_detail, opts.diag_children};
           }
@@ -2185,6 +2209,7 @@ ResolveStmtResult ResolveStmt(ResolveContext& ctx,
           std::optional<Scope> saved_scope;
           if (node.alias_opt) {
             if (!ctx.ctx || ctx.ctx->scopes.empty()) {
+              SPEC_RULE("diag.18.Region");
               return {false, "ResolveExpr-Ident-Err", node.span, {},
                       "unresolved name '" + *node.alias_opt + "'"};
             }
@@ -2195,12 +2220,14 @@ ResolveStmtResult ResolveStmt(ResolveContext& ctx,
             alias_entity.source = EntitySource::RegionAlias;
             const auto res = Intro(*ctx.ctx, *node.alias_opt, alias_entity);
             if (!res.ok) {
+              SPEC_RULE("diag.18.Region");
               return {false, res.diag_id, node.span, {}};
             }
           }
           if (node.body) {
             const auto resolved = ResolveBlock(ctx, *node.body);
             if (!resolved.ok) {
+              SPEC_RULE("diag.18.Region");
               return {false, resolved.diag_id, resolved.span, {},
                       resolved.diag_detail, resolved.diag_children};
             }
@@ -2245,6 +2272,7 @@ ResolveStmtResult ResolveStmt(ResolveContext& ctx,
           auto out = node;
           const auto value = ResolveExpr(ctx, node.value);
           if (!value.ok) {
+            SPEC_RULE("diag.18.ExpressionStatements");
             return {false, value.diag_id, value.span, {},
                     value.diag_detail, value.diag_children};
           }

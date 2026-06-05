@@ -12,7 +12,33 @@ internal type BuiltinOpenDirResultName = Outcome<DirIter@Open, IoError>
 
 internal type BuiltinDirEntryName = DirEntry
 
-internal procedure ioErrorVariantIsKnown(error: IoError) -> bool {
+internal type BuiltinFileReadName = File@Read
+
+internal type BuiltinDirIterOpenName = DirIter@Open
+
+internal type BuiltinFileKindName = FileKind
+
+internal type BuiltinIoErrorName = IoError
+
+internal type BuiltinAllocationErrorName = AllocationError
+
+internal type BuiltinTimeErrorName = TimeError
+
+internal type BuiltinDurationName = Duration
+
+internal type BuiltinMonotonicInstantName = MonotonicInstant
+
+internal type BuiltinUtcInstantName = UtcInstant
+
+internal type BuiltinContextName = Context
+
+internal type BuiltinSystemName = System
+
+internal type BuiltinCpuSetName = CpuSet
+
+internal type BuiltinPriorityName = Priority
+
+internal procedure ioErrorVariantIsKnown(error: BuiltinIoErrorName) -> bool {
     return if error is {
         IoError::NotFound {
             true
@@ -38,7 +64,7 @@ internal procedure ioErrorVariantIsKnown(error: IoError) -> bool {
     }
 }
 
-internal procedure fileKindVariantIsKnown(kind: FileKind) -> bool {
+internal procedure fileKindVariantIsKnown(kind: BuiltinFileKindName) -> bool {
     return if kind is {
         FileKind::File {
             true
@@ -52,7 +78,18 @@ internal procedure fileKindVariantIsKnown(kind: FileKind) -> bool {
     }
 }
 
-internal procedure timeErrorVariantIsKnown(error: TimeError) -> bool {
+internal procedure allocationErrorVariantIsKnown(error: BuiltinAllocationErrorName) -> bool {
+    return if error is {
+        AllocationError::OutOfMemory(size) {
+            size == 1usize
+        }
+        AllocationError::QuotaExceeded(size) {
+            size == 2usize
+        }
+    }
+}
+
+internal procedure timeErrorVariantIsKnown(error: BuiltinTimeErrorName) -> bool {
     return if error is {
         TimeError::Unsupported {
             true
@@ -72,6 +109,56 @@ internal procedure timeErrorVariantIsKnown(error: TimeError) -> bool {
     }
 }
 
+internal procedure priorityVariantIsKnown(priority: BuiltinPriorityName) -> bool {
+    return if priority is {
+        Priority::Low {
+            true
+        }
+        Priority::Normal {
+            true
+        }
+        Priority::High {
+            true
+        }
+    }
+}
+
+internal procedure timeErrorDeclarationObserved() -> bool {
+    return timeErrorVariantIsKnown(TimeError::Unsupported) &&
+        timeErrorVariantIsKnown(TimeError::ClockUnavailable) &&
+        timeErrorVariantIsKnown(TimeError::OutOfRange) &&
+        timeErrorVariantIsKnown(TimeError::InvalidResolution) &&
+        timeErrorVariantIsKnown(TimeError::ClockMismatch)
+}
+
+internal procedure durationDeclarationObserved() -> bool {
+    let duration: BuiltinDurationName = Duration { nanoseconds: 7u128 }
+    return duration.nanoseconds == 7u128
+}
+
+internal procedure utcInstantDeclarationObserved() -> bool {
+    let instant: BuiltinUtcInstantName = UtcInstant { unix_nanoseconds: 0i128 }
+    return instant.unix_nanoseconds == 0i128
+}
+
+internal procedure monotonicInstantDeclarationObserved(
+    instant: BuiltinMonotonicInstantName
+) -> bool {
+    let _ = instant
+    return sizeof(BuiltinMonotonicInstantName) > 0usize
+}
+
+internal procedure allocationErrorDeclarationObserved() -> bool {
+    return allocationErrorVariantIsKnown(AllocationError::OutOfMemory(1usize)) &&
+        allocationErrorVariantIsKnown(AllocationError::QuotaExceeded(2usize))
+}
+
+internal procedure priorityDeclarationObserved() -> bool {
+    return priorityVariantIsKnown(Priority::Low) &&
+        priorityVariantIsKnown(Priority::Normal) &&
+        priorityVariantIsKnown(Priority::High)
+}
+
 internal procedure ioCapabilityCanSeePath(
     io: BuiltinIOCapabilityName,
     path: string@View
@@ -79,8 +166,58 @@ internal procedure ioCapabilityCanSeePath(
     return io~>exists(path)
 }
 
+internal procedure builtinFileReadObserved(
+    move result: Outcome<unique BuiltinFileReadName, BuiltinIoErrorName>
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let text: Outcome<unique string@Managed, BuiltinIoErrorName> =
+                value~>read_all()
+            let closed: File@Closed = value~>close()
+            let _ = closed
+            readableTextObserved(move text)
+        }
+        @Error { error } {
+            ioErrorVariantIsKnown(error)
+        }
+    }
+}
+
+internal procedure builtinDirIterObserved(
+    move result: Outcome<unique BuiltinDirIterOpenName, BuiltinIoErrorName>
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let first: Outcome<BuiltinDirEntryName | (), BuiltinIoErrorName> =
+                value~>next()
+            let closed: DirIter@Closed = value~>close()
+            let _ = closed
+            return if first is {
+                @Value { value: first_value } {
+                    return if first_value is {
+                        entry: BuiltinDirEntryName {
+                            string::length(string::as_view(entry.name)) > 0usize &&
+                                string::length(string::as_view(entry.path)) > 0usize &&
+                                fileKindVariantIsKnown(entry.kind)
+                        }
+                        empty: () {
+                            false
+                        }
+                    }
+                }
+                @Error { error } {
+                    ioErrorVariantIsKnown(error)
+                }
+            }
+        }
+        @Error { error } {
+            ioErrorVariantIsKnown(error)
+        }
+    }
+}
+
 internal procedure readableTextObserved(
-    move result: Outcome<unique string@Managed, IoError>
+    move result: Outcome<unique string@Managed, BuiltinIoErrorName>
 ) -> bool {
     return if move result is {
         @Value { value } {
@@ -94,7 +231,7 @@ internal procedure readableTextObserved(
 }
 
 internal procedure missingTextObserved(
-    move result: Outcome<unique string@Managed, IoError>
+    move result: Outcome<unique string@Managed, BuiltinIoErrorName>
 ) -> bool {
     return if move result is {
         @Value {
@@ -106,11 +243,13 @@ internal procedure missingTextObserved(
     }
 }
 
-internal procedure durationIsResolved(duration: Duration) -> bool {
+internal procedure durationIsResolved(duration: BuiltinDurationName) -> bool {
     return duration.nanoseconds >= 0u128
 }
 
-internal procedure elapsedOutcomeObserved(result: Outcome<Duration, TimeError>) -> bool {
+internal procedure elapsedOutcomeObserved(
+    result: Outcome<BuiltinDurationName, BuiltinTimeErrorName>
+) -> bool {
     return if result is {
         @Value { value } {
             durationIsResolved(value)
@@ -121,7 +260,9 @@ internal procedure elapsedOutcomeObserved(result: Outcome<Duration, TimeError>) 
     }
 }
 
-internal procedure wallInstantOutcomeObserved(result: Outcome<UtcInstant, TimeError>) -> bool {
+internal procedure wallInstantOutcomeObserved(
+    result: Outcome<BuiltinUtcInstantName, BuiltinTimeErrorName>
+) -> bool {
     return if result is {
         @Value {
             true
@@ -132,7 +273,9 @@ internal procedure wallInstantOutcomeObserved(result: Outcome<UtcInstant, TimeEr
     }
 }
 
-internal procedure wallCoarsenOutcomeObserved(result: Outcome<$WallTime, TimeError>) -> bool {
+internal procedure wallCoarsenOutcomeObserved(
+    result: Outcome<$WallTime, BuiltinTimeErrorName>
+) -> bool {
     return if result is {
         @Value {
             true
@@ -141,32 +284,69 @@ internal procedure wallCoarsenOutcomeObserved(result: Outcome<$WallTime, TimeErr
             timeErrorVariantIsKnown(error)
         }
     }
+}
+
+internal procedure builtinSystemDeclarationObserved(sys: BuiltinSystemName) -> bool {
+    return string::length(sys~>current_directory()) > 0usize
+}
+
+internal procedure builtinContextDeclarationObserved(context: BuiltinContextName) -> bool {
+    let sys: BuiltinSystemName = context.sys
+    let affinity: BuiltinCpuSetName = 1u64
+    let priority: BuiltinPriorityName = Priority::Normal
+    let domain: $ExecutionDomain = context~>cpu(affinity, priority)
+    let _ = context.io
+    let _ = context.net
+    let _ = context.heap
+    let _ = context.reactor
+    let _ = context.time
+    return builtinSystemDeclarationObserved(sys) &&
+        priorityVariantIsKnown(priority) &&
+        string::length(domain~>name()) > 0usize
 }
 
 /// Exercises the Authority built-in IO and time type-name surface.
-public procedure runAuthorityBuiltinTypeNamesReference(context: Context) -> bool {
+public procedure runAuthorityBuiltinTypeNamesReference(context: BuiltinContextName) -> bool {
     let io: BuiltinIOCapabilityName = context.io
-    let readable: Outcome<unique string@Managed, IoError> = io~>read_file(
+    let readable: Outcome<unique string@Managed, BuiltinIoErrorName> = io~>read_file(
         "HelloUltraviolet/Source/Reference/Authority/Time.uv"
     )
-    let missing: Outcome<unique string@Managed, IoError> = io~>read_file(
+    let open_read: Outcome<unique BuiltinFileReadName, BuiltinIoErrorName> =
+        io~>open_read("HelloUltraviolet/Source/Reference/Authority/Time.uv")
+    let open_dir: Outcome<unique BuiltinDirIterOpenName, BuiltinIoErrorName> =
+        io~>open_dir("HelloUltraviolet/Source/Reference/Authority")
+    let missing: Outcome<unique string@Managed, BuiltinIoErrorName> = io~>read_file(
         "HelloUltraviolet/Source/Reference/Authority/__MissingBuiltinTypeNames.uv"
     )
 
     let monotonic: $MonotonicTime = context.time~>monotonic()
     let wall: $WallTime = context.time~>wall()
-    let start: MonotonicInstant = monotonic~>now()
-    let end: MonotonicInstant = monotonic~>now()
-    let resolution: Duration = monotonic~>resolution()
-    let elapsed: Outcome<Duration, TimeError> = monotonic~>elapsed(start, end)
-    let wall_now: Outcome<UtcInstant, TimeError> = wall~>now_utc()
-    let coarsened_wall: Outcome<$WallTime, TimeError> = wall~>coarsen(resolution)
+    let start: BuiltinMonotonicInstantName = monotonic~>now()
+    let end: BuiltinMonotonicInstantName = monotonic~>now()
+    let resolution: BuiltinDurationName = monotonic~>resolution()
+    let elapsed: Outcome<BuiltinDurationName, BuiltinTimeErrorName> =
+        monotonic~>elapsed(start, end)
+    let wall_now: Outcome<BuiltinUtcInstantName, BuiltinTimeErrorName> =
+        wall~>now_utc()
+    let coarsened_wall: Outcome<$WallTime, BuiltinTimeErrorName> =
+        wall~>coarsen(resolution)
 
     return ioCapabilityCanSeePath(io, "HelloUltraviolet") &&
         readableTextObserved(move readable) &&
+        builtinFileReadObserved(move open_read) &&
+        builtinDirIterObserved(move open_dir) &&
         missingTextObserved(move missing) &&
+        fileKindVariantIsKnown(FileKind::File) &&
         fileKindVariantIsKnown(FileKind::Dir) &&
+        fileKindVariantIsKnown(FileKind::Other) &&
         ioErrorVariantIsKnown(IoError::DirectoryNotEmpty) &&
+        allocationErrorDeclarationObserved() &&
+        timeErrorDeclarationObserved() &&
+        durationDeclarationObserved() &&
+        monotonicInstantDeclarationObserved(start) &&
+        utcInstantDeclarationObserved() &&
+        priorityDeclarationObserved() &&
+        builtinContextDeclarationObserved(context) &&
         durationIsResolved(resolution) &&
         elapsedOutcomeObserved(elapsed) &&
         wallInstantOutcomeObserved(wall_now) &&

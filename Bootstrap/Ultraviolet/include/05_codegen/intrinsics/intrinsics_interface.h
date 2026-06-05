@@ -63,6 +63,8 @@ enum class RuntimeSymbolCategory {
   HeapAllocator,
   /// System capability
   System,
+  /// Reactor capability
+  Reactor,
   /// Time capability
   Time,
   /// ExecutionDomain capability

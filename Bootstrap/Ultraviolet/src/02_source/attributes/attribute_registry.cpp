@@ -25,6 +25,7 @@
 
 #include "00_core/assert_spec.h"
 #include "00_core/compiler_support.h"
+#include "00_core/spec_trace.h"
 #include "01_project/language_profile.h"
 
 #ifndef UV_DEFAULT_OBLIGATION_LEDGER_PATH
@@ -113,6 +114,10 @@ static bool ValidateDeriveAttributeArgs(const ast::AttributeItem& attr,
     seen_targets.push_back(token->lexeme);
   }
 
+  core::Conformance::Record(
+      "requirement.22.DeriveAttributeParsingReference",
+      attr.span,
+      "source=ValidateDeriveAttributeArgs;attribute=derive;args=validated");
   return true;
 }
 
@@ -266,6 +271,7 @@ static bool ValidateTestAttributeArgs(const ast::AttributeItem& attr,
   if (attr.name != attrs::kTest) {
     return true;
   }
+  SPEC_RULE("def.TestAttributeArgsOk");
 
   bool saw_name = false;
   for (const auto& arg : attr.args) {
@@ -390,6 +396,15 @@ static bool IsKnownLibraryKind(std::string_view kind) {
 static bool IsIntLayoutKind(std::string_view value) {
   return value == "i8" || value == "i16" || value == "i32" || value == "i64" ||
          value == "u8" || value == "u16" || value == "u32" || value == "u64";
+}
+
+static void RecordVendorAttributeLoweringRejection(
+    const ast::AttributeItem& attr) {
+  core::Conformance::Record(
+      "conformance.VendorAttributeLowering",
+      attr.span,
+      "source=ValidateAttributes;registered_vendor_attributes=0;"
+      "lowering_rules=none;rejected_before_lowering=true");
 }
 
 // Class/record methods are validated against procedure-target attributes for
@@ -649,8 +664,10 @@ AttributeValidationResult ValidateAttributes(
     if (!spec) {
       result.ok = false;
       if (attr.name.rfind(ReservedAttributePrefix(), 0) == 0) {
+        RecordVendorAttributeLoweringRejection(attr);
         result.diag_id = "E-CNF-0402";
       } else {
+        SPEC_RULE("AttrList-Unknown");
         result.diag_id = "E-MOD-2451";  // Unknown attribute name
       }
       result.span = attr.span;
@@ -678,6 +695,13 @@ AttributeValidationResult ValidateAttributes(
       } else if (attr.name == ::ultraviolet::analysis::attrs::kLibrary) {
         result.diag_id = "E-SYS-3345";
       } else {
+        if (attr.name == ::ultraviolet::analysis::attrs::kTest) {
+          SPEC_RULE("req.TestAttributeProcedureTarget");
+        }
+        if (attr.name == ::ultraviolet::analysis::attrs::kLayout) {
+          SPEC_RULE("def.LayoutAttributeApplicability");
+        }
+        SPEC_RULE("AttrList-Target-Err");
         result.diag_id = "E-MOD-2452";  // Attribute not valid on target declaration kind
       }
       result.span = attr.span;
@@ -720,6 +744,7 @@ AttributeValidationResult ValidateAttributes(
       for (const auto& arg : attr.args) {
         if (arg.key.has_value()) {
           if (*arg.key != "align") {
+            SPEC_RULE("req.LayoutAttributeConstraints");
             result.ok = false;
             result.diag_id = "E-MOD-2450";
             result.span = attr.span;
@@ -730,6 +755,7 @@ AttributeValidationResult ValidateAttributes(
           const auto* nested =
               std::get_if<std::vector<ast::AttributeArg>>(&arg.value);
           if (!nested || nested->size() != 1 || (*nested)[0].key.has_value()) {
+            SPEC_RULE("req.LayoutAttributeConstraints");
             result.ok = false;
             result.diag_id = "E-MOD-2450";
             result.span = attr.span;
@@ -741,6 +767,7 @@ AttributeValidationResult ValidateAttributes(
           if (!token || token->kind != lexer::TokenKind::IntLiteral ||
               !ParseU64Literal(*token, alignment) ||
               !IsPowerOfTwo(alignment)) {
+            SPEC_RULE("req.LayoutAttributeConstraints");
             result.ok = false;
             result.diag_id = "E-MOD-2453";
             result.span = attr.span;
@@ -748,6 +775,8 @@ AttributeValidationResult ValidateAttributes(
             return result;
           }
           if (saw_align) {
+            SPEC_RULE("def.InvalidLayoutAttributeCombinations");
+            SPEC_RULE("req.LayoutAttributeConstraints");
             result.ok = false;
             result.diag_id = "E-MOD-2455";
             result.span = attr.span;
@@ -760,6 +789,7 @@ AttributeValidationResult ValidateAttributes(
 
         const auto* token = std::get_if<ast::Token>(&arg.value);
         if (!token) {
+          SPEC_RULE("req.LayoutAttributeConstraints");
           result.ok = false;
           result.diag_id = "E-MOD-2450";
           result.span = attr.span;
@@ -770,6 +800,8 @@ AttributeValidationResult ValidateAttributes(
         const auto value = NormalizeAttrLiteral(token->lexeme);
         if (value == "C") {
           if (saw_c) {
+            SPEC_RULE("def.InvalidLayoutAttributeCombinations");
+            SPEC_RULE("req.LayoutAttributeConstraints");
             result.ok = false;
             result.diag_id = "E-MOD-2455";
             result.span = attr.span;
@@ -781,6 +813,8 @@ AttributeValidationResult ValidateAttributes(
         }
         if (value == "packed") {
           if (saw_packed) {
+            SPEC_RULE("def.InvalidLayoutAttributeCombinations");
+            SPEC_RULE("req.LayoutAttributeConstraints");
             result.ok = false;
             result.diag_id = "E-MOD-2455";
             result.span = attr.span;
@@ -792,6 +826,8 @@ AttributeValidationResult ValidateAttributes(
         }
         if (IsIntLayoutKind(value)) {
           if (saw_discriminant) {
+            SPEC_RULE("def.InvalidLayoutAttributeCombinations");
+            SPEC_RULE("req.LayoutAttributeConstraints");
             result.ok = false;
             result.diag_id = "E-MOD-2455";
             result.span = attr.span;
@@ -802,6 +838,7 @@ AttributeValidationResult ValidateAttributes(
           continue;
         }
 
+        SPEC_RULE("req.LayoutAttributeConstraints");
         result.ok = false;
         result.diag_id = "E-MOD-2450";
         result.span = attr.span;
@@ -810,6 +847,7 @@ AttributeValidationResult ValidateAttributes(
       }
 
       if (!saw_c && !saw_packed && !saw_align && !saw_discriminant) {
+        SPEC_RULE("req.LayoutAttributeConstraints");
         result.ok = false;
         result.diag_id = "E-MOD-2450";
         result.span = attr.span;
@@ -818,6 +856,8 @@ AttributeValidationResult ValidateAttributes(
         return result;
       }
       if (saw_packed && target != AttributeTarget::Record) {
+        SPEC_RULE("def.LayoutAttributeApplicability");
+        SPEC_RULE("req.LayoutAttributeConstraints");
         result.ok = false;
         result.diag_id = "E-MOD-2454";
         result.span = attr.span;
@@ -825,6 +865,8 @@ AttributeValidationResult ValidateAttributes(
         return result;
       }
       if (saw_discriminant && target != AttributeTarget::Enum) {
+        SPEC_RULE("def.LayoutAttributeApplicability");
+        SPEC_RULE("req.LayoutAttributeConstraints");
         result.ok = false;
         result.diag_id = "E-MOD-2455";
         result.span = attr.span;
@@ -832,6 +874,8 @@ AttributeValidationResult ValidateAttributes(
         return result;
       }
       if (saw_packed && saw_align) {
+        SPEC_RULE("def.InvalidLayoutAttributeCombinations");
+        SPEC_RULE("req.LayoutAttributeConstraints");
         result.ok = false;
         result.diag_id = "E-MOD-2455";
         result.span = attr.span;
@@ -839,11 +883,23 @@ AttributeValidationResult ValidateAttributes(
         return result;
       }
       if (saw_discriminant && (saw_c || saw_packed || saw_align)) {
+        SPEC_RULE("def.InvalidLayoutAttributeCombinations");
+        SPEC_RULE("req.LayoutAttributeConstraints");
         result.ok = false;
         result.diag_id = "E-MOD-2455";
         result.span = attr.span;
         result.message = "Conflicting layout arguments";
         return result;
+      }
+      SPEC_RULE("def.ValidLayoutAttributeCombinations");
+      if (saw_discriminant) {
+        SPEC_RULE("req.LayoutExplicitEnumDiscriminant");
+      }
+      if (saw_packed) {
+        SPEC_RULE("req.LayoutPackedRecordSemantics");
+      }
+      if (saw_align) {
+        SPEC_RULE("req.LayoutAlignSemantics");
       }
     }
 

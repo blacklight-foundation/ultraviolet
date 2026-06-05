@@ -179,7 +179,8 @@ ParseElemResult<IfCaseClause> ParseIfCaseClause(Parser parser) {
     IfCaseClause clause;
     clause.pattern = full_pattern.elem;
     clause.body = body.elem;
-    return {body.parser, std::move(clause)};
+    Parser merged = MergeDiag(parser, body.parser, body.parser);
+    return {merged, std::move(clause)};
   }
 
   if (std::optional<ParseElemResult<PatternPtr>> fallback =
@@ -189,11 +190,13 @@ ParseElemResult<IfCaseClause> ParseIfCaseClause(Parser parser) {
     IfCaseClause clause;
     clause.pattern = fallback->elem;
     clause.body = body.elem;
-    return {body.parser, std::move(clause)};
+    Parser merged = MergeDiag(parser, body.parser, body.parser);
+    return {merged, std::move(clause)};
   }
 
-  EmitParseSyntaxErr(full_pattern.parser, TokSpan(full_pattern.parser));
-  return {full_pattern.parser, IfCaseClause{}};
+  Parser merged = MergeDiag(parser, full_pattern.parser, full_pattern.parser);
+  EmitParseSyntaxErr(merged, TokSpan(merged));
+  return {merged, IfCaseClause{}};
 }
 
 IfCaseListResult ParseIfCaseList(Parser parser) {

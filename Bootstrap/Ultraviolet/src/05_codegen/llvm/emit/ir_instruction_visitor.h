@@ -172,9 +172,17 @@ struct IRInstructionVisitor
 
   void operator()(const IRWait &wait) const;
 
+  void operator()(const IRCancelCreate &create) const;
+
+  void operator()(const IRCancelRequest &request) const;
+
+  void operator()(const IRCancelWait &wait) const;
+
   void operator()(const IRCancelCheck &check) const;
 
   void operator()(const IRCancelSuppress &) const;
+
+  void operator()(const IRGpuBarrier &barrier) const;
 
   void operator()(const IRDispatch &dispatch) const;
 

@@ -20,6 +20,7 @@
 #include "05_codegen/globals/literal_emit.h"
 #include "05_codegen/intrinsics/intrinsics_interface.h"
 #include "04_analysis/layout/layout.h"
+#include "05_codegen/ir/ir_model.h"
 #include "05_codegen/lower/lower_module.h"
 #include "05_codegen/llvm/llvm_attr.h"
 #include "05_codegen/llvm/llvm_call.h"
@@ -48,6 +49,7 @@
 #include <chrono>
 #include <cstdio>
 #include <iostream>
+#include <optional>
 #include <set>
 #include <string>
 #include <unordered_set>
@@ -57,10 +59,104 @@ namespace ultraviolet::codegen {
 
 using namespace emit_detail;
 
+namespace {
+
+const char *BoolPayload(bool value)
+{
+  return value ? "true" : "false";
+}
+
+void AppendPayloadField(std::string &payload, std::string_view name, bool value)
+{
+  payload += ";";
+  payload += name;
+  payload += "=";
+  payload += BoolPayload(value);
+}
+
+void RecordLLVMUBSafetyConformance(const llvm::Module &module)
+{
+  if (!core::Conformance::Enabled())
+  {
+    return;
+  }
+
+  const bool no_undef_poison = NoUndefPoison(module);
+  const bool checked_overflow = CheckedOverflow(module);
+  const bool checked_div_rem = CheckedDivRem(module);
+  const bool checked_shifts = CheckedShifts(module);
+  const bool frozen_poison_uses = FrozenPoisonUses(module);
+  const bool inbounds_gep = InboundsGEP(module);
+  const bool no_nsw_nuw = NoNSWNUW(module);
+  const bool llvm_ub_safe =
+      no_undef_poison &&
+      checked_overflow &&
+      checked_div_rem &&
+      checked_shifts &&
+      frozen_poison_uses &&
+      inbounds_gep &&
+      no_nsw_nuw;
+
+  std::string payload = "source=EmitModule";
+  AppendPayloadField(payload, "no_undef_poison", no_undef_poison);
+  AppendPayloadField(payload, "checked_overflow", checked_overflow);
+  AppendPayloadField(payload, "checked_div_rem", checked_div_rem);
+  AppendPayloadField(payload, "checked_shifts", checked_shifts);
+  AppendPayloadField(payload, "frozen_poison_uses", frozen_poison_uses);
+  AppendPayloadField(payload, "inbounds_gep", inbounds_gep);
+  AppendPayloadField(payload, "no_nsw_nuw", no_nsw_nuw);
+  AppendPayloadField(payload, "llvm_ub_safe", llvm_ub_safe);
+  core::Conformance::Record(
+      "def.24.LLVMUBAndPoisonAvoidance", std::nullopt, payload);
+}
+
+const char *InlineModePayload(IRInlineMode mode)
+{
+  switch (mode)
+  {
+  case IRInlineMode::Default:
+    return "default";
+  case IRInlineMode::Always:
+    return "always";
+  case IRInlineMode::Never:
+    return "never";
+  }
+  return "unknown";
+}
+
+void RecordOptimizationAttributeLowering(const ProcIR &proc,
+                                         const llvm::Function &function)
+{
+  if (proc.inline_mode == IRInlineMode::Default && !proc.cold)
+  {
+    return;
+  }
+
+  std::string payload = "source=ApplyProcFunctionAttrs;symbol=" +
+      proc.symbol + ";inline_mode=" + InlineModePayload(proc.inline_mode) +
+      ";cold=" + BoolPayload(proc.cold) + ";llvm_alwaysinline=" +
+      BoolPayload(function.hasFnAttribute(llvm::Attribute::AlwaysInline)) +
+      ";llvm_noinline=" +
+      BoolPayload(function.hasFnAttribute(llvm::Attribute::NoInline)) +
+      ";llvm_cold=" +
+      BoolPayload(function.hasFnAttribute(llvm::Attribute::Cold)) +
+      ";body_emitted=true";
+  core::Conformance::Record(
+      "conformance.OptimizationAttributeLowering", std::nullopt, payload);
+}
+
+}  // namespace
+
   llvm::Module *LLVMEmitter::EmitModule(const IRDecls &decls, LowerCtx &ctx)
   {
     SPEC_RULE("LowerIR-Module");
     SPEC_RULE("EmitLLVM-Ok");
+    SPEC_RULE("rule.24.LowerIR-Module");
+    SPEC_RULE("rule.24.EmitLLVM-Ok");
+    core::Conformance::Record(
+        "def.24.IRFormsAndEmissionJudgements",
+        std::nullopt,
+        "source=EmitModule;forms=IRDecls,LLVMIR;emission=module");
     current_ctx_ = &ctx;
     using Clock = std::chrono::steady_clock;
 
@@ -87,8 +183,23 @@ using namespace emit_detail;
         decl_perf{};
 
     IRDecls expanded_decls = ExpandIR(decls, ctx);
+    if (!ValidateModuleIR(expanded_decls))
+    {
+      current_ctx_->ReportCodegenFailure();
+    }
+    core::Conformance::Record(
+        "def.24.ExpandIR",
+        std::nullopt,
+        "source=EmitModule;input_decls=" + std::to_string(decls.size()) +
+            ";expanded_decls=" + std::to_string(expanded_decls.size()));
 
-    if (!UniqueEmits(expanded_decls) && current_ctx_)
+    const bool unique_emits = UniqueEmits(expanded_decls);
+    core::Conformance::Record(
+        "def.24.UniqueEmits",
+        std::nullopt,
+        std::string("source=EmitModule;unique=") +
+            (unique_emits ? "true" : "false"));
+    if (!unique_emits && current_ctx_)
     {
       current_ctx_->ReportCodegenFailure();
     }
@@ -258,6 +369,7 @@ using namespace emit_detail;
         f->setLinkage(linkage);
         f->setCallingConv(CallingConvForAbi(proc->abi));
         ApplyProcFunctionAttrs(*proc, f);
+        RecordOptimizationAttributeLowering(*proc, *f);
 
         for (std::size_t idx = 0; idx < abi.llvm_param_attrs.size(); ++idx) {
           if (idx >= f->arg_size()) {
@@ -388,7 +500,7 @@ using namespace emit_detail;
           *module_,
           vtable_ty,
           false,
-          llvm::GlobalValue::InternalLinkage,
+          emit_detail::LLVMLinkageFor(LinkageOfVTable()),
           llvm::Constant::getNullValue(vtable_ty),
           vtable->symbol);
       globals_[vtable->symbol] = placeholder;
@@ -462,6 +574,8 @@ using namespace emit_detail;
       emit_defs_ms = ElapsedMs(phase_start, now);
       phase_start = now;
     }
+
+    EmitLifecycleBridges();
 
     if (ctx.shared_library_project)
     {
@@ -554,6 +668,7 @@ using namespace emit_detail;
     }
 
     FinalizeModule(*module_);
+    RecordLLVMUBSafetyConformance(*module_);
     return module_.get();
   }
 

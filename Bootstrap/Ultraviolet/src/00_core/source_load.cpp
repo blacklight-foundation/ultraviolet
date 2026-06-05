@@ -474,6 +474,7 @@ SourceLoadResult LoadSource(std::string_view path,
   std::vector<std::size_t> offsets = Utf8Offsets(source.scalars);
 
   if (had_bom) {
+    SPEC_RULE("req.LeadingBOMWarningPersistence");
     SPEC_RULE("Span-BOM-Warn");
     const std::size_t end = std::min<std::size_t>(1, span_source.byte_len);
     if (auto diag = MakeDiagnosticById("W-SRC-0101", SpanOfTemp(span_source, 0, end))) {

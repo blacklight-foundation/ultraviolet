@@ -976,6 +976,12 @@ ParseModuleResult ParseModuleFromDirWithDeps(
     if (!load.source.has_value()) {
       SPEC_RULE("Mod-Scan-Err-Load");
       SPEC_RULE("ParseModule-Err-Load");
+      core::Conformance::Record(
+          "req.LoadSourceShortCircuit",
+          std::nullopt,
+          "source=ParseModuleWithDeps;file=" + file.generic_string() +
+              ";load_source_ok=false;tokenize_invoked=false;"
+              "parse_file_invoked=false;syntactic_checks_invoked=false");
       emit_file_telemetry(false);
       emit_module_telemetry(false);
       return result;

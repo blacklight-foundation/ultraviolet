@@ -1425,6 +1425,7 @@ EvalResult MakeStringResult(std::string value) {
 }
 
 void EmitReflectionDeclDiag(CtEnv& env, const core::Span& span) {
+  SPEC_RULE_AT("requirement.22.IntrospectMemberValidity", span);
   EmitComptimeDiag(env, "E-CTE-0053", span);
 }
 
@@ -1451,6 +1452,11 @@ std::optional<EvalResult> EvalIntrospectMethod(const ast::MethodCallExpr& call,
   if (!IdEq(recv, "introspect")) {
     return std::nullopt;
   }
+  const core::Span call_span = call.receiver->span;
+  SPEC_RULE_AT("requirement.22.CtCapMethodCallParsing", call_span);
+  SPEC_RULE_AT("def.22.CtCapabilityDynamicHelpers", call_span);
+  SPEC_RULE_AT("requirement.22.IntrospectAndDiagnosticsAvailability",
+               call_span);
 
   auto eval_type_arg = [&](std::size_t index) -> std::optional<TypePtr> {
     if (index >= call.args.size()) {
@@ -1476,6 +1482,9 @@ std::optional<EvalResult> EvalIntrospectMethod(const ast::MethodCallExpr& call,
     EvalResult result;
     if (const auto category = CategoryOfType(env, *type, visiting)) {
       SPEC_RULE("CtBuiltin-Reflect-Category");
+      SPEC_RULE_AT("requirement.22.IntrospectCategoryValidity", call_span);
+      SPEC_RULE_AT("requirement.22.ReflectionPurityAndImmutability",
+                   call_span);
       result.ok = true;
       result.value = *category;
     }
@@ -1488,6 +1497,7 @@ std::optional<EvalResult> EvalIntrospectMethod(const ast::MethodCallExpr& call,
       return std::optional<EvalResult>{EvalResult{}};
     }
     SPEC_RULE("CtBuiltin-Reflect-TypeName");
+    SPEC_RULE_AT("requirement.22.ReflectionPurityAndImmutability", call_span);
     ast::DumpOptions render_options;
     render_options.include_spans = false;
     return std::optional<EvalResult>{
@@ -1500,6 +1510,7 @@ std::optional<EvalResult> EvalIntrospectMethod(const ast::MethodCallExpr& call,
       return std::optional<EvalResult>{EvalResult{}};
     }
     SPEC_RULE("CtBuiltin-Reflect-ModulePath");
+    SPEC_RULE_AT("requirement.22.ReflectionPurityAndImmutability", call_span);
     return std::optional<EvalResult>{std::visit(
         [&](const auto& node) -> EvalResult {
           using T = std::decay_t<decltype(node)>;
@@ -1528,7 +1539,9 @@ std::optional<EvalResult> EvalIntrospectMethod(const ast::MethodCallExpr& call,
     const auto target = ResolveReflectNominalTarget(env, *type);
     if (!target.has_value() || target->decl.kind != NamedDeclKind::Record ||
         target->decl.record == nullptr) {
-      EmitComptimeDiag(env, "E-CTE-0050", ReflectionDiagSpan(call));
+      const core::Span span = ReflectionDiagSpan(call);
+      SPEC_RULE_AT("requirement.22.IntrospectMemberValidity", span);
+      EmitComptimeDiag(env, "E-CTE-0050", span);
       return std::optional<EvalResult>{EvalResult{}};
     }
 
@@ -1544,6 +1557,8 @@ std::optional<EvalResult> EvalIntrospectMethod(const ast::MethodCallExpr& call,
       }
     }
     SPEC_RULE("CtBuiltin-Reflect-Fields");
+    SPEC_RULE_AT("requirement.22.ReflectionCanonicalOrder", call_span);
+    SPEC_RULE_AT("requirement.22.ReflectionPurityAndImmutability", call_span);
     return std::optional<EvalResult>{MakeArrayResult(std::move(infos))};
   }
 
@@ -1560,7 +1575,9 @@ std::optional<EvalResult> EvalIntrospectMethod(const ast::MethodCallExpr& call,
     const auto target = ResolveReflectNominalTarget(env, *type);
     if (!target.has_value() || target->decl.kind != NamedDeclKind::Enum ||
         target->decl.enum_decl == nullptr) {
-      EmitComptimeDiag(env, "E-CTE-0051", ReflectionDiagSpan(call));
+      const core::Span span = ReflectionDiagSpan(call);
+      SPEC_RULE_AT("requirement.22.IntrospectMemberValidity", span);
+      EmitComptimeDiag(env, "E-CTE-0051", span);
       return std::optional<EvalResult>{EvalResult{}};
     }
 
@@ -1593,6 +1610,8 @@ std::optional<EvalResult> EvalIntrospectMethod(const ast::MethodCallExpr& call,
           variant.span));
     }
     SPEC_RULE("CtBuiltin-Reflect-Variants");
+    SPEC_RULE_AT("requirement.22.ReflectionCanonicalOrder", call_span);
+    SPEC_RULE_AT("requirement.22.ReflectionPurityAndImmutability", call_span);
     return std::optional<EvalResult>{MakeArrayResult(std::move(infos))};
   }
 
@@ -1609,7 +1628,9 @@ std::optional<EvalResult> EvalIntrospectMethod(const ast::MethodCallExpr& call,
     const auto target = ResolveReflectNominalTarget(env, *type);
     if (!target.has_value() || target->decl.kind != NamedDeclKind::Modal ||
         target->decl.modal == nullptr) {
-      EmitComptimeDiag(env, "E-CTE-0052", ReflectionDiagSpan(call));
+      const core::Span span = ReflectionDiagSpan(call);
+      SPEC_RULE_AT("requirement.22.IntrospectMemberValidity", span);
+      EmitComptimeDiag(env, "E-CTE-0052", span);
       return std::optional<EvalResult>{EvalResult{}};
     }
 
@@ -1619,6 +1640,8 @@ std::optional<EvalResult> EvalIntrospectMethod(const ast::MethodCallExpr& call,
       infos.push_back(MakeStateInfoValue(state));
     }
     SPEC_RULE("CtBuiltin-Reflect-States");
+    SPEC_RULE_AT("requirement.22.ReflectionCanonicalOrder", call_span);
+    SPEC_RULE_AT("requirement.22.ReflectionPurityAndImmutability", call_span);
     return std::optional<EvalResult>{MakeArrayResult(std::move(infos))};
   }
 
@@ -1645,6 +1668,9 @@ std::optional<EvalResult> EvalIntrospectMethod(const ast::MethodCallExpr& call,
       return std::optional<EvalResult>{MakeBoolResult(false)};
     }
     SPEC_RULE("CtBuiltin-Reflect-Form");
+    SPEC_RULE_AT("requirement.22.IntrospectImplementsFormSemantics",
+                 call_span);
+    SPEC_RULE_AT("requirement.22.ReflectionPurityAndImmutability", call_span);
     return std::optional<EvalResult>{
         MakeBoolResult(ReflectNominalImplementsForm(env, *target, form_path))};
   }

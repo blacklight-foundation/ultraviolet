@@ -9,7 +9,7 @@ public procedure validatedKeySystemMemoryOrderingObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.19.MemoryOrdering",
-        75347usize,
+        75349usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysMemoryOrderingReference",
         "Source/Reference/Keys/MemoryOrdering.uv"
@@ -18,7 +18,7 @@ public procedure validatedKeySystemMemoryOrderingObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "parse.19.MemoryOrdering",
-        75367usize,
+        75369usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysMemoryOrderingReference",
         "Source/Reference/Keys/MemoryOrdering.uv"
@@ -27,7 +27,7 @@ public procedure validatedKeySystemMemoryOrderingObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "ast.19.MemoryOrderingForms",
-        75384usize,
+        75386usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysMemoryOrderingReference",
         "Source/Reference/Keys/MemoryOrdering.uv"
@@ -36,16 +36,16 @@ public procedure validatedKeySystemMemoryOrderingObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "requirement.19.MemoryOrderingDefaultsAndKeySemantics",
-        75407usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysMemoryOrderingReference",
-        "Source/Reference/Keys/MemoryOrdering.uv"
+        75409usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.19.MemoryOrderingLevels",
-        75422usize,
+        75424usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysMemoryOrderingReference",
         "Source/Reference/Keys/MemoryOrdering.uv"
@@ -54,34 +54,34 @@ public procedure validatedKeySystemMemoryOrderingObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "requirement.19.MemoryOrderAttributeAttachment",
-        75443usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysMemoryOrderingReference",
-        "Source/Reference/Keys/MemoryOrdering.uv"
+        75445usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.19.ExpressionMemoryOrderWellFormedness",
-        75461usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysMemoryOrderingReference",
-        "Source/Reference/Keys/MemoryOrdering.uv"
+        75463usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.19.MemoryOrderDoesNotAlterKeySemantics",
-        75474usize,
+        75476usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysMemoryOrderingReference",
+        "memoryOrderDoesNotAlterKeySemanticsReference",
         "Source/Reference/Keys/MemoryOrdering.uv"
     ) {
         count = count + 1usize
     }
     if rejectedSourceObligationEntryMatches(
         "requirement.19.MemoryOrderNotInsideSpeculativeBlocks",
-        75487usize,
+        75489usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedKeysRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Keys/SpeculativeMemoryOrder/Source/Main.uv"
@@ -90,7 +90,7 @@ public procedure validatedKeySystemMemoryOrderingObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.19.T-Fence",
-        75500usize,
+        75502usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysMemoryOrderingReference",
         "Source/Reference/Keys/MemoryOrdering.uv"
@@ -99,61 +99,61 @@ public procedure validatedKeySystemMemoryOrderingObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "requirement.19.FenceContextAndHeldKeys",
-        75516usize,
+        75518usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysMemoryOrderingReference",
+        "fenceContextAndHeldKeysReference",
         "Source/Reference/Keys/MemoryOrdering.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.19.FenceEvaluation",
-        75531usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysMemoryOrderingReference",
-        "Source/Reference/Keys/MemoryOrdering.uv"
+        75533usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.19.FenceOrderingConstraints",
-        75548usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysMemoryOrderingReference",
-        "Source/Reference/Keys/MemoryOrdering.uv"
+        75550usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.19.FenceNoProgramVisibleStorageAccess",
-        75565usize,
+        75567usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysMemoryOrderingReference",
+        "fenceNoProgramVisibleStorageAccessReference",
         "Source/Reference/Keys/MemoryOrdering.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.19.Lower-Expr-Fence",
-        75580usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysMemoryOrderingReference",
-        "Source/Reference/Keys/MemoryOrdering.uv"
+        75582usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.19.Lower-Ordered-Access",
-        75595usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysMemoryOrderingReference",
-        "Source/Reference/Keys/MemoryOrdering.uv"
+        75597usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.19.MemoryOrdering",
-        75613usize,
+        75615usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedKeysRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Keys/MemoryOrderingDiagnostic/Source/Main.uv"

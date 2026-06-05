@@ -17,6 +17,7 @@ namespace ultraviolet::codegen {
 std::optional<ABIType> ABITyPtr(const analysis::ScopeContext& ctx,
                                 const analysis::TypePtr& /*ptr*/) {
   SPEC_RULE("ABI-Ptr");
+  SPEC_RULE("rule.24.ABI-Ptr");
   return ABIType{::ultraviolet::analysis::layout::PtrSize(ctx),
                  ::ultraviolet::analysis::layout::PtrAlign(ctx)};
 }

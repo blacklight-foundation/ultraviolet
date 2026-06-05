@@ -9,25 +9,25 @@ public procedure validatedKeySystemDynamicKeyVerificationObligations() -> usize 
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "requirement.19.DynamicKeyVerificationNoAdditionalSyntax",
-        75093usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysDynamicVerificationReference",
-        "Source/Reference/Keys/DynamicVerification.uv"
+        75095usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.19.DynamicKeyVerificationNoAdditionalParsingRules",
-        75108usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysDynamicVerificationReference",
-        "Source/Reference/Keys/DynamicVerification.uv"
+        75110usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.19.StaticallySafeConditions",
-        75123usize,
+        75125usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysDynamicVerificationReference",
         "Source/Reference/Keys/DynamicVerification.uv"
@@ -36,16 +36,16 @@ public procedure validatedKeySystemDynamicKeyVerificationObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "requirement.19.StaticallySafeSoundProofRequired",
-        75145usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysDynamicVerificationReference",
-        "Source/Reference/Keys/DynamicVerification.uv"
+        75147usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.19.K-Static-Safe",
-        75164usize,
+        75166usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysDynamicVerificationReference",
         "Source/Reference/Keys/DynamicVerification.uv"
@@ -54,16 +54,16 @@ public procedure validatedKeySystemDynamicKeyVerificationObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "requirement.19.NoRuntimeSyncMeaning",
-        75180usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysDynamicVerificationReference",
-        "Source/Reference/Keys/DynamicVerification.uv"
+        75182usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if rejectedSourceObligationEntryMatches(
         "rule.19.K-Static-Required",
-        75195usize,
+        75197usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedKeysRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired/Source/Main.uv"
@@ -72,52 +72,52 @@ public procedure validatedKeySystemDynamicKeyVerificationObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "requirement.19.RuntimeSynchronizationRequirements",
-        75213usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysDynamicVerificationReference",
-        "Source/Reference/Keys/DynamicVerification.uv"
+        75215usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.19.DynamicIndexRuntimeOrdering",
-        75231usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysDynamicVerificationReference",
-        "Source/Reference/Keys/DynamicVerification.uv"
+        75233usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.19.DynamicIndexedPathCoarsening",
-        75250usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysDynamicVerificationReference",
-        "Source/Reference/Keys/DynamicVerification.uv"
+        75252usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.19.CanonicalOrderDeadlockFreedom",
-        75265usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysDynamicVerificationReference",
-        "Source/Reference/Keys/DynamicVerification.uv"
+        75267usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.19.StaticAndRuntimeKeySafetyEquivalence",
-        75280usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysDynamicVerificationReference",
-        "Source/Reference/Keys/DynamicVerification.uv"
+        75282usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.19.K-Dynamic-Permitted",
-        75295usize,
+        75297usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysDynamicVerificationReference",
         "Source/Reference/Keys/DynamicVerification.uv"
@@ -126,16 +126,16 @@ public procedure validatedKeySystemDynamicKeyVerificationObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "requirement.19.DynamicContextStaticSafeLowering",
-        75311usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysDynamicVerificationReference",
-        "Source/Reference/Keys/DynamicVerification.uv"
+        75313usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if diagnosticSourceObligationEntryMatches(
         "diagnostics.19.DynamicKeyVerification",
-        75326usize,
+        75328usize,
         "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedKeysDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeSyncInfo/Source/Main.uv"

@@ -42,9 +42,26 @@ internal procedure spawnTrailingOptionsReference(context: Context) -> i32 {
     }
 }
 
+internal procedure spawnEvaluationProcedureReference(context: Context) -> bool {
+    return namedSpawnReference(context) == 42 &&
+        nestedSpawnReference(context) == 21
+}
+
+internal procedure evalSigmaSpawnReference(context: Context) -> bool {
+    return nestedSpawnReference(context) == 21
+}
+
+internal procedure spawnedResultRetrievalReference(context: Context) -> bool {
+    return namedSpawnReference(context) == 42 &&
+        spawnTrailingOptionsReference(context) == 22
+}
+
 /// Exercises the Parallelism Spawn reference surface.
 public procedure runParallelismSpawnReference(context: Context) -> bool {
     return namedSpawnReference(context) == 42 &&
         nestedSpawnReference(context) == 21 &&
-        spawnTrailingOptionsReference(context) == 22
+        spawnTrailingOptionsReference(context) == 22 &&
+        spawnEvaluationProcedureReference(context) &&
+        evalSigmaSpawnReference(context) &&
+        spawnedResultRetrievalReference(context)
 }

@@ -96,6 +96,11 @@ struct ParseStmtCoreResult {
   bool matched = false;  // true if a statement was parsed
 };
 
+static inline void SpecDefsParseStmt() {
+  SPEC_DEF("rule.18.Parse-Statement-Err", "18.1.2");
+  SPEC_DEF("diag.18.Blocks", "18.1.7");
+}
+
 // =============================================================================
 // ParseRegionOptsOpt - Parse optional region options
 // =============================================================================
@@ -311,13 +316,14 @@ static ParseStmtCoreResult ParseStmtCore(Parser parser) {
   const Token* op = Tok(place.parser);
   if (op && IsAssignOp(*op)) {
     SPEC_RULE("Parse-Assign-Stmt");
+    Parser place_end = MergeDiag(parser, place.parser, place.parser);
     if (!IsPlace(place.elem)) {
-      EmitParseSyntaxErr(place.parser, TokSpan(parser));
-      Parser sync = place.parser;
+      EmitParseSyntaxErr(place_end, TokSpan(parser));
+      Parser sync = place_end;
       SyncStmt(sync);
       return {sync, ErrorStmt{SpanBetween(start, sync)}, true};
     }
-    Parser next = place.parser;
+    Parser next = place_end;
     Advance(next);
     ParseElemResult<ExprPtr> rhs = ParseExpr(next);
     if (IsCompoundAssignOp(*op)) {
@@ -359,6 +365,8 @@ static ParseStmtCoreResult ParseStmtCore(Parser parser) {
 // Parses a statement with optional attributes and terminator handling.
 
 ParseElemResult<Stmt> ParseStmt(Parser parser) {
+  SpecDefsParseStmt();
+
   // Parse optional attributes
   ParseElemResult<AttrOpt> attrs = ParseAttributeListOpt(parser);
   parser = attrs.parser;
@@ -373,6 +381,9 @@ ParseElemResult<Stmt> ParseStmt(Parser parser) {
   ParseStmtCoreResult core = ParseStmtCore(parser);
   if (!core.matched) {
     SPEC_RULE_AT("Parse-Statement-Err", TokSpan(parser));
+    SPEC_RULE_AT("rule.18.Parse-Statement-Err", TokSpan(parser));
+    SPEC_RULE_AT("diag.18.Blocks", TokSpan(parser));
+    SPEC_RULE_AT("req.16.ControlExpressionDiagnosticOwnership", TokSpan(parser));
     EmitGenericParseSyntaxErr(parser, TokSpan(parser));
     Parser next = AdvanceOrEOF(parser);
     Parser sync = next;

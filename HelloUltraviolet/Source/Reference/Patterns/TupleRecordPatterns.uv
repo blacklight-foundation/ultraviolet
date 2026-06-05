@@ -22,7 +22,10 @@ public procedure runPatternsTupleRecordPatternsReference() -> bool {
     } else {
         false
     }
-    let trailing_tuple_hit: bool = if pair is (13, true,) {
+    let trailing_tuple_hit: bool = if pair is (
+        13,
+        true,
+    ) {
         true
     } else {
         false

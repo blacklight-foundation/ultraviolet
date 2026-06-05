@@ -38,19 +38,23 @@ internal procedure allocationExpressionValue() -> i32 {
     region as scratch {
         let implicit_value: i32 = ^7
         let explicit_value: i32 = scratch ^ 11
-        if implicit_value == 7
+        if implicit_value == 7 {
             score = score + 1
-        if explicit_value == 11
+        }
+        if explicit_value == 11 {
             score = score + 2
+        }
         frame {
             let frame_value: i32 = ^13
-            if frame_value == 13
+            if frame_value == 13 {
                 score = score + 4
+            }
         }
         scratch.frame {
             let explicit_frame_value: i32 = scratch ^ 17
-            if explicit_frame_value == 17
+            if explicit_frame_value == 17 {
                 score = score + 8
+            }
         }
     }
     return score
@@ -62,8 +66,9 @@ internal procedure scopedRegionBuiltinValue() -> i32 {
     let opened: unique Region@Active = Region::new_scoped(options)
     let allocated: i32 = opened~>alloc(19)
     var score: i32 = 0
-    if allocated == 19
+    if allocated == 19 {
         score = score + 1
+    }
 
     let freed: unique Region@Freed = unsafe { opened~>free_unchecked() }
     return score

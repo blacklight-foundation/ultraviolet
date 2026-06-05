@@ -1501,6 +1501,7 @@ static DispatchInferenceResult InferDispatchAccesses(
     if (!DispatchInvariantKeyPathExpr(candidate.expr, pattern_names, env,
                                       candidate.local_names)) {
       SPEC_RULE("Dispatch-Infer-Err");
+      SPEC_RULE("rule.20.Dispatch-Infer-Err");
       result.ok = false;
       result.diag_id = "E-CON-0141";
       return result;
@@ -1509,6 +1510,7 @@ static DispatchInferenceResult InferDispatchAccesses(
     const auto schema = TryBuildDispatchSchema(candidate.expr, pattern_names);
     if (!schema.has_value()) {
       SPEC_RULE("Dispatch-Infer-Err");
+      SPEC_RULE("rule.20.Dispatch-Infer-Err");
       result.ok = false;
       result.diag_id = "E-CON-0141";
       return result;
@@ -1617,6 +1619,9 @@ ExprTypeResult TypeDispatchExprImpl(const ScopeContext& ctx,
 
   // Check that we're inside a parallel block (section 18.5.1)
   if (!type_ctx.in_parallel) {
+    SPEC_RULE("requirement.20.DispatchRequiresParallelContext");
+    SPEC_RULE("Dispatch-Outside-Err");
+    SPEC_RULE("rule.20.Dispatch-Outside-Err");
     result.diag_id = "E-CON-0140";  // dispatch without enclosing parallel block
     return result;
   }
@@ -1675,7 +1680,9 @@ ExprTypeResult TypeDispatchExprImpl(const ScopeContext& ctx,
     return result;
   }
 
-  ExprTypeResult body_result = TypeBlock(ctx, type_ctx, *expr.body, body_env,
+  StmtTypeContext body_ctx = type_ctx;
+  body_ctx.env_ref = nullptr;
+  ExprTypeResult body_result = TypeBlock(ctx, body_ctx, *expr.body, body_env,
                                          type_expr, type_ident, type_place);
   if (!body_result.ok) {
     result.diag_id = body_result.diag_id;
@@ -1703,11 +1710,15 @@ ExprTypeResult TypeDispatchExprImpl(const ScopeContext& ctx,
     if (is_explicit_move &&
         IsOuterParallelBinding(type_ctx, captured_name) &&
         !ClaimFirstChildMove(type_ctx, captured_name)) {
+      SPEC_RULE("Parallel-Closure-Capture-OuterMove-Err");
+      SPEC_RULE("rule.20.Parallel-Closure-Capture-OuterMove-Err");
       result.diag_id = "E-CON-0122";
       return result;
     }
 
     if (PermOfType(binding->type) == Permission::Unique && !is_explicit_move) {
+      SPEC_RULE("Parallel-Closure-Capture-Unique-Err");
+      SPEC_RULE("rule.20.Parallel-Closure-Capture-Unique-Err");
       result.diag_id = "E-CON-0120";
       return result;
     }
@@ -1740,6 +1751,8 @@ ExprTypeResult TypeDispatchExprImpl(const ScopeContext& ctx,
         return result;
       }
       if (!IsUsizeType(chunk_typed.type)) {
+        SPEC_RULE("Dispatch-Chunk-Type-Err");
+        SPEC_RULE("rule.20.Dispatch-Chunk-Type-Err");
         result.diag_id = "E-SEM-3133";
         return result;
       }
@@ -1754,12 +1767,14 @@ ExprTypeResult TypeDispatchExprImpl(const ScopeContext& ctx,
       const auto dims = ExtractDim3Const(ctx, opt.workgroup_expr, type_expr);
       if (!dims.has_value()) {
         SPEC_RULE("Dim3Const-Err");
+        SPEC_RULE("rule.20.Dim3Const-Err");
         result.diag_id = "E-CON-0159";
         return result;
       }
       if (GpuContext(env)) {
         if (ExceedsMaxWorkgroupSize(*dims)) {
           SPEC_RULE("WorkgroupSize-Err");
+          SPEC_RULE("rule.20.WorkgroupSize-Err");
           result.diag_id = "E-CON-0157";
           return result;
         }
@@ -1775,6 +1790,8 @@ ExprTypeResult TypeDispatchExprImpl(const ScopeContext& ctx,
   }
 
   if (non_associative_reduce && !has_ordered) {
+    SPEC_RULE("Dispatch-Reduce-Assoc-Err");
+    SPEC_RULE("rule.20.Dispatch-Reduce-Assoc-Err");
     result.diag_id = "E-CON-0143";
     return result;
   }
@@ -1800,6 +1817,7 @@ ExprTypeResult TypeDispatchExprImpl(const ScopeContext& ctx,
                                   pattern_names) &&
             !KeyModeCompatible(partition_spec[i].mode, partition_spec[j].mode)) {
           SPEC_RULE("Dispatch-Dependency-Err");
+          SPEC_RULE("rule.20.Dispatch-Dependency-Err");
           result.diag_id = "E-CON-0142";
           return result;
         }
@@ -1810,6 +1828,7 @@ ExprTypeResult TypeDispatchExprImpl(const ScopeContext& ctx,
   if (!partition_spec.empty() && type_ctx.diags &&
       DynamicKeyPattern(partition_spec, pattern_names)) {
     SPEC_RULE("Dispatch-DynamicKey-Warn");
+    SPEC_RULE("rule.20.Dispatch-DynamicKey-Warn");
     const core::Span warn_span =
         expr.key_clause.has_value()
             ? expr.key_clause->span

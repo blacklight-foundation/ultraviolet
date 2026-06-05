@@ -44,12 +44,15 @@ std::optional<ParseElemResult<ExprPtr>> TryParseUnsafeBlockExpr(Parser parser) {
   }
 
   SPEC_RULE("Parse-Unsafe-Expr");
+  SPEC_RULE("rule.16.Parse-Unsafe-Expr");
+  SPEC_RULE("grammar.16.EffectfulCoreExpressions");
   Parser next = parser;
   Advance(next);  // past "unsafe"
 
   ParseElemResult<std::shared_ptr<Block>> block = ParseBlock(next);
   UnsafeBlockExpr unsafe;
   unsafe.block = block.elem;
+  SPEC_RULE("def.16.EffectfulCoreExprAst");
   return ParseElemResult<ExprPtr>{
       block.parser, MakeExpr(SpanBetween(parser, block.parser), unsafe)};
 }
@@ -63,12 +66,15 @@ std::optional<ParseElemResult<ExprPtr>> TryParseUnsafeBlockExpr(Parser parser) {
 
 ParseElemResult<ExprPtr> ParseUnsafeBlockExpr(Parser parser) {
   SPEC_RULE("Parse-Unsafe-Expr");
+  SPEC_RULE("rule.16.Parse-Unsafe-Expr");
+  SPEC_RULE("grammar.16.EffectfulCoreExpressions");
   Parser next = parser;
   Advance(next);  // past "unsafe"
 
   ParseElemResult<std::shared_ptr<Block>> block = ParseBlock(next);
   UnsafeBlockExpr unsafe;
   unsafe.block = block.elem;
+  SPEC_RULE("def.16.EffectfulCoreExprAst");
   return {block.parser, MakeExpr(SpanBetween(parser, block.parser), unsafe)};
 }
 

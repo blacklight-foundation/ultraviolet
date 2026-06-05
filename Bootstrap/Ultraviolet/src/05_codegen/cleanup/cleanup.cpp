@@ -92,8 +92,10 @@
 #include <cstdlib>
 #include <functional>
 #include <iostream>
+#include <mutex>
 #include <string_view>
 #include <unordered_set>
+#include <utility>
 
 namespace ultraviolet::codegen {
 
@@ -161,10 +163,16 @@ static std::optional<CleanupTraceIds> CleanupTraceIdsFor(const CleanupAction& ac
           "Cleanup-Step-Defer-Panic",
           "Cleanup-Step-Defer-Abort",
       };
-    case CleanupAction::Kind::DropVar:
     case CleanupAction::Kind::DropStatic:
+      return CleanupTraceIds{
+          "Cleanup-Step-DropStatic-Ok",
+          "Cleanup-Step-DropStatic-Panic",
+          "Cleanup-Step-DropStatic-Abort",
+      };
+    case CleanupAction::Kind::DropVar:
     case CleanupAction::Kind::DropTemp:
     case CleanupAction::Kind::DropField:
+    case CleanupAction::Kind::SpeculativeWriteRollback:
     case CleanupAction::Kind::ReleaseRegion:
     case CleanupAction::Kind::ReleaseKeyScope:
     case CleanupAction::Kind::ReacquireReleasedKey:
@@ -191,6 +199,8 @@ static const char* CleanupActionEnterTraceIdFor(const CleanupAction& action) {
       return "Cleanup-Action-DropTemp-Enter";
     case CleanupAction::Kind::DropField:
       return "Cleanup-Action-DropField-Enter";
+    case CleanupAction::Kind::SpeculativeWriteRollback:
+      return "Cleanup-Action-SpeculativeWriteRollback-Enter";
     case CleanupAction::Kind::ReleaseRegion:
       return "Cleanup-Action-ReleaseRegion-Enter";
     case CleanupAction::Kind::ReleaseKeyScope:
@@ -213,6 +223,7 @@ static bool CleanupActionCanPanic(const CleanupAction& action) {
     case CleanupAction::Kind::DropField:
     case CleanupAction::Kind::RunDefer:
       return true;
+    case CleanupAction::Kind::SpeculativeWriteRollback:
     case CleanupAction::Kind::ReleaseRegion:
     case CleanupAction::Kind::ReleaseKeyScope:
     case CleanupAction::Kind::ReacquireReleasedKey:
@@ -227,6 +238,168 @@ static bool CleanupActionCanPanic(const CleanupAction& action) {
       return false;
   }
   return true;
+}
+
+static void RecordCleanupConformanceOnce(std::once_flag& flag,
+                                         std::string_view rule_id,
+                                         std::string payload) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  std::call_once(flag, [rule_id = std::string(rule_id),
+                       payload = std::move(payload)]() {
+    core::Conformance::Record(rule_id, std::nullopt, payload);
+  });
+}
+
+static void AppendCleanupPayloadField(std::string& payload,
+                                      std::string_view key,
+                                      std::string_view value) {
+  if (!payload.empty()) {
+    payload += ';';
+  }
+  payload += key;
+  payload += '=';
+  payload += value;
+}
+
+static void AppendCleanupPayloadField(std::string& payload,
+                                      std::string_view key,
+                                      std::uint64_t value) {
+  const std::string text = std::to_string(value);
+  AppendCleanupPayloadField(payload, key, std::string_view(text));
+}
+
+static void AppendCleanupPayloadField(std::string& payload,
+                                      std::string_view key,
+                                      const char* value) {
+  AppendCleanupPayloadField(payload,
+                            key,
+                            std::string_view(value ? value : "-"));
+}
+
+static void AppendCleanupPayloadField(std::string& payload,
+                                      std::string_view key,
+                                      bool value) {
+  AppendCleanupPayloadField(payload,
+                            key,
+                            std::string_view(value ? "true" : "false"));
+}
+
+static std::string CleanupListPayload(std::size_t item_count,
+                                      std::size_t plan_count) {
+  std::string payload;
+  AppendCleanupPayloadField(payload, "operation", "CleanupList");
+  AppendCleanupPayloadField(payload, "source", "scope.cleanup_items");
+  AppendCleanupPayloadField(payload,
+                            "items",
+                            static_cast<std::uint64_t>(item_count));
+  AppendCleanupPayloadField(payload,
+                            "plan_actions",
+                            static_cast<std::uint64_t>(plan_count));
+  AppendCleanupPayloadField(payload, "result", "ordered_cleanup_plan");
+  return payload;
+}
+
+static std::string CleanupPlanPayload(std::size_t item_count,
+                                      std::size_t plan_count) {
+  std::string payload;
+  AppendCleanupPayloadField(payload, "operation", "CleanupPlan");
+  AppendCleanupPayloadField(payload, "source", "scope.cleanup_items");
+  AppendCleanupPayloadField(payload,
+                            "items",
+                            static_cast<std::uint64_t>(item_count));
+  AppendCleanupPayloadField(payload,
+                            "plan_actions",
+                            static_cast<std::uint64_t>(plan_count));
+  AppendCleanupPayloadField(payload, "result", "cs");
+  return payload;
+}
+
+static std::string SetCleanupListPayload(std::size_t plan_count,
+                                         std::size_t remainder_count) {
+  std::string payload;
+  AppendCleanupPayloadField(payload, "operation", "SetCleanupList");
+  AppendCleanupPayloadField(payload,
+                            "representation",
+                            "linearized_cleanup_plan");
+  AppendCleanupPayloadField(payload,
+                            "plan_actions",
+                            static_cast<std::uint64_t>(plan_count));
+  AppendCleanupPayloadField(payload,
+                            "remainder_actions",
+                            static_cast<std::uint64_t>(remainder_count));
+  AppendCleanupPayloadField(payload, "preserves_scope_identity", true);
+  AppendCleanupPayloadField(payload, "updates_remaining_actions", true);
+  return payload;
+}
+
+static std::string RegionRuntimeOwnershipBoundaryPayload() {
+  std::string payload;
+  AppendCleanupPayloadField(payload,
+                            "requirement",
+                            "RegionRuntimeOwnershipBoundary");
+  AppendCleanupPayloadField(payload, "source", "EmitCleanupAction");
+  AppendCleanupPayloadField(payload, "cleanup_owner", "cleanup.cpp");
+  AppendCleanupPayloadField(payload,
+                            "arena_owner",
+                            "runtime/src/memory/region.c");
+  AppendCleanupPayloadField(payload,
+                            "arena_reclaim_symbol",
+                            "Region::free_unchecked");
+  AppendCleanupPayloadField(payload, "dynamic_scope_symbol", "Region::scope_exit");
+  AppendCleanupPayloadField(payload, "separate_boundary", true);
+  return payload;
+}
+
+static std::string RegionReleaseCleanupBeforeArenaPayload(std::size_t release_index,
+                                                          std::size_t plan_count) {
+  std::string payload;
+  AppendCleanupPayloadField(payload,
+                            "requirement",
+                            "RegionReleaseCleanupBeforeArenaReclaim");
+  AppendCleanupPayloadField(payload, "source", "EmitCleanupImpl");
+  AppendCleanupPayloadField(payload, "cleanup_plan", "linearized_scope_cleanup");
+  AppendCleanupPayloadField(payload, "release_action", "ReleaseRegion");
+  AppendCleanupPayloadField(payload,
+                            "arena_reclaim_symbol",
+                            "Region::free_unchecked");
+  AppendCleanupPayloadField(payload,
+                            "release_index",
+                            static_cast<std::uint64_t>(release_index));
+  AppendCleanupPayloadField(payload,
+                            "plan_actions",
+                            static_cast<std::uint64_t>(plan_count));
+  AppendCleanupPayloadField(payload, "cleanup_scope_before_release", true);
+  return payload;
+}
+
+static std::once_flag g_cleanup_list_obligation_once;
+static std::once_flag g_cleanup_plan_obligation_once;
+static std::once_flag g_set_cleanup_list_obligation_once;
+static std::once_flag g_region_runtime_ownership_boundary_obligation_once;
+static std::once_flag g_region_release_cleanup_before_arena_obligation_once;
+
+static void RecordCleanupPlanObservation(std::size_t item_count,
+                                         std::size_t plan_count) {
+  if (item_count == 0 && plan_count == 0) {
+    return;
+  }
+  RecordCleanupConformanceOnce(
+      g_cleanup_plan_obligation_once,
+      "CleanupPlan",
+      CleanupPlanPayload(item_count, plan_count));
+}
+
+static void RecordCleanupListObservation(std::size_t item_count,
+                                         std::size_t plan_count) {
+  if (item_count == 0 && plan_count == 0) {
+    return;
+  }
+  RecordCleanupConformanceOnce(
+      g_cleanup_list_obligation_once,
+      "def.CleanupList",
+      CleanupListPayload(item_count, plan_count));
 }
 
 static std::optional<StaticBindFlags> StaticBindFlagsFor(
@@ -377,6 +550,16 @@ static void AppendCleanupItemToPlan(const CleanupItem& item,
       plan.push_back(std::move(action));
       return;
     }
+    case CleanupItem::Kind::SpeculativeWriteRollback: {
+      if (!item.restore_ir) {
+        return;
+      }
+      CleanupAction action;
+      action.kind = CleanupAction::Kind::SpeculativeWriteRollback;
+      action.restore_ir = item.restore_ir;
+      plan.push_back(std::move(action));
+      return;
+    }
     case CleanupItem::Kind::ReleaseRegion: {
       CleanupAction action;
       action.kind = CleanupAction::Kind::ReleaseRegion;
@@ -422,6 +605,12 @@ static void AppendCleanupItemToPlan(const CleanupItem& item,
 static void AppendScopeCleanupItems(const std::vector<CleanupItem>& items,
                                     LowerCtx& ctx,
                                     CleanupPlan& plan) {
+  for (auto it = items.rbegin(); it != items.rend(); ++it) {
+    if (it->kind != CleanupItem::Kind::SpeculativeWriteRollback) {
+      continue;
+    }
+    AppendCleanupItemToPlan(*it, ctx, plan);
+  }
   // Key scopes must be released before any binding drops in the same scope.
   for (auto it = items.rbegin(); it != items.rend(); ++it) {
     if (it->kind != CleanupItem::Kind::ReleaseKeyScope) {
@@ -437,6 +626,7 @@ static void AppendScopeCleanupItems(const std::vector<CleanupItem>& items,
   }
   for (auto it = items.rbegin(); it != items.rend(); ++it) {
     if (it->kind == CleanupItem::Kind::ReleaseKeyScope ||
+        it->kind == CleanupItem::Kind::SpeculativeWriteRollback ||
         it->kind == CleanupItem::Kind::ReacquireReleasedKey) {
       continue;
     }
@@ -446,14 +636,18 @@ static void AppendScopeCleanupItems(const std::vector<CleanupItem>& items,
 
 static CleanupPlan ComputeCleanupPlanForScopes(LowerCtx& ctx, bool stop_at_loop) {
   CleanupPlan plan;
+  std::size_t item_count = 0;
 
   for (auto it = ctx.scope_stack.rbegin(); it != ctx.scope_stack.rend(); ++it) {
+    item_count += it->cleanup_items.size();
     AppendScopeCleanupItems(it->cleanup_items, ctx, plan);
     if (stop_at_loop && it->is_loop) {
       break;
     }
   }
 
+  RecordCleanupListObservation(item_count, plan.size());
+  RecordCleanupPlanObservation(item_count, plan.size());
   return plan;
 }
 
@@ -466,6 +660,8 @@ CleanupPlan ComputeCleanupPlan(const std::vector<CleanupItem>& cleanup_items,
     AppendCleanupItemToPlan(item, ctx, plan);
   }
 
+  RecordCleanupListObservation(cleanup_items.size(), plan.size());
+  RecordCleanupPlanObservation(cleanup_items.size(), plan.size());
   return plan;
 }
 
@@ -475,6 +671,10 @@ CleanupPlan ComputeCleanupPlanForCurrentScope(LowerCtx& ctx) {
   }
   CleanupPlan plan;
   AppendScopeCleanupItems(ctx.scope_stack.back().cleanup_items, ctx, plan);
+  RecordCleanupListObservation(ctx.scope_stack.back().cleanup_items.size(),
+                               plan.size());
+  RecordCleanupPlanObservation(ctx.scope_stack.back().cleanup_items.size(),
+                               plan.size());
   return plan;
 }
 
@@ -556,7 +756,31 @@ static IRPtr EmitCleanupAction(const CleanupAction& action, LowerCtx& ctx) {
       }
       return EmptyIR();
     }
+    case CleanupAction::Kind::SpeculativeWriteRollback: {
+      if (!action.restore_ir || !*action.restore_ir) {
+        return EmptyIR();
+      }
+
+      const PanicAccess access = BuildPanicAccess(ctx);
+      auto snapshot = ReadPanicRecord(access, ctx);
+
+      IRIf if_panic;
+      if_panic.cond = snapshot.flag;
+      if_panic.then_ir = *action.restore_ir;
+      if_panic.then_value = UnitValue();
+      if_panic.else_ir = EmptyIR();
+      if_panic.else_value = UnitValue();
+      if_panic.result = ctx.FreshTempValue("spec_rollback_if");
+      ctx.RegisterValueType(if_panic.result, analysis::MakeTypePrim("()"));
+
+      return SeqIR({snapshot.ir, MakeIR(std::move(if_panic))});
+    }
     case CleanupAction::Kind::ReleaseRegion: {
+      RecordCleanupConformanceOnce(
+          g_region_runtime_ownership_boundary_obligation_once,
+          "req.RegionRuntimeOwnershipBoundary",
+          RegionRuntimeOwnershipBoundaryPayload());
+
       IRValue region_value;
       if (action.value) {
         region_value = *action.value;
@@ -674,6 +898,21 @@ static IRPtr EmitCleanupImpl(const CleanupPlan& plan,
 
   if (plan.empty()) {
     return EmitRuntimeTrace("Cleanup-Empty", ctx);
+  }
+
+  RecordCleanupConformanceOnce(
+      g_set_cleanup_list_obligation_once,
+      "def.SetCleanupList",
+      SetCleanupListPayload(plan.size(), remainder.size()));
+  for (std::size_t i = 0; i < plan.size(); ++i) {
+    if (plan[i].kind != CleanupAction::Kind::ReleaseRegion) {
+      continue;
+    }
+    RecordCleanupConformanceOnce(
+        g_region_release_cleanup_before_arena_obligation_once,
+        "req.RegionReleaseCleanupBeforeArenaReclaim",
+        RegionReleaseCleanupBeforeArenaPayload(i, plan.size()));
+    break;
   }
 
   const PanicAccess access = BuildPanicAccess(ctx);
@@ -922,6 +1161,7 @@ static IRPtr EmitReleaseValue(const analysis::TypeRef& /*type*/,
                               const IRValue& /*value*/,
                               LowerCtx& /*ctx*/) {
   SPEC_RULE("ReleaseValue");
+  SPEC_RULE("def.24.ReleaseValue");
   return EmptyIR();
 }
 
@@ -1563,6 +1803,20 @@ std::string DropGlueSym(const analysis::TypeRef& type, LowerCtx& ctx) {
 
   const std::string sym = DropGluePathSig(drop_type);
   ctx.RegisterDropGlueType(sym, drop_type);
+  if (core::Conformance::Enabled()) {
+    std::string payload;
+    AppendCleanupPayloadField(payload, "source", "DropGlueSym");
+    AppendCleanupPayloadField(payload, "judgement", "DropGlueSym");
+    AppendCleanupPayloadField(payload, "symbol_present", !sym.empty());
+    core::Conformance::Record("def.24.VTableJudg", std::nullopt, payload);
+
+    std::string helper_payload;
+    AppendCleanupPayloadField(helper_payload, "source", "DropGlueSym");
+    AppendCleanupPayloadField(helper_payload, "helper", "DropGlueSym");
+    AppendCleanupPayloadField(helper_payload, "symbol_present", !sym.empty());
+    core::Conformance::Record(
+        "def.24.VTableEmissionHelpers", std::nullopt, helper_payload);
+  }
   return sym;
 }
 
@@ -1607,6 +1861,24 @@ ProcIR EmitDropGlue(const analysis::TypeRef& type, LowerCtx& ctx) {
   proc.params.push_back(PanicOutParam());
   proc.ret = analysis::MakeTypePrim("()");
   proc.body = DropGlueIR(type, ctx);
+  if (core::Conformance::Enabled()) {
+    std::string payload;
+    AppendCleanupPayloadField(payload, "source", "EmitDropGlue");
+    AppendCleanupPayloadField(payload, "operation", "ProcIR");
+    AppendCleanupPayloadField(payload, "symbol_present", !proc.symbol.empty());
+    AppendCleanupPayloadField(payload, "param0_mode", "move");
+    AppendCleanupPayloadField(payload, "param0_name", "data");
+    AppendCleanupPayloadField(payload, "param0_type", "rawptr_imm_unit");
+    AppendCleanupPayloadField(
+        payload,
+        "panic_out_param",
+        proc.params.size() == 2);
+    AppendCleanupPayloadField(payload, "ret", "unit");
+    AppendCleanupPayloadField(payload, "body", "DropGlueIR");
+    core::Conformance::Record("def.24.VTableJudg", std::nullopt, payload);
+    core::Conformance::Record(
+        "rule.24.EmitDropGlue-Decl", std::nullopt, payload);
+  }
 
   return proc;
 }
@@ -1804,4 +2076,3 @@ void AnchorCleanupRules() {
 }
 
 }  // namespace ultraviolet::codegen
-

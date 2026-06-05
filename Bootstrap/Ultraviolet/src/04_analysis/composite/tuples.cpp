@@ -224,6 +224,7 @@ ExprTypeResult TypeTupleAccessValue(const ScopeContext& ctx,
     }
     SPEC_RULE("TupleAccess-NotTuple");
     result.diag_id = "TupleAccess-NotTuple";
+    result.diagnostic_obligation_ids = {"TupleAccess-NotTuple"};
     return result;
   }
 
@@ -231,6 +232,8 @@ ExprTypeResult TypeTupleAccessValue(const ScopeContext& ctx,
   if (!index.has_value() || *index >= tuple->elements.size()) {
     SPEC_RULE("TupleIndex-OOB");
     result.diag_id = "TupleIndex-OOB";
+    result.diagnostic_obligation_ids = {"TupleIndex-OOB",
+                                        "diagnostics.Tuples"};
     return result;
   }
 

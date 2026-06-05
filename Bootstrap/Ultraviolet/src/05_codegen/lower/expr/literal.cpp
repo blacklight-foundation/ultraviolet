@@ -38,6 +38,7 @@
 
 #include "05_codegen/lower/expr/literal.h"
 #include "04_analysis/layout/layout.h"
+#include "04_analysis/typing/type_predicates.h"
 #include "00_core/assert_spec.h"
 
 #include <array>
@@ -66,6 +67,55 @@ std::string StripIntSuffix(std::string_view text) {
         }
     }
     return std::string(text);
+}
+
+std::optional<std::string_view> MatchIntSuffix(std::string_view text) {
+    for (const auto& suffix : kIntSuffixes) {
+        if (text.size() > suffix.size() &&
+            text.substr(text.size() - suffix.size()) == suffix) {
+            return suffix;
+        }
+    }
+    return std::nullopt;
+}
+
+analysis::TypeRef UniquePrimitiveUnionMember(
+    const analysis::TypeRef& contextual_type,
+    std::string_view primitive_name) {
+    analysis::TypeRef stripped = analysis::StripPerm(contextual_type);
+    const auto* union_type =
+        stripped ? std::get_if<analysis::TypeUnion>(&stripped->node) : nullptr;
+    if (!union_type) {
+        return nullptr;
+    }
+
+    analysis::TypeRef match;
+    for (const analysis::TypeRef& member : union_type->members) {
+        analysis::TypeRef stripped_member = analysis::StripPerm(member);
+        const auto* prim =
+            stripped_member
+                ? std::get_if<analysis::TypePrim>(&stripped_member->node)
+                : nullptr;
+        if (!prim || prim->name != primitive_name) {
+            continue;
+        }
+        if (match) {
+            return nullptr;
+        }
+        match = member;
+    }
+    return match;
+}
+
+analysis::TypeRef LiteralSourceTypeForContextualUnion(
+    const ast::LiteralExpr& lit,
+    const analysis::TypeRef& contextual_type) {
+    if (lit.literal.kind == lexer::TokenKind::IntLiteral) {
+        if (const auto suffix = MatchIntSuffix(lit.literal.lexeme)) {
+            return UniquePrimitiveUnionMember(contextual_type, *suffix);
+        }
+    }
+    return nullptr;
 }
 
 // Check if character is a valid digit for the given base
@@ -224,11 +274,28 @@ LowerResult LowerLiteral(const ast::Expr& expr,
                          const ast::LiteralExpr& lit,
                          LowerCtx& ctx) {
     SPEC_RULE("Lower-Expr-Literal");
+    SPEC_RULE("rule.16.Lower-Expr-Literal");
 
     IRValue value;
     value.kind = IRValue::Kind::Immediate;
     value.name = lit.literal.lexeme;
     value.literal_id = ++(*ctx.temp_counter);
+    switch (lit.literal.kind) {
+        case lexer::TokenKind::StringLiteral:
+            value.literal_kind = IRImmediateLiteralKind::String;
+            break;
+        case lexer::TokenKind::CharLiteral:
+            value.literal_kind = IRImmediateLiteralKind::Char;
+            break;
+        case lexer::TokenKind::IntLiteral:
+            value.literal_kind = IRImmediateLiteralKind::Int;
+            break;
+        case lexer::TokenKind::FloatLiteral:
+            value.literal_kind = IRImmediateLiteralKind::Float;
+            break;
+        default:
+            break;
+    }
 
     // String literals: decode escape sequences to UTF-8 bytes
     if (lit.literal.kind == lexer::TokenKind::StringLiteral) {
@@ -242,10 +309,18 @@ LowerResult LowerLiteral(const ast::Expr& expr,
 
     // If we have type information, use EncodeConst for proper encoding
     if (ctx.expr_type) {
-        const auto lit_type = ctx.expr_type(expr);
+        analysis::TypeRef lit_type = ctx.expr_type(expr);
+        if (analysis::TypeRef source_type =
+                LiteralSourceTypeForContextualUnion(lit, lit_type)) {
+            lit_type = source_type;
+        }
         if (lit_type) {
             if (auto bytes = ::ultraviolet::analysis::layout::EncodeConst(lit_type, lit.literal)) {
                 value.bytes = std::move(*bytes);
+                (void)::ultraviolet::analysis::layout::ValidValue(
+                    ScopeForLowering(ctx),
+                    lit_type,
+                    value.bytes);
             }
             ctx.RegisterValueType(value, lit_type);
         }

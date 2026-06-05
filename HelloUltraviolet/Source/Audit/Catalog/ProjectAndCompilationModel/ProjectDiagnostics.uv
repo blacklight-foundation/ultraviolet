@@ -7,12 +7,12 @@ public procedure countProjectAndCompilationModelProjectDiagnosticsObligations() 
 
 public procedure validatedProjectAndCompilationModelProjectDiagnosticsObligations() -> usize {
     var count: usize = 0usize
-    if artifactBehaviorObligationEntryMatches(
+    if acceptedObligationEntryMatches(
         "diagnostics.ProjectDiagnostics",
         6796usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics",
-        "validatedOutputProjectDiagnosticFixtureCount",
-        "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml"
+        "HelloUltraviolet::Audit",
+        "outputDiagnosticManifestParseErrorExercise",
+        "Source/Audit/OutputDiagnosticExecution.uv"
     ) {
         count = count + 1usize
     }

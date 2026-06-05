@@ -63,14 +63,24 @@ internal procedure compoundAssignmentControlValue() -> i32 {
     return value
 }
 
-/// Exercises the Statements Assignment reference surface.
-public procedure runStatementsAssignmentReference() -> bool {
+/// Exercises Lower-Stmt-Assign with write-place lowering and expression control propagation.
+public procedure lowerStmtAssignReference() -> bool {
     return directAssignmentValue() == 9 &&
-        compoundAssignmentValue() == 2 &&
         fieldAssignmentValue() == 12 &&
         tupleAssignmentValue() == 12 &&
         indexAssignmentValue() == 4 &&
         immovableAssignmentValue() == 13 &&
-        assignmentInitializerControlValue() == 43 &&
+        assignmentInitializerControlValue() == 43
+}
+
+/// Exercises Lower-Stmt-CompoundAssign with compound operator writeback and RHS control flow.
+public procedure lowerStmtCompoundAssignReference() -> bool {
+    return compoundAssignmentValue() == 2 &&
         compoundAssignmentControlValue() == 47
+}
+
+/// Exercises the Statements Assignment reference surface.
+public procedure runStatementsAssignmentReference() -> bool {
+    return lowerStmtAssignReference() &&
+        lowerStmtCompoundAssignReference()
 }

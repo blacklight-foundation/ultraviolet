@@ -36,6 +36,7 @@
 
 #include "00_core/assert_spec.h"
 #include "00_core/diagnostic_messages.h"
+#include "00_core/spec_trace.h"
 #include "00_core/span.h"
 #include "02_source/attributes/attribute_registry.h"
 #include "04_analysis/caps/cap_concurrency.h"
@@ -102,6 +103,14 @@ ExprTypeResult TypeUnsafeBlockExprImpl(const ScopeContext& ctx,
                                        const TypeExprFn& type_expr,
                                        const IdentTypeFn& type_ident,
                                        const PlaceTypeFn& type_place);
+CheckResult CheckUnsafeBlockExprImpl(const ScopeContext& ctx,
+                                     const StmtTypeContext& type_ctx,
+                                     const ast::UnsafeBlockExpr& expr,
+                                     const TypeEnv& env,
+                                     const TypeRef& expected,
+                                     const TypeExprFn& type_expr,
+                                     const TypeIdentFn& type_ident,
+                                     const PlaceTypeFn& type_place);
 ExprTypeResult TypeTupleExprImpl(const ScopeContext& ctx,
                                  const StmtTypeContext& type_ctx,
                                  const ast::TupleExpr& expr,
@@ -172,6 +181,10 @@ static inline void SpecDefsTypeExpr() {
   SPEC_DEF("P-Index", "5.2.12");
   SPEC_DEF("P-Deref", "5.2.12");
   SPEC_DEF("Expr-Unresolved-Err", "5.2.12");
+  SPEC_DEF("def.16.QualifiedNameResolution", "16.1.3");
+  SPEC_DEF("rule.16.Expr-Unresolved-Err", "16.1.4");
+  SPEC_DEF("req.16.QualifiedNameEliminatedBeforeTyping", "16.1.4");
+  SPEC_DEF("diag.16.LiteralAndNameExpressions", "16.1.7");
 }
 
 template <typename T>
@@ -308,9 +321,19 @@ void StoreExprTypeWithPerf(const ScopeContext& ctx,
                            const ast::ExprPtr& expr,
                            const TypeRef& type,
                            TypeBodyPerfPhase phase) {
-  if (ctx.expr_types && expr) {
+  if (!expr) {
+    return;
+  }
+  const bool stores_value_type =
+      phase == TypeBodyPerfPhase::ExprStoreType && ctx.expr_value_types;
+  if (ctx.expr_types || stores_value_type) {
     ScopedTypeBodyPerfPhase store_perf(phase);
-    (*ctx.expr_types)[expr.get()] = type;
+    if (ctx.expr_types) {
+      (*ctx.expr_types)[expr.get()] = type;
+    }
+    if (stores_value_type) {
+      (*ctx.expr_value_types)[expr.get()] = type;
+    }
   }
 }
 
@@ -324,6 +347,46 @@ std::optional<TypeRef> StoredExprType(const ScopeContext& ctx,
     return std::nullopt;
   }
   return found->second;
+}
+
+bool ExprMayHaveDistinctPlaceTyping(const ast::ExprPtr& expr) {
+  if (!expr) {
+    return false;
+  }
+
+  return std::visit(
+      [&](const auto& node) -> bool {
+        using T = std::decay_t<decltype(node)>;
+        if constexpr (std::is_same_v<T, ast::AttributedExpr>) {
+          return ExprMayHaveDistinctPlaceTyping(node.expr);
+        } else if constexpr (std::is_same_v<T, ast::IdentifierExpr> ||
+                             std::is_same_v<T, ast::FieldAccessExpr> ||
+                             std::is_same_v<T, ast::TupleAccessExpr> ||
+                             std::is_same_v<T, ast::IndexAccessExpr> ||
+                             std::is_same_v<T, ast::DerefExpr>) {
+          return true;
+        } else {
+          return false;
+        }
+      },
+      expr->node);
+}
+
+std::optional<TypeRef> StoredValueExprType(const ScopeContext& ctx,
+                                           const ast::ExprPtr& expr) {
+  if (!expr) {
+    return std::nullopt;
+  }
+  if (ctx.expr_value_types) {
+    const auto found = ctx.expr_value_types->find(expr.get());
+    if (found != ctx.expr_value_types->end() && found->second) {
+      return found->second;
+    }
+  }
+  if (ExprMayHaveDistinctPlaceTyping(expr)) {
+    return std::nullopt;
+  }
+  return StoredExprType(ctx, expr);
 }
 
 bool CallCheckNeedsExpectedTraversal(const ScopeContext& ctx,
@@ -393,7 +456,7 @@ std::optional<CheckResult> TryCachedExprCheck(
     return std::nullopt;
   }
 
-  const auto cached = StoredExprType(ctx, expr);
+  const auto cached = StoredValueExprType(ctx, expr);
   if (!cached.has_value() || CachedCheckMayHitModalNonNiche(*cached)) {
     return std::nullopt;
   }
@@ -1160,6 +1223,32 @@ static bool CtAvailTypeImpl(const ScopeContext& ctx,
                             const TypeRef& type,
                             std::set<std::string>& active_paths);
 
+static constexpr std::string_view kCtAvailabilityPositiveForms =
+    "TypePrim,TypeStringView,TypeStringManaged,TypeBytesView,TypeBytesManaged,"
+    "TypePathType,TypePathAst,TypePathAstExpr,TypePathAstStmt,TypePathAstItem,"
+    "TypePathAstType,TypePathAstPattern,TypeTuple,TypeArray,TypeSlice,"
+    "TypePathRecordFields,TypePathEnumPayloads,TypePerm";
+
+static constexpr std::string_view kCtAvailabilityForbiddenForms =
+    "Capability,ModalState,Dynamic,Ptr,RawPtr,Func,Context";
+
+static void RecordCtAvailabilityDefinition(bool available) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload = "source=CtAvailType;result=";
+  payload += available ? "available" : "unavailable";
+  payload += ";positive=";
+  payload.append(kCtAvailabilityPositiveForms.data(),
+                 kCtAvailabilityPositiveForms.size());
+  payload += ";forbidden=";
+  payload.append(kCtAvailabilityForbiddenForms.data(),
+                 kCtAvailabilityForbiddenForms.size());
+  core::Conformance::Record("def.22.CtAvailabilityAndForbiddenTypes",
+                            std::nullopt, payload);
+}
+
 static bool CtAvailRecordFields(const ScopeContext& ctx,
                                 const ast::RecordDecl& decl,
                                 const std::vector<TypeRef>& args,
@@ -1307,7 +1396,9 @@ static bool CtAvailTypeImpl(const ScopeContext& ctx,
 
 static bool CtAvailType(const ScopeContext& ctx, const TypeRef& type) {
   std::set<std::string> active_paths;
-  return CtAvailTypeImpl(ctx, type, active_paths);
+  const bool available = CtAvailTypeImpl(ctx, type, active_paths);
+  RecordCtAvailabilityDefinition(available);
+  return available;
 }
 
 enum class QuoteSplicePosition {
@@ -1332,6 +1423,11 @@ static CheckResult MakeDiagCheckResult(std::string_view diag_id,
   result.diag_id = diag_id;
   result.diag_span = span;
   return result;
+}
+
+static CheckResult MakeQuotedContentDiagCheckResult(const core::Span& span) {
+  SPEC_RULE_AT("requirement.22.QuotedContentValidity", span);
+  return MakeDiagCheckResult("E-CTE-0220", span);
 }
 
 static bool IsExactTypePath(const TypeRef& type, const TypePath& path) {
@@ -1574,6 +1670,7 @@ static CheckResult CheckSpliceSource(const ScopeContext& ctx,
     return result;
   }
   if (!IsSpliceCompatible(ctx, pos, typed.type)) {
+    SPEC_RULE_AT("requirement.22.SpliceContextAndTypeCompatibility", span);
     return MakeDiagCheckResult("E-CTE-0230", span);
   }
   return OkCheckResult();
@@ -2961,42 +3058,42 @@ static CheckResult ValidateQuoteSplicesStatic(const ScopeContext& ctx,
     case ast::QuoteKind::Expr: {
       auto parsed = ast::ParseExpr(parser);
       if (!parsed.elem || !ast::AtEof(parsed.parser)) {
-        return MakeDiagCheckResult("E-CTE-0220", quote_span);
+        return MakeQuotedContentDiagCheckResult(quote_span);
       }
       return CheckQuoteExprSplices(ctx, type_ctx, parsed.elem, env);
     }
     case ast::QuoteKind::Stmt: {
       auto parsed = ast::ParseStmt(parser);
       if (!IsQuotedStatementForm(parsed.elem) || !ast::AtEof(parsed.parser)) {
-        return MakeDiagCheckResult("E-CTE-0220", quote_span);
+        return MakeQuotedContentDiagCheckResult(quote_span);
       }
       return CheckQuoteStmtSplices(ctx, type_ctx, parsed.elem, env);
     }
     case ast::QuoteKind::Unspecified:
-      return MakeDiagCheckResult("E-CTE-0220", quote_span);
+      return MakeQuotedContentDiagCheckResult(quote_span);
     case ast::QuoteKind::Item: {
       auto parsed = ast::ParseItem(parser);
       if (!ast::AtEof(parsed.parser)) {
-        return MakeDiagCheckResult("E-CTE-0220", quote_span);
+        return MakeQuotedContentDiagCheckResult(quote_span);
       }
       return CheckQuoteItemSplices(ctx, type_ctx, parsed.item, env);
     }
     case ast::QuoteKind::Type: {
       auto parsed = ast::ParseType(parser);
       if (!parsed.elem || !ast::AtEof(parsed.parser)) {
-        return MakeDiagCheckResult("E-CTE-0220", quote_span);
+        return MakeQuotedContentDiagCheckResult(quote_span);
       }
       return CheckQuoteTypeSplices(ctx, type_ctx, parsed.elem, env);
     }
     case ast::QuoteKind::Pattern: {
       auto parsed = ast::ParsePattern(parser);
       if (!parsed.elem || !ast::AtEof(parsed.parser)) {
-        return MakeDiagCheckResult("E-CTE-0220", quote_span);
+        return MakeQuotedContentDiagCheckResult(quote_span);
       }
       return CheckQuotePatternSplices(ctx, type_ctx, parsed.elem, env);
     }
   }
-  return MakeDiagCheckResult("E-CTE-0220", quote_span);
+  return MakeQuotedContentDiagCheckResult(quote_span);
 }
 
 static std::optional<std::string_view> CtForbiddenTypeDiag(
@@ -3009,6 +3106,7 @@ static std::optional<std::string_view> CtForbiddenTypeDiag(
   const auto caps =
       InferCapabilitiesFromType(ctx, ctx.current_module, type);
   if (!caps.IsEmpty()) {
+    SPEC_RULE("requirement.22.CompileTimeTypeAvailabilityRejection");
     return "E-CTE-0012";
   }
 
@@ -3021,6 +3119,7 @@ static std::optional<std::string_view> CtForbiddenTypeDiag(
       std::holds_alternative<TypePtr>(stripped->node) ||
       std::holds_alternative<TypeRawPtr>(stripped->node) ||
       std::holds_alternative<TypeFunc>(stripped->node)) {
+    SPEC_RULE("requirement.22.CompileTimeTypeAvailabilityRejection");
     return "E-CTE-0011";
   }
   return std::nullopt;
@@ -3495,8 +3594,15 @@ static ExprTypeResult TypeExprImpl(const ScopeContext& ctx,
     return TypeExpr(ctx, type_ctx, inner, env);
   };
   expr::TypeIdentFn type_ident_fn = [&](std::string_view name) -> ExprTypeResult {
-    return expr::TypeIdentifierExprImpl(ctx, ast::IdentifierExpr{std::string(name)},
-                                        env);
+    auto ident_result =
+        expr::TypeIdentifierExprImpl(ctx, ast::IdentifierExpr{std::string(name)},
+                                     env);
+    if (ident_result.ok) {
+      if (const auto binding = BindOf(env, name)) {
+        EmitStaleBindingReferenceWarning(*binding, type_ctx, std::nullopt);
+      }
+    }
+    return ident_result;
   };
   expr::PlaceTypeFn type_place_fn = [&](const ast::ExprPtr& inner) {
     return TypePlace(ctx, type_ctx, inner, env);
@@ -3513,6 +3619,8 @@ static ExprTypeResult TypeExprImpl(const ScopeContext& ctx,
         } else if constexpr (std::is_same_v<T, ast::AttributedExpr>) {
           if (type_ctx.in_speculative &&
               HasMemoryOrderAttribute(node.attrs)) {
+            SPEC_RULE("rule.19.K-Spec-No-Memory-Ordering");
+            SPEC_RULE("requirement.19.MemoryOrderNotInsideSpeculativeBlocks");
             ExprTypeResult r;
             r.diag_id = "E-CON-0096";
             return r;
@@ -3562,6 +3670,9 @@ static ExprTypeResult TypeExprImpl(const ScopeContext& ctx,
           if (r.ok) {
             const auto binding = BindOf(env, node.name);
             if (binding.has_value()) {
+              EmitStaleBindingReferenceWarning(
+                  *binding, type_ctx,
+                  e ? std::optional<core::Span>(e->span) : std::nullopt);
               EmitDeprecatedBindingReferenceWarning(
                   *binding, type_ctx,
                   e ? std::optional<core::Span>(e->span) : std::nullopt);
@@ -3603,16 +3714,19 @@ static ExprTypeResult TypeExprImpl(const ScopeContext& ctx,
           return expr::TypePropagateExprImpl(ctx, type_ctx, node, env);
         } else if constexpr (std::is_same_v<T, ast::ResultExpr>) {
           if (type_ctx.contract_phase != ContractPhase::Postcondition) {
+            SPEC_RULE("req.15.ContractResultProperties");
             ExprTypeResult r;
             r.diag_id = "E-SEM-2806";
             return r;
           }
+          SPEC_RULE("req.15.ContractResultProperties");
           ExprTypeResult r;
           r.ok = true;
           r.type = type_ctx.return_type ? type_ctx.return_type : MakeTypePrim("()");
           return r;
         } else if constexpr (std::is_same_v<T, ast::EntryExpr>) {
           if (type_ctx.contract_phase != ContractPhase::Postcondition) {
+            SPEC_RULE("req.15.ContractEntryConstraints");
             ExprTypeResult r;
             r.diag_id = "E-SEM-2852";
             return r;
@@ -3621,16 +3735,19 @@ static ExprTypeResult TypeExprImpl(const ScopeContext& ctx,
             return ExprTypeResult{};
           }
           if (!ExprUsesOnlyEnvBindings(node.expr, env)) {
+            SPEC_RULE("req.15.ContractEntryConstraints");
             ExprTypeResult r;
             r.diag_id = "E-SEM-2852";
             return r;
           }
           if (EntryExprHasCapabilityOp(node.expr)) {
+            SPEC_RULE("req.15.ContractEntryConstraints");
             ExprTypeResult r;
             r.diag_id = "E-CON-0415";
             return r;
           }
           if (EntryExprHasSideEffectOp(node.expr)) {
+            SPEC_RULE("req.15.ContractEntryConstraints");
             ExprTypeResult r;
             r.diag_id = "E-CON-0416";
             return r;
@@ -3642,10 +3759,15 @@ static ExprTypeResult TypeExprImpl(const ScopeContext& ctx,
             return r;
           }
           if (!BitcopyType(ctx, typed.type)) {
+            SPEC_RULE("rule.15.Entry-Type");
+            SPEC_RULE("req.15.ContractEntryConstraints");
             ExprTypeResult r;
             r.diag_id = "E-SEM-2805";
             return r;
           }
+          SPEC_RULE("Entry-Type");
+          SPEC_RULE("rule.15.Entry-Type");
+          SPEC_RULE("req.15.ContractEntryConstraints");
           ExprTypeResult r;
           r.ok = true;
           r.type = typed.type;
@@ -3702,11 +3824,15 @@ static ExprTypeResult TypeExprImpl(const ScopeContext& ctx,
         } else if constexpr (std::is_same_v<T, ast::QuoteExpr>) {
           ExprTypeResult r;
           if (!IsComptimeEnv(env)) {
+            SPEC_RULE_AT("requirement.22.QuoteCompileTimeOnly",
+                         e ? e->span : core::Span{});
             r.diag_id = "E-CTE-0221";
             return r;
           }
           auto resolved_kind = ResolveQuoteKindStatic(node, nullptr);
           if (!resolved_kind.has_value()) {
+            SPEC_RULE_AT("requirement.22.QuotedContentValidity",
+                         e ? e->span : core::Span{});
             r.diag_id = "E-CTE-0220";
             return r;
           }
@@ -3802,6 +3928,10 @@ static ExprTypeResult TypeExprImpl(const ScopeContext& ctx,
           return expr::TypeAllExprImpl(ctx, type_ctx, node, env, type_expr_fn);
         } else if constexpr (std::is_same_v<T, ast::QualifiedNameExpr>) {
           SPEC_RULE("Expr-Unresolved-Err");
+          SPEC_RULE("def.16.QualifiedNameResolution");
+          SPEC_RULE("rule.16.Expr-Unresolved-Err");
+          SPEC_RULE("req.16.QualifiedNameEliminatedBeforeTyping");
+          SPEC_RULE("diag.16.LiteralAndNameExpressions");
           ExprTypeResult r;
           r.diag_id = "ResolveExpr-Ident-Err";
           return r;
@@ -3822,6 +3952,8 @@ static ExprTypeResult TypeExprImpl(const ScopeContext& ctx,
         } else if constexpr (std::is_same_v<T, ast::FenceExpr>) {
           ExprTypeResult r;
           if (type_ctx.in_speculative) {
+            SPEC_RULE("rule.19.K-Spec-No-Memory-Ordering");
+            SPEC_RULE("requirement.19.MemoryOrderNotInsideSpeculativeBlocks");
             r.diag_id = "E-CON-0096";
             return r;
           }
@@ -3869,8 +4001,15 @@ static PlaceTypeResult TypePlaceImpl(const ScopeContext& ctx,
     return TypeExpr(ctx, type_ctx, inner, env);
   };
   expr::TypeIdentFn type_ident_fn = [&](std::string_view name) -> ExprTypeResult {
-    return expr::TypeIdentifierExprImpl(ctx, ast::IdentifierExpr{std::string(name)},
-                                        env);
+    auto ident_result =
+        expr::TypeIdentifierExprImpl(ctx, ast::IdentifierExpr{std::string(name)},
+                                     env);
+    if (ident_result.ok) {
+      if (const auto binding = BindOf(env, name)) {
+        EmitStaleBindingReferenceWarning(*binding, type_ctx, std::nullopt);
+      }
+    }
+    return ident_result;
   };
 
   result = std::visit(
@@ -3884,6 +4023,9 @@ static PlaceTypeResult TypePlaceImpl(const ScopeContext& ctx,
           if (r.ok) {
             const auto binding = BindOf(env, node.name);
             if (binding.has_value()) {
+              EmitStaleBindingReferenceWarning(
+                  *binding, type_ctx,
+                  e ? std::optional<core::Span>(e->span) : std::nullopt);
               EmitDeprecatedBindingReferenceWarning(
                   *binding, type_ctx,
                   e ? std::optional<core::Span>(e->span) : std::nullopt);
@@ -3893,6 +4035,8 @@ static PlaceTypeResult TypePlaceImpl(const ScopeContext& ctx,
         } else if constexpr (std::is_same_v<T, ast::AttributedExpr>) {
           if (type_ctx.in_speculative &&
               HasMemoryOrderAttribute(node.attrs)) {
+            SPEC_RULE("rule.19.K-Spec-No-Memory-Ordering");
+            SPEC_RULE("requirement.19.MemoryOrderNotInsideSpeculativeBlocks");
             PlaceTypeResult r;
             r.diag_id = "E-CON-0096";
             r.diag_span = e ? std::optional<core::Span>(e->span) : std::nullopt;
@@ -4082,8 +4226,16 @@ static CheckResult TryDynamicRefinementFallback(const ScopeContext& ctx,
     return base_check;
   }
 
+  SPEC_RULE("req.14.RefinementStaticDefaultDynamicFallback");
   if (ctx.dynamic_refine_checks && e) {
     (*ctx.dynamic_refine_checks)[e.get()].push_back(norm.type);
+    if (core::Conformance::Enabled()) {
+      core::Conformance::Record(
+          "req.14.RefinementStaticDefaultDynamicFallback",
+          std::optional<core::Span>{e->span},
+          "source=TryDynamicRefinementFallback;proof=failed;context=dynamic;"
+          "action=record_runtime_refinement_check;outside_dynamic=ill_formed");
+    }
   }
   result.ok = true;
   return result;
@@ -4134,6 +4286,8 @@ CheckResult CheckExprAgainst(const ScopeContext& ctx,
   if (const auto* attributed = std::get_if<ast::AttributedExpr>(&e->node)) {
     if (type_ctx.in_speculative &&
         HasMemoryOrderAttribute(attributed->attrs)) {
+      SPEC_RULE("rule.19.K-Spec-No-Memory-Ordering");
+      SPEC_RULE("requirement.19.MemoryOrderNotInsideSpeculativeBlocks");
       result.diag_id = "E-CON-0096";
       result.diag_span = e ? std::optional<core::Span>(e->span) : std::nullopt;
       return result;
@@ -4156,13 +4310,18 @@ CheckResult CheckExprAgainst(const ScopeContext& ctx,
     inner_ctx.contract_dynamic =
         ComputeExprDynamicContext(*e, type_ctx.contract_dynamic);
 
+    TypeEnv inner_env = env;
+    if (attributed->expr &&
+        std::holds_alternative<ast::ComptimeExpr>(attributed->expr->node)) {
+      inner_env = ExtendComptimeEnv(env, &attributed->attrs);
+    }
     const auto checked_inner =
-        CheckExprAgainst(ctx, inner_ctx, attributed->expr, expected, env);
+        CheckExprAgainst(ctx, inner_ctx, attributed->expr, expected, inner_env);
     if (!checked_inner.ok) {
       return checked_inner;
     }
     if (const auto diag = ValidateMemoryOrderAttributePlacement(
-            ctx, inner_ctx, attributed->attrs, attributed->expr, env)) {
+            ctx, inner_ctx, attributed->attrs, attributed->expr, inner_env)) {
       result.diag_id = *diag;
       result.diag_span = e ? std::optional<core::Span>(e->span) : std::nullopt;
       return result;
@@ -4171,6 +4330,43 @@ CheckResult CheckExprAgainst(const ScopeContext& ctx,
     result.ok = true;
     StoreExprTypeWithPerf(ctx, e, expected,
                           TypeBodyPerfPhase::ExprStoreType);
+    return result;
+  }
+
+  if (const auto* comptime = std::get_if<ast::ComptimeExpr>(&e->node)) {
+    StmtTypeContext inner_ctx = type_ctx;
+    inner_ctx.contract_dynamic =
+        ComputeExprDynamicContext(*e, type_ctx.contract_dynamic);
+    const TypeEnv comptime_env =
+        ExtendComptimeEnv(env, &ast::AttrListOf(comptime->attrs_opt));
+
+    const auto checked_body =
+        CheckExprAgainst(ctx, inner_ctx, comptime->body, expected,
+                         comptime_env);
+    if (!checked_body.ok) {
+      result.diag_id = checked_body.diag_id;
+      result.diag_detail = checked_body.diag_detail;
+      result.diag_span = checked_body.diag_span.has_value()
+                             ? checked_body.diag_span
+                             : (comptime->body
+                                    ? std::optional<core::Span>(
+                                          comptime->body->span)
+                                    : std::optional<core::Span>(e->span));
+      return result;
+    }
+
+    if (const auto diag =
+            ComptimeTypeAvailabilityDiag(ctx, expected, "E-CTE-0021")) {
+      result.diag_id = *diag;
+      result.diag_span = comptime->body
+                             ? std::optional<core::Span>(comptime->body->span)
+                             : std::optional<core::Span>(e->span);
+      return result;
+    }
+
+    SPEC_RULE_AT("T-CtExpr", e ? e->span : core::Span{});
+    result.ok = true;
+    StoreExprTypeWithPerf(ctx, e, expected, TypeBodyPerfPhase::ExprStoreType);
     return result;
   }
 
@@ -4204,6 +4400,31 @@ CheckResult CheckExprAgainst(const ScopeContext& ctx,
     return result;
   }
 
+  expr::TypeExprFn type_expr_fn = [&](const ast::ExprPtr& inner) {
+    return TypeExpr(ctx, type_ctx, inner, env);
+  };
+  expr::TypeIdentFn type_ident_fn = [&](std::string_view name) -> ExprTypeResult {
+    return expr::TypeIdentifierExprImpl(ctx, ast::IdentifierExpr{std::string(name)}, env);
+  };
+  expr::PlaceTypeFn type_place_fn = [&](const ast::ExprPtr& inner) {
+    return TypePlace(ctx, type_ctx, inner, env);
+  };
+
+  if (const auto* block_expr = std::get_if<ast::BlockExpr>(&e->node)) {
+    const auto checked_block = expr::CheckBlockExprImpl(
+        ctx, type_ctx, *block_expr, env, expected, type_expr_fn, type_ident_fn,
+        type_place_fn);
+    if (!checked_block.ok) {
+      result.diag_id = checked_block.diag_id;
+      result.diag_detail = checked_block.diag_detail;
+      result.diag_span = checked_block.diag_span;
+      return result;
+    }
+    result.ok = true;
+    StoreExprTypeWithPerf(ctx, e, expected, TypeBodyPerfPhase::ExprStoreType);
+    return result;
+  }
+
   if (const auto* record_expr = std::get_if<ast::RecordExpr>(&e->node)) {
     const auto typed_record =
         expr::TypeRecordExprImpl(ctx, type_ctx, *record_expr, env, &expected);
@@ -4230,6 +4451,8 @@ CheckResult CheckExprAgainst(const ScopeContext& ctx,
 
   if (const auto* quote = std::get_if<ast::QuoteExpr>(&e->node)) {
     if (!IsComptimeEnv(env)) {
+      SPEC_RULE_AT("requirement.22.QuoteCompileTimeOnly",
+                   e ? e->span : core::Span{});
       result.diag_id = "E-CTE-0221";
       result.diag_span = e ? std::optional<core::Span>(e->span) : std::nullopt;
       return result;
@@ -4239,6 +4462,8 @@ CheckResult CheckExprAgainst(const ScopeContext& ctx,
     if (IsAstMetaType(expected) || expected_kind.has_value()) {
       auto resolved_kind = ResolveQuoteKindStatic(*quote, &expected);
       if (!resolved_kind.has_value()) {
+        SPEC_RULE_AT("requirement.22.QuotedContentValidity",
+                     e ? e->span : core::Span{});
         result.diag_id = "E-CTE-0220";
         result.diag_span = e ? std::optional<core::Span>(e->span) : std::nullopt;
         return result;
@@ -4279,15 +4504,20 @@ CheckResult CheckExprAgainst(const ScopeContext& ctx,
     }
   }
 
-  expr::TypeExprFn type_expr_fn = [&](const ast::ExprPtr& inner) {
-    return TypeExpr(ctx, type_ctx, inner, env);
-  };
-  expr::TypeIdentFn type_ident_fn = [&](std::string_view name) -> ExprTypeResult {
-    return expr::TypeIdentifierExprImpl(ctx, ast::IdentifierExpr{std::string(name)}, env);
-  };
-  expr::PlaceTypeFn type_place_fn = [&](const ast::ExprPtr& inner) {
-    return TypePlace(ctx, type_ctx, inner, env);
-  };
+  if (const auto* unsafe_block = std::get_if<ast::UnsafeBlockExpr>(&e->node)) {
+    const auto checked_unsafe = expr::CheckUnsafeBlockExprImpl(
+        ctx, type_ctx, *unsafe_block, env, expected,
+        type_expr_fn, type_ident_fn, type_place_fn);
+    if (!checked_unsafe.ok) {
+      result.diag_id = checked_unsafe.diag_id;
+      result.diag_detail = checked_unsafe.diag_detail;
+      result.diag_span = checked_unsafe.diag_span;
+      return result;
+    }
+    result.ok = true;
+    StoreExprTypeWithPerf(ctx, e, expected, TypeBodyPerfPhase::ExprStoreType);
+    return result;
+  }
   if (const auto* closure_expr = std::get_if<ast::ClosureExpr>(&e->node)) {
     const auto stripped_expected = StripPerm(expected);
     if (stripped_expected &&
@@ -4321,7 +4551,8 @@ CheckResult CheckExprAgainst(const ScopeContext& ctx,
   };
 
   const auto check =
-      CheckExpr(ctx, e, expected, type_expr_fn, type_place_fn, type_ident_fn, if_case_check);
+      CheckExpr(ctx, e, expected, type_expr_fn, type_place_fn, type_ident_fn,
+                if_case_check, type_ctx.proof_ctx);
   if (!check.ok) {
     const auto dynamic_fallback =
         TryDynamicRefinementFallback(ctx, type_ctx, e, expected, env);
@@ -4335,6 +4566,10 @@ CheckResult CheckExprAgainst(const ScopeContext& ctx,
       result.diag_span = dynamic_fallback.diag_span.has_value()
                              ? dynamic_fallback.diag_span
                              : check.diag_span;
+      result.diagnostic_obligation_ids =
+          dynamic_fallback.diagnostic_obligation_ids.empty()
+              ? check.diagnostic_obligation_ids
+              : dynamic_fallback.diagnostic_obligation_ids;
       return result;
     }
     result.ok = true;

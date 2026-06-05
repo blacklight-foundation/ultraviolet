@@ -194,8 +194,8 @@ std::string BuiltinSymBytesDropManaged();
 // =============================================================================
 
 std::string BuiltinSymEqEq();
-std::string BuiltinSymStepSuccessor();
-std::string BuiltinSymStepPredecessor();
+std::string BuiltinSymDiscreteSuccessor();
+std::string BuiltinSymDiscretePredecessor();
 
 // =============================================================================
 // Section 6.8 Panic symbol

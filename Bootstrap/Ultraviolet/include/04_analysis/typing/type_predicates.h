@@ -52,8 +52,8 @@ bool ZeroableType(const ScopeContext& ctx, const TypeRef& type);
 bool EqType(const TypeRef& type);
 bool EqType(const ScopeContext& ctx, const TypeRef& type);
 
-// Check if a type has intrinsic built-in Step support.
-bool BuiltinStepType(const TypeRef& type);
+// Check if a type has intrinsic built-in Discrete support.
+bool BuiltinDiscreteType(const TypeRef& type);
 
 struct FoundationalBuiltinMethodSig {
   Permission recv_perm = Permission::Const;
@@ -62,7 +62,7 @@ struct FoundationalBuiltinMethodSig {
   TypeRef ret;
 };
 
-// Lookup intrinsic built-in Eq/Step method signatures on types that satisfy
+// Lookup intrinsic built-in Eq/Discrete method signatures on types that satisfy
 // the corresponding foundational predicates intrinsically.
 std::optional<FoundationalBuiltinMethodSig> LookupFoundationalBuiltinMethodSig(
     const TypeRef& recv_base,

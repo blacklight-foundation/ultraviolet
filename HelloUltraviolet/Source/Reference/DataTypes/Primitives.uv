@@ -71,6 +71,13 @@ internal procedure primitiveDefaultNumericReference() -> bool {
         default_float < 2.0f32
 }
 
+internal procedure parsePrimTypeReference() -> bool {
+    return primitiveSignedIntegerReference() &&
+        primitiveUnsignedIntegerReference() &&
+        primitiveFloatReference() &&
+        primitiveValueTypeReference()
+}
+
 internal procedure primitiveUnitValueReference(value: ()) -> bool {
     let consumed: () = value
     return sizeof(()) == 0usize && alignof(()) == 1usize
@@ -124,6 +131,10 @@ internal procedure primitiveLayoutReference() -> bool {
         alignof(!) == 1usize
 }
 
+internal procedure primitiveLayoutAbiOwnershipReference() -> bool {
+    return primitiveLayoutReference()
+}
+
 /// Exercises the DataTypes Primitives reference surface.
 public procedure runDataTypesPrimitivesReference() -> bool {
     let reference: PrimitiveReference =
@@ -134,10 +145,12 @@ public procedure runDataTypesPrimitivesReference() -> bool {
         reference.unsigned_value == 7usize &&
         reference.codepoint == 'P' &&
         primitiveUnitValueReference(unit_value) &&
+        parsePrimTypeReference() &&
         primitiveSignedIntegerReference() &&
         primitiveUnsignedIntegerReference() &&
         primitiveFloatReference() &&
         primitiveDefaultNumericReference() &&
         primitiveValueTypeReference() &&
-        primitiveLayoutReference()
+        primitiveLayoutReference() &&
+        primitiveLayoutAbiOwnershipReference()
 }

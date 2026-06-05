@@ -1,0 +1,14 @@
+//! Artifact fixture for runtime slice range-index out-of-bounds panic behavior.
+
+/// Slices through a runtime upper bound so invalid bounds are exercised at runtime.
+public procedure sliceRangeOOBPanicValue(end_index: usize) -> i32 {
+    let values: [i32; 3] = [10, 20, 30]
+    let invalid: [i32] = values[1usize..end_index]
+    return invalid[0usize]
+}
+
+/// Runs the out-of-bounds range access; the parent audit observes the panic exit code.
+public procedure main(context: Context) -> i32 {
+    let _ = context
+    return sliceRangeOOBPanicValue(5usize)
+}

@@ -1,0 +1,278 @@
+//! Runtime probes for Polymorphism / CapabilityClasses reference specimens.
+
+using HelloUltraviolet::Audit::{ auditTargetProfile }
+using HelloUltraviolet::Audit::{ auditTargetProfileIsWindows }
+
+internal record CapabilityContextFields {
+    internal io: $IO
+    internal net: $Network
+    internal heap: $HeapAllocator
+    internal sys: System
+    internal reactor: $Reactor
+    internal time: $Time
+    internal cpu: $ExecutionDomain
+    internal gpu: $ExecutionDomain
+    internal inline: $ExecutionDomain
+}
+
+internal record CapabilityNestedContextFields {
+    internal first: CapabilityContextFields
+    internal second: CapabilityContextFields
+}
+
+internal procedure capabilityBoundAcceptsIO<TValue <: IO>() -> bool {
+    return sizeof($IO) > 0usize
+}
+
+internal procedure capabilityBoundAcceptsNetwork<TValue <: Network>() -> bool {
+    return sizeof($Network) > 0usize
+}
+
+internal procedure capabilityBoundAcceptsHeapAllocator<TValue <: HeapAllocator>() -> bool {
+    return sizeof($HeapAllocator) > 0usize
+}
+
+internal procedure capabilityBoundAcceptsExecutionDomain<TValue <: ExecutionDomain>() -> bool {
+    return sizeof($ExecutionDomain) > 0usize
+}
+
+internal procedure capabilityBoundAcceptsReactor<TValue <: Reactor>() -> bool {
+    return sizeof($Reactor) > 0usize
+}
+
+internal procedure capabilityBoundAcceptsTime<TValue <: Time>() -> bool {
+    return sizeof($Time) > 0usize
+}
+
+internal procedure capabilityBoundAcceptsMonotonicTime<TValue <: MonotonicTime>() -> bool {
+    return sizeof($MonotonicTime) > 0usize
+}
+
+internal procedure capabilityBoundAcceptsWallTime<TValue <: WallTime>() -> bool {
+    return sizeof($WallTime) > 0usize
+}
+
+internal procedure capabilityPathExists(
+    io: $IO,
+    path: string@View
+) -> bool {
+    return io~>exists(path)
+}
+
+internal procedure restrictedCapabilityPathExists(
+    io: $IO,
+    path: string@View
+) -> bool {
+    let restricted_file_system: $IO = io~>restrict(".")
+    return restricted_file_system~>exists(path)
+}
+
+internal procedure capabilityIOInterfaceObserved(io: $IO) -> bool {
+    let root: string@View = "HelloUltraviolet/Build/PolymorphismCapabilityClasses"
+    let child_root: string@View =
+        "HelloUltraviolet/Build/PolymorphismCapabilityClasses/Child"
+    let data_path: string@View =
+        "HelloUltraviolet/Build/PolymorphismCapabilityClasses/Data.txt"
+    let handle_path: string@View =
+        "HelloUltraviolet/Build/PolymorphismCapabilityClasses/Handle.txt"
+
+    let _ = io~>remove(data_path)
+    let _ = io~>remove(handle_path)
+    let _ = io~>remove(child_root)
+    let _ = io~>remove(root)
+
+    let root_ready: Outcome<(), IoError> = io~>ensure_dir(root)
+    let child_ready: Outcome<(), IoError> = io~>create_dir(child_root)
+    let data_ready: Outcome<(), IoError> =
+        io~>write_file(data_path, bytes::view_string("capability"))
+    let read_file: Outcome<unique string@Managed, IoError> = io~>read_file(data_path)
+    let read_bytes: Outcome<unique bytes@Managed, IoError> = io~>read_bytes(data_path)
+    let kind_file: Outcome<FileKind, IoError> = io~>kind(data_path)
+    let restricted: $IO = io~>restrict(root)
+    let restricted_exists: bool = restricted~>exists("Data.txt")
+    let read_handle: bool = capabilityReadHandleEquals(
+        io~>open_read(data_path),
+        "capability"
+    )
+    let create_handle: bool = capabilityWriteHandleAccepts(
+        io~>create_write(handle_path),
+        "created"
+    )
+    let append_handle: bool =
+        capabilityAppendHandleAccepts(io~>open_append(handle_path), "-appended")
+    let write_handle: bool =
+        capabilityWriteHandleAccepts(io~>open_write(handle_path), "rewritten")
+    let directory_entry: bool = capabilityDirectoryHasEntry(io~>open_dir(root))
+    let stdout_ready: Outcome<(), IoError> = io~>write_stdout("")
+    let stderr_ready: Outcome<(), IoError> = io~>write_stderr("")
+    let remove_data: Outcome<(), IoError> = io~>remove(data_path)
+    let remove_handle: Outcome<(), IoError> = io~>remove(handle_path)
+    let remove_child: Outcome<(), IoError> = io~>remove(child_root)
+    let remove_root: Outcome<(), IoError> = io~>remove(root)
+
+    return capabilityUnitSucceeded(root_ready) &&
+        capabilityUnitSucceeded(child_ready) &&
+        capabilityUnitSucceeded(data_ready) &&
+        capabilityTextEquals(move read_file, "capability") &&
+        capabilityBytesLengthEquals(move read_bytes, 10usize) &&
+        capabilityFileKindIsFile(kind_file) &&
+        restricted_exists &&
+        read_handle &&
+        create_handle &&
+        append_handle &&
+        write_handle &&
+        directory_entry &&
+        capabilityUnitSucceeded(stdout_ready) &&
+        capabilityUnitSucceeded(stderr_ready) &&
+        capabilityUnitSucceeded(remove_data) &&
+        capabilityUnitSucceeded(remove_handle) &&
+        capabilityUnitSucceeded(remove_child) &&
+        capabilityUnitSucceeded(remove_root)
+}
+
+internal procedure capabilityNetworkRestricts(net: $Network) -> bool {
+    let restricted: $Network = net~>restrict_to_host("localhost")
+    let _ = restricted~>restrict_to_host("localhost")
+    return sizeof($Network) > 0usize
+}
+
+internal procedure capabilityHeapAllocates(heap: $HeapAllocator) -> bool {
+    let limited: $HeapAllocator = heap~>with_quota(64usize)
+    unsafe {
+        let ptr: *mut u8 = limited~>alloc_raw(0usize)
+        limited~>dealloc_raw(ptr, 0usize)
+    }
+    return capabilityAllocationErrorValueKnown(AllocationError::OutOfMemory(1usize)) &&
+        capabilityAllocationErrorValueKnown(AllocationError::QuotaExceeded(2usize))
+}
+
+internal procedure capabilityFutureValue(value: i32) -> Future<i32, bool> {
+    return value
+}
+
+internal procedure capabilityUnionI32Is(value: i32 | bool, expected: i32) -> bool {
+    return if value is {
+        actual: i32 {
+            actual == expected
+        }
+        failure: bool {
+            false
+        }
+    }
+}
+
+internal procedure capabilityReactorRuns(reactor: $Reactor) -> bool {
+    let run_value: i32 | bool = reactor~>run(capabilityFutureValue(37))
+    let tracked: Tracked<i32, bool> = reactor~>register(capabilityFutureValue(41))
+    let tracked_value: i32 | bool = wait tracked
+    return capabilityUnionI32Is(run_value, 37) &&
+        capabilityUnionI32Is(tracked_value, 41)
+}
+
+internal procedure capabilitySystemExitTypechecks(sys: System, code: i32) -> ! {
+    return sys~>exit(code)
+}
+
+internal procedure capabilitySystemRunSuccessCommand(sys: System) -> string@View {
+    let target_profile: string@View = auditTargetProfile(sys)
+    if auditTargetProfileIsWindows(target_profile) {
+        return "cmd /C exit 0"
+    }
+    return "exit 0"
+}
+
+internal procedure capabilitySystemObserved(sys: System) -> bool {
+    let missing_environment: string@View =
+        sys~>get_env("HUV_CAPABILITY_CLASSES_ENVIRONMENT_KEY_SHOULD_NOT_EXIST")
+    let executable_path: string@View = sys~>executable_path()
+    let argument_count: usize = sys~>argument_count()
+    let current_directory: string@View = sys~>current_directory()
+    let first_argument_available: bool = if argument_count > 0usize {
+        string::length(sys~>argument(0usize)) > 0usize
+    } else {
+        true
+    }
+    let command_status: i32 = sys~>run(capabilitySystemRunSuccessCommand(sys))
+    let _ = capabilitySystemExitTypechecks
+    return capabilityViewEquals(missing_environment, "") &&
+        string::length(executable_path) > 0usize &&
+        string::length(current_directory) > 0usize &&
+        first_argument_available &&
+        command_status == 0
+}
+
+internal procedure capabilityDomainCanObserve(domain: $ExecutionDomain) -> bool {
+    return string::length(domain~>name()) > 0usize &&
+        domain~>max_concurrency() > 0usize
+}
+
+internal procedure capabilityExecutionDomainSupport(context: Context) -> bool {
+    let affinity: CpuSet = 1u64
+    let low: Priority = Priority::Low
+    let normal: Priority = Priority::Normal
+    let high: Priority = Priority::High
+    let _ = low
+    let cpu_default: $ExecutionDomain = context~>cpu()
+    let cpu_masked: $ExecutionDomain = context~>cpu(affinity)
+    let cpu_priority: $ExecutionDomain = context~>cpu(affinity, high)
+    let gpu_default: $ExecutionDomain = context~>gpu()
+    let inline_default: $ExecutionDomain = context~>inline()
+    return capabilityDomainCanObserve(cpu_default) &&
+        capabilityDomainCanObserve(cpu_masked) &&
+        capabilityDomainCanObserve(cpu_priority) &&
+        capabilityDomainCanObserve(gpu_default) &&
+        capabilityDomainCanObserve(inline_default) &&
+        capabilityPriorityIsNormal(normal)
+}
+
+internal procedure capabilityTimeObserved(time: $Time) -> bool {
+    let monotonic: $MonotonicTime = time~>monotonic()
+    let wall: $WallTime = time~>wall()
+    let start: MonotonicInstant = monotonic~>now()
+    let end: MonotonicInstant = monotonic~>now()
+    let resolution: Duration = monotonic~>resolution()
+    let elapsed: Outcome<Duration, TimeError> = monotonic~>elapsed(start, end)
+    let wall_resolution: Outcome<Duration, TimeError> = wall~>resolution()
+    let monotonic_coarsen: Outcome<$MonotonicTime, TimeError> =
+        monotonic~>coarsen(resolution)
+    let wall_now: Outcome<UtcInstant, TimeError> = wall~>now_utc()
+    let wall_coarsen: Outcome<$WallTime, TimeError> = wall~>coarsen(resolution)
+    return resolution.nanoseconds > 0u128 &&
+        capabilityDurationOutcomeObserved(elapsed) &&
+        capabilityDurationOutcomeObserved(wall_resolution) &&
+        capabilityUtcOutcomeObserved(wall_now) &&
+        capabilityMonotonicOutcomeObserved(monotonic_coarsen) &&
+        capabilityWallOutcomeObserved(wall_coarsen)
+}
+
+internal procedure capabilityContextFields(context: Context) -> CapabilityContextFields {
+    return CapabilityContextFields {
+        io: context.io,
+        net: context.net,
+        heap: context.heap,
+        sys: context.sys,
+        reactor: context.reactor,
+        time: context.time,
+        cpu: context~>cpu(),
+        gpu: context~>gpu(),
+        inline: context~>inline()
+    }
+}
+
+internal procedure capabilityContextBundleObserved(context: Context) -> bool {
+    let fields: CapabilityContextFields = capabilityContextFields(context)
+    let nested: CapabilityNestedContextFields = CapabilityNestedContextFields {
+        first: fields,
+        second: capabilityContextFields(context)
+    }
+    return capabilityPathExists(nested.first.io, "HelloUltraviolet") &&
+        capabilityNetworkRestricts(nested.first.net) &&
+        capabilityHeapAllocates(nested.first.heap) &&
+        capabilitySystemObserved(nested.first.sys) &&
+        capabilityReactorRuns(nested.first.reactor) &&
+        capabilityTimeObserved(nested.first.time) &&
+        capabilityDomainCanObserve(nested.first.cpu) &&
+        capabilityDomainCanObserve(nested.first.gpu) &&
+        capabilityDomainCanObserve(nested.first.inline) &&
+        restrictedCapabilityPathExists(nested.second.io, "HelloUltraviolet")
+}

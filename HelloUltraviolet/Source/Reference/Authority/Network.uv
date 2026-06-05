@@ -24,6 +24,150 @@ internal procedure networkAuthorityCanAffectHost(
     return reference.requires_capability && (reference.can_connect || reference.can_listen)
 }
 
+internal record NetworkRuntimeStateReference {
+    internal parent: *mut NetworkRuntimeStateReference
+    internal host_utf8: *mut u8
+    internal host_len: u32
+    internal restricted: i32
+    internal valid: i32
+}
+
+internal record NetworkRuntimeObjectReference {
+    internal data: *mut NetworkRuntimeStateReference
+    internal vtable: *mut u8
+}
+
+internal procedure networkRuntimeObjectReference(
+    net: $Network
+) -> NetworkRuntimeObjectReference {
+    return unsafe { transmute<$Network, NetworkRuntimeObjectReference>(net) }
+}
+
+internal procedure networkRuntimeStateReference(
+    object: NetworkRuntimeObjectReference
+) -> NetworkRuntimeStateReference {
+    return unsafe { *object.data }
+}
+
+internal procedure networkHostBytesAreLocalhost(pointer: *mut u8) -> bool {
+    if pointer == null {
+        return false
+    }
+    let host_pointer: *mut [u8; 9] = unsafe { transmute<*mut u8, *mut [u8; 9]>(pointer) }
+    let host_bytes: [u8; 9] = unsafe { *host_pointer }
+    return host_bytes[0usize] == 108u8 &&
+        host_bytes[1usize] == 111u8 &&
+        host_bytes[2usize] == 99u8 &&
+        host_bytes[3usize] == 97u8 &&
+        host_bytes[4usize] == 108u8 &&
+        host_bytes[5usize] == 104u8 &&
+        host_bytes[6usize] == 111u8 &&
+        host_bytes[7usize] == 115u8 &&
+        host_bytes[8usize] == 116u8
+}
+
+internal procedure networkHostBytesAreExample(pointer: *mut u8) -> bool {
+    if pointer == null {
+        return false
+    }
+    let host_pointer: *mut [u8; 11] =
+        unsafe { transmute<*mut u8, *mut [u8; 11]>(pointer) }
+    let host_bytes: [u8; 11] = unsafe { *host_pointer }
+    return host_bytes[0usize] == 101u8 &&
+        host_bytes[1usize] == 120u8 &&
+        host_bytes[2usize] == 97u8 &&
+        host_bytes[3usize] == 109u8 &&
+        host_bytes[4usize] == 112u8 &&
+        host_bytes[5usize] == 108u8 &&
+        host_bytes[6usize] == 101u8 &&
+        host_bytes[7usize] == 46u8 &&
+        host_bytes[8usize] == 99u8 &&
+        host_bytes[9usize] == 111u8 &&
+        host_bytes[10usize] == 109u8
+}
+
+internal procedure networkRootStateMatches(state: NetworkRuntimeStateReference) -> bool {
+    return state.parent == null &&
+        state.host_utf8 == null &&
+        state.host_len == 0u32 &&
+        state.restricted == 0 &&
+        state.valid == 1
+}
+
+internal procedure networkLocalhostRestrictionStateMatches(
+    state: NetworkRuntimeStateReference,
+    parent: *mut NetworkRuntimeStateReference
+) -> bool {
+    return state.parent == parent &&
+        state.host_len == 9u32 &&
+        state.restricted == 1 &&
+        state.valid == 1 &&
+        networkHostBytesAreLocalhost(state.host_utf8)
+}
+
+internal procedure networkExampleRestrictionStateMatches(
+    state: NetworkRuntimeStateReference,
+    parent: *mut NetworkRuntimeStateReference
+) -> bool {
+    return state.parent == parent &&
+        state.host_len == 11u32 &&
+        state.restricted == 1 &&
+        state.valid == 1 &&
+        networkHostBytesAreExample(state.host_utf8)
+}
+
+public procedure authorityNetworkRestrictionRuntimeStateReference(context: Context) -> bool {
+    let root_object: NetworkRuntimeObjectReference =
+        networkRuntimeObjectReference(context.net)
+    if root_object.data == null {
+        return false
+    }
+
+    let restricted: $Network = context.net~>restrict_to_host("localhost")
+    let nested_same: $Network = restricted~>restrict_to_host("localhost")
+    let nested_other: $Network = restricted~>restrict_to_host("example.com")
+
+    let restricted_object: NetworkRuntimeObjectReference =
+        networkRuntimeObjectReference(restricted)
+    let nested_same_object: NetworkRuntimeObjectReference =
+        networkRuntimeObjectReference(nested_same)
+    let nested_other_object: NetworkRuntimeObjectReference =
+        networkRuntimeObjectReference(nested_other)
+
+    if restricted_object.data == null ||
+        nested_same_object.data == null ||
+        nested_other_object.data == null {
+        return false
+    }
+
+    let root_state: NetworkRuntimeStateReference =
+        networkRuntimeStateReference(root_object)
+    let restricted_state: NetworkRuntimeStateReference =
+        networkRuntimeStateReference(restricted_object)
+    let nested_same_state: NetworkRuntimeStateReference =
+        networkRuntimeStateReference(nested_same_object)
+    let nested_other_state: NetworkRuntimeStateReference =
+        networkRuntimeStateReference(nested_other_object)
+    let root_state_after_restriction: NetworkRuntimeStateReference =
+        networkRuntimeStateReference(root_object)
+    let restricted_state_after_nested: NetworkRuntimeStateReference =
+        networkRuntimeStateReference(restricted_object)
+
+    return networkRootStateMatches(root_state) &&
+        networkLocalhostRestrictionStateMatches(restricted_state, root_object.data) &&
+        networkLocalhostRestrictionStateMatches(nested_same_state, restricted_object.data) &&
+        networkExampleRestrictionStateMatches(nested_other_state, restricted_object.data) &&
+        networkRootStateMatches(root_state_after_restriction) &&
+        networkLocalhostRestrictionStateMatches(
+            restricted_state_after_nested,
+            root_object.data
+        )
+}
+
+public procedure authorityNetworkPrimitiveCallsReference(context: Context) -> bool {
+    return authorityNetworkRestrictionRuntimeStateReference(context)
+}
+
 /// Exercises the Authority Network reference surface.
 public procedure runAuthorityNetworkReference() -> bool {
     let client: NetworkAuthorityReference = networkAuthorityReference(true, false, true)

@@ -4,11 +4,45 @@
 // =============================================================================
 #include "../../ir_instruction_visitor.h"
 
+#include "00_core/spec_trace.h"
+
+#include <optional>
+#include <string>
+
 namespace ultraviolet::codegen::emit_detail {
+
+namespace {
+
+void RecordPanicInstructionLowering(const char *rule_id,
+                                    const char *ir_form,
+                                    const char *lower_form,
+                                    bool cleanup_present)
+{
+  if (!core::Conformance::Enabled())
+  {
+    return;
+  }
+
+  std::string payload = "source=IRInstructionVisitor;ir_form=";
+  payload += ir_form;
+  payload += ";lower_form=";
+  payload += lower_form;
+  payload += ";cleanup_present=";
+  payload += cleanup_present ? "true" : "false";
+  core::Conformance::Record(rule_id, std::nullopt, payload);
+}
+
+} // namespace
 
 void IRInstructionVisitor::operator()(const IRClearPanic &) const
 {
+  SPEC_RULE("rule.24.LowerIRInstr-ClearPanic");
   ClearPanicRecord(emitter, &builder);
+  RecordPanicInstructionLowering(
+      "rule.24.LowerIRInstr-ClearPanic",
+      "ClearPanic",
+      "ClearPanicRecord",
+      false);
 }
 
 namespace {
@@ -51,15 +85,11 @@ void EmitPanicCheckImpl(LLVMEmitter &emitter,
   {
     return;
   }
-  llvm::Type *i8_ty = llvm::Type::getInt8Ty(emitter.GetContext());
-  llvm::Type *i8_ptr_ty = llvm::PointerType::get(emitter.GetContext(), 0);
-  llvm::Value *flag_ptr = CoerceTo(&builder, panic_ptr, i8_ptr_ty);
-  if (!flag_ptr)
+  llvm::Value *has_panic = LoadPanicFlag(emitter, &builder, panic_ptr);
+  if (!has_panic)
   {
     return;
   }
-  llvm::Value *flag = builder.CreateLoad(i8_ty, flag_ptr);
-  llvm::Value *has_panic = builder.CreateICmpNE(flag, llvm::ConstantInt::get(i8_ty, 0));
 
   llvm::Function *func = builder.GetInsertBlock()->getParent();
   llvm::BasicBlock *panic_bb =
@@ -67,6 +97,11 @@ void EmitPanicCheckImpl(LLVMEmitter &emitter,
   llvm::BasicBlock *cont_bb =
       llvm::BasicBlock::Create(emitter.GetContext(), "panic.cont", func);
   builder.CreateCondBr(has_panic, panic_bb, cont_bb);
+  RecordPanicInstructionLowering(
+      "rule.24.LowerIRInstr-PanicCheck",
+      "PanicCheck",
+      "panic-flag-branch",
+      cleanup_ir != nullptr);
 
   builder.SetInsertPoint(panic_bb);
   if (cleanup_ir)
@@ -126,16 +161,19 @@ void EmitPanicCheckImpl(LLVMEmitter &emitter,
 
 void IRInstructionVisitor::operator()(const IRPanicCheck &) const
 {
+  SPEC_RULE("rule.24.LowerIRInstr-PanicCheck");
   EmitPanicCheckImpl(emitter, builder, IRPtr{});
 }
 
 void IRInstructionVisitor::operator()(const IRCleanupPanicCheck &check) const
 {
+  SPEC_RULE("rule.24.LowerIRInstr-PanicCheck");
   EmitPanicCheckImpl(emitter, builder, check.cleanup_ir);
 }
 
 void IRInstructionVisitor::operator()(const IRLowerPanic &panic) const
 {
+  SPEC_RULE("rule.24.LowerIRInstr-LowerPanic");
   const std::uint16_t code = PanicCodeFromString(panic.reason);
   StorePanicRecord(emitter, &builder, code);
   if (panic.cleanup_ir)
@@ -146,6 +184,11 @@ void IRInstructionVisitor::operator()(const IRLowerPanic &panic) const
   {
     EmitReturn(emitter, &builder);
   }
+  RecordPanicInstructionLowering(
+      "rule.24.LowerIRInstr-LowerPanic",
+      "LowerPanic",
+      "StorePanicRecord+EmitReturn",
+      panic.cleanup_ir != nullptr);
 }
 
 void IRInstructionVisitor::operator()(const IRInitPanicRaise &raise) const
@@ -168,16 +211,11 @@ void IRInstructionVisitor::operator()(const IRInitPanicHandle &handle) const
   {
     return;
   }
-  llvm::Type *i8_ty = llvm::Type::getInt8Ty(emitter.GetContext());
-  llvm::Type *i8_ptr_ty = llvm::PointerType::get(emitter.GetContext(), 0);
-  llvm::Value *flag_ptr = CoerceTo(&builder, panic_ptr, i8_ptr_ty);
-  if (!flag_ptr)
+  llvm::Value *has_panic = LoadPanicFlag(emitter, &builder, panic_ptr);
+  if (!has_panic)
   {
     return;
   }
-  llvm::Value *flag = builder.CreateLoad(i8_ty, flag_ptr);
-  llvm::Value *has_panic =
-      builder.CreateICmpNE(flag, llvm::ConstantInt::get(i8_ty, 0));
 
   llvm::Function *func = builder.GetInsertBlock()->getParent();
   llvm::BasicBlock *panic_bb =

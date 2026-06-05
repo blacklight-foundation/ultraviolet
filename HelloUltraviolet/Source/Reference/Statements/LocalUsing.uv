@@ -28,10 +28,26 @@ internal procedure localUsingNoRuntimeEffectValue() -> i32 {
     return before_using + after_using + alias_value
 }
 
-/// Exercises the Statements LocalUsing reference surface.
-public procedure runStatementsLocalUsingReference() -> bool {
+/// Exercises that local using aliases have no runtime effect beyond alias resolution.
+public procedure usingLocalNoRuntimeEffectReference() -> bool {
+    return localUsingNoRuntimeEffectValue() == 93
+}
+
+/// Exercises Lower-Stmt-UsingLocal by preserving alias identity and later writes.
+public procedure lowerStmtUsingLocalReference() -> bool {
     return localUsingReadAliasValue() == 19 &&
         localUsingAliasChainValue() == 23 &&
-        localUsingAliasIdentityValue() == 31 &&
-        localUsingNoRuntimeEffectValue() == 93
+        localUsingAliasIdentityValue() == 31
+}
+
+/// Exercises that local using statements produce no runtime IR side effects.
+public procedure usingLocalNoRuntimeIRReference() -> bool {
+    return usingLocalNoRuntimeEffectReference()
+}
+
+/// Exercises the Statements LocalUsing reference surface.
+public procedure runStatementsLocalUsingReference() -> bool {
+    return lowerStmtUsingLocalReference() &&
+        usingLocalNoRuntimeEffectReference() &&
+        usingLocalNoRuntimeIRReference()
 }

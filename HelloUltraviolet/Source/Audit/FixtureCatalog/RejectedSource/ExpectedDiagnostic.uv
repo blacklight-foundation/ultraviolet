@@ -17,6 +17,13 @@ public procedure expectedDiagnostic(
     }
 }
 
+public procedure expectedDiagnosticOnly(
+    code: string@View,
+    obligation_id: string@View
+) -> ExpectedDiagnostic {
+    return expectedDiagnostic(code, obligation_id)
+}
+
 public procedure expectedDiagnosticMatches(
     diagnostic: ExpectedDiagnostic,
     code: string@View,

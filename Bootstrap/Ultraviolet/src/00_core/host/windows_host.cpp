@@ -109,6 +109,39 @@ std::wstring BuildCommandLine(const std::filesystem::path& program,
   return cmd;
 }
 
+class ScopedThreadErrorMode {
+ public:
+  explicit ScopedThreadErrorMode(DWORD additional_flags) {
+    DWORD previous = 0;
+    if (!SetThreadErrorMode(additional_flags, &previous)) {
+      return;
+    }
+
+    previous_mode_ = previous;
+    restore_ = true;
+    const DWORD merged = previous | additional_flags;
+    if (merged != additional_flags) {
+      DWORD ignored = 0;
+      SetThreadErrorMode(merged, &ignored);
+    }
+  }
+
+  ~ScopedThreadErrorMode() {
+    if (!restore_) {
+      return;
+    }
+    DWORD ignored = 0;
+    SetThreadErrorMode(previous_mode_, &ignored);
+  }
+
+  ScopedThreadErrorMode(const ScopedThreadErrorMode&) = delete;
+  ScopedThreadErrorMode& operator=(const ScopedThreadErrorMode&) = delete;
+
+ private:
+  DWORD previous_mode_ = 0;
+  bool restore_ = false;
+};
+
 void DrainPipe(HANDLE pipe, std::string* output) {
   std::array<char, 4096> buffer{};
   DWORD bytes_read = 0;
@@ -175,6 +208,8 @@ HostProcessResult RunProcessImpl(const HostProcessSpec& spec) {
           ? spec.working_directory->wstring()
           : std::wstring();
 
+  const ScopedThreadErrorMode launch_error_mode(SEM_FAILCRITICALERRORS |
+                                                SEM_NOOPENFILEERRORBOX);
   const BOOL ok = CreateProcessW(
       spec.program.wstring().c_str(), cmd_buf.data(), nullptr, nullptr,
       capture_merged || capture_separate, creation_flags,

@@ -104,6 +104,8 @@ analysis::TypeRef IndexedElementType(const ast::Expr& access,
 // =============================================================================
 
 LowerResult LowerIndexAccess(const ast::IndexAccessExpr& expr, LowerCtx& ctx) {
+    SPEC_RULE("rule.16.Lower-Expr-IndexFamily");
+
     ast::Expr access_expr;
     access_expr.node = expr;
     access_expr.span = expr.base ? expr.base->span : core::Span{};
@@ -115,6 +117,7 @@ LowerResult LowerIndexAccess(const ast::IndexAccessExpr& expr, LowerCtx& ctx) {
     // Check if index is a range expression
     if (std::holds_alternative<ast::RangeExpr>(expr.index->node)) {
         SPEC_RULE("Lower-Expr-Index-Range");
+        SPEC_RULE("req.16.IndexAccessRuntimeFailuresAndControlPropagation");
 
         const auto& range_node = std::get<ast::RangeExpr>(expr.index->node);
         auto range_result = LowerRangeExpr(range_node, ctx);
@@ -123,6 +126,10 @@ LowerResult LowerIndexAccess(const ast::IndexAccessExpr& expr, LowerCtx& ctx) {
         IRCheckRange check;
         check.base = base_result.value;
         check.range = ToIRRange(range_result.value);
+        RecordLoweringChecksJudgementMember(
+            ctx,
+            LoweringChecksJudgementMember::CheckRange);
+        RecordRuntimeCheckPanicBehavior("SliceBounds", "LowerIndexAccess");
 
         // Create slice value
         IRValue slice_value = ctx.FreshTempValue("slice");
@@ -141,6 +148,7 @@ LowerResult LowerIndexAccess(const ast::IndexAccessExpr& expr, LowerCtx& ctx) {
 
     if (IsRangeIndexExpr(*expr.index, ctx)) {
         SPEC_RULE("Lower-Expr-Index-Range");
+        SPEC_RULE("req.16.IndexAccessRuntimeFailuresAndControlPropagation");
 
         auto range_result = LowerExpr(*expr.index, ctx);
         const auto range_kind = RangeIndexKindOf(*expr.index, ctx);
@@ -151,6 +159,10 @@ LowerResult LowerIndexAccess(const ast::IndexAccessExpr& expr, LowerCtx& ctx) {
         if (range_kind.has_value()) {
             check.range.kind = ToIRRangeKind(*range_kind);
         }
+        RecordLoweringChecksJudgementMember(
+            ctx,
+            LoweringChecksJudgementMember::CheckRange);
+        RecordRuntimeCheckPanicBehavior("SliceBounds", "LowerIndexAccess");
 
         IRValue slice_value = ctx.FreshTempValue("slice");
         DerivedValueInfo info;
@@ -208,6 +220,10 @@ LowerResult LowerIndexAccess(const ast::IndexAccessExpr& expr, LowerCtx& ctx) {
         seq.push_back(index_result.ir);
         seq.push_back(key_ir);
         if (needs_check) {
+            RecordLoweringChecksJudgementMember(
+                ctx,
+                LoweringChecksJudgementMember::CheckIndex);
+            SPEC_RULE("req.16.IndexAccessRuntimeFailuresAndControlPropagation");
             seq.push_back(MakeIR(std::move(check)));
             seq.push_back(PanicFollowup(ctx));
         }
@@ -238,6 +254,10 @@ LowerResult LowerIndexAccess(const ast::IndexAccessExpr& expr, LowerCtx& ctx) {
     seq.push_back(index_result.ir);
     seq.push_back(key_ir);
     if (needs_check) {
+      RecordLoweringChecksJudgementMember(
+          ctx,
+          LoweringChecksJudgementMember::CheckIndex);
+      SPEC_RULE("req.16.IndexAccessRuntimeFailuresAndControlPropagation");
       seq.push_back(MakeIR(std::move(check)));
       seq.push_back(PanicFollowup(ctx));
     }

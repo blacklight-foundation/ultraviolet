@@ -66,6 +66,7 @@
 #include <cstdio>
 #include <functional>
 #include <map>
+#include <mutex>
 #include <optional>
 #include <set>
 #include <string>
@@ -118,6 +119,7 @@ static inline void SpecDefsBorrowBind() {
   SPEC_DEF("ParamTypeMap", "5.2.15");
   SPEC_DEF("ParamMov", "5.2.15");
   SPEC_DEF("ParamResp", "5.2.15");
+  SPEC_DEF("rule.16.Call-Arg-NotPlace", "16.4");
   SPEC_DEF("JoinState", "5.2.15");
   SPEC_DEF("JoinBindInfo", "5.2.15");
   SPEC_DEF("JoinScope_B", "5.2.15");
@@ -129,11 +131,42 @@ static inline void SpecDefsBorrowBind() {
   SPEC_DEF("LoopFix", "5.2.15");
   SPEC_DEF("B-Transition", "5.2.15");
   SPEC_DEF("B-Pipeline", "5.2.15");
+  SPEC_DEF("rule.16.Capture-Unique-Err", "16.9.4");
+  SPEC_DEF("rule.16.B-Closure-NonCapturing", "16.9.4");
+  SPEC_DEF("rule.16.B-Closure-Capturing", "16.9.4");
+  SPEC_DEF("rule.16.B-Closure-MoveCapture-Moved-Err", "16.9.4");
+  SPEC_DEF("rule.16.B-Closure-MoveCapture-Immovable-Err", "16.9.4");
+  SPEC_DEF("rule.16.B-Closure-RefCapture-Moved-Err", "16.9.4");
+  SPEC_DEF("rule.18.B-LetVar-UniqueNonMove-Err", "18.2.3");
+  SPEC_DEF("diag.18.BindingStatements", "18.2.7");
 }
 
 static inline void SpecRuleTransitionAnchor() {
   SPEC_RULE("B-Transition");
 }
+
+static void RecordBorrowStateObligationOnce(std::once_flag& flag,
+                                            std::string_view id,
+                                            std::string_view payload) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  std::call_once(flag, [id, payload]() {
+    core::Conformance::Record(id, std::optional<core::Span>{}, payload);
+  });
+}
+
+static std::once_flag g_binding_environment_obligation_once;
+static std::once_flag g_permission_environment_obligation_once;
+static std::once_flag g_initial_binding_environment_obligation_once;
+static std::once_flag g_initial_permission_environment_obligation_once;
+static std::once_flag g_binding_environment_join_obligation_once;
+static std::once_flag g_permission_environment_join_obligation_once;
+static std::once_flag g_movability_assign_obligation_once;
+static std::once_flag g_movability_colon_assign_obligation_once;
+static std::once_flag g_mov_eff_resp_mov_obligation_once;
+static std::once_flag g_mov_eff_resp_immov_obligation_once;
+static std::once_flag g_mov_eff_alias_obligation_once;
 
 struct BorrowBindPerfStats {
   std::uint64_t body_calls = 0;
@@ -743,6 +776,10 @@ static std::optional<BindEnv> Join_B(const BindEnv& lhs, const BindEnv& rhs) {
     }
     out.push_back(*scope);
   }
+  RecordBorrowStateObligationOnce(
+      g_binding_environment_join_obligation_once,
+      "def.BindingEnvironmentJoin",
+      "operation=Join_B;result=success");
   return out;
 }
 
@@ -785,6 +822,10 @@ static std::optional<PermEnv> JoinPerm(const PermEnv& lhs, const PermEnv& rhs) {
   for (std::size_t i = 0; i < lhs.size(); ++i) {
     out.push_back(JoinScope_Pi(lhs[i], rhs[i]));
   }
+  RecordBorrowStateObligationOnce(
+      g_permission_environment_join_obligation_once,
+      "def.PermissionEnvironmentJoin",
+      "operation=JoinPerm;result=success");
   return out;
 }
 
@@ -1403,8 +1444,16 @@ static bool AccessOk(const ScopeContext& ctx,
 
 static Movability MovOf(const ast::Token& op) {
   if (op.lexeme == ":=") {
+    RecordBorrowStateObligationOnce(
+        g_movability_colon_assign_obligation_once,
+        "def.BindingMovabilityOperator",
+        "operator=colon_assign;result=immov");
     return Movability::Immov;
   }
+  RecordBorrowStateObligationOnce(
+      g_movability_assign_obligation_once,
+      "def.BindingMovabilityOperator",
+      "operator=assign;result=mov");
   return Movability::Mov;
 }
 
@@ -1452,7 +1501,22 @@ static Responsibility RespOfInit(const ScopeContext& ctx,
 
 static Movability MovEff(Movability mv, Responsibility resp) {
   if (resp == Responsibility::Alias) {
+    RecordBorrowStateObligationOnce(
+        g_mov_eff_alias_obligation_once,
+        "def.EffectiveMovability",
+        "responsibility=alias;input=mov;result=immov");
     return Movability::Immov;
+  }
+  if (mv == Movability::Mov) {
+    RecordBorrowStateObligationOnce(
+        g_mov_eff_resp_mov_obligation_once,
+        "def.EffectiveMovability",
+        "responsibility=resp;input=mov;result=mov");
+  } else {
+    RecordBorrowStateObligationOnce(
+        g_mov_eff_resp_immov_obligation_once,
+        "def.EffectiveMovability",
+        "responsibility=resp;input=immov;result=immov");
   }
   return mv;
 }
@@ -2015,6 +2079,7 @@ static ArgPassResult ArgPass(const ScopeContext& ctx,
   if (!param.mode.has_value()) {
     if (arg_has_source_provenance() && !IsPlaceExprForCall(arg.value)) {
       SPEC_RULE("Call-Arg-NotPlace");
+      SPEC_RULE("rule.16.Call-Arg-NotPlace");
       return ArgError("E-TYP-1603", arg.span);
     }
     if (!arg_has_source_provenance()) {
@@ -2600,6 +2665,7 @@ static BindResult BindMethodCallExpr(const ScopeContext& ctx,
   if (!recv_mode.has_value() && receiver_has_source() &&
       !IsPlaceExprForCall(call.receiver)) {
     SPEC_RULE("Call-Arg-NotPlace");
+    SPEC_RULE("rule.16.Call-Arg-NotPlace");
     return ErrorResult(std::string_view("E-TYP-1603"), std::optional<core::Span>(call.receiver->span));
   }
 
@@ -3036,6 +3102,7 @@ static BindResult BindClosureExpr(const ScopeContext& ctx,
 
   if (collector.captures.empty()) {
     SPEC_RULE("B-Closure-NonCapturing");
+    SPEC_RULE("rule.16.B-Closure-NonCapturing");
     return OkResult(in);
   }
 
@@ -3058,6 +3125,8 @@ static BindResult BindClosureExpr(const ScopeContext& ctx,
     if (PermOfType(binding->type) == Permission::Unique &&
         move_caps.find(name) == move_caps.end()) {
       SPEC_RULE("Capture-Unique-NoMove-Err");
+      SPEC_RULE("Capture-Unique-Err");
+      SPEC_RULE("rule.16.Capture-Unique-Err");
       return ErrorResult(std::string_view("E-CON-0120"),
                          expr ? std::optional<core::Span>(expr->span)
                               : std::optional<core::Span>{});
@@ -3071,12 +3140,14 @@ static BindResult BindClosureExpr(const ScopeContext& ctx,
     }
     if (info->mov == Movability::Immov) {
       SPEC_RULE("B-Closure-MoveCapture-Immovable-Err");
+      SPEC_RULE("rule.16.B-Closure-MoveCapture-Immovable-Err");
       return ErrorResult(std::string_view("E-MEM-3006"),
                          expr ? std::optional<core::Span>(expr->span)
                               : std::optional<core::Span>{});
     }
     if (info->state.kind != BindStateKind::Valid) {
       SPEC_RULE("B-Closure-MoveCapture-Moved-Err");
+      SPEC_RULE("rule.16.B-Closure-MoveCapture-Moved-Err");
       return ErrorResult(std::string_view("E-CON-0121"),
                          expr ? std::optional<core::Span>(expr->span)
                               : std::optional<core::Span>{});
@@ -3093,6 +3164,7 @@ static BindResult BindClosureExpr(const ScopeContext& ctx,
     }
     if (info->state.kind != BindStateKind::Valid) {
       SPEC_RULE("B-Closure-RefCapture-Moved-Err");
+      SPEC_RULE("rule.16.B-Closure-RefCapture-Moved-Err");
       return ErrorResult(std::string_view("E-MEM-3001"),
                          expr ? std::optional<core::Span>(expr->span)
                               : std::optional<core::Span>{});
@@ -3110,6 +3182,7 @@ static BindResult BindClosureExpr(const ScopeContext& ctx,
     (void)Update_B_inplace(out.binds, name, updated);
   }
   SPEC_RULE("B-Closure-Capturing");
+  SPEC_RULE("rule.16.B-Closure-Capturing");
   return OkResult(out);
 }
 
@@ -3270,6 +3343,8 @@ static BindResult BindStmt(const ScopeContext& ctx,
           if (PermOfType(*bind_type) == Permission::Unique &&
               IsPlaceExpr(binding.init) && !IsMoveExpr(binding.init)) {
             SPEC_RULE("B-LetVar-UniqueNonMove-Err");
+            SPEC_RULE("rule.18.B-LetVar-UniqueNonMove-Err");
+            SPEC_RULE("diag.18.BindingStatements");
             return ErrorResult(std::string_view("E-MEM-3007"), std::optional<core::Span>(binding.init->span));
           }
 
@@ -3826,6 +3901,22 @@ BindCheckResult BindCheckBody(const ScopeContext& ctx,
   binds.emplace_back();
   binds = IntroAll_B(binds, param_info);
   ParamTypeMap(ctx, params, self_param, env);
+  RecordBorrowStateObligationOnce(
+      g_binding_environment_obligation_once,
+      "def.BindingEnvironment",
+      "definition=BindingEnvironment;scopes=static+params");
+  RecordBorrowStateObligationOnce(
+      g_permission_environment_obligation_once,
+      "def.PermissionEnvironment",
+      "definition=PermissionEnvironment;scopes=static+params");
+  RecordBorrowStateObligationOnce(
+      g_initial_binding_environment_obligation_once,
+      "def.InitialBindingEnvironment",
+      "definition=InitialBindingEnvironment;static_scope=present;param_scope=present");
+  RecordBorrowStateObligationOnce(
+      g_initial_permission_environment_obligation_once,
+      "def.InitialPermissionEnvironment",
+      "definition=InitialPermissionEnvironment;static_scope=present;param_scope=present");
 
   BindStateBundle state{binds, perms, env};
   const auto checked = [&]() {

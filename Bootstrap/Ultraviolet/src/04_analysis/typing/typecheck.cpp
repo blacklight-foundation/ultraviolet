@@ -155,6 +155,8 @@ ProcedureDeclResult TypeDeriveTargetDeclBody(const ScopeContext& ctx,
                          ? body_result.diag_id
                          : std::optional<std::string_view>{"E-TYP-1530"};
     result.diag_span = body_result.diag_span;
+    result.diagnostic_obligation_ids =
+        body_result.diagnostic_obligation_ids;
     result.diag_detail =
         body_result.diag_detail.empty()
             ? "procedure body typing failed without statement-level diagnostic"
@@ -234,7 +236,9 @@ ProcedureDeclResult TypeComptimeProcedureDeclBody(
 
   const bool is_unit = TypeEquiv(sig.return_type, MakeTypePrim("()")).equiv;
   if (!is_unit && !ComptimeProcedureHasExplicitReturn(*decl.body)) {
+    SPEC_RULE("def.15.ExplicitReturn");
     SPEC_RULE("WF-ProcBody-ExplicitReturn-Err");
+    SPEC_RULE("rule.15.WF-ProcBody-ExplicitReturn-Err");
     SPEC_RULE("ProcReturn-Missing-Err");
     result.ok = false;
     result.diag_id = "E-TYP-1507";
@@ -281,6 +285,8 @@ ProcedureDeclResult TypeComptimeProcedureDeclBody(
                          ? body_result.diag_id
                          : std::optional<std::string_view>{"E-TYP-1530"};
     result.diag_span = body_result.diag_span;
+    result.diagnostic_obligation_ids =
+        body_result.diagnostic_obligation_ids;
     result.diag_detail =
         body_result.diag_detail.empty()
             ? "compile-time procedure body typing failed without statement-level diagnostic"
@@ -422,6 +428,17 @@ static void EmitTypecheckDiag(core::DiagnosticStream& diags,
   EmitResolvedTypecheckDiagnostic(diags, diag_id, span, detail);
 }
 
+static void EmitDuplicateDeclarationOverloadDiag(
+    core::DiagnosticStream& diags,
+    const std::optional<core::Span>& span) {
+  auto diag = core::MakeDiagnosticById("E-MOD-1302", span);
+  if (!diag.has_value()) {
+    return;
+  }
+  diag->obligation_ids.emplace_back("Collect-Dup");
+  core::Emit(diags, *diag);
+}
+
 static bool IsContextTypeSyntax(const ast::Type& type) {
   if (const auto* path_type = std::get_if<ast::TypePathType>(&type.node)) {
     return path_type->generic_args.empty() && IsContextTypePath(path_type->path);
@@ -473,7 +490,8 @@ static void EmitDeclDiag(core::DiagnosticStream& diags,
                          const std::optional<std::string_view>& diag_id,
                          const std::optional<core::Span>& span,
                          const std::string& detail = {},
-                         std::vector<core::SubDiagnostic> children = {}) {
+                         std::vector<core::SubDiagnostic> children = {},
+                         std::vector<std::string_view> obligation_ids = {}) {
   if (!diag_id.has_value()) {
     return;
   }
@@ -492,6 +510,21 @@ static void EmitDeclDiag(core::DiagnosticStream& diags,
     diag->children.insert(diag->children.end(),
                           std::make_move_iterator(children.begin()),
                           std::make_move_iterator(children.end()));
+    for (const auto obligation_id : obligation_ids) {
+      if (obligation_id.empty()) {
+        continue;
+      }
+      bool already_attached = false;
+      for (const auto& attached_id : diag->obligation_ids) {
+        if (attached_id == obligation_id) {
+          already_attached = true;
+          break;
+        }
+      }
+      if (!already_attached) {
+        diag->obligation_ids.emplace_back(obligation_id);
+      }
+    }
     core::Emit(diags, *diag);
     return true;
   };
@@ -657,6 +690,11 @@ static void EmitDuplicateErasedOverloadSignatureDiags(
     for (const auto& seen : seen_signatures) {
       if (ErasedOverloadSignatureEqual(*signature, seen)) {
         SPEC_RULE("DuplicateErasedOverloadSignaturesForbidden");
+        SPEC_RULE("req.15.DuplicateErasedOverloadSignaturesForbidden");
+        SPEC_RULE("diag-table.15.Overloading");
+        SPEC_RULE("Collect-Dup");
+        EmitDuplicateDeclarationOverloadDiag(
+            diags, std::optional<core::Span>(proc->span));
         EmitTypecheckDiag(diags, "E-SEM-3032",
                           std::optional<core::Span>(proc->span));
         break;
@@ -701,6 +739,7 @@ static bool MainSigOk(const ScopeContext& ctx, const ast::ProcedureDecl& decl) {
 
   // Must have exactly one parameter
   if (decl.params.size() != 1) {
+    SPEC_RULE("NAA-2");
     return false;
   }
 
@@ -711,6 +750,7 @@ static bool MainSigOk(const ScopeContext& ctx, const ast::ProcedureDecl& decl) {
   }
 
   if (!param.type || !IsContextBundleType(ctx, *param.type)) {
+    SPEC_RULE("NAA-2");
     return false;
   }
 
@@ -852,7 +892,8 @@ DeclTypingResult DeclTypingModules(ScopeContext& ctx,
                 EmitDeclDiag(result.diags, res.diag_id,
                              diag_span,
                              res.diag_detail,
-                             std::move(children));
+                             std::move(children),
+                             res.diagnostic_obligation_ids);
               }
             } else if constexpr (std::is_same_v<T, ast::ComptimeProcedureDecl>) {
               if (const auto precheck =
@@ -874,7 +915,9 @@ DeclTypingResult DeclTypingModules(ScopeContext& ctx,
                         : std::optional<core::Span>(node.span);
                 EmitDeclDiag(result.diags, res.diag_id,
                              diag_span,
-                             res.diag_detail);
+                             res.diag_detail,
+                             {},
+                             res.diagnostic_obligation_ids);
               } else {
                 SPEC_RULE_AT("T-CtProc", node.span);
               }
@@ -887,7 +930,9 @@ DeclTypingResult DeclTypingModules(ScopeContext& ctx,
                         ? res.diag_span
                         : std::optional<core::Span>(node.span);
                 EmitDeclDiag(result.diags, res.diag_id, diag_span,
-                             res.diag_detail);
+                             res.diag_detail,
+                             {},
+                             res.diagnostic_obligation_ids);
               }
             } else if constexpr (std::is_same_v<T, ast::RecordDecl>) {
               const auto res = ::ultraviolet::analysis::TypeRecordDecl(
@@ -895,14 +940,19 @@ DeclTypingResult DeclTypingModules(ScopeContext& ctx,
               if (!res.ok) {
                 EmitDeclDiag(result.diags, res.diag_id,
                              std::optional<core::Span>(node.span),
-                             res.diag_detail);
+                             res.diag_detail,
+                             {},
+                             res.diagnostic_obligation_ids);
               }
             } else if constexpr (std::is_same_v<T, ast::EnumDecl>) {
               const auto res = ::ultraviolet::analysis::TypeEnumDecl(
                   ctx, node, module.path, result.diags);
               if (!res.ok) {
                 EmitDeclDiag(result.diags, res.diag_id,
-                             std::optional<core::Span>(node.span));
+                             std::optional<core::Span>(node.span),
+                             {},
+                             {},
+                             res.diagnostic_obligation_ids);
               }
             } else if constexpr (std::is_same_v<T, ast::ModalDecl>) {
               const auto res = ::ultraviolet::analysis::TypeModalDecl(
@@ -925,7 +975,10 @@ DeclTypingResult DeclTypingModules(ScopeContext& ctx,
                   ctx, node, module.path, result.diags);
               if (!res.ok) {
                 EmitDeclDiag(result.diags, res.diag_id,
-                             std::optional<core::Span>(node.span));
+                             std::optional<core::Span>(node.span),
+                             {},
+                             {},
+                             res.diagnostic_obligation_ids);
               }
             } else if constexpr (std::is_same_v<T, ast::StaticDecl>) {
               const auto res = ::ultraviolet::analysis::TypeStaticDecl(
@@ -1026,6 +1079,8 @@ DeclTypingResult MainCheckProject(ScopeContext& ctx,
 
   if (mains.empty()) {
     SPEC_RULE("Main-Missing");
+    SPEC_RULE("rule.15.Main-Missing");
+    SPEC_RULE("def.15.MainDiagRefs");
     EmitTypecheckDiag(result.diags, "E-MOD-2434", std::nullopt);
     result.ok = false;
     return result;
@@ -1033,6 +1088,8 @@ DeclTypingResult MainCheckProject(ScopeContext& ctx,
 
   if (mains.size() > 1) {
     SPEC_RULE("Main-Multiple");
+    SPEC_RULE("rule.15.Main-Multiple");
+    SPEC_RULE("def.15.MainDiagRefs");
     const std::optional<core::Span> duplicate_span =
         mains.front().decl ? std::optional<core::Span>(mains.front().decl->span)
                            : std::nullopt;
@@ -1045,6 +1102,9 @@ DeclTypingResult MainCheckProject(ScopeContext& ctx,
   const auto* main_decl = main_ref.decl;
   const auto* main_module_path = main_ref.module_path;
   if (!main_decl || !main_module_path) {
+    SPEC_RULE("Main-Missing");
+    SPEC_RULE("rule.15.Main-Missing");
+    SPEC_RULE("def.15.MainDiagRefs");
     EmitTypecheckDiag(result.diags, "E-MOD-2434", std::nullopt);
     result.ok = false;
     return result;
@@ -1052,6 +1112,8 @@ DeclTypingResult MainCheckProject(ScopeContext& ctx,
 
   if (MainGeneric(*main_decl)) {
     SPEC_RULE("Main-Generic-Err");
+    SPEC_RULE("rule.15.Main-Generic-Err");
+    SPEC_RULE("def.15.MainDiagRefs");
     EmitTypecheckDiag(result.diags, "E-MOD-2432", main_decl->span);
     result.ok = false;
     return result;
@@ -1063,6 +1125,8 @@ DeclTypingResult MainCheckProject(ScopeContext& ctx,
 
   if (!MainSigOk(ctx, *main_decl)) {
     SPEC_RULE("Main-Signature-Err");
+    SPEC_RULE("rule.15.Main-Signature-Err");
+    SPEC_RULE("def.15.MainDiagRefs");
     auto diag =
         BuildResolvedTypecheckDiagnostic("E-MOD-2431", main_decl->span);
     if (diag.has_value()) {
@@ -1131,6 +1195,7 @@ TypecheckResult TypecheckModules(
                                          &visible_module_names};
 
   ExprTypeMap* prev_expr_types = ctx.expr_types;
+  ExprValueTypeMap* prev_expr_value_types = ctx.expr_value_types;
   DynamicRefineExprMap* prev_dynamic_refine_checks = ctx.dynamic_refine_checks;
   GenericCallSubstMap* prev_generic_call_substs = ctx.generic_call_substs;
   SelectedCallTargetMap* prev_selected_call_targets = ctx.selected_call_targets;
@@ -1145,6 +1210,7 @@ TypecheckResult TypecheckModules(
       ctx.contract_purity_cache;
   auto contract_purity_cache = std::make_shared<ContractPurityCache>();
   ctx.expr_types = &result.expr_types;
+  ctx.expr_value_types = &result.expr_value_types;
   ctx.dynamic_refine_checks = &result.dynamic_refine_checks;
   ctx.generic_call_substs = &result.generic_call_substs;
   ctx.selected_call_targets = &result.selected_call_targets;
@@ -1156,6 +1222,7 @@ TypecheckResult TypecheckModules(
   struct ExprTypesReset {
     ScopeContext& ctx;
     ExprTypeMap* prev;
+    ExprValueTypeMap* prev_expr_value_types;
     DynamicRefineExprMap* prev_dynamic_refine_checks;
     GenericCallSubstMap* prev_generic_call_substs;
     SelectedCallTargetMap* prev_selected_call_targets;
@@ -1166,6 +1233,7 @@ TypecheckResult TypecheckModules(
     std::shared_ptr<ContractPurityCache> prev_contract_purity_cache;
     ~ExprTypesReset() {
       ctx.expr_types = prev;
+      ctx.expr_value_types = prev_expr_value_types;
       ctx.dynamic_refine_checks = prev_dynamic_refine_checks;
       ctx.generic_call_substs = prev_generic_call_substs;
       ctx.selected_call_targets = prev_selected_call_targets;
@@ -1177,6 +1245,7 @@ TypecheckResult TypecheckModules(
     }
   } expr_types_reset{ctx,
                      prev_expr_types,
+                     prev_expr_value_types,
                      prev_dynamic_refine_checks,
                      prev_generic_call_substs,
                      prev_selected_call_targets,

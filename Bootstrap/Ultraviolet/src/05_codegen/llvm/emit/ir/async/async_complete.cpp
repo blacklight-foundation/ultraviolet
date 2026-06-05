@@ -8,6 +8,9 @@ namespace ultraviolet::codegen::emit_detail {
 
 void IRInstructionVisitor::operator()(const IRAsyncComplete &async_complete) const
 {
+  SPEC_RULE("rule.21.Lower-Async-Complete");
+  SPEC_RULE("requirement.21.AsyncSettlementRuntimeSemantics");
+
   llvm::Value *wrapped_value = EvaluateOrDefault(async_complete.value);
   const LowerCtx *active_ctx = emitter.GetCurrentCtx();
   const analysis::ScopeContext &scope = BuildScope(active_ctx);
@@ -53,7 +56,7 @@ void IRInstructionVisitor::operator()(const IRAsyncComplete &async_complete) con
       const AsyncStateDiscs async_discs =
           LoweredAsyncStateDiscs(scope, async_type);
       const std::uint64_t completed_disc = async_discs.completed;
-      llvm::Value *disc_ptr = builder.CreateStructGEP(async_struct, async_slot, 0);
+      llvm::Value *disc_ptr = async_slot;
       llvm::Value *disc_val = llvm::ConstantInt::get(disc_ty, completed_disc);
       builder.CreateStore(disc_val, disc_ptr);
 
@@ -114,12 +117,12 @@ void IRInstructionVisitor::operator()(const IRAsyncComplete &async_complete) con
                 dl.getTypeAllocSize(payload_value->getType()));
             if (copy_size > 0)
             {
-              builder.CreateMemCpy(
+              EmitAggMemcpy(
+                  emitter,
                   payload_i8,
-                  llvm::Align(1),
                   src_i8,
-                  llvm::Align(1),
-                  llvm::ConstantInt::get(i64_ty, copy_size));
+                  llvm::ConstantInt::get(i64_ty, copy_size),
+                  1);
             }
           }
         }

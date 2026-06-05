@@ -48,12 +48,79 @@ bool IsIdentifierSlotToken(const Token* tok) {
   return tok && (IsIdentTok(*tok) || tok->kind == TokenKind::Keyword);
 }
 
+void RecordRestrictedSpliceIdentIfPresent(Parser parser) {
+  if (!parser.quote_mode || !IsOp(parser, "$")) {
+    return;
+  }
+
+  Parser after_dollar = parser;
+  Advance(after_dollar);
+  if (!IsIdentifierSlotToken(Tok(after_dollar))) {
+    return;
+  }
+
+  Parser after_ident = after_dollar;
+  Advance(after_ident);
+  SPEC_RULE_AT("requirement.22.SpliceIdentifierPositionRestrictions",
+               SpanBetween(parser, after_ident));
+}
+
 void EmitReservedKeywordIdentifierErr(Parser& parser, const core::Span& span) {
   auto diag = core::MakeDiagnosticById("E-CNF-0401", span);
   if (!diag) {
     return;
   }
   core::Emit(parser.diags, *diag);
+}
+
+struct QualifiedSegment {
+  Identifier name;
+  core::Span span;
+  bool is_keyword = false;
+};
+
+ParseElemResult<QualifiedSegment> ParseQualifiedSegment(Parser parser) {
+  const Token* tok = Tok(parser);
+  if (tok && IsIdentifierSlotToken(tok)) {
+    QualifiedSegment segment;
+    segment.name = tok->lexeme;
+    segment.span = tok->span;
+    segment.is_keyword = tok->kind == TokenKind::Keyword;
+    Advance(parser);
+    return {parser, std::move(segment)};
+  }
+
+  RecordRestrictedSpliceIdentIfPresent(parser);
+  SPEC_RULE("Parse-Ident-Err");
+  EmitGenericParseSyntaxErr(parser, TokSpan(parser));
+  QualifiedSegment segment;
+  segment.name = "_";
+  segment.span = TokSpan(parser);
+  return {parser, std::move(segment)};
+}
+
+bool IsSpecDefinedKeywordQualifiedName(
+    const std::vector<QualifiedSegment>& segments,
+    std::size_t index) {
+  if (segments.size() == 2 && index == 1 &&
+      segments[0].name == "string" && segments[1].name == "from") {
+    return true;
+  }
+  return false;
+}
+
+void EmitReservedQualifiedSegmentErrs(
+    Parser& parser,
+    const std::vector<QualifiedSegment>& segments) {
+  for (std::size_t i = 0; i < segments.size(); ++i) {
+    if (!segments[i].is_keyword) {
+      continue;
+    }
+    if (IsSpecDefinedKeywordQualifiedName(segments, i)) {
+      continue;
+    }
+    EmitReservedKeywordIdentifierErr(parser, segments[i].span);
+  }
 }
 
 // =============================================================================
@@ -165,6 +232,7 @@ ParseElemResult<Identifier> ParseIdent(Parser parser) {
     return {parser, name};
   }
 
+  RecordRestrictedSpliceIdentIfPresent(parser);
   SPEC_RULE("Parse-Ident-Err");
   EmitGenericParseSyntaxErr(parser, TokSpan(parser));
   return {parser, Identifier{"_"}};
@@ -269,22 +337,41 @@ ParseElemResult<ClassPath> ParseClassPath(Parser parser) {
 
 ParseQualifiedHeadResult ParseQualifiedHead(Parser parser) {
   SPEC_RULE("Parse-QualifiedHead");
-  ParseElemResult<Identifier> head = ParseIdent(parser);
+  std::vector<QualifiedSegment> segments;
+  ParseElemResult<QualifiedSegment> head = ParseQualifiedSegment(parser);
+  segments.push_back(std::move(head.elem));
+
   const Token* tok = Tok(head.parser);
   if (!tok || !IsOpTok(*tok, "::")) {
     EmitParseSyntaxErr(parser, TokSpan(parser));
     return {parser, {}, "_"};
   }
 
-  ParseElemResult<ModulePath> rest = ParseModulePathTail(head.parser, {head.elem});
-  ModulePath full = std::move(rest.elem);
-  if (full.size() < 2) {
+  Parser cur = head.parser;
+  while (const Token* sep = Tok(cur)) {
+    if (!IsOpTok(*sep, "::")) {
+      break;
+    }
+    Advance(cur);
+    ParseElemResult<QualifiedSegment> segment = ParseQualifiedSegment(cur);
+    segments.push_back(std::move(segment.elem));
+    cur = segment.parser;
+  }
+
+  if (segments.size() < 2) {
     EmitParseSyntaxErr(parser, TokSpan(parser));
-    return {rest.parser, full, "_"};
+    return {cur, {}, "_"};
+  }
+
+  EmitReservedQualifiedSegmentErrs(cur, segments);
+  ModulePath full;
+  full.reserve(segments.size());
+  for (const auto& segment : segments) {
+    full.push_back(segment.name);
   }
   Identifier name = full.back();
   full.pop_back();
-  return {rest.parser, full, name};
+  return {cur, full, name};
 }
 
 // =============================================================================

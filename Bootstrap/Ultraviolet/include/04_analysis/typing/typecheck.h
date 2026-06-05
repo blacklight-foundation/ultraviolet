@@ -16,6 +16,7 @@ struct TypecheckResult {
   bool ok = false;
   core::DiagnosticStream diags;
   ExprTypeMap expr_types;
+  ExprValueTypeMap expr_value_types;
   DynamicRefineExprMap dynamic_refine_checks;
   GenericCallSubstMap generic_call_substs;
   SelectedCallTargetMap selected_call_targets;

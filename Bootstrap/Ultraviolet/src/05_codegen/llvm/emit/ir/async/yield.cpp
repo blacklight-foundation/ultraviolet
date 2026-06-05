@@ -6,6 +6,28 @@
 
 namespace ultraviolet::codegen::emit_detail {
 
+namespace {
+
+void RecordAsyncKeyIRComponent(
+    const char *component,
+    const char *operation)
+{
+  if (!core::Conformance::Enabled())
+  {
+    return;
+  }
+
+  std::string payload = "source=EmitYield;operation=";
+  payload += operation;
+  payload += ";component=";
+  payload += component;
+  payload += ";component_set=SnapshotHeldKeysIR,ReleaseHeldKeysIR,";
+  payload += "ReacquireHeldKeysIR,StaleValueMarkIR";
+  core::Conformance::Record("def.21.AsyncKeyIR", std::nullopt, payload);
+}
+
+}  // namespace
+
 void IRInstructionVisitor::operator()(const IRYield &y) const
 {
   AsyncEmitState *async_state = emitter.GetAsyncState();
@@ -16,6 +38,14 @@ void IRInstructionVisitor::operator()(const IRYield &y) const
   }
 
   const LowerCtx::AsyncProcInfo &info = *async_state->info;
+  SPEC_RULE("requirement.21.YieldRuntimeSemantics");
+  SPEC_RULE("def.21.ResumptionHelpers");
+  SPEC_RULE("rule.21.EvalSigma-Yield");
+  if (y.release)
+  {
+    SPEC_RULE("rule.21.EvalSigma-Yield-Release");
+  }
+
   llvm::Function *func =
       builder.GetInsertBlock() ? builder.GetInsertBlock()->getParent() : nullptr;
   if (!func)
@@ -317,8 +347,13 @@ void IRInstructionVisitor::operator()(const IRYield &y) const
   llvm::Value *frame_ptr = ensure_async_frame();
   if (y.release && frame_ptr)
   {
+    SPEC_RULE("rule.21.Lower-Yield-Release-Keys");
+    SPEC_RULE("requirement.21.AsyncSuspensionAccessRights");
+    SPEC_RULE("requirement.21.YieldReleaseRuntimeReference");
     llvm::Value *released = EmitKeyReleaseAll(emitter, &builder);
     StoreAsyncFrameKeySnapshot(emitter, &builder, frame_ptr, released);
+    RecordAsyncKeyIRComponent("ReleaseHeldKeysIR", "release-held-keys");
+    RecordAsyncKeyIRComponent("SnapshotHeldKeysIR", "snapshot-held-keys");
   }
   if (frame_ptr)
   {
@@ -332,6 +367,8 @@ void IRInstructionVisitor::operator()(const IRYield &y) const
         i64_ty);
     if (state_ptr)
     {
+      SPEC_RULE("requirement.21.AsyncFrameStoredState");
+      SPEC_RULE("rule.21.Lower-Async-Suspend");
       builder.CreateStore(
           llvm::ConstantInt::get(i64_ty, y.state_index),
           state_ptr);
@@ -355,7 +392,7 @@ void IRInstructionVisitor::operator()(const IRYield &y) const
     const AsyncStateDiscs async_discs =
         LoweredAsyncStateDiscs(scope, async_type);
     const std::uint64_t suspended_disc = async_discs.suspended;
-    llvm::Value *disc_ptr = builder.CreateStructGEP(async_struct, async_slot, 0);
+    llvm::Value *disc_ptr = async_slot;
     builder.CreateStore(
         llvm::ConstantInt::get(disc_ty, suspended_disc),
         disc_ptr);
@@ -411,12 +448,12 @@ void IRInstructionVisitor::operator()(const IRYield &y) const
             static_cast<std::uint64_t>(dl.getTypeAllocSize(out_ll));
         if (copy_size > 0)
         {
-          builder.CreateMemCpy(
+          EmitAggMemcpy(
+              emitter,
               payload_i8,
-              llvm::Align(1),
               src_i8,
-              llvm::Align(1),
-              llvm::ConstantInt::get(i64_ty, copy_size));
+              llvm::ConstantInt::get(i64_ty, copy_size),
+              1);
         }
       }
     }
@@ -498,9 +535,13 @@ void IRInstructionVisitor::operator()(const IRYield &y) const
     async_state->emitting_resume_prelude = false;
     if (y.release && async_state->frame_ptr)
     {
+      SPEC_RULE("rule.21.Lower-Yield-Release-Keys");
+      SPEC_RULE("requirement.21.AsyncSuspensionAccessRights");
+      SPEC_RULE("requirement.21.YieldReleaseRuntimeReference");
       llvm::Value *released =
           LoadAsyncFrameKeySnapshot(emitter, &builder, async_state->frame_ptr);
       EmitKeyReacquire(emitter, &builder, released);
+      RecordAsyncKeyIRComponent("ReacquireHeldKeysIR", "reacquire-held-keys");
       StoreAsyncFrameKeySnapshot(
           emitter,
           &builder,
@@ -508,6 +549,7 @@ void IRInstructionVisitor::operator()(const IRYield &y) const
           NullOpaquePtr(emitter));
     }
     llvm::Value *resume_input = load_resume_input(builder);
+    SPEC_RULE("rule.21.EvalSigma-Yield-Resume");
     if (!resume_input)
     {
       resume_input = DefaultFor(y.result);

@@ -320,7 +320,7 @@ AttributeValidationResult ValidateAttributeList(
   for (const auto& attr : attrs) {
     // Check if attribute is known
     if (!IsKnownAttribute(attr.name)) {
-      SPEC_RULE("Attr-Unknown");
+      SPEC_RULE("AttrList-Unknown");
       result.ok = false;
       result.diag_id = "E-MOD-2451";
       return result;
@@ -336,7 +336,7 @@ AttributeValidationResult ValidateAttributeList(
 
     // Check if attribute applies to this target
     if (!AttrAppliesTo(attr.name, internal_target)) {
-      SPEC_RULE("Attr-Target-Err");
+      SPEC_RULE("AttrList-Target-Err");
       result.ok = false;
       result.diag_id = "E-MOD-2452";
       return result;

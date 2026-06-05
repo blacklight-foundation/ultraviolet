@@ -26,6 +26,8 @@ namespace {
 
 static inline void SpecDefsUnsafeBlockStmt() {
   SPEC_DEF("T-UnsafeStmt", "5.5");
+  SPEC_DEF("rule.18.T-UnsafeStmt", "18.10.4");
+  SPEC_DEF("diag.18.UnsafeStatements", "18.10.7");
 }
 
 }  // namespace
@@ -52,6 +54,7 @@ StmtTypeResult TypeUnsafeBlockStmt(const ScopeContext& ctx,
                                   type_expr, type_ident, type_place,
                                   unsafe_ctx.env_ref);
   if (!info.ok) {
+    SPEC_RULE("diag.18.UnsafeStatements");
     return {false, info.diag_id, {}, {}, info.diag_detail, info.diag_span};
   }
 
@@ -63,6 +66,7 @@ StmtTypeResult TypeUnsafeBlockStmt(const ScopeContext& ctx,
   }
   flow.breaks = info.breaks;
   flow.break_void = info.break_void;
+  SPEC_RULE("rule.18.T-UnsafeStmt");
   SPEC_RULE("T-UnsafeStmt");
   return {true, std::nullopt, env, std::move(flow)};
 }

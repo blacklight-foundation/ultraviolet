@@ -99,6 +99,49 @@ static bool DistinctClassPaths(const std::vector<ast::ClassPath>& impls) {
   return std::adjacent_find(keys.begin(), keys.end()) == keys.end();
 }
 
+static bool HasDirectFoundationalImpl(const std::vector<ast::ClassPath>& impls,
+                                      std::string_view name) {
+  for (const auto& impl : impls) {
+    if (impl.size() == 1 && impl[0] == name) {
+      return true;
+    }
+  }
+  return false;
+}
+
+static void RecordHashRequiresEqCheck(std::string_view source,
+                                      bool implements_eq) {
+  SPEC_RULE("req.14.HashRequiresEqAndEqualValuesHashEqual");
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload;
+  payload += "source=";
+  payload += source;
+  payload += ";implements_hash=true;implements_eq=";
+  payload += implements_eq ? "true" : "false";
+  payload += ";equal_values_hash_equal=semantic_law";
+  core::Conformance::Record(
+      "req.14.HashRequiresEqAndEqualValuesHashEqual",
+      std::nullopt,
+      payload);
+}
+
+static bool HashImplementationSatisfiesEqRequirement(
+    const ScopeContext& ctx,
+    const TypeRef& self_type,
+    const std::vector<ast::ClassPath>& impls) {
+  if (!HasDirectFoundationalImpl(impls, "Hash")) {
+    return true;
+  }
+
+  const bool implements_eq =
+      EqType(ctx, self_type) || HasDirectFoundationalImpl(impls, "Eq");
+  RecordHashRequiresEqCheck("TypeEnumDecl", implements_eq);
+  return implements_eq;
+}
+
 // Check for conflicting implementations (Bitcopy + Drop)
 static bool CheckImplConflicts(const std::vector<ast::ClassPath>& impls,
                                std::optional<std::string_view>& diag_id) {
@@ -203,6 +246,8 @@ EnumDeclResult TypeEnumDecl(
   // Check class implementations are distinct
   if (!DistinctClassPaths(decl.implements)) {
     SPEC_RULE("Impl-Duplicate-Err");
+    SPEC_RULE("rule.14.Impl-Coherence-Err");
+    SPEC_RULE("req.14.DuplicateClassImplementationForbidden");
     result.ok = false;
     result.diag_id = "E-TYP-2506";
     return result;
@@ -212,15 +257,26 @@ EnumDeclResult TypeEnumDecl(
   std::optional<std::string_view> impl_diag;
   if (!CheckImplConflicts(decl.implements, impl_diag)) {
     SPEC_RULE("BitcopyDrop-Conflict");
+    SPEC_RULE("rule.14.BitcopyDrop-Conflict");
     result.ok = false;
     result.diag_id = impl_diag;
     return result;
   }
 
+  if (!HashImplementationSatisfiesEqRequirement(
+          ctx, result.self_type, decl.implements)) {
+    result.ok = false;
+    result.diag_id = "E-TYP-2503";
+    return result;
+  }
+
   if (decl.variants.empty()) {
     SPEC_RULE("Enum-Empty-Err");
+    SPEC_RULE("diagnostics.Enums");
     result.ok = false;
     result.diag_id = "E-TYP-2001";
+    result.diagnostic_obligation_ids = {"Enum-Empty-Err",
+                                        "diagnostics.Enums"};
     return result;
   }
 
@@ -356,6 +412,7 @@ EnumDeclResult TypeEnumDecl(
     }
     if (IsModalClass(class_it->second)) {
       SPEC_RULE("T-Modal-Class");
+      SPEC_RULE("req.14.ModalClassImplementationRequiresModalType");
       result.ok = false;
       result.diag_id = "E-TYP-2401";
       return result;
@@ -443,8 +500,11 @@ EnumDeclResult TypeEnumDeclSignature(
 
   if (decl.variants.empty()) {
     SPEC_RULE("Enum-Empty-Err");
+    SPEC_RULE("diagnostics.Enums");
     result.ok = false;
     result.diag_id = "E-TYP-2001";
+    result.diagnostic_obligation_ids = {"Enum-Empty-Err",
+                                        "diagnostics.Enums"};
     return result;
   }
 

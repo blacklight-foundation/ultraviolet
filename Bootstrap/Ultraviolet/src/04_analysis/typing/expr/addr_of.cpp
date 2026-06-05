@@ -20,7 +20,7 @@ namespace ultraviolet::analysis::expr {
 namespace {
 
 static inline void SpecDefsAddrOf() {
-  SPEC_DEF("T-AddrOf", "5.2.12");
+  SPEC_DEF("rule.16.T-AddrOf", "16.8");
   SPEC_DEF("AddrOf-NonPlace", "5.2.12");
   SPEC_DEF("AddrOf-Index-Array-NonUsize", "5.2.12");
   SPEC_DEF("AddrOf-Index-Slice-NonUsize", "5.2.12");
@@ -44,6 +44,7 @@ static bool HasLayoutPacked(const ast::AttributeList& attrs) {
 }
 
 static bool IsPackedRecord(const ScopeContext& ctx, const TypePath& path) {
+  SPEC_RULE("def.16.AddressOfStaticHelpers");
   PathKey key;
   for (const auto& seg : path) {
     key.push_back(seg);
@@ -71,10 +72,12 @@ ExprTypeResult TypeAddressOfExprImpl(const ScopeContext& ctx,
 
   // Must be a place expression
   if (!IsPlaceExpr(expr.place)) {
+    SPEC_RULE("diag.16.EffectfulCoreExpressions");
     SPEC_RULE("AddrOf-NonPlace");
     result.diag_id = "AddrOf-NonPlace";
     return result;
   }
+  SPEC_RULE("rule.16.T-AddrOf");
 
   if (expr.place) {
     if (const auto* field = std::get_if<ast::FieldAccessExpr>(&expr.place->node)) {
@@ -83,6 +86,7 @@ ExprTypeResult TypeAddressOfExprImpl(const ScopeContext& ctx,
         const auto stripped = StripPerm(base_type.type);
         if (const auto* path = stripped ? std::get_if<TypePathType>(&stripped->node) : nullptr) {
           if (IsPackedRecord(ctx, path->path) && !IsInUnsafeSpan(ctx, expr.place->span)) {
+            SPEC_RULE("diag.16.EffectfulCoreExpressions");
             SPEC_RULE("AddrOf-Packed-Unsafe-Err");
             result.diag_id = "E-TYP-2105";
             return result;
@@ -108,15 +112,18 @@ ExprTypeResult TypeAddressOfExprImpl(const ScopeContext& ctx,
         }
         const auto stripped = StripPerm(base_type.type);
         if (stripped && std::holds_alternative<TypeArray>(stripped->node)) {
+          SPEC_RULE("diag.16.EffectfulCoreExpressions");
           SPEC_RULE("AddrOf-Index-Array-NonUsize");
           result.diag_id = "Index-Array-NonUsize";
           return result;
         }
         if (stripped && std::holds_alternative<TypeSlice>(stripped->node)) {
+          SPEC_RULE("diag.16.EffectfulCoreExpressions");
           SPEC_RULE("AddrOf-Index-Slice-NonUsize");
           result.diag_id = "Index-Slice-NonUsize";
           return result;
         }
+        SPEC_RULE("diag.16.EffectfulCoreExpressions");
         result.diag_id = "Index-NonIndexable";
         return result;
       }
@@ -158,7 +165,6 @@ ExprTypeResult TypeAddressOfExprImpl(const ScopeContext& ctx,
           if (const auto* perm = std::get_if<TypePerm>(&base_place.type->node)) {
             out_type = MakeTypePerm(perm->perm, out_type);
           }
-          SPEC_RULE("T-AddrOf");
           result.ok = true;
           result.type = MakeTypePtr(out_type, PtrState::Valid);
           return result;
@@ -175,7 +181,6 @@ ExprTypeResult TypeAddressOfExprImpl(const ScopeContext& ctx,
     return result;
   }
 
-  SPEC_RULE("T-AddrOf");
   result.ok = true;
   result.type = MakeTypePtr(place.type, PtrState::Valid);
   return result;

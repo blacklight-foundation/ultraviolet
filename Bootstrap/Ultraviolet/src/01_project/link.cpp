@@ -8,6 +8,7 @@
 #include <fstream>
 #include <optional>
 #include <sstream>
+#include <string>
 #include <string_view>
 #include <unordered_set>
 
@@ -44,6 +45,42 @@ namespace ultraviolet::project
         out.push_back(static_cast<char>(ch));
       }
       return out;
+    }
+
+    std::string RenderOptionalPath(
+        const std::optional<std::filesystem::path> &path)
+    {
+      return path.has_value() ? path->generic_string() : "<bottom>";
+    }
+
+    std::string LinkOutputKindRecordName(LinkOutputKind kind)
+    {
+      switch (kind)
+      {
+      case LinkOutputKind::Executable:
+        return "exe";
+      case LinkOutputKind::SharedLibrary:
+        return "shared";
+      }
+      return "<bottom>";
+    }
+
+    bool ArgsContainPrefix(const std::vector<std::string> &args,
+                           std::string_view prefix)
+    {
+      for (const auto &arg : args)
+      {
+        if (arg.rfind(prefix, 0) == 0)
+        {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    std::string RenderBool(bool value)
+    {
+      return value ? "true" : "false";
     }
 
     std::string LowerAsciiForDiagnosticMatch(std::string_view text)
@@ -129,8 +166,41 @@ namespace ultraviolet::project
       return core::LinkDebugOverride().value_or(core::IsDebugEnabled("link"));
     }
 
+    bool IsOutputBackendDiagnostic(std::string_view code)
+    {
+      constexpr std::string_view prefix = "E-OUT-";
+      return code.size() >= prefix.size() &&
+             code.substr(0, prefix.size()) == prefix;
+    }
+
+    void RecordOutputBackendDiagnostic(std::string_view code,
+                                       std::string_view source)
+    {
+      if (!IsOutputBackendDiagnostic(code))
+      {
+        return;
+      }
+
+      std::string payload;
+      payload += "source=";
+      payload += source;
+      payload += ";code=";
+      payload += code;
+      payload += ";phase=diagnostics;diagnostic_family=output-backend;"
+                 "spec_section=24.8";
+      core::Conformance::Record(
+          "req.24.OutputBackendDiagnosticsOwnership",
+          std::nullopt,
+          payload);
+      core::Conformance::Record(
+          "diag.24.OutputBackendDiagnostics",
+          std::nullopt,
+          payload);
+    }
+
     void EmitExternal(core::DiagnosticStream &diags, std::string_view code)
     {
+      RecordOutputBackendDiagnostic(code, "Link::EmitExternal");
       core::EmitExternalDiagnostic(diags, code);
     }
 
@@ -1646,22 +1716,64 @@ namespace ultraviolet::project
   std::filesystem::path RuntimeLibPath(const Project &project,
                                        TargetProfile target_profile)
   {
-    // Spec rule:
-    // 1. CLI/manifest override
-    // 2. Compiler-provided runtime
+    const std::string runtime_name(TargetRuntimeLibName(target_profile));
+    const std::filesystem::path compiler_executable_dir =
+        CompilerExecutableDir(project);
+    const std::filesystem::path compiler_runtime_lib =
+        CompilerRuntimeLibPath(project, target_profile);
+    if (core::Conformance::Enabled())
+    {
+      SPEC_RULE("def.RuntimeLibName");
+      core::Conformance::Record(
+          "def.RuntimeLibName",
+          std::nullopt,
+          "target=" + std::string(TargetProfileName(target_profile)) +
+              ";name=" + runtime_name);
+      SPEC_RULE("def.CompilerExecutableDir");
+      core::Conformance::Record(
+          "def.CompilerExecutableDir",
+          std::nullopt,
+          "value=" + compiler_executable_dir.generic_string());
+      SPEC_RULE("def.CompilerRuntimeLibPath");
+      core::Conformance::Record(
+          "def.CompilerRuntimeLibPath",
+          std::nullopt,
+          "target=" + std::string(TargetProfileName(target_profile)) +
+              ";runtime_name=" + runtime_name +
+              ";value=" + compiler_runtime_lib.generic_string());
+    }
+
+    std::filesystem::path selected;
+    std::string source;
     if (const auto override_lib = core::RuntimeLibOverride();
         override_lib.has_value() && !override_lib->empty())
     {
-      return std::filesystem::path(*override_lib);
+      selected = std::filesystem::path(*override_lib);
+      source = "cli_override";
     }
-
-    if (const auto manifest_lib = core::ManifestRuntimeLib();
-        manifest_lib.has_value() && !manifest_lib->empty())
+    else if (const auto manifest_lib = core::ManifestRuntimeLib();
+             manifest_lib.has_value() && !manifest_lib->empty())
     {
-      return ResolveManifestToolchainPath(project, *manifest_lib);
+      selected = ResolveManifestToolchainPath(project, *manifest_lib);
+      source = "toolchain_config";
+    }
+    else
+    {
+      selected = DefaultRuntimeLibPath(project, target_profile);
+      source = "compiler_runtime";
     }
 
-    return DefaultRuntimeLibPath(project, target_profile);
+    if (core::Conformance::Enabled())
+    {
+      SPEC_RULE("def.RuntimeLibPath");
+      core::Conformance::Record(
+          "def.RuntimeLibPath",
+          std::nullopt,
+          "target=" + std::string(TargetProfileName(target_profile)) +
+              ";source=" + source + ";value=" + selected.generic_string());
+    }
+
+    return selected;
   }
 
   std::vector<std::string> RuntimeRequiredSyms()
@@ -1682,10 +1794,18 @@ namespace ultraviolet::project
     if (!CanReadFile(path))
     {
       SPEC_RULE("ResolveRuntimeLib-Err");
+      core::Conformance::Record(
+          "ResolveRuntimeLib-Err",
+          std::nullopt,
+          "path=" + path.generic_string() + ";readable=false");
       core::HostPrimFail(core::HostPrim::ResolveRuntimeLib, true);
       return std::nullopt;
     }
     SPEC_RULE("ResolveRuntimeLib-Ok");
+    core::Conformance::Record(
+        "ResolveRuntimeLib-Ok",
+        std::nullopt,
+        "path=" + path.generic_string() + ";readable=true");
     return path;
   }
 
@@ -1731,6 +1851,20 @@ namespace ultraviolet::project
     }
     std::vector<std::string> args =
         BuildTargetLinkArgs(tool, inputs, output, import_lib, plan, arg_options);
+    SPEC_RULE("def.LinkFlags");
+    core::Conformance::Record(
+        "def.LinkFlags",
+        std::nullopt,
+        "target=" + std::string(TargetProfileName(plan.target_profile)) +
+            ";output_kind=" + LinkOutputKindRecordName(plan.output_kind) +
+            ";output=" + output.generic_string() +
+            ";import_lib=" + RenderOptionalPath(import_lib) +
+            ";input_count=" + std::to_string(inputs.size()) +
+            ";arg_count=" + std::to_string(args.size()) +
+            ";has_out=" + RenderBool(ArgsContainPrefix(args, "/OUT:") ||
+                                      ArgsContainPrefix(args, "-o")) +
+            ";has_import_lib=" +
+            RenderBool(ArgsContainPrefix(args, "/IMPLIB:")));
     result.tool_path = tool;
     result.working_directory = output.parent_path();
     result.argv = args;
@@ -1787,6 +1921,13 @@ namespace ultraviolet::project
   {
     const std::vector<std::string> args =
         BuildTargetArchiverArgs(tool, inputs, output);
+    SPEC_RULE("def.ArchiveFlags");
+    core::Conformance::Record(
+        "def.ArchiveFlags",
+        std::nullopt,
+        "output=" + output.generic_string() +
+            ";input_count=" + std::to_string(inputs.size()) +
+            ";arg_count=" + std::to_string(args.size()));
     if (core::CrashReportingEnabled() && core::CrashCaptureSupported())
     {
       core::DebugRunOptions run_options;
@@ -1865,6 +2006,15 @@ namespace ultraviolet::project
     inputs.insert(inputs.end(), library_artifact_inputs.begin(),
                   library_artifact_inputs.end());
     inputs.push_back(runtime_lib);
+    SPEC_RULE("def.LinkInputs");
+    core::Conformance::Record(
+        "def.LinkInputs",
+        std::nullopt,
+        "objs=" + std::to_string(objs.size()) +
+            ";library_artifacts=" +
+            std::to_string(library_artifact_inputs.size()) +
+            ";runtime_lib=" + runtime_lib.generic_string() +
+            ";inputs=" + std::to_string(inputs.size()));
     return inputs;
   }
 
@@ -1877,6 +2027,15 @@ namespace ultraviolet::project
     LinkResult result;
     const auto output_path = LinkOutputPath(project, plan.target_profile);
     const auto import_lib = ImportLibPath(project, plan.target_profile);
+    if (core::Conformance::Enabled())
+    {
+      SPEC_RULE("def.LinkJudg");
+      core::Conformance::Record(
+          "def.LinkJudg",
+          std::nullopt,
+          "operation=Link;assembly=" + project.assembly.name +
+              ";kind=" + project.assembly.kind);
+    }
     if (!output_path.has_value())
     {
       result.status = LinkStatus::Fail;
@@ -1887,7 +2046,6 @@ namespace ultraviolet::project
     {
       if (IsMissingExplicitLibraryInput(input))
       {
-        SPEC_RULE("Link-Library-NotFound");
         EmitExternal(result.diags, "E-SYS-3347");
         result.status = LinkStatus::Fail;
         return result;
@@ -1900,6 +2058,11 @@ namespace ultraviolet::project
     if (!tool.has_value())
     {
       SPEC_RULE("Link-NotFound");
+      core::Conformance::Record(
+          "Link-NotFound",
+          std::nullopt,
+          "assembly=" + project.assembly.name +
+              ";tool=" + std::string(linker_name));
       if (auto diag = core::MakeExternalDiagnostic("E-OUT-0405"))
       {
         core::SubDiagnostic guidance_note;
@@ -1913,6 +2076,8 @@ namespace ultraviolet::project
         search_note.kind = core::SubDiagnosticKind::Note;
         search_note.message = FormatSearchedPaths(project, plan.target_profile, linker_name);
         diag->children.push_back(std::move(search_note));
+        RecordOutputBackendDiagnostic("E-OUT-0405",
+                                      "Link::Link/linker-tool-not-found");
         core::Emit(result.diags, *diag);
       }
       result.status = LinkStatus::NotFound;
@@ -1928,6 +2093,11 @@ namespace ultraviolet::project
     if (!runtime_lib.has_value())
     {
       SPEC_RULE("Link-Runtime-Missing");
+      core::Conformance::Record(
+          "Link-Runtime-Missing",
+          std::nullopt,
+          "assembly=" + project.assembly.name +
+              ";target=" + std::string(TargetProfileName(plan.target_profile)));
       if (auto diag = core::MakeExternalDiagnostic("E-OUT-0407"))
       {
         core::SubDiagnostic guidance_note;
@@ -1945,6 +2115,8 @@ namespace ultraviolet::project
         search_note.kind = core::SubDiagnosticKind::Note;
         search_note.message = std::move(search_info);
         diag->children.push_back(std::move(search_note));
+        RecordOutputBackendDiagnostic("E-OUT-0407",
+                                      "Link::Link/runtime-lib-missing");
         core::Emit(result.diags, *diag);
       }
       result.status = LinkStatus::RuntimeMissing;
@@ -1970,6 +2142,8 @@ namespace ultraviolet::project
                        std::string(TargetProfileName(plan.target_profile)) +
                        "`";
         diag->children.push_back(std::move(note));
+        RecordOutputBackendDiagnostic("E-OUT-0408",
+                                      "Link::Link/runtime-format-mismatch");
         core::Emit(result.diags, *diag);
       }
       else
@@ -1982,6 +2156,18 @@ namespace ultraviolet::project
 
     const auto logical_inputs =
         LinkInputs(objs, materialized_extra_inputs, *runtime_lib);
+    if (core::Conformance::Enabled())
+    {
+      SPEC_RULE("def.LinkObjs");
+      core::Conformance::Record(
+          "def.LinkObjs",
+          std::nullopt,
+          "assembly=" + project.assembly.name +
+              ";count=" + std::to_string(objs.size()) +
+              ";first=" +
+              (objs.empty() ? std::string("<bottom>")
+                            : objs.front().generic_string()));
+    }
     const auto runtime_sidecars =
         TargetRuntimeSidecars(plan.target_profile, *runtime_lib);
     if (runtime_sidecars.size() !=
@@ -1993,6 +2179,8 @@ namespace ultraviolet::project
         note.kind = core::SubDiagnosticKind::Note;
         note.message = TargetRuntimeSidecarMissingMessage(plan.target_profile);
         diag->children.push_back(std::move(note));
+        RecordOutputBackendDiagnostic("E-OUT-0407",
+                                      "Link::Link/runtime-sidecar-missing");
         core::Emit(result.diags, *diag);
       }
       else
@@ -2016,6 +2204,8 @@ namespace ultraviolet::project
           note.message =
               TargetRuntimeStartupObjectMissingMessage(plan.target_profile);
           diag->children.push_back(std::move(note));
+          RecordOutputBackendDiagnostic("E-OUT-0407",
+                                        "Link::Link/runtime-startup-missing");
           core::Emit(result.diags, *diag);
         }
         else
@@ -2038,6 +2228,8 @@ namespace ultraviolet::project
                          std::string(TargetProfileName(plan.target_profile)) +
                          "`";
           diag->children.push_back(std::move(note));
+          RecordOutputBackendDiagnostic("E-OUT-0408",
+                                        "Link::Link/runtime-startup-format-mismatch");
           core::Emit(result.diags, *diag);
         }
         else
@@ -2087,6 +2279,18 @@ namespace ultraviolet::project
                     runtime_sidecars.end());
     }
 
+    SPEC_RULE("def.LinkArgsOk");
+    core::Conformance::Record(
+        "def.LinkArgsOk",
+        std::nullopt,
+        "assembly=" + project.assembly.name +
+            ";logical_input_count=" + std::to_string(logical_inputs.size()) +
+            ";invocation_input_count=" + std::to_string(inputs.size()) +
+            ";target_inputs_added=" +
+            RenderBool(inputs.size() != logical_inputs.size()) +
+            ";output=" + output_path->generic_string() +
+            ";import_lib=" + RenderOptionalPath(import_lib));
+
     std::vector<std::filesystem::path> duplicate_symbol_inputs = objs;
     duplicate_symbol_inputs.reserve(objs.size() + materialized_extra_inputs.size() +
                                     (startup_object.has_value() ? 1u : 0u));
@@ -2121,6 +2325,22 @@ namespace ultraviolet::project
     const auto syms = deps.linker_syms(tool_path, logical_inputs, *output_path);
     const auto missing_runtime_sym =
         syms.has_value() ? FirstMissingRuntimeSym(*syms) : std::nullopt;
+    if (core::Conformance::Enabled())
+    {
+      const auto runtime_syms = RuntimeRequiredSyms();
+      SPEC_RULE("def.LinkerSymbols");
+      core::Conformance::Record(
+          "def.LinkerSymbols",
+          std::nullopt,
+          "assembly=" + project.assembly.name +
+              ";tool=" + tool_path.generic_string() +
+              ";inputs=" + std::to_string(logical_inputs.size()) +
+              ";runtime_required=" + std::to_string(runtime_syms.size()) +
+              ";symbol_scan=" + RenderBool(syms.has_value()) +
+              ";missing_runtime_sym=" +
+              (missing_runtime_sym.has_value() ? *missing_runtime_sym
+                                               : std::string("<bottom>")));
+    }
     if (!syms.has_value() || missing_runtime_sym.has_value())
     {
       if (LinkDebugEnabled())
@@ -2151,9 +2371,9 @@ namespace ultraviolet::project
       core::HostPrimFail(core::HostPrim::InvokeLinker, true);
       const bool missing_library =
           IsMissingNamedLibraryFailure(extra_inputs, link_result.output);
-      if (auto diag = core::MakeExternalDiagnostic(missing_library
-                                                       ? "E-SYS-3347"
-                                                       : "E-OUT-0404"))
+      const std::string_view diagnostic_code =
+          missing_library ? "E-SYS-3347" : "E-OUT-0404";
+      if (auto diag = core::MakeExternalDiagnostic(diagnostic_code))
       {
         if (!link_result.transcript_path.empty())
         {
@@ -2203,6 +2423,8 @@ namespace ultraviolet::project
           note.message = "linker crash kind: " + link_result.crash_kind;
           diag->children.push_back(std::move(note));
         }
+        RecordOutputBackendDiagnostic(diagnostic_code,
+                                      "Link::Link/invoke-linker");
         core::Emit(result.diags, *diag);
       }
       else if (missing_library)
@@ -2213,11 +2435,7 @@ namespace ultraviolet::project
       {
         EmitExternal(result.diags, "E-OUT-0404");
       }
-      if (missing_library)
-      {
-        SPEC_RULE("Link-Library-NotFound");
-      }
-      else
+      if (!missing_library)
       {
         SPEC_RULE("Link-Fail");
       }
@@ -2226,6 +2444,13 @@ namespace ultraviolet::project
     }
 
     SPEC_RULE("Link-Ok");
+    core::Conformance::Record(
+        "Link-Ok",
+        std::nullopt,
+        "assembly=" + project.assembly.name +
+            ";inputs=" + std::to_string(inputs.size()) +
+            ";output=" + output_path->generic_string() +
+            ";import_lib=" + RenderOptionalPath(import_lib));
     result.status = LinkStatus::Ok;
     return result;
   }
@@ -2237,6 +2462,24 @@ namespace ultraviolet::project
   {
     LinkResult result;
     const auto output_path = PrimaryArtifactPath(project, target_profile);
+    if (core::Conformance::Enabled())
+    {
+      SPEC_RULE("def.LinkJudg");
+      core::Conformance::Record(
+          "def.LinkJudg",
+          std::nullopt,
+          "operation=Archive;assembly=" + project.assembly.name +
+              ";kind=" + project.assembly.kind);
+      SPEC_RULE("def.LinkObjs");
+      core::Conformance::Record(
+          "def.LinkObjs",
+          std::nullopt,
+          "assembly=" + project.assembly.name +
+              ";count=" + std::to_string(objs.size()) +
+              ";first=" +
+              (objs.empty() ? std::string("<bottom>")
+                            : objs.front().generic_string()));
+    }
     if (!output_path.has_value())
     {
       result.status = LinkStatus::Fail;
@@ -2263,6 +2506,8 @@ namespace ultraviolet::project
         search_note.kind = core::SubDiagnosticKind::Note;
         search_note.message = FormatSearchedPaths(project, target_profile, archiver_name);
         diag->children.push_back(std::move(search_note));
+        RecordOutputBackendDiagnostic("E-OUT-0405",
+                                      "Link::Archive/archiver-tool-not-found");
         core::Emit(result.diags, *diag);
       }
       result.status = LinkStatus::NotFound;
@@ -2271,6 +2516,21 @@ namespace ultraviolet::project
     const std::filesystem::path tool_path = *tool;
 
     std::vector<std::filesystem::path> inputs = objs;
+    SPEC_RULE("def.ArchiveInputs");
+    core::Conformance::Record(
+        "def.ArchiveInputs",
+        std::nullopt,
+        "objs=" + std::to_string(objs.size()) +
+            ";inputs=" + std::to_string(inputs.size()) +
+            ";output=" + output_path->generic_string());
+    SPEC_RULE("def.ArchiveArgsOk");
+    core::Conformance::Record(
+        "def.ArchiveArgsOk",
+        std::nullopt,
+        "assembly=" + project.assembly.name +
+            ";inputs_match_objs=true" +
+            ";input_count=" + std::to_string(inputs.size()) +
+            ";output=" + output_path->generic_string());
 
     if (!deps.invoke_archiver(tool_path, inputs, *output_path))
     {

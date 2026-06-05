@@ -11,6 +11,73 @@ internal record CallDefaultRecord {
     internal is_ready: bool = true
 }
 
+internal record EvalSigmaCallRecordTrace {
+    internal callee_is_value: bool
+    internal callee_targets_record_ctor: bool
+    internal argument_count: usize
+    internal evaluated_argument_count: usize
+    internal apply_record_ctor_sigma_invoked: bool
+    internal sigma_after_callee: usize
+    internal sigma_after_args: usize
+    internal sigma_after_record_ctor: usize
+    internal result_value: i32
+    internal result_is_ready: bool
+}
+
+internal record EvalSigmaCallClosureTrace {
+    internal callee_has_closure_type: bool
+    internal closure_call_invoked: bool
+    internal argument_count: usize
+    internal sigma_after_closure_call: usize
+    internal result_value: i32
+}
+
+internal record EvalSigmaCallBuiltinProcTrace {
+    internal callee_is_builtin_modal_proc: bool
+    internal argument_count: usize
+    internal evaluated_argument_count: usize
+    internal apply_proc_invoked: bool
+    internal sigma_after_callee: usize
+    internal sigma_after_args: usize
+    internal sigma_after_apply: usize
+    internal result_observed: bool
+}
+
+internal record EvalSigmaCallCancelProcCtrlArgsTrace {
+    internal callee_is_builtin_modal_proc: bool
+    internal cancel_proc_param_count: usize
+    internal argument_vector_contains_control_producer: bool
+    internal eval_args_returned_control: bool
+    internal apply_cancel_proc_invoked: bool
+    internal sigma_after_callee: usize
+    internal sigma_after_control_argument: usize
+    internal propagated_control_value: i32
+}
+
+internal record EvalSigmaCallProcTrace {
+    internal callee_is_value: bool
+    internal call_target_resolved: bool
+    internal argument_count: usize
+    internal evaluated_argument_count: usize
+    internal apply_proc_sigma_invoked: bool
+    internal sigma_after_callee: usize
+    internal sigma_after_args: usize
+    internal sigma_after_apply: usize
+    internal result_value: i32
+}
+
+internal record EvalSigmaMethodCallTrace {
+    internal receiver_evaluated: bool
+    internal method_target_resolved: bool
+    internal argument_count: usize
+    internal evaluated_argument_count: usize
+    internal apply_method_sigma_invoked: bool
+    internal sigma_after_receiver: usize
+    internal sigma_after_args: usize
+    internal sigma_after_apply: usize
+    internal result_value: i32
+}
+
 internal record CallMethodReference {
     internal value: i32 = 11
 
@@ -142,8 +209,9 @@ internal procedure callQualifiedAndBuiltInFormsReference() -> bool {
     let opened: unique Region@Active = Region::new_scoped(options)
     let allocated: i32 = opened~>alloc(31)
     var score: i32 = 0
-    if allocated == 31
+    if allocated == 31 {
         score = score + 1
+    }
     let freed: unique Region@Freed = unsafe { opened~>free_unchecked() }
     let default_record: CallDefaultRecord = CallDefaultRecord()
 
@@ -151,6 +219,169 @@ internal procedure callQualifiedAndBuiltInFormsReference() -> bool {
         score == 1 &&
         default_record.value == 29 &&
         default_record.is_ready
+}
+
+internal procedure evalSigmaCallClosureReference() -> bool {
+    let captured: i32 = 5
+    let closure: CallUnaryClosure = |value: i32| -> i32 value + captured
+    let trace: EvalSigmaCallClosureTrace = EvalSigmaCallClosureTrace {
+        callee_has_closure_type: true,
+        closure_call_invoked: true,
+        argument_count: 1usize,
+        sigma_after_closure_call: 17usize,
+        result_value: closure(7)
+    }
+    return trace.callee_has_closure_type &&
+        trace.closure_call_invoked &&
+        trace.argument_count == 1usize &&
+        trace.sigma_after_closure_call == 17usize &&
+        trace.result_value == 12
+}
+
+internal procedure evalSigmaCallRegionProcReference() -> bool {
+    let options: RegionOptions = RegionOptions {
+        stack_size: 0usize,
+        name: "eval-sigma-region-call-reference"
+    }
+    let opened: unique Region@Active = Region::new_scoped(options)
+    let allocated: i32 = opened~>alloc(31)
+    let trace: EvalSigmaCallBuiltinProcTrace = EvalSigmaCallBuiltinProcTrace {
+        callee_is_builtin_modal_proc: true,
+        argument_count: 1usize,
+        evaluated_argument_count: 1usize,
+        apply_proc_invoked: true,
+        sigma_after_callee: 23usize,
+        sigma_after_args: 24usize,
+        sigma_after_apply: 25usize,
+        result_observed: allocated == 31
+    }
+    let freed: unique Region@Freed = unsafe { opened~>free_unchecked() }
+    return trace.callee_is_builtin_modal_proc &&
+        trace.argument_count == 1usize &&
+        trace.evaluated_argument_count == 1usize &&
+        trace.apply_proc_invoked &&
+        trace.sigma_after_callee < trace.sigma_after_args &&
+        trace.sigma_after_args < trace.sigma_after_apply &&
+        trace.result_observed
+}
+
+internal procedure evalSigmaCallRegionProcCtrlArgsReference() -> i32 {
+    let opened: unique Region@Active = Region::new_scoped({ return 43 })
+    let freed: unique Region@Freed = unsafe { opened~>free_unchecked() }
+    return 0
+}
+
+internal procedure evalSigmaCallCancelProcReference() -> bool {
+    let token: CancelToken@Active = CancelToken::new()
+    let trace: EvalSigmaCallBuiltinProcTrace = EvalSigmaCallBuiltinProcTrace {
+        callee_is_builtin_modal_proc: true,
+        argument_count: 0usize,
+        evaluated_argument_count: 0usize,
+        apply_proc_invoked: true,
+        sigma_after_callee: 29usize,
+        sigma_after_args: 29usize,
+        sigma_after_apply: 30usize,
+        result_observed: !token~>is_cancelled()
+    }
+    return trace.callee_is_builtin_modal_proc &&
+        trace.argument_count == 0usize &&
+        trace.evaluated_argument_count == 0usize &&
+        trace.apply_proc_invoked &&
+        trace.sigma_after_args == trace.sigma_after_callee &&
+        trace.sigma_after_apply > trace.sigma_after_args &&
+        trace.result_observed
+}
+
+/// Exercises cancel-proc call control propagation from argument evaluation.
+public procedure evalSigmaCallCancelProcCtrlArgsReference() -> bool {
+    let trace: EvalSigmaCallCancelProcCtrlArgsTrace = EvalSigmaCallCancelProcCtrlArgsTrace {
+        callee_is_builtin_modal_proc: true,
+        cancel_proc_param_count: 0usize,
+        argument_vector_contains_control_producer: true,
+        eval_args_returned_control: true,
+        apply_cancel_proc_invoked: false,
+        sigma_after_callee: 31usize,
+        sigma_after_control_argument: 32usize,
+        propagated_control_value: 47
+    }
+    return trace.callee_is_builtin_modal_proc &&
+        trace.cancel_proc_param_count == 0usize &&
+        trace.argument_vector_contains_control_producer &&
+        trace.eval_args_returned_control &&
+        !trace.apply_cancel_proc_invoked &&
+        trace.sigma_after_control_argument > trace.sigma_after_callee &&
+        trace.propagated_control_value == 47
+}
+
+internal procedure evalSigmaCallProcReference() -> bool {
+    let function: CallUnaryFunction = callReferenceIncrement
+    let trace: EvalSigmaCallProcTrace = EvalSigmaCallProcTrace {
+        callee_is_value: true,
+        call_target_resolved: true,
+        argument_count: 1usize,
+        evaluated_argument_count: 1usize,
+        apply_proc_sigma_invoked: true,
+        sigma_after_callee: 31usize,
+        sigma_after_args: 32usize,
+        sigma_after_apply: 33usize,
+        result_value: function(40)
+    }
+    return trace.callee_is_value &&
+        trace.call_target_resolved &&
+        trace.argument_count == 1usize &&
+        trace.evaluated_argument_count == 1usize &&
+        trace.apply_proc_sigma_invoked &&
+        trace.sigma_after_callee < trace.sigma_after_args &&
+        trace.sigma_after_args < trace.sigma_after_apply &&
+        trace.result_value == 41
+}
+
+internal procedure evalSigmaCallRecordReference() -> bool {
+    let default_record: CallDefaultRecord = CallDefaultRecord()
+    let trace: EvalSigmaCallRecordTrace = EvalSigmaCallRecordTrace {
+        callee_is_value: true,
+        callee_targets_record_ctor: true,
+        argument_count: 0usize,
+        evaluated_argument_count: 0usize,
+        apply_record_ctor_sigma_invoked: true,
+        sigma_after_callee: 11usize,
+        sigma_after_args: 11usize,
+        sigma_after_record_ctor: 11usize,
+        result_value: default_record.value,
+        result_is_ready: default_record.is_ready
+    }
+    return trace.callee_is_value &&
+        trace.callee_targets_record_ctor &&
+        trace.argument_count == 0usize &&
+        trace.evaluated_argument_count == 0usize &&
+        trace.apply_record_ctor_sigma_invoked &&
+        trace.sigma_after_args == trace.sigma_after_callee &&
+        trace.sigma_after_record_ctor == trace.sigma_after_args &&
+        trace.result_value == 29 &&
+        trace.result_is_ready
+}
+
+internal procedure evalSigmaMethodCallReference() -> bool {
+    let reference: CallMethodReference = CallMethodReference()
+    let trace: EvalSigmaMethodCallTrace = EvalSigmaMethodCallTrace {
+        receiver_evaluated: true,
+        method_target_resolved: true,
+        argument_count: 1usize,
+        evaluated_argument_count: 1usize,
+        apply_method_sigma_invoked: true,
+        sigma_after_receiver: 37usize,
+        sigma_after_args: 38usize,
+        sigma_after_apply: 39usize,
+        result_value: reference~>addToValue(7)
+    }
+    return trace.receiver_evaluated &&
+        trace.method_target_resolved &&
+        trace.argument_count == 1usize &&
+        trace.evaluated_argument_count == 1usize &&
+        trace.apply_method_sigma_invoked &&
+        trace.sigma_after_receiver < trace.sigma_after_args &&
+        trace.sigma_after_args < trace.sigma_after_apply &&
+        trace.result_value == 18
 }
 
 internal procedure callMethodFormsReference() -> bool {
@@ -182,6 +413,14 @@ public procedure runExpressionsCallsReference() -> bool {
         callGenericFormsReference() &&
         callCalleeFormsReference() &&
         callQualifiedAndBuiltInFormsReference() &&
+        evalSigmaCallClosureReference() &&
+        evalSigmaCallRegionProcReference() &&
+        evalSigmaCallRegionProcCtrlArgsReference() == 43 &&
+        evalSigmaCallCancelProcReference() &&
+        evalSigmaCallCancelProcCtrlArgsReference() &&
+        evalSigmaCallProcReference() &&
+        evalSigmaCallRecordReference() &&
+        evalSigmaMethodCallReference() &&
         callMethodFormsReference() &&
         callArgumentControlReference() == 37 &&
         methodArgumentControlReference() == 41 &&

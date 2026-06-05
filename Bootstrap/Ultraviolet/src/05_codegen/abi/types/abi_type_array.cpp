@@ -17,6 +17,7 @@ namespace ultraviolet::codegen {
 std::optional<ABIType> ABITyArray(const analysis::ScopeContext& ctx,
                                   const analysis::TypeRef& type) {
   SPEC_RULE("ABI-Array");
+  SPEC_RULE("rule.24.ABI-Array");
   const auto size = ::ultraviolet::analysis::layout::SizeOf(ctx, type);
   const auto align = ::ultraviolet::analysis::layout::AlignOf(ctx, type);
   if (!size.has_value() || !align.has_value()) {
