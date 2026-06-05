@@ -1004,6 +1004,50 @@ llvm::AllocaInst* AcquireReusableEntryAlloca(llvm::Function* func,
   return result;
 }
 
+llvm::Value* ReinterpretFirstClassValueBits(llvm::IRBuilder<>* builder,
+                                            llvm::Value* value,
+                                            llvm::Type* target,
+                                            std::string_view slot_name) {
+  if (!builder || !value || !target) {
+    return nullptr;
+  }
+  if (value->getType() == target) {
+    return value;
+  }
+  if (!value->getType()->isFirstClassType() || !target->isFirstClassType()) {
+    return nullptr;
+  }
+
+  llvm::BasicBlock* insert_block = builder->GetInsertBlock();
+  llvm::Function* fn = insert_block ? insert_block->getParent() : nullptr;
+  llvm::Module* module = fn ? fn->getParent() : nullptr;
+  if (!fn || !module) {
+    return nullptr;
+  }
+
+  const llvm::DataLayout& layout = module->getDataLayout();
+  const std::uint64_t src_bits = layout.getTypeSizeInBits(value->getType());
+  const std::uint64_t dst_bits = layout.getTypeSizeInBits(target);
+  if (src_bits == 0 || src_bits != dst_bits) {
+    return nullptr;
+  }
+
+  const std::string slot_name_string(slot_name);
+  llvm::AllocaInst* slot =
+      CreateEntryAlloca(fn, value->getType(), slot_name_string);
+  if (!slot) {
+    return nullptr;
+  }
+
+  llvm::StoreInst* stored = builder->CreateStore(value, slot);
+  stored->setAlignment(slot->getAlign());
+  llvm::Value* cast_ptr =
+      builder->CreateBitCast(slot, llvm::PointerType::get(target, 0));
+  llvm::LoadInst* loaded = builder->CreateLoad(target, cast_ptr);
+  loaded->setAlignment(llvm::Align(1));
+  return loaded;
+}
+
 llvm::Value* CoerceValue(llvm::IRBuilderBase* builder_base,
                          llvm::Value* value,
                          llvm::Type* target) {
@@ -1106,25 +1150,10 @@ llvm::Value* CoerceValue(llvm::IRBuilderBase* builder_base,
     }
   }
   if (value->getType()->isFirstClassType() && target->isFirstClassType()) {
-    llvm::BasicBlock* insert_block = builder->GetInsertBlock();
-    llvm::Function* fn = insert_block ? insert_block->getParent() : nullptr;
-    llvm::Module* module = fn ? fn->getParent() : nullptr;
-    if (fn && module) {
-      const llvm::DataLayout& layout = module->getDataLayout();
-      const std::uint64_t src_bits = layout.getTypeSizeInBits(value->getType());
-      const std::uint64_t dst_bits = layout.getTypeSizeInBits(target);
-      if (src_bits == dst_bits && src_bits > 0 &&
-          !llvm::CastInst::isBitCastable(value->getType(), target)) {
-        llvm::AllocaInst* slot = CreateEntryAlloca(fn, value->getType(), "coerce_bits");
-        if (slot) {
-          llvm::StoreInst* stored = builder->CreateStore(value, slot);
-          stored->setAlignment(slot->getAlign());
-          llvm::Value* cast_ptr =
-              builder->CreateBitCast(slot, llvm::PointerType::get(target, 0));
-          llvm::LoadInst* loaded = builder->CreateLoad(target, cast_ptr);
-          loaded->setAlignment(llvm::Align(1));
-          return loaded;
-        }
+    if (!llvm::CastInst::isBitCastable(value->getType(), target)) {
+      if (llvm::Value* reinterpreted =
+              ReinterpretFirstClassValueBits(builder, value, target, "coerce_bits")) {
+        return reinterpreted;
       }
     }
   }
@@ -1133,6 +1162,27 @@ llvm::Value* CoerceValue(llvm::IRBuilderBase* builder_base,
     return builder->CreateBitCast(value, target);
   }
   return llvm::Constant::getNullValue(target);
+}
+
+llvm::Value* ReconstructABIReturnValue(llvm::IRBuilderBase* builder_base,
+                                       llvm::Value* value,
+                                       llvm::Type* target) {
+  if (!builder_base || !value || !target) {
+    return value;
+  }
+
+  auto* builder = static_cast<llvm::IRBuilder<>*>(builder_base);
+  if (value->getType() == target) {
+    return value;
+  }
+  if (llvm::Value* reinterpreted =
+          ReinterpretFirstClassValueBits(builder, value, target, "abi_return")) {
+    return reinterpreted;
+  }
+  if (llvm::CastInst::isBitCastable(value->getType(), target)) {
+    return builder->CreateBitCast(value, target);
+  }
+  return CoerceValue(builder, value, target);
 }
 
 // -----------------------------------------------------------------------------
@@ -2234,7 +2284,7 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
     if (ret_type) {
       llvm::Type* expected = emitter.GetLLVMType(ret_type);
       if (expected && direct_result->getType() != expected) {
-        direct_result = CoerceValue(builder, direct_result, expected);
+        direct_result = ReconstructABIReturnValue(builder, direct_result, expected);
       }
     }
     return direct_result;
