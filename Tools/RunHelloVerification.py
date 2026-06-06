@@ -173,6 +173,16 @@ PACKAGED_TOOL_PLATFORM = {
     "x86_64-win64": "windows",
     "aarch64-darwin": "macos",
 }
+TARGET_LINKER_TOOL = {
+    "x86_64-sysv": "ld.lld",
+    "x86_64-win64": "lld-link",
+    "aarch64-darwin": "clang++",
+}
+TARGET_ARCHIVER_TOOL = {
+    "x86_64-sysv": "llvm-ar",
+    "x86_64-win64": "llvm-lib",
+    "aarch64-darwin": "llvm-ar",
+}
 RELEASE_PLATFORM_LABELS = {
     "linux": "Linux",
     "windows": "Windows",
@@ -894,6 +904,20 @@ exit 1
 """
 
 
+def ordered_unique(values: Sequence[str]) -> list[str]:
+    out: list[str] = []
+    for value in values:
+        if value not in out:
+            out.append(value)
+    return out
+
+
+def executable_script_names(tool_name: str) -> tuple[str, ...]:
+    if tool_name.lower().endswith(".exe"):
+        return (tool_name,)
+    return (tool_name, f"{tool_name}.exe")
+
+
 def windows_llvm_as_failure_shim_source() -> str:
     return r"""#include <stdio.h>
 #include <string.h>
@@ -1095,7 +1119,7 @@ def stage_linking_invocation_failure_tools(config: TargetConfig) -> list[Path]:
             / "Linking"
             / "LinkerInvocationFailure"
             / "Tools",
-            "lld-link",
+            ordered_unique(("lld-link", TARGET_LINKER_TOOL[config.profile])),
         ),
         (
             ROOT
@@ -1105,14 +1129,16 @@ def stage_linking_invocation_failure_tools(config: TargetConfig) -> list[Path]:
             / "Linking"
             / "ArchiverInvocationFailure"
             / "Tools",
-            "llvm-lib",
+            ordered_unique(("llvm-lib", TARGET_ARCHIVER_TOOL[config.profile])),
         ),
     )
 
     staged: list[Path] = []
     if platform.system() == "Windows":
-        for destination_dir, tool_name in fixtures:
-            remove_stale_tool(destination_dir / tool_name)
+        for destination_dir, tool_names in fixtures:
+            for tool_name in tool_names:
+                remove_stale_tool(destination_dir / tool_name)
+            tool_name = tool_names[0]
             destination = destination_dir / f"{tool_name}.exe"
             build_windows_tool_invocation_failure_shim(
                 config,
@@ -1122,17 +1148,17 @@ def stage_linking_invocation_failure_tools(config: TargetConfig) -> list[Path]:
             staged.append(destination)
         return staged
 
-    for destination_dir, tool_name in fixtures:
-        destinations = (
-            destination_dir / tool_name,
-            destination_dir / f"{tool_name}.exe",
-        )
-        for destination in destinations:
-            write_executable_script(
-                destination,
-                tool_invocation_failure_shim_text(tool_name),
+    for destination_dir, tool_names in fixtures:
+        for tool_name in tool_names:
+            destinations = tuple(
+                destination_dir / name for name in executable_script_names(tool_name)
             )
-        staged.extend(destinations)
+            for destination in destinations:
+                write_executable_script(
+                    destination,
+                    tool_invocation_failure_shim_text(tool_name),
+                )
+            staged.extend(destinations)
     return staged
 
 
