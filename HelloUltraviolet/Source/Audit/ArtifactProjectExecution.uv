@@ -6546,10 +6546,11 @@ internal procedure artifactProjectEmitLlExercise(
             authority,
             "ArtifactProjectEmitLlBuild",
             "Intermediate/IR/Source/EmitLlLibrary.ll",
-            artifactProjectTargetText(
+            artifactProjectTargetProfileText(
                 authority,
                 "call void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite(ptr noalias noundef nonnull sret(",
-                "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite("
+                "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite(",
+                "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite("
             )
         ) &&
         artifactProjectTempFileExcludes(
@@ -7278,30 +7279,33 @@ internal procedure artifactProjectExecutableContextBundleIrMatches(
             authority,
             "ArtifactProjectExecutableBuild",
             "Intermediate/IR/Source/ExecutableOutput.ll",
-            artifactProjectTargetText(
+            artifactProjectTargetProfileText(
                 authority,
                 "call void @ultraviolet_x3a_x3aruntime_x3a_x3acontext_x3a_x3acpu(",
-                "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3acontext_x3a_x3acpu("
+                "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3acontext_x3a_x3acpu(",
+                "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3acontext_x3a_x3acpu("
             )
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "ArtifactProjectExecutableBuild",
             "Intermediate/IR/Source/ExecutableOutput.ll",
-            artifactProjectTargetText(
+            artifactProjectTargetProfileText(
                 authority,
                 "call void @ultraviolet_x3a_x3aruntime_x3a_x3acontext_x3a_x3agpu(",
-                "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3acontext_x3a_x3agpu("
+                "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3acontext_x3a_x3agpu(",
+                "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3acontext_x3a_x3agpu("
             )
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "ArtifactProjectExecutableBuild",
             "Intermediate/IR/Source/ExecutableOutput.ll",
-            artifactProjectTargetText(
+            artifactProjectTargetProfileText(
                 authority,
                 "call void @ultraviolet_x3a_x3aruntime_x3a_x3acontext_x3a_x3ainline(",
-                "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3acontext_x3a_x3ainline("
+                "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3acontext_x3a_x3ainline(",
+                "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3acontext_x3a_x3ainline("
             )
         ) &&
         acceptedProjectTempFileContains(

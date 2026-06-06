@@ -96,33 +96,38 @@ internal procedure artifactProjectRuntimeInterfaceSignaturesMatch(
     authority: TestAuthority
 ) -> bool {
     let required_fragments: [string@View; 64] = [
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3anew_x5fscoped(ptr noalias noundef nonnull sret({ i8, [7 x i8], [8 x i8], [0 x i64] }) align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(40))",
-            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3anew_x5fscoped("
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3anew_x5fscoped(",
+            "declare [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3anew_x5fscoped("
         ),
         "declare ptr @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aalloc(ptr, ptr, ptr)",
         "declare i64 @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3amark(ptr noundef nonnull align 8 dereferenceable(16))",
         "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5fto(ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(8))",
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5funchecked(ptr noalias noundef nonnull sret({ i8, [7 x i8], [8 x i8], [0 x i64] }) align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
-            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5funchecked("
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5funchecked(",
+            "declare [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5funchecked("
         ),
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afreeze(ptr noalias noundef nonnull sret({ i8, [7 x i8], [8 x i8], [0 x i64] }) align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
-            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afreeze("
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afreeze(",
+            "declare [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afreeze("
         ),
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3athaw(ptr noalias noundef nonnull sret({ i8, [7 x i8], [8 x i8], [0 x i64] }) align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
-            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3athaw("
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3athaw(",
+            "declare [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3athaw("
         ),
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afree_x5funchecked(ptr noalias noundef nonnull sret({ i8, [7 x i8], [8 x i8], [0 x i64] }) align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
-            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afree_x5funchecked("
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afree_x5funchecked(",
+            "declare [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afree_x5funchecked("
         ),
         "declare i8 @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aaddr_x5fis_x5factive(ptr)",
         "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aaddr_x5ftag_x5ffrom(ptr, ptr)",
@@ -131,25 +136,29 @@ internal procedure artifactProjectRuntimeInterfaceSignaturesMatch(
         "declare i8 @CancelToken_x3a_x3aActive_x3a_x3ais_x5fcancelled(ptr)",
         "declare i64 @CancelToken_x3a_x3aActive_x3a_x3achild(ptr)",
         "declare void @CancelToken_x3a_x3aActive_x3a_x3await_x5fcancelled(ptr noundef nonnull align 8 dereferenceable(24), ptr)",
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fread(ptr noalias noundef nonnull sret(",
-            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fread("
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fread(",
+            "declare [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fread("
         ),
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fwrite(ptr noalias noundef nonnull sret(",
-            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fwrite("
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fwrite(",
+            "declare [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fwrite("
         ),
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fappend(ptr noalias noundef nonnull sret(",
-            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fappend("
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fappend(",
+            "declare [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fappend("
         ),
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite(ptr noalias noundef nonnull sret(",
-            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite("
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite(",
+            "declare [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite("
         ),
         "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aread_x5ffile(ptr noundef nonnull align 8 dereferenceable(32), ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
         "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aread_x5fbytes(ptr noundef nonnull align 8 dereferenceable(32), ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
@@ -158,18 +167,20 @@ internal procedure artifactProjectRuntimeInterfaceSignaturesMatch(
         "declare i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3awrite_x5fstderr(ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
         "declare i8 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aexists(ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
         "declare i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aremove(ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fdir(ptr noalias noundef nonnull sret(",
-            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fdir("
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fdir(",
+            "declare [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fdir("
         ),
         "declare i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fdir(ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
         "declare i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aensure_x5fdir(ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
         "declare i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3akind(ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3arestrict(ptr noalias noundef nonnull sret(",
-            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3arestrict("
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3arestrict(",
+            "declare [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3arestrict("
         ),
         "declare void @DirIter_x3a_x3aOpen_x3a_x3aclose(ptr noundef nonnull align 8 dereferenceable(8))",
         "declare void @DirIter_x3a_x3aOpen_x3a_x3anext(ptr noalias noundef nonnull sret(",
@@ -182,52 +193,60 @@ internal procedure artifactProjectRuntimeInterfaceSignaturesMatch(
         "declare void @File_x3a_x3aWrite_x3a_x3aclose(ptr noundef nonnull align 8 dereferenceable(8))",
         "declare i16 @File_x3a_x3aWrite_x3a_x3aflush(ptr noundef nonnull align 8 dereferenceable(8))",
         "declare i16 @File_x3a_x3aWrite_x3a_x3awrite(ptr noundef nonnull align 8 dereferenceable(8), ptr noundef nonnull align 8 dereferenceable(16))",
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "declare void @ultraviolet_x3a_x3aruntime_x3a_x3anet_x3a_x3arestrict_x5fto_x5fhost(ptr noalias noundef nonnull sret(",
-            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3anet_x3a_x3arestrict_x5fto_x5fhost("
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3anet_x3a_x3arestrict_x5fto_x5fhost(",
+            "declare [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3anet_x3a_x3arestrict_x5fto_x5fhost("
         ),
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3awith_x5fquota(ptr noalias noundef nonnull sret(",
-            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3awith_x5fquota("
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3awith_x5fquota(",
+            "declare [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3awith_x5fquota("
         ),
         "declare ptr @ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3aalloc_x5fraw(ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(8))",
         "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3adealloc_x5fraw(ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(8), ptr noundef nonnull align 8 dereferenceable(8))",
         "declare void @ultraviolet_x3a_x3aruntime_x3a_x3areactor_x3a_x3arun(ptr noalias noundef nonnull sret(",
         "declare ptr @ultraviolet_x3a_x3aruntime_x3a_x3areactor_x3a_x3aregister(ptr, ptr)",
         "declare void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexit(ptr noundef nonnull align 1, ptr noundef nonnull align 4 dereferenceable(4))",
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "declare void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aget_x5fenv(ptr noalias noundef nonnull sret(",
-            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aget_x5fenv("
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aget_x5fenv(",
+            "declare [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aget_x5fenv("
         ),
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "declare void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexecutable_x5fpath(ptr noalias noundef nonnull sret(",
-            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexecutable_x5fpath("
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexecutable_x5fpath(",
+            "declare [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexecutable_x5fpath("
         ),
         "declare i64 @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument_x5fcount(ptr noundef nonnull align 1)",
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "declare void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument(ptr noalias noundef nonnull sret(",
-            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument("
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument(",
+            "declare [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument("
         ),
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "declare void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3acurrent_x5fdirectory(ptr noalias noundef nonnull sret(",
-            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3acurrent_x5fdirectory("
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3acurrent_x5fdirectory(",
+            "declare [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3acurrent_x5fdirectory("
         ),
         "declare i32 @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3arun(ptr noundef nonnull align 1, ptr noundef nonnull align 8 dereferenceable(16))",
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "declare void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic(ptr noalias noundef nonnull sret(",
-            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic("
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic(",
+            "declare [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic("
         ),
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "declare void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall(ptr noalias noundef nonnull sret(",
-            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall("
+            "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall(",
+            "declare [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall("
         ),
         "declare void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fnow(ptr noundef nonnull align 16 dereferenceable(32), ptr noundef nonnull align 8 dereferenceable(16))",
         "declare void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fresolution(ptr noundef nonnull align 16 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
@@ -250,10 +269,11 @@ internal procedure artifactProjectRuntimeInterfaceIOHostCallsMatch(
     authority: TestAuthority
 ) -> bool {
     let required_call_fragments: [string@View; 27] = [
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "call void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3arestrict(",
-            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3arestrict("
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3arestrict(",
+            "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3arestrict("
         ),
         "call i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aensure_x5fdir(",
         "call i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fdir(",
@@ -264,30 +284,35 @@ internal procedure artifactProjectRuntimeInterfaceIOHostCallsMatch(
         "call i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3awrite_x5fstderr(",
         "call i8 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aexists(",
         "call i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3akind(",
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "call void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fread(",
-            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fread("
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fread(",
+            "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fread("
         ),
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "call void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fwrite(",
-            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fwrite("
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fwrite(",
+            "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fwrite("
         ),
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "call void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fappend(",
-            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fappend("
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fappend(",
+            "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fappend("
         ),
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "call void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite(",
-            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite("
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite(",
+            "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite("
         ),
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "call void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fdir(",
-            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fdir("
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fdir(",
+            "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fdir("
         ),
         "call i16 @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aremove(",
         "call void @File_x3a_x3aRead_x3a_x3aread_x5fall(",
@@ -315,15 +340,17 @@ internal procedure artifactProjectRuntimeInterfaceTimeCallsMatch(
     authority: TestAuthority
 ) -> bool {
     let required_call_fragments: [string@View; 9] = [
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "call void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic(",
-            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic("
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic(",
+            "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic("
         ),
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "call void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall(",
-            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall("
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall(",
+            "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall("
         ),
         "call void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fnow(",
         "call void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fresolution(",
@@ -371,39 +398,45 @@ internal procedure artifactProjectRuntimeInterfaceOtherHostCallsMatch(
     authority: TestAuthority
 ) -> bool {
     let required_call_fragments: [string@View; 16] = [
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "call void @ultraviolet_x3a_x3aruntime_x3a_x3anet_x3a_x3arestrict_x5fto_x5fhost(",
-            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3anet_x3a_x3arestrict_x5fto_x5fhost("
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3anet_x3a_x3arestrict_x5fto_x5fhost(",
+            "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3anet_x3a_x3arestrict_x5fto_x5fhost("
         ),
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "call void @ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3awith_x5fquota(",
-            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3awith_x5fquota("
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3awith_x5fquota(",
+            "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3awith_x5fquota("
         ),
         "call ptr @ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3aalloc_x5fraw(",
         "call void @ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3adealloc_x5fraw(",
         "call void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexit(",
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "call void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aget_x5fenv(",
-            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aget_x5fenv("
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aget_x5fenv(",
+            "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aget_x5fenv("
         ),
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "call void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexecutable_x5fpath(",
-            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexecutable_x5fpath("
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexecutable_x5fpath(",
+            "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexecutable_x5fpath("
         ),
         "call i64 @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument_x5fcount(",
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "call void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument(",
-            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument("
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument(",
+            "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument("
         ),
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "call void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3acurrent_x5fdirectory(",
-            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3acurrent_x5fdirectory("
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3acurrent_x5fdirectory(",
+            "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3acurrent_x5fdirectory("
         ),
         "call i32 @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3arun(",
         "call i64 @CancelToken_x3a_x3anew(",
@@ -426,33 +459,38 @@ internal procedure artifactProjectRuntimeInterfaceRegionRuntimeCallsMatch(
     authority: TestAuthority
 ) -> bool {
     let required_call_fragments: [string@View; 10] = [
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "call void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3anew_x5fscoped(",
-            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3anew_x5fscoped("
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3anew_x5fscoped(",
+            "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3anew_x5fscoped("
         ),
         "call ptr @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aalloc(",
         "call i64 @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3amark(",
         "call void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5fto(",
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "call void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5funchecked(",
-            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5funchecked("
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5funchecked(",
+            "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5funchecked("
         ),
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "call void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afreeze(",
-            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afreeze("
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afreeze(",
+            "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afreeze("
         ),
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "call void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3athaw(",
-            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3athaw("
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3athaw(",
+            "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3athaw("
         ),
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "call void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afree_x5funchecked(",
-            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afree_x5funchecked("
+            "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afree_x5funchecked(",
+            "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afree_x5funchecked("
         ),
         "call void @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aaddr_x5ftag_x5ffrom(",
         "call i8 @ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aaddr_x5fis_x5factive("
