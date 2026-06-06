@@ -67,9 +67,10 @@ jobs:
             xcrun lldb --batch \
               -o "settings set target.process.thread.step-avoid-regexp '^$'" \
               -o "run" \
-              -o "bt all" \
-              -o "register read" \
-              -o "image list" \
+              -k "bt all" \
+              -k "register read" \
+              -k "disassemble -n uv_dispatch_run" \
+              -k "image list" \
               -- "$executable" \
               > artifacts/lldb-hello-ultraviolet.txt \
               2>&1
