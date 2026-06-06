@@ -925,8 +925,13 @@ TargetAggregateCarrier TargetCAggregateByValueParamCarrier(
     case TargetProfile::X86_64SysV:
       return RegisterPairAggregateCarrier(size, contains_floating);
     case TargetProfile::AArch64AAPCS64:
-    case TargetProfile::AArch64Darwin:
-      return {};
+    case TargetProfile::AArch64Darwin: {
+      const auto carrier = AArch64AggregateCarrier(size, align);
+      if (carrier.kind != TargetAggregateCarrierKind::None) {
+        return carrier;
+      }
+      return IndirectCarrier();
+    }
   }
 
   UnreachableTargetPlatform();
