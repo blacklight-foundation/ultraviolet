@@ -6,13 +6,21 @@ internal procedure acceptedProjectTargetIsWindows(authority: TestAuthority) -> b
     return auditTextEquals(authority.target_profile, "x86_64-win64")
 }
 
+internal procedure acceptedProjectTargetIsDarwin(authority: TestAuthority) -> bool {
+    return auditTextEquals(authority.target_profile, "aarch64-darwin")
+}
+
 internal procedure acceptedProjectTargetPath(
     authority: TestAuthority,
     windows_path: string@View,
-    sysv_path: string@View
+    sysv_path: string@View,
+    darwin_path: string@View
 ) -> string@View {
     if acceptedProjectTargetIsWindows(authority) {
         return windows_path
+    }
+    if acceptedProjectTargetIsDarwin(authority) {
+        return darwin_path
     }
     return sysv_path
 }
@@ -417,6 +425,7 @@ internal procedure acceptedProjectStaticLibraryExercise(
             acceptedProjectTargetPath(
                 authority,
                 "Intermediate/Obj/Source/StaticLibrary.obj",
+                "Intermediate/Obj/Source/StaticLibrary.o",
                 "Intermediate/Obj/Source/StaticLibrary.o"
             )
         ) &&
@@ -426,6 +435,7 @@ internal procedure acceptedProjectStaticLibraryExercise(
             acceptedProjectTargetPath(
                 authority,
                 "Library/StaticLibrary.lib",
+                "Library/libStaticLibrary.a",
                 "Library/libStaticLibrary.a"
             )
         ) &&
@@ -496,6 +506,7 @@ internal procedure acceptedProjectExecutableExercise(
             acceptedProjectTargetPath(
                 authority,
                 "Intermediate/Obj/Source/ExecutableMain.obj",
+                "Intermediate/Obj/Source/ExecutableMain.o",
                 "Intermediate/Obj/Source/ExecutableMain.o"
             )
         ) &&
@@ -510,6 +521,7 @@ internal procedure acceptedProjectExecutableExercise(
             acceptedProjectTargetPath(
                 authority,
                 "Binary/ExecutableMain.exe",
+                "Binary/ExecutableMain",
                 "Binary/ExecutableMain"
             )
         ) &&
@@ -583,7 +595,8 @@ internal procedure acceptedProjectCrossAssemblyExercise(
             acceptedProjectTargetPath(
                 authority,
                 "Binary/CrossAssemblyImplementation.dll",
-                "Binary/libCrossAssemblyImplementation.so"
+                "Binary/libCrossAssemblyImplementation.so",
+                "Binary/libCrossAssemblyImplementation.dylib"
             )
         ) &&
         acceptedProjectTempFileExists(
@@ -592,6 +605,7 @@ internal procedure acceptedProjectCrossAssemblyExercise(
             acceptedProjectTargetPath(
                 authority,
                 "Intermediate/Obj/Source/ExternalContracts/ExternalContracts.obj",
+                "Intermediate/Obj/Source/ExternalContracts/ExternalContracts.o",
                 "Intermediate/Obj/Source/ExternalContracts/ExternalContracts.o"
             )
         ) &&
@@ -601,6 +615,7 @@ internal procedure acceptedProjectCrossAssemblyExercise(
             acceptedProjectTargetPath(
                 authority,
                 "Intermediate/Obj/Source/CrossAssemblyImplementation/CrossAssemblyImplementation.obj",
+                "Intermediate/Obj/Source/CrossAssemblyImplementation/CrossAssemblyImplementation.o",
                 "Intermediate/Obj/Source/CrossAssemblyImplementation/CrossAssemblyImplementation.o"
             )
         ) &&
@@ -662,7 +677,8 @@ internal procedure acceptedProjectPtrNullReturnExercise(
             acceptedProjectTargetPath(
                 authority,
                 "Library/PtrNullReturn.lib",
-                "Binary/libPtrNullReturn.so"
+                "Binary/libPtrNullReturn.so",
+                "Binary/libPtrNullReturn.dylib"
             )
         ) &&
         acceptedProjectConformanceContains(
@@ -705,7 +721,8 @@ internal procedure acceptedProjectLoweringChecksJudgementSetExercise(
             acceptedProjectTargetPath(
                 authority,
                 "Library/LoweringChecksJudgementSet.lib",
-                "Binary/libLoweringChecksJudgementSet.so"
+                "Binary/libLoweringChecksJudgementSet.so",
+                "Binary/libLoweringChecksJudgementSet.dylib"
             )
         ) &&
         acceptedProjectConformanceLineContains(
@@ -743,7 +760,8 @@ internal procedure acceptedProjectExpressionSemanticsExercise(
             acceptedProjectTargetPath(
                 authority,
                 "Library/ExpressionSemantics.lib",
-                "Binary/libExpressionSemantics.so"
+                "Binary/libExpressionSemantics.so",
+                "Binary/libExpressionSemantics.dylib"
             )
         ) &&
         acceptedProjectConformanceContains(
@@ -2630,6 +2648,33 @@ internal procedure acceptedProjectHostedConformanceContains(
     )
 }
 
+internal procedure acceptedProjectHostedExportMapPath(authority: TestAuthority) -> string@View {
+    return acceptedProjectTargetPath(
+        authority,
+        "Binary/HostedExportLibrary.map",
+        "Binary/libHostedExportLibrary.so.exports.map",
+        "Binary/libHostedExportLibrary.dylib.exports.map"
+    )
+}
+
+internal procedure acceptedProjectHostedExportMapArtifactMatches(
+    authority: TestAuthority
+) -> bool {
+    if acceptedProjectTargetIsDarwin(authority) {
+        return acceptedProjectTempFileDoesNotExist(
+            authority,
+            "AcceptedProjectHostedBuild",
+            acceptedProjectHostedExportMapPath(authority)
+        )
+    }
+
+    return acceptedProjectTempFileExists(
+        authority,
+        "AcceptedProjectHostedBuild",
+        acceptedProjectHostedExportMapPath(authority)
+    )
+}
+
 internal procedure acceptedProjectHostedTargetCarrierConformanceMatches(
     authority: TestAuthority
 ) -> bool {
@@ -2756,11 +2801,7 @@ internal procedure acceptedProjectHostedMapFileContains(
     return acceptedProjectTempFileContains(
         authority,
         "AcceptedProjectHostedBuild",
-        acceptedProjectTargetPath(
-            authority,
-            "Binary/HostedExportLibrary.map",
-            "Binary/libHostedExportLibrary.so.exports.map"
-        ),
+        acceptedProjectHostedExportMapPath(authority),
         required_text
     )
 }
@@ -2788,124 +2829,80 @@ internal procedure acceptedProjectHostedMapInternalSymbolsMatch(
 }
 
 internal procedure acceptedProjectHostedMapMatches(authority: TestAuthority) -> bool {
+    if acceptedProjectTargetIsDarwin(authority) {
+        return acceptedProjectHostedExportMapArtifactMatches(authority)
+    }
+
     return acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            acceptedProjectTargetPath(
-                authority,
-                "Binary/HostedExportLibrary.map",
-                "Binary/libHostedExportLibrary.so.exports.map"
-            ),
+            acceptedProjectHostedExportMapPath(authority),
             "__ultraviolet_host_abi_version"
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            acceptedProjectTargetPath(
-                authority,
-                "Binary/HostedExportLibrary.map",
-                "Binary/libHostedExportLibrary.so.exports.map"
-            ),
+            acceptedProjectHostedExportMapPath(authority),
             "__ultraviolet_host_session_create"
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            acceptedProjectTargetPath(
-                authority,
-                "Binary/HostedExportLibrary.map",
-                "Binary/libHostedExportLibrary.so.exports.map"
-            ),
+            acceptedProjectHostedExportMapPath(authority),
             "__ultraviolet_host_session_destroy"
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            acceptedProjectTargetPath(
-                authority,
-                "Binary/HostedExportLibrary.map",
-                "Binary/libHostedExportLibrary.so.exports.map"
-            ),
+            acceptedProjectHostedExportMapPath(authority),
             "uv_hosted_reference_increment"
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            acceptedProjectTargetPath(
-                authority,
-                "Binary/HostedExportLibrary.map",
-                "Binary/libHostedExportLibrary.so.exports.map"
-            ),
+            acceptedProjectHostedExportMapPath(authority),
             "uv_hosted_reference_pair_sum"
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            acceptedProjectTargetPath(
-                authority,
-                "Binary/HostedExportLibrary.map",
-                "Binary/libHostedExportLibrary.so.exports.map"
-            ),
+            acceptedProjectHostedExportMapPath(authority),
             "uv_hosted_reference_pair_echo"
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            acceptedProjectTargetPath(
-                authority,
-                "Binary/HostedExportLibrary.map",
-                "Binary/libHostedExportLibrary.so.exports.map"
-            ),
+            acceptedProjectHostedExportMapPath(authority),
             "uv_hosted_reference_triple_sum"
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            acceptedProjectTargetPath(
-                authority,
-                "Binary/HostedExportLibrary.map",
-                "Binary/libHostedExportLibrary.so.exports.map"
-            ),
+            acceptedProjectHostedExportMapPath(authority),
             "uv_hosted_reference_triple_echo"
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            acceptedProjectTargetPath(
-                authority,
-                "Binary/HostedExportLibrary.map",
-                "Binary/libHostedExportLibrary.so.exports.map"
-            ),
+            acceptedProjectHostedExportMapPath(authority),
             "uv_hosted_reference_large_echo"
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            acceptedProjectTargetPath(
-                authority,
-                "Binary/HostedExportLibrary.map",
-                "Binary/libHostedExportLibrary.so.exports.map"
-            ),
+            acceptedProjectHostedExportMapPath(authority),
             "uv_hosted_reference_io_probe"
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            acceptedProjectTargetPath(
-                authority,
-                "Binary/HostedExportLibrary.map",
-                "Binary/libHostedExportLibrary.so.exports.map"
-            ),
+            acceptedProjectHostedExportMapPath(authority),
             "uv_hosted_reference_state_increment"
         ) &&
         acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",
-            acceptedProjectTargetPath(
-                authority,
-                "Binary/HostedExportLibrary.map",
-                "Binary/libHostedExportLibrary.so.exports.map"
-            ),
+            acceptedProjectHostedExportMapPath(authority),
             "uv_hosted_reference_catch_value"
         ) &&
         acceptedProjectHostedMapInternalSymbolsMatch(authority)
@@ -2925,7 +2922,12 @@ internal procedure acceptedProjectHostedImportLibraryMatches(
     return acceptedProjectTempFileDoesNotExist(
         authority,
         "AcceptedProjectHostedBuild",
-        "Library/libHostedExportLibrary.so.import"
+        acceptedProjectTargetPath(
+            authority,
+            "Library/HostedExportLibrary.lib",
+            "Library/libHostedExportLibrary.so.import",
+            "Library/libHostedExportLibrary.dylib.import"
+        )
     )
 }
 
@@ -2951,19 +2953,12 @@ internal procedure acceptedProjectHostedExercise(
             acceptedProjectTargetPath(
                 authority,
                 "Binary/HostedExportLibrary.dll",
-                "Binary/libHostedExportLibrary.so"
+                "Binary/libHostedExportLibrary.so",
+                "Binary/libHostedExportLibrary.dylib"
             )
         ) &&
         acceptedProjectHostedImportLibraryMatches(authority) &&
-        acceptedProjectTempFileExists(
-            authority,
-            "AcceptedProjectHostedBuild",
-            acceptedProjectTargetPath(
-                authority,
-                "Binary/HostedExportLibrary.map",
-                "Binary/libHostedExportLibrary.so.exports.map"
-            )
-        ) &&
+        acceptedProjectHostedExportMapArtifactMatches(authority) &&
         acceptedProjectTempFileContains(
             authority,
             "AcceptedProjectHostedBuild",

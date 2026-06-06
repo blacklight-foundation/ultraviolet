@@ -7,7 +7,7 @@ internal procedure artifactProjectTargetText(
     windows_text: string@View,
     sysv_text: string@View
 ) -> string@View {
-    return acceptedProjectTargetPath(authority, windows_text, sysv_text)
+    return acceptedProjectTargetPath(authority, windows_text, sysv_text, sysv_text)
 }
 
 internal procedure artifactProjectTargetStatus(
