@@ -346,6 +346,24 @@ void IRInstructionVisitor::operator()(const IRDispatch &dispatch) const
       dispatch_args.push_back(ordered);
       dispatch_args.push_back(chunk_size);
       dispatch_args.push_back(workgroup_size);
+
+      std::vector<IRValue> dispatch_source_args;
+      dispatch_source_args.resize(dispatch_args.size());
+      dispatch_source_args[0] = dispatch.range;
+      dispatch_source_args[1] = dispatch.elem_size;
+      dispatch_source_args[2] = dispatch.result_size;
+      dispatch_source_args[3] = dispatch.body_fn;
+      dispatch_source_args[5] = dispatch.env_ptr;
+      if (dispatch.reduce_fn.has_value())
+      {
+        dispatch_source_args[8] = *dispatch.reduce_fn;
+      }
+      if (dispatch.chunk_size.has_value())
+      {
+        dispatch_source_args[10] = *dispatch.chunk_size;
+      }
+      dispatch_source_args[11] = dispatch.workgroup_size;
+
       (void)EmitABICall(
           emitter,
           &builder,
@@ -357,7 +375,7 @@ void IRInstructionVisitor::operator()(const IRDispatch &dispatch) const
           /*ffi_import_boundary=*/false,
           /*ffi_import_catch=*/false,
           std::nullopt,
-          nullptr,
+          &dispatch_source_args,
           nullptr,
           nullptr,
           runtime_foreign_boundary);

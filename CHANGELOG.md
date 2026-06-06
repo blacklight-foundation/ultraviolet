@@ -4,6 +4,14 @@
 
 - No unreleased changes.
 
+## 0.4.0-alpha - 2026-06-06
+
+- Fixed runtime stdout and stderr writes with empty data so zero-length writes
+  return the normal successful IO outcome.
+- Fixed async dispatch runtime call lowering to preserve source argument identity
+  for ABI lowering without adding global derived-aggregate materialization in
+  generic call emission.
+
 ## 0.2.0-alpha - 2026-06-04
 
 - Added source-native diagnostic fixture execution checks so rejected-source and

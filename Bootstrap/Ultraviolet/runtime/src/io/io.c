@@ -902,6 +902,10 @@ static uv_rt_handle_t uv_open_console_out(void) {
 static UVUnion_Unit_IoError uv_write_stream_utf8(uv_rt_u32_t std_handle_id,
                                                   const UVStringView* data) {
   uint64_t len = data ? data->len : 0;
+  if (len == 0) {
+    return uv_unit_ok();
+  }
+
   uv_rt_handle_t h = uv_rt_std_stream(std_handle_id);
   int close_handle = 0;
 

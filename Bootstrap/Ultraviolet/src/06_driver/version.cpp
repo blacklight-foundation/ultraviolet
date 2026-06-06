@@ -25,7 +25,7 @@ namespace {
 #endif
 
 constexpr int VERSION_MAJOR = 0;
-constexpr int VERSION_MINOR = 3;
+constexpr int VERSION_MINOR = 4;
 constexpr int VERSION_PATCH = 0;
 constexpr const char* VERSION_PRERELEASE = "alpha";
 constexpr const char* VERSION_OVERRIDE = UV_COMPILER_VERSION_OVERRIDE;
