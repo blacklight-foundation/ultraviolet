@@ -1005,10 +1005,11 @@ internal procedure artifactProjectRuntimeInterfaceSymbolsExercise(
             authority,
             "ArtifactProjectRuntimeInterfaceBuild",
             "Logs/BuildTelemetry.tsv",
-            artifactProjectTargetText(
+            artifactProjectTargetProfileText(
                 authority,
                 "output-start\tRuntimeInterfaceSymbols\tkind=library;modules=1;emit_ir=ll;target=x86_64-win64",
-                "output-start\tRuntimeInterfaceSymbols\tkind=library;modules=1;emit_ir=ll;target=x86_64-sysv"
+                "output-start\tRuntimeInterfaceSymbols\tkind=library;modules=1;emit_ir=ll;target=x86_64-sysv",
+                "output-start\tRuntimeInterfaceSymbols\tkind=library;modules=1;emit_ir=ll;target=aarch64-darwin"
             )
         ) &&
         artifactProjectRuntimeInterfaceSymbolsMatch(authority) &&

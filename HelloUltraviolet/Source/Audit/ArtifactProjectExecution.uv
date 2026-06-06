@@ -5,9 +5,23 @@ internal let ARTIFACT_PROJECT_EXECUTED_OBLIGATION_COUNT: usize = 689usize
 internal procedure artifactProjectTargetText(
     authority: TestAuthority,
     windows_text: string@View,
-    sysv_text: string@View
+    non_windows_text: string@View
 ) -> string@View {
-    return acceptedProjectTargetPath(authority, windows_text, sysv_text, sysv_text)
+    return acceptedProjectTargetPath(
+        authority,
+        windows_text,
+        non_windows_text,
+        non_windows_text
+    )
+}
+
+internal procedure artifactProjectTargetProfileText(
+    authority: TestAuthority,
+    windows_text: string@View,
+    sysv_text: string@View,
+    darwin_text: string@View
+) -> string@View {
+    return acceptedProjectTargetPath(authority, windows_text, sysv_text, darwin_text)
 }
 
 internal procedure artifactProjectTargetStatus(
@@ -1251,7 +1265,12 @@ internal procedure artifactProjectSharedLinkSemanticsImportLibraryMatches(
     return acceptedProjectTempFileDoesNotExist(
         authority,
         "ArtifactProjectSharedLinkSemanticsBuild",
-        "Library/libHostedExportLibrary.so.import"
+        acceptedProjectTargetPath(
+            authority,
+            "Library/HostedExportLibrary.lib",
+            "Library/libHostedExportLibrary.so.import",
+            "Library/libHostedExportLibrary.dylib.import"
+        )
     )
 }
 
@@ -1645,10 +1664,11 @@ internal procedure artifactProjectAssemblyAndLinkKindsExercise(
         ) &&
         artifactProjectExecutableLinkConformanceContains(
             authority,
-            artifactProjectTargetText(
+            artifactProjectTargetProfileText(
                 authority,
                 "target%3Dx86_64-win64",
-                "target%3Dx86_64-sysv"
+                "target%3Dx86_64-sysv",
+                "target%3Daarch64-darwin"
             )
         ) &&
         artifactProjectExecutableLinkConformanceContains(
@@ -1747,10 +1767,11 @@ internal procedure artifactProjectAssemblyAndLinkKindsExercise(
         acceptedProjectTempFileExists(
             authority,
             "ArtifactProjectSharedLinkSemanticsBuild",
-            artifactProjectTargetText(
+            artifactProjectTargetProfileText(
                 authority,
                 "Binary/HostedExportLibrary.dll",
-                "Binary/libHostedExportLibrary.so"
+                "Binary/libHostedExportLibrary.so",
+                "Binary/libHostedExportLibrary.dylib"
             )
         ) &&
         artifactProjectSharedLinkSemanticsImportLibraryMatches(authority) &&
@@ -1798,10 +1819,11 @@ internal procedure artifactProjectAssemblyAndLinkKindsExercise(
         ) &&
         artifactProjectSharedLinkSemanticsConformanceContains(
             authority,
-            artifactProjectTargetText(
+            artifactProjectTargetProfileText(
                 authority,
                 "Binary/HostedExportLibrary.dll",
-                "Binary/libHostedExportLibrary.so"
+                "Binary/libHostedExportLibrary.so",
+                "Binary/libHostedExportLibrary.dylib"
             )
         ) &&
         artifactProjectSharedLinkSemanticsConformanceContains(
@@ -3523,18 +3545,20 @@ internal procedure artifactProjectEmitLlBackendHeaderMatches(
 ) -> bool {
     return artifactProjectEmitLlIrContains(
         authority,
-        artifactProjectTargetText(
+        artifactProjectTargetProfileText(
             authority,
             "target datalayout = \"e-m:w-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128\"",
-            "target datalayout = \"e-m:e-p270:32:32-p271:32:32-p272:64:64-i128:128-n8:16:32:64-S128\""
+            "target datalayout = \"e-m:e-p270:32:32-p271:32:32-p272:64:64-i128:128-n8:16:32:64-S128\"",
+            "target datalayout = \"e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32\""
         )
     ) &&
         artifactProjectEmitLlIrContains(
             authority,
-            artifactProjectTargetText(
+            artifactProjectTargetProfileText(
                 authority,
                 "target triple = \"x86_64-pc-windows-msvc\"",
-                "target triple = \"x86_64-unknown-linux-gnu\""
+                "target triple = \"x86_64-unknown-linux-gnu\"",
+                "target triple = \"arm64-apple-macosx14.0.0\""
             )
         ) &&
         artifactProjectEmitLlConformanceContains(
@@ -3543,10 +3567,11 @@ internal procedure artifactProjectEmitLlBackendHeaderMatches(
         ) &&
         artifactProjectEmitLlConformanceContains(
             authority,
-            artifactProjectTargetText(
+            artifactProjectTargetProfileText(
                 authority,
                 "target_profile%3Dx86_64-win64%3Btriple%3Dx86_64-pc-windows-msvc%3Bdata_layout%3De-m:w",
-                "target_profile%3Dx86_64-sysv%3Btriple%3Dx86_64-unknown-linux-gnu%3Bdata_layout%3De-m:e"
+                "target_profile%3Dx86_64-sysv%3Btriple%3Dx86_64-unknown-linux-gnu%3Bdata_layout%3De-m:e",
+                "target_profile%3Daarch64-darwin%3Btriple%3Darm64-apple-macosx14.0.0%3Bdata_layout%3De-m:o"
             )
         )
 }
@@ -3645,10 +3670,11 @@ internal procedure artifactProjectEmitLlTargetAndLayoutAbiObligationsMatch(
         ) &&
         artifactProjectEmitLlConformanceContains(
             authority,
-            artifactProjectTargetText(
+            artifactProjectTargetProfileText(
                 authority,
                 "source%3Dcli_override%3Bresolution_once%3Dtrue%3Bselected%3Dx86_64-win64",
-                "source%3Dcli_override%3Bresolution_once%3Dtrue%3Bselected%3Dx86_64-sysv"
+                "source%3Dcli_override%3Bresolution_once%3Dtrue%3Bselected%3Dx86_64-sysv",
+                "source%3Dcli_override%3Bresolution_once%3Dtrue%3Bselected%3Daarch64-darwin"
             )
         ) &&
         artifactProjectEmitLlConformanceContains(
@@ -3657,37 +3683,41 @@ internal procedure artifactProjectEmitLlTargetAndLayoutAbiObligationsMatch(
         ) &&
         artifactProjectEmitLlConformanceContains(
             authority,
-            artifactProjectTargetText(
+            artifactProjectTargetProfileText(
                 authority,
                 "host_inference%3Dfalse%3Bselected%3Dx86_64-win64",
-                "host_inference%3Dfalse%3Bselected%3Dx86_64-sysv"
+                "host_inference%3Dfalse%3Bselected%3Dx86_64-sysv",
+                "host_inference%3Dfalse%3Bselected%3Daarch64-darwin"
             )
         ) &&
         artifactProjectEmitLlConformanceContains(authority, "\tdef.TargetArch\t") &&
         artifactProjectEmitLlConformanceContains(
             authority,
-            artifactProjectTargetText(
+            artifactProjectTargetProfileText(
                 authority,
                 "target_profile%3Dx86_64-win64%3Barch%3Dx86_64",
-                "target_profile%3Dx86_64-sysv%3Barch%3Dx86_64"
+                "target_profile%3Dx86_64-sysv%3Barch%3Dx86_64",
+                "target_profile%3Daarch64-darwin%3Barch%3Daarch64"
             )
         ) &&
         artifactProjectEmitLlConformanceContains(authority, "\tdef.TargetMachineModel\t") &&
         artifactProjectEmitLlConformanceContains(
             authority,
-            artifactProjectTargetText(
+            artifactProjectTargetProfileText(
                 authority,
                 "target_profile%3Dx86_64-win64%3Bendianness%3Dlittle%3Bptr_size_bytes%3D8",
-                "target_profile%3Dx86_64-sysv%3Bendianness%3Dlittle%3Bptr_size_bytes%3D8"
+                "target_profile%3Dx86_64-sysv%3Bendianness%3Dlittle%3Bptr_size_bytes%3D8",
+                "target_profile%3Daarch64-darwin%3Bendianness%3Dlittle%3Bptr_size_bytes%3D8"
             )
         ) &&
         artifactProjectEmitLlConformanceContains(authority, "\tdef.TargetTriple\t") &&
         artifactProjectEmitLlConformanceContains(
             authority,
-            artifactProjectTargetText(
+            artifactProjectTargetProfileText(
                 authority,
                 "target_profile%3Dx86_64-win64%3Btriple%3Dx86_64-pc-windows-msvc",
-                "target_profile%3Dx86_64-sysv%3Btriple%3Dx86_64-unknown-linux-gnu"
+                "target_profile%3Dx86_64-sysv%3Btriple%3Dx86_64-unknown-linux-gnu",
+                "target_profile%3Daarch64-darwin%3Btriple%3Darm64-apple-macosx14.0.0"
             )
         ) &&
         artifactProjectEmitLlConformanceContains(
@@ -3704,10 +3734,11 @@ internal procedure artifactProjectEmitLlTargetAndLayoutAbiObligationsMatch(
         ) &&
         artifactProjectEmitLlConformanceContains(
             authority,
-            artifactProjectTargetText(
+            artifactProjectTargetProfileText(
                 authority,
                 "target_profile%3Dx86_64-win64%3Bptr_size%3D8%3Bptr_align%3D8%3Bendianness%3Dlittle",
-                "target_profile%3Dx86_64-sysv%3Bptr_size%3D8%3Bptr_align%3D8%3Bendianness%3Dlittle"
+                "target_profile%3Dx86_64-sysv%3Bptr_size%3D8%3Bptr_align%3D8%3Bendianness%3Dlittle",
+                "target_profile%3Daarch64-darwin%3Bptr_size%3D8%3Bptr_align%3D8%3Bendianness%3Dlittle"
             )
         ) &&
         artifactProjectEmitLlConformanceContains(authority, "\tdef.24.LayoutJudgements\t") &&
@@ -4797,10 +4828,11 @@ internal procedure artifactProjectEmitLlCallLoweringRulesMatch(
         ) &&
         artifactProjectEmitLlIrContains(
             authority,
-            artifactProjectTargetText(
+            artifactProjectTargetProfileText(
                 authority,
                 "define i64 @uv_emit_ll_foreign_byref_record_probe(ptr noundef nonnull align 8 dereferenceable(24) %payload",
-                "define i64 @uv_emit_ll_foreign_byref_record_probe(ptr noundef nonnull byval({ i64, i64, i64, [0 x i64] }) align 8 dereferenceable(24) %payload"
+                "define i64 @uv_emit_ll_foreign_byref_record_probe(ptr noundef nonnull byval({ i64, i64, i64, [0 x i64] }) align 8 dereferenceable(24) %payload",
+                "define i64 @uv_emit_ll_foreign_byref_record_probe(ptr noundef nonnull align 8 dereferenceable(24) %payload"
             )
         ) &&
         artifactProjectEmitLlIrContains(authority, "%__panic") &&
@@ -6460,10 +6492,11 @@ internal procedure artifactProjectEmitLlExercise(
             authority,
             "ArtifactProjectEmitLlBuild",
             "Logs/BuildTelemetry.tsv",
-            artifactProjectTargetText(
+            artifactProjectTargetProfileText(
                 authority,
                 "output-start\tEmitLlLibrary\tkind=library;modules=1;emit_ir=ll;target=x86_64-win64",
-                "output-start\tEmitLlLibrary\tkind=library;modules=1;emit_ir=ll;target=x86_64-sysv"
+                "output-start\tEmitLlLibrary\tkind=library;modules=1;emit_ir=ll;target=x86_64-sysv",
+                "output-start\tEmitLlLibrary\tkind=library;modules=1;emit_ir=ll;target=aarch64-darwin"
             )
         ) &&
         artifactProjectEmitLlLifecycleCleanupMatches(authority) &&
@@ -6657,10 +6690,11 @@ internal procedure artifactProjectEmitBcExercise(
             authority,
             "ArtifactProjectEmitBcBuild",
             "Logs/BuildTelemetry.tsv",
-            artifactProjectTargetText(
+            artifactProjectTargetProfileText(
                 authority,
                 "output-start\tEmitBcLibrary\tkind=library;modules=1;emit_ir=bc;target=x86_64-win64",
-                "output-start\tEmitBcLibrary\tkind=library;modules=1;emit_ir=bc;target=x86_64-sysv"
+                "output-start\tEmitBcLibrary\tkind=library;modules=1;emit_ir=bc;target=x86_64-sysv",
+                "output-start\tEmitBcLibrary\tkind=library;modules=1;emit_ir=bc;target=aarch64-darwin"
             )
         )
     if !passed {
@@ -6752,10 +6786,11 @@ internal procedure artifactProjectEmitLlDependencyExercise(
             authority,
             "ArtifactProjectEmitLlDependencyBuild",
             "Logs/BuildTelemetry.tsv",
-            artifactProjectTargetText(
+            artifactProjectTargetProfileText(
                 authority,
                 "output-start\tEmitLlDependency\tkind=dependency;modules=1;emit_ir=ll;target=x86_64-win64",
-                "output-start\tEmitLlDependency\tkind=dependency;modules=1;emit_ir=ll;target=x86_64-sysv"
+                "output-start\tEmitLlDependency\tkind=dependency;modules=1;emit_ir=ll;target=x86_64-sysv",
+                "output-start\tEmitLlDependency\tkind=dependency;modules=1;emit_ir=ll;target=aarch64-darwin"
             )
         )
     if !passed {
@@ -6827,10 +6862,11 @@ internal procedure artifactProjectEmptyDependencyObjectExercise(
             authority,
             "ArtifactProjectEmptyDependencyObjectBuild",
             "Logs/BuildTelemetry.tsv",
-            artifactProjectTargetText(
+            artifactProjectTargetProfileText(
                 authority,
                 "output-start\tEmptyDependencyObject\tkind=dependency;modules=0;emit_ir=none;target=x86_64-win64",
-                "output-start\tEmptyDependencyObject\tkind=dependency;modules=0;emit_ir=none;target=x86_64-sysv"
+                "output-start\tEmptyDependencyObject\tkind=dependency;modules=0;emit_ir=none;target=x86_64-sysv",
+                "output-start\tEmptyDependencyObject\tkind=dependency;modules=0;emit_ir=none;target=aarch64-darwin"
             )
         )
     if !passed {
@@ -7167,10 +7203,11 @@ internal procedure artifactProjectExecutableContextBundleIrMatches(
             authority,
             "ArtifactProjectExecutableBuild",
             "Logs/BuildTelemetry.tsv",
-            artifactProjectTargetText(
+            artifactProjectTargetProfileText(
                 authority,
                 "output-start\tExecutableOutput\tkind=executable;modules=1;emit_ir=ll;target=x86_64-win64",
-                "output-start\tExecutableOutput\tkind=executable;modules=1;emit_ir=ll;target=x86_64-sysv"
+                "output-start\tExecutableOutput\tkind=executable;modules=1;emit_ir=ll;target=x86_64-sysv",
+                "output-start\tExecutableOutput\tkind=executable;modules=1;emit_ir=ll;target=aarch64-darwin"
             )
         ) &&
         acceptedProjectTempFileContains(
@@ -7662,10 +7699,11 @@ internal procedure artifactProjectDynamicReceiverExpiredPanicExercise(
             authority,
             out_dir_suffix,
             "Logs/BuildTelemetry.tsv",
-            artifactProjectTargetText(
+            artifactProjectTargetProfileText(
                 authority,
                 "output-start\tDynamicReceiverExpiredPanic\tkind=executable;modules=1;emit_ir=ll;target=x86_64-win64",
-                "output-start\tDynamicReceiverExpiredPanic\tkind=executable;modules=1;emit_ir=ll;target=x86_64-sysv"
+                "output-start\tDynamicReceiverExpiredPanic\tkind=executable;modules=1;emit_ir=ll;target=x86_64-sysv",
+                "output-start\tDynamicReceiverExpiredPanic\tkind=executable;modules=1;emit_ir=ll;target=aarch64-darwin"
             )
         ) &&
         acceptedProjectTempFileContains(
