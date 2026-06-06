@@ -939,7 +939,17 @@ TargetAggregateCarrier TargetCAggregateByValueParamCarrier(
 
 bool TargetForeignByValueAggregateIndirectParamUsesByVal(
     TargetProfile profile) {
-  return ObjectFormatOf(profile) != ObjectFormat::Coff;
+  switch (profile) {
+    case TargetProfile::X86_64Win64:
+      return false;
+    case TargetProfile::X86_64SysV:
+      return true;
+    case TargetProfile::AArch64AAPCS64:
+    case TargetProfile::AArch64Darwin:
+      return false;
+  }
+
+  UnreachableTargetPlatform();
 }
 
 std::filesystem::path TargetHostFilesystemPath(const std::filesystem::path& path) {
