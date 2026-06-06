@@ -885,6 +885,15 @@ exit 1
 """
 
 
+def tool_invocation_failure_shim_text(tool_name: str) -> str:
+    return f"""#!/usr/bin/env bash
+set -euo pipefail
+
+echo "{tool_name} fixture shim: intentional invocation failure" >&2
+exit 1
+"""
+
+
 def windows_llvm_as_failure_shim_source() -> str:
     return r"""#include <stdio.h>
 #include <string.h>
@@ -900,6 +909,16 @@ int main(int argc, char** argv) {
     fputs("llvm-as fixture shim: intentional assembly failure\n", stderr);
     return 1;
 }
+"""
+
+
+def windows_tool_invocation_failure_shim_source(tool_name: str) -> str:
+    return f"""#include <stdio.h>
+
+int main(void) {{
+    fputs("{tool_name} fixture shim: intentional invocation failure\\n", stderr);
+    return 1;
+}}
 """
 
 
@@ -943,15 +962,17 @@ def visual_studio_dev_command_for_compiler(compiler: str) -> Path | None:
     return None
 
 
-def build_windows_llvm_as_failure_shim(
+def build_windows_failure_shim(
     config: TargetConfig,
     destination: Path,
+    source_text: str,
+    label: str,
 ) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
-    source_path = destination.with_name("llvm_as_failure_shim.c")
+    source_path = destination.with_name(f"{destination.stem}_failure_shim.c")
     object_path = destination.with_suffix(".obj")
     source_path.write_text(
-        windows_llvm_as_failure_shim_source(),
+        source_text,
         encoding="utf-8",
         newline="\n",
     )
@@ -983,10 +1004,35 @@ def build_windows_llvm_as_failure_shim(
     if result.returncode != 0:
         output = (result.stdout + result.stderr).strip()
         raise RuntimeError(
-            f"failed to build Windows llvm-as shim with {compiler}: {output}"
+            f"failed to build Windows {label} shim with {compiler}: {output}"
         )
     remove_stale_tool(source_path)
     remove_stale_tool(object_path)
+
+
+def build_windows_llvm_as_failure_shim(
+    config: TargetConfig,
+    destination: Path,
+) -> None:
+    build_windows_failure_shim(
+        config,
+        destination,
+        windows_llvm_as_failure_shim_source(),
+        "llvm-as",
+    )
+
+
+def build_windows_tool_invocation_failure_shim(
+    config: TargetConfig,
+    destination: Path,
+    tool_name: str,
+) -> None:
+    build_windows_failure_shim(
+        config,
+        destination,
+        windows_tool_invocation_failure_shim_source(tool_name),
+        tool_name,
+    )
 
 
 def stage_coff_fixture_tools(config: TargetConfig, destination_dir: Path) -> list[Path]:
@@ -1039,6 +1085,57 @@ def stage_emit_llvm_render_failure_tool(config: TargetConfig) -> list[Path]:
     return list(destinations)
 
 
+def stage_linking_invocation_failure_tools(config: TargetConfig) -> list[Path]:
+    fixtures = (
+        (
+            ROOT
+            / "HelloUltraviolet"
+            / "Fixtures"
+            / "OutputDiagnostics"
+            / "Linking"
+            / "LinkerInvocationFailure"
+            / "Tools",
+            "lld-link",
+        ),
+        (
+            ROOT
+            / "HelloUltraviolet"
+            / "Fixtures"
+            / "OutputDiagnostics"
+            / "Linking"
+            / "ArchiverInvocationFailure"
+            / "Tools",
+            "llvm-lib",
+        ),
+    )
+
+    staged: list[Path] = []
+    if platform.system() == "Windows":
+        for destination_dir, tool_name in fixtures:
+            remove_stale_tool(destination_dir / tool_name)
+            destination = destination_dir / f"{tool_name}.exe"
+            build_windows_tool_invocation_failure_shim(
+                config,
+                destination,
+                tool_name,
+            )
+            staged.append(destination)
+        return staged
+
+    for destination_dir, tool_name in fixtures:
+        destinations = (
+            destination_dir / tool_name,
+            destination_dir / f"{tool_name}.exe",
+        )
+        for destination in destinations:
+            write_executable_script(
+                destination,
+                tool_invocation_failure_shim_text(tool_name),
+            )
+        staged.extend(destinations)
+    return staged
+
+
 def run_internal_gate(
     transcript: Transcript,
     label: str,
@@ -1062,6 +1159,7 @@ def run_internal_gate(
             *stage_coff_fixture_tools(config, target_support_tool_dir),
             *stage_coff_fixture_tools(config, emit_bc_compat_tool_dir),
             *stage_emit_llvm_render_failure_tool(config),
+            *stage_linking_invocation_failure_tools(config),
         ]
         for path in staged:
             transcript.line(f"## Staged: {relative_path(path)}")
