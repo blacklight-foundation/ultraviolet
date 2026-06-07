@@ -736,6 +736,37 @@ static size_t uv_rt_macos_utf8_cstr_len(const char *text)
   return text ? strlen(text) : 0u;
 }
 
+static char **uv_rt_macos_process_argv(int *out_argc)
+{
+  const uv_rt_process_start_t *start = uv_rt_startup_current();
+  int argc = 0;
+  char **argv = NULL;
+
+  if (start)
+  {
+    argc = start->argc;
+    argv = start->argv;
+  }
+
+  if (argc <= 0 || !argv)
+  {
+    int *darwin_argc = _NSGetArgc();
+    char ***darwin_argv = _NSGetArgv();
+    argc = darwin_argc ? *darwin_argc : 0;
+    argv = darwin_argv ? *darwin_argv : NULL;
+  }
+
+  if (argc < 0)
+  {
+    argc = 0;
+  }
+  if (out_argc)
+  {
+    *out_argc = argc;
+  }
+  return argv;
+}
+
 static const char *uv_rt_macos_process_env_utf8_value(const char *name)
 {
   const uv_rt_process_start_t *start = uv_rt_startup_current();
@@ -3260,12 +3291,13 @@ uv_platform_u32_t uv_platform_backend_executable_path_utf8(
 
 uv_platform_uptr_t uv_platform_backend_argument_count(void)
 {
-  const uv_rt_process_start_t *start = uv_rt_startup_current();
-  if (!start || start->argc <= 1 || !start->argv)
+  int argc = 0;
+  char **argv = uv_rt_macos_process_argv(&argc);
+  if (argc <= 1 || !argv)
   {
     return 0u;
   }
-  return (uv_platform_uptr_t)(start->argc - 1);
+  return (uv_platform_uptr_t)(argc - 1);
 }
 
 uv_platform_u32_t uv_platform_backend_argument_utf8(
@@ -3273,14 +3305,14 @@ uv_platform_u32_t uv_platform_backend_argument_utf8(
     char *buffer,
     uv_platform_u32_t size)
 {
-  const uv_rt_process_start_t *start = uv_rt_startup_current();
-  if (!start || start->argc <= 1 || !start->argv ||
-      index >= (uv_platform_uptr_t)(start->argc - 1))
+  int argc = 0;
+  char **argv = uv_rt_macos_process_argv(&argc);
+  if (argc <= 1 || !argv || index >= (uv_platform_uptr_t)(argc - 1))
   {
     return 0u;
   }
 
-  const char *argument = start->argv[index + 1u];
+  const char *argument = argv[index + 1u];
   if (!argument)
   {
     return 0u;
