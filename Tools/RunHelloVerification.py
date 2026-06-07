@@ -339,6 +339,32 @@ def prepare_runtime_log_path(path: Path) -> None:
         pass
 
 
+def normalized_command_path(path: str | Path) -> str:
+    return os.path.normcase(os.path.abspath(os.fspath(path)))
+
+
+def command_uses_executable(command: Sequence[str], executable: Path) -> bool:
+    if not command:
+        return False
+    return normalized_command_path(command[0]) == normalized_command_path(executable)
+
+
+def remove_runtime_capture_environment(env: dict[str, str]) -> None:
+    for variable in (
+        "UV_RUNTIME_SINK",
+        "UV_RUNTIME_PATH",
+        "UV_RUNTIME_ROOT",
+        "UV_RUNTIME_FILTER",
+        "UV_RUNTIME_LEVEL",
+        "UV_RUNTIME_RULE",
+        "UV_RUNTIME_FILE",
+        "UV_RUNTIME_LABEL",
+        "UV_RUNTIME_FAIL_ONLY",
+        "UV_RUNTIME_BREAK_ON_FAIL",
+    ):
+        env.pop(variable, None)
+
+
 def git_text(args: list[str], timeout_seconds: float = 10.0) -> str:
     try:
         result = subprocess.run(
@@ -1238,7 +1264,7 @@ def run_command(
     label: str,
     cwd: Path,
     command: Sequence[str],
-    target_profile: str,
+    config: TargetConfig,
     runtime_log_path: Path,
 ) -> int:
     transcript.line()
@@ -1256,16 +1282,17 @@ def run_command(
 
     start = time.monotonic()
     env = os.environ.copy()
-    env.update(
-        {
-            "HUV_TARGET_PROFILE": target_profile,
-            "UV_RUNTIME_SINK": "both",
-            "UV_RUNTIME_PATH": str(runtime_log_path),
-            "UV_RUNTIME_ROOT": str(ROOT),
-            "UV_RUNTIME_FILTER": "all",
-            "UV_RUNTIME_LEVEL": "trace",
-        }
-    )
+    remove_runtime_capture_environment(env)
+    env["HUV_TARGET_PROFILE"] = config.profile
+    if not command_uses_executable(command, config.compiler_path):
+        env.update(
+            {
+                "UV_RUNTIME_SINK": "console",
+                "UV_RUNTIME_ROOT": str(ROOT),
+                "UV_RUNTIME_FILTER": "all",
+                "UV_RUNTIME_LEVEL": "trace",
+            }
+        )
     try:
         process = subprocess.Popen(
             command,
@@ -1284,8 +1311,10 @@ def run_command(
         return 127
 
     assert process.stdout is not None
-    for line in process.stdout:
-        transcript.write(line)
+    with runtime_log_path.open("a", encoding="utf-8", errors="replace") as log:
+        for line in process.stdout:
+            transcript.write(line)
+            log.write(line)
     exit_code = process.wait()
     elapsed = time.monotonic() - start
     transcript.line(f"## Exit code: {exit_code}")
@@ -1305,7 +1334,7 @@ def run_verification_gate(
             gate.label,
             gate.cwd,
             gate.command,
-            config.profile,
+            config,
             verification_runtime_log_path(config, gate_index, gate.label),
         )
     else:
