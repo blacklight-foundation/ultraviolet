@@ -60,7 +60,13 @@ jobs:
         if: always()
         run: |
           set +e
-          mkdir -p artifacts/crash-reports
+          mkdir -p artifacts/crash-reports artifacts/runtime-logs/macos
+          export UV_RUNTIME_SINK=both
+          export UV_RUNTIME_PATH="$PWD/artifacts/runtime-logs/macos/lldb-hello-ultraviolet.log"
+          export UV_RUNTIME_ROOT="$PWD"
+          export UV_RUNTIME_FILTER=all
+          export UV_RUNTIME_LEVEL=trace
+          rm -f "$UV_RUNTIME_PATH"
           executable="HelloUltraviolet/Build/Binary/HelloUltraviolet"
           if [ -x "$executable" ]; then
             cp "$executable" artifacts/HelloUltraviolet || true
