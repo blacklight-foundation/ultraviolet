@@ -195,6 +195,8 @@ EXECUTABLE_EXTERN_PAYLOADS = frozenset(
         MACOS_LLVM_EXTERN_ROOT / "bin" / "llvm-as",
     }
 )
+RUNTIME_LOG_ROOT = ROOT / "artifacts" / "runtime-logs"
+RUNTIME_LOG_SLUG_MAX = 96
 
 
 class Transcript:
@@ -304,6 +306,37 @@ def relative_path(path: Path) -> str:
         return path.resolve().relative_to(ROOT.resolve()).as_posix()
     except ValueError:
         return str(path)
+
+
+def runtime_log_slug(label: str) -> str:
+    characters: list[str] = []
+    for character in label.lower():
+        if character.isalnum():
+            characters.append(character)
+        elif characters and characters[-1] != "-":
+            characters.append("-")
+
+    slug = "".join(characters).strip("-")
+    if not slug:
+        return "gate"
+    return slug[:RUNTIME_LOG_SLUG_MAX].rstrip("-")
+
+
+def verification_runtime_log_path(
+    config: TargetConfig,
+    gate_index: int,
+    label: str,
+) -> Path:
+    slug = runtime_log_slug(label)
+    return RUNTIME_LOG_ROOT / config.release_platform / f"{gate_index:03d}-{slug}.log"
+
+
+def prepare_runtime_log_path(path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        path.unlink()
+    except FileNotFoundError:
+        pass
 
 
 def git_text(args: list[str], timeout_seconds: float = 10.0) -> str:
@@ -1206,15 +1239,33 @@ def run_command(
     cwd: Path,
     command: Sequence[str],
     target_profile: str,
+    runtime_log_path: Path,
 ) -> int:
     transcript.line()
     transcript.line(f"## Gate: {label}")
     transcript.line(f"## Working directory: {relative_path(cwd)}")
     transcript.line(f"## Command: {command_text(command)}")
+    transcript.line(f"## Runtime log: {relative_path(runtime_log_path)}")
+
+    try:
+        prepare_runtime_log_path(runtime_log_path)
+    except OSError as exc:
+        transcript.line(f"## Failed to prepare runtime log: {exc}")
+        transcript.line("## Exit code: 127")
+        return 127
 
     start = time.monotonic()
     env = os.environ.copy()
-    env["HUV_TARGET_PROFILE"] = target_profile
+    env.update(
+        {
+            "HUV_TARGET_PROFILE": target_profile,
+            "UV_RUNTIME_SINK": "both",
+            "UV_RUNTIME_PATH": str(runtime_log_path),
+            "UV_RUNTIME_ROOT": str(ROOT),
+            "UV_RUNTIME_FILTER": "all",
+            "UV_RUNTIME_LEVEL": "trace",
+        }
+    )
     try:
         process = subprocess.Popen(
             command,
@@ -1246,6 +1297,7 @@ def run_verification_gate(
     transcript: Transcript,
     gate: VerificationGate,
     config: TargetConfig,
+    gate_index: int,
 ) -> int:
     if gate.internal_action is None:
         exit_code = run_command(
@@ -1254,6 +1306,7 @@ def run_verification_gate(
             gate.cwd,
             gate.command,
             config.profile,
+            verification_runtime_log_path(config, gate_index, gate.label),
         )
     else:
         exit_code = run_internal_gate(
@@ -1357,11 +1410,18 @@ def main() -> int:
             digest = transcript.hexdigest()
             transcript.line(f"Verification transcript SHA256: {digest}", hashed=False)
             return 2
-        for gate in commands:
+        for gate_index, gate in enumerate(commands, start=1):
             transcript.line()
             transcript.line(f"## Planned gate: {gate.label}")
             transcript.line(f"## Working directory: {relative_path(gate.cwd)}")
             transcript.line(f"## Command: {gate_command_text(gate)}")
+            if gate.internal_action is None:
+                runtime_log_path = verification_runtime_log_path(
+                    config,
+                    gate_index,
+                    gate.label,
+                )
+                transcript.line(f"## Runtime log: {relative_path(runtime_log_path)}")
             if gate.allowed_exit_codes != (0,):
                 transcript.line(
                     "## Expected exit code(s): "
@@ -1428,8 +1488,8 @@ def main() -> int:
     start = time.monotonic()
     failure_code = run_extern_payload_gate(transcript, config)
     if failure_code == 0:
-        for gate in commands:
-            exit_code = run_verification_gate(transcript, gate, config)
+        for gate_index, gate in enumerate(commands, start=1):
+            exit_code = run_verification_gate(transcript, gate, config, gate_index)
             if exit_code != 0:
                 failure_code = exit_code
                 break

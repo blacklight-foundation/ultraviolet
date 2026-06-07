@@ -79,7 +79,9 @@ jobs:
         if: always()
         with:
           name: hello-verification-macos
-          path: artifacts/hello-verification-macos.txt
+          path: |
+            artifacts/hello-verification-macos.txt
+            artifacts/runtime-logs/**
           if-no-files-found: ignore
 
       - name: Upload macOS release archive
