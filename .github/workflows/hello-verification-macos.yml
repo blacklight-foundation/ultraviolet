@@ -82,6 +82,14 @@ jobs:
           path: |
             artifacts/hello-verification-macos.txt
             artifacts/runtime-logs/**
+            Build/Tests/**/*.log
+            Build/Tests/**/*.out
+            Build/Tests/**/*.err
+            Build/Tests/**/*.json
+            HelloUltraviolet/Build/Tests/**/*.log
+            HelloUltraviolet/Build/Tests/**/*.out
+            HelloUltraviolet/Build/Tests/**/*.err
+            HelloUltraviolet/Build/Tests/**/*.json
           if-no-files-found: ignore
 
       - name: Upload macOS release archive
