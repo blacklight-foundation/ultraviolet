@@ -17,7 +17,8 @@ namespace ultraviolet::codegen {
 std::optional<ABIType> ABITyTuple(const analysis::ScopeContext& ctx,
                                   const analysis::TypeTuple& tuple) {
   SPEC_RULE("ABI-Tuple");
-  const auto layout = ::ultraviolet::analysis::layout::RecordLayoutOf(ctx, tuple.elements);
+  SPEC_RULE("rule.24.ABI-Tuple");
+  const auto layout = ::ultraviolet::analysis::layout::TupleLayoutOf(ctx, tuple.elements);
   if (!layout.has_value()) {
     return std::nullopt;
   }

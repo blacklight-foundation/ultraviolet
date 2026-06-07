@@ -20,6 +20,7 @@
 #include <string_view>
 #include <string>
 #include <type_traits>
+#include <variant>
 
 #include "00_core/assert_spec.h"
 #include "00_core/diagnostic_messages.h"
@@ -55,6 +56,127 @@ static inline void SpecDefsResolverModules() {
   SPEC_DEF("BindSelfClass", "5.1.7");
 }
 
+void AppendResolvePayloadField(
+    std::string& payload,
+    std::string_view key,
+    std::string_view value) {
+  if (!payload.empty()) {
+    payload += ';';
+  }
+  payload += key;
+  payload += '=';
+  payload += value;
+}
+
+void AppendResolvePayloadField(
+    std::string& payload,
+    std::string_view key,
+    const char* value) {
+  AppendResolvePayloadField(
+      payload,
+      key,
+      std::string_view(value ? value : "-"));
+}
+
+void AppendResolvePayloadField(
+    std::string& payload,
+    std::string_view key,
+    bool value) {
+  AppendResolvePayloadField(
+      payload,
+      key,
+      std::string_view(value ? "true" : "false"));
+}
+
+std::string ResolvePathPayload(const ast::Path& path) {
+  std::string result;
+  for (const auto& segment : path) {
+    if (!result.empty()) {
+      result += "::";
+    }
+    result += segment;
+  }
+  return result;
+}
+
+bool SigmaEntryIsModal(const Sigma& sigma, const ast::Path& path) {
+  const auto it = sigma.types.find(PathKeyOf(path));
+  if (it == sigma.types.end()) {
+    return false;
+  }
+  return std::holds_alternative<ast::ModalDecl>(it->second);
+}
+
+void RecordDirIterAndFileTypeBindings(const Sigma& sigma) {
+  SPEC_RULE("def.DirIterAndFileTypeBindings");
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  ast::Path dir_iter_path;
+  dir_iter_path.emplace_back("DirIter");
+  ast::Path file_path;
+  file_path.emplace_back("File");
+
+  const bool dir_iter_binding_is_modal =
+      SigmaEntryIsModal(sigma, dir_iter_path);
+  const bool file_binding_is_modal = SigmaEntryIsModal(sigma, file_path);
+  if (!dir_iter_binding_is_modal || !file_binding_is_modal) {
+    return;
+  }
+
+  std::string payload;
+  const std::string dir_iter_key = ResolvePathPayload(dir_iter_path);
+  const std::string file_key = ResolvePathPayload(file_path);
+  AppendResolvePayloadField(payload, "source", "RegisterBuiltinTypes");
+  AppendResolvePayloadField(payload, "sigma_types", true);
+  AppendResolvePayloadField(payload, "dir_iter_key", dir_iter_key);
+  AppendResolvePayloadField(payload, "dir_iter_binding", "modal");
+  AppendResolvePayloadField(payload, "dir_iter_decl", "DirIterDecl");
+  AppendResolvePayloadField(payload, "file_key", file_key);
+  AppendResolvePayloadField(payload, "file_binding", "modal");
+  AppendResolvePayloadField(payload, "file_decl", "FileDecl");
+
+  core::Conformance::Record(
+      "def.DirIterAndFileTypeBindings",
+      std::nullopt,
+      payload);
+}
+
+void RecordSharedResolutionOutputs(
+    const ResolveContext& ctx,
+    const ResolveModulesResult& result) {
+  if (!core::Conformance::Enabled() || !ctx.ctx) {
+    return;
+  }
+
+  const std::size_t input_module_count = ctx.ctx->sigma.mods.size();
+  const std::size_t output_module_count = result.modules.size();
+  const std::size_t name_map_count =
+      ctx.name_maps == nullptr ? 0 : ctx.name_maps->size();
+  const std::size_t module_name_count =
+      ctx.module_names == nullptr ? 0 : ctx.module_names->size();
+
+  std::string payload = "source=ResolveModules;tuple=ResolveOutputs<M'>";
+  payload.append(";input_modules=");
+  payload.append(std::to_string(input_module_count));
+  payload.append(";resolved_modules=");
+  payload.append(std::to_string(output_module_count));
+  payload.append(";name_maps=");
+  payload.append(std::to_string(name_map_count));
+  payload.append(";module_names=");
+  payload.append(std::to_string(module_name_count));
+  payload.append(";all_modules_resolved=");
+  payload.append(output_module_count == input_module_count ? "true" : "false");
+  payload.append(";name_map_coverage=");
+  payload.append(name_map_count >= input_module_count ? "true" : "false");
+
+  core::Conformance::Record(
+      "def.SharedResolutionOutputs",
+      std::nullopt,
+      payload);
+}
+
 std::optional<std::string_view> CodeForResolveDiag(
     std::string_view diag_id) {
   if (diag_id == "ResolveExpr-Ident-Err" ||
@@ -69,6 +191,9 @@ std::optional<std::string_view> CodeForResolveDiag(
   }
   if (diag_id == "E-TYP-2007") {
     return "E-TYP-2007";
+  }
+  if (diag_id == "E-SEM-2852") {
+    return "E-SEM-2852";
   }
   if (diag_id == "ResolveModulePath-Err") {
     return "E-MOD-1107";
@@ -458,10 +583,10 @@ void PopulateSigma(ScopeContext& ctx) {
   }
   {
     ast::Path path;
-    path.emplace_back("Step");
+    path.emplace_back("Discrete");
     ast::ClassDecl decl{};
     decl.vis = ast::Visibility::Public;
-    decl.name = "Step";
+    decl.name = "Discrete";
     decl.supers = {};
     ast::ClassMethodDecl successor_method{};
     successor_method.vis = ast::Visibility::Public;
@@ -621,6 +746,7 @@ void PopulateSigma(ScopeContext& ctx) {
     path.emplace_back("DirIter");
     ctx.sigma.types[PathKeyOf(path)] = BuildDirIterModalDecl();
   }
+  RecordDirIterAndFileTypeBindings(ctx.sigma);
   {
     ast::Path path;
     path.emplace_back("Spawned");
@@ -764,6 +890,7 @@ ResolveModulesResult ResolveModules(ResolveContext& ctx) {
   }
   if (result.ok) {
     SPEC_RULE("ResolveModules-Ok");
+    RecordSharedResolutionOutputs(ctx, result);
   }
   return result;
 }

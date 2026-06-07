@@ -106,10 +106,16 @@ LowerCtx MakeBranchCtx(LowerCtx& base) {
 
 LowerResult LowerRaceExpr(const ast::RaceExpr& expr, LowerCtx& ctx) {
     SPEC_RULE("Lower-Expr-Race");
+    SPEC_RULE("def.21.AsyncComposeIR");
 
     // Determine mode from first handler
     bool is_streaming = !expr.arms.empty() &&
                         expr.arms[0].handler.kind == ast::RaceHandlerKind::Yield;
+    if (is_streaming) {
+        SPEC_RULE("rule.21.Lower-Expr-Race-Stream");
+    } else {
+        SPEC_RULE("rule.21.Lower-Expr-Race-Return");
+    }
 
     std::vector<IRRaceArm> ir_arms;
     std::vector<LowerCtx> arm_ctxs;

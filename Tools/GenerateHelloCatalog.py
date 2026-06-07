@@ -25,6 +25,32 @@ AUDIT_DIGEST_FACTOR = 257
 CHECK_MODE = False
 CHECK_FAILURES: list[str] = []
 EXPECTED_GENERATED_PATHS: set[pathlib.Path] = set()
+BLOCKED_OBLIGATIONS = {
+    "DirSeq-Rel-Fail": (
+        "No validated manifest-loaded compiler route reaches the "
+        "directory-relative-path failure branch without synthetic input."
+    ),
+    "Out-Obj-Collision": (
+        "No legal manifest-loaded artifact project route produces duplicate "
+        "computed object paths without synthetic project/module injection."
+    ),
+    "Out-IR-Collision": (
+        "No legal manifest-loaded artifact project route produces duplicate "
+        "computed IR paths without synthetic project/module injection."
+    ),
+    "rule.17.Lower-Pat-Err": (
+        "Source paths reject unsupported pattern forms before lowering, so the "
+        "lowerer-only undefined MatchPattern branch is not source-reachable."
+    ),
+    "rule.18.Lower-Stmt-Error": (
+        "Parser recovery diagnostics stop the normal pipeline before lowering "
+        "recovered error statements."
+    ),
+    "rule.21.Lower-Wait-Key-Illegal": (
+        "Semantic key validation rejects held-key waits before accepted-source "
+        "lowering reaches the lowerer-only branch."
+    ),
+}
 
 
 def display_path(path: pathlib.Path) -> str:
@@ -33,20 +59,21 @@ def display_path(path: pathlib.Path) -> str:
 
 def write_generated(path: pathlib.Path, text: str) -> None:
     EXPECTED_GENERATED_PATHS.add(path)
+    expected_bytes = text.encode("utf-8")
     if CHECK_MODE:
         if not path.exists():
             CHECK_FAILURES.append(f"missing generated file: {display_path(path)}")
             return
-        if path.read_text(encoding="utf-8") != text:
+        if path.read_bytes() != expected_bytes:
             CHECK_FAILURES.append(f"out-of-date generated file: {display_path(path)}")
         return
 
-    if path.exists() and path.read_text(encoding="utf-8") == text:
+    if path.exists() and path.read_bytes() == expected_bytes:
         return
 
     for attempt in range(5):
         try:
-            path.write_text(text, encoding="utf-8")
+            path.write_bytes(expected_bytes)
             return
         except OSError:
             if attempt == 4:
@@ -85,6 +112,14 @@ def key_digest(keys: list[tuple[str, int]]) -> int:
     return text_digest(canonical)
 
 
+def is_blocked_obligation(row: "CsvRow") -> bool:
+    return row.obligation_id in BLOCKED_OBLIGATIONS
+
+
+def blocked_obligation_rows(rows: list["CsvRow"]) -> list["CsvRow"]:
+    return [row for row in rows if is_blocked_obligation(row)]
+
+
 def target_digest(targets: list[tuple[str, str, str]]) -> int:
     canonical = "".join(
         f"{module_path}\t{symbol}\t{source_path}\n"
@@ -109,6 +144,17 @@ def symbol_execution_group(source_path: str) -> str:
     if len(parts) >= 2 and parts[0] == "Source" and parts[1] == "Audit":
         return "Audit"
     return pascal_identifier(source_path)
+
+
+def is_compiled_symbol_execution_target(symbol: str) -> bool:
+    is_run_reference = (
+        re.match(r"^run[A-Z][A-Za-z0-9]*(Reference|ReferenceModels)$", symbol)
+        is not None
+    )
+    is_fixture_count = (
+        symbol.startswith("validated") and symbol.endswith("FixtureCount")
+    )
+    return is_run_reference or is_fixture_count
 
 
 ENTRY_RE = re.compile(
@@ -184,6 +230,18 @@ REJECTED_SOURCE_HELPER = "rejectedSourceObligationEntryMatches"
 DIAGNOSTIC_SOURCE_HELPER = "diagnosticSourceObligationEntryMatches"
 ARTIFACT_BEHAVIOR_HELPER = "artifactBehaviorObligationEntryMatches"
 REFERENCE_MODEL_HELPER = "referenceModelObligationEntryMatches"
+CATALOG_AUDIT_HELPER_IMPORTS = {
+    "acceptedProjectConformanceContains",
+    "acceptedProjectConformanceLineContains",
+    "acceptedProjectRunCase",
+    "acceptedProjectTempFileContains",
+    "acceptedProjectTempFileExists",
+    "artifactProjectRunCase",
+    "artifactProjectTempFileExcludes",
+    "diagnosticExerciseFixture",
+    "diagnosticExerciseProjectFixtureDirectory",
+    "diagnosticIoSucceeded",
+}
 
 
 @dataclass(frozen=True)
@@ -1033,6 +1091,11 @@ def missing_target(row: CsvRow) -> ReferenceTarget:
     module_aggregation = (
         CATALOG_ROOT / "ModuleLevelForms" / "ModuleAndFileAggregation.uv"
     )
+    output_artifacts = (
+        CATALOG_ROOT
+        / "ProjectAndCompilationModel"
+        / "OutputArtifactsAndLinking.uv"
+    )
     control_expressions = CATALOG_ROOT / "Expressions" / "ControlExpressions.uv"
     basic_patterns = CATALOG_ROOT / "Patterns" / "BasicPatterns.uv"
     case_clauses = CATALOG_ROOT / "Patterns" / "CaseClauses.uv"
@@ -1062,6 +1125,14 @@ def missing_target(row: CsvRow) -> ReferenceTarget:
         source_path="Source/Reference/Patterns/BasicPatterns.uv",
     )
 
+    def artifact_output_target(symbol: str) -> ReferenceTarget:
+        return ReferenceTarget(
+            path=output_artifacts,
+            module_path="HelloUltraviolet::Audit",
+            symbol=symbol,
+            source_path="Source/Audit/ArtifactProjectExecution.uv",
+        )
+
     if row.obligation_id in {
         "Parse-Attribute",
         "Parse-AttrArgsOpt-Empty",
@@ -1070,6 +1141,75 @@ def missing_target(row: CsvRow) -> ReferenceTarget:
 
     if row.obligation_id == "requirement.19.OrderedKeyBlockOption":
         return key_acquisition_blocks_target()
+
+    if row.obligation_id in {
+        "def.RequiredOutputs",
+        "def.IRSet",
+        "def.PrimaryArtifactSet",
+        "def.ImportLibSet",
+        "def.OutputRoot",
+        "def.OutputHygiene",
+        "def.OutputPathsRoot",
+        "def.OutputPathsDirectories",
+        "def.ProjectOutputBinding",
+        "def.ObjectPath",
+        "def.FinalArtifactLibraryName",
+        "def.FinalArtifactNames",
+        "def.ArtifactPathContext",
+        "def.EmitIRExtension",
+        "def.ObjPath",
+        "def.IRPath",
+        "def.ExePath",
+        "def.SharedLibPath",
+        "def.StaticLibPath",
+        "def.ImportLibPath",
+        "def.PrimaryArtifact",
+        "def.ArtifactOutputDirectoryUse",
+        "def.ObjPaths",
+        "def.IRPaths",
+        "def.LinkJudg",
+        "def.RuntimeLibName",
+        "def.CompilerExecutableDir",
+        "def.CompilerSidecarLayoutPredicates",
+        "def.CompilerSupportRoot",
+        "def.CompilerRuntimeLibPath",
+        "def.RuntimeLibPath",
+        "ResolveRuntimeLib-Ok",
+        "def.LinkerSymbols",
+        "def.LinkObjs",
+    }:
+        return artifact_output_target("artifactProjectAssemblyAndLinkKindsExercise")
+
+    if row.obligation_id in {
+        "def.LibraryArtifactInputs",
+        "Link-Ok",
+        "Out-Final-Link-Ok",
+    }:
+        return artifact_output_target("artifactProjectLibraryArtifactInputsExercise")
+
+    if row.obligation_id in {
+        "Archive-Ok",
+        "Out-Final-Archive-Ok",
+    }:
+        return artifact_output_target("artifactProjectStaticLibraryExercise")
+
+    if row.obligation_id in {
+        "req.15.NoRuntimeOverloadSearch",
+        "req.15.InvariantRuntimeChecks",
+        "req.15.InvariantLoweringViaVerificationLogic",
+    }:
+        return ReferenceTarget(
+            path=CATALOG_ROOT
+            / "ProceduresAndContracts"
+            / (
+                "Overloading.uv"
+                if row.obligation_id == "req.15.NoRuntimeOverloadSearch"
+                else "Invariants.uv"
+            ),
+            module_path="HelloUltraviolet::Audit",
+            symbol="artifactProjectEmitLlExercise",
+            source_path="Source/Audit/ArtifactProjectExecution.uv",
+        )
 
     if row.obligation_id in {
         "def.TimePrimitiveJudgments",
@@ -1244,6 +1384,8 @@ def build_catalog_entries(rows: list[CsvRow]) -> list[CatalogEntry]:
     fixture_targets = fixture_obligation_targets()
     entries: list[CatalogEntry] = []
     for row in rows:
+        if is_blocked_obligation(row):
+            continue
         key = (row.obligation_id, row.internal_spec_line, row.index)
         target = assigned.get(key)
         if target is None:
@@ -1256,13 +1398,20 @@ def build_catalog_entries(rows: list[CsvRow]) -> list[CatalogEntry]:
     return entries
 
 
-def write_catalog_root(total: int) -> None:
+def write_catalog_root(total: int, blocked_total: int) -> None:
     write_generated(
         AUDIT_ROOT / "Catalog.uv",
         "//! Root catalog accounting for generated obligation entries.\n\n"
         f"public let EXPECTED_OBLIGATION_COUNT: usize = {total}\n\n"
+        f"public let BLOCKED_OBLIGATION_COUNT: usize = {blocked_total}\n\n"
         "public procedure catalogObligationCount() -> usize {\n"
         "    return EXPECTED_OBLIGATION_COUNT\n"
+        "}\n\n"
+        "public procedure catalogBlockedObligationCount() -> usize {\n"
+        "    return BLOCKED_OBLIGATION_COUNT\n"
+        "}\n\n"
+        "public procedure catalogAccountedObligationCount() -> usize {\n"
+        "    return EXPECTED_OBLIGATION_COUNT + BLOCKED_OBLIGATION_COUNT\n"
         "}\n",
     )
 
@@ -1271,6 +1420,14 @@ def write_catalog_imports(entries: list[CatalogEntry]) -> None:
     helpers_by_directory: dict[pathlib.Path, set[str]] = defaultdict(set)
     for entry in entries:
         helpers_by_directory[entry.target.path.parent].add(entry.helper)
+
+    for path in sorted(CATALOG_ROOT.rglob("*.uv")):
+        if path.name == "Imports.uv":
+            continue
+        text = path.read_text(encoding="utf-8")
+        for helper in CATALOG_AUDIT_HELPER_IMPORTS:
+            if re.search(r"\b" + re.escape(helper) + r"\s*\(", text):
+                helpers_by_directory[path.parent].add(helper)
 
     for directory, helpers in sorted(helpers_by_directory.items()):
         lines = [
@@ -1325,10 +1482,18 @@ def write_topic_files(entries: list[CatalogEntry]) -> None:
         write_generated(path, "\n".join(lines))
 
 
-def write_membership(rows: list[CsvRow], entries: list[CatalogEntry]) -> None:
+def write_membership(
+    rows: list[CsvRow],
+    entries: list[CatalogEntry],
+    blocked_rows: list[CsvRow],
+) -> None:
     csv_text = CSV_PATH.read_text(encoding="utf-8")
     csv_keys = sorted((row.obligation_id, row.internal_spec_line) for row in rows)
     catalog_keys = sorted((entry.row.obligation_id, entry.row.internal_spec_line) for entry in entries)
+    blocked_keys = sorted(
+        (row.obligation_id, row.internal_spec_line) for row in blocked_rows
+    )
+    accounted_keys = sorted([*catalog_keys, *blocked_keys])
     for old_group in AUDIT_ROOT.glob("CatalogCsvMembershipGroup*.uv"):
         remove_generated(old_group)
 
@@ -1371,12 +1536,28 @@ def write_membership(rows: list[CsvRow], entries: list[CatalogEntry]) -> None:
         f"    return {len(catalog_keys)}usize",
         "}",
         "",
+        "public procedure catalogBlockedObligationKeyCount() -> usize {",
+        f"    return {len(blocked_keys)}usize",
+        "}",
+        "",
+        "public procedure catalogAccountedObligationKeyCount() -> usize {",
+        f"    return {len(accounted_keys)}usize",
+        "}",
+        "",
         "public procedure expectedCsvObligationKeyDigest() -> usize {",
         f"    return {key_digest(csv_keys)}usize",
         "}",
         "",
         "public procedure catalogGeneratedObligationKeyDigest() -> usize {",
         f"    return {key_digest(catalog_keys)}usize",
+        "}",
+        "",
+        "public procedure catalogBlockedObligationKeyDigest() -> usize {",
+        f"    return {key_digest(blocked_keys)}usize",
+        "}",
+        "",
+        "public procedure catalogAccountedObligationKeyDigest() -> usize {",
+        f"    return {key_digest(accounted_keys)}usize",
         "}",
         "",
         "public procedure expectedCsvFileByteCount() -> usize {",
@@ -1398,8 +1579,8 @@ def write_membership(rows: list[CsvRow], entries: list[CatalogEntry]) -> None:
         "}",
         "",
         "internal procedure generatedCatalogKeysMatchCsv() -> bool {",
-        "    return catalogGeneratedObligationKeyCount() == expectedCsvObligationKeyCount() &&",
-        "        catalogGeneratedObligationKeyDigest() == expectedCsvObligationKeyDigest()",
+        "    return catalogAccountedObligationKeyCount() == expectedCsvObligationKeyCount() &&",
+        "        catalogAccountedObligationKeyDigest() == expectedCsvObligationKeyDigest()",
         "}",
         "",
         "public procedure catalogMatchesCsvObligations(context: Context) -> bool {",
@@ -1648,6 +1829,7 @@ def write_symbols(entries: list[CatalogEntry]) -> None:
         {
             (entry.target.module_path, entry.target.symbol, entry.target.source_path)
             for entry in entries
+            if is_compiled_symbol_execution_target(entry.target.symbol)
         }
     )
     context_symbols = {
@@ -1820,11 +2002,12 @@ def main(argv: list[str] | None = None) -> int:
     CHECK_MODE = args.check
 
     rows = load_csv_rows()
+    blocked_rows = blocked_obligation_rows(rows)
     entries = build_catalog_entries(rows)
-    write_catalog_root(len(entries))
+    write_catalog_root(len(entries), len(blocked_rows))
     write_catalog_imports(entries)
     write_topic_files(entries)
-    write_membership(rows, entries)
+    write_membership(rows, entries, blocked_rows)
     write_primary_references(entries)
     write_source_paths(entries)
     write_symbols(entries)

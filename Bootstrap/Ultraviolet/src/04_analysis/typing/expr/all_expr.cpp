@@ -1,8 +1,8 @@
 // =================================================================
 // File: 04_analysis/typing/expr/all_expr.cpp
 // Construct: All Expression Type Checking (concurrent async execution)
-// Spec Section: 17.3.7
-// Spec Rules: T-All
+// Spec Section: 21.3.7
+// Spec Rules: T-All, All-Out-Err, All-In-Err
 // =================================================================
 
 #include "04_analysis/typing/expr/all_expr.h"
@@ -18,7 +18,9 @@ namespace ultraviolet::analysis::expr {
 namespace {
 
 static inline void SpecDefsAllExpr() {
-  SPEC_DEF("T-All", "17.3.7");
+  SPEC_DEF("rule.21.T-All", "21.3.7");
+  SPEC_DEF("rule.21.All-Out-Err", "21.3.7");
+  SPEC_DEF("rule.21.All-In-Err", "21.3.7");
 }
 
 }  // namespace
@@ -31,7 +33,6 @@ ExprTypeResult TypeAllExprImpl(const ScopeContext& ctx,
                                const TypeEnv& env,
                                const TypeExprFn& type_expr) {
   SpecDefsAllExpr();
-  SPEC_RULE("T-All");
   ExprTypeResult result;
 
   std::vector<TypeRef> result_types;
@@ -49,10 +50,12 @@ ExprTypeResult TypeAllExprImpl(const ScopeContext& ctx,
     // Each expression must be an async with Future-like signature
     const auto async_sig = AsyncSigOf(ctx, elem_result.type);
     if (!async_sig.has_value() || !IsPrimType(async_sig->out, "()")) {
+      SPEC_RULE("rule.21.All-Out-Err");
       result.diag_id = "E-CON-0270";
       return result;
     }
     if (!IsPrimType(async_sig->in, "()")) {
+      SPEC_RULE("rule.21.All-In-Err");
       result.diag_id = "E-CON-0271";
       return result;
     }
@@ -60,6 +63,8 @@ ExprTypeResult TypeAllExprImpl(const ScopeContext& ctx,
     result_types.push_back(async_sig->result);
     error_types.push_back(async_sig->err);
   }
+
+  SPEC_RULE("rule.21.T-All");
 
   // Result is tuple of all success types | union of all error types
   const auto tuple_type = MakeTypeTuple(std::move(result_types));

@@ -203,6 +203,7 @@
 #include "00_core/diagnostic_messages.h"
 #include "00_core/source_text.h"
 #include "00_core/span.h"
+#include "00_core/spec_trace.h"
 
 namespace ultraviolet::lexer {
 
@@ -819,6 +820,17 @@ void EmitDiag(core::DiagnosticStream& diags,
   core::Emit(diags, *diag);
 }
 
+void RecordFirstBadEscapeDefinition(std::string_view obligation_id,
+                                    std::string_view literal_kind,
+                                    const core::Span& span,
+                                    std::size_t bad_scalar_index) {
+  std::string payload = "source=FirstBadEscape;literal=";
+  payload.append(literal_kind);
+  payload.append(";bad_scalar_index=");
+  payload.append(std::to_string(bad_scalar_index));
+  core::Conformance::Record(obligation_id, span, payload);
+}
+
 }  // namespace
 
 LiteralScanResult ScanIntLiteral(const core::SourceFile& source,
@@ -984,8 +996,10 @@ LiteralScanResult ScanStringLiteral(const core::SourceFile& source,
 
   const auto bad = FirstBadEscape(scalars, start, term.index);
   if (bad.has_value()) {
-    EmitDiag(result.diags, "E-SRC-0302",
-             SpanOfText(source, offsets, *bad, *bad + 1));
+    const core::Span bad_span = SpanOfText(source, offsets, *bad, *bad + 1);
+    RecordFirstBadEscapeDefinition(
+        "def.FirstBadStringEscape", "string", bad_span, *bad);
+    EmitDiag(result.diags, "E-SRC-0302", bad_span);
   }
 
   return result;
@@ -1023,8 +1037,10 @@ LiteralScanResult ScanCharLiteral(const core::SourceFile& source,
 
   const auto bad = FirstBadEscape(scalars, start, term.index);
   if (bad.has_value()) {
-    EmitDiag(result.diags, "E-SRC-0302",
-             SpanOfText(source, offsets, *bad, *bad + 1));
+    const core::Span bad_span = SpanOfText(source, offsets, *bad, *bad + 1);
+    RecordFirstBadEscapeDefinition(
+        "def.FirstBadCharEscape", "char", bad_span, *bad);
+    EmitDiag(result.diags, "E-SRC-0302", bad_span);
   }
 
   const std::size_t count = CharScalarCount(scalars, start, term.index);

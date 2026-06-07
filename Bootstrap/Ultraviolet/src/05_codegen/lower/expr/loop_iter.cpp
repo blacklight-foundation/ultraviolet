@@ -21,10 +21,11 @@
 
 #include "05_codegen/lower/expr/loop_iter.h"
 
-#include <variant>
+#include <string>
 #include <vector>
 
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 #include "04_analysis/contracts/verification.h"
 #include "04_analysis/typing/types.h"
 #include "05_codegen/checks/checks.h"
@@ -124,11 +125,8 @@ analysis::TypeRef LoopPatternType(const analysis::TypeRef& iter_type) {
   return nullptr;
 }
 
-bool IsNoOpIR(const IRPtr& ir) {
-  return !ir || std::holds_alternative<IROpaque>(ir->node);
-}
-
 IRPtr EmitLoopInvariantCheck(const ast::LoopInvariant& invariant,
+                             const char* position,
                              const char* temp_prefix,
                              LowerCtx& ctx) {
   if (!ctx.dynamic_checks || !invariant.predicate) {
@@ -139,6 +137,24 @@ IRPtr EmitLoopInvariantCheck(const ast::LoopInvariant& invariant,
   const auto proof = analysis::StaticProof(proof_ctx, invariant.predicate);
   if (proof.provable) {
     return EmptyIR();
+  }
+
+  SPEC_RULE("def.15.LoopInvariantEnforcementPoints");
+  SPEC_RULE("req.15.InvariantVerificationModeRules");
+  if (core::Conformance::Enabled()) {
+    std::string payload =
+        "source=EmitLoopInvariantCheck;kind=LoopInv;position=";
+    payload += position;
+    payload +=
+        ";dynamic_checks=true;static_proof=false;lowering=ContractCheck";
+    core::Conformance::Record(
+        "def.15.LoopInvariantEnforcementPoints",
+        std::nullopt,
+        payload);
+    core::Conformance::Record(
+        "req.15.InvariantVerificationModeRules",
+        std::nullopt,
+        payload);
   }
 
   const analysis::TypeRef bool_type = analysis::MakeTypePrim("bool");
@@ -197,9 +213,18 @@ LowerResult LowerLoopIter(const ast::Expr& expr,
   auto iter_result = LowerExpr(*loop_expr.iter, ctx);
 
   // Determine the pattern type from the iterator's element type
-  analysis::TypeRef pattern_type;
+  analysis::TypeRef iter_expr_type;
   if (ctx.expr_type) {
-    pattern_type = LoopPatternType(ctx.expr_type(*loop_expr.iter));
+    iter_expr_type = ctx.expr_type(*loop_expr.iter);
+  }
+  if (iter_expr_type &&
+      analysis::AsyncSigOf(ScopeForLowering(ctx), iter_expr_type).has_value()) {
+    SPEC_RULE("requirement.21.AsyncIterationRuntimeSemantics");
+  }
+
+  analysis::TypeRef pattern_type;
+  if (iter_expr_type) {
+    pattern_type = LoopPatternType(iter_expr_type);
   }
 
   // Compute provenance for the loop binding
@@ -214,12 +239,16 @@ LowerResult LowerLoopIter(const ast::Expr& expr,
   // Lower the body
   LowerResult body_result = LowerBlock(*loop_expr.body, ctx);
 
+  IRPtr invariant_entry_ir;
+  IRPtr invariant_backedge_ir;
   if (loop_expr.invariant_opt.has_value()) {
-    IRPtr maintenance_check =
-        EmitLoopInvariantCheck(*loop_expr.invariant_opt, "for_inv_maint", ctx);
-    if (!IsNoOpIR(maintenance_check)) {
-      body_result.ir = SeqIR({body_result.ir, maintenance_check});
-    }
+    invariant_entry_ir =
+        EmitLoopInvariantCheck(*loop_expr.invariant_opt, "entry", "for_inv_init", ctx);
+    invariant_backedge_ir =
+        EmitLoopInvariantCheck(*loop_expr.invariant_opt,
+                               "backedge",
+                               "for_inv_maint",
+                               ctx);
   }
 
   IRPatternPtr loop_pattern = LowerIRPattern(*loop_expr.pattern, ctx);
@@ -234,6 +263,8 @@ LowerResult LowerLoopIter(const ast::Expr& expr,
   loop.iter_ir = iter_result.ir;
   loop.iter_value = iter_result.value;
   loop.body_ir = body_result.ir;
+  loop.invariant_entry_ir = std::move(invariant_entry_ir);
+  loop.invariant_backedge_ir = std::move(invariant_backedge_ir);
   loop.body_value = body_result.value;
 
   IRValue result = ctx.FreshTempValue("for");
@@ -244,14 +275,16 @@ LowerResult LowerLoopIter(const ast::Expr& expr,
   }
   loop.result = result;
   IRPtr loop_ir = MakeIR(std::move(loop));
-
-  if (loop_expr.invariant_opt.has_value()) {
-    IRPtr init_check =
-        EmitLoopInvariantCheck(*loop_expr.invariant_opt, "for_inv_init", ctx);
-    if (!IsNoOpIR(init_check)) {
-      return LowerResult{SeqIR({init_check, loop_ir}), result};
-    }
-  }
+  core::Conformance::Record(
+      "def.18.BlockLoopLoweringTotality",
+      std::nullopt,
+      "source=LowerLoopIter;form=LoopIter;ir_form=IRLoop;"
+      "iterator_lowered=true;body_lowered=true;pattern_lowered=true");
+  core::Conformance::Record(
+      "rule.18.Lower-Loop-Iter",
+      std::nullopt,
+      "source=LowerLoopIter;ir_form=IRLoop;kind=Iter;"
+      "iterator_lowered=true;body_lowered=true;pattern_lowered=true");
 
   return LowerResult{loop_ir, result};
 }

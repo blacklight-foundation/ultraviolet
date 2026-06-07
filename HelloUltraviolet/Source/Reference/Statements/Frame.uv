@@ -54,23 +54,36 @@ internal procedure frameAllocationValue() -> i32 {
     region as scratch {
         frame {
             let implicit_value: i32 = ^29
-            if implicit_value == 29
+            if implicit_value == 29 {
                 value = value + 1
+            }
         }
         scratch.frame {
             let explicit_value: i32 = scratch ^ 31
-            if explicit_value == 31
+            if explicit_value == 31 {
                 value = value + 2
+            }
         }
     }
     return value
 }
 
-/// Exercises the Statements Frame reference surface.
-public procedure runStatementsFrameReference() -> bool {
+/// Exercises Lower-Stmt-Frame-Implicit with implicit target resolution.
+public procedure lowerStmtFrameImplicitReference() -> bool {
     return implicitAndExplicitFrameValue() == 3 &&
-        nestedFrameTargetValue() == 7 &&
         implicitFrameControlValue() == 19 &&
+        frameAllocationValue() == 3
+}
+
+/// Exercises Lower-Stmt-Frame-Explicit with explicit active-region targets.
+public procedure lowerStmtFrameExplicitReference() -> bool {
+    return nestedFrameTargetValue() == 7 &&
         explicitFrameControlValue() == 23 &&
         frameAllocationValue() == 3
+}
+
+/// Exercises the Statements Frame reference surface.
+public procedure runStatementsFrameReference() -> bool {
+    return lowerStmtFrameImplicitReference() &&
+        lowerStmtFrameExplicitReference()
 }

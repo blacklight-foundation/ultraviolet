@@ -1,0 +1,14 @@
+//! Rejected polymorphism specimen for inherited class fields with incompatible signatures.
+
+internal class FieldConflictLeft {
+    internal inherited_conflict: i32
+}
+
+internal class FieldConflictRight {
+    internal inherited_conflict: bool
+}
+
+internal class InheritedFieldSignatureConflictClass <:
+    FieldConflictLeft +
+    FieldConflictRight {
+}

@@ -1107,14 +1107,6 @@ CapabilityChainResult ValidateCapabilityChain(
   CapabilityChainResult result;
   result.valid = true;
 
-  // Get entry point
-  const CallGraphNode* entry = cg.GetEntryPoint();
-  if (!entry) {
-    // No main procedure - may be a library
-    return result;
-  }
-
-  // Detect leaks
   result.leaks = DetectCapabilityLeaks(cg);
   if (!result.leaks.empty()) {
     result.valid = false;
@@ -1135,7 +1127,9 @@ CapabilityChainResult ValidateCapabilityChain(
       const CallGraphNode* caller = cg.GetNode(edge->caller);
       if (!caller) continue;
 
+      SPEC_RULE("conformance.NoAmbientAuthorityDiscipline");
       SPEC_RULE("NAA-3");
+      SPEC_RULE("req.DirectCallCapabilityInclusion");
       if (!node.cap_sig.required.IsSubsetOf(caller->cap_sig.provided)) {
         result.valid = false;
         std::ostringstream msg;
@@ -1166,7 +1160,9 @@ CapabilityChainResult ValidateCapabilityChain(
         continue;
       }
 
+      SPEC_RULE("conformance.NoAmbientAuthorityDiscipline");
       SPEC_RULE("NAA-3");
+      SPEC_RULE("req.DirectCallCapabilityInclusion");
       const CapabilityValidationResult cap_check = ValidateCapabilitySatisfied(
           caller->cap_sig.provided, callee_required, unresolved.call_span);
       if (cap_check.valid) {
@@ -1216,6 +1212,7 @@ CapabilityChainResult ValidateCapabilityChain(
         continue;
       }
 
+      SPEC_RULE("conformance.NoAmbientAuthorityDiscipline");
       SPEC_RULE("NAA-3");
       const CapabilityValidationResult cap_check = ValidateCapabilitySatisfied(
           caller->cap_sig.provided, method_required, unresolved_method.call_span);
@@ -1251,11 +1248,6 @@ CapabilityChainResult ValidateCapabilityChain(
   CapabilityChainResult result;
   result.valid = true;
 
-  const CallGraphNode* entry = cg.GetEntryPoint();
-  if (!entry) {
-    return result;
-  }
-
   result.leaks = DetectCapabilityLeaks(cg);
   if (!result.leaks.empty()) {
     result.valid = false;
@@ -1276,7 +1268,9 @@ CapabilityChainResult ValidateCapabilityChain(
       if (!caller) {
         continue;
       }
+      SPEC_RULE("conformance.NoAmbientAuthorityDiscipline");
       SPEC_RULE("NAA-3");
+      SPEC_RULE("req.DirectCallCapabilityInclusion");
       if (node.cap_sig.required.IsSubsetOf(caller->cap_sig.provided)) {
         continue;
       }
@@ -1311,7 +1305,9 @@ CapabilityChainResult ValidateCapabilityChain(
         continue;
       }
 
+      SPEC_RULE("conformance.NoAmbientAuthorityDiscipline");
       SPEC_RULE("NAA-3");
+      SPEC_RULE("req.DirectCallCapabilityInclusion");
       const CapabilityValidationResult cap_check = ValidateCapabilitySatisfied(
           caller->cap_sig.provided, callee_required, unresolved.call_span);
       if (cap_check.valid) {
@@ -1363,6 +1359,7 @@ CapabilityChainResult ValidateCapabilityChain(
         continue;
       }
 
+      SPEC_RULE("conformance.NoAmbientAuthorityDiscipline");
       SPEC_RULE("NAA-3");
       const CapabilityValidationResult cap_check = ValidateCapabilitySatisfied(
           caller->cap_sig.provided, method_required, unresolved_method.call_span);

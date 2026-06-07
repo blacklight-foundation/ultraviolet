@@ -27,8 +27,11 @@ typedef struct WorkItem WorkItem;
 typedef struct WorkerPool WorkerPool;
 typedef struct ParallelContext ParallelContext;
 typedef struct SpawnHandle SpawnHandle;
+typedef struct UVGpuDispatchState UVGpuDispatchState;
+typedef struct UVGpuWorkItemState UVGpuWorkItemState;
 typedef size_t UVCancelId;
 static void uv_parallel_context_panic(ParallelContext* ctx, uint32_t code);
+void uv_parallel_work_panic(void* ctx_ptr, uint32_t code);
 static uv_rt_u32_t uv_worker_thread_proc(void* param);
 static void uv_start_worker_threads(WorkerPool* pool);
 
@@ -37,10 +40,12 @@ static void uv_start_worker_threads(WorkerPool* pool);
 // -----------------------------------------------------------------------------
 
 #define UV_PANIC_REDUCED_EMPTY_DISPATCH 2862u
+#define UV_PANIC_GPU_DISPATCH_LAUNCH_FAILED 2863u
 
 typedef struct {
     ParallelContext* ctx;
     WorkItem* item;
+    UVGpuWorkItemState* gpu_item;
 } UVThreadState;
 static uv_rt_once_t uv_tls_once = UV_RT_ONCE_INIT;
 static uv_rt_tls_key_t uv_tls_index = UV_RT_TLS_KEY_INVALID;
@@ -74,6 +79,7 @@ static UVThreadState* uv_tls_state(void) {
         }
         state->ctx = NULL;
         state->item = NULL;
+        state->gpu_item = NULL;
         uv_rt_tls_set(uv_tls_index, state);
     }
     return state;
@@ -101,6 +107,56 @@ static void uv_set_current_ctx(ParallelContext* ctx) {
 
 static void uv_set_current_item(WorkItem* item) {
     uv_tls_state()->item = item;
+}
+
+static UVUsize3 uv_gpu_triplet(uint64_t x, uint64_t y, uint64_t z) {
+    UVUsize3 out;
+    out.x = x;
+    out.y = y;
+    out.z = z;
+    return out;
+}
+
+static uint64_t uv_gpu_workgroup_volume(UVUsize3 workgroup_size) {
+    if (workgroup_size.x == 0 || workgroup_size.y == 0 ||
+        workgroup_size.z == 0) {
+        return 0;
+    }
+    return workgroup_size.x * workgroup_size.y * workgroup_size.z;
+}
+
+static UVUsize3 uv_gpu_local_id_from_linear(uint64_t linear,
+                                            UVUsize3 workgroup_size) {
+    if (workgroup_size.x == 0 || workgroup_size.y == 0) {
+        return uv_gpu_triplet(0, 0, 0);
+    }
+    return uv_gpu_triplet(
+        linear % workgroup_size.x,
+        (linear / workgroup_size.x) % workgroup_size.y,
+        (linear / (workgroup_size.x * workgroup_size.y)) %
+            workgroup_size.z);
+}
+
+static UVUsize3 uv_gpu_workgroup_id_from_linear(uint64_t linear,
+                                                uint64_t workgroup_volume) {
+    if (workgroup_volume == 0) {
+        return uv_gpu_triplet(0, 0, 0);
+    }
+    return uv_gpu_triplet(linear / workgroup_volume, 0, 0);
+}
+
+static UVUsize3 uv_gpu_global_id(UVUsize3 local_id,
+                                 UVUsize3 workgroup_id,
+                                 UVUsize3 workgroup_size) {
+    return uv_gpu_triplet(
+        local_id.x + workgroup_id.x * workgroup_size.x,
+        local_id.y + workgroup_id.y * workgroup_size.y,
+        local_id.z + workgroup_id.z * workgroup_size.z);
+}
+
+static void uv_gpu_memory_fence(void) {
+    static volatile uv_rt_i64_t fence_counter = 0;
+    (void)uv_rt_atomic_increment64(&fence_counter);
 }
 // §18.1.2 Work item state
 typedef enum {
@@ -145,6 +201,45 @@ struct SpawnHandle {
     SpawnHandle* next;
 };
 
+typedef enum {
+    GPU_WORK_PENDING,
+    GPU_WORK_RUNNING,
+    GPU_WORK_AT_BARRIER,
+    GPU_WORK_DONE
+} UVGpuWorkItemStatus;
+
+typedef struct UVGpuWorkgroupState {
+    uv_rt_mutex_t lock;
+    uv_rt_condition_t barrier_cv;
+    uint64_t expected_count;
+    uint64_t barrier_count;
+    uint64_t barrier_generation;
+    int launch_ready;
+    int launch_aborted;
+} UVGpuWorkgroupState;
+
+struct UVGpuDispatchState {
+    UVUsize3 workgroup_size;
+    UVUsize3 num_workgroups;
+    UVUsize3 global_size;
+    uint64_t workgroup_volume;
+    uint64_t start;
+    uint64_t end;
+    size_t workgroup_count;
+    UVGpuWorkgroupState* workgroups;
+};
+
+struct UVGpuWorkItemState {
+    UVGpuDispatchState* dispatch;
+    uint64_t linear_id;
+    size_t workgroup_index;
+    UVUsize3 local_id;
+    UVUsize3 workgroup_id;
+    UVUsize3 global_id;
+    UVGpuWorkItemStatus status;
+    void* private_mem;
+};
+
 enum {
     UV_CANCEL_STATUS_ACTIVE = 0,
     UV_CANCEL_STATUS_CANCELLED = 1
@@ -179,6 +274,7 @@ typedef struct UVCancelWaitFrame {
 enum {
     UV_ASYNC_DISC_SUSPENDED_LOCAL = 0,
     UV_ASYNC_DISC_COMPLETED_LOCAL = 1,
+    UV_ASYNC_DISC_FAILED_LOCAL = 2,
     UV_ASYNC_PAYLOAD_FRAME_PTR_OFFSET_LOCAL = 8,
 };
 
@@ -459,6 +555,618 @@ static uint32_t uv_u64_to_dec(uint64_t value, char* out) {
         out[i] = rev[count - 1 - i];
     }
     return count;
+}
+
+static const char* uv_gpu_status_name(UVGpuWorkItemStatus status) {
+    switch (status) {
+        case GPU_WORK_PENDING:
+            return "Pending";
+        case GPU_WORK_RUNNING:
+            return "Running";
+        case GPU_WORK_AT_BARRIER:
+            return "AtBarrier";
+        case GPU_WORK_DONE:
+            return "Done";
+        default:
+            return "Unknown";
+    }
+}
+
+static void uv_gpu_trace_payload_append(char* payload,
+                                        uint64_t* payload_len,
+                                        uint64_t payload_cap,
+                                        const char* text) {
+    if (!payload || !payload_len || payload_cap == 0 || !text) {
+        return;
+    }
+    while (*text != 0 && *payload_len + 1 < payload_cap) {
+        payload[*payload_len] = *text;
+        *payload_len += 1;
+        text += 1;
+    }
+}
+
+static void uv_gpu_trace_payload_append_u64(char* payload,
+                                            uint64_t* payload_len,
+                                            uint64_t payload_cap,
+                                            const char* key,
+                                            uint64_t value) {
+    char decimal[32];
+    const uint32_t decimal_len = uv_u64_to_dec(value, decimal);
+    uv_gpu_trace_payload_append(payload, payload_len, payload_cap, key);
+    uv_gpu_trace_payload_append(payload, payload_len, payload_cap, "=");
+    for (uint32_t i = 0; i < decimal_len && *payload_len + 1 < payload_cap; ++i) {
+        payload[*payload_len] = decimal[i];
+        *payload_len += 1;
+    }
+    uv_gpu_trace_payload_append(payload, payload_len, payload_cap, ";");
+}
+
+static void uv_gpu_trace_payload_append_triplet(char* payload,
+                                                uint64_t* payload_len,
+                                                uint64_t payload_cap,
+                                                const char* key,
+                                                UVUsize3 value) {
+    char axis_key[64];
+    const char axes[3] = {'x', 'y', 'z'};
+    const uint64_t values[3] = {value.x, value.y, value.z};
+    for (uint32_t axis = 0; axis < 3; ++axis) {
+        uint64_t axis_len = 0;
+        uv_gpu_trace_payload_append(axis_key, &axis_len, sizeof(axis_key), key);
+        uv_gpu_trace_payload_append(axis_key, &axis_len, sizeof(axis_key), "_");
+        if (axis_len + 1 < (uint64_t)sizeof(axis_key)) {
+            axis_key[axis_len] = axes[axis];
+            axis_len += 1;
+        }
+        if (axis_len < (uint64_t)sizeof(axis_key)) {
+            axis_key[axis_len] = 0;
+        } else {
+            axis_key[sizeof(axis_key) - 1] = 0;
+        }
+        uv_gpu_trace_payload_append_u64(
+            payload,
+            payload_len,
+            payload_cap,
+            axis_key,
+            values[axis]);
+    }
+}
+
+#define UV_GPU_TRACE_NO_GENERATION ((uint64_t)~(uint64_t)0)
+
+static void uv_gpu_trace_emit_with_transition(const char* rule_id,
+                                              const char* event,
+                                              const char* transition,
+                                              const UVGpuWorkItemState* item,
+                                              const UVGpuWorkgroupState* group,
+                                              uint64_t generation_before,
+                                              uint64_t generation_after) {
+    if (!rule_id || !event) {
+        return;
+    }
+
+    char payload_buf[640];
+    uint64_t payload_len = 0;
+    uv_gpu_trace_payload_append(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "category=runtime;level=trace;component=GpuRuntimeState;event=");
+    uv_gpu_trace_payload_append(payload_buf, &payload_len, sizeof(payload_buf), event);
+    uv_gpu_trace_payload_append(payload_buf, &payload_len, sizeof(payload_buf), ";");
+    if (transition && transition[0] != 0) {
+        uv_gpu_trace_payload_append(
+            payload_buf,
+            &payload_len,
+            sizeof(payload_buf),
+            "transition=");
+        uv_gpu_trace_payload_append(
+            payload_buf,
+            &payload_len,
+            sizeof(payload_buf),
+            transition);
+        uv_gpu_trace_payload_append(payload_buf, &payload_len, sizeof(payload_buf), ";");
+    }
+
+    if (item) {
+        uv_gpu_trace_payload_append(payload_buf, &payload_len, sizeof(payload_buf), "status=");
+        uv_gpu_trace_payload_append(
+            payload_buf,
+            &payload_len,
+            sizeof(payload_buf),
+            uv_gpu_status_name(item->status));
+        uv_gpu_trace_payload_append(payload_buf, &payload_len, sizeof(payload_buf), ";");
+        uv_gpu_trace_payload_append_u64(
+            payload_buf,
+            &payload_len,
+            sizeof(payload_buf),
+            "linear_id",
+            item->linear_id);
+        uv_gpu_trace_payload_append_u64(
+            payload_buf,
+            &payload_len,
+            sizeof(payload_buf),
+            "workgroup_index",
+            (uint64_t)item->workgroup_index);
+        uv_gpu_trace_payload_append_triplet(
+            payload_buf,
+            &payload_len,
+            sizeof(payload_buf),
+            "local_id",
+            item->local_id);
+        uv_gpu_trace_payload_append_triplet(
+            payload_buf,
+            &payload_len,
+            sizeof(payload_buf),
+            "workgroup_id",
+            item->workgroup_id);
+        uv_gpu_trace_payload_append_triplet(
+            payload_buf,
+            &payload_len,
+            sizeof(payload_buf),
+            "global_id",
+            item->global_id);
+
+        if (item->dispatch) {
+            uv_gpu_trace_payload_append_triplet(
+                payload_buf,
+                &payload_len,
+                sizeof(payload_buf),
+                "workgroup_size",
+                item->dispatch->workgroup_size);
+            uv_gpu_trace_payload_append_triplet(
+                payload_buf,
+                &payload_len,
+                sizeof(payload_buf),
+                "global_size",
+                item->dispatch->global_size);
+            uv_gpu_trace_payload_append_triplet(
+                payload_buf,
+                &payload_len,
+                sizeof(payload_buf),
+                "num_workgroups",
+                item->dispatch->num_workgroups);
+            uv_gpu_trace_payload_append_u64(
+                payload_buf,
+                &payload_len,
+                sizeof(payload_buf),
+                "workgroup_volume",
+                item->dispatch->workgroup_volume);
+        }
+    }
+
+    if (group) {
+        uv_gpu_trace_payload_append_u64(
+            payload_buf,
+            &payload_len,
+            sizeof(payload_buf),
+            "barrier_count",
+            group->barrier_count);
+        uv_gpu_trace_payload_append_u64(
+            payload_buf,
+            &payload_len,
+            sizeof(payload_buf),
+            "expected_count",
+            group->expected_count);
+        uv_gpu_trace_payload_append_u64(
+            payload_buf,
+            &payload_len,
+            sizeof(payload_buf),
+            "barrier_generation",
+            group->barrier_generation);
+    }
+
+    if (generation_before != UV_GPU_TRACE_NO_GENERATION) {
+        uv_gpu_trace_payload_append_u64(
+            payload_buf,
+            &payload_len,
+            sizeof(payload_buf),
+            "generation_before",
+            generation_before);
+    }
+    if (generation_after != UV_GPU_TRACE_NO_GENERATION) {
+        uv_gpu_trace_payload_append_u64(
+            payload_buf,
+            &payload_len,
+            sizeof(payload_buf),
+            "generation_after",
+            generation_after);
+    }
+
+    UVStringView rule_view;
+    rule_view.data = (const uint8_t*)rule_id;
+    rule_view.len = uv_cstr_len(rule_id);
+
+    UVStringView file_view;
+    file_view.data = NULL;
+    file_view.len = 0;
+
+    UVStringView payload_view;
+    payload_view.data = (const uint8_t*)payload_buf;
+    payload_view.len = payload_len;
+
+    ultraviolet_x3a_x3aruntime_x3a_x3aconformance_x3a_x3aemit(
+        rule_view,
+        file_view,
+        0,
+        0,
+        0,
+        0,
+        payload_view);
+}
+
+static void uv_gpu_trace_emit(const char* rule_id,
+                              const char* event,
+                              const UVGpuWorkItemState* item,
+                              const UVGpuWorkgroupState* group,
+                              uint64_t generation_before,
+                              uint64_t generation_after) {
+    uv_gpu_trace_emit_with_transition(
+        rule_id,
+        event,
+        NULL,
+        item,
+        group,
+        generation_before,
+        generation_after);
+}
+
+static int uv_gpu_workgroup_volume_within_limit(UVUsize3 workgroup_size,
+                                                uint64_t limit) {
+    if (workgroup_size.x == 0 || workgroup_size.y == 0 ||
+        workgroup_size.z == 0) {
+        return 0;
+    }
+    if (workgroup_size.x > limit) {
+        return 0;
+    }
+    const uint64_t xy_limit = limit / workgroup_size.x;
+    if (workgroup_size.y > xy_limit) {
+        return 0;
+    }
+    const uint64_t xyz_limit = xy_limit / workgroup_size.y;
+    return workgroup_size.z <= xyz_limit;
+}
+
+static int uv_gpu_topology_axis_valid(uint64_t global_size,
+                                      uint64_t workgroup_size,
+                                      uint64_t num_workgroups) {
+    if (workgroup_size == 0) {
+        return 0;
+    }
+    if (num_workgroups != 0 && workgroup_size > UINT64_MAX / num_workgroups) {
+        return 0;
+    }
+    return global_size == workgroup_size * num_workgroups;
+}
+
+static int uv_gpu_topology_valid(const UVGpuDispatchState* state) {
+    if (!state) {
+        return 0;
+    }
+    if (!uv_gpu_workgroup_volume_within_limit(state->workgroup_size, 1024)) {
+        return 0;
+    }
+    return uv_gpu_topology_axis_valid(
+               state->global_size.x,
+               state->workgroup_size.x,
+               state->num_workgroups.x) &&
+           uv_gpu_topology_axis_valid(
+               state->global_size.y,
+               state->workgroup_size.y,
+               state->num_workgroups.y) &&
+           uv_gpu_topology_axis_valid(
+               state->global_size.z,
+               state->workgroup_size.z,
+               state->num_workgroups.z);
+}
+
+static void uv_gpu_trace_emit_dispatch(const char* rule_id,
+                                       const char* event,
+                                       const UVGpuDispatchState* state,
+                                       uint64_t range_count,
+                                       uint64_t work_item_count) {
+    if (!rule_id || !event || !state) {
+        return;
+    }
+
+    char payload_buf[640];
+    uint64_t payload_len = 0;
+    uv_gpu_trace_payload_append(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "category=runtime;level=trace;component=GpuRuntimeState;event=");
+    uv_gpu_trace_payload_append(payload_buf, &payload_len, sizeof(payload_buf), event);
+    uv_gpu_trace_payload_append(payload_buf, &payload_len, sizeof(payload_buf), ";");
+    uv_gpu_trace_payload_append(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "source=uv_gpu_dispatch_run;");
+    uv_gpu_trace_payload_append_triplet(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "workgroup_size",
+        state->workgroup_size);
+    uv_gpu_trace_payload_append_triplet(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "global_size",
+        state->global_size);
+    uv_gpu_trace_payload_append_triplet(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "num_workgroups",
+        state->num_workgroups);
+    uv_gpu_trace_payload_append_u64(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "workgroup_volume",
+        state->workgroup_volume);
+    uv_gpu_trace_payload_append_u64(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "range_count",
+        range_count);
+    uv_gpu_trace_payload_append_u64(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "work_item_count",
+        work_item_count);
+    uv_gpu_trace_payload_append_u64(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "topology_valid",
+        (uint64_t)(uv_gpu_topology_valid(state) ? 1 : 0));
+
+    UVStringView rule_view;
+    rule_view.data = (const uint8_t*)rule_id;
+    rule_view.len = uv_cstr_len(rule_id);
+
+    UVStringView file_view;
+    file_view.data = NULL;
+    file_view.len = 0;
+
+    UVStringView payload_view;
+    payload_view.data = (const uint8_t*)payload_buf;
+    payload_view.len = payload_len;
+
+    ultraviolet_x3a_x3aruntime_x3a_x3aconformance_x3a_x3aemit(
+        rule_view,
+        file_view,
+        0,
+        0,
+        0,
+        0,
+        payload_view);
+}
+
+static void uv_gpu_trace_emit_memory_forms(const UVGpuWorkItemState* item) {
+    if (!item || !item->dispatch) {
+        return;
+    }
+
+    char payload_buf[768];
+    uint64_t payload_len = 0;
+    uv_gpu_trace_payload_append(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "category=runtime;level=trace;component=GpuMemoryForms;"
+        "event=gpu_memory_forms_created;source=uv_gpu_prepare_work_item;"
+        "forms=GlobalMem,SharedMem,PrivateMem;"
+        "address_spaces=Global,Shared,Private;"
+        "global_scope=dispatch;shared_scope=workgroup;"
+        "private_scope=work_item;");
+    uv_gpu_trace_payload_append_triplet(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "workgroup_id",
+        item->workgroup_id);
+    uv_gpu_trace_payload_append_triplet(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "global_id",
+        item->global_id);
+    uv_gpu_trace_payload_append_u64(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "linear_id",
+        item->linear_id);
+    uv_gpu_trace_payload_append_u64(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "workgroup_index",
+        (uint64_t)item->workgroup_index);
+    uv_gpu_trace_payload_append_u64(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "workgroup_count",
+        (uint64_t)item->dispatch->workgroup_count);
+    uv_gpu_trace_payload_append_u64(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "work_item_count",
+        item->dispatch->end - item->dispatch->start);
+
+    UVStringView rule_view;
+    rule_view.data = (const uint8_t*)"def.20.GpuMemoryForms";
+    rule_view.len = uv_cstr_len("def.20.GpuMemoryForms");
+
+    UVStringView file_view;
+    file_view.data = NULL;
+    file_view.len = 0;
+
+    UVStringView payload_view;
+    payload_view.data = (const uint8_t*)payload_buf;
+    payload_view.len = payload_len;
+
+    ultraviolet_x3a_x3aruntime_x3a_x3aconformance_x3a_x3aemit(
+        rule_view,
+        file_view,
+        0,
+        0,
+        0,
+        0,
+        payload_view);
+}
+
+static void uv_gpu_trace_emit_parallel(const char* rule_id,
+                                       const char* event,
+                                       const ParallelContext* ctx,
+                                       uint32_t panic_code) {
+    if (!rule_id || !event || !ctx) {
+        return;
+    }
+
+    char payload_buf[320];
+    uint64_t payload_len = 0;
+    uv_gpu_trace_payload_append(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "category=runtime;level=trace;component=GpuRuntimeState;event=");
+    uv_gpu_trace_payload_append(payload_buf, &payload_len, sizeof(payload_buf), event);
+    uv_gpu_trace_payload_append(payload_buf, &payload_len, sizeof(payload_buf), ";");
+    uv_gpu_trace_payload_append(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "source=uv_parallel_join;");
+    uv_gpu_trace_payload_append_u64(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "domain_kind",
+        ctx->domain_kind);
+    uv_gpu_trace_payload_append_u64(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "panic_code",
+        panic_code);
+    uv_gpu_trace_payload_append_u64(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "has_pool",
+        (uint64_t)(ctx->pool ? 1 : 0));
+
+    UVStringView rule_view;
+    rule_view.data = (const uint8_t*)rule_id;
+    rule_view.len = uv_cstr_len(rule_id);
+
+    UVStringView file_view;
+    file_view.data = NULL;
+    file_view.len = 0;
+
+    UVStringView payload_view;
+    payload_view.data = (const uint8_t*)payload_buf;
+    payload_view.len = payload_len;
+
+    ultraviolet_x3a_x3aruntime_x3a_x3aconformance_x3a_x3aemit(
+        rule_view,
+        file_view,
+        0,
+        0,
+        0,
+        0,
+        payload_view);
+}
+
+static void uv_parallel_trace_emit(const char* rule_id,
+                                   const char* event,
+                                   const char* source,
+                                   const ParallelContext* ctx,
+                                   const WorkItem* item,
+                                   uint32_t panic_code) {
+    if (!rule_id || !event || !source) {
+        return;
+    }
+
+    char payload_buf[384];
+    uint64_t payload_len = 0;
+    uv_gpu_trace_payload_append(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "category=runtime;level=trace;component=StructuredParallelRuntime;event=");
+    uv_gpu_trace_payload_append(payload_buf, &payload_len, sizeof(payload_buf), event);
+    uv_gpu_trace_payload_append(payload_buf, &payload_len, sizeof(payload_buf), ";");
+    uv_gpu_trace_payload_append(payload_buf, &payload_len, sizeof(payload_buf), "source=");
+    uv_gpu_trace_payload_append(payload_buf, &payload_len, sizeof(payload_buf), source);
+    uv_gpu_trace_payload_append(payload_buf, &payload_len, sizeof(payload_buf), ";");
+    uv_gpu_trace_payload_append_u64(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "domain_kind",
+        ctx ? ctx->domain_kind : 0);
+    uv_gpu_trace_payload_append_u64(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "task_id",
+        item ? item->task_id : 0);
+    uv_gpu_trace_payload_append_u64(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "work_state",
+        item ? (uint64_t)item->state : 0);
+    uv_gpu_trace_payload_append_u64(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "completion_seq",
+        item ? item->completion_seq : 0);
+    uv_gpu_trace_payload_append_u64(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "panic_code",
+        panic_code);
+    uv_gpu_trace_payload_append_u64(
+        payload_buf,
+        &payload_len,
+        sizeof(payload_buf),
+        "has_cancel_token",
+        (uint64_t)(ctx && ctx->cancel_token != UV_CANCEL_INVALID_ID ? 1 : 0));
+
+    UVStringView rule_view;
+    rule_view.data = (const uint8_t*)rule_id;
+    rule_view.len = uv_cstr_len(rule_id);
+
+    UVStringView file_view;
+    file_view.data = NULL;
+    file_view.len = 0;
+
+    UVStringView payload_view;
+    payload_view.data = (const uint8_t*)payload_buf;
+    payload_view.len = payload_len;
+
+    ultraviolet_x3a_x3aruntime_x3a_x3aconformance_x3a_x3aemit(
+        rule_view,
+        file_view,
+        0,
+        0,
+        0,
+        0,
+        payload_view);
 }
 
 static int32_t uv_priority_rank(int32_t priority_hint) {
@@ -789,6 +1497,13 @@ static void uv_parallel_run_item_body(void* context) {
         if (item->result && item->result_size > 0) {
             uv_memset(item->result, 0, item->result_size);
         }
+        uv_parallel_trace_emit(
+            "requirement.20.CooperativeCancellationBehavior",
+            "queued_cancel_suppressed",
+            "uv_parallel_run_item_body",
+            ctx,
+            item,
+            0);
         return;
     }
 
@@ -896,6 +1611,15 @@ static SpawnHandle* uv_await_spawned(ParallelContext* ctx) {
             item->completion_seq < failed->item->completion_seq) {
             failed = handle;
         }
+    }
+    if (failed && failed->item) {
+        uv_parallel_trace_emit(
+            "def.20.FirstCompletedFailure",
+            "first_completed_failure_selected",
+            "uv_await_spawned",
+            ctx,
+            failed->item,
+            failed->item->panic_code);
     }
     return failed;
 }
@@ -1214,6 +1938,16 @@ int uv_parallel_join(void* ctx_ptr) {
         panic_code = ctx->context_panic_code;
     }
     int had_panic = (panic_code != 0);
+    if (had_panic) {
+        uv_trace_emit_rule("requirement.20.ParallelPanicPropagationReference");
+    }
+    if (!had_panic && ctx->domain_kind == (uint32_t)UV_DOMAIN_GPU) {
+        uv_gpu_trace_emit_parallel(
+            "rule.20.EvalSigma-GPU-Parallel",
+            "gpu_parallel_join",
+            ctx,
+            panic_code);
+    }
     
     // Cleanup
     WorkItem* item = ctx->all_items;
@@ -1417,16 +2151,63 @@ void* uv_spawn_wait(void* handle_ptr) {
     return item->result;
 }
 
-// Reactor::register runtime hook.
+static UVAsyncResumeValue uv_reactor_resolve_future(const void* future) {
+    UVAsyncResumeValue current;
+    uv_memset(&current, 0, sizeof(current));
+    if (!future) {
+        return current;
+    }
+
+    uv_memcpy(&current, future, sizeof(current));
+    for (uint32_t step = 0; step < 1024 &&
+                          current.disc == UV_ASYNC_DISC_SUSPENDED_LOCAL;
+         ++step) {
+        uint64_t panic_record[2];
+        uv_memset(panic_record, 0, sizeof(panic_record));
+        UVAsyncResumeValue next =
+            ultraviolet_x3a_x3aruntime_x3a_x3aasync_x3a_x3aresume(
+                &current,
+                NULL,
+                panic_record);
+        if (((uint8_t*)panic_record)[0] != 0) {
+            break;
+        }
+        if (next.disc == UV_ASYNC_DISC_SUSPENDED_LOCAL) {
+            void* next_frame = NULL;
+            uv_memcpy(&next_frame,
+                      next.payload + UV_ASYNC_PAYLOAD_FRAME_PTR_OFFSET_LOCAL,
+                      sizeof(next_frame));
+            current = next;
+            if (!next_frame) {
+                break;
+            }
+            continue;
+        }
+        current = next;
+    }
+    return current;
+}
+
+// Reactor::run runtime hook.
 // ABI is type-erased at this boundary: the reactor capability object is passed
-// by value, the future is passed by pointer, and the returned tracked handle is
-// the same opaque spawn handle used by wait. For Ultraviolet exercises,
-// Future<T,E> values here are immediate and we materialize a ready handle
-// carrying T|E in a compact tagged payload.
-void* ultraviolet_x3a_x3aruntime_x3a_x3areactor_x3a_x3aregister(
-    UVDynObject reactor,
+// by reference and the future is passed by pointer.
+UVAsyncResumeValue ultraviolet_x3a_x3aruntime_x3a_x3areactor_x3a_x3arun(
+    const UVDynObject* reactor,
     const void* future) {
     (void)reactor;
+    uv_trace_emit_rule("BuiltinSym-Reactor-Run");
+    return uv_reactor_resolve_future(future);
+}
+
+// Reactor::register runtime hook.
+// ABI is type-erased at this boundary: the reactor capability object is passed
+// by reference, the future is passed by pointer, and the returned tracked
+// handle is the same opaque spawn handle used by wait.
+void* ultraviolet_x3a_x3aruntime_x3a_x3areactor_x3a_x3aregister(
+    const UVDynObject* reactor,
+    const void* future) {
+    (void)reactor;
+    uv_trace_emit_rule("BuiltinSym-Reactor-Register");
 
     SpawnHandle* handle =
         (SpawnHandle*)uv_spawn_create(NULL, 0, NULL, NULL, 8, 0, 1);
@@ -1437,29 +2218,24 @@ void* ultraviolet_x3a_x3aruntime_x3a_x3areactor_x3a_x3aregister(
     uint8_t* out = (uint8_t*)handle->item->result;
     uv_memset(out, 0, 8);
 
-    if (!future) {
-        return handle;
-    }
-
-    const uint8_t* future_bytes = (const uint8_t*)future;
-    const uint8_t future_disc = future_bytes[0];
-    const uint8_t* future_payload = future_bytes + 8;
+    const UVAsyncResumeValue resolved = uv_reactor_resolve_future(future);
+    const uint8_t* future_payload = resolved.payload;
 
     // Async@Completed -> union success arm
-    if (future_disc == 1) {
+    if (resolved.disc == UV_ASYNC_DISC_COMPLETED_LOCAL) {
         out[0] = 1;
         uv_memcpy(out + 4, future_payload, 4);
         return handle;
     }
 
     // Async@Failed -> union error arm
-    if (future_disc == 2) {
+    if (resolved.disc == UV_ASYNC_DISC_FAILED_LOCAL) {
         out[0] = 0;
         out[4] = future_payload[0];
         return handle;
     }
 
-    // Async@Suspended maps to error arm in this runtime fallback path.
+    // An unresolved suspension cannot be observed as a successful tracked value.
     out[0] = 0;
     out[4] = 0;
     return handle;
@@ -1628,6 +2404,554 @@ typedef struct {
     void (*reduce_fn)(void* hosted_env, void* lhs, void* rhs, void* out, void* panic_out);
 } DispatchChunkEnv;
 
+typedef struct {
+    ParallelContext* ctx;
+    WorkItem item;
+    UVGpuWorkItemState gpu_item;
+    DispatchChunkEnv* dispatch;
+    uint8_t* result;
+    uint8_t index_storage[sizeof(UVU128)];
+} UVGpuWorkThreadEnv;
+
+static void uv_gpu_init_workgroups(UVGpuDispatchState* state) {
+    if (!state || !state->workgroups) {
+        return;
+    }
+    for (size_t i = 0; i < state->workgroup_count; ++i) {
+        UVGpuWorkgroupState* group = &state->workgroups[i];
+        uv_rt_mutex_init(&group->lock);
+        uv_rt_condition_init(&group->barrier_cv);
+        group->barrier_count = 0;
+        group->barrier_generation = 0;
+        group->launch_ready = 0;
+        group->launch_aborted = 0;
+        const uint64_t group_start =
+            state->start + (uint64_t)i * state->workgroup_volume;
+        uint64_t group_end = group_start + state->workgroup_volume;
+        if (group_end > state->end) {
+            group_end = state->end;
+        }
+        group->expected_count =
+            group_end > group_start ? group_end - group_start : 0;
+    }
+}
+
+static int uv_gpu_wait_for_launch(UVGpuWorkItemState* item) {
+    UVGpuWorkgroupState* group;
+    if (!item || !item->dispatch ||
+        item->workgroup_index >= item->dispatch->workgroup_count) {
+        return 0;
+    }
+    group = &item->dispatch->workgroups[item->workgroup_index];
+    uv_rt_mutex_lock(&group->lock);
+    while (!group->launch_ready) {
+        uv_rt_condition_wait(&group->barrier_cv,
+                             &group->lock,
+                             UV_RT_WAIT_FOREVER);
+    }
+    const int can_run = !group->launch_aborted;
+    uv_rt_mutex_unlock(&group->lock);
+    return can_run;
+}
+
+static void uv_gpu_release_workgroup_launch(UVGpuDispatchState* state,
+                                            size_t group_index,
+                                            int aborted) {
+    if (!state || group_index >= state->workgroup_count) {
+        return;
+    }
+    UVGpuWorkgroupState* group = &state->workgroups[group_index];
+    uv_rt_mutex_lock(&group->lock);
+    group->launch_aborted = aborted ? 1 : 0;
+    group->launch_ready = 1;
+    uv_rt_condition_wake_all(&group->barrier_cv);
+    uv_rt_mutex_unlock(&group->lock);
+}
+
+static void uv_gpu_barrier_wait(void) {
+    UVThreadState* thread_state = uv_tls_state();
+    UVGpuWorkItemState* item = thread_state->gpu_item;
+    if (!item || !item->dispatch ||
+        item->workgroup_index >= item->dispatch->workgroup_count) {
+        uv_gpu_memory_fence();
+        return;
+    }
+
+    UVGpuWorkgroupState* group =
+        &item->dispatch->workgroups[item->workgroup_index];
+    uv_rt_mutex_lock(&group->lock);
+    const uint64_t generation = group->barrier_generation;
+    item->status = GPU_WORK_AT_BARRIER;
+    uv_gpu_trace_emit_with_transition(
+        "def.20.GpuRuntimeState",
+        "status_at_barrier",
+        "Running->AtBarrier",
+        item,
+        group,
+        generation,
+        UV_GPU_TRACE_NO_GENERATION);
+    uv_gpu_trace_emit_with_transition(
+        "rule.20.EvalSigma-GpuBarrier",
+        "status_at_barrier",
+        "Running->AtBarrier",
+        item,
+        group,
+        generation,
+        UV_GPU_TRACE_NO_GENERATION);
+    group->barrier_count += 1;
+    uv_gpu_trace_emit(
+        "requirement.20.GpuBarrierWait",
+        "barrier_arrive",
+        item,
+        group,
+        generation,
+        UV_GPU_TRACE_NO_GENERATION);
+    if (group->barrier_count >= group->expected_count) {
+        group->barrier_count = 0;
+        group->barrier_generation += 1;
+        const uint64_t generation_after = group->barrier_generation;
+        uv_gpu_memory_fence();
+        uv_gpu_trace_emit(
+            "def.20.GpuMemoryVisibility",
+            "barrier_fence",
+            item,
+            group,
+            generation,
+            generation_after);
+        uv_gpu_trace_emit(
+            "rule.20.GpuBarrier-Sync",
+            "barrier_generation_advance",
+            item,
+            group,
+            generation,
+            generation_after);
+        uv_rt_condition_wake_all(&group->barrier_cv);
+    } else {
+        while (generation == group->barrier_generation) {
+            uv_rt_condition_wait(&group->barrier_cv, &group->lock,
+                                 UV_RT_WAIT_FOREVER);
+        }
+    }
+    item->status = GPU_WORK_RUNNING;
+    uv_gpu_trace_emit_with_transition(
+        "def.20.GpuRuntimeState",
+        "status_resume_running",
+        "AtBarrier->Running",
+        item,
+        group,
+        generation,
+        group->barrier_generation);
+    uv_gpu_trace_emit(
+        "requirement.20.GpuBarrierWait",
+        "barrier_release",
+        item,
+        group,
+        generation,
+        group->barrier_generation);
+    uv_rt_mutex_unlock(&group->lock);
+}
+
+static void uv_gpu_work_item_body(void* hosted_env,
+                                  void* env_ptr,
+                                  void* result_ptr,
+                                  void* panic_out) {
+    (void)hosted_env;
+    (void)result_ptr;
+    UVGpuWorkThreadEnv* thread_env = (UVGpuWorkThreadEnv*)env_ptr;
+    if (!thread_env || !thread_env->dispatch || !thread_env->dispatch->body) {
+        return;
+    }
+
+    UVThreadState* thread_state = uv_tls_state();
+    UVGpuWorkItemState* previous_gpu_item = thread_state->gpu_item;
+    UVPanicRecord local_panic;
+    local_panic.panic = 0;
+    local_panic.code = 0;
+    UVPanicRecord* panic_record =
+        panic_out ? (UVPanicRecord*)panic_out : &local_panic;
+
+    thread_state->gpu_item = &thread_env->gpu_item;
+    if (!uv_gpu_wait_for_launch(&thread_env->gpu_item)) {
+        thread_env->gpu_item.status = GPU_WORK_DONE;
+        uv_gpu_trace_emit_with_transition(
+            "def.20.GpuRuntimeState",
+            "status_done",
+            "Pending->Done",
+            &thread_env->gpu_item,
+            NULL,
+            UV_GPU_TRACE_NO_GENERATION,
+            UV_GPU_TRACE_NO_GENERATION);
+        thread_state->gpu_item = previous_gpu_item;
+        return;
+    }
+    thread_env->gpu_item.status = GPU_WORK_RUNNING;
+    uv_gpu_trace_emit_with_transition(
+        "def.20.GpuRuntimeState",
+        "status_running",
+        "Pending->Running",
+        &thread_env->gpu_item,
+        NULL,
+        UV_GPU_TRACE_NO_GENERATION,
+        UV_GPU_TRACE_NO_GENERATION);
+    uv_gpu_trace_emit_with_transition(
+        "rule.20.GpuExecute-Step",
+        "status_running",
+        "Pending->Running",
+        &thread_env->gpu_item,
+        NULL,
+        UV_GPU_TRACE_NO_GENERATION,
+        UV_GPU_TRACE_NO_GENERATION);
+    thread_env->dispatch->body(thread_env->dispatch->hosted_env,
+                               thread_env->index_storage,
+                               thread_env->dispatch->captured_env,
+                               thread_env->result,
+                               panic_record);
+    if (panic_record->panic) {
+        uv_parallel_work_panic(uv_current_ctx(), panic_record->code);
+    }
+    thread_env->gpu_item.status = GPU_WORK_DONE;
+    uv_gpu_trace_emit_with_transition(
+        "def.20.GpuRuntimeState",
+        "status_done",
+        "Running->Done",
+        &thread_env->gpu_item,
+        NULL,
+        UV_GPU_TRACE_NO_GENERATION,
+        UV_GPU_TRACE_NO_GENERATION);
+    thread_state->gpu_item = previous_gpu_item;
+}
+
+static uv_rt_u32_t uv_gpu_work_thread_proc(void* param) {
+    UVGpuWorkThreadEnv* thread_env = (UVGpuWorkThreadEnv*)param;
+    if (!thread_env) {
+        return 0;
+    }
+    uv_run_item(thread_env->ctx, &thread_env->item);
+    return 0;
+}
+
+static void uv_gpu_prepare_work_item(UVGpuWorkThreadEnv* thread_env,
+                                     DispatchChunkEnv* dispatch,
+                                     UVGpuDispatchState* gpu_state,
+                                     ParallelContext* ctx,
+                                     uint64_t index_value,
+                                     uint64_t work_item_linear,
+                                     size_t group_index,
+                                     size_t result_size) {
+    if (!thread_env || !dispatch || !gpu_state) {
+        return;
+    }
+    uv_memset(thread_env, 0, sizeof(*thread_env));
+    thread_env->ctx = ctx;
+    thread_env->dispatch = dispatch;
+
+    const size_t copy =
+        dispatch->elem_size < sizeof(index_value) ? dispatch->elem_size
+                                                  : sizeof(index_value);
+    uv_memcpy(thread_env->index_storage, &index_value, copy);
+
+    thread_env->gpu_item.dispatch = gpu_state;
+    thread_env->gpu_item.linear_id = work_item_linear;
+    thread_env->gpu_item.workgroup_index = group_index;
+    thread_env->gpu_item.local_id =
+        uv_gpu_local_id_from_linear(work_item_linear,
+                                    gpu_state->workgroup_size);
+    thread_env->gpu_item.workgroup_id =
+        uv_gpu_workgroup_id_from_linear(work_item_linear,
+                                        gpu_state->workgroup_volume);
+    thread_env->gpu_item.global_id =
+        uv_gpu_global_id(thread_env->gpu_item.local_id,
+                         thread_env->gpu_item.workgroup_id,
+                         gpu_state->workgroup_size);
+    thread_env->gpu_item.status = GPU_WORK_PENDING;
+    thread_env->gpu_item.private_mem = NULL;
+    uv_gpu_trace_emit_memory_forms(&thread_env->gpu_item);
+    uv_gpu_trace_emit(
+        "def.20.GpuRuntimeState",
+        "status_pending",
+        &thread_env->gpu_item,
+        NULL,
+        UV_GPU_TRACE_NO_GENERATION,
+        UV_GPU_TRACE_NO_GENERATION);
+    uv_gpu_trace_emit(
+        "def.20.GpuExecutionTopology",
+        "work_item_topology_created",
+        &thread_env->gpu_item,
+        NULL,
+        UV_GPU_TRACE_NO_GENERATION,
+        UV_GPU_TRACE_NO_GENERATION);
+    uv_gpu_trace_emit(
+        "rule.20.EvalSigma-GPU-Dispatch",
+        "gpu_dispatch_work_item_created",
+        &thread_env->gpu_item,
+        NULL,
+        UV_GPU_TRACE_NO_GENERATION,
+        UV_GPU_TRACE_NO_GENERATION);
+
+    if (result_size > 0) {
+        thread_env->result = (uint8_t*)uv_heap_alloc_raw(result_size);
+        if (thread_env->result) {
+            uv_memset(thread_env->result, 0, result_size);
+        }
+    }
+
+    thread_env->item.state = WORK_PENDING;
+    thread_env->item.task_id = uv_fresh_task_id();
+    thread_env->item.completion_seq = 0;
+    thread_env->item.owner_ctx = ctx;
+    thread_env->item.captured_env = thread_env;
+    thread_env->item.hosted_env = NULL;
+    thread_env->item.body = uv_gpu_work_item_body;
+    thread_env->item.result = thread_env->result;
+    thread_env->item.result_size = result_size;
+    thread_env->item.affinity_mask = ctx ? ctx->domain_affinity_mask : 0;
+    thread_env->item.priority_hint = ctx ? ctx->domain_priority_hint : 1;
+    thread_env->item.panic_code = 0;
+    thread_env->item.next = NULL;
+    thread_env->item.all_next = NULL;
+    thread_env->item.done_event = NULL;
+    thread_env->item.handle = NULL;
+}
+
+static void uv_gpu_reduce_result(DispatchChunkEnv* dispatch,
+                                 ParallelContext* ctx,
+                                 void* reduce_result,
+                                 UVGpuWorkThreadEnv* thread_env,
+                                 int* has_accum) {
+    if (!dispatch || !thread_env || !thread_env->result ||
+        dispatch->result_size == 0 || !reduce_result) {
+        return;
+    }
+
+    if (dispatch->reduce_fn) {
+        if (!*has_accum) {
+            uv_memcpy(reduce_result, thread_env->result, dispatch->result_size);
+            *has_accum = 1;
+            return;
+        }
+
+        UVPanicRecord panic_record;
+        panic_record.panic = 0;
+        panic_record.code = 0;
+        dispatch->reduce_fn(dispatch->hosted_env,
+                            reduce_result,
+                            thread_env->result,
+                            reduce_result,
+                            &panic_record);
+        if (panic_record.panic) {
+            uv_parallel_work_panic(ctx, panic_record.code);
+        }
+        return;
+    }
+
+    if (uv_reduce_has_op(dispatch->reduce_op)) {
+        uv_reduce_apply(dispatch->reduce_op,
+                        reduce_result,
+                        thread_env->result,
+                        dispatch->result_size);
+    }
+}
+
+static void uv_gpu_dispatch_run(const UVRange* range,
+                                size_t elem_size,
+                                size_t result_size,
+                                void (*body)(void* hosted_env,
+                                             void* elem,
+                                             void* captured,
+                                             void* result,
+                                             void* panic_out),
+                                void* hosted_env,
+                                void* captured_env,
+                                UVStringView reduce_op,
+                                void* reduce_result,
+                                void (*reduce_fn)(void* hosted_env,
+                                                  void* lhs,
+                                                  void* rhs,
+                                                  void* out,
+                                                  void* panic_out),
+                                UVUsize3 workgroup_size,
+                                uint64_t start,
+                                uint64_t end) {
+    ParallelContext* ctx = uv_current_ctx();
+    const uint64_t count = end - start;
+    uint64_t volume = uv_gpu_workgroup_volume(workgroup_size);
+    if (volume == 0) {
+        workgroup_size = uv_gpu_triplet(64, 1, 1);
+        volume = uv_gpu_workgroup_volume(workgroup_size);
+    }
+    const uint64_t groups = (count + volume - 1) / volume;
+
+    UVGpuDispatchState gpu_state;
+    gpu_state.workgroup_size = workgroup_size;
+    gpu_state.num_workgroups = uv_gpu_triplet(groups, 1, 1);
+    gpu_state.global_size =
+        uv_gpu_triplet(workgroup_size.x * groups,
+                       workgroup_size.y,
+                       workgroup_size.z);
+    gpu_state.workgroup_volume = volume;
+    gpu_state.start = start;
+    gpu_state.end = end;
+    gpu_state.workgroup_count = (size_t)groups;
+    uv_gpu_trace_emit_dispatch(
+        "def.20.DispatchGpuTopologyComputation",
+        "dispatch_topology_computed",
+        &gpu_state,
+        count,
+        count);
+    if (uv_gpu_topology_valid(&gpu_state)) {
+        uv_gpu_trace_emit_dispatch(
+            "def.20.GpuTopologyValidity",
+            "dispatch_topology_valid",
+            &gpu_state,
+            count,
+            count);
+    }
+    gpu_state.workgroups = (UVGpuWorkgroupState*)uv_heap_alloc_raw(
+        sizeof(UVGpuWorkgroupState) * gpu_state.workgroup_count);
+    if (!gpu_state.workgroups) {
+        uv_parallel_context_panic(ctx, UV_PANIC_GPU_DISPATCH_LAUNCH_FAILED);
+        return;
+    }
+    uv_memset(gpu_state.workgroups,
+              0,
+              sizeof(UVGpuWorkgroupState) * gpu_state.workgroup_count);
+    uv_gpu_init_workgroups(&gpu_state);
+    uv_gpu_trace_emit_dispatch(
+        "rule.20.EvalSigma-GPU-Dispatch",
+        "gpu_dispatch_created",
+        &gpu_state,
+        count,
+        count);
+
+    DispatchChunkEnv dispatch;
+    dispatch.start = start;
+    dispatch.end = end;
+    dispatch.elem_size = elem_size;
+    dispatch.result_size = result_size;
+    dispatch.body = body;
+    dispatch.hosted_env = hosted_env;
+    dispatch.captured_env = captured_env;
+    dispatch.reduce_op = reduce_op;
+    dispatch.reduce_fn = reduce_fn;
+
+    const int use_builtin = uv_reduce_has_op(reduce_op);
+    const int has_reduce = reduce_result && result_size > 0;
+    int has_accum = 0;
+    if (use_builtin && has_reduce) {
+        uv_reduce_init(reduce_op, reduce_result, result_size);
+    }
+
+    int dispatch_aborted = 0;
+    for (size_t group = 0; group < gpu_state.workgroup_count; ++group) {
+        const uint64_t group_start = start + (uint64_t)group * volume;
+        uint64_t group_end = group_start + volume;
+        if (group_end > end) {
+            group_end = end;
+        }
+        const size_t active_count = (size_t)(group_end - group_start);
+        if (active_count == 0) {
+            continue;
+        }
+
+        UVGpuWorkThreadEnv* thread_envs =
+            (UVGpuWorkThreadEnv*)uv_heap_alloc_raw(
+                sizeof(UVGpuWorkThreadEnv) * active_count);
+        uv_rt_handle_t* handles = (uv_rt_handle_t*)uv_heap_alloc_raw(
+            sizeof(uv_rt_handle_t) * active_count);
+        if (!thread_envs || !handles) {
+            if (thread_envs) {
+                uv_heap_free_raw(thread_envs);
+            }
+            if (handles) {
+                uv_heap_free_raw(handles);
+            }
+            uv_parallel_context_panic(ctx, UV_PANIC_GPU_DISPATCH_LAUNCH_FAILED);
+            dispatch_aborted = 1;
+            break;
+        }
+        uv_memset(handles, 0, sizeof(uv_rt_handle_t) * active_count);
+        int launch_failed = 0;
+
+        for (size_t item_index = 0; item_index < active_count; ++item_index) {
+            const uint64_t index_value = group_start + (uint64_t)item_index;
+            const uint64_t work_item_linear = index_value - start;
+            uv_gpu_prepare_work_item(&thread_envs[item_index],
+                                     &dispatch,
+                                     &gpu_state,
+                                     ctx,
+                                     index_value,
+                                     work_item_linear,
+                                     group,
+                                     has_reduce ? result_size : 0);
+            if (has_reduce && !thread_envs[item_index].result) {
+                launch_failed = 1;
+            }
+        }
+
+        if (!launch_failed) {
+            for (size_t item_index = 0; item_index < active_count; ++item_index) {
+                handles[item_index] = uv_rt_thread_spawn(
+                    NULL,
+                    0,
+                    uv_gpu_work_thread_proc,
+                    &thread_envs[item_index],
+                    0,
+                    NULL);
+                if (!handles[item_index] ||
+                    handles[item_index] == UV_RT_INVALID_HANDLE) {
+                    launch_failed = 1;
+                    handles[item_index] = NULL;
+                }
+            }
+        }
+
+        uv_gpu_release_workgroup_launch(&gpu_state, group, launch_failed);
+
+        for (size_t item_index = 0; item_index < active_count; ++item_index) {
+            if (handles[item_index] &&
+                handles[item_index] != UV_RT_INVALID_HANDLE) {
+                uv_rt_wait(handles[item_index], UV_RT_WAIT_FOREVER);
+                uv_rt_handle_release(handles[item_index]);
+            }
+        }
+
+        if (launch_failed) {
+            uv_parallel_context_panic(ctx, UV_PANIC_GPU_DISPATCH_LAUNCH_FAILED);
+            dispatch_aborted = 1;
+        }
+
+        if (!launch_failed && has_reduce) {
+            for (size_t item_index = 0; item_index < active_count; ++item_index) {
+                uv_gpu_reduce_result(&dispatch,
+                                     ctx,
+                                     reduce_result,
+                                     &thread_envs[item_index],
+                                     &has_accum);
+            }
+        }
+
+        for (size_t item_index = 0; item_index < active_count; ++item_index) {
+            if (thread_envs[item_index].result) {
+                uv_heap_free_raw(thread_envs[item_index].result);
+            }
+        }
+        uv_heap_free_raw(handles);
+        uv_heap_free_raw(thread_envs);
+        if (dispatch_aborted) {
+            break;
+        }
+    }
+
+    if (!dispatch_aborted && reduce_fn && has_reduce && !has_accum) {
+        uv_memset(reduce_result, 0, result_size);
+    }
+    for (size_t group = 0; group < gpu_state.workgroup_count; ++group) {
+        uv_rt_mutex_destroy(&gpu_state.workgroups[group].lock);
+    }
+    uv_heap_free_raw(gpu_state.workgroups);
+    (void)range;
+}
+
 static void uv_dispatch_chunk(void* hosted_env, void* env_ptr, void* result_ptr, void* panic_out) {
     (void)hosted_env;
     DispatchChunkEnv* env = (DispatchChunkEnv*)env_ptr;
@@ -1706,7 +3030,8 @@ void uv_dispatch_run(const UVRange* range, size_t elem_size, size_t result_size,
                            void* reduce_result,
                            void (*reduce_fn)(void* hosted_env, void* lhs, void* rhs, void* out, void* panic_out),
                            int ordered,
-                           size_t chunk_size) {
+                           size_t chunk_size,
+                           UVUsize3 workgroup_size) {
     if (!body) return;
     if (!range) return;
 
@@ -1759,11 +3084,34 @@ void uv_dispatch_run(const UVRange* range, size_t elem_size, size_t result_size,
         if ((reduce_fn || uv_reduce_has_op(reduce_op)) && result_size > 0) {
             ParallelContext* ctx = uv_current_ctx();
             if (ctx) {
-                uv_parallel_context_panic(ctx, UV_PANIC_REDUCED_EMPTY_DISPATCH);
+                if (uv_current_item()) {
+                    uv_parallel_work_panic(ctx, UV_PANIC_REDUCED_EMPTY_DISPATCH);
+                } else {
+                    uv_parallel_context_panic(ctx, UV_PANIC_REDUCED_EMPTY_DISPATCH);
+                }
             } else {
                 uv_panic(UV_PANIC_REDUCED_EMPTY_DISPATCH);
             }
         }
+        return;
+    }
+
+    ParallelContext* ctx = uv_current_ctx();
+    if (ctx && ctx->domain_kind == (uint32_t)UV_DOMAIN_GPU) {
+        (void)ordered;
+        (void)chunk_size;
+        uv_gpu_dispatch_run(range,
+                            elem_size,
+                            result_size,
+                            body,
+                            hosted_env,
+                            captured_env,
+                            reduce_op,
+                            reduce_result,
+                            reduce_fn,
+                            workgroup_size,
+                            start,
+                            end);
         return;
     }
 
@@ -1816,7 +3164,6 @@ void uv_dispatch_run(const UVRange* range, size_t elem_size, size_t result_size,
         return;
     }
 
-    ParallelContext* ctx = uv_current_ctx();
     WorkerPool* pool = ctx->pool;
     uint64_t count = end - start;
     if (chunk_size == 0) {
@@ -2004,6 +3351,158 @@ void uv_dispatch_run(const UVRange* range, size_t elem_size, size_t result_size,
     uv_heap_free_raw(items);
 }
 
+UVUsize3 ultraviolet_x3a_x3aruntime_x3a_x3agpu_x3a_x3aglobal_x5fid(void) {
+    UVGpuWorkItemState* item = uv_tls_state()->gpu_item;
+    if (item) {
+        uv_gpu_trace_emit(
+            "def.20.GpuIntrinsicTable",
+            "intrinsic_gpu_global_id",
+            item,
+            NULL,
+            UV_GPU_TRACE_NO_GENERATION,
+            UV_GPU_TRACE_NO_GENERATION);
+    }
+    return item ? item->global_id : uv_gpu_triplet(0, 0, 0);
+}
+
+UVUsize3 ultraviolet_x3a_x3aruntime_x3a_x3agpu_x3a_x3alocal_x5fid(void) {
+    UVGpuWorkItemState* item = uv_tls_state()->gpu_item;
+    if (item) {
+        uv_gpu_trace_emit(
+            "def.20.GpuIntrinsicTable",
+            "intrinsic_gpu_local_id",
+            item,
+            NULL,
+            UV_GPU_TRACE_NO_GENERATION,
+            UV_GPU_TRACE_NO_GENERATION);
+    }
+    return item ? item->local_id : uv_gpu_triplet(0, 0, 0);
+}
+
+UVUsize3 ultraviolet_x3a_x3aruntime_x3a_x3agpu_x3a_x3aworkgroup_x5fid(void) {
+    UVGpuWorkItemState* item = uv_tls_state()->gpu_item;
+    if (item) {
+        uv_gpu_trace_emit(
+            "def.20.GpuIntrinsicTable",
+            "intrinsic_gpu_workgroup_id",
+            item,
+            NULL,
+            UV_GPU_TRACE_NO_GENERATION,
+            UV_GPU_TRACE_NO_GENERATION);
+    }
+    return item ? item->workgroup_id : uv_gpu_triplet(0, 0, 0);
+}
+
+UVUsize3 ultraviolet_x3a_x3aruntime_x3a_x3agpu_x3a_x3aworkgroup_x5fsize(void) {
+    UVGpuWorkItemState* item = uv_tls_state()->gpu_item;
+    if (item) {
+        uv_gpu_trace_emit(
+            "def.20.GpuIntrinsicTable",
+            "intrinsic_gpu_workgroup_size",
+            item,
+            NULL,
+            UV_GPU_TRACE_NO_GENERATION,
+            UV_GPU_TRACE_NO_GENERATION);
+    }
+    return item && item->dispatch ? item->dispatch->workgroup_size
+                                  : uv_gpu_triplet(1, 1, 1);
+}
+
+UVUsize3 ultraviolet_x3a_x3aruntime_x3a_x3agpu_x3a_x3aglobal_x5fsize(void) {
+    UVGpuWorkItemState* item = uv_tls_state()->gpu_item;
+    if (item) {
+        uv_gpu_trace_emit(
+            "def.20.GpuIntrinsicTable",
+            "intrinsic_gpu_global_size",
+            item,
+            NULL,
+            UV_GPU_TRACE_NO_GENERATION,
+            UV_GPU_TRACE_NO_GENERATION);
+    }
+    return item && item->dispatch ? item->dispatch->global_size
+                                  : uv_gpu_triplet(1, 1, 1);
+}
+
+UVUsize3 ultraviolet_x3a_x3aruntime_x3a_x3agpu_x3a_x3anum_x5fworkgroups(void) {
+    UVGpuWorkItemState* item = uv_tls_state()->gpu_item;
+    if (item) {
+        uv_gpu_trace_emit(
+            "def.20.GpuIntrinsicTable",
+            "intrinsic_gpu_num_workgroups",
+            item,
+            NULL,
+            UV_GPU_TRACE_NO_GENERATION,
+            UV_GPU_TRACE_NO_GENERATION);
+    }
+    return item && item->dispatch ? item->dispatch->num_workgroups
+                                  : uv_gpu_triplet(1, 1, 1);
+}
+
+uint64_t ultraviolet_x3a_x3aruntime_x3a_x3agpu_x3a_x3alinear_x5fid(void) {
+    UVGpuWorkItemState* item = uv_tls_state()->gpu_item;
+    if (item) {
+        uv_gpu_trace_emit(
+            "def.20.GpuIntrinsicTable",
+            "intrinsic_gpu_linear_id",
+            item,
+            NULL,
+            UV_GPU_TRACE_NO_GENERATION,
+            UV_GPU_TRACE_NO_GENERATION);
+    }
+    return item ? item->linear_id : 0;
+}
+
+void ultraviolet_x3a_x3aruntime_x3a_x3agpu_x3a_x3abarrier(void) {
+    UVGpuWorkItemState* item = uv_tls_state()->gpu_item;
+    if (item) {
+        uv_gpu_trace_emit(
+            "def.20.GpuIntrinsicTable",
+            "intrinsic_gpu_barrier",
+            item,
+            NULL,
+            UV_GPU_TRACE_NO_GENERATION,
+            UV_GPU_TRACE_NO_GENERATION);
+    }
+    uv_gpu_barrier_wait();
+}
+
+void ultraviolet_x3a_x3aruntime_x3a_x3agpu_x3a_x3amemory_x5fbarrier(void) {
+    UVGpuWorkItemState* item = uv_tls_state()->gpu_item;
+    if (item) {
+        uv_gpu_trace_emit(
+            "def.20.GpuIntrinsicTable",
+            "intrinsic_gpu_memory_barrier",
+            item,
+            NULL,
+            UV_GPU_TRACE_NO_GENERATION,
+            UV_GPU_TRACE_NO_GENERATION);
+    }
+    uv_gpu_memory_fence();
+    if (item) {
+        uv_gpu_trace_emit(
+            "def.20.GpuMemoryVisibility",
+            "memory_barrier",
+            item,
+            NULL,
+            UV_GPU_TRACE_NO_GENERATION,
+            UV_GPU_TRACE_NO_GENERATION);
+    }
+}
+
+void ultraviolet_x3a_x3aruntime_x3a_x3agpu_x3a_x3aworkgroup_x5fbarrier(void) {
+    UVGpuWorkItemState* item = uv_tls_state()->gpu_item;
+    if (item) {
+        uv_gpu_trace_emit(
+            "def.20.GpuIntrinsicTable",
+            "intrinsic_gpu_workgroup_barrier",
+            item,
+            NULL,
+            UV_GPU_TRACE_NO_GENERATION,
+            UV_GPU_TRACE_NO_GENERATION);
+    }
+    uv_gpu_barrier_wait();
+}
+
 // §18.6.1 Create cancellation token
 UVCancelId uv_cancel_token_new(void) {
     UVCancelId token_id = UV_CANCEL_INVALID_ID;
@@ -2082,8 +3581,29 @@ void uv_parallel_work_panic(void* ctx_ptr, uint32_t code) {
         (ctx->cancel_token != UV_CANCEL_INVALID_ID && ctx->panic_count == 1);
     uv_unlock_parallel_ctx(ctx);
 
+    uv_parallel_trace_emit(
+        "requirement.20.ParallelWorkItemPanicSemantics",
+        "work_item_panic_recorded",
+        "uv_parallel_work_panic",
+        ctx,
+        item,
+        code);
+    uv_parallel_trace_emit(
+        "rule.20.EvalSigma-Parallel-Spawn-Panic",
+        "spawn_panic_recorded",
+        "uv_parallel_work_panic",
+        ctx,
+        item,
+        code);
     if (request_cancel) {
         uv_cancel_token_cancel(ctx->cancel_token);
+        uv_parallel_trace_emit(
+            "requirement.20.ParallelPanicCancellationRequest",
+            "panic_requested_cancellation",
+            "uv_parallel_work_panic",
+            ctx,
+            item,
+            code);
     }
 }
 

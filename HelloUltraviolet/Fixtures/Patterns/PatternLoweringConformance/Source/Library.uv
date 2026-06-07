@@ -1,0 +1,110 @@
+//! Accepted project fixture for pattern lowering conformance markers.
+
+public type PatternLoweringUnion = i32 | bool
+
+public record PatternLoweringRecord {
+    public count: i32
+    public enabled: bool
+}
+
+public enum PatternLoweringEnum {
+    Empty
+    Count(i32)
+    Named {
+        value: i32
+    }
+}
+
+public modal PatternLoweringModal {
+    @Closed {}
+    @Open {
+        public value: i32
+    }
+}
+
+public procedure patternLoweringConformanceValue() -> i32 {
+    let basic_score: i32 = if 3 is {
+        1 {
+            0
+        }
+        3 {
+            3
+        }
+        else {
+            0
+        }
+    }
+
+    let range_score: i32 = if 4 is {
+        1..5 {
+            4
+        }
+        else {
+            0
+        }
+    }
+
+    let typed_value: PatternLoweringUnion = true
+    let typed_score: i32 = if typed_value is {
+        value: i32 {
+            value
+        }
+        value: bool {
+            if value { 5 } else { 0 }
+        }
+    }
+
+    let pair: (i32, bool) = (7, true)
+    let tuple_score: i32 = if pair is {
+        (tuple_count, tuple_enabled) {
+            if tuple_enabled { tuple_count } else { 0 }
+        }
+    }
+
+    let pattern_record: PatternLoweringRecord = PatternLoweringRecord {
+        count: 11,
+        enabled: true
+    }
+    let record_score: i32 = if pattern_record is {
+        PatternLoweringRecord {
+            count: record_count,
+            enabled: record_enabled,
+        } {
+            if record_enabled { record_count } else { 0 }
+        }
+    }
+
+    let enum_value: PatternLoweringEnum = PatternLoweringEnum::Count(13)
+    let enum_score: i32 = if enum_value is {
+        PatternLoweringEnum::Empty {
+            0
+        }
+        PatternLoweringEnum::Count(enum_count,) {
+            enum_count
+        }
+        PatternLoweringEnum::Named { value } {
+            value
+        }
+    }
+
+    let open_state: PatternLoweringModal@Open = PatternLoweringModal@Open {
+        value: 17
+    }
+    let modal_value: PatternLoweringModal = widen open_state
+    let modal_score: i32 = if modal_value is {
+        @Closed {
+            0
+        }
+        @Open { value } {
+            value
+        }
+    }
+
+    return basic_score +
+        range_score +
+        typed_score +
+        tuple_score +
+        record_score +
+        enum_score +
+        modal_score
+}

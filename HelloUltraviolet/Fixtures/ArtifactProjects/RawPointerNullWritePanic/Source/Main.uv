@@ -1,0 +1,17 @@
+//! Artifact fixture for runtime null raw-pointer write panic behavior.
+
+/// Writes through a raw pointer parameter so the null-address failure is dynamic.
+#dynamic
+public procedure rawPointerNullWritePanicValue(pointer: *mut i32, value: i32) -> i32 {
+    unsafe {
+        *pointer = value
+    }
+    return value
+}
+
+/// Runs the null raw-pointer write; the parent audit observes the panic exit code.
+public procedure main(context: Context) -> i32 {
+    let _ = context
+    let pointer: *mut i32 = null
+    return rawPointerNullWritePanicValue(pointer, 17)
+}

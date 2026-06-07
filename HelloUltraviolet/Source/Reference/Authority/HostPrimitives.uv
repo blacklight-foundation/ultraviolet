@@ -1,0 +1,125 @@
+//! Reference models for host primitive set and mapping obligations.
+
+internal procedure hostPrimitiveIsDiagnosticReference(name: string@View) -> bool {
+    return auditTextEquals(name, "ParseTOML") ||
+        auditTextEquals(name, "ReadBytes") ||
+        auditTextEquals(name, "WriteFile") ||
+        auditTextEquals(name, "ResolveTool") ||
+        auditTextEquals(name, "ResolveRuntimeLib") ||
+        auditTextEquals(name, "Invoke") ||
+        auditTextEquals(name, "AssembleIR") ||
+        auditTextEquals(name, "InvokeLinker") ||
+        auditTextEquals(name, "InvokeArchiver") ||
+        auditTextEquals(name, "ArchiveMembers")
+}
+
+internal procedure hostPrimitiveIsRuntimeReference(name: string@View) -> bool {
+    return auditTextEquals(name, "IOOpenRead") ||
+        auditTextEquals(name, "IOOpenWrite") ||
+        auditTextEquals(name, "IOOpenAppend") ||
+        auditTextEquals(name, "IOCreateWrite") ||
+        auditTextEquals(name, "IOReadFile") ||
+        auditTextEquals(name, "IOReadBytes") ||
+        auditTextEquals(name, "IOWriteFile") ||
+        auditTextEquals(name, "IOWriteStdout") ||
+        auditTextEquals(name, "IOWriteStderr") ||
+        auditTextEquals(name, "IOExists") ||
+        auditTextEquals(name, "IORemove") ||
+        auditTextEquals(name, "IOOpenDir") ||
+        auditTextEquals(name, "IOCreateDir") ||
+        auditTextEquals(name, "IOEnsureDir") ||
+        auditTextEquals(name, "IOKind") ||
+        auditTextEquals(name, "IORestrict") ||
+        auditTextEquals(name, "FileReadAll") ||
+        auditTextEquals(name, "FileReadAllBytes") ||
+        auditTextEquals(name, "FileWrite") ||
+        auditTextEquals(name, "FileFlush") ||
+        auditTextEquals(name, "FileClose") ||
+        auditTextEquals(name, "DirNext") ||
+        auditTextEquals(name, "DirClose") ||
+        auditTextEquals(name, "SystemGetEnv") ||
+        auditTextEquals(name, "SystemExit") ||
+        auditTextEquals(name, "SystemRun") ||
+        auditTextEquals(name, "NetRestrictHost") ||
+        auditTextEquals(name, "HeapWithQuota") ||
+        auditTextEquals(name, "HeapAllocRaw") ||
+        auditTextEquals(name, "HeapDeallocRaw") ||
+        auditTextEquals(name, "ReactorRun") ||
+        auditTextEquals(name, "ReactorRegister") ||
+        auditTextEquals(name, "TimeMonotonic") ||
+        auditTextEquals(name, "TimeWall") ||
+        auditTextEquals(name, "MonotonicTimeNow") ||
+        auditTextEquals(name, "MonotonicTimeResolution") ||
+        auditTextEquals(name, "MonotonicTimeElapsed") ||
+        auditTextEquals(name, "MonotonicTimeCoarsen") ||
+        auditTextEquals(name, "WallTimeNowUtc") ||
+        auditTextEquals(name, "WallTimeResolution") ||
+        auditTextEquals(name, "WallTimeCoarsen") ||
+        auditTextEquals(name, "CancelNew") ||
+        auditTextEquals(name, "CancelChild") ||
+        auditTextEquals(name, "CancelDoCancel") ||
+        auditTextEquals(name, "CancelIsCancelled") ||
+        auditTextEquals(name, "CancelWaitCancelled")
+}
+
+internal procedure hostPrimitiveMapsToDiagnosticOrRuntimeReference(
+    name: string@View
+) -> bool {
+    return hostPrimitiveIsDiagnosticReference(name) ||
+        hostPrimitiveIsRuntimeReference(name)
+}
+
+internal procedure hostPrimitiveSetCountsReference() -> bool {
+    let diagnostic_count: usize = 10usize
+    let runtime_count: usize = 46usize
+    let universe_count: usize = 56usize
+    return diagnostic_count + runtime_count == universe_count
+}
+
+public procedure diagnosticHostPrimitivesReference() -> bool {
+    return hostPrimitiveIsDiagnosticReference("ParseTOML") &&
+        hostPrimitiveIsDiagnosticReference("ReadBytes") &&
+        hostPrimitiveIsDiagnosticReference("WriteFile") &&
+        hostPrimitiveIsDiagnosticReference("ResolveTool") &&
+        hostPrimitiveIsDiagnosticReference("ResolveRuntimeLib") &&
+        hostPrimitiveIsDiagnosticReference("Invoke") &&
+        hostPrimitiveIsDiagnosticReference("AssembleIR") &&
+        hostPrimitiveIsDiagnosticReference("InvokeLinker") &&
+        hostPrimitiveIsDiagnosticReference("InvokeArchiver") &&
+        hostPrimitiveIsDiagnosticReference("ArchiveMembers") &&
+        !hostPrimitiveIsDiagnosticReference("IOOpenRead") &&
+        !hostPrimitiveIsDiagnosticReference("NotAHostPrimitive")
+}
+
+public procedure hostPrimitiveUniverseReference() -> bool {
+    return hostPrimitiveSetCountsReference() &&
+        diagnosticHostPrimitivesReference() &&
+        hostPrimitiveIsRuntimeReference("IOOpenRead") &&
+        hostPrimitiveIsRuntimeReference("IOWriteFile") &&
+        hostPrimitiveIsRuntimeReference("FileReadAll") &&
+        hostPrimitiveIsRuntimeReference("DirNext") &&
+        hostPrimitiveIsRuntimeReference("SystemGetEnv") &&
+        hostPrimitiveIsRuntimeReference("NetRestrictHost") &&
+        hostPrimitiveIsRuntimeReference("HeapWithQuota") &&
+        hostPrimitiveIsRuntimeReference("ReactorRegister") &&
+        hostPrimitiveIsRuntimeReference("MonotonicTimeCoarsen") &&
+        hostPrimitiveIsRuntimeReference("WallTimeCoarsen") &&
+        hostPrimitiveIsRuntimeReference("CancelWaitCancelled") &&
+        !hostPrimitiveIsRuntimeReference("ParseTOML") &&
+        !hostPrimitiveMapsToDiagnosticOrRuntimeReference("NotAHostPrimitive")
+}
+
+public procedure hostPrimitiveMappingAndFailureReference() -> bool {
+    return hostPrimitiveMapsToDiagnosticOrRuntimeReference("ParseTOML") &&
+        hostPrimitiveMapsToDiagnosticOrRuntimeReference("ResolveRuntimeLib") &&
+        hostPrimitiveMapsToDiagnosticOrRuntimeReference("IOOpenRead") &&
+        hostPrimitiveMapsToDiagnosticOrRuntimeReference("FileClose") &&
+        hostPrimitiveMapsToDiagnosticOrRuntimeReference("DirClose") &&
+        hostPrimitiveMapsToDiagnosticOrRuntimeReference("SystemRun") &&
+        hostPrimitiveMapsToDiagnosticOrRuntimeReference("NetRestrictHost") &&
+        hostPrimitiveMapsToDiagnosticOrRuntimeReference("HeapDeallocRaw") &&
+        hostPrimitiveMapsToDiagnosticOrRuntimeReference("ReactorRun") &&
+        hostPrimitiveMapsToDiagnosticOrRuntimeReference("WallTimeResolution") &&
+        hostPrimitiveMapsToDiagnosticOrRuntimeReference("CancelDoCancel") &&
+        !hostPrimitiveMapsToDiagnosticOrRuntimeReference("UnmappedPrimitive")
+}

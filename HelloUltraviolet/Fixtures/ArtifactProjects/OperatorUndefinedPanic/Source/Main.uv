@@ -1,0 +1,28 @@
+//! Artifact fixture for runtime undefined binary-operation panic and NaN comparison behavior.
+
+/// Checks the NaN-sensitive comparison outcomes required for operator evaluation.
+public procedure operatorNaNComparisonsHold(divisor: f64) -> bool {
+    let zero: f64 = 0.0f64
+    let not_a_number: f64 = zero / divisor
+    return not_a_number != not_a_number &&
+        !(not_a_number == not_a_number) &&
+        !(not_a_number < 1.0f64) &&
+        !(not_a_number <= 1.0f64) &&
+        !(not_a_number > 1.0f64) &&
+        !(not_a_number >= 1.0f64)
+}
+
+/// Divides by a runtime parameter so undefined integer division is exercised at runtime.
+public procedure operatorUndefinedPanicValue(divisor: i32) -> i32 {
+    let numerator: i32 = 42
+    return numerator / divisor
+}
+
+/// Runs NaN comparison assertions before triggering the undefined binary-operation panic.
+public procedure main(context: Context) -> i32 {
+    let _ = context
+    if !operatorNaNComparisonsHold(0.0f64) {
+        return 0
+    }
+    return operatorUndefinedPanicValue(0)
+}

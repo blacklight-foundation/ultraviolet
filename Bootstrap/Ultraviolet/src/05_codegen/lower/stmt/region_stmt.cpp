@@ -19,6 +19,7 @@
 #include <variant>
 
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 #include "04_analysis/memory/regions.h"
 #include "04_analysis/typing/types.h"
 #include "05_codegen/ir/ir_model.h"
@@ -135,6 +136,14 @@ IRPtr LowerRegionStmt(const ast::RegionStmt& stmt, LowerCtx& ctx) {
   region.alias = runtime_alias;
   region.body = body_result.ir;
   region.value = body_result.value;
+
+  std::string payload =
+      "source=LowerRegionStmt;ir_form=SeqIR;components=LowerExpr,RuntimeScopeEnter,"
+      "RegionIR";
+  payload += ";alias_present=";
+  payload += user_alias.has_value() ? "true" : "false";
+  payload += ";body_lowered=LowerBlock;release_registered=true";
+  core::Conformance::Record("rule.18.Lower-Stmt-Region", std::nullopt, payload);
 
   return SeqIR({opts_result.ir, scope_enter_ir, MakeIR(std::move(region))});
 }

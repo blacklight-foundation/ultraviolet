@@ -33,19 +33,35 @@ public procedure expectedCsvObligationKeyCount() -> usize {
 }
 
 public procedure catalogGeneratedObligationKeyCount() -> usize {
+    return 6046usize
+}
+
+public procedure catalogBlockedObligationKeyCount() -> usize {
+    return 6usize
+}
+
+public procedure catalogAccountedObligationKeyCount() -> usize {
     return 6052usize
 }
 
 public procedure expectedCsvObligationKeyDigest() -> usize {
-    return 902236931usize
+    return 108074367usize
 }
 
 public procedure catalogGeneratedObligationKeyDigest() -> usize {
-    return 902236931usize
+    return 408563804usize
+}
+
+public procedure catalogBlockedObligationKeyDigest() -> usize {
+    return 603612868usize
+}
+
+public procedure catalogAccountedObligationKeyDigest() -> usize {
+    return 108074367usize
 }
 
 public procedure expectedCsvFileByteCount() -> usize {
-    return 1526162usize
+    return 1526207usize
 }
 
 public procedure expectedCsvFileLineBreakCount() -> usize {
@@ -53,7 +69,7 @@ public procedure expectedCsvFileLineBreakCount() -> usize {
 }
 
 public procedure expectedCsvFileDigest() -> usize {
-    return 585373726usize
+    return 520626564usize
 }
 
 internal procedure csvFileShapeMatches(csv_text: string@View) -> bool {
@@ -63,8 +79,8 @@ internal procedure csvFileShapeMatches(csv_text: string@View) -> bool {
 }
 
 internal procedure generatedCatalogKeysMatchCsv() -> bool {
-    return catalogGeneratedObligationKeyCount() == expectedCsvObligationKeyCount() &&
-        catalogGeneratedObligationKeyDigest() == expectedCsvObligationKeyDigest()
+    return catalogAccountedObligationKeyCount() == expectedCsvObligationKeyCount() &&
+        catalogAccountedObligationKeyDigest() == expectedCsvObligationKeyDigest()
 }
 
 public procedure catalogMatchesCsvObligations(context: Context) -> bool {

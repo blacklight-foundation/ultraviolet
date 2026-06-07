@@ -78,7 +78,19 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hello-verification-linux
-          path: artifacts/hello-verification-linux.txt
+          path: |
+            artifacts/hello-verification-linux.txt
+            artifacts/runtime-logs/**
+            Build/Tests/**/*.log
+            Build/Tests/**/*.out
+            Build/Tests/**/*.err
+            Build/Tests/**/*.json
+            Build/Tests/**/*.evidence
+            HelloUltraviolet/Build/Tests/**/*.log
+            HelloUltraviolet/Build/Tests/**/*.out
+            HelloUltraviolet/Build/Tests/**/*.err
+            HelloUltraviolet/Build/Tests/**/*.json
+            HelloUltraviolet/Build/Tests/**/*.evidence
           if-no-files-found: ignore
 
       - name: Upload Linux release archive

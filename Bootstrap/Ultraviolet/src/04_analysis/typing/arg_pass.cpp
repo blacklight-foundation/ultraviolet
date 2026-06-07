@@ -83,6 +83,9 @@ static inline void SpecDefsArgPass() {
   SPEC_DEF("ArgumentPassExpressions", "3.3.2.4");
   SPEC_DEF("PlaceType", "3.3.3");
   SPEC_DEF("ParamMode", "3.3.2.3");
+  SPEC_DEF("rule.16.Call-Move-Missing", "16.4");
+  SPEC_DEF("rule.16.Call-Move-Unexpected", "16.4");
+  SPEC_DEF("rule.16.Call-Arg-NotPlace", "16.4");
 }
 
 // Helper: Check if an expression is a place expression
@@ -181,6 +184,7 @@ ArgModeCheckResult CheckArgModeMatch(const ast::Arg& arg,
   if (param_mode.has_value() && *param_mode == ParamMode::Move) {
     if (ast::IsRefArg(arg) && HasSourceProvenance(arg.value)) {
       SPEC_RULE("Call-Move-Missing");
+      SPEC_RULE("rule.16.Call-Move-Missing");
       return {false, "E-SEM-2534"};
     }
     return {true, std::nullopt};
@@ -189,6 +193,7 @@ ArgModeCheckResult CheckArgModeMatch(const ast::Arg& arg,
   if (!param_mode.has_value()) {
     if (ast::IsMoveArg(arg)) {
       SPEC_RULE("Call-Move-Unexpected");
+      SPEC_RULE("rule.16.Call-Move-Unexpected");
       return {false, "E-SEM-2535"};
     }
 
@@ -196,6 +201,7 @@ ArgModeCheckResult CheckArgModeMatch(const ast::Arg& arg,
     if (ast::IsRefArg(arg) && HasSourceProvenance(arg.value) &&
         !IsPlaceExprInternal(arg.value)) {
       SPEC_RULE("Call-Arg-NotPlace");
+      SPEC_RULE("rule.16.Call-Arg-NotPlace");
       return {false, "E-TYP-1603"};
     }
 

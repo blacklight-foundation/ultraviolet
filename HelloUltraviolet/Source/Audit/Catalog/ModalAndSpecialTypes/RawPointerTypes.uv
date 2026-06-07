@@ -9,7 +9,7 @@ public procedure validatedModalAndSpecialTypesRawPointerTypesObligations() -> us
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.RawPointerTypes.Syntax",
-        46410usize,
+        46412usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesPointersReference",
         "Source/Reference/ModalTypes/Pointers.uv"
@@ -18,7 +18,7 @@ public procedure validatedModalAndSpecialTypesRawPointerTypesObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.13.Parse-Raw-Pointer-Type",
-        46426usize,
+        46428usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesPointersReference",
         "Source/Reference/ModalTypes/Pointers.uv"
@@ -27,7 +27,7 @@ public procedure validatedModalAndSpecialTypesRawPointerTypesObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "def.RawPointerTypes.AST",
-        46444usize,
+        46446usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesPointersReference",
         "Source/Reference/ModalTypes/Pointers.uv"
@@ -36,7 +36,7 @@ public procedure validatedModalAndSpecialTypesRawPointerTypesObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.13.WF-RawPtr",
-        46458usize,
+        46460usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesPointersReference",
         "Source/Reference/ModalTypes/Pointers.uv"
@@ -45,52 +45,52 @@ public procedure validatedModalAndSpecialTypesRawPointerTypesObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.13.T-Deref-Raw",
-        46474usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesPointersReference",
-        "Source/Reference/ModalTypes/Pointers.uv"
+        46476usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.13.P-Deref-Raw-Imm",
-        46490usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesPointersReference",
-        "Source/Reference/ModalTypes/Pointers.uv"
+        46492usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.13.P-Deref-Raw-Mut",
-        46506usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesPointersReference",
-        "Source/Reference/ModalTypes/Pointers.uv"
+        46508usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.13.Deref-Raw-Unsafe",
-        46522usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesPointersReference",
-        "Source/Reference/ModalTypes/Pointers.uv"
+        46524usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily/Source/Main.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.RawPointerRuntimeValue",
-        46540usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesPointersReference",
-        "Source/Reference/ModalTypes/Pointers.uv"
+        46542usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.13.ReadPtr-Raw",
-        46552usize,
+        46554usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesPointersReference",
         "Source/Reference/ModalTypes/Pointers.uv"
@@ -99,70 +99,70 @@ public procedure validatedModalAndSpecialTypesRawPointerTypesObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.13.WritePtr-Raw",
-        46568usize,
+        46570usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesPointersReference",
         "Source/Reference/ModalTypes/Pointers.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if artifactBehaviorObligationEntryMatches(
         "rule.13.ReadPtr-Raw-Invalid",
-        46584usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesPointersReference",
-        "Source/Reference/ModalTypes/Pointers.uv"
+        46586usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
+        "validatedArtifactProjectFixtureCount",
+        "Fixtures/ArtifactProjects/RawPointerNullReadPanic/Source/Main.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.13.WritePtr-Raw-Imm",
-        46600usize,
+        46602usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesPointersReference",
         "Source/Reference/ModalTypes/Pointers.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if artifactBehaviorObligationEntryMatches(
         "rule.13.WritePtr-Raw-Invalid",
-        46616usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesPointersReference",
-        "Source/Reference/ModalTypes/Pointers.uv"
+        46618usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
+        "validatedArtifactProjectFixtureCount",
+        "Fixtures/ArtifactProjects/RawPointerNullWritePanic/Source/Main.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.13.Size-RawPtr",
-        46634usize,
+        46636usize,
         "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesPointersReference",
+        "sizeRawPointerReference",
         "Source/Reference/ModalTypes/Pointers.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.13.Align-RawPtr",
-        46650usize,
+        46652usize,
         "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesPointersReference",
+        "alignRawPointerReference",
         "Source/Reference/ModalTypes/Pointers.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.13.Layout-RawPtr",
-        46666usize,
+        46668usize,
         "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesPointersReference",
+        "layoutRawPointerReference",
         "Source/Reference/ModalTypes/Pointers.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.RawPointerValidValue",
-        46682usize,
+        46684usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesPointersReference",
         "Source/Reference/ModalTypes/Pointers.uv"
@@ -171,7 +171,7 @@ public procedure validatedModalAndSpecialTypesRawPointerTypesObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "def.RawPointerValueBits",
-        46694usize,
+        46696usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesPointersReference",
         "Source/Reference/ModalTypes/Pointers.uv"
@@ -180,16 +180,16 @@ public procedure validatedModalAndSpecialTypesRawPointerTypesObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "req.RawPointerLowering",
-        46705usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesPointersReference",
-        "Source/Reference/ModalTypes/Pointers.uv"
+        46707usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "diag.RawPointerTypes",
-        46719usize,
+        46721usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesPointersReference",
         "Source/Reference/ModalTypes/Pointers.uv"

@@ -116,8 +116,39 @@ EXECUTABLE_AUDIT_ARTIFACT_PROJECTS = (
 RUNNABLE_EXECUTABLE_AUDIT_ARTIFACT_PROJECTS = frozenset({
     "ExecutableOutput",
 })
+EXECUTABLE_OUTPUT_FAILURE_DIAGNOSTICS = {
+    10: "System::current_directory returned an empty string",
+    11: "primary IO exists check returned false for System::current_directory",
+    12: "secondary IO exists check returned false for System::current_directory",
+    13: "combined IO predicate returned false after both individual IO checks passed",
+    14: "primary IO exists check returned false for the root path literal",
+    15: "secondary IO exists check returned false for the root path literal",
+    21: "current directory was empty",
+    22: "secondary System argument_count predicate returned false",
+    23: "combined System predicate returned false after individual checks passed",
+    31: "Reactor::run future value did not match expected i32 payload",
+    32: "MonotonicTime::resolution returned zero nanoseconds",
+    33: "primary cpu execution domain was not observed",
+    34: "primary gpu execution domain was not observed",
+    35: "primary inline execution domain was not observed",
+    36: "secondary cpu execution domain was not observed",
+    39: "combined domain predicate returned false after individual domains passed",
+    41: "non-capturing closure call returned the wrong value",
+    42: "capturing or move-capturing closure call returned the wrong value",
+    43: "direct closure call returned the wrong value",
+    44: "closure helper call returned the wrong value",
+    45: "closure callee control-flow value was not preserved",
+    46: "closure argument control-flow value was not preserved",
+    47: "resolved internal-form closure call returned the wrong value",
+    48: "function pipeline call returned the wrong value",
+    49: "closure pipeline call returned the wrong value",
+    50: "pipeline left operand control-flow value was not preserved",
+    51: "pipeline right operand control-flow value was not preserved",
+    99: "original aggregate executable predicate failed after individual probes passed",
+}
 CURRENT_TARGET_EXECUTABLE_AUDIT_ARTIFACT_PROJECTS = frozenset({
     "ExecutableOutput",
+    "EmitBcLibrary",
     "EmitLlLibrary",
 })
 EXECUTABLE_AUDIT_OUTPUT_DIAGNOSTICS = (
@@ -142,6 +173,16 @@ PACKAGED_TOOL_PLATFORM = {
     "x86_64-win64": "windows",
     "aarch64-darwin": "macos",
 }
+TARGET_LINKER_TOOL = {
+    "x86_64-sysv": "ld.lld",
+    "x86_64-win64": "lld-link",
+    "aarch64-darwin": "clang++",
+}
+TARGET_ARCHIVER_TOOL = {
+    "x86_64-sysv": "llvm-ar",
+    "x86_64-win64": "llvm-lib",
+    "aarch64-darwin": "llvm-ar",
+}
 RELEASE_PLATFORM_LABELS = {
     "linux": "Linux",
     "windows": "Windows",
@@ -154,6 +195,8 @@ EXECUTABLE_EXTERN_PAYLOADS = frozenset(
         MACOS_LLVM_EXTERN_ROOT / "bin" / "llvm-as",
     }
 )
+RUNTIME_LOG_ROOT = ROOT / "artifacts" / "runtime-logs"
+RUNTIME_LOG_SLUG_MAX = 96
 
 
 class Transcript:
@@ -263,6 +306,63 @@ def relative_path(path: Path) -> str:
         return path.resolve().relative_to(ROOT.resolve()).as_posix()
     except ValueError:
         return str(path)
+
+
+def runtime_log_slug(label: str) -> str:
+    characters: list[str] = []
+    for character in label.lower():
+        if character.isalnum():
+            characters.append(character)
+        elif characters and characters[-1] != "-":
+            characters.append("-")
+
+    slug = "".join(characters).strip("-")
+    if not slug:
+        return "gate"
+    return slug[:RUNTIME_LOG_SLUG_MAX].rstrip("-")
+
+
+def verification_runtime_log_path(
+    config: TargetConfig,
+    gate_index: int,
+    label: str,
+) -> Path:
+    slug = runtime_log_slug(label)
+    return RUNTIME_LOG_ROOT / config.release_platform / f"{gate_index:03d}-{slug}.log"
+
+
+def prepare_runtime_log_path(path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        path.unlink()
+    except FileNotFoundError:
+        pass
+
+
+def normalized_command_path(path: str | Path) -> str:
+    return os.path.normcase(os.path.abspath(os.fspath(path)))
+
+
+def command_uses_executable(command: Sequence[str], executable: Path) -> bool:
+    if not command:
+        return False
+    return normalized_command_path(command[0]) == normalized_command_path(executable)
+
+
+def remove_runtime_capture_environment(env: dict[str, str]) -> None:
+    for variable in (
+        "UV_RUNTIME_SINK",
+        "UV_RUNTIME_PATH",
+        "UV_RUNTIME_ROOT",
+        "UV_RUNTIME_FILTER",
+        "UV_RUNTIME_LEVEL",
+        "UV_RUNTIME_RULE",
+        "UV_RUNTIME_FILE",
+        "UV_RUNTIME_LABEL",
+        "UV_RUNTIME_FAIL_ONLY",
+        "UV_RUNTIME_BREAK_ON_FAIL",
+    ):
+        env.pop(variable, None)
 
 
 def git_text(args: list[str], timeout_seconds: float = 10.0) -> str:
@@ -854,6 +954,29 @@ exit 1
 """
 
 
+def tool_invocation_failure_shim_text(tool_name: str) -> str:
+    return f"""#!/usr/bin/env bash
+set -euo pipefail
+
+echo "{tool_name} fixture shim: intentional invocation failure" >&2
+exit 1
+"""
+
+
+def ordered_unique(values: Sequence[str]) -> list[str]:
+    out: list[str] = []
+    for value in values:
+        if value not in out:
+            out.append(value)
+    return out
+
+
+def executable_script_names(tool_name: str) -> tuple[str, ...]:
+    if tool_name.lower().endswith(".exe"):
+        return (tool_name,)
+    return (tool_name, f"{tool_name}.exe")
+
+
 def windows_llvm_as_failure_shim_source() -> str:
     return r"""#include <stdio.h>
 #include <string.h>
@@ -872,36 +995,127 @@ int main(int argc, char** argv) {
 """
 
 
-def build_windows_llvm_as_failure_shim(destination: Path) -> None:
+def windows_tool_invocation_failure_shim_source(tool_name: str) -> str:
+    return f"""#include <stdio.h>
+
+int main(void) {{
+    fputs("{tool_name} fixture shim: intentional invocation failure\\n", stderr);
+    return 1;
+}}
+"""
+
+
+def cmake_cache_value(cache_path: Path, key: str) -> str | None:
+    if not cache_path.is_file():
+        return None
+
+    prefix = f"{key}:"
+    for line in cache_path.read_text(encoding="utf-8", errors="replace").splitlines():
+        if not line.startswith(prefix):
+            continue
+        _, _, value = line.partition("=")
+        return value.strip() or None
+    return None
+
+
+def windows_c_compiler(config: TargetConfig) -> str:
+    cache_path = config.compiler_path.parent.parent / "CMakeCache.txt"
+    configured = cmake_cache_value(cache_path, "CMAKE_C_COMPILER")
+    if configured:
+        return configured
+
+    discovered = shutil.which("cl")
+    if discovered:
+        return discovered
+
+    raise FileNotFoundError(
+        "could not find a Windows C compiler: CMAKE_C_COMPILER is missing from "
+        f"{cache_path} and cl.exe is not on PATH"
+    )
+
+
+def visual_studio_dev_command_for_compiler(compiler: str) -> Path | None:
+    compiler_path = Path(compiler)
+    for parent in compiler_path.parents:
+        if parent.name.lower() != "vc":
+            continue
+        candidate = parent.parent / "Common7" / "Tools" / "VsDevCmd.bat"
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def build_windows_failure_shim(
+    config: TargetConfig,
+    destination: Path,
+    source_text: str,
+    label: str,
+) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
-    source_path = destination.with_name("llvm_as_failure_shim.c")
+    source_path = destination.with_name(f"{destination.stem}_failure_shim.c")
     object_path = destination.with_suffix(".obj")
     source_path.write_text(
-        windows_llvm_as_failure_shim_source(),
+        source_text,
         encoding="utf-8",
         newline="\n",
     )
+    compiler = windows_c_compiler(config)
+    compile_command = [
+        compiler,
+        "/nologo",
+        "/O2",
+        f"/Fe:{destination}",
+        f"/Fo:{object_path}",
+        str(source_path),
+    ]
+    dev_command = visual_studio_dev_command_for_compiler(compiler)
+    if dev_command is not None:
+        compile_command = (
+            f'call "{dev_command}" -arch=x64 -host_arch=x64 >nul && '
+            f"{subprocess.list2cmdline(compile_command)}"
+        )
     result = subprocess.run(
-        [
-            "cl",
-            "/nologo",
-            "/O2",
-            f"/Fe:{destination}",
-            f"/Fo:{object_path}",
-            str(source_path),
-        ],
+        compile_command,
         cwd=destination.parent,
         check=False,
         capture_output=True,
+        shell=dev_command is not None,
         text=True,
         encoding="utf-8",
         errors="replace",
     )
     if result.returncode != 0:
         output = (result.stdout + result.stderr).strip()
-        raise RuntimeError(f"failed to build Windows llvm-as shim: {output}")
+        raise RuntimeError(
+            f"failed to build Windows {label} shim with {compiler}: {output}"
+        )
     remove_stale_tool(source_path)
     remove_stale_tool(object_path)
+
+
+def build_windows_llvm_as_failure_shim(
+    config: TargetConfig,
+    destination: Path,
+) -> None:
+    build_windows_failure_shim(
+        config,
+        destination,
+        windows_llvm_as_failure_shim_source(),
+        "llvm-as",
+    )
+
+
+def build_windows_tool_invocation_failure_shim(
+    config: TargetConfig,
+    destination: Path,
+    tool_name: str,
+) -> None:
+    build_windows_failure_shim(
+        config,
+        destination,
+        windows_tool_invocation_failure_shim_source(tool_name),
+        tool_name,
+    )
 
 
 def stage_coff_fixture_tools(config: TargetConfig, destination_dir: Path) -> list[Path]:
@@ -945,13 +1159,66 @@ def stage_emit_llvm_render_failure_tool(config: TargetConfig) -> list[Path]:
     if platform.system() == "Windows":
         remove_stale_tool(destination_dir / "llvm-as")
         destination = destination_dir / "llvm-as.exe"
-        build_windows_llvm_as_failure_shim(destination)
+        build_windows_llvm_as_failure_shim(config, destination)
         return [destination]
 
     destinations = (destination_dir / "llvm-as", destination_dir / "llvm-as.exe")
     for destination in destinations:
         write_executable_script(destination, llvm_as_failure_shim_text())
     return list(destinations)
+
+
+def stage_linking_invocation_failure_tools(config: TargetConfig) -> list[Path]:
+    fixtures = (
+        (
+            ROOT
+            / "HelloUltraviolet"
+            / "Fixtures"
+            / "OutputDiagnostics"
+            / "Linking"
+            / "LinkerInvocationFailure"
+            / "Tools",
+            ordered_unique(("lld-link", TARGET_LINKER_TOOL[config.profile])),
+        ),
+        (
+            ROOT
+            / "HelloUltraviolet"
+            / "Fixtures"
+            / "OutputDiagnostics"
+            / "Linking"
+            / "ArchiverInvocationFailure"
+            / "Tools",
+            ordered_unique(("llvm-lib", TARGET_ARCHIVER_TOOL[config.profile])),
+        ),
+    )
+
+    staged: list[Path] = []
+    if platform.system() == "Windows":
+        for destination_dir, tool_names in fixtures:
+            for tool_name in tool_names:
+                remove_stale_tool(destination_dir / tool_name)
+            tool_name = tool_names[0]
+            destination = destination_dir / f"{tool_name}.exe"
+            build_windows_tool_invocation_failure_shim(
+                config,
+                destination,
+                tool_name,
+            )
+            staged.append(destination)
+        return staged
+
+    for destination_dir, tool_names in fixtures:
+        for tool_name in tool_names:
+            destinations = tuple(
+                destination_dir / name for name in executable_script_names(tool_name)
+            )
+            for destination in destinations:
+                write_executable_script(
+                    destination,
+                    tool_invocation_failure_shim_text(tool_name),
+                )
+            staged.extend(destinations)
+    return staged
 
 
 def run_internal_gate(
@@ -977,6 +1244,7 @@ def run_internal_gate(
             *stage_coff_fixture_tools(config, target_support_tool_dir),
             *stage_coff_fixture_tools(config, emit_bc_compat_tool_dir),
             *stage_emit_llvm_render_failure_tool(config),
+            *stage_linking_invocation_failure_tools(config),
         ]
         for path in staged:
             transcript.line(f"## Staged: {relative_path(path)}")
@@ -996,17 +1264,40 @@ def run_command(
     label: str,
     cwd: Path,
     command: Sequence[str],
+    config: TargetConfig,
+    runtime_log_path: Path,
 ) -> int:
     transcript.line()
     transcript.line(f"## Gate: {label}")
     transcript.line(f"## Working directory: {relative_path(cwd)}")
     transcript.line(f"## Command: {command_text(command)}")
+    transcript.line(f"## Runtime log: {relative_path(runtime_log_path)}")
+
+    try:
+        prepare_runtime_log_path(runtime_log_path)
+    except OSError as exc:
+        transcript.line(f"## Failed to prepare runtime log: {exc}")
+        transcript.line("## Exit code: 127")
+        return 127
 
     start = time.monotonic()
+    env = os.environ.copy()
+    remove_runtime_capture_environment(env)
+    env["HUV_TARGET_PROFILE"] = config.profile
+    if not command_uses_executable(command, config.compiler_path):
+        env.update(
+            {
+                "UV_RUNTIME_SINK": "console",
+                "UV_RUNTIME_ROOT": str(ROOT),
+                "UV_RUNTIME_FILTER": "all",
+                "UV_RUNTIME_LEVEL": "trace",
+            }
+        )
     try:
         process = subprocess.Popen(
             command,
             cwd=cwd,
+            env=env,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
@@ -1020,8 +1311,10 @@ def run_command(
         return 127
 
     assert process.stdout is not None
-    for line in process.stdout:
-        transcript.write(line)
+    with runtime_log_path.open("a", encoding="utf-8", errors="replace") as log:
+        for line in process.stdout:
+            transcript.write(line)
+            log.write(line)
     exit_code = process.wait()
     elapsed = time.monotonic() - start
     transcript.line(f"## Exit code: {exit_code}")
@@ -1033,9 +1326,17 @@ def run_verification_gate(
     transcript: Transcript,
     gate: VerificationGate,
     config: TargetConfig,
+    gate_index: int,
 ) -> int:
     if gate.internal_action is None:
-        exit_code = run_command(transcript, gate.label, gate.cwd, gate.command)
+        exit_code = run_command(
+            transcript,
+            gate.label,
+            gate.cwd,
+            gate.command,
+            config,
+            verification_runtime_log_path(config, gate_index, gate.label),
+        )
     else:
         exit_code = run_internal_gate(
             transcript,
@@ -1049,6 +1350,13 @@ def run_verification_gate(
         if gate.allowed_exit_codes != (0,):
             transcript.line(f"## Accepted exit code: {exit_code}")
         return 0
+
+    if gate.label == (
+        "HelloUltraviolet executable audit artifact fixture run: ExecutableOutput"
+    ):
+        diagnostic = EXECUTABLE_OUTPUT_FAILURE_DIAGNOSTICS.get(exit_code)
+        if diagnostic is not None:
+            transcript.line(f"## ExecutableOutput diagnostic: {diagnostic}")
 
     transcript.line(
         "## Expected exit code(s): "
@@ -1131,11 +1439,18 @@ def main() -> int:
             digest = transcript.hexdigest()
             transcript.line(f"Verification transcript SHA256: {digest}", hashed=False)
             return 2
-        for gate in commands:
+        for gate_index, gate in enumerate(commands, start=1):
             transcript.line()
             transcript.line(f"## Planned gate: {gate.label}")
             transcript.line(f"## Working directory: {relative_path(gate.cwd)}")
             transcript.line(f"## Command: {gate_command_text(gate)}")
+            if gate.internal_action is None:
+                runtime_log_path = verification_runtime_log_path(
+                    config,
+                    gate_index,
+                    gate.label,
+                )
+                transcript.line(f"## Runtime log: {relative_path(runtime_log_path)}")
             if gate.allowed_exit_codes != (0,):
                 transcript.line(
                     "## Expected exit code(s): "
@@ -1202,8 +1517,8 @@ def main() -> int:
     start = time.monotonic()
     failure_code = run_extern_payload_gate(transcript, config)
     if failure_code == 0:
-        for gate in commands:
-            exit_code = run_verification_gate(transcript, gate, config)
+        for gate_index, gate in enumerate(commands, start=1):
+            exit_code = run_verification_gate(transcript, gate, config, gate_index)
             if exit_code != 0:
                 failure_code = exit_code
                 break

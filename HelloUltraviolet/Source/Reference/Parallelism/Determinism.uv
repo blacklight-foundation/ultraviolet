@@ -19,6 +19,34 @@ internal procedure nestedParallelReference(context: Context) -> i32 {
     }
 }
 
+internal procedure dispatchDeterminismConditionsReference(context: Context) -> bool {
+    let first: i32 = orderedDispatchDeterminismReference(context)
+    let second: i32 = orderedDispatchDeterminismReference(context)
+    return first == 6 &&
+        second == 6 &&
+        first == second
+}
+
+internal procedure orderedDispatchSequentialSideEffectsReference(context: Context) -> bool {
+    var backing: shared [i32; 4] = [0, 0, 0, 0]
+    let values: shared [i32] = backing[..]
+    parallel context~>inline() {
+        dispatch index in 0usize..4usize [ordered] {
+            values[index] = index as i32
+        }
+    }
+
+    var observed: i32 = 0
+    %read values[0usize], values[1usize], values[2usize], values[3usize] [ordered] {
+        observed = values[0usize] + values[1usize] + values[2usize] + values[3usize]
+    }
+    return observed == 6
+}
+
+internal procedure nestedParallelRuntimeSemanticsReference(context: Context) -> bool {
+    return nestedParallelReference(context) == 8
+}
+
 /// Exercises the Parallelism Determinism reference surface.
 public procedure runParallelismDeterminismReference(context: Context) -> bool {
     let first: i32 = orderedDispatchDeterminismReference(context)
@@ -26,5 +54,8 @@ public procedure runParallelismDeterminismReference(context: Context) -> bool {
     return first == 6 &&
         second == 6 &&
         first == second &&
-        nestedParallelReference(context) == 8
+        nestedParallelReference(context) == 8 &&
+        dispatchDeterminismConditionsReference(context) &&
+        orderedDispatchSequentialSideEffectsReference(context) &&
+        nestedParallelRuntimeSemanticsReference(context)
 }

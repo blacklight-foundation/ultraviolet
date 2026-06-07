@@ -32,5 +32,9 @@ ModuleStaticLookupResult LookupModuleStatic(const ScopeContext& ctx,
 
 ValuePathTypeResult ProcType(const ScopeContext& ctx,
                              const ast::ProcedureDecl& decl);
+ValuePathTypeResult ProcType(const ScopeContext& ctx,
+                             const ast::ComptimeProcedureDecl& decl);
+ValuePathTypeResult ProcType(const ScopeContext& ctx,
+                             const ast::ExternProcDecl& decl);
 
 }  // namespace ultraviolet::analysis

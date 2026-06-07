@@ -47,6 +47,8 @@
 #include "05_codegen/globals/globals.h"
 
 #include <cstring>
+#include <optional>
+#include <string>
 #include <variant>
 
 #include "05_codegen/symbols/mangle.h"
@@ -63,6 +65,29 @@ namespace ultraviolet::codegen {
 // ============================================================================
 
 // Helpers moved to lower_expr.h
+static bool IsUnitTypeRef(analysis::TypeRef type) {
+  while (type) {
+    if (const auto* prim = std::get_if<analysis::TypePrim>(&type->node)) {
+      return prim->name == "()";
+    }
+    if (const auto* perm = std::get_if<analysis::TypePerm>(&type->node)) {
+      type = perm->base;
+      continue;
+    }
+    if (const auto* refine = std::get_if<analysis::TypeRefine>(&type->node)) {
+      type = refine->base;
+      continue;
+    }
+    return false;
+  }
+  return false;
+}
+
+static bool IsUnitValueExpr(const ast::Expr& expr) {
+  const auto* tuple = std::get_if<ast::TupleExpr>(&expr.node);
+  return tuple && tuple->elements.empty();
+}
+
 static std::optional<std::vector<std::uint8_t>> ConstInit(analysis::TypeRef type,
                                                           const ast::Expr& expr) {
   if (!type) {
@@ -71,6 +96,12 @@ static std::optional<std::vector<std::uint8_t>> ConstInit(analysis::TypeRef type
   if (const auto* lit = std::get_if<ast::LiteralExpr>(&expr.node)) {
     SPEC_RULE("ConstInit");
     return ::ultraviolet::analysis::layout::EncodeConst(type, lit->literal);
+  }
+  if (IsUnitTypeRef(type) && IsUnitValueExpr(expr)) {
+    SPEC_RULE("ConstInit");
+    SPEC_RULE("Encode-Unit");
+    SPEC_RULE("rule.24.Encode-Unit");
+    return std::vector<std::uint8_t>{};
   }
   return std::nullopt;
 }
@@ -462,7 +493,9 @@ EmitGlobalResult EmitGlobal(const ast::StaticDecl& item,
                             LowerCtx& ctx) {
   EmitGlobalResult result;
   result.needs_runtime_init = false;
-  const bool externally_visible = LinkageOf(item) == LinkageKind::External;
+  (void)LinkageOf(item);
+  const bool externally_visible =
+      LinkageOfStaticBinding(item.vis) == LinkageKind::External;
   const bool export_from_shared_library = item.vis == ast::Visibility::Public;
 
   const auto& binding = item.binding;
@@ -596,6 +629,19 @@ IRPtr StaticStoreIR(const ast::StaticDecl& item,
                     const ast::ModulePath& module_path,
                     const std::vector<std::pair<std::string, IRValue>>& binds) {
   SPEC_DEF("StaticStoreIR", "Section 6.7");
+  if (core::Conformance::Enabled()) {
+    std::string payload;
+    payload.reserve(core::StringOfPath(module_path).size() + 96);
+    payload += "source=StaticStoreIR;module=";
+    payload += core::StringOfPath(module_path);
+    payload += ";binding_count=";
+    payload += std::to_string(binds.size());
+    payload += ";empty=";
+    payload += binds.empty() ? "true" : "false";
+    payload += ";composition=StoreGlobal";
+    core::Conformance::Record(
+        "def.StaticStoreIR", std::optional<core::Span>(item.span), payload);
+  }
 
   // StaticStoreIR(item, []) = empty
   if (binds.empty()) {

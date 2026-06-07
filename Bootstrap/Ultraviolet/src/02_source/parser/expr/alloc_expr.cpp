@@ -45,12 +45,15 @@ std::optional<ParseElemResult<ExprPtr>> TryParseAllocExpr(Parser parser) {
   }
 
   SPEC_RULE("Parse-Alloc-Implicit");
+  SPEC_RULE("rule.16.Parse-Alloc-Implicit");
+  SPEC_RULE("grammar.16.EffectfulCoreExpressions");
   Parser next = parser;
   Advance(next);
   ParseElemResult<ExprPtr> expr = ParseExpr(next);
   AllocExpr alloc;
   alloc.region_opt = std::nullopt;  // Implicit region
   alloc.value = expr.elem;
+  SPEC_RULE("def.16.EffectfulCoreExprAst");
   return ParseElemResult<ExprPtr>{
       expr.parser, MakeExpr(SpanBetween(parser, expr.parser), alloc)};
 }
@@ -64,12 +67,15 @@ std::optional<ParseElemResult<ExprPtr>> TryParseAllocExpr(Parser parser) {
 
 ParseElemResult<ExprPtr> ParseAllocExpr(Parser parser) {
   SPEC_RULE("Parse-Alloc-Implicit");
+  SPEC_RULE("rule.16.Parse-Alloc-Implicit");
+  SPEC_RULE("grammar.16.EffectfulCoreExpressions");
   Parser next = parser;
   Advance(next);  // consume "^"
   ParseElemResult<ExprPtr> expr = ParseExpr(next);
   AllocExpr alloc;
   alloc.region_opt = std::nullopt;  // Implicit region
   alloc.value = expr.elem;
+  SPEC_RULE("def.16.EffectfulCoreExprAst");
   return {expr.parser, MakeExpr(SpanBetween(parser, expr.parser), alloc)};
 }
 
@@ -90,6 +96,7 @@ ParseElemResult<ExprPtr> ParseExplicitAllocExpr(Parser parser,
   AllocExpr alloc;
   alloc.region_opt = region_name;
   alloc.value = expr.elem;
+  SPEC_RULE("def.16.EffectfulCoreExprAst");
   return {expr.parser, MakeExpr(SpanBetween(start, expr.parser), alloc)};
 }
 

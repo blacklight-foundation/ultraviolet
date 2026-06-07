@@ -20,10 +20,6 @@
 //   If release is used, all held keys are released before suspension
 //   and reacquired on resume in canonical order
 //
-// STALENESS WARNING (from spec):
-//   Bindings derived from shared data before yield release are potentially
-//   stale after resumption. Warning W-CON-0011 applies unless #stale_ok.
-//
 // =============================================================================
 
 #include "04_analysis/keys/key_lifetimes.h"
@@ -31,7 +27,6 @@
 #include <algorithm>
 
 #include "00_core/assert_spec.h"
-#include "02_source/attributes/attribute_registry.h"
 #include "04_analysis/keys/key_conflict.h"
 #include "04_analysis/keys/key_paths.h"
 
@@ -549,71 +544,6 @@ void ReacquireAfterYieldRelease(const std::vector<KeyPath>& paths,
 }
 
 // =============================================================================
-// Staleness Analysis
-// =============================================================================
-
-std::vector<StalenessWarning> CheckStaleness(const ast::Block& block,
-                                             const std::vector<core::Span>& yield_release_points) {
-  SpecDefsKeyLifetimes();
-  SPEC_RULE("K-Check-Staleness");
-
-  std::vector<StalenessWarning> warnings;
-
-  // This would require tracking which bindings are derived from shared data
-  // and whether they are used after a yield release point.
-
-  // For now, we identify let/var bindings and check if they appear before
-  // yield release points in the block.
-
-  for (const auto& stmt : block.stmts) {
-    // Track let bindings
-    if (const auto* let_stmt = std::get_if<ast::LetStmt>(&stmt)) {
-      // Check if this binding is before any yield release point
-      for (const auto& yield_span : yield_release_points) {
-        // Simple span comparison - binding comes before yield
-        // A proper implementation would track data flow
-        if (let_stmt->span.start_offset < yield_span.start_offset) {
-          StalenessWarning warning;
-          warning.binding_name = let_stmt->binding.pat ? "binding" : "unknown";
-          warning.binding_span = let_stmt->span;
-          warning.yield_span = yield_span;
-          warning.suppressed = HasStaleOkAttribute(*let_stmt);
-          if (!warning.suppressed) {
-            warnings.push_back(std::move(warning));
-          }
-        }
-      }
-    }
-
-    // Track var bindings
-    if (const auto* var_stmt = std::get_if<ast::VarStmt>(&stmt)) {
-      for (const auto& yield_span : yield_release_points) {
-        if (var_stmt->span.start_offset < yield_span.start_offset) {
-          StalenessWarning warning;
-          warning.binding_name = var_stmt->binding.pat ? "binding" : "unknown";
-          warning.binding_span = var_stmt->span;
-          warning.yield_span = yield_span;
-          warning.suppressed = HasStaleOkAttribute(*var_stmt);
-          if (!warning.suppressed) {
-            warnings.push_back(std::move(warning));
-          }
-        }
-      }
-    }
-  }
-
-  return warnings;
-}
-
-bool HasStaleOkAttribute(const ast::LetStmt& stmt) {
-  return HasAttribute(stmt.binding.attrs, attrs::kStaleOk);
-}
-
-bool HasStaleOkAttribute(const ast::VarStmt& stmt) {
-  return HasAttribute(stmt.binding.attrs, attrs::kStaleOk);
-}
-
-// =============================================================================
 // Helper Functions
 // =============================================================================
 
@@ -647,4 +577,3 @@ bool HasReleaseModifier(const ast::KeyBlockStmt& block) {
 }
 
 }  // namespace ultraviolet::analysis
-

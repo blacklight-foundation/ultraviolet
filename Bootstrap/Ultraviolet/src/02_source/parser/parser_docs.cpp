@@ -128,6 +128,7 @@ std::vector<ASTItem> ItemSeq(std::vector<ASTItem> items) {
 
 std::vector<DocComment> ModuleDocs(const std::vector<DocComment>& docs) {
   std::vector<DocComment> out;
+  out.reserve(docs.size());
   for (const auto& doc : docs) {
     if (doc.kind == DocKind::ModuleDoc) {
       SPEC_RULE("Attach-Doc-Module");

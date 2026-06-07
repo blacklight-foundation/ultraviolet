@@ -22,12 +22,59 @@
 #include "05_codegen/lower/expr/deref.h"
 #include "05_codegen/checks/checks.h"
 #include "05_codegen/intrinsics/builtins.h"
+#include "05_codegen/lower/expr/expr_common.h"
 #include "04_analysis/typing/type_predicates.h"
 #include "00_core/assert_spec.h"
 
+#include <string>
+#include <string_view>
 #include <variant>
 
 namespace ultraviolet::codegen {
+
+namespace {
+
+bool IsSingleSegmentTypePath(const analysis::TypePath& path,
+                             std::string_view name) {
+  if (path.size() != 1) {
+    return false;
+  }
+  const std::string& segment = path.front();
+  return segment.size() == name.size() &&
+         segment.compare(0, segment.size(), name.data(), name.size()) == 0;
+}
+
+bool IsGpuPtrAddressSpaceType(const analysis::TypeRef& type) {
+  if (!type) {
+    return false;
+  }
+  const auto* path = analysis::AppliedTypePath(*type);
+  const auto* args = analysis::AppliedTypeArgs(*type);
+  if (!path || !args || !args->empty()) {
+    return false;
+  }
+  return IsSingleSegmentTypePath(*path, "Global") ||
+         IsSingleSegmentTypePath(*path, "Shared") ||
+         IsSingleSegmentTypePath(*path, "Private");
+}
+
+bool TryGpuPtrPointerType(const analysis::TypeRef& type,
+                          analysis::TypeRef& element) {
+  if (!type) {
+    return false;
+  }
+  const auto* path = analysis::AppliedTypePath(*type);
+  const auto* args = analysis::AppliedTypeArgs(*type);
+  if (!path || !args || args->size() != 2 ||
+      !IsSingleSegmentTypePath(*path, "GpuPtr") ||
+      !(*args)[0] || !IsGpuPtrAddressSpaceType((*args)[1])) {
+    return false;
+  }
+  element = (*args)[0];
+  return true;
+}
+
+}  // namespace
 
 // ============================================================================
 // LowerReadPlaceDeref - Lower dereference expression for reading
@@ -49,7 +96,7 @@ namespace ultraviolet::codegen {
 //   - @Expired: Panic (Lower-RawDeref-Expired)
 //
 // - For raw pointers (*imm T, *mut T):
-//   - Unchecked read (Lower-RawDeref-Raw)
+//   - Nonnull guard before read (Lower-RawDeref-Raw)
 //
 // If no type information is available, falls back to a simple IRReadPtr.
 // ============================================================================
@@ -82,6 +129,10 @@ LowerResult LowerReadPlaceDeref(const ast::DerefExpr& node,
       if (std::holds_alternative<analysis::TypeRawPtr>(stripped->node)) {
         return 2;
       }
+      analysis::TypeRef gpu_ptr_element;
+      if (TryGpuPtrPointerType(stripped, gpu_ptr_element)) {
+        return 2;
+      }
       return 1;
     };
     if (pointer_specificity(expr_ptr_type) > pointer_specificity(ptr_type)) {
@@ -93,6 +144,9 @@ LowerResult LowerReadPlaceDeref(const ast::DerefExpr& node,
   // of different pointer types (safe vs raw, and safe pointer states)
   if (ptr_type) {
     auto deref_result = LowerRawDeref(ptr_result.value, ptr_type, ctx);
+    RecordLoweringChecksJudgementMember(
+        ctx,
+        LoweringChecksJudgementMember::LowerRawDeref);
     return LowerResult{SeqIR(std::vector<IRPtr>{ptr_result.ir, deref_result.ir}),
                        deref_result.value};
   }
@@ -183,6 +237,10 @@ IRPtr LowerWritePlaceDeref(const ast::DerefExpr& node,
       if (std::holds_alternative<analysis::TypeRawPtr>(stripped->node)) {
         return 2;
       }
+      analysis::TypeRef gpu_ptr_element;
+      if (TryGpuPtrPointerType(stripped, gpu_ptr_element)) {
+        return 2;
+      }
       return 1;
     };
     if (pointer_specificity(expr_ptr_type) > pointer_specificity(ptr_type)) {
@@ -192,7 +250,18 @@ IRPtr LowerWritePlaceDeref(const ast::DerefExpr& node,
   ptr_type = analysis::StripPerm(ptr_type);
 
   if (ptr_type) {
-    if (const auto* ptr = std::get_if<analysis::TypePtr>(&ptr_type->node)) {
+    analysis::TypeRef gpu_ptr_element;
+    if (TryGpuPtrPointerType(ptr_type, gpu_ptr_element)) {
+      SPEC_RULE("rule.20.GpuPtr-Deref-Visible");
+
+      IRWritePtr write;
+      write.ptr = ptr_result.value;
+      write.value = value;
+      return SeqIR(std::vector<IRPtr>{
+          ptr_result.ir,
+          MakeIR(std::move(write)),
+      });
+    } else if (const auto* ptr = std::get_if<analysis::TypePtr>(&ptr_type->node)) {
       if (ptr->state.has_value()) {
         if (*ptr->state == analysis::PtrState::Null) {
           return SeqIR(std::vector<IRPtr>{ptr_result.ir, LowerPanic(PanicReason::NullDeref, ctx)});
@@ -268,6 +337,20 @@ IRPtr LowerWritePlaceDeref(const ast::DerefExpr& node,
       if (raw->qual == analysis::RawPtrQual::Imm) {
         return SeqIR(std::vector<IRPtr>{ptr_result.ir, LowerPanic(PanicReason::Other, ctx)});
       }
+      IRCheckOp null_check;
+      null_check.op = "nonnull";
+      null_check.reason = PanicReasonString(PanicReason::NullDeref);
+      null_check.lhs = ptr_result.value;
+
+      IRWritePtr write;
+      write.ptr = ptr_result.value;
+      write.value = value;
+      return SeqIR(std::vector<IRPtr>{
+          ptr_result.ir,
+          MakeIR(std::move(null_check)),
+          PanicFollowup(ctx),
+          MakeIR(std::move(write)),
+      });
     } else if (const auto* path = std::get_if<analysis::TypePathType>(&ptr_type->node)) {
       if (!path->path.empty() && path->path.back() == "Ptr") {
         IRCheckOp null_check;

@@ -9,61 +9,61 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "requirement.21.AsyncStateMachineSyntaxSurface",
-        82759usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncStateMachineReference",
-        "Source/Reference/Async/StateMachine.uv"
+        82761usize,
+        "HelloUltraviolet::Audit",
+        "asyncArtifactObligationsExercise",
+        "Source/Audit/AsyncArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.21.AsyncProcedureDefinition",
-        82772usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncStateMachineReference",
-        "Source/Reference/Async/StateMachine.uv"
+        82774usize,
+        "HelloUltraviolet::Audit",
+        "asyncArtifactObligationsExercise",
+        "Source/Audit/AsyncArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.21.AsyncStateMachineParsingSurface",
-        82787usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncStateMachineReference",
-        "Source/Reference/Async/StateMachine.uv"
+        82789usize,
+        "HelloUltraviolet::Audit",
+        "asyncArtifactObligationsExercise",
+        "Source/Audit/AsyncArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.21.AsyncStateMachineHelperForms",
-        82804usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncStateMachineReference",
-        "Source/Reference/Async/StateMachine.uv"
+        82806usize,
+        "HelloUltraviolet::Audit",
+        "asyncArtifactObligationsExercise",
+        "Source/Audit/AsyncArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.21.AsyncFrameStoredState",
-        82833usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncStateMachineReference",
-        "Source/Reference/Async/StateMachine.uv"
+        82835usize,
+        "HelloUltraviolet::Audit",
+        "asyncArtifactObligationsExercise",
+        "Source/Audit/AsyncArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.21.LiveAcrossSuspension",
-        82852usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncStateMachineReference",
-        "Source/Reference/Async/StateMachine.uv"
+        82854usize,
+        "HelloUltraviolet::Audit",
+        "asyncArtifactObligationsExercise",
+        "Source/Audit/AsyncArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if diagnosticSourceObligationEntryMatches(
         "rule.21.Warn-Async-LargeCapture",
-        82867usize,
+        82869usize,
         "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedAsyncDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarning/Source/Main.uv"
@@ -72,7 +72,7 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
     }
     if diagnosticSourceObligationEntryMatches(
         "rule.21.Warn-Async-LargeCapture-Ok",
-        82885usize,
+        82887usize,
         "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedAsyncDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureNoWarning/Source/Main.uv"
@@ -81,7 +81,7 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
     }
     if diagnosticSourceObligationEntryMatches(
         "requirement.21.AsyncLargeCaptureWarningEmission",
-        82903usize,
+        82905usize,
         "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedAsyncDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarningEmission/Source/Main.uv"
@@ -90,7 +90,7 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.Async-Capture-Err",
-        82916usize,
+        82918usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/AsyncCaptureOutlivesFrame/Source/Main.uv"
@@ -99,16 +99,16 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.21.P-Async-Create",
-        82934usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncStateMachineReference",
-        "Source/Reference/Async/StateMachine.uv"
+        82936usize,
+        "HelloUltraviolet::Audit",
+        "asyncArtifactObligationsExercise",
+        "Source/Audit/AsyncArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.Prov-Async-Escape-Err",
-        82953usize,
+        82955usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/AsyncOperationEscapesRegion/Source/Main.uv"
@@ -117,142 +117,142 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
     }
     if acceptedObligationEntryMatches(
         "requirement.21.AsyncErrorPropagationTypingReference",
-        82972usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncStateMachineReference",
-        "Source/Reference/Async/StateMachine.uv"
+        82974usize,
+        "HelloUltraviolet::Audit",
+        "asyncArtifactObligationsExercise",
+        "Source/Audit/AsyncArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.21.AsyncProcedureCallRuntimeSemantics",
-        82987usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncStateMachineReference",
-        "Source/Reference/Async/StateMachine.uv"
+        82989usize,
+        "HelloUltraviolet::Audit",
+        "asyncArtifactObligationsExercise",
+        "Source/Audit/AsyncArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.21.AsyncSettlementRuntimeSemantics",
-        83005usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncStateMachineReference",
-        "Source/Reference/Async/StateMachine.uv"
+        83007usize,
+        "HelloUltraviolet::Audit",
+        "asyncArtifactObligationsExercise",
+        "Source/Audit/AsyncArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.21.AsyncResumeRuntimeSemantics",
-        83022usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncStateMachineReference",
-        "Source/Reference/Async/StateMachine.uv"
+        83024usize,
+        "HelloUltraviolet::Audit",
+        "asyncArtifactObligationsExercise",
+        "Source/Audit/AsyncArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.21.AsyncFailureRuntimeSemantics",
-        83038usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncStateMachineReference",
-        "Source/Reference/Async/StateMachine.uv"
+        83040usize,
+        "HelloUltraviolet::Audit",
+        "asyncArtifactObligationsExercise",
+        "Source/Audit/AsyncArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.21.AsyncStateMachineLoweringJudgements",
-        83058usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncStateMachineReference",
-        "Source/Reference/Async/StateMachine.uv"
+        83060usize,
+        "HelloUltraviolet::Audit",
+        "asyncArtifactObligationsExercise",
+        "Source/Audit/AsyncArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.21.AsyncStateMachineFrameHelpers",
-        83072usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncStateMachineReference",
-        "Source/Reference/Async/StateMachine.uv"
+        83074usize,
+        "HelloUltraviolet::Audit",
+        "asyncArtifactObligationsExercise",
+        "Source/Audit/AsyncArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.21.Lower-Async-Proc",
-        83088usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncStateMachineReference",
-        "Source/Reference/Async/StateMachine.uv"
+        83090usize,
+        "HelloUltraviolet::Audit",
+        "asyncArtifactObligationsExercise",
+        "Source/Audit/AsyncArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.21.AsyncFrameInitIRSemantics",
-        83108usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncStateMachineReference",
-        "Source/Reference/Async/StateMachine.uv"
+        83110usize,
+        "HelloUltraviolet::Audit",
+        "asyncArtifactObligationsExercise",
+        "Source/Audit/AsyncArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.21.Lower-Async-Resume",
-        83127usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncStateMachineReference",
-        "Source/Reference/Async/StateMachine.uv"
+        83129usize,
+        "HelloUltraviolet::Audit",
+        "asyncArtifactObligationsExercise",
+        "Source/Audit/AsyncArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.21.AsyncResumeSwitchIRSemantics",
-        83146usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncStateMachineReference",
-        "Source/Reference/Async/StateMachine.uv"
+        83148usize,
+        "HelloUltraviolet::Audit",
+        "asyncArtifactObligationsExercise",
+        "Source/Audit/AsyncArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.21.Lower-Async-Suspend",
-        83160usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncStateMachineReference",
-        "Source/Reference/Async/StateMachine.uv"
+        83162usize,
+        "HelloUltraviolet::Audit",
+        "asyncArtifactObligationsExercise",
+        "Source/Audit/AsyncArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.21.Lower-Async-Complete",
-        83179usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncStateMachineReference",
-        "Source/Reference/Async/StateMachine.uv"
+        83181usize,
+        "HelloUltraviolet::Audit",
+        "asyncArtifactObligationsExercise",
+        "Source/Audit/AsyncArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.21.Lower-Async-Fail",
-        83198usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncStateMachineReference",
-        "Source/Reference/Async/StateMachine.uv"
+        83200usize,
+        "HelloUltraviolet::Audit",
+        "asyncArtifactObligationsExercise",
+        "Source/Audit/AsyncArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.21.AsyncFailStateIRSemantics",
-        83217usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncStateMachineReference",
-        "Source/Reference/Async/StateMachine.uv"
+        83219usize,
+        "HelloUltraviolet::Audit",
+        "asyncArtifactObligationsExercise",
+        "Source/Audit/AsyncArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if diagnosticSourceObligationEntryMatches(
         "diagnostics.21.AsyncStateMachineDiagnostics",
-        83233usize,
+        83235usize,
         "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedAsyncDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Async/AsyncStateMachineDiagnosticsTable/Source/Main.uv"

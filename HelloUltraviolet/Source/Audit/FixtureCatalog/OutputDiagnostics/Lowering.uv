@@ -6,7 +6,7 @@ using HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource::{ diagnosticSpe
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ expectedDiagnostic }
 
 public procedure outputLoweringDiagnosticFixtureCount() -> usize {
-    return 2usize
+    return 5usize
 }
 
 public procedure validatedOutputLoweringDiagnosticFixtureCount() -> usize {
@@ -44,6 +44,60 @@ public procedure validatedOutputLoweringDiagnosticFixtureCount() -> usize {
         "Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure/Expected.uv",
         "E-OUT-0403",
         "rule.24.EmitLLVM-Err"
+    ) {
+        count = count + 1usize
+    }
+    let llvm_type_mapping_specimen: DiagnosticSpecimen = diagnosticSpecimen(
+        "LlvmTypeMappingFailure",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure/Source/Library.uv",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure/Expected.uv",
+        expectedDiagnostic("E-OUT-0410", "rule.24.LLVMTy-Err")
+    )
+    if diagnosticSpecimenMatches(
+        llvm_type_mapping_specimen,
+        "LlvmTypeMappingFailure",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure/Source/Library.uv",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure/Expected.uv",
+        "E-OUT-0410",
+        "rule.24.LLVMTy-Err"
+    ) {
+        count = count + 1usize
+    }
+    let llvm_type_mapping_object_specimen: DiagnosticSpecimen = diagnosticSpecimen(
+        "LlvmTypeMappingFailure",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure/Source/Library.uv",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure/Expected.uv",
+        expectedDiagnostic("E-OUT-0402", "Out-Obj-Err")
+    )
+    if diagnosticSpecimenMatches(
+        llvm_type_mapping_object_specimen,
+        "LlvmTypeMappingFailure",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure/Source/Library.uv",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure/Expected.uv",
+        "E-OUT-0402",
+        "Out-Obj-Err"
+    ) {
+        count = count + 1usize
+    }
+    let llvm_type_mapping_pipeline_specimen: DiagnosticSpecimen = diagnosticSpecimen(
+        "LlvmTypeMappingFailure",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure/Source/Library.uv",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure/Expected.uv",
+        expectedDiagnostic("E-OUT-0402", "Output-Pipeline-Err")
+    )
+    if diagnosticSpecimenMatches(
+        llvm_type_mapping_pipeline_specimen,
+        "LlvmTypeMappingFailure",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure/Source/Library.uv",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure/Expected.uv",
+        "E-OUT-0402",
+        "Output-Pipeline-Err"
     ) {
         count = count + 1usize
     }

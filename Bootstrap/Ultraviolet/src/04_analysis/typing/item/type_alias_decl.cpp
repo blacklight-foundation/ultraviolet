@@ -206,9 +206,15 @@ TypeAliasDeclResult TypeTypeAliasDecl(
 
   // Check for cycles
   if (!TypeAliasOk(ctx, type_path)) {
-    SPEC_RULE("TypeAlias-Cycle-Err");
+    SPEC_RULE("def.AliasCycle");
+    SPEC_RULE("TypeAlias-Recursive-Err");
+    SPEC_RULE("req.TypeAliasDiagnosticOwnership");
     result.ok = false;
     result.diag_id = "TypeAlias-Recursive-Err";
+    result.diagnostic_obligation_ids = {
+        "def.AliasCycle",
+        "TypeAlias-Recursive-Err",
+        "req.TypeAliasDiagnosticOwnership"};
     return result;
   }
 

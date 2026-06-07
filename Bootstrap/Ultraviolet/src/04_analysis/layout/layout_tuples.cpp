@@ -44,15 +44,8 @@
 
 #include "00_core/assert_spec.h"
 
-// Tuple layout is computed directly in layout_dispatch.cpp via RecordLayoutOf.
-// This file exists for organizational clarity but the implementation delegates
-// to the record layout algorithm since tuples are laid out identically to
-// records with positional fields.
-//
-// The LayoutOf function in layout_dispatch.cpp handles TypeTuple by calling:
-//   RecordLayoutOf(ctx, tuple->elements)
-//
-// This achieves the spec's TupleFields transformation implicitly.
+// TupleLayoutOf performs the specification's TupleFields transformation before
+// delegating to the shared record-layout algorithm for positional fields.
 
 namespace ultraviolet::analysis::layout {
 

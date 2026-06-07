@@ -1,0 +1,14 @@
+[[assembly]]
+name = "LibraryArtifactProvider"
+kind = "library"
+link_kind = "static"
+root = "Source/LibraryArtifactProvider"
+
+[[assembly]]
+name = "LibraryArtifactConsumer"
+kind = "executable"
+root = "Source/LibraryArtifactConsumer"
+
+[build]
+incremental = true
+progress = false

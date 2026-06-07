@@ -64,7 +64,9 @@ ExprTypeResult TypeUnsafeBlockExprImpl(const ScopeContext& ctx,
   // Type check the block body
   // The ScopeContext tracks unsafe spans, which will be checked
   // by operations like transmute, raw pointer deref, extern calls, etc.
-  ExprTypeResult body_result = TypeBlock(ctx, type_ctx, *expr.block, env,
+  StmtTypeContext body_ctx = type_ctx;
+  body_ctx.env_ref = nullptr;
+  ExprTypeResult body_result = TypeBlock(ctx, body_ctx, *expr.block, env,
                                          type_expr, type_ident, type_place);
   if (!body_result.ok) {
     result.diag_id = body_result.diag_id;
@@ -73,8 +75,39 @@ ExprTypeResult TypeUnsafeBlockExprImpl(const ScopeContext& ctx,
 
   EmitInvalidTransmuteTargetWarningsInBlock(ctx, type_ctx, *expr.block, env);
 
+  SPEC_RULE("rule.16.T-Unsafe-Expr");
   result.ok = true;
   result.type = body_result.type;
+  return result;
+}
+
+CheckResult CheckUnsafeBlockExprImpl(const ScopeContext& ctx,
+                                     const StmtTypeContext& type_ctx,
+                                     const ast::UnsafeBlockExpr& expr,
+                                     const TypeEnv& env,
+                                     const TypeRef& expected,
+                                     const ExprTypeFn& type_expr,
+                                     const IdentTypeFn& type_ident,
+                                     const PlaceTypeFn& type_place) {
+  SpecDefsUnsafeBlock();
+  CheckResult result;
+  if (!expr.block || !expected) {
+    return result;
+  }
+
+  StmtTypeContext body_ctx = type_ctx;
+  body_ctx.env_ref = nullptr;
+  const auto checked = CheckBlock(ctx, body_ctx, *expr.block, env, expected,
+                                  type_expr, type_ident, type_place,
+                                  nullptr);
+  if (!checked.ok) {
+    return checked;
+  }
+
+  EmitInvalidTransmuteTargetWarningsInBlock(ctx, type_ctx, *expr.block, env);
+
+  SPEC_RULE("rule.16.Chk-Unsafe-Expr");
+  result.ok = true;
   return result;
 }
 

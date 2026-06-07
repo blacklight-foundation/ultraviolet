@@ -79,7 +79,8 @@ std::shared_ptr<CodegenCache> BuildCodegenCache(
     const project::Project& project,
     const analysis::ScopeContext& sema_ctx,
     const analysis::NameMapBuildResult& name_maps,
-    const analysis::TypecheckResult& typechecked);
+    const analysis::TypecheckResult& typechecked,
+    core::DiagnosticStream* diags = nullptr);
 
 std::optional<std::size_t> EnsureCodegenModule(CodegenCache& cache,
                                                std::string_view module_path);

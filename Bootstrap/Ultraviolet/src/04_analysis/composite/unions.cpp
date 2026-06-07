@@ -56,6 +56,7 @@ static inline void SpecDefsUnions() {
   SPEC_DEF("DistinctMembers", "5.2.7");
   SPEC_DEF("SetMembers", "5.2.7");
   SPEC_DEF("Member", "5.2.2");
+  SPEC_DEF("rule.16.Union-DirectAccess-Err", "16.2.4");
 }
 
 struct UnionMemberResult {
@@ -154,6 +155,7 @@ UnionAccessResult CheckUnionDirectAccess(const ScopeContext& ctx,
   const auto stripped = StripPerm(base_type.type);
   if (stripped && std::holds_alternative<TypeUnion>(stripped->node)) {
     SPEC_RULE("Union-DirectAccess-Err");
+    SPEC_RULE("rule.16.Union-DirectAccess-Err");
     result.diag_id = "Union-DirectAccess-Err";
     return result;
   }

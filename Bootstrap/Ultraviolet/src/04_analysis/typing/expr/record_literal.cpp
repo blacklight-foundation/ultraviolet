@@ -45,6 +45,14 @@ static inline void SpecDefsRecordLiteral() {
   SPEC_DEF("Record-FieldInit-Missing", "5.2.12");
   SPEC_DEF("Record-Field-NonBitcopy-Move", "5.2.12");
   SPEC_DEF("Record-FileDir-Err", "5.2.12");
+  SPEC_DEF("rule.13.Record-FileDir-Err", "5.2.12");
+  SPEC_DEF("def.16.FieldVisibility", "16.2.4");
+  SPEC_DEF("def.16.FieldInitNamesAndSet", "16.6.4");
+  SPEC_DEF("def.16.RecordFieldNameSet", "16.6.4");
+  SPEC_DEF("rule.16.Record-FieldInit-Dup", "16.6.4");
+  SPEC_DEF("rule.16.Record-FieldInit-Missing", "16.6.4");
+  SPEC_DEF("rule.16.RecordFieldUnknownNotVisibleFamily", "16.6.4");
+  SPEC_DEF("rule.16.Record-Field-NonBitcopy-Move", "16.6.4");
 }
 
 static const ast::ModalDecl* LookupModalDeclForLiteral(
@@ -183,6 +191,7 @@ ExprTypeResult TypeRecordExprImpl(const ScopeContext& ctx,
     // Built-in runtime-backed modal states that cannot be constructed directly.
     if (IsBuiltinModalRecordLiteralForbidden(modal->path)) {
       SPEC_RULE("Record-FileDir-Err");
+      SPEC_RULE("rule.13.Record-FileDir-Err");
       result.diag_id = "E-TYP-2073";
       return result;
     }
@@ -272,7 +281,9 @@ ExprTypeResult TypeRecordExprImpl(const ScopeContext& ctx,
     for (const auto& field_init : expr.fields) {
       const auto key = IdKeyOf(field_init.name);
       if (!seen.insert(key).second) {
+        SPEC_RULE("def.16.FieldInitNamesAndSet");
         SPEC_RULE("Record-FieldInit-Dup");
+        SPEC_RULE("rule.16.Record-FieldInit-Dup");
         result.diag_id = "E-TYP-1903";
         return result;
       }
@@ -291,6 +302,7 @@ ExprTypeResult TypeRecordExprImpl(const ScopeContext& ctx,
     for (const auto& field_init : expr.fields) {
       if (payload_fields.find(IdKeyOf(field_init.name)) == payload_fields.end()) {
         SPEC_RULE("Record-Field-Unknown");
+        SPEC_RULE("rule.16.RecordFieldUnknownNotVisibleFamily");
         result.diag_id = "E-TYP-1904";
         return result;
       }
@@ -301,7 +313,9 @@ ExprTypeResult TypeRecordExprImpl(const ScopeContext& ctx,
       if (const auto* field = std::get_if<ast::StateFieldDecl>(&member)) {
         const auto key = IdKeyOf(field->name);
         if (seen.find(key) == seen.end()) {
+          SPEC_RULE("def.16.RecordFieldNameSet");
           SPEC_RULE("Record-FieldInit-Missing");
+          SPEC_RULE("rule.16.Record-FieldInit-Missing");
           result.diag_id = "E-TYP-1902";
           return result;
         }
@@ -379,7 +393,9 @@ ExprTypeResult TypeRecordExprImpl(const ScopeContext& ctx,
   for (const auto& field_init : expr.fields) {
     const auto key = IdKeyOf(field_init.name);
     if (!seen.insert(key).second) {
+      SPEC_RULE("def.16.FieldInitNamesAndSet");
       SPEC_RULE("Record-FieldInit-Dup");
+      SPEC_RULE("rule.16.Record-FieldInit-Dup");
       result.diag_id = "E-TYP-1903";
       return result;
     }
@@ -389,11 +405,14 @@ ExprTypeResult TypeRecordExprImpl(const ScopeContext& ctx,
   for (const auto& field_init : expr.fields) {
     if (!FieldExists(*record, field_init.name)) {
       SPEC_RULE("Record-Field-Unknown");
+      SPEC_RULE("rule.16.RecordFieldUnknownNotVisibleFamily");
       result.diag_id = "E-TYP-1904";
       return result;
     }
     if (!FieldVisible(ctx, *record, field_init.name, type_path)) {
+      SPEC_RULE("def.16.FieldVisibility");
       SPEC_RULE("Record-Field-NotVisible");
+      SPEC_RULE("rule.16.RecordFieldUnknownNotVisibleFamily");
       result.diag_id = "E-TYP-1905";
       return result;
     }
@@ -409,7 +428,9 @@ ExprTypeResult TypeRecordExprImpl(const ScopeContext& ctx,
       continue;
     }
     if (provided.find(IdKeyOf(field->name)) == provided.end()) {
+      SPEC_RULE("def.16.RecordFieldNameSet");
       SPEC_RULE("Record-FieldInit-Missing");
+      SPEC_RULE("rule.16.Record-FieldInit-Missing");
       result.diag_id = "E-TYP-1902";
       return result;
     }
@@ -428,6 +449,7 @@ ExprTypeResult TypeRecordExprImpl(const ScopeContext& ctx,
         (!field_init.value ||
          !std::holds_alternative<ast::MoveExpr>(field_init.value->node))) {
       SPEC_RULE("Record-Field-NonBitcopy-Move");
+      SPEC_RULE("rule.16.Record-Field-NonBitcopy-Move");
       result.diag_id = "E-TYP-1907";
       return result;
     }

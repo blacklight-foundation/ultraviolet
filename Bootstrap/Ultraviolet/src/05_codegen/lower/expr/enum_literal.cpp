@@ -67,6 +67,8 @@ void RegisterEnumLiteralLoweredType(const ast::Expr& source_expr,
 LowerResult LowerEnumLiteral(const ast::Expr& source_expr,
                              const ast::EnumLiteralExpr& expr,
                              LowerCtx& ctx) {
+    SPEC_RULE("rule.16.LowerEnumConstructionFamily");
+
     // Extract variant name from path
     std::string variant_name = expr.path.empty() ? std::string() : expr.path.back();
     std::vector<std::string> enum_path;

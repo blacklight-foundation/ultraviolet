@@ -32,8 +32,10 @@
 #include "05_codegen/llvm/llvm_types.h"
 
 #include "00_core/spec_trace.h"
+#include "00_core/symbols.h"
 #include "04_analysis/layout/layout.h"
 #include "04_analysis/modal/modal.h"
+#include "04_analysis/modal/modal_widen.h"
 #include "04_analysis/resolve/scopes.h"
 #include "04_analysis/typing/type_equiv.h"
 #include "05_codegen/llvm/llvm_emit.h"
@@ -46,6 +48,8 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <string>
+#include <string_view>
 
 namespace ultraviolet::codegen {
 
@@ -72,6 +76,41 @@ bool TypePathEq(const analysis::TypePath& lhs, const analysis::TypePath& rhs) {
     }
   }
   return true;
+}
+
+bool IsSingleSegmentTypePath(const analysis::TypePath& path,
+                             std::string_view name) {
+  if (path.size() != 1) {
+    return false;
+  }
+  const std::string& segment = path.front();
+  return segment.size() == name.size() &&
+         segment.compare(0, segment.size(), name.data(), name.size()) == 0;
+}
+
+bool IsGpuPtrAddressSpaceType(const analysis::TypeRef& type) {
+  if (!type) {
+    return false;
+  }
+  const auto* path = analysis::AppliedTypePath(*type);
+  const auto* args = analysis::AppliedTypeArgs(*type);
+  if (!path || !args || !args->empty()) {
+    return false;
+  }
+  return IsSingleSegmentTypePath(*path, "Global") ||
+         IsSingleSegmentTypePath(*path, "Shared") ||
+         IsSingleSegmentTypePath(*path, "Private");
+}
+
+bool IsGpuPtrLLVMType(const analysis::TypeRef& type) {
+  if (!type) {
+    return false;
+  }
+  const auto* path = analysis::AppliedTypePath(*type);
+  const auto* args = analysis::AppliedTypeArgs(*type);
+  return path && args && args->size() == 2 &&
+         IsSingleSegmentTypePath(*path, "GpuPtr") &&
+         (*args)[0] && IsGpuPtrAddressSpaceType((*args)[1]);
 }
 
 bool TypeArgsEq(const std::vector<analysis::TypeRef>& lhs,
@@ -114,6 +153,64 @@ bool SameNominalType(const analysis::TypeRef& lhs,
   const auto* rhs_args = analysis::AppliedTypeArgs(*rhs);
   return TypeArgsEq(lhs_args ? *lhs_args : empty_args,
                     rhs_args ? *rhs_args : empty_args);
+}
+
+void RecordOpaqueConcreteLowering(const analysis::TypeOpaque& opaque,
+                                  const analysis::TypeRef& underlying) {
+  if (!core::Conformance::Enabled() || !underlying) {
+    return;
+  }
+
+  const std::string class_path = core::PathString(opaque.class_path);
+  const std::string underlying_type = analysis::TypeToString(underlying);
+
+  std::string no_wrapper_payload;
+  no_wrapper_payload.reserve(192 + class_path.size() + underlying_type.size());
+  no_wrapper_payload += "source=LLVMEmitter::GetLLVMType";
+  no_wrapper_payload += ";wrapper=none";
+  no_wrapper_payload += ";runtime_representation=underlying_concrete";
+  no_wrapper_payload += ";caller_observation=opaque_interface";
+  no_wrapper_payload += ";class=";
+  no_wrapper_payload += class_path;
+  no_wrapper_payload += ";underlying=";
+  no_wrapper_payload += underlying_type;
+  core::Conformance::Record(
+      "req.14.OpaqueTypesNoRuntimeWrapper", std::nullopt, no_wrapper_payload);
+
+  std::string lowering_payload;
+  lowering_payload.reserve(192 + class_path.size() + underlying_type.size());
+  lowering_payload += "source=LLVMEmitter::GetLLVMType";
+  lowering_payload += ";lowering=underlying_concrete";
+  lowering_payload += ";distinct_runtime_representation=false";
+  lowering_payload += ";distinct_abi_form=false";
+  lowering_payload += ";class=";
+  lowering_payload += class_path;
+  lowering_payload += ";underlying=";
+  lowering_payload += underlying_type;
+  core::Conformance::Record(
+      "req.14.OpaqueTypesLowerAsConcrete", std::nullopt, lowering_payload);
+}
+
+void RecordRefinementRuntimeRepresentation(const analysis::TypeRef& refined,
+                                           const analysis::TypeRef& base) {
+  if (!core::Conformance::Enabled() || !refined || !base) {
+    return;
+  }
+
+  const std::string refined_type = analysis::TypeToString(refined);
+  const std::string base_type = analysis::TypeToString(base);
+
+  std::string payload;
+  payload.reserve(160 + refined_type.size() + base_type.size());
+  payload += "source=LLVMEmitter::GetLLVMType";
+  payload += ";representation=base";
+  payload += ";wrapper=none";
+  payload += ";refined=";
+  payload += refined_type;
+  payload += ";base=";
+  payload += base_type;
+  core::Conformance::Record(
+      "req.14.RefinementRuntimeRepresentationAndPanic", std::nullopt, payload);
 }
 
 std::optional<analysis::TypeSubst> BuildTypeSubstitution(
@@ -960,6 +1057,11 @@ using namespace emit_detail;
     if (!type)
     {
       SPEC_RULE("LLVMTy-Err");
+      if (current_ctx_)
+      {
+        current_ctx_->ReportCodegenFailure(
+            LowerCtx::CodegenFailureKind::LLVMTypeMapping);
+      }
       return llvm::Type::getVoidTy(context_);
     }
 
@@ -975,6 +1077,15 @@ using namespace emit_detail;
     }
 
     llvm::Type *ll_ty = nullptr;
+    bool type_mapping_failed = false;
+    auto report_type_mapping_failure = [&]() {
+      type_mapping_failed = true;
+      if (current_ctx_)
+      {
+        current_ctx_->ReportCodegenFailure(
+            LowerCtx::CodegenFailureKind::LLVMTypeMapping);
+      }
+    };
 
     if (current_ctx_ && current_ctx_->sigma)
     {
@@ -982,6 +1093,7 @@ using namespace emit_detail;
       if (const auto async_sig = analysis::AsyncSigOf(scope, type))
       {
         SPEC_RULE("LLVMTy-Async");
+        (void)::ultraviolet::analysis::layout::LowerAsyncType(type);
         std::vector<analysis::TypeRef> async_args;
         async_args.reserve(4);
         async_args.push_back(async_sig->out);
@@ -1002,13 +1114,21 @@ using namespace emit_detail;
     else if (const auto *perm = std::get_if<analysis::TypePerm>(&type->node))
     {
       SPEC_RULE("LLVMTy-Perm");
+      SPEC_RULE("conformance.AliasExclusivityLowering");
+      SPEC_RULE("conformance.BindingActivityLowering");
+      SPEC_RULE("conformance.PermissionAdmissibilityLowering");
+      SPEC_RULE("req.PermissionFormsLoweringDiagnostics");
       ll_ty = GetLLVMType(perm->base);
     }
     else if (const auto *refine = std::get_if<analysis::TypeRefine>(&type->node))
     {
       SPEC_RULE("LLVMTy-Refine");
-      // Refinement types are representationally identical to their base type.
+      SPEC_RULE("rule.14.LLVMTy-Refine");
+      SPEC_RULE("req.14.RefinementRuntimeRepresentationAndPanic");
       ll_ty = GetLLVMType(refine->base);
+      if (ll_ty) {
+        RecordRefinementRuntimeRepresentation(type, refine->base);
+      }
     }
     else if (const auto *opaque = std::get_if<analysis::TypeOpaque>(&type->node))
     {
@@ -1020,16 +1140,18 @@ using namespace emit_detail;
             analysis::PathKeyOf(opaque->class_path));
         if (it != scope.sigma.opaque_underlying_by_class_path.end() &&
             it->second && it->second.get() != type.get()) {
+          SPEC_RULE("req.14.OpaqueTypesNoRuntimeWrapper");
+          SPEC_RULE("req.14.OpaqueTypesLowerAsConcrete");
           ll_ty = GetLLVMType(it->second);
+          if (ll_ty) {
+            RecordOpaqueConcreteLowering(*opaque, it->second);
+          }
         }
       }
       if (!ll_ty)
       {
         SPEC_RULE("LLVMTy-Err");
-        if (current_ctx_)
-        {
-          current_ctx_->ReportCodegenFailure();
-        }
+        report_type_mapping_failure();
       }
     }
     else if (std::holds_alternative<analysis::TypePtr>(type->node))
@@ -1042,6 +1164,12 @@ using namespace emit_detail;
       SPEC_RULE("LLVMTy-RawPtr");
       ll_ty = GetOpaquePtr();
     }
+    else if (IsGpuPtrLLVMType(type))
+    {
+      SPEC_RULE("LLVMTy-Ptr");
+      SPEC_RULE("def.20.GpuMemoryForms");
+      ll_ty = GetOpaquePtr();
+    }
     else if (std::holds_alternative<analysis::TypeFunc>(type->node))
     {
       SPEC_RULE("LLVMTy-Func");
@@ -1052,7 +1180,7 @@ using namespace emit_detail;
       (void)closure;
       // Runtime closure values are lowered as a pair (env_ptr, code_ptr).
       // Both components are represented as opaque pointers at LLVM level.
-      SPEC_RULE("LLVMTy-Tuple");
+      SPEC_RULE("LLVMTy-Closure");
       llvm::Type *ptr_ty = GetOpaquePtr();
       ll_ty = llvm::StructType::get(context_, {ptr_ty, ptr_ty});
     }
@@ -1066,7 +1194,7 @@ using namespace emit_detail;
       else
       {
         const analysis::ScopeContext &scope = BuildScope(current_ctx_);
-        const auto layout = ::ultraviolet::analysis::layout::RecordLayoutOf(scope, tuple->elements);
+        const auto layout = ::ultraviolet::analysis::layout::TupleLayoutOf(scope, tuple->elements);
         std::vector<llvm::Type *> elems;
         if (layout.has_value())
         {
@@ -1077,7 +1205,6 @@ using namespace emit_detail;
     }
     else if (const auto *uni = std::get_if<analysis::TypeUnion>(&type->node))
     {
-      SPEC_RULE("LLVMTy-Union");
       if (!current_ctx_ || !current_ctx_->sigma)
       {
         ll_ty = llvm::Type::getInt8Ty(context_);
@@ -1120,6 +1247,7 @@ using namespace emit_detail;
 
           if (layout->niche)
           {
+            SPEC_RULE("LLVMTy-Union-Niche");
             analysis::TypeRef payload_member = nullptr;
             for (const auto &member : layout->member_list)
             {
@@ -1140,6 +1268,7 @@ using namespace emit_detail;
           }
           else
           {
+            SPEC_RULE("LLVMTy-Union-Tagged");
             analysis::TypeRef disc_type = analysis::MakeTypePrim("u8");
             if (layout->disc_type.has_value())
             {
@@ -1169,6 +1298,7 @@ using namespace emit_detail;
         const analysis::ScopeContext &scope = BuildScope(current_ctx_);
         if (analysis::IsAsyncType(type))
         {
+          (void)::ultraviolet::analysis::layout::LowerAsyncType(type);
           if (const auto async_sig = analysis::GetAsyncSig(type))
           {
             std::vector<analysis::TypeRef> async_args;
@@ -1304,12 +1434,12 @@ using namespace emit_detail;
           {
             if (const auto *modal = std::get_if<ast::ModalDecl>(decl))
             {
-              SPEC_RULE("LLVMTy-Tuple");
               if (const auto layout = ::ultraviolet::analysis::layout::ModalLayoutOf(
                       scope, *modal, generic_args))
               {
                 if (layout->disc_type.has_value())
                 {
+                  SPEC_RULE("LLVMTy-Modal-Tagged");
                   analysis::TypeRef disc_type = analysis::MakeTypePrim(*layout->disc_type);
                   ll_ty = CreateTaggedStructType(*this,
                                                  disc_type,
@@ -1319,9 +1449,63 @@ using namespace emit_detail;
                 }
                 else
                 {
-                  ll_ty = llvm::ArrayType::get(
-                      llvm::Type::getInt8Ty(context_),
-                      static_cast<std::uint64_t>(layout->layout.size));
+                  SPEC_RULE("LLVMTy-Modal-Niche");
+                  analysis::TypeRef payload_type = nullptr;
+                  analysis::TypeSubst modal_subst;
+                  if (modal->generic_params &&
+                      !modal->generic_params->params.empty())
+                  {
+                    if (generic_args.size() > modal->generic_params->params.size())
+                    {
+                      return nullptr;
+                    }
+                    modal_subst = analysis::BuildSubstitution(
+                        modal->generic_params->params,
+                        generic_args);
+                  }
+                  const auto payload_state = analysis::PayloadState(scope, *modal);
+                  for (const auto &state : modal->states)
+                  {
+                    if (payload_state.has_value() &&
+                        !analysis::IdEq(state.name, *payload_state))
+                    {
+                      continue;
+                    }
+                    const ast::StateFieldDecl *field = nullptr;
+                    for (const auto &member : state.members)
+                    {
+                      const auto *candidate =
+                          std::get_if<ast::StateFieldDecl>(&member);
+                      if (!candidate)
+                      {
+                        continue;
+                      }
+                      if (field)
+                      {
+                        field = nullptr;
+                        break;
+                      }
+                      field = candidate;
+                    }
+                    if (!field)
+                    {
+                      continue;
+                    }
+                    auto lowered =
+                        ::ultraviolet::analysis::layout::LowerTypeForLayout(scope, field->type);
+                    if (!lowered.has_value())
+                    {
+                      continue;
+                    }
+                    payload_type = *lowered;
+                    if (!modal_subst.empty())
+                    {
+                      payload_type = analysis::InstantiateType(payload_type, modal_subst);
+                    }
+                    break;
+                  }
+                  ll_ty = payload_type ? GetLLVMType(payload_type)
+                                       : llvm::Type::getInt8Ty(context_);
                 }
               }
             }
@@ -1339,6 +1523,7 @@ using namespace emit_detail;
       {
         if (analysis::IsAsyncType(type))
         {
+          (void)::ultraviolet::analysis::layout::LowerAsyncType(type);
           if (const auto async_sig = analysis::GetAsyncSig(type))
           {
             std::vector<analysis::TypeRef> async_args;
@@ -1395,7 +1580,7 @@ using namespace emit_detail;
 
             if (state_block)
             {
-              SPEC_RULE("LLVMTy-Tuple");
+              SPEC_RULE("LLVMTy-ModalState");
               std::vector<analysis::TypeRef> fields;
               for (const auto &member : state_block->members)
               {
@@ -1622,15 +1807,21 @@ using namespace emit_detail;
     else
     {
       SPEC_RULE("LLVMTy-Err");
+      report_type_mapping_failure();
       ll_ty = llvm::Type::getInt8Ty(context_);
     }
 
     if (!ll_ty)
     {
+      SPEC_RULE("LLVMTy-Err");
+      report_type_mapping_failure();
       ll_ty = llvm::Type::getInt8Ty(context_);
     }
 
-    type_cache_[type] = ll_ty;
+    if (!type_mapping_failed)
+    {
+      type_cache_[type] = ll_ty;
+    }
     return ll_ty;
   }
 

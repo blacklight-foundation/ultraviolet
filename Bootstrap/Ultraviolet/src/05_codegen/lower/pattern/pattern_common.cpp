@@ -15,7 +15,9 @@
 #include "05_codegen/lower/pattern/pattern_common.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <set>
+#include <string_view>
 #include <variant>
 
 #include "00_core/assert_spec.h"
@@ -170,9 +172,13 @@ analysis::TypeRef ResolvePatternAliasType(const analysis::TypeRef& type,
   return ResolvePatternAliasType(resolved, ctx, depth + 1);
 }
 
-bool TypeEquivForUnionMatch(analysis::TypeRef lhs, analysis::TypeRef rhs) {
-  lhs = analysis::StripPerm(lhs);
-  rhs = analysis::StripPerm(rhs);
+bool TypeEquivForUnionMatch(analysis::TypeRef lhs,
+                            analysis::TypeRef rhs,
+                            LowerCtx& ctx) {
+  lhs = ResolvePatternAliasType(lhs, ctx);
+  rhs = ResolvePatternAliasType(rhs, ctx);
+  lhs = StripPermAndRefine(lhs);
+  rhs = StripPermAndRefine(rhs);
   const auto equiv = analysis::TypeEquiv(lhs, rhs);
   return equiv.ok && equiv.equiv;
 }
@@ -434,6 +440,82 @@ struct OrderedPatternBinding {
   analysis::TypeRef type_hint;
 };
 
+void AppendBindListPayloadField(std::string& payload,
+                                std::string_view key,
+                                std::string_view value) {
+  if (!payload.empty()) {
+    payload.push_back(';');
+  }
+  payload.append(key);
+  payload.push_back('=');
+  payload.append(value);
+}
+
+void AppendBindListPayloadField(std::string& payload,
+                                std::string_view key,
+                                std::uint64_t value) {
+  AppendBindListPayloadField(payload, key, std::to_string(value));
+}
+
+void AppendBindListPayloadField(std::string& payload,
+                                std::string_view key,
+                                const char* value) {
+  AppendBindListPayloadField(payload, key, std::string_view(value ? value : "-"));
+}
+
+void AppendBindListPayloadField(std::string& payload,
+                                std::string_view key,
+                                bool value) {
+  AppendBindListPayloadField(payload, key,
+                             std::string_view(value ? "true" : "false"));
+}
+
+std::string BindRuntimeListPayload(std::size_t bind_count) {
+  std::string payload;
+  AppendBindListPayloadField(payload, "operation", "BindList");
+  AppendBindListPayloadField(payload, "source", "EmitOrderedPatternBindings");
+  AppendBindListPayloadField(payload, "bind_count",
+                             static_cast<std::uint64_t>(bind_count));
+  AppendBindListPayloadField(payload, "order", "pattern_order");
+  AppendBindListPayloadField(payload, "emits_bind_ir", true);
+  AppendBindListPayloadField(payload, "recurses_via_bindval", true);
+  return payload;
+}
+
+std::string LowerPatPayload(std::size_t bind_count) {
+  std::string payload;
+  AppendBindListPayloadField(payload, "operation", "LowerBindPattern");
+  AppendBindListPayloadField(payload, "match_pattern", true);
+  AppendBindListPayloadField(payload, "bind_order", "pattern_order");
+  AppendBindListPayloadField(payload, "lower_bind_list", true);
+  AppendBindListPayloadField(payload, "bind_count",
+                             static_cast<std::uint64_t>(bind_count));
+  return payload;
+}
+
+std::string LowerPatErrPayload(std::string_view reason) {
+  std::string payload;
+  AppendBindListPayloadField(payload, "operation", "LowerBindPattern");
+  AppendBindListPayloadField(payload, "match_pattern", "undefined");
+  AppendBindListPayloadField(payload, "result", "failure");
+  AppendBindListPayloadField(payload, "reason", reason);
+  return payload;
+}
+
+void RecordLowerPatError(LowerCtx& ctx, std::string_view reason) {
+  core::Conformance::Record("rule.17.Lower-Pat-Err",
+                            std::nullopt,
+                            LowerPatErrPayload(reason));
+  ctx.ReportCodegenFailure();
+}
+
+void RecordBindRuntimeList(const std::string& payload) {
+  core::Conformance::Record("def.BindRuntimeList", std::nullopt, payload);
+  core::Conformance::Record("rule.17.Lower-BindList-Cons",
+                            std::nullopt,
+                            payload);
+}
+
 analysis::TypeRef LookupBindType(LowerCtx& ctx, const std::string& name) {
   if (const auto* state = ctx.GetBindingState(name)) {
     return state->type;
@@ -466,8 +548,12 @@ std::optional<std::string> LookupBindRegionTag(LowerCtx& ctx,
 IRPtr EmitOrderedPatternBindings(const std::vector<OrderedPatternBinding>& bindings,
                                  LowerCtx& ctx) {
   if (bindings.empty()) {
+    core::Conformance::Record("rule.17.Lower-BindList-Empty",
+                              std::nullopt,
+                              "operation=BindList;bind_count=0;emits_ir=empty");
     return EmptyIR();
   }
+  RecordBindRuntimeList(BindRuntimeListPayload(bindings.size()));
 
   std::vector<IRPtr> emitted;
   emitted.reserve(bindings.size());
@@ -501,23 +587,24 @@ IRPtr EmitOrderedPatternBindings(const std::vector<OrderedPatternBinding>& bindi
   return SeqIR(std::move(emitted));
 }
 
-void CollectPatternBindingsInOrder(const ast::Pattern& pattern,
+bool CollectPatternBindingsInOrder(const ast::Pattern& pattern,
                                    const IRValue& value,
                                    LowerCtx& ctx,
                                    std::vector<OrderedPatternBinding>& bindings) {
-  std::visit(
-      [&value, &ctx, &bindings](const auto& pat) {
+  return std::visit(
+      [&value, &ctx, &bindings](const auto& pat) -> bool {
         using T = std::decay_t<decltype(pat)>;
 
         if constexpr (std::is_same_v<T, ast::WildcardPattern> ||
                       std::is_same_v<T, ast::LiteralPattern> ||
                       std::is_same_v<T, ast::RangePattern>) {
-          return;
+          return true;
         } else if constexpr (std::is_same_v<T, ast::IdentifierPattern>) {
           bindings.push_back({pat.name, value, nullptr});
+          return true;
         } else if constexpr (std::is_same_v<T, ast::TypedPattern>) {
           if (pat.name == "_") {
-            return;
+            return true;
           }
           IRValue bind_value = value;
           analysis::TypeRef type_hint = nullptr;
@@ -540,7 +627,7 @@ void CollectPatternBindingsInOrder(const ast::Pattern& pattern,
                   const auto& members = layout->member_list;
                   std::optional<std::size_t> member_index;
                   for (std::size_t i = 0; i < members.size(); ++i) {
-                    if (TypeEquivForUnionMatch(type_hint, members[i])) {
+                    if (TypeEquivForUnionMatch(type_hint, members[i], ctx)) {
                       member_index = i;
                       break;
                     }
@@ -552,6 +639,7 @@ void CollectPatternBindingsInOrder(const ast::Pattern& pattern,
                     info.base = value;
                     info.union_index = *member_index;
                     ctx.RegisterDerivedValue(payload, info);
+                    ctx.RegisterValueType(payload, type_hint);
                     bind_value = payload;
                   }
                 }
@@ -559,6 +647,7 @@ void CollectPatternBindingsInOrder(const ast::Pattern& pattern,
             }
           }
           bindings.push_back({pat.name, bind_value, type_hint});
+          return true;
         } else if constexpr (std::is_same_v<T, ast::TuplePattern>) {
           for (std::size_t i = 0; i < pat.elements.size(); ++i) {
             IRValue elem = ctx.FreshTempValue("pat_tuple_elem");
@@ -567,8 +656,12 @@ void CollectPatternBindingsInOrder(const ast::Pattern& pattern,
             info.base = value;
             info.tuple_index = i;
             ctx.RegisterDerivedValue(elem, info);
-            CollectPatternBindingsInOrder(*pat.elements[i], elem, ctx, bindings);
+            if (!CollectPatternBindingsInOrder(*pat.elements[i], elem, ctx,
+                                               bindings)) {
+              return false;
+            }
           }
+          return true;
         } else if constexpr (std::is_same_v<T, ast::RecordPattern>) {
           for (const auto& field : pat.fields) {
             IRValue field_val = ctx.FreshTempValue("pat_field");
@@ -578,14 +671,18 @@ void CollectPatternBindingsInOrder(const ast::Pattern& pattern,
             info.field = field.name;
             ctx.RegisterDerivedValue(field_val, info);
             if (field.pattern_opt) {
-              CollectPatternBindingsInOrder(*field.pattern_opt, field_val, ctx, bindings);
+              if (!CollectPatternBindingsInOrder(*field.pattern_opt, field_val,
+                                                 ctx, bindings)) {
+                return false;
+              }
             } else {
               bindings.push_back({field.name, field_val, nullptr});
             }
           }
+          return true;
         } else if constexpr (std::is_same_v<T, ast::EnumPattern>) {
           if (!pat.payload_opt) {
-            return;
+            return true;
           }
           const ast::EnumDecl* enum_decl = LookupEnumDecl(pat.path, ctx);
           const ast::VariantDecl* variant =
@@ -593,9 +690,9 @@ void CollectPatternBindingsInOrder(const ast::Pattern& pattern,
           const std::vector<analysis::TypeRef> enum_generic_args =
               GenericArgsFromType(
                   InstantiateActiveGenericType(ctx.LookupValueType(value), ctx));
-          std::visit(
+          return std::visit(
               [&value, &ctx, &bindings, &pat, enum_decl, variant,
-               &enum_generic_args](const auto& payload) {
+               &enum_generic_args](const auto& payload) -> bool {
                 using P = std::decay_t<decltype(payload)>;
                 if constexpr (std::is_same_v<P, ast::TuplePayloadPattern>) {
                   for (std::size_t i = 0; i < payload.elements.size(); ++i) {
@@ -615,7 +712,10 @@ void CollectPatternBindingsInOrder(const ast::Pattern& pattern,
                     if (elem_type) {
                       ctx.RegisterValueType(elem, elem_type);
                     }
-                    CollectPatternBindingsInOrder(*payload.elements[i], elem, ctx, bindings);
+                    if (!CollectPatternBindingsInOrder(*payload.elements[i], elem,
+                                                       ctx, bindings)) {
+                      return false;
+                    }
                   }
                 } else {
                   for (const auto& field : payload.fields) {
@@ -636,18 +736,22 @@ void CollectPatternBindingsInOrder(const ast::Pattern& pattern,
                       ctx.RegisterValueType(field_val, field_type);
                     }
                     if (field.pattern_opt) {
-                      CollectPatternBindingsInOrder(*field.pattern_opt, field_val, ctx,
-                                                    bindings);
+                      if (!CollectPatternBindingsInOrder(*field.pattern_opt,
+                                                         field_val, ctx,
+                                                         bindings)) {
+                        return false;
+                      }
                     } else {
                       bindings.push_back({field.name, field_val, field_type});
                     }
                   }
                 }
+                return true;
               },
               *pat.payload_opt);
         } else if constexpr (std::is_same_v<T, ast::ModalPattern>) {
           if (!pat.fields_opt) {
-            return;
+            return true;
           }
           analysis::TypeRef modal_hint =
               ResolvePatternAliasType(InstantiateActiveGenericType(
@@ -759,13 +863,19 @@ void CollectPatternBindingsInOrder(const ast::Pattern& pattern,
               ctx.RegisterValueType(field_val, field_type);
             }
             if (field.pattern_opt) {
-              CollectPatternBindingsInOrder(*field.pattern_opt, field_val, ctx, bindings);
+              if (!CollectPatternBindingsInOrder(*field.pattern_opt, field_val,
+                                                 ctx, bindings)) {
+                return false;
+              }
             } else {
               bindings.push_back({field.name, field_val, field_type});
             }
           }
+          return true;
         } else {
           SPEC_RULE("Lower-Pat-Err");
+          RecordLowerPatError(ctx, "unsupported_pattern_variant");
+          return false;
         }
       },
       pattern.node);
@@ -778,7 +888,9 @@ std::vector<std::pair<std::string, IRValue>> PatternBindingValuesInOrder(
     const IRValue& value,
     LowerCtx& ctx) {
   std::vector<OrderedPatternBinding> ordered;
-  CollectPatternBindingsInOrder(pattern, value, ctx, ordered);
+  if (!CollectPatternBindingsInOrder(pattern, value, ctx, ordered)) {
+    return {};
+  }
 
   std::vector<std::pair<std::string, IRValue>> result;
   result.reserve(ordered.size());
@@ -795,14 +907,20 @@ std::vector<std::pair<std::string, IRValue>> PatternBindingValuesInOrder(
 IRPtr LowerBindPattern(const ast::Pattern& pattern,
                        const IRValue& value,
                        LowerCtx& ctx) {
-  SPEC_RULE("Lower-Pat-General");
+  SPEC_RULE("def.17.PatternLoweringJudgements");
 
   // The spec lowers pattern binding through three logical steps:
   // MatchPattern/BindPatternVal to recover the bound identifier map,
   // BindOrder to linearize it in PatNames order, and BindList to emit the
   // concrete binding operations in that same order.
   std::vector<OrderedPatternBinding> bindings;
-  CollectPatternBindingsInOrder(pattern, value, ctx, bindings);
+  if (!CollectPatternBindingsInOrder(pattern, value, ctx, bindings)) {
+    return EmptyIR();
+  }
+  SPEC_RULE("Lower-Pat-General");
+  const std::string payload = LowerPatPayload(bindings.size());
+  core::Conformance::Record("rule.17.Lower-Pat-General", std::nullopt, payload);
+  core::Conformance::Record("rule.17.Lower-Pat-Correctness", std::nullopt, payload);
   return EmitOrderedPatternBindings(bindings, ctx);
 }
 
@@ -813,6 +931,7 @@ IRPtr LowerBindPattern(const ast::Pattern& pattern,
 IRPtr LowerBindList(const std::vector<std::shared_ptr<ast::Pattern>>& patterns,
                     const std::vector<IRValue>& values,
                     LowerCtx& ctx) {
+  SPEC_RULE("def.17.PatternLoweringJudgements");
   SPEC_RULE("Lower-BindList");
   if (patterns.size() != values.size()) {
     ctx.ReportCodegenFailure();
@@ -821,7 +940,9 @@ IRPtr LowerBindList(const std::vector<std::shared_ptr<ast::Pattern>>& patterns,
 
   std::vector<OrderedPatternBinding> bindings;
   for (std::size_t i = 0; i < patterns.size(); ++i) {
-    CollectPatternBindingsInOrder(*patterns[i], values[i], ctx, bindings);
+    if (!CollectPatternBindingsInOrder(*patterns[i], values[i], ctx, bindings)) {
+      return EmptyIR();
+    }
   }
   return EmitOrderedPatternBindings(bindings, ctx);
 }

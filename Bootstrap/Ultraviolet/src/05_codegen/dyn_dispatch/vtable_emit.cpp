@@ -142,6 +142,8 @@ void CollectVTableRefsFromIR(std::set<std::string>& refs, const IRPtr& ir) {
           CollectVTableRefsFromIR(refs, node.cond_ir);
           AddOptVTableRef(refs, node.cond_value);
           CollectVTableRefsFromIR(refs, node.body_ir);
+          CollectVTableRefsFromIR(refs, node.invariant_entry_ir);
+          CollectVTableRefsFromIR(refs, node.invariant_backedge_ir);
           AddVTableRef(refs, node.body_value);
           AddVTableRef(refs, node.result);
         } else if constexpr (std::is_same_v<T, IRIfCase>) {
@@ -196,8 +198,18 @@ void CollectVTableRefsFromIR(std::set<std::string>& refs, const IRPtr& ir) {
         } else if constexpr (std::is_same_v<T, IRWait>) {
           AddVTableRef(refs, node.handle);
           AddVTableRef(refs, node.result);
+        } else if constexpr (std::is_same_v<T, IRCancelCreate>) {
+          AddVTableRef(refs, node.result);
+        } else if constexpr (std::is_same_v<T, IRCancelRequest>) {
+          AddVTableRef(refs, node.token);
+          AddVTableRef(refs, node.result);
+        } else if constexpr (std::is_same_v<T, IRCancelWait>) {
+          AddVTableRef(refs, node.token);
+          AddVTableRef(refs, node.result);
         } else if constexpr (std::is_same_v<T, IRCancelCheck>) {
           AddVTableRef(refs, node.token);
+          AddVTableRef(refs, node.result);
+        } else if constexpr (std::is_same_v<T, IRGpuBarrier>) {
           AddVTableRef(refs, node.result);
         } else if constexpr (std::is_same_v<T, IRDispatch>) {
           AddVTableRef(refs, node.range);
@@ -212,6 +224,7 @@ void CollectVTableRefsFromIR(std::set<std::string>& refs, const IRPtr& ir) {
           AddOptVTableRef(refs, node.reduce_fn);
           AddVTableRef(refs, node.result);
           AddOptVTableRef(refs, node.chunk_size);
+          AddVTableRef(refs, node.workgroup_size);
         } else if constexpr (std::is_same_v<T, IRYield>) {
           AddVTableRef(refs, node.value);
           AddVTableRef(refs, node.result);
@@ -221,6 +234,7 @@ void CollectVTableRefsFromIR(std::set<std::string>& refs, const IRPtr& ir) {
           AddVTableRef(refs, node.result);
         } else if constexpr (std::is_same_v<T, IRSync>) {
           AddVTableRef(refs, node.async_value);
+          AddOptVTableRef(refs, node.runtime_receiver);
           AddVTableRef(refs, node.result);
         } else if constexpr (std::is_same_v<T, IRRaceReturn>) {
           for (const auto& arm : node.arms) {

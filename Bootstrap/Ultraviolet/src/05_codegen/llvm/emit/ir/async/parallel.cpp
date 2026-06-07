@@ -8,6 +8,14 @@ namespace ultraviolet::codegen::emit_detail {
 
 void IRInstructionVisitor::operator()(const IRParallel &parallel) const
 {
+  SPEC_RULE("def.20.ParallelLoweringJudgments");
+  SPEC_RULE("rule.20.Lower-Expr-Parallel");
+  SPEC_RULE("rule.20.Lower-Parallel-Join-Panic");
+  if (emitter.CurrentParallelContext())
+  {
+    SPEC_RULE("rule.20.Lower-Nested-Parallel");
+  }
+
   llvm::Type *ptr_ty = emitter.GetOpaquePtr();
   llvm::Type *usize_ty = llvm::Type::getInt64Ty(emitter.GetContext());
   llvm::Type *i8_ptr_ty =

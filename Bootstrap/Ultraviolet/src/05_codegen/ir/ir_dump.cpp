@@ -43,8 +43,9 @@
 //      - Low-level: IRBranch, IRPhi
 //      - Panic: IRClearPanic, IRPanicCheck, IRInitPanicHandle, IRLowerPanic
 //      - Poison: IRCheckPoison
-//      - Parallelism: IRParallel, IRSpawn, IRWait, IRCancelCheck,
-//        IRCancelSuppress, IRDispatch (Section 19)
+//      - Parallelism: IRParallel, IRSpawn, IRWait, IRCancelCreate,
+//        IRCancelRequest, IRCancelWait, IRCancelCheck, IRCancelSuppress,
+//        IRGpuBarrier, IRDispatch (Section 20)
 //      - Async: IRYield, IRYieldFrom, IRSync, IRRaceReturn, IRRaceYield, IRAll (Section 19.2-19.3)
 //   3. Smart formatting for common patterns (addr_of + bind, call + bind)
 //   4. Indentation-aware output for nested structures
@@ -385,6 +386,9 @@ struct Dumper {
     oss << "call_vtable ";
     Dump(c.base);
     oss << " [" << c.slot << "]";
+    if (c.check_dynamic_receiver_addr_active) {
+      oss << " check_dynamic_receiver_addr_active";
+    }
     if (!c.args.empty()) {
       oss << " (";
       for (std::size_t i = 0; i < c.args.size(); ++i) {
@@ -615,6 +619,18 @@ struct Dumper {
         oss << "body ";
         Dump(l.body_ir);
         oss << "\n";
+        if (l.invariant_entry_ir) {
+          Indent();
+          oss << "invariant_entry ";
+          Dump(l.invariant_entry_ir);
+          oss << "\n";
+        }
+        if (l.invariant_backedge_ir) {
+          Indent();
+          oss << "invariant_backedge ";
+          Dump(l.invariant_backedge_ir);
+          oss << "\n";
+        }
         Indent();
         oss << "value ";
         Dump(l.body_value);
@@ -640,6 +656,18 @@ struct Dumper {
         oss << "body ";
         Dump(l.body_ir);
         oss << "\n";
+        if (l.invariant_entry_ir) {
+          Indent();
+          oss << "invariant_entry ";
+          Dump(l.invariant_entry_ir);
+          oss << "\n";
+        }
+        if (l.invariant_backedge_ir) {
+          Indent();
+          oss << "invariant_backedge ";
+          Dump(l.invariant_backedge_ir);
+          oss << "\n";
+        }
         Indent();
         oss << "body_value ";
         Dump(l.body_value);
@@ -667,6 +695,18 @@ struct Dumper {
         oss << "body ";
         Dump(l.body_ir);
         oss << "\n";
+        if (l.invariant_entry_ir) {
+          Indent();
+          oss << "invariant_entry ";
+          Dump(l.invariant_entry_ir);
+          oss << "\n";
+        }
+        if (l.invariant_backedge_ir) {
+          Indent();
+          oss << "invariant_backedge ";
+          Dump(l.invariant_backedge_ir);
+          oss << "\n";
+        }
         Indent();
         oss << "body_value ";
         Dump(l.body_value);
@@ -828,6 +868,12 @@ struct Dumper {
     indent_level--;
     Indent(); oss << "body_result: "; Dump(spawn.body_result); oss << "\n";
     Indent(); oss << "result: "; Dump(spawn.result); oss << "\n";
+    if (spawn.runtime_symbol.has_value()) {
+      Indent(); oss << "runtime_symbol: " << *spawn.runtime_symbol << "\n";
+    }
+    if (spawn.runtime_receiver.has_value()) {
+      Indent(); oss << "runtime_receiver: "; Dump(*spawn.runtime_receiver); oss << "\n";
+    }
     if (spawn.affinity_mask.has_value()) {
       Indent(); oss << "affinity: "; Dump(*spawn.affinity_mask); oss << "\n";
     }
@@ -846,6 +892,30 @@ struct Dumper {
     Dump(wait.handle);
     oss << " -> ";
     Dump(wait.result);
+    if (wait.kind == IRWaitKind::Spawned) {
+      oss << " [spawned]";
+    } else if (wait.kind == IRWaitKind::Tracked) {
+      oss << " [tracked]";
+    }
+  }
+
+  void DumpNode(const IRCancelCreate& create) {
+    oss << "cancel_create -> ";
+    Dump(create.result);
+  }
+
+  void DumpNode(const IRCancelRequest& request) {
+    oss << "cancel_request ";
+    Dump(request.token);
+    oss << " -> ";
+    Dump(request.result);
+  }
+
+  void DumpNode(const IRCancelWait& wait) {
+    oss << "cancel_wait ";
+    Dump(wait.token);
+    oss << " -> ";
+    Dump(wait.result);
   }
 
   void DumpNode(const IRCancelCheck& check) {
@@ -857,6 +927,23 @@ struct Dumper {
 
   void DumpNode(const IRCancelSuppress&) { oss << "cancel_suppress"; }
 
+  void DumpNode(const IRGpuBarrier& barrier) {
+    oss << "gpu_barrier ";
+    switch (barrier.kind) {
+      case IRGpuBarrierKind::Memory:
+        oss << "memory";
+        break;
+      case IRGpuBarrierKind::Workgroup:
+        oss << "workgroup";
+        break;
+      case IRGpuBarrierKind::Full:
+        oss << "full";
+        break;
+    }
+    oss << " -> ";
+    Dump(barrier.result);
+  }
+
   void DumpNode(const IRDispatch& dispatch) {
     oss << "dispatch {\n";
     indent_level++;
@@ -867,6 +954,7 @@ struct Dumper {
     if (dispatch.chunk_size.has_value()) {
       Indent(); oss << "chunk_size: "; Dump(*dispatch.chunk_size); oss << "\n";
     }
+    Indent(); oss << "workgroup_size: "; Dump(dispatch.workgroup_size); oss << "\n";
     if (dispatch.reduce_op.has_value()) {
       Indent(); oss << "reduce_op: " << *dispatch.reduce_op << "\n";
     }
@@ -964,6 +1052,13 @@ struct Dumper {
   void DumpNode(const IRSync& sync) {
     oss << "sync ";
     Dump(sync.async_value);
+    if (sync.runtime_symbol.has_value()) {
+      oss << " runtime_symbol=" << *sync.runtime_symbol;
+    }
+    if (sync.runtime_receiver.has_value()) {
+      oss << " runtime_receiver=";
+      Dump(*sync.runtime_receiver);
+    }
     oss << " -> ";
     Dump(sync.result);
   }

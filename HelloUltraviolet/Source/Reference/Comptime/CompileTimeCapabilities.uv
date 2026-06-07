@@ -1,5 +1,28 @@
 //! Reference specimens for Comptime / CompileTimeCapabilities.
 
+#reflect
+internal record ComptimeCapabilityReflectedRecord {
+    internal value: i32
+}
+
+#reflect
+internal enum ComptimeCapabilityReflectedEnum {
+    Empty
+    Value(i32)
+    Named {
+        value: usize
+    }
+}
+
+#reflect
+internal modal ComptimeCapabilityReflectedModal {
+    @Ready {
+        internal value: i32
+    }
+
+    @Done {}
+}
+
 internal procedure compileTimeIOReferenceValue() -> usize {
     let project_root_ok: bool =
         #files comptime { files~>project_root() != "" }
@@ -30,8 +53,201 @@ internal procedure compileTimeDiagnosticsReferenceValue() -> bool {
         comptime { diagnostics~>current_span().start_line > 0usize }
 }
 
+comptime internal procedure compileTimeCurrentSpanHasPosition() -> bool {
+    let span = diagnostics~>current_span()
+    return span.start_line > 0usize && span.start_col > 0usize
+}
+
+comptime internal procedure compileTimeAstTypesAreAvailable() -> bool {
+    let expr: Ast::Expr = quote { 1 + 2 }
+    let stmt: Ast::Stmt = quote { let value = 1usize; }
+    let item: Ast::Item = quote {
+        internal procedure compileTimeCapabilityQuotedItemReference() -> usize {
+            return 0usize
+        }
+    }
+    let ty: Ast::Type = quote type { usize }
+    let pattern: Ast::Pattern = quote pattern { quoted_pattern_value: usize }
+    return true
+}
+
+internal procedure compileTimeListDirInvalidPathReferenceValue() -> bool {
+    return #files comptime {
+        {
+            let result = files~>list_dir("../outside-project")
+            if result is {
+                @Value { value } {
+                    false
+                }
+                @Error { error } {
+                    if error is {
+                        IoError::NotFound {
+                            false
+                        }
+                        IoError::PermissionDenied {
+                            false
+                        }
+                        IoError::AlreadyExists {
+                            false
+                        }
+                        IoError::InvalidPath {
+                            true
+                        }
+                        IoError::Busy {
+                            false
+                        }
+                        IoError::IoFailure {
+                            false
+                        }
+                        IoError::DirectoryNotEmpty {
+                            false
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+internal procedure compileTimeReflectionCapabilityReferenceValue() -> bool {
+    let record_category_ok: bool = comptime {
+        introspect~>category(Type::<ComptimeCapabilityReflectedRecord>) == TypeCategory::Record
+    }
+    let enum_category_ok: bool = comptime {
+        introspect~>category(Type::<ComptimeCapabilityReflectedEnum>) == TypeCategory::Enum
+    }
+    let modal_category_ok: bool = comptime {
+        introspect~>category(Type::<ComptimeCapabilityReflectedModal>) == TypeCategory::Modal
+    }
+    let source_span_ok: bool = comptime { compileTimeCurrentSpanHasPosition() }
+    let ast_types_ok: bool = comptime { compileTimeAstTypesAreAvailable() }
+
+    var field_count: usize = 0usize
+    var primitive_field_count: usize = 0usize
+    comptime loop field in introspect~>fields(Type::<ComptimeCapabilityReflectedRecord>) {
+        field_count = field_count + comptime if field.name == "value" { 1usize } else { 0usize }
+        primitive_field_count = primitive_field_count +
+            comptime if introspect~>category(field.type) == TypeCategory::Primitive {
+                1usize
+            } else {
+                0usize
+            }
+    }
+
+    var variant_count: usize = 0usize
+    var payload_kind_count: usize = 0usize
+    comptime loop variant in introspect~>variants(Type::<ComptimeCapabilityReflectedEnum>) {
+        variant_count = variant_count + 1usize
+        payload_kind_count = payload_kind_count +
+            comptime if variant.payload_kind == "unit" { 1usize } else { 0usize }
+        payload_kind_count = payload_kind_count +
+            comptime if variant.payload_kind == "tuple" { 1usize } else { 0usize }
+        payload_kind_count = payload_kind_count +
+            comptime if variant.payload_kind == "record" { 1usize } else { 0usize }
+    }
+
+    var state_count: usize = 0usize
+    var state_field_count: usize = 0usize
+    comptime loop state in introspect~>states(Type::<ComptimeCapabilityReflectedModal>) {
+        state_count = state_count + 1usize
+        comptime loop field_name in state.field_names {
+            state_field_count = state_field_count +
+                comptime if field_name == "value" { 1usize } else { 0usize }
+        }
+    }
+
+    return record_category_ok &&
+        enum_category_ok &&
+        modal_category_ok &&
+        source_span_ok &&
+        ast_types_ok &&
+        field_count == 1usize &&
+        primitive_field_count == 1usize &&
+        variant_count == 3usize &&
+        payload_kind_count == 3usize &&
+        state_count == 2usize &&
+        state_field_count == 1usize
+}
+
+/// Exercises compile-time capability syntax surfaces with exact capability forms.
+public procedure compileTimeCapabilitiesSyntaxSurfaceReference() -> bool {
+    return introspectAndDiagnosticsAvailabilityReference() &&
+        typeEmitterAvailabilityReference() &&
+        projectFilesAvailabilityReference()
+}
+
+/// Exercises compile-time capability method-call parsing through ordinary calls.
+public procedure ctCapMethodCallParsingReference() -> bool {
+    return comptime { diagnostics~>current_module() != "" } &&
+        comptime {
+            introspect~>category(Type::<ComptimeCapabilityReflectedRecord>) ==
+                TypeCategory::Record
+        } &&
+        #files comptime { files~>exists("Ultraviolet.toml").value == true } &&
+        typeEmitterAvailabilityReference()
+}
+
+/// Exercises compile-time capabilities, built-in types, and capability bindings.
+public procedure ctCapabilitiesAndBuiltinTypesReference() -> bool {
+    return compileTimeReflectionCapabilityReferenceValue() &&
+        introspectAndDiagnosticsAvailabilityReference() &&
+        typeEmitterAvailabilityReference() &&
+        projectFilesAvailabilityReference()
+}
+
+/// Exercises Introspect and ComptimeDiagnostics availability in compile-time forms.
+public procedure introspectAndDiagnosticsAvailabilityReference() -> bool {
+    return compileTimeDiagnosticsReferenceValue() &&
+        compileTimeReflectionCapabilityReferenceValue()
+}
+
+/// Exercises TypeEmitter availability inside an emit-annotated compile-time form.
+public procedure typeEmitterAvailabilityReference() -> bool {
+    #emit
+    comptime {
+        let ast: Ast::Item = quote {
+            internal procedure emittedCompileTimeCapabilitiesReferenceValue() -> usize {
+                return 7usize
+            }
+        }
+        emitter~>emit(ast)
+    }
+
+    return emittedCompileTimeCapabilitiesReferenceValue() == 7usize
+}
+
+/// Exercises ProjectFiles availability inside a files-annotated compile-time form.
+public procedure projectFilesAvailabilityReference() -> bool {
+    return compileTimeIOReferenceValue() == 1usize
+}
+
+/// Exercises dynamic compile-time capability helpers for emit and project files.
+public procedure ctCapabilityDynamicHelpersReference() -> bool {
+    return typeEmitterAvailabilityReference() &&
+        projectFilesAvailabilityReference() &&
+        ctBuiltinListDirReference() &&
+        ctBuiltinListDirInvalidPathReference()
+}
+
+/// Exercises files.list_dir for a restricted project path.
+public procedure ctBuiltinListDirReference() -> bool {
+    return compileTimeIOReferenceValue() == 1usize
+}
+
+/// Exercises files.list_dir invalid-path behavior.
+public procedure ctBuiltinListDirInvalidPathReference() -> bool {
+    return compileTimeListDirInvalidPathReferenceValue()
+}
+
 /// Exercises the Comptime CompileTimeCapabilities reference surface.
 public procedure runComptimeCompileTimeCapabilitiesReference() -> bool {
-    return compileTimeIOReferenceValue() == 1usize &&
-        compileTimeDiagnosticsReferenceValue()
+    return compileTimeCapabilitiesSyntaxSurfaceReference() &&
+        ctCapMethodCallParsingReference() &&
+        ctCapabilitiesAndBuiltinTypesReference() &&
+        introspectAndDiagnosticsAvailabilityReference() &&
+        typeEmitterAvailabilityReference() &&
+        projectFilesAvailabilityReference() &&
+        ctCapabilityDynamicHelpersReference() &&
+        ctBuiltinListDirReference() &&
+        ctBuiltinListDirInvalidPathReference()
 }

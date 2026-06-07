@@ -454,6 +454,16 @@ static UVUnion_FileKind_IoError uv_kind_ok(UVFileKind kind) {
   return out;
 }
 
+static UVFileKind uv_file_kind_from_attrs(uv_rt_u32_t attrs) {
+  if (attrs & UV_RT_FILE_ATTRIBUTE_OTHER) {
+    return UV_FILE_KIND_OTHER;
+  }
+  if (attrs & UV_RT_FILE_ATTRIBUTE_DIRECTORY) {
+    return UV_FILE_KIND_DIR;
+  }
+  return UV_FILE_KIND_FILE;
+}
+
 static UVUnion_StringManaged_IoError uv_string_io_err(UVIoError err) {
   UVUnion_StringManaged_IoError out;
   out.disc = 1;
@@ -467,23 +477,18 @@ static UVUnion_BytesManaged_IoError uv_bytes_io_err(UVIoError err) {
   out.payload.io_error = err;
   return out;
 }
-static UVUnion_BytesManaged_IoError uv_read_all_bytes_handle(uv_rt_handle_t handle) {
+
+static UVUnion_BytesManaged_IoError uv_read_bytes_handle_len(
+    uv_rt_handle_t handle,
+    uint64_t len) {
   if (!handle || handle == UV_RT_INVALID_HANDLE) {
     return uv_bytes_io_err(UV_IO_FAILURE);
   }
 
-  uv_rt_file_offset_t size;
-  if (!uv_rt_file_size(handle, &size)) {
-    return uv_bytes_io_err(uv_last_io_error());
-  }
-  if (size.quad_part < 0) {
-    return uv_bytes_io_err(UV_IO_FAILURE);
-  }
-  if ((uint64_t)size.quad_part > (uint64_t)SIZE_MAX) {
+  if (len > (uint64_t)SIZE_MAX) {
     return uv_bytes_io_err(UV_IO_FAILURE);
   }
 
-  uint64_t len = (uint64_t)size.quad_part;
   if (len == 0) {
     UVUnion_BytesManaged_IoError out;
     out.disc = 0;
@@ -522,6 +527,43 @@ static UVUnion_BytesManaged_IoError uv_read_all_bytes_handle(uv_rt_handle_t hand
   out.payload.value.data = data;
   out.payload.value.len = len;
   out.payload.value.cap = len;
+  return out;
+}
+
+static UVUnion_BytesManaged_IoError uv_read_all_bytes_handle(uv_rt_handle_t handle) {
+  if (!handle || handle == UV_RT_INVALID_HANDLE) {
+    return uv_bytes_io_err(UV_IO_FAILURE);
+  }
+
+  uv_rt_file_offset_t size;
+  if (!uv_rt_file_size(handle, &size)) {
+    return uv_bytes_io_err(uv_last_io_error());
+  }
+  if (size.quad_part < 0) {
+    return uv_bytes_io_err(UV_IO_FAILURE);
+  }
+
+  return uv_read_bytes_handle_len(handle, (uint64_t)size.quad_part);
+}
+
+static UVUnion_StringManaged_IoError uv_read_string_handle_len(
+    uv_rt_handle_t handle,
+    uint64_t len) {
+  UVUnion_BytesManaged_IoError bytes = uv_read_bytes_handle_len(handle, len);
+  if (bytes.disc == 1) {
+    return uv_string_io_err(bytes.payload.io_error);
+  }
+
+  if (!uv_utf8_valid(bytes.payload.value.data, bytes.payload.value.len)) {
+    uv_free_managed_bytes(bytes.payload.value.data);
+    return uv_string_io_err(UV_IO_FAILURE);
+  }
+
+  UVUnion_StringManaged_IoError out;
+  out.disc = 0;
+  out.payload.value.data = bytes.payload.value.data;
+  out.payload.value.len = bytes.payload.value.len;
+  out.payload.value.cap = bytes.payload.value.cap;
   return out;
 }
 
@@ -860,6 +902,10 @@ static uv_rt_handle_t uv_open_console_out(void) {
 static UVUnion_Unit_IoError uv_write_stream_utf8(uv_rt_u32_t std_handle_id,
                                                   const UVStringView* data) {
   uint64_t len = data ? data->len : 0;
+  if (len == 0) {
+    return uv_unit_ok();
+  }
+
   uv_rt_handle_t h = uv_rt_std_stream(std_handle_id);
   int close_handle = 0;
 
@@ -1202,7 +1248,8 @@ UVUnion_DirIter_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fdir(
     uv_heap_free_raw(canon);
     return uv_dir_err(err);
   }
-  if ((attrs & UV_RT_FILE_ATTRIBUTE_DIRECTORY) == 0) {
+  if ((attrs & UV_RT_FILE_ATTRIBUTE_OTHER) != 0 ||
+      (attrs & UV_RT_FILE_ATTRIBUTE_DIRECTORY) == 0) {
     uv_heap_free_raw(wide);
     uv_heap_free_raw(canon);
     return uv_dir_err(UV_IO_INVALID_PATH);
@@ -1234,80 +1281,60 @@ UVUnion_DirIter_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fdir(
   uv_rt_find_data_t data;
   uv_rt_handle_t find = uv_rt_directory_scan_first_wide(pattern, &data);
   uv_heap_free_raw(pattern);
-  if (find == UV_RT_INVALID_HANDLE) {
-    UVIoError err = uv_last_io_error();
-    uv_heap_free_raw(wide);
-    uv_heap_free_raw(canon);
-    return uv_dir_err(err);
-  }
 
-  uint32_t cap = 16;
+  uint32_t cap = 0;
   uint32_t count = 0;
-  DirEntryTmp* entries = (DirEntryTmp*)uv_heap_alloc_raw(sizeof(DirEntryTmp) * cap);
-  if (!entries) {
-    uv_rt_directory_scan_close(find);
-    uv_heap_free_raw(wide);
-    uv_heap_free_raw(canon);
-    return uv_dir_err(UV_IO_FAILURE);
-  }
+  DirEntryTmp* entries = NULL;
 
-  do {
-    const wchar_t* name = data.file_name;
-    if (name[0] == L'.' && name[1] == 0) {
-      continue;
-    }
-    if (name[0] == L'.' && name[1] == L'.' && name[2] == 0) {
-      continue;
-    }
-
-    uint32_t name_len = (uint32_t)uv_wcslen(name);
-    wchar_t* name_copy = (wchar_t*)uv_heap_alloc_raw(sizeof(wchar_t) * (name_len + 1));
-    if (!name_copy) {
-      uv_rt_directory_scan_close(find);
-      for (uint32_t i = 0; i < count; ++i) {
-        uv_heap_free_raw(entries[i].name_w);
-        uv_heap_free_raw(entries[i].name_utf8);
-        uv_heap_free_raw(entries[i].key_utf8);
-      }
-      uv_heap_free_raw(entries);
+  if (find == UV_RT_INVALID_HANDLE) {
+    uv_rt_u32_t scan_error = uv_rt_last_error_get();
+    if (scan_error != UV_RT_ERROR_NO_MORE_FILES) {
+      UVIoError err =
+          scan_error == 0 ? UV_IO_FAILURE : uv_map_platform_error(scan_error);
       uv_heap_free_raw(wide);
       uv_heap_free_raw(canon);
-      return uv_dir_err(UV_IO_FAILURE);
+      return uv_dir_err(err);
     }
-    uv_memcpy(name_copy, name, sizeof(wchar_t) * name_len);
-    name_copy[name_len] = 0;
-
-    uint32_t name_utf8_len = 0;
-    uint8_t* name_utf8 = uv_wide_to_utf8(name_copy, name_len, &name_utf8_len);
-    if (!name_utf8) {
-      uv_heap_free_raw(name_copy);
+    uv_rt_last_error_set(UV_RT_ERROR_SUCCESS);
+  } else {
+    cap = 16;
+    entries = (DirEntryTmp*)uv_heap_alloc_raw(sizeof(DirEntryTmp) * cap);
+    if (!entries) {
       uv_rt_directory_scan_close(find);
-      for (uint32_t i = 0; i < count; ++i) {
-        uv_heap_free_raw(entries[i].name_w);
-        uv_heap_free_raw(entries[i].name_utf8);
-        uv_heap_free_raw(entries[i].key_utf8);
-      }
-      uv_heap_free_raw(entries);
       uv_heap_free_raw(wide);
       uv_heap_free_raw(canon);
       return uv_dir_err(UV_IO_FAILURE);
     }
 
-    uint32_t key_utf8_len = 0;
-    uint8_t* key_utf8 = uv_entry_key_utf8(name_copy, name_len, &key_utf8_len);
-    if (!key_utf8) {
-      key_utf8 = name_utf8;
-      key_utf8_len = name_utf8_len;
-    }
+    do {
+      const wchar_t* name = data.file_name;
+      if (name[0] == L'.' && name[1] == 0) {
+        continue;
+      }
+      if (name[0] == L'.' && name[1] == L'.' && name[2] == 0) {
+        continue;
+      }
 
-    if (count == cap) {
-      uint32_t new_cap = cap * 2;
-      DirEntryTmp* resized = (DirEntryTmp*)uv_heap_alloc_raw(sizeof(DirEntryTmp) * new_cap);
-      if (!resized) {
-        if (key_utf8 != name_utf8) {
-          uv_heap_free_raw(key_utf8);
+      uint32_t name_len = (uint32_t)uv_wcslen(name);
+      wchar_t* name_copy = (wchar_t*)uv_heap_alloc_raw(sizeof(wchar_t) * (name_len + 1));
+      if (!name_copy) {
+        uv_rt_directory_scan_close(find);
+        for (uint32_t i = 0; i < count; ++i) {
+          uv_heap_free_raw(entries[i].name_w);
+          uv_heap_free_raw(entries[i].name_utf8);
+          uv_heap_free_raw(entries[i].key_utf8);
         }
-        uv_heap_free_raw(name_utf8);
+        uv_heap_free_raw(entries);
+        uv_heap_free_raw(wide);
+        uv_heap_free_raw(canon);
+        return uv_dir_err(UV_IO_FAILURE);
+      }
+      uv_memcpy(name_copy, name, sizeof(wchar_t) * name_len);
+      name_copy[name_len] = 0;
+
+      uint32_t name_utf8_len = 0;
+      uint8_t* name_utf8 = uv_wide_to_utf8(name_copy, name_len, &name_utf8_len);
+      if (!name_utf8) {
         uv_heap_free_raw(name_copy);
         uv_rt_directory_scan_close(find);
         for (uint32_t i = 0; i < count; ++i) {
@@ -1320,27 +1347,55 @@ UVUnion_DirIter_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fdir(
         uv_heap_free_raw(canon);
         return uv_dir_err(UV_IO_FAILURE);
       }
-      for (uint32_t i = 0; i < count; ++i) {
-        resized[i] = entries[i];
+
+      uint32_t key_utf8_len = 0;
+      uint8_t* key_utf8 = uv_entry_key_utf8(name_copy, name_len, &key_utf8_len);
+      if (!key_utf8) {
+        key_utf8 = name_utf8;
+        key_utf8_len = name_utf8_len;
       }
-      uv_heap_free_raw(entries);
-      entries = resized;
-      cap = new_cap;
-    }
 
-    entries[count].name_w = name_copy;
-    entries[count].name_w_len = name_len;
-    entries[count].name_utf8 = name_utf8;
-    entries[count].name_utf8_len = name_utf8_len;
-    entries[count].key_utf8 = key_utf8;
-    entries[count].key_utf8_len = key_utf8_len;
-    entries[count].kind = (data.file_attributes & UV_RT_FILE_ATTRIBUTE_DIRECTORY)
-        ? UV_FILE_KIND_DIR
-        : UV_FILE_KIND_FILE;
-    ++count;
-  } while (uv_rt_directory_scan_next(find, &data));
+      if (count == cap) {
+        uint32_t new_cap = cap * 2;
+        DirEntryTmp* resized =
+            (DirEntryTmp*)uv_heap_alloc_raw(sizeof(DirEntryTmp) * new_cap);
+        if (!resized) {
+          if (key_utf8 != name_utf8) {
+            uv_heap_free_raw(key_utf8);
+          }
+          uv_heap_free_raw(name_utf8);
+          uv_heap_free_raw(name_copy);
+          uv_rt_directory_scan_close(find);
+          for (uint32_t i = 0; i < count; ++i) {
+            uv_heap_free_raw(entries[i].name_w);
+            uv_heap_free_raw(entries[i].name_utf8);
+            uv_heap_free_raw(entries[i].key_utf8);
+          }
+          uv_heap_free_raw(entries);
+          uv_heap_free_raw(wide);
+          uv_heap_free_raw(canon);
+          return uv_dir_err(UV_IO_FAILURE);
+        }
+        for (uint32_t i = 0; i < count; ++i) {
+          resized[i] = entries[i];
+        }
+        uv_heap_free_raw(entries);
+        entries = resized;
+        cap = new_cap;
+      }
 
-  uv_rt_directory_scan_close(find);
+      entries[count].name_w = name_copy;
+      entries[count].name_w_len = name_len;
+      entries[count].name_utf8 = name_utf8;
+      entries[count].name_utf8_len = name_utf8_len;
+      entries[count].key_utf8 = key_utf8;
+      entries[count].key_utf8_len = key_utf8_len;
+      entries[count].kind = uv_file_kind_from_attrs(data.file_attributes);
+      ++count;
+    } while (uv_rt_directory_scan_next(find, &data));
+
+    uv_rt_directory_scan_close(find);
+  }
 
   if (count > 1) {
     uv_sort_entries(entries, count);
@@ -1475,7 +1530,8 @@ UVUnion_Unit_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aensure_x5fdir(
 
   uv_rt_u32_t attrs = uv_rt_path_attributes_wide(wide);
   if (attrs != UV_RT_FILE_ATTRIBUTES_INVALID) {
-    if (attrs & UV_RT_FILE_ATTRIBUTE_DIRECTORY) {
+    if ((attrs & UV_RT_FILE_ATTRIBUTE_OTHER) == 0 &&
+        attrs & UV_RT_FILE_ATTRIBUTE_DIRECTORY) {
       uv_heap_free_raw(wide);
       return uv_unit_ok();
     }
@@ -1492,29 +1548,32 @@ UVUnion_Unit_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aensure_x5fdir(
   buf[wide_len] = 0;
 
   uint32_t start = 0;
-  if (wide_len >= 3 && wide[1] == L':' && wide[2] == L'\\') {
+  if (wide_len >= 3 && wide[1] == L':' &&
+      (wide[2] == L'\\' || wide[2] == L'/')) {
     start = 3;
-  } else if (wide_len >= 2 && wide[0] == L'\\' && wide[1] == L'\\') {
+  } else if (wide_len >= 2 &&
+             (wide[0] == L'\\' || wide[0] == L'/') &&
+             (wide[1] == L'\\' || wide[1] == L'/')) {
     uint32_t idx = 2;
-    while (idx < wide_len && wide[idx] != L'\\') {
+    while (idx < wide_len && wide[idx] != L'\\' && wide[idx] != L'/') {
       ++idx;
     }
     if (idx < wide_len) {
       ++idx;
     }
-    while (idx < wide_len && wide[idx] != L'\\') {
+    while (idx < wide_len && wide[idx] != L'\\' && wide[idx] != L'/') {
       ++idx;
     }
     if (idx < wide_len) {
       ++idx;
     }
     start = idx;
-  } else if (wide[0] == L'\\') {
+  } else if (wide[0] == L'\\' || wide[0] == L'/') {
     start = 1;
   }
 
   for (uint32_t i = start; i <= wide_len; ++i) {
-    if (i == wide_len || buf[i] == L'\\') {
+    if (i == wide_len || buf[i] == L'\\' || buf[i] == L'/') {
       wchar_t saved = buf[i];
       buf[i] = 0;
       if (buf[0] != 0) {
@@ -1571,14 +1630,7 @@ UVUnion_FileKind_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3akind(
     UVUnion_FileKind_IoError out = uv_kind_err(uv_last_io_error());
     return out;
   }
-  if (attrs & UV_RT_FILE_ATTRIBUTE_DIRECTORY) {
-    UVUnion_FileKind_IoError out = uv_kind_ok(UV_FILE_KIND_DIR);
-    return out;
-  }
-  {
-    UVUnion_FileKind_IoError out = uv_kind_ok(UV_FILE_KIND_FILE);
-    return out;
-  }
+  return uv_kind_ok(uv_file_kind_from_attrs(attrs));
 }
 
 UVDynObject ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3arestrict(
@@ -1626,7 +1678,12 @@ UVUnion_StringManaged_IoError File_x3a_x3aRead_x3a_x3aread_x5fall(
     uv_rt_rwlock_unlock_exclusive(&g_uv_io_registry_lock);
     return uv_string_io_err(UV_IO_FAILURE);
   }
-  UVUnion_StringManaged_IoError out = uv_read_all_string_handle(tracked->handle);
+  uint64_t remaining = 0;
+  if (tracked->position < tracked->length) {
+    remaining = tracked->length - tracked->position;
+  }
+  UVUnion_StringManaged_IoError out =
+      uv_read_string_handle_len(tracked->handle, remaining);
   if (out.disc == 0) {
     tracked->position = tracked->length;
   }
@@ -1647,7 +1704,12 @@ UVUnion_BytesManaged_IoError File_x3a_x3aRead_x3a_x3aread_x5fall_x5fbytes(
     uv_rt_rwlock_unlock_exclusive(&g_uv_io_registry_lock);
     return uv_bytes_io_err(UV_IO_FAILURE);
   }
-  UVUnion_BytesManaged_IoError out = uv_read_all_bytes_handle(tracked->handle);
+  uint64_t remaining = 0;
+  if (tracked->position < tracked->length) {
+    remaining = tracked->length - tracked->position;
+  }
+  UVUnion_BytesManaged_IoError out =
+      uv_read_bytes_handle_len(tracked->handle, remaining);
   if (out.disc == 0) {
     tracked->position = tracked->length;
   }
@@ -1738,6 +1800,7 @@ UVUnion_Unit_IoError File_x3a_x3aWrite_x3a_x3aflush(
     return out;
   }
   tracked->flushed = 1;
+  uv_trace_emit_rule("FileFlush-RecordsFlushed");
   uv_rt_rwlock_unlock_exclusive(&g_uv_io_registry_lock);
   return uv_unit_ok();
 }
@@ -1795,6 +1858,7 @@ UVUnion_Unit_IoError File_x3a_x3aAppend_x3a_x3aflush(
     return out;
   }
   tracked->flushed = 1;
+  uv_trace_emit_rule("FileFlush-RecordsFlushed");
   uv_rt_rwlock_unlock_exclusive(&g_uv_io_registry_lock);
   return uv_unit_ok();
 }

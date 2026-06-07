@@ -1,7 +1,7 @@
 //! Rejected expression specimens.
 
 public procedure expressionsRejectedSourceFixtureCount() -> usize {
-    return 116usize
+    return 133usize
 }
 
 public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
@@ -37,6 +37,23 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Expressions/IndexNonIndexable/Expected.uv",
         "E-SEM-2527",
         "Index-NonIndexable"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "IndexNonIndexable",
+            "Fixtures/RejectedSource/Expressions/IndexNonIndexable",
+            "Fixtures/RejectedSource/Expressions/IndexNonIndexable/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/IndexNonIndexable/Expected.uv",
+            expectedDiagnostic("E-SEM-2527", "req.SliceDiagnosticOwnership")
+        ),
+        "IndexNonIndexable",
+        "Fixtures/RejectedSource/Expressions/IndexNonIndexable",
+        "Fixtures/RejectedSource/Expressions/IndexNonIndexable/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/IndexNonIndexable/Expected.uv",
+        "E-SEM-2527",
+        "req.SliceDiagnosticOwnership"
     ) {
         count = count + 1usize
     }
@@ -88,6 +105,40 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Expressions/ArrayIndexNonUsize/Expected.uv",
         "E-TYP-1812",
         "Index-Array-NonUsize"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SliceIndexNonUsize",
+            "Fixtures/RejectedSource/Expressions/SliceIndexNonUsize",
+            "Fixtures/RejectedSource/Expressions/SliceIndexNonUsize/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/SliceIndexNonUsize/Expected.uv",
+            expectedDiagnostic("E-TYP-1820", "Index-Slice-NonUsize")
+        ),
+        "SliceIndexNonUsize",
+        "Fixtures/RejectedSource/Expressions/SliceIndexNonUsize",
+        "Fixtures/RejectedSource/Expressions/SliceIndexNonUsize/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/SliceIndexNonUsize/Expected.uv",
+        "E-TYP-1820",
+        "Index-Slice-NonUsize"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SliceIndexNonUsize",
+            "Fixtures/RejectedSource/Expressions/SliceIndexNonUsize",
+            "Fixtures/RejectedSource/Expressions/SliceIndexNonUsize/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/SliceIndexNonUsize/Expected.uv",
+            expectedDiagnostic("E-TYP-1820", "req.SliceDiagnosticOwnership")
+        ),
+        "SliceIndexNonUsize",
+        "Fixtures/RejectedSource/Expressions/SliceIndexNonUsize",
+        "Fixtures/RejectedSource/Expressions/SliceIndexNonUsize/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/SliceIndexNonUsize/Expected.uv",
+        "E-TYP-1820",
+        "req.SliceDiagnosticOwnership"
     ) {
         count = count + 1usize
     }
@@ -161,6 +212,23 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
     }
     if rejectedSpecimenMatches(
         rejectedSpecimen(
+            "CallArgType",
+            "Fixtures/RejectedSource/Expressions/CallArgType",
+            "Fixtures/RejectedSource/Expressions/CallArgType/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/CallArgType/Expected.uv",
+            expectedDiagnostic("E-SEM-2533", "Unify-Prim-Fail")
+        ),
+        "CallArgType",
+        "Fixtures/RejectedSource/Expressions/CallArgType",
+        "Fixtures/RejectedSource/Expressions/CallArgType/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/CallArgType/Expected.uv",
+        "E-SEM-2533",
+        "Unify-Prim-Fail"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
             "ExprUnresolved",
             "Fixtures/RejectedSource/Expressions/ExprUnresolved",
             "Fixtures/RejectedSource/Expressions/ExprUnresolved/Source/Main.uv",
@@ -173,6 +241,23 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Expressions/ExprUnresolved/Expected.uv",
         "E-MOD-1301",
         "rule.16.Expr-Unresolved-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "UnionDirectAccess",
+            "Fixtures/RejectedSource/Expressions/UnionDirectAccess",
+            "Fixtures/RejectedSource/Expressions/UnionDirectAccess/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/UnionDirectAccess/Expected.uv",
+            expectedDiagnostic("E-TYP-2202", "Union-DirectAccess-Err")
+        ),
+        "UnionDirectAccess",
+        "Fixtures/RejectedSource/Expressions/UnionDirectAccess",
+        "Fixtures/RejectedSource/Expressions/UnionDirectAccess/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/UnionDirectAccess/Expected.uv",
+        "E-TYP-2202",
+        "Union-DirectAccess-Err"
     ) {
         count = count + 1usize
     }
@@ -360,6 +445,23 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Expressions/TupleAccessNonTuple/Expected.uv",
         "E-SEM-2524",
         "diag.16.AccessAndPlaceExpressions"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "TupleAccessNonTuple",
+            "Fixtures/RejectedSource/Expressions/TupleAccessNonTuple",
+            "Fixtures/RejectedSource/Expressions/TupleAccessNonTuple/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/TupleAccessNonTuple/Expected.uv",
+            expectedDiagnostic("E-SEM-2524", "TupleAccess-NotTuple")
+        ),
+        "TupleAccessNonTuple",
+        "Fixtures/RejectedSource/Expressions/TupleAccessNonTuple",
+        "Fixtures/RejectedSource/Expressions/TupleAccessNonTuple/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/TupleAccessNonTuple/Expected.uv",
+        "E-SEM-2524",
+        "TupleAccess-NotTuple"
     ) {
         count = count + 1usize
     }
@@ -921,6 +1023,23 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Expressions/AsyncTryInfallible/Expected.uv",
         "E-CON-0230",
         "rule.16.Async-Try-Infallible-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "AsyncTryInfallible",
+            "Fixtures/RejectedSource/Expressions/AsyncTryInfallible",
+            "Fixtures/RejectedSource/Expressions/AsyncTryInfallible/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/AsyncTryInfallible/Expected.uv",
+            expectedDiagnostic("E-CON-0230", "diag.16.EffectfulCoreExpressions")
+        ),
+        "AsyncTryInfallible",
+        "Fixtures/RejectedSource/Expressions/AsyncTryInfallible",
+        "Fixtures/RejectedSource/Expressions/AsyncTryInfallible/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/AsyncTryInfallible/Expected.uv",
+        "E-CON-0230",
+        "diag.16.EffectfulCoreExpressions"
     ) {
         count = count + 1usize
     }
@@ -1627,6 +1746,23 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Expressions/IntLiteralCheckRange",
             "Fixtures/RejectedSource/Expressions/IntLiteralCheckRange/Source/Main.uv",
             "Fixtures/RejectedSource/Expressions/IntLiteralCheckRange/Expected.uv",
+            expectedDiagnostic("E-SEM-3161", "diag.16.LiteralAndNameExpressions")
+        ),
+        "IntLiteralCheckRange",
+        "Fixtures/RejectedSource/Expressions/IntLiteralCheckRange",
+        "Fixtures/RejectedSource/Expressions/IntLiteralCheckRange/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/IntLiteralCheckRange/Expected.uv",
+        "E-SEM-3161",
+        "diag.16.LiteralAndNameExpressions"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "IntLiteralCheckRange",
+            "Fixtures/RejectedSource/Expressions/IntLiteralCheckRange",
+            "Fixtures/RejectedSource/Expressions/IntLiteralCheckRange/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/IntLiteralCheckRange/Expected.uv",
             expectedDiagnostic("E-SEM-3161", "rule.16.Chk-Int-Literal")
         ),
         "IntLiteralCheckRange",
@@ -1635,6 +1771,23 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Expressions/IntLiteralCheckRange/Expected.uv",
         "E-SEM-3161",
         "rule.16.Chk-Int-Literal"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "FloatLiteralExplicitRequirement",
+            "Fixtures/RejectedSource/Expressions/FloatLiteralExplicitRequirement",
+            "Fixtures/RejectedSource/Expressions/FloatLiteralExplicitRequirement/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/FloatLiteralExplicitRequirement/Expected.uv",
+            expectedDiagnostic("E-TYP-1531", "diagnostics.CoreTypeDiagnostics")
+        ),
+        "FloatLiteralExplicitRequirement",
+        "Fixtures/RejectedSource/Expressions/FloatLiteralExplicitRequirement",
+        "Fixtures/RejectedSource/Expressions/FloatLiteralExplicitRequirement/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/FloatLiteralExplicitRequirement/Expected.uv",
+        "E-TYP-1531",
+        "diagnostics.CoreTypeDiagnostics"
     ) {
         count = count + 1usize
     }
@@ -1712,13 +1865,13 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Expressions/ControlExpressionDiagnosticOwnership",
             "Fixtures/RejectedSource/Expressions/ControlExpressionDiagnosticOwnership/Source/Main.uv",
             "Fixtures/RejectedSource/Expressions/ControlExpressionDiagnosticOwnership/Expected.uv",
-            expectedDiagnostic("E-SEM-2526", "req.16.ControlExpressionDiagnosticOwnership")
+            expectedDiagnostic("E-SEM-2830", "req.16.ControlExpressionDiagnosticOwnership")
         ),
         "ControlExpressionDiagnosticOwnership",
         "Fixtures/RejectedSource/Expressions/ControlExpressionDiagnosticOwnership",
         "Fixtures/RejectedSource/Expressions/ControlExpressionDiagnosticOwnership/Source/Main.uv",
         "Fixtures/RejectedSource/Expressions/ControlExpressionDiagnosticOwnership/Expected.uv",
-        "E-SEM-2526",
+        "E-SEM-2830",
         "req.16.ControlExpressionDiagnosticOwnership"
     ) {
         count = count + 1usize
@@ -1771,6 +1924,23 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Expressions/EnumEmpty/Expected.uv",
         "E-TYP-2001",
         "Enum-Empty-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "EnumEmpty",
+            "Fixtures/RejectedSource/Expressions/EnumEmpty",
+            "Fixtures/RejectedSource/Expressions/EnumEmpty/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/EnumEmpty/Expected.uv",
+            expectedDiagnostic("E-TYP-2001", "diagnostics.Enums")
+        ),
+        "EnumEmpty",
+        "Fixtures/RejectedSource/Expressions/EnumEmpty",
+        "Fixtures/RejectedSource/Expressions/EnumEmpty/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/EnumEmpty/Expected.uv",
+        "E-TYP-2001",
+        "diagnostics.Enums"
     ) {
         count = count + 1usize
     }
@@ -1895,6 +2065,23 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
     }
     if rejectedSpecimenMatches(
         rejectedSpecimen(
+            "AddressOfStaticHelpers",
+            "Fixtures/RejectedSource/Expressions/AddressOfStaticHelpers",
+            "Fixtures/RejectedSource/Expressions/AddressOfStaticHelpers/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/AddressOfStaticHelpers/Expected.uv",
+            expectedDiagnostic("E-TYP-2105", "diag.16.EffectfulCoreExpressions")
+        ),
+        "AddressOfStaticHelpers",
+        "Fixtures/RejectedSource/Expressions/AddressOfStaticHelpers",
+        "Fixtures/RejectedSource/Expressions/AddressOfStaticHelpers/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/AddressOfStaticHelpers/Expected.uv",
+        "E-TYP-2105",
+        "diag.16.EffectfulCoreExpressions"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
             "AddressOfIndexTyping",
             "Fixtures/RejectedSource/Expressions/AddressOfIndexTyping",
             "Fixtures/RejectedSource/Expressions/AddressOfIndexTyping/Source/Main.uv",
@@ -1912,18 +2099,52 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
     }
     if rejectedSpecimenMatches(
         rejectedSpecimen(
+            "AddressOfIndexTyping",
+            "Fixtures/RejectedSource/Expressions/AddressOfIndexTyping",
+            "Fixtures/RejectedSource/Expressions/AddressOfIndexTyping/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/AddressOfIndexTyping/Expected.uv",
+            expectedDiagnostic("E-TYP-1812", "diag.16.EffectfulCoreExpressions")
+        ),
+        "AddressOfIndexTyping",
+        "Fixtures/RejectedSource/Expressions/AddressOfIndexTyping",
+        "Fixtures/RejectedSource/Expressions/AddressOfIndexTyping/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/AddressOfIndexTyping/Expected.uv",
+        "E-TYP-1812",
+        "diag.16.EffectfulCoreExpressions"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
             "RawDerefUnsafeRequirement",
             "Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement",
             "Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement/Source/Main.uv",
             "Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement/Expected.uv",
-            expectedDiagnostic("E-TYP-2103", "rule.16.T-Deref-Raw")
+            expectedDiagnostic("E-TYP-2103", "rule.13.Deref-Raw-Unsafe")
         ),
         "RawDerefUnsafeRequirement",
         "Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement",
         "Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement/Source/Main.uv",
         "Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement/Expected.uv",
         "E-TYP-2103",
-        "rule.16.T-Deref-Raw"
+        "rule.13.Deref-Raw-Unsafe"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RawDerefUnsafeRequirement",
+            "Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement",
+            "Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement/Expected.uv",
+            expectedDiagnostic("E-TYP-2103", "diag.16.EffectfulCoreExpressions")
+        ),
+        "RawDerefUnsafeRequirement",
+        "Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement",
+        "Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement/Expected.uv",
+        "E-TYP-2103",
+        "diag.16.EffectfulCoreExpressions"
     ) {
         count = count + 1usize
     }
@@ -1933,14 +2154,31 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily",
             "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily/Source/Main.uv",
             "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily/Expected.uv",
-            expectedDiagnostic("E-TYP-2103", "rule.16.DerefPlaceTypingFamily")
+            expectedDiagnostic("E-TYP-2103", "rule.13.Deref-Raw-Unsafe")
         ),
         "RawDerefPlaceTypingFamily",
         "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily",
         "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily/Source/Main.uv",
         "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily/Expected.uv",
         "E-TYP-2103",
-        "rule.16.DerefPlaceTypingFamily"
+        "rule.13.Deref-Raw-Unsafe"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RawDerefPlaceTypingFamily",
+            "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily",
+            "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily/Expected.uv",
+            expectedDiagnostic("E-TYP-2103", "diag.16.EffectfulCoreExpressions")
+        ),
+        "RawDerefPlaceTypingFamily",
+        "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily",
+        "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily/Expected.uv",
+        "E-TYP-2103",
+        "diag.16.EffectfulCoreExpressions"
     ) {
         count = count + 1usize
     }
@@ -1967,6 +2205,23 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership",
             "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership/Source/Main.uv",
             "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership/Expected.uv",
+            expectedDiagnostic("E-TYP-2071", "rule.13.Widen-NonModal")
+        ),
+        "WidenTypingDiagnosticsOwnership",
+        "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership",
+        "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership/Expected.uv",
+        "E-TYP-2071",
+        "rule.13.Widen-NonModal"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "WidenTypingDiagnosticsOwnership",
+            "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership",
+            "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership/Expected.uv",
             expectedDiagnostic("E-TYP-2071", "req.16.WidenTypingDiagnosticsOwnershipForCastTransmute")
         ),
         "WidenTypingDiagnosticsOwnership",
@@ -1975,6 +2230,40 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership/Expected.uv",
         "E-TYP-2071",
         "req.16.WidenTypingDiagnosticsOwnershipForCastTransmute"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "WidenTypingDiagnosticsOwnership",
+            "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership",
+            "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership/Expected.uv",
+            expectedDiagnostic("E-TYP-2071", "diag.ModalWidening")
+        ),
+        "WidenTypingDiagnosticsOwnership",
+        "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership",
+        "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership/Expected.uv",
+        "E-TYP-2071",
+        "diag.ModalWidening"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "WidenTypingDiagnosticsOwnership",
+            "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership",
+            "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership/Expected.uv",
+            expectedDiagnostic("E-TYP-2071", "diagnostics.ModalPointerSupplement")
+        ),
+        "WidenTypingDiagnosticsOwnership",
+        "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership",
+        "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership/Expected.uv",
+        "E-TYP-2071",
+        "diagnostics.ModalPointerSupplement"
     ) {
         count = count + 1usize
     }

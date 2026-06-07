@@ -36,6 +36,7 @@ ParseElemResult<DeriveClause> ParseDeriveClause(Parser parser) {
   DeriveClause clause{};
   if (IsLexemeToken(parser, "requires")) {
     SPEC_RULE("Parse-DeriveClause-Requires");
+    SPEC_RULE("rule.22.Parse-DeriveClause-Requires");
     clause.kind = DeriveClauseKind::Requires;
   } else if (IsLexemeToken(parser, "emits")) {
     SPEC_RULE("Parse-DeriveClause-Emits");

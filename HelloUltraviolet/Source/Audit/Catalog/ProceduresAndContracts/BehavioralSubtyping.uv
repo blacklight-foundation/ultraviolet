@@ -9,7 +9,7 @@ public procedure validatedProceduresAndContractsBehavioralSubtypingObligations()
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "req.15.BehavioralSubtypingNoSurfaceSyntax",
-        57291usize,
+        57293usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresBehavioralSubtypingReference",
         "Source/Reference/Procedures/BehavioralSubtyping.uv"
@@ -18,7 +18,7 @@ public procedure validatedProceduresAndContractsBehavioralSubtypingObligations()
     }
     if acceptedObligationEntryMatches(
         "req.15.BehavioralSubtypingNotParserOwned",
-        57306usize,
+        57308usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresBehavioralSubtypingReference",
         "Source/Reference/Procedures/BehavioralSubtyping.uv"
@@ -27,7 +27,7 @@ public procedure validatedProceduresAndContractsBehavioralSubtypingObligations()
     }
     if acceptedObligationEntryMatches(
         "def.15.BehavioralSubtypingRelationship",
-        57321usize,
+        57323usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresBehavioralSubtypingReference",
         "Source/Reference/Procedures/BehavioralSubtyping.uv"
@@ -36,7 +36,7 @@ public procedure validatedProceduresAndContractsBehavioralSubtypingObligations()
     }
     if rejectedSourceObligationEntryMatches(
         "req.15.BehavioralSubtypingLiskovRequirement",
-        57336usize,
+        57338usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedProceduresRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Procedures/BehavioralSubtypingLiskov/Source/Main.uv"
@@ -45,7 +45,7 @@ public procedure validatedProceduresAndContractsBehavioralSubtypingObligations()
     }
     if rejectedSourceObligationEntryMatches(
         "req.15.BehavioralSubtypingPreconditionRule",
-        57349usize,
+        57351usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedProceduresRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Procedures/BehavioralSubtypingPrecondition/Source/Main.uv"
@@ -54,7 +54,7 @@ public procedure validatedProceduresAndContractsBehavioralSubtypingObligations()
     }
     if rejectedSourceObligationEntryMatches(
         "req.15.BehavioralSubtypingPostconditionRule",
-        57365usize,
+        57367usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedProceduresRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Procedures/BehavioralSubtypingPostcondition/Source/Main.uv"
@@ -63,7 +63,7 @@ public procedure validatedProceduresAndContractsBehavioralSubtypingObligations()
     }
     if acceptedObligationEntryMatches(
         "req.15.BehavioralSubtypingVerificationStrategy",
-        57381usize,
+        57383usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresBehavioralSubtypingReference",
         "Source/Reference/Procedures/BehavioralSubtyping.uv"
@@ -72,34 +72,34 @@ public procedure validatedProceduresAndContractsBehavioralSubtypingObligations()
     }
     if acceptedObligationEntryMatches(
         "req.15.BehavioralSubtypingNoRuntimeChecks",
-        57397usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresBehavioralSubtypingReference",
-        "Source/Reference/Procedures/BehavioralSubtyping.uv"
+        57399usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectFlowProofRuntimeErasureExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "req.15.BehavioralSubtypingNoAdditionalRuntimeSemantics",
-        57412usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresBehavioralSubtypingReference",
-        "Source/Reference/Procedures/BehavioralSubtyping.uv"
+        57414usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectFlowProofRuntimeErasureExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "req.15.BehavioralSubtypingLoweringNoExtraChecks",
-        57427usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresBehavioralSubtypingReference",
-        "Source/Reference/Procedures/BehavioralSubtyping.uv"
+        57429usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectFlowProofRuntimeErasureExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if rejectedSourceObligationEntryMatches(
         "diag.15.BehavioralSubtyping",
-        57442usize,
+        57444usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedProceduresRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Procedures/BehavioralSubtypingDiagnostics/Source/Main.uv"

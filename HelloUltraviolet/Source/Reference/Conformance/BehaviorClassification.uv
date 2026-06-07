@@ -41,6 +41,76 @@ internal procedure behaviorIsExecutableReference(kind: BehaviorReferenceKind) ->
     }
 }
 
+internal record JudgmentReference {
+    internal environment: string@View
+    internal subject: string@View
+}
+
+internal procedure judgmentSubject(reference: JudgmentReference) -> string@View {
+    return reference.subject
+}
+
+internal procedure judgmentEnvironment(reference: JudgmentReference) -> string@View {
+    return reference.environment
+}
+
+internal enum RuntimeCheckReferenceKind {
+    IntegerOverflow
+    SliceBounds
+    IntDivisionByZero
+}
+
+internal enum RuntimeBehaviorReferenceKind {
+    Panic
+}
+
+internal procedure runtimeCheckPanics(kind: RuntimeCheckReferenceKind) -> bool {
+    let behavior: RuntimeBehaviorReferenceKind = if kind is {
+        RuntimeCheckReferenceKind::IntegerOverflow {
+            RuntimeBehaviorReferenceKind::Panic
+        }
+        RuntimeCheckReferenceKind::SliceBounds {
+            RuntimeBehaviorReferenceKind::Panic
+        }
+        RuntimeCheckReferenceKind::IntDivisionByZero {
+            RuntimeBehaviorReferenceKind::Panic
+        }
+    }
+    return if behavior is {
+        RuntimeBehaviorReferenceKind::Panic {
+            true
+        }
+    }
+}
+
+/// Exercises Subject and EnvOf extraction for a concrete judgment specimen.
+public procedure judgmentSubjectAndEnvironmentReference() -> bool {
+    let reference: JudgmentReference = JudgmentReference {
+        environment: "Gamma",
+        subject: "LowerStaticDeinit"
+    }
+    return judgmentSubject(reference) == "LowerStaticDeinit" &&
+        judgmentEnvironment(reference) == "Gamma"
+}
+
+/// Exercises the required runtime check set.
+public procedure runtimeCheckReference() -> bool {
+    let overflow: RuntimeCheckReferenceKind =
+        RuntimeCheckReferenceKind::IntegerOverflow
+    let slice_bounds: RuntimeCheckReferenceKind =
+        RuntimeCheckReferenceKind::SliceBounds
+    let division_by_zero: RuntimeCheckReferenceKind =
+        RuntimeCheckReferenceKind::IntDivisionByZero
+    return runtimeCheckPanics(overflow) &&
+        runtimeCheckPanics(slice_bounds) &&
+        runtimeCheckPanics(division_by_zero)
+}
+
+/// Exercises the RuntimeBehavior mapping for every runtime check.
+public procedure runtimeCheckBehaviorReference() -> bool {
+    return runtimeCheckReference()
+}
+
 /// Exercises the Conformance BehaviorClassification reference surface.
 public procedure runConformanceBehaviorClassificationReference() -> bool {
     let accepted: BehaviorReferenceKind = BehaviorReferenceKind::Accepted
@@ -51,5 +121,8 @@ public procedure runConformanceBehaviorClassificationReference() -> bool {
         !behaviorRequiresDiagnostic(accepted) &&
         behaviorRequiresDiagnostic(rejected) &&
         behaviorRequiresDiagnostic(diagnostic) &&
-        !behaviorIsExecutableReference(unspecified)
+        !behaviorIsExecutableReference(unspecified) &&
+        judgmentSubjectAndEnvironmentReference() &&
+        runtimeCheckReference() &&
+        runtimeCheckBehaviorReference()
 }

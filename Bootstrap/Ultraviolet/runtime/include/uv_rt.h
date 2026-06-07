@@ -720,8 +720,12 @@ UVDynObject ultraviolet_x3a_x3aruntime_x3a_x3acontext_x3a_x3ainline(
   const UVContext* self);
 
 // Section 19.4 Reactor methods
+UVAsyncResumeValue ultraviolet_x3a_x3aruntime_x3a_x3areactor_x3a_x3arun(
+  const UVDynObject* self,
+  const void* future);
+
 void* ultraviolet_x3a_x3aruntime_x3a_x3areactor_x3a_x3aregister(
-  UVDynObject self,
+  const UVDynObject* self,
   const void* future);
 
 // Â§18.2 ExecutionDomain methods
@@ -768,7 +772,8 @@ void uv_dispatch_run(const UVRange* range, size_t elem_size, size_t result_size,
                            void* reduce_result,
                            void (*reduce_fn)(void* hosted_env, void* lhs, void* rhs, void* out, void* panic_out),
                            int ordered,
-                           size_t chunk_size);
+                           size_t chunk_size,
+                           UVUsize3 workgroup_size);
 
 // Dynamic key runtime primitives.
 void* uv_key_scope_enter(void);

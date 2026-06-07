@@ -305,7 +305,9 @@ TryPatternInResult TryParsePatternIn(Parser parser) {
 //   try_in - Result from successful TryParsePatternIn call
 
 ParseElemResult<ExprPtr> ParseLoopIterExpr(Parser parser, TryPatternInResult try_in) {
+  SPEC_RULE("requirement.21.AsyncIterationSyntax");
   SPEC_RULE("Parse-LoopTail-Iter");
+  SPEC_RULE("rule.21.Parse-LoopTail-Iter");
   Parser start = parser;
 
   // Parse optional type annotation (may have been partially parsed in TryParsePatternIn)

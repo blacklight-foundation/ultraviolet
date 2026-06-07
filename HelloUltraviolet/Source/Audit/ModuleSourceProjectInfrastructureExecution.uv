@@ -1,0 +1,439 @@
+//! Module, source, and project infrastructure artifact execution checks.
+
+internal procedure moduleSourceProjectConformanceContains(
+    authority: TestAuthority,
+    out_dir_suffix: string@View,
+    log_name: string@View,
+    required_text: string@View
+) -> bool {
+    return acceptedProjectConformanceContains(
+        authority,
+        out_dir_suffix,
+        log_name,
+        required_text
+    )
+}
+
+internal procedure moduleSourceProjectExternAbiFormsConformanceContains(
+    authority: TestAuthority,
+    required_text: string@View
+) -> bool {
+    return moduleSourceProjectConformanceContains(
+        authority,
+        "ExternAbiFormsBuild",
+        "extern_abi_forms.conformance.log",
+        required_text
+    )
+}
+
+internal procedure moduleSourceProjectExternAbiFormsConformanceLineContains(
+    authority: TestAuthority,
+    required_marker: string@View,
+    required_payload: string@View
+) -> bool {
+    return acceptedProjectConformanceLineContains(
+        authority,
+        "ExternAbiFormsBuild",
+        "extern_abi_forms.conformance.log",
+        required_marker,
+        required_payload
+    )
+}
+
+internal procedure moduleSourceProjectModuleAggregationLineContains(
+    authority: TestAuthority,
+    required_payload: string@View
+) -> bool {
+    return moduleSourceProjectExternAbiFormsConformanceLineContains(
+        authority,
+        "\tdef.ModuleAggregationInputsOutputs\t",
+        required_payload
+    )
+}
+
+internal procedure moduleSourceProjectSharedResolutionLineContains(
+    authority: TestAuthority,
+    required_payload: string@View
+) -> bool {
+    return moduleSourceProjectExternAbiFormsConformanceLineContains(
+        authority,
+        "\tdef.SharedResolutionOutputs\t",
+        required_payload
+    )
+}
+
+internal procedure moduleSourceProjectModuleAggregationPayloadMatches(
+    authority: TestAuthority
+) -> bool {
+    return moduleSourceProjectModuleAggregationLineContains(
+        authority,
+        "source%3DCompilerMain"
+    ) &&
+        moduleSourceProjectModuleAggregationLineContains(
+            authority,
+            "tuple%3DModuleAggInputsOutputs%3Bmodules%3D2"
+        ) &&
+        moduleSourceProjectModuleAggregationLineContains(
+            authority,
+            "source_root%3D"
+        ) &&
+        moduleSourceProjectModuleAggregationLineContains(
+            authority,
+            "compilation_units%3D2"
+        ) &&
+        moduleSourceProjectModuleAggregationLineContains(
+            authority,
+            "compilation_unit_files%3D2"
+        ) &&
+        moduleSourceProjectModuleAggregationLineContains(
+            authority,
+            "compilation_unit_files%3D2%3Bast_modules%3D2"
+        ) &&
+        moduleSourceProjectModuleAggregationLineContains(
+            authority,
+            "project_ast_modules%3D2"
+        ) &&
+        moduleSourceProjectModuleAggregationLineContains(
+            authority,
+            "name_maps%3D2"
+        ) &&
+        moduleSourceProjectModuleAggregationLineContains(
+            authority,
+            "resolved_modules%3D2"
+        ) &&
+        moduleSourceProjectModuleAggregationLineContains(
+            authority,
+            "resolve_ok%3Dtrue"
+        ) &&
+        moduleSourceProjectModuleAggregationLineContains(
+            authority,
+            "init_plan%3Dtrue"
+        ) &&
+        moduleSourceProjectModuleAggregationLineContains(
+            authority,
+            "dependency_graph_modules%3D2"
+        ) &&
+        moduleSourceProjectModuleAggregationLineContains(
+            authority,
+            "type_edges%3D"
+        ) &&
+        moduleSourceProjectModuleAggregationLineContains(
+            authority,
+            "eager_edges%3D"
+        ) &&
+        moduleSourceProjectModuleAggregationLineContains(
+            authority,
+            "lazy_edges%3D"
+        ) &&
+        moduleSourceProjectModuleAggregationLineContains(
+            authority,
+            "init_order_count%3D2"
+        ) &&
+        moduleSourceProjectModuleAggregationLineContains(
+            authority,
+            "topo_ok%3Dtrue"
+        ) &&
+        moduleSourceProjectModuleAggregationLineContains(
+            authority,
+            "all_outputs_present%3Dtrue"
+        )
+}
+
+internal procedure moduleSourceProjectSharedResolutionPayloadMatches(
+    authority: TestAuthority
+) -> bool {
+    return moduleSourceProjectSharedResolutionLineContains(
+        authority,
+        "source%3DResolveModules"
+    ) &&
+        moduleSourceProjectSharedResolutionLineContains(
+            authority,
+            "tuple%3DResolveOutputs<M'>%3Binput_modules%3D2"
+        ) &&
+        moduleSourceProjectSharedResolutionLineContains(
+            authority,
+            "resolved_modules%3D2"
+        ) &&
+        moduleSourceProjectSharedResolutionLineContains(
+            authority,
+            "name_maps%3D2"
+        ) &&
+        moduleSourceProjectSharedResolutionLineContains(
+            authority,
+            "module_names%3D2"
+        ) &&
+        moduleSourceProjectSharedResolutionLineContains(
+            authority,
+            "all_modules_resolved%3Dtrue"
+        ) &&
+        moduleSourceProjectSharedResolutionLineContains(
+            authority,
+            "name_map_coverage%3Dtrue"
+        )
+}
+
+#test(name: "module source project extern ABI forms emit parser obligations")
+internal procedure moduleSourceProjectExternAbiFormsExecute(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+
+    if !artifactProjectRunCase(
+        authority,
+        "Fixtures/ArtifactProjects/ExternAbiForms",
+        authority.target_profile,
+        "off",
+        "ExternAbiForms.out",
+        "ExternAbiForms.err",
+        "ExternAbiFormsBuild",
+        "extern_abi_forms.conformance.log"
+    ) {
+        return false
+    }
+
+    return moduleSourceProjectConformanceContains(
+        authority,
+        "ExternAbiFormsBuild",
+        "extern_abi_forms.conformance.log",
+        "\tParse-ExternAbiOpt-None\t"
+    ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ExternAbiFormsBuild",
+            "extern_abi_forms.conformance.log",
+            "\tParse-ExternAbiOpt-String\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ExternAbiFormsBuild",
+            "extern_abi_forms.conformance.log",
+            "\tParse-ExternAbiOpt-Ident\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ExternAbiFormsBuild",
+            "extern_abi_forms.conformance.log",
+            "\tdef.ModuleDirOf\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ExternAbiFormsBuild",
+            "extern_abi_forms.conformance.log",
+            "\tdef.ModuleAggregationInputsOutputs\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ExternAbiFormsBuild",
+            "extern_abi_forms.conformance.log",
+            "tuple%3DModuleAggInputsOutputs"
+        ) &&
+        moduleSourceProjectModuleAggregationPayloadMatches(authority) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ExternAbiFormsBuild",
+            "extern_abi_forms.conformance.log",
+            "\tResolve-Import-Direct\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ExternAbiFormsBuild",
+            "extern_abi_forms.conformance.log",
+            "\tResolve-ModulePath-Direct\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ExternAbiFormsBuild",
+            "extern_abi_forms.conformance.log",
+            "\tModulePrefix-Direct\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ExternAbiFormsBuild",
+            "extern_abi_forms.conformance.log",
+            "\tconformance.ImportDeclarationLowering\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ExternAbiFormsBuild",
+            "extern_abi_forms.conformance.log",
+            "\tconformance.UsingDeclarationLowering\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ExternAbiFormsBuild",
+            "extern_abi_forms.conformance.log",
+            "\tconformance.ExternBlockLowering\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ExternAbiFormsBuild",
+            "extern_abi_forms.conformance.log",
+            "boundary%3Dextern_import"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ExternAbiFormsBuild",
+            "extern_abi_forms.conformance.log",
+            "\tdef.ModuleInitializationDependencyEnvironment\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ExternAbiFormsBuild",
+            "extern_abi_forms.conformance.log",
+            "env_fields%3Dself,Modules,Alias,UsingValueMap,UsingTypeMap"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ExternAbiFormsBuild",
+            "extern_abi_forms.conformance.log",
+            "\tdef.TypeReferenceEnvironmentAliases\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ExternAbiFormsBuild",
+            "extern_abi_forms.conformance.log",
+            "\tdef.ValueReferenceEnvironmentAliases\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ExternAbiFormsBuild",
+            "extern_abi_forms.conformance.log",
+            "\tdef.SharedResolutionOutputs\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ExternAbiFormsBuild",
+            "extern_abi_forms.conformance.log",
+            "tuple%3DResolveOutputs<M'>"
+        ) &&
+        moduleSourceProjectSharedResolutionPayloadMatches(authority) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ExternAbiFormsBuild",
+            "extern_abi_forms.conformance.log",
+            "\tconformance.ModuleAggregationEagerGraphLoweringInput\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ExternAbiFormsBuild",
+            "extern_abi_forms.conformance.log",
+            "eager_edges%3D"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ExternAbiFormsBuild",
+            "extern_abi_forms.conformance.log",
+            "\tconformance.ModuleAggregationLifecycleLoweringOwnership\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ExternAbiFormsBuild",
+            "extern_abi_forms.conformance.log",
+            "init_order_count%3D"
+        )
+}
+
+#test(name: "module source project static lowering emits exact item obligations")
+internal procedure moduleSourceProjectStaticLoweringItemsExecute(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+
+    if !artifactProjectRunCase(
+        authority,
+        "Fixtures/ArtifactProjects/EmitLlLibrary",
+        authority.target_profile,
+        "off",
+        "ModuleSourceStaticLowering.out",
+        "ModuleSourceStaticLowering.err",
+        "ModuleSourceStaticLoweringBuild",
+        "module_source_static_lowering.conformance.log"
+    ) {
+        return false
+    }
+
+    return moduleSourceProjectConformanceContains(
+        authority,
+        "ModuleSourceStaticLoweringBuild",
+        "module_source_static_lowering.conformance.log",
+        "\tLower-StaticInitItems-Empty\t"
+    ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ModuleSourceStaticLoweringBuild",
+            "module_source_static_lowering.conformance.log",
+            "\tLower-StaticInitItems-Cons\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ModuleSourceStaticLoweringBuild",
+            "module_source_static_lowering.conformance.log",
+            "\tLower-StaticDeinitNames-Empty\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ModuleSourceStaticLoweringBuild",
+            "module_source_static_lowering.conformance.log",
+            "\tLower-StaticDeinitNames-Cons-Resp\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ModuleSourceStaticLoweringBuild",
+            "module_source_static_lowering.conformance.log",
+            "\tLower-StaticDeinitNames-Cons-NoResp\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ModuleSourceStaticLoweringBuild",
+            "module_source_static_lowering.conformance.log",
+            "\tLower-StaticDeinit-Item\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ModuleSourceStaticLoweringBuild",
+            "module_source_static_lowering.conformance.log",
+            "\tLower-StaticDeinitItems-Empty\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ModuleSourceStaticLoweringBuild",
+            "module_source_static_lowering.conformance.log",
+            "\tLower-StaticDeinitItems-Cons\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ModuleSourceStaticLoweringBuild",
+            "module_source_static_lowering.conformance.log",
+            "\tdef.SeqIRList\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ModuleSourceStaticLoweringBuild",
+            "module_source_static_lowering.conformance.log",
+            "source%3DSeqIRList"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ModuleSourceStaticLoweringBuild",
+            "module_source_static_lowering.conformance.log",
+            "\tdef.StaticStoreIR\t"
+        ) &&
+        moduleSourceProjectConformanceContains(
+            authority,
+            "ModuleSourceStaticLoweringBuild",
+            "module_source_static_lowering.conformance.log",
+            "source%3DStaticStoreIR"
+        )
+}

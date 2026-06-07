@@ -5,7 +5,7 @@ static const DiagMessageEntry kDiagMessages[] = {
   {"E-CNF-0401", Severity::Error, "Reserved keyword used as identifier"},
   {"E-CNF-0402", Severity::Error, "Reserved namespace `ultraviolet.*` used by user code"},
   {"E-CNF-0403", Severity::Error, "Primitive type name shadowed at module scope"},
-  {"E-CNF-0404", Severity::Error, "Shadowing of `Self`, `Drop`, `Bitcopy`, `Clone`, `Eq`, `Hash`, `Hasher`, `Iterator`, `Step`, `FfiSafe`, `string`, `bytes`, `Modal`, `Region`, `RegionOptions`, `CancelToken`, `Context`, `System`, `ExecutionDomain`, `CpuSet`, `Priority`, or `Reactor`"},
+  {"E-CNF-0404", Severity::Error, "Shadowing of `Self`, `Drop`, `Bitcopy`, `Clone`, `Eq`, `Hash`, `Hasher`, `Iterator`, `Discrete`, `FfiSafe`, `string`, `bytes`, `Modal`, `Region`, `RegionOptions`, `CancelToken`, `Context`, `System`, `ExecutionDomain`, `CpuSet`, `Priority`, or `Reactor`"},
   {"E-CNF-0405", Severity::Error, "Shadowing of async type alias (`Async`, `Future`, `Sequence`, `Stream`, `Pipe`, `Exchange`, `Tracked`)"},
   {"E-CNF-0406", Severity::Error, "User declaration uses `gen_` prefix"},
   {"E-CON-0001", Severity::Error, "Access to `shared` path outside valid key context"},

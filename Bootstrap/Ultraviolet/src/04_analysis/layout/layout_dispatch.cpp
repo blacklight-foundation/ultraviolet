@@ -48,10 +48,13 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <string>
+#include <string_view>
 #include <type_traits>
 #include <unordered_map>
 
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 #include "02_source/attributes/attribute_registry.h"
 #include "04_analysis/caps/cap_concurrency.h"
 #include "04_analysis/generics/monomorphize.h"
@@ -63,6 +66,73 @@
 
 namespace ultraviolet::analysis::layout {
 namespace {
+
+void RecordStringBytesLoweringLayout(std::string_view obligation,
+                                     std::string_view type_name,
+                                     std::string_view state_name,
+                                     std::uint64_t ptr_size,
+                                     std::uint64_t ptr_align) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  const bool managed = state_name == "Managed";
+  std::string payload = "source=LayoutDispatcher.StringBytes";
+  payload += ";type=";
+  payload += type_name;
+  payload += ";state=";
+  payload += state_name;
+  payload += ";fields=pointer,length";
+  if (managed) {
+    payload += ",capacity";
+  }
+  payload += ";offsets=0,";
+  payload += std::to_string(ptr_size);
+  if (managed) {
+    payload += ",";
+    payload += std::to_string(2 * ptr_size);
+  }
+  payload += ";size=";
+  payload += std::to_string((managed ? 3 : 2) * ptr_size);
+  payload += ";align=";
+  payload += std::to_string(ptr_align);
+  payload += ";ptr_size=";
+  payload += std::to_string(ptr_size);
+  payload += ";ptr_align=";
+  payload += std::to_string(ptr_align);
+
+  core::Conformance::Record(std::string(obligation), std::nullopt, payload);
+}
+
+bool IsSingleSegmentTypePath(const ultraviolet::analysis::TypePath& path,
+                             std::string_view name) {
+  if (path.size() != 1) {
+    return false;
+  }
+  const std::string& segment = path.front();
+  return segment.size() == name.size() &&
+         segment.compare(0, segment.size(), name.data(), name.size()) == 0;
+}
+
+bool IsGpuPtrAddressSpaceType(const ultraviolet::analysis::TypeRef& type) {
+  if (!type) {
+    return false;
+  }
+  const auto* path = ultraviolet::analysis::AppliedTypePath(*type);
+  const auto* args = ultraviolet::analysis::AppliedTypeArgs(*type);
+  if (!path || !args || !args->empty()) {
+    return false;
+  }
+  return IsSingleSegmentTypePath(*path, "Global") ||
+         IsSingleSegmentTypePath(*path, "Shared") ||
+         IsSingleSegmentTypePath(*path, "Private");
+}
+
+bool IsGpuPtrLayoutType(const ultraviolet::analysis::TypePath& path,
+                        const std::vector<ultraviolet::analysis::TypeRef>& args) {
+  return IsSingleSegmentTypePath(path, "GpuPtr") && args.size() == 2 &&
+         args[0] && IsGpuPtrAddressSpaceType(args[1]);
+}
 
 std::optional<ultraviolet::analysis::TypeRef> ResolveOpaqueUnderlying(
     const ultraviolet::analysis::ScopeContext& ctx,
@@ -449,7 +519,8 @@ std::optional<ultraviolet::analysis::TypeRef> LowerTypeForLayoutWithSubst(
 
 std::optional<LoweredAsyncType> LowerAsyncType(
     const ultraviolet::analysis::AsyncSig& sig) {
-  SPEC_RULE("Lower-Async-Type");
+  SPEC_RULE("def.21.AsyncTypeLoweringForms");
+  SPEC_RULE("rule.21.Lower-Async-Type");
 
   std::vector<ultraviolet::analysis::TypeRef> async_args;
   async_args.reserve(4);
@@ -473,6 +544,9 @@ std::optional<LoweredAsyncType> LowerAsyncType(
     states.push_back("Failed");
     members.push_back(ultraviolet::analysis::MakeTypeModalState(
         {"Async"}, "Failed", std::move(async_args)));
+  } else {
+    SPEC_RULE("requirement.21.AsyncFailedUninhabitedForNeverError");
+    SPEC_RULE("requirement.21.AsyncNeverErrorLowering");
   }
 
   return LoweredAsyncType{
@@ -483,10 +557,14 @@ std::optional<LoweredAsyncType> LowerAsyncType(
 
 std::optional<LoweredAsyncType> LowerAsyncType(
     const ultraviolet::analysis::TypeRef& type) {
-  SPEC_RULE("Lower-Async-Type");
+  SPEC_RULE("rule.21.Lower-Async-Type");
   const auto sig = ultraviolet::analysis::GetAsyncSig(type);
   if (!sig.has_value()) {
     return std::nullopt;
+  }
+  const auto* path = ultraviolet::analysis::AppliedTypePath(*type);
+  if (path && !path->empty() && path->back() != "Async") {
+    SPEC_RULE("rule.21.Lower-Async-Alias");
   }
   return LowerAsyncType(*sig);
 }
@@ -799,6 +877,8 @@ std::optional<Layout> LayoutOf(const ultraviolet::analysis::ScopeContext& ctx,
 
   if (const auto* perm = std::get_if<ultraviolet::analysis::TypePerm>(&type->node)) {
     SPEC_RULE("Layout-Perm");
+    SPEC_RULE("rule.24.Layout-Perm");
+    SPEC_RULE("conformance.PermissionLayoutNeutrality");
     return LayoutOf(ctx, perm->base);
   }
   if (const auto* refine =
@@ -815,6 +895,7 @@ std::optional<Layout> LayoutOf(const ultraviolet::analysis::ScopeContext& ctx,
 
   if (const auto* prim = std::get_if<ultraviolet::analysis::TypePrim>(&type->node)) {
     SPEC_RULE("Layout-Prim");
+    SPEC_RULE("rule.24.Layout-Prim");
     const auto size = PrimSize(ctx, prim->name);
     const auto align = PrimAlign(ctx, prim->name);
     if (!size.has_value() || !align.has_value()) {
@@ -825,14 +906,17 @@ std::optional<Layout> LayoutOf(const ultraviolet::analysis::ScopeContext& ctx,
 
   if (std::holds_alternative<ultraviolet::analysis::TypePtr>(type->node)) {
     SPEC_RULE("Layout-Ptr");
+    SPEC_RULE("rule.24.Layout-Ptr");
     return Layout{ptr_size, ptr_align};
   }
   if (std::holds_alternative<ultraviolet::analysis::TypeRawPtr>(type->node)) {
     SPEC_RULE("Layout-RawPtr");
+    SPEC_RULE("rule.24.Layout-RawPtr");
     return Layout{ptr_size, ptr_align};
   }
   if (std::holds_alternative<ultraviolet::analysis::TypeFunc>(type->node)) {
     SPEC_RULE("Layout-Func");
+    SPEC_RULE("rule.24.Layout-Func");
     return Layout{ptr_size, ptr_align};
   }
   if (std::holds_alternative<ultraviolet::analysis::TypeClosure>(type->node)) {
@@ -863,9 +947,21 @@ std::optional<Layout> LayoutOf(const ultraviolet::analysis::ScopeContext& ctx,
     }
     if (*str->state == ultraviolet::analysis::StringState::Managed) {
       SPEC_RULE("Layout-String-Managed");
+      RecordStringBytesLoweringLayout(
+          "def.StringManagedLoweringLayout",
+          "string",
+          "Managed",
+          ptr_size,
+          ptr_align);
       return Layout{3 * ptr_size, ptr_align};
     }
     SPEC_RULE("Layout-String-View");
+    RecordStringBytesLoweringLayout(
+        "def.StringViewLoweringLayout",
+        "string",
+        "View",
+        ptr_size,
+        ptr_align);
     return Layout{2 * ptr_size, ptr_align};
   }
 
@@ -877,9 +973,21 @@ std::optional<Layout> LayoutOf(const ultraviolet::analysis::ScopeContext& ctx,
     }
     if (*bytes->state == ultraviolet::analysis::BytesState::Managed) {
       SPEC_RULE("Layout-Bytes-Managed");
+      RecordStringBytesLoweringLayout(
+          "def.BytesManagedLoweringLayout",
+          "bytes",
+          "Managed",
+          ptr_size,
+          ptr_align);
       return Layout{3 * ptr_size, ptr_align};
     }
     SPEC_RULE("Layout-Bytes-View");
+    RecordStringBytesLoweringLayout(
+        "def.BytesViewLoweringLayout",
+        "bytes",
+        "View",
+        ptr_size,
+        ptr_align);
     return Layout{2 * ptr_size, ptr_align};
   }
 
@@ -981,6 +1089,11 @@ std::optional<Layout> LayoutOf(const ultraviolet::analysis::ScopeContext& ctx,
               ultraviolet::analysis::LookupBuiltinModalLayout(*path)) {
         return Layout{builtin_layout->size, builtin_layout->align};
       }
+      if (IsGpuPtrLayoutType(*path, args)) {
+        SPEC_RULE("Layout-Ptr");
+        SPEC_RULE("rule.24.Layout-Ptr");
+        return Layout{ptr_size, ptr_align};
+      }
       const auto* decl = ultraviolet::analysis::LookupTypeDecl(ctx, *path);
       if (!decl) {
         return std::nullopt;
@@ -1057,6 +1170,7 @@ std::optional<std::uint64_t> SizeOf(const ultraviolet::analysis::ScopeContext& c
   const std::uint64_t ptr_size = PtrSize(ctx);
   if (const auto* perm = std::get_if<ultraviolet::analysis::TypePerm>(&type->node)) {
     SPEC_RULE("Size-Perm");
+    SPEC_RULE("rule.24.Size-Perm");
     return SizeOf(ctx, perm->base);
   }
   if (const auto* refine =
@@ -1076,14 +1190,17 @@ std::optional<std::uint64_t> SizeOf(const ultraviolet::analysis::ScopeContext& c
   }
   if (std::holds_alternative<ultraviolet::analysis::TypePtr>(type->node)) {
     SPEC_RULE("Size-Ptr");
+    SPEC_RULE("rule.24.Size-Ptr");
     return ptr_size;
   }
   if (std::holds_alternative<ultraviolet::analysis::TypeRawPtr>(type->node)) {
     SPEC_RULE("Size-RawPtr");
+    SPEC_RULE("rule.24.Size-RawPtr");
     return ptr_size;
   }
   if (std::holds_alternative<ultraviolet::analysis::TypeFunc>(type->node)) {
     SPEC_RULE("Size-Func");
+    SPEC_RULE("rule.24.Size-Func");
     return ptr_size;
   }
   if (std::holds_alternative<ultraviolet::analysis::TypeClosure>(type->node)) {
@@ -1193,6 +1310,11 @@ std::optional<std::uint64_t> SizeOf(const ultraviolet::analysis::ScopeContext& c
     if (IsRuntimeHandleModalPath(*path)) {
       return ptr_size;
     }
+    if (IsGpuPtrLayoutType(*path, args)) {
+      SPEC_RULE("Size-Ptr");
+      SPEC_RULE("rule.24.Size-Ptr");
+      return ptr_size;
+    }
     const auto* decl = ultraviolet::analysis::LookupTypeDecl(ctx, *path);
     if (!decl) {
       return std::nullopt;
@@ -1251,6 +1373,7 @@ std::optional<std::uint64_t> AlignOf(const ultraviolet::analysis::ScopeContext& 
   const std::uint64_t ptr_align = PtrAlign(ctx);
   if (const auto* perm = std::get_if<ultraviolet::analysis::TypePerm>(&type->node)) {
     SPEC_RULE("Align-Perm");
+    SPEC_RULE("rule.24.Align-Perm");
     return AlignOf(ctx, perm->base);
   }
   if (const auto* refine =
@@ -1270,14 +1393,17 @@ std::optional<std::uint64_t> AlignOf(const ultraviolet::analysis::ScopeContext& 
   }
   if (std::holds_alternative<ultraviolet::analysis::TypePtr>(type->node)) {
     SPEC_RULE("Align-Ptr");
+    SPEC_RULE("rule.24.Align-Ptr");
     return ptr_align;
   }
   if (std::holds_alternative<ultraviolet::analysis::TypeRawPtr>(type->node)) {
     SPEC_RULE("Align-RawPtr");
+    SPEC_RULE("rule.24.Align-RawPtr");
     return ptr_align;
   }
   if (std::holds_alternative<ultraviolet::analysis::TypeFunc>(type->node)) {
     SPEC_RULE("Align-Func");
+    SPEC_RULE("rule.24.Align-Func");
     return ptr_align;
   }
   if (std::holds_alternative<ultraviolet::analysis::TypeClosure>(type->node)) {
@@ -1381,6 +1507,11 @@ std::optional<std::uint64_t> AlignOf(const ultraviolet::analysis::ScopeContext& 
     const std::vector<ultraviolet::analysis::TypeRef> empty_args;
     const auto& args = generic_args ? *generic_args : empty_args;
     if (IsRuntimeHandleModalPath(*path)) {
+      return ptr_align;
+    }
+    if (IsGpuPtrLayoutType(*path, args)) {
+      SPEC_RULE("Align-Ptr");
+      SPEC_RULE("rule.24.Align-Ptr");
       return ptr_align;
     }
     const auto* decl = ultraviolet::analysis::LookupTypeDecl(ctx, *path);

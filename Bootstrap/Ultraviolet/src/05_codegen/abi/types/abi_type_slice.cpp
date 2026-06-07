@@ -18,6 +18,7 @@ namespace ultraviolet::codegen {
 std::optional<ABIType> ABITySlice(const analysis::ScopeContext& ctx,
                                   const analysis::TypeSlice& /*slice*/) {
   SPEC_RULE("ABI-Slice");
+  SPEC_RULE("rule.24.ABI-Slice");
   return ABIType{2 * ::ultraviolet::analysis::layout::PtrSize(ctx),
                  ::ultraviolet::analysis::layout::PtrAlign(ctx)};
 }

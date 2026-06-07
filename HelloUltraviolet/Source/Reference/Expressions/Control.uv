@@ -23,6 +23,197 @@ internal procedure controlElseIfReference(value: i32) -> i32 {
     }
 }
 
+/// Exercises EvalSigma-If-True by evaluating only the then branch.
+public procedure runExpressionsEvalSigmaIfTrueReference() -> bool {
+    let true_value: i32 = if true {
+        10
+    } else {
+        20
+    }
+    return true_value == 10
+}
+
+/// Exercises EvalSigma-If-False-None by producing unit and preserving state.
+public procedure runExpressionsEvalSigmaIfFalseNoneReference() -> bool {
+    var score: i32 = 3
+    if false {
+        score = 100
+    }
+    return score == 3
+}
+
+/// Exercises EvalSigma-If-False-Some by evaluating only the else branch.
+public procedure runExpressionsEvalSigmaIfFalseSomeReference() -> bool {
+    let false_value: i32 = if false {
+        30
+    } else {
+        40
+    }
+    return false_value == 40
+}
+
+/// Exercises EvalSigma-If-Is through matched and unmatched single-case dispatch.
+public procedure runExpressionsEvalSigmaIfIsReference() -> bool {
+    let numeric_value: ControlUnion = 17
+    let typed_value: i32 = if numeric_value is value: i32 {
+        value
+    } else {
+        0
+    }
+
+    let boolean_value: ControlUnion = true
+    let complement_value: i32 = if boolean_value is value: i32 {
+        value
+    } else {
+        5
+    }
+
+    return typed_value == 17 &&
+        complement_value == 5
+}
+
+/// Exercises EvalSigma-If-Cases through braced case-list dispatch.
+public procedure runExpressionsEvalSigmaIfCasesReference() -> bool {
+    let integer_result: i32 = if 2 is {
+        1 {
+            10
+        }
+        2 {
+            20
+        }
+        else {
+            30
+        }
+    }
+
+    let union_value: ControlUnion = true
+    let union_result: i32 = if union_value is {
+        value: i32 {
+            value
+        }
+        flag: bool {
+            if flag { 1 } else { 0 }
+        }
+    }
+
+    return integer_result == 20 &&
+        union_result == 1
+}
+
+internal procedure evalSigmaIfCtrlPropagatesReturnReference() -> i32 {
+    let result: i32 = if if true { return 17 } else { false } {
+        1
+    } else {
+        2
+    }
+    return result
+}
+
+/// Exercises EvalSigma-If-Ctrl by propagating control from condition evaluation.
+public procedure runExpressionsEvalSigmaIfCtrlReference() -> bool {
+    return evalSigmaIfCtrlPropagatesReturnReference() == 17
+}
+
+internal procedure evalSigmaIfIsCtrlPropagatesReturnReference() -> i32 {
+    let result: i32 = if if true { return 19 } else { 3 } is value: i32 {
+        value
+    } else {
+        0
+    }
+    return result
+}
+
+/// Exercises EvalSigma-If-Is-Ctrl by propagating control from scrutinee evaluation.
+public procedure runExpressionsEvalSigmaIfIsCtrlReference() -> bool {
+    return evalSigmaIfIsCtrlPropagatesReturnReference() == 19
+}
+
+internal procedure evalSigmaIfCasesCtrlPropagatesReturnReference() -> i32 {
+    let result: i32 = if if true { return 21 } else { 1 } is {
+        1 {
+            10
+        }
+        else {
+            20
+        }
+    }
+    return result
+}
+
+/// Exercises EvalSigma-If-Cases-Ctrl by propagating control from scrutinee evaluation.
+public procedure runExpressionsEvalSigmaIfCasesCtrlReference() -> bool {
+    return evalSigmaIfCasesCtrlPropagatesReturnReference() == 21
+}
+
+/// Exercises EvalIfCasesFamily head, tail, else, wildcard, and none cases.
+public procedure runExpressionsEvalIfCasesFamilyReference() -> bool {
+    let head_hit: i32 = if 1 is {
+        1 {
+            10
+        }
+        _ {
+            90
+        }
+    }
+
+    let tail_hit: i32 = if 2 is {
+        1 {
+            10
+        }
+        2 {
+            20
+        }
+        else {
+            30
+        }
+    }
+
+    let else_hit: i32 = if 3 is {
+        1 {
+            10
+        }
+        2 {
+            20
+        }
+        else {
+            30
+        }
+    }
+
+    let wildcard_hit: i32 = if 4 is {
+        1 {
+            10
+        }
+        _ {
+            40
+        }
+    }
+
+    let no_match_value: ControlUnion = true
+    var no_match_score: i32 = 50
+    if no_match_value is value: i32 {
+        no_match_score = value
+    }
+
+    return head_hit == 10 &&
+        tail_hit == 20 &&
+        else_hit == 30 &&
+        wildcard_hit == 40 &&
+        no_match_score == 50
+}
+
+/// Exercises EvalSigma-Block through value and unit block evaluation.
+public procedure runExpressionsEvalSigmaBlockReference() -> bool {
+    let value_result: i32 = {
+        let local_value: i32 = 6
+        local_value + 1
+    }
+    let unit_result: () = {
+        let ignored_value: i32 = value_result
+    }
+    return value_result == 7
+}
+
 /// Exercises broad control-expression source grammar coverage.
 public procedure runExpressionsControlSurfaceReference() -> bool {
     return runExpressionsIfControlReference() &&
@@ -35,16 +226,6 @@ public procedure runExpressionsControlSurfaceReference() -> bool {
 
 /// Exercises ordinary if-expression control coverage.
 public procedure runExpressionsIfControlReference() -> bool {
-    let true_value: i32 = if true {
-        10
-    } else {
-        20
-    }
-    let false_value: i32 = if false {
-        30
-    } else {
-        40
-    }
     let newline_else_value: i32 = if true {
         50
     }
@@ -53,8 +234,10 @@ public procedure runExpressionsIfControlReference() -> bool {
     }
     let tailless_score: i32 = controlNoElseIfReference()
     let chained_value: i32 = controlElseIfReference(0)
-    return true_value == 10 &&
-        false_value == 40 &&
+    return runExpressionsEvalSigmaIfTrueReference() &&
+        runExpressionsEvalSigmaIfFalseNoneReference() &&
+        runExpressionsEvalSigmaIfFalseSomeReference() &&
+        runExpressionsEvalSigmaIfCtrlReference() &&
         newline_else_value == 50 &&
         tailless_score == 3 &&
         chained_value == 2
@@ -63,11 +246,6 @@ public procedure runExpressionsIfControlReference() -> bool {
 /// Exercises single-case if-is control coverage.
 public procedure runExpressionsIfIsControlReference() -> bool {
     let numeric_value: ControlUnion = 17
-    let typed_value: i32 = if numeric_value is value: i32 {
-        value
-    } else {
-        0
-    }
     let type_test_value: i32 = if numeric_value is _: i32 {
         3
     } else {
@@ -86,7 +264,8 @@ public procedure runExpressionsIfIsControlReference() -> bool {
         5
     }
 
-    return typed_value == 17 &&
+    return runExpressionsEvalSigmaIfIsReference() &&
+        runExpressionsEvalSigmaIfIsCtrlReference() &&
         type_test_value == 3 &&
         tailless_score == 17 &&
         complement_value == 5
@@ -94,28 +273,6 @@ public procedure runExpressionsIfIsControlReference() -> bool {
 
 /// Exercises braced if-case control coverage.
 public procedure runExpressionsIfCaseControlReference() -> bool {
-    let integer_result: i32 = if 2 is {
-        1 {
-            10
-        }
-        2 {
-            20
-        }
-        else {
-            30
-        }
-    }
-
-    let union_value: ControlUnion = true
-    let tailless_result: i32 = if union_value is {
-        value: i32 {
-            value
-        }
-        flag: bool {
-            if flag { 1 } else { 0 }
-        }
-    }
-
     let left_to_right_result: i32 = if 1 is {
         1 {
             11
@@ -135,22 +292,16 @@ public procedure runExpressionsIfCaseControlReference() -> bool {
         }
     }
 
-    return integer_result == 20 &&
-        tailless_result == 1 &&
+    return runExpressionsEvalSigmaIfCasesReference() &&
+        runExpressionsEvalSigmaIfCasesCtrlReference() &&
+        runExpressionsEvalIfCasesFamilyReference() &&
         left_to_right_result == 11 &&
         tail_end_result == 8
 }
 
 /// Exercises block-expression control coverage.
 public procedure runExpressionsBlockControlReference() -> bool {
-    let value_result: i32 = {
-        let local_value: i32 = 6
-        local_value + 1
-    }
-    let unit_result: () = {
-        let ignored_value: i32 = value_result
-    }
-    return value_result == 7
+    return runExpressionsEvalSigmaBlockReference()
 }
 
 internal procedure controlLoopInvariantReference() -> bool {
@@ -161,18 +312,61 @@ internal procedure controlLoopInvariantReference() -> bool {
     return index == 1usize
 }
 
-/// Exercises ordinary loop-expression control coverage.
-public procedure runExpressionsLoopControlReference() -> bool {
+/// Exercises EvalSigma-Loop-Infinite-Step by continuing after unit body values.
+public procedure runExpressionsEvalSigmaLoopInfiniteStepReference() -> bool {
+    var index: usize = 0usize
+    loop {
+        index = index + 1usize
+        if index == 3usize {
+            break
+        }
+    }
+    return index == 3usize
+}
+
+/// Exercises EvalSigma-Loop-Infinite-Continue by continuing after `continue`.
+public procedure runExpressionsEvalSigmaLoopInfiniteContinueReference() -> bool {
+    var index: usize = 0usize
+    var total: usize = 0usize
+    loop {
+        index = index + 1usize
+        if index < 3usize {
+            continue
+        }
+        total = index
+        break
+    }
+    return total == 3usize
+}
+
+/// Exercises EvalSigma-Loop-Infinite-Break by returning a break value.
+public procedure runExpressionsEvalSigmaLoopInfiniteBreakReference() -> bool {
     let break_value: i32 = loop {
         break 9
     }
+    return break_value == 9
+}
 
-    var unit_break_score: i32 = 0
-    loop {
-        unit_break_score = 4
-        break
+/// Exercises EvalSigma-Loop-Cond-False by skipping the body and returning unit.
+public procedure runExpressionsEvalSigmaLoopCondFalseReference() -> bool {
+    var false_loop_seen: bool = false
+    loop false {
+        false_loop_seen = true
     }
+    return !false_loop_seen
+}
 
+/// Exercises EvalSigma-Loop-Cond-True-Step by recursing after body values.
+public procedure runExpressionsEvalSigmaLoopCondTrueStepReference() -> bool {
+    var index: usize = 0usize
+    loop index < 3usize {
+        index = index + 1usize
+    }
+    return index == 3usize
+}
+
+/// Exercises EvalSigma-Loop-Cond-Continue by recursing after `continue`.
+public procedure runExpressionsEvalSigmaLoopCondContinueReference() -> bool {
     var continue_index: usize = 0usize
     var continue_total: usize = 0usize
     loop continue_index < 4usize {
@@ -182,26 +376,104 @@ public procedure runExpressionsLoopControlReference() -> bool {
         }
         continue_total = continue_total + continue_index
     }
+    return continue_total == 8usize
+}
 
-    var false_loop_seen: bool = false
-    loop false {
-        false_loop_seen = true
-    }
-
+/// Exercises EvalSigma-Loop-Cond-Break by returning a conditional-loop break value.
+public procedure runExpressionsEvalSigmaLoopCondBreakReference() -> bool {
     let conditional_break_value: i32 = loop true {
         break 13
     }
+    return conditional_break_value == 13
+}
 
-    return break_value == 9 &&
+internal procedure evalSigmaLoopInfiniteCtrlPropagatesReturnReference() -> i32 {
+    loop {
+        return 23
+    }
+    return 0
+}
+
+/// Exercises EvalSigma-Loop-Infinite-Ctrl by propagating nonlocal body control.
+public procedure runExpressionsEvalSigmaLoopInfiniteCtrlReference() -> bool {
+    return evalSigmaLoopInfiniteCtrlPropagatesReturnReference() == 23
+}
+
+internal procedure evalSigmaLoopCondCtrlPropagatesReturnReference() -> i32 {
+    loop if true { return 29 } else { true } {
+    }
+    return 0
+}
+
+/// Exercises EvalSigma-Loop-Cond-Ctrl by propagating control from condition evaluation.
+public procedure runExpressionsEvalSigmaLoopCondCtrlReference() -> bool {
+    return evalSigmaLoopCondCtrlPropagatesReturnReference() == 29
+}
+
+internal procedure evalSigmaLoopCondBodyCtrlPropagatesReturnReference() -> i32 {
+    loop true {
+        return 31
+    }
+    return 0
+}
+
+/// Exercises EvalSigma-Loop-Cond-Body-Ctrl by propagating nonlocal body control.
+public procedure runExpressionsEvalSigmaLoopCondBodyCtrlReference() -> bool {
+    return evalSigmaLoopCondBodyCtrlPropagatesReturnReference() == 31
+}
+
+/// Exercises ordinary loop-expression control coverage.
+public procedure runExpressionsLoopControlReference() -> bool {
+
+    var unit_break_score: i32 = 0
+    loop {
+        unit_break_score = 4
+        break
+    }
+
+    return runExpressionsEvalSigmaLoopInfiniteStepReference() &&
+        runExpressionsEvalSigmaLoopInfiniteContinueReference() &&
+        runExpressionsEvalSigmaLoopInfiniteBreakReference() &&
+        runExpressionsEvalSigmaLoopCondFalseReference() &&
+        runExpressionsEvalSigmaLoopCondTrueStepReference() &&
+        runExpressionsEvalSigmaLoopCondContinueReference() &&
+        runExpressionsEvalSigmaLoopCondBreakReference() &&
+        runExpressionsEvalSigmaLoopInfiniteCtrlReference() &&
+        runExpressionsEvalSigmaLoopCondCtrlReference() &&
+        runExpressionsEvalSigmaLoopCondBodyCtrlReference() &&
         unit_break_score == 4 &&
-        continue_total == 8usize &&
-        !false_loop_seen &&
-        conditional_break_value == 13 &&
         controlLoopInvariantReference()
 }
 
-/// Exercises iterator loop-expression control coverage.
-public procedure runExpressionsIteratorLoopControlReference() -> bool {
+/// Exercises EvalSigma-Loop-Iter by initializing and executing an array iterator.
+public procedure runExpressionsEvalSigmaLoopIterReference() -> bool {
+    var total: usize = 0usize
+    loop value: usize in [1usize, 2usize, 3usize] {
+        total = total + value
+    }
+    return total == 6usize
+}
+
+/// Exercises LoopIter-Done by observing an empty iterator body is never executed.
+public procedure runExpressionsLoopIterDoneReference() -> bool {
+    var empty_count: usize = 0usize
+    loop value: usize in [0usize; 0] {
+        empty_count = empty_count + value
+    }
+    return empty_count == 0usize
+}
+
+/// Exercises LoopIter-Step-Val by continuing after value-producing loop bodies.
+public procedure runExpressionsLoopIterStepValReference() -> bool {
+    var total: usize = 0usize
+    loop value: usize in [1usize, 2usize, 3usize] {
+        total = total + value
+    }
+    return total == 6usize
+}
+
+/// Exercises LoopIter-Step-Continue by continuing after an iterator body continue.
+public procedure runExpressionsLoopIterStepContinueReference() -> bool {
     var total: usize = 0usize
     loop value: usize in [1usize, 2usize, 3usize] {
         if value == 2usize {
@@ -209,21 +481,124 @@ public procedure runExpressionsIteratorLoopControlReference() -> bool {
         }
         total = total + value
     }
+    return total == 4usize
+}
 
-    var empty_count: usize = 0usize
-    loop value: usize in [0usize; 0] {
-        empty_count = empty_count + value
-    }
-
+/// Exercises LoopIter-Step-Break by returning a break value from an iterator loop.
+public procedure runExpressionsLoopIterStepBreakReference() -> bool {
     let first_even: usize = loop value: usize in [1usize, 2usize, 3usize] {
         if value == 2usize {
             break value
         }
     }
+    return first_even == 2usize
+}
 
-    return total == 4usize &&
-        empty_count == 0usize &&
-        first_even == 2usize
+internal procedure evalSigmaLoopIterCtrlPropagatesReturnReference() -> i32 {
+    loop value: i32 in if true { return 37 } else { [1, 2] } {
+        let ignored_value: i32 = value
+    }
+    return 0
+}
+
+/// Exercises EvalSigma-Loop-Iter-Ctrl by propagating control from iterator evaluation.
+public procedure runExpressionsEvalSigmaLoopIterCtrlReference() -> bool {
+    return evalSigmaLoopIterCtrlPropagatesReturnReference() == 37
+}
+
+internal procedure loopIterStepCtrlPropagatesReturnReference() -> i32 {
+    loop value: i32 in [1, 2] {
+        if value == 1 {
+            return 41
+        }
+    }
+    return 0
+}
+
+/// Exercises LoopIter-Step-Ctrl by propagating nonlocal control from the loop body.
+public procedure runExpressionsLoopIterStepCtrlReference() -> bool {
+    return loopIterStepCtrlPropagatesReturnReference() == 41
+}
+
+/// Exercises LoopIterableType, IterInit, and IterNext over arrays, slices, and ranges.
+public procedure runExpressionsLoopIteratorRuntimeReference() -> bool {
+    var array_total: usize = 0usize
+    var array_count: usize = 0usize
+    loop value: usize in [1usize, 2usize, 3usize] {
+        array_total = array_total + value
+        array_count = array_count + 1usize
+    }
+
+    let slice_source: [usize; 4] = [5usize, 6usize, 7usize, 8usize]
+    let selected_slice: [usize] = slice_source[1usize..3usize]
+    var slice_total: usize = 0usize
+    var slice_count: usize = 0usize
+    loop value: usize in selected_slice {
+        slice_total = slice_total + value
+        slice_count = slice_count + 1usize
+    }
+
+    var exclusive_total: usize = 0usize
+    var exclusive_count: usize = 0usize
+    loop value: usize in 1usize..4usize {
+        exclusive_total = exclusive_total + value
+        exclusive_count = exclusive_count + 1usize
+    }
+
+    var empty_exclusive_count: usize = 0usize
+    loop value: usize in 3usize..3usize {
+        empty_exclusive_count = empty_exclusive_count + value
+    }
+
+    var inclusive_total: usize = 0usize
+    var inclusive_count: usize = 0usize
+    loop value: usize in 1usize..=3usize {
+        inclusive_total = inclusive_total + value
+        inclusive_count = inclusive_count + 1usize
+    }
+
+    var single_inclusive_total: usize = 0usize
+    var single_inclusive_count: usize = 0usize
+    loop value: usize in 3usize..=3usize {
+        single_inclusive_total = single_inclusive_total + value
+        single_inclusive_count = single_inclusive_count + 1usize
+    }
+
+    var from_total: usize = 0usize
+    var from_count: usize = 0usize
+    loop value: usize in (2usize..) {
+        if value == 5usize {
+            break
+        }
+        from_total = from_total + value
+        from_count = from_count + 1usize
+    }
+
+    return array_total == 6usize &&
+        array_count == 3usize &&
+        slice_total == 13usize &&
+        slice_count == 2usize &&
+        exclusive_total == 6usize &&
+        exclusive_count == 3usize &&
+        empty_exclusive_count == 0usize &&
+        inclusive_total == 6usize &&
+        inclusive_count == 3usize &&
+        single_inclusive_total == 3usize &&
+        single_inclusive_count == 1usize &&
+        from_total == 9usize &&
+        from_count == 3usize
+}
+
+/// Exercises iterator loop-expression control coverage.
+public procedure runExpressionsIteratorLoopControlReference() -> bool {
+    return runExpressionsEvalSigmaLoopIterReference() &&
+        runExpressionsLoopIterDoneReference() &&
+        runExpressionsLoopIterStepValReference() &&
+        runExpressionsLoopIterStepContinueReference() &&
+        runExpressionsLoopIterStepBreakReference() &&
+        runExpressionsEvalSigmaLoopIterCtrlReference() &&
+        runExpressionsLoopIterStepCtrlReference() &&
+        runExpressionsLoopIteratorRuntimeReference()
 }
 
 /// Exercises the Expressions Control reference surface.

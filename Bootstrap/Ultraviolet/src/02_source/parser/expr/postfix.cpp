@@ -228,11 +228,14 @@ ParseElemResult<ExprPtr> PostfixStep(Parser parser, ExprPtr expr,
   // Propagate: expr?
   if (IsOp(parser, "?")) {
     SPEC_RULE("Postfix-Propagate");
+    SPEC_RULE("rule.16.Postfix-Propagate");
+    SPEC_RULE("grammar.16.EffectfulCoreExpressions");
     Parser next = parser;
     core::Span op_span = TokSpan(parser);
     Advance(next);
     PropagateExpr prop;
     prop.value = expr;
+    SPEC_RULE("def.16.EffectfulCoreExprAst");
     return {next, MakeExpr(SpanCover(expr->span, op_span), prop)};
   }
 

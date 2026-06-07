@@ -12,6 +12,8 @@
 #include <unordered_set>
 #include <utility>
 
+#include "00_core/assert_spec.h"
+
 namespace ultraviolet::frontend::comptime_internal {
 
 namespace {
@@ -862,11 +864,15 @@ void RenameUsingAliases(ast::UsingClause& clause,
         using T = std::decay_t<decltype(entry)>;
         if constexpr (std::is_same_v<T, ast::UsingItem>) {
           if (entry.alias_opt.has_value()) {
+            SPEC_RULE_AT("requirement.22.ImportUsingHygiene",
+                         ctx.emit_site.span);
             BindHygienicItemName(*entry.alias_opt, ctx, ast);
           }
         } else if constexpr (std::is_same_v<T, ast::UsingList>) {
           for (auto& spec : entry.specs) {
             if (spec.alias_opt.has_value()) {
+              SPEC_RULE_AT("requirement.22.ImportUsingHygiene",
+                           ctx.emit_site.span);
               BindHygienicItemName(*spec.alias_opt, ctx, ast);
             }
           }
@@ -1416,7 +1422,9 @@ void RenameItem(ASTItem& item, HygieneContext& ctx, const CtAst& ast) {
           RenameUsingAliases(node.clause, ctx, ast);
         } else if constexpr (std::is_same_v<T, ast::ImportDecl>) {
           if (node.alias_opt.has_value()) {
-            BindPreservedName(ctx, *node.alias_opt);
+            SPEC_RULE_AT("requirement.22.ImportUsingHygiene",
+                         ctx.emit_site.span);
+            BindHygienicItemName(*node.alias_opt, ctx, ast);
           }
         } else if constexpr (std::is_same_v<T, ast::ProcedureDecl> ||
                       std::is_same_v<T, ast::ComptimeProcedureDecl>) {
@@ -1649,6 +1657,8 @@ std::optional<CtAst> HygienizeAst(const CtAst& ast,
   if (!ctx.ok) {
     return std::nullopt;
   }
+  SPEC_RULE_AT("requirement.22.HygienizeAstProperties", emit_site.span);
+  SPEC_RULE_AT("requirement.22.HygienicInternalReferences", emit_site.span);
   return out;
 }
 

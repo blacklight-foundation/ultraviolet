@@ -1,0 +1,319 @@
+//! Compile-time diagnostic fixture execution checks.
+
+internal procedure comptimeDiagnosticFixtureMatchesExpectedDiagnostics(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    should_reject: bool,
+    expected_count: usize
+) -> bool {
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+
+    let result =
+        diagnosticExerciseProjectFixtureDirectory(authority, fixture_path, should_reject)
+    return result.passed &&
+        result.count == expected_count
+}
+
+#test(name: "comptime project files invalid path emits expected diagnostics")
+internal procedure comptimeProjectFilesInvalidPathEmitsExpectedDiagnostics(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return comptimeDiagnosticFixtureMatchesExpectedDiagnostics(
+            authority,
+            "Fixtures/DiagnosticSource/Comptime/ProjectFilesInvalidPath",
+            false,
+            1usize
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "DiagnosticFixtureBuild",
+            "DiagnosticFixture.conformance.log",
+            "\trequirement.22.ProjectFilesPathRestrictions\t"
+        )
+}
+
+#test(name: "comptime emitter emit non-item rejects with exact diagnostics")
+internal procedure comptimeEmitterEmitNonItemRejectsWithExactDiagnostics(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return comptimeDiagnosticFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem",
+        true,
+        3usize
+    )
+}
+
+#test(name: "comptime user diagnostic error rejects with exact diagnostics")
+internal procedure comptimeUserDiagnosticErrorRejectsWithExactDiagnostics(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return comptimeDiagnosticFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Comptime/UserDiagnosticError",
+        true,
+        2usize
+    )
+}
+
+#test(name: "comptime user diagnostic warning emits exact diagnostics")
+internal procedure comptimeUserDiagnosticWarningEmitsExpectedDiagnostics(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return comptimeDiagnosticFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning",
+        false,
+        2usize
+    )
+}
+
+#test(name: "comptime user diagnostic note emits exact diagnostics")
+internal procedure comptimeUserDiagnosticNoteEmitsExpectedDiagnostics(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return comptimeDiagnosticFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/DiagnosticSource/Comptime/UserDiagnosticNote",
+        false,
+        1usize
+    )
+}
+
+#test(name: "comptime pointer parameter rejects with exact diagnostic")
+internal procedure comptimePointerParameterRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return comptimeDiagnosticFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Comptime/ComptimePointerParameter",
+        true,
+        1usize
+    )
+}
+
+#test(name: "comptime prohibited wait rejects with exact diagnostic")
+internal procedure comptimeProhibitedWaitRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return comptimeDiagnosticFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Comptime/ComptimeProhibitedWait",
+        true,
+        1usize
+    )
+}
+
+#test(name: "comptime runtime call rejects with exact diagnostic")
+internal procedure comptimeRuntimeCallsComptimeProcedureRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return comptimeDiagnosticFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Comptime/RuntimeCallsComptimeProcedure",
+        true,
+        1usize
+    )
+}
+
+#test(name: "comptime procedure contract failure rejects with exact diagnostic")
+internal procedure comptimeProcedureContractFailureRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return comptimeDiagnosticFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Comptime/ComptimeProcedureContractFailure",
+        true,
+        1usize
+    )
+}
+
+#test(name: "comptime if condition type rejects with exact diagnostic")
+internal procedure comptimeIfConditionTypeRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return comptimeDiagnosticFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Comptime/ComptimeIfConditionType",
+        true,
+        1usize
+    )
+}
+
+#test(name: "comptime derive on procedure rejects with exact diagnostics")
+internal procedure comptimeDeriveOnProcedureRejectsWithExactDiagnostics(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return comptimeDiagnosticFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Comptime/DeriveOnProcedure",
+        true,
+        2usize
+    )
+}
+
+#test(name: "comptime unknown derive target rejects with exact diagnostic")
+internal procedure comptimeUnknownDeriveTargetRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return comptimeDiagnosticFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Comptime/UnknownDeriveTarget",
+        true,
+        1usize
+    )
+}
+
+#test(name: "comptime derive target wait rejects with exact diagnostic")
+internal procedure comptimeDeriveTargetProhibitedWaitRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return comptimeDiagnosticFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Comptime/DeriveTargetProhibitedWait",
+        true,
+        1usize
+    )
+}
+
+#test(name: "comptime derive missing required class rejects with exact diagnostic")
+internal procedure comptimeDeriveMissingRequiredClassRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return comptimeDiagnosticFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Comptime/DeriveMissingRequiredClass",
+        true,
+        1usize
+    )
+}
+
+#test(name: "comptime derive missing emitted class rejects with exact diagnostic")
+internal procedure comptimeDeriveMissingEmittedClassRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return comptimeDiagnosticFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Comptime/DeriveMissingEmittedClass",
+        true,
+        1usize
+    )
+}
+
+#test(name: "comptime derive target user error rejects with exact diagnostic")
+internal procedure comptimeDeriveTargetUserErrorRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return comptimeDiagnosticFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Comptime/DeriveTargetUserError",
+        true,
+        1usize
+    )
+}
+
+#test(name: "comptime quote outside comptime rejects with exact diagnostics")
+internal procedure comptimeQuoteOutsideComptimeRejectsWithExactDiagnostics(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return comptimeDiagnosticFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Comptime/QuoteOutsideComptime",
+        true,
+        2usize
+    )
+}
+
+#test(name: "comptime invalid quoted content rejects with exact diagnostic")
+internal procedure comptimeInvalidQuotedContentRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return comptimeDiagnosticFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Comptime/InvalidQuotedContent",
+        true,
+        1usize
+    )
+}
+
+#test(name: "comptime splice type mismatch rejects with exact diagnostic")
+internal procedure comptimeSpliceTypeMismatchRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return comptimeDiagnosticFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Comptime/SpliceTypeMismatch",
+        true,
+        1usize
+    )
+}
+
+#test(name: "comptime splice structural identifier rejects with exact diagnostic")
+internal procedure comptimeSpliceIdentifierStructuralNameRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return comptimeDiagnosticFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Comptime/SpliceIdentifierStructuralName",
+        true,
+        1usize
+    )
+}
+
+#test(name: "comptime introspect fields non-record rejects with exact diagnostics")
+internal procedure comptimeIntrospectFieldsNonRecordRejectsWithExactDiagnostics(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return comptimeDiagnosticFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Comptime/IntrospectFieldsNonRecord",
+        true,
+        2usize
+    )
+}

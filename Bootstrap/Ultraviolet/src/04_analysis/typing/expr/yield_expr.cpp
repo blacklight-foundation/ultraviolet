@@ -19,6 +19,9 @@ namespace {
 
 static inline void SpecDefsYield() {
   SPEC_DEF("T-Yield", "17.3.3");
+  SPEC_DEF("rule.21.T-Yield", "21.2.4");
+  SPEC_DEF("rule.21.Yield-NotAsync-Err", "21.2.4");
+  SPEC_DEF("rule.21.Yield-Out-Err", "21.2.4");
 }
 
 }  // namespace
@@ -47,16 +50,17 @@ static inline void SpecDefsYield() {
 ExprTypeResult TypeYieldExpr(const ScopeContext& ctx,
                              const StmtTypeContext& type_ctx,
                              const ast::YieldExpr& expr,
-                             const TypeEnv& env,
-                             const ExprTypeFn& type_expr,
-                             const IdentTypeFn& /*type_ident*/,
-                             const PlaceTypeFn& /*type_place*/) {
-  SPEC_RULE("T-Yield");
+                            const TypeEnv& env,
+                            const ExprTypeFn& type_expr,
+                            const IdentTypeFn& /*type_ident*/,
+                            const PlaceTypeFn& /*type_place*/) {
+  SpecDefsYield();
   ExprTypeResult result;
 
   // Verify we're in an async procedure by extracting async signature
   const auto async_sig = AsyncSigOf(ctx, type_ctx.return_type);
   if (!async_sig.has_value()) {
+    SPEC_RULE("rule.21.Yield-NotAsync-Err");
     result.diag_id = "E-CON-0210";  // yield outside async context
     return result;
   }
@@ -75,18 +79,27 @@ ExprTypeResult TypeYieldExpr(const ScopeContext& ctx,
     return result;
   }
   if (!sub.subtype) {
+    SPEC_RULE("rule.21.Yield-Out-Err");
     result.diag_id = "E-CON-0211";  // yield type mismatch
     return result;
   }
 
   // Check key constraint
   // yield is ill-formed when keys are held, unless release modifier is present
+  SPEC_RULE("requirement.21.SuspensionKeyRestrictionsReference");
   if (type_ctx.keys_held && !expr.release) {
+    SPEC_RULE("requirement.21.AsyncKeyRestrictions");
     result.diag_id = "E-CON-0213";  // yield inside key block without release
     return result;
   }
+  if (expr.release && type_ctx.env_ref) {
+    MarkSharedDerivedBindingsStale(*type_ctx.env_ref);
+  }
 
   // Result type is the In type from async signature (received on resume)
+  SPEC_RULE("requirements.21.AsyncCapabilityRequirements");
+  SPEC_RULE("T-Yield");
+  SPEC_RULE("rule.21.T-Yield");
   result.ok = true;
   result.type = async_sig->in;
   return result;

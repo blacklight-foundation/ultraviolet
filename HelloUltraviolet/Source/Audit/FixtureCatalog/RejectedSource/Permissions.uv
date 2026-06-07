@@ -1,7 +1,7 @@
 //! Rejected permission specimens.
 
 public procedure permissionsRejectedSourceFixtureCount() -> usize {
-    return 4usize
+    return 9usize
 }
 
 public procedure validatedPermissionsRejectedSourceFixtureCount() -> usize {
@@ -71,6 +71,91 @@ public procedure validatedPermissionsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Permissions/ReceiverPermissionMismatch/Expected.uv",
         "E-TYP-1605",
         "diagnostics.PermissionAdmissibility"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DirectCallCapabilityInclusion",
+            "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion",
+            "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion/Source/Main.uv",
+            "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion/Expected.uv",
+            expectedDiagnostic("E-CON-0020", "conformance.NoAmbientAuthorityDiscipline")
+        ),
+        "DirectCallCapabilityInclusion",
+        "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion",
+        "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion/Source/Main.uv",
+        "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion/Expected.uv",
+        "E-CON-0020",
+        "conformance.NoAmbientAuthorityDiscipline"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DirectCallCapabilityInclusion",
+            "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion",
+            "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion/Source/Main.uv",
+            "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion/Expected.uv",
+            expectedDiagnostic("E-CON-0020", "NAA-3")
+        ),
+        "DirectCallCapabilityInclusion",
+        "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion",
+        "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion/Source/Main.uv",
+        "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion/Expected.uv",
+        "E-CON-0020",
+        "NAA-3"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DirectCallCapabilityInclusion",
+            "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion",
+            "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion/Source/Main.uv",
+            "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion/Expected.uv",
+            expectedDiagnostic("E-CON-0020", "req.DirectCallCapabilityInclusion")
+        ),
+        "DirectCallCapabilityInclusion",
+        "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion",
+        "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion/Source/Main.uv",
+        "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion/Expected.uv",
+        "E-CON-0020",
+        "req.DirectCallCapabilityInclusion"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "NoAmbientCapabilityGlobal",
+            "Fixtures/RejectedSource/Permissions/NoAmbientCapabilityGlobal",
+            "Fixtures/RejectedSource/Permissions/NoAmbientCapabilityGlobal/Source/Main.uv",
+            "Fixtures/RejectedSource/Permissions/NoAmbientCapabilityGlobal/Expected.uv",
+            expectedDiagnostic("E-CON-0020", "NAA-1")
+        ),
+        "NoAmbientCapabilityGlobal",
+        "Fixtures/RejectedSource/Permissions/NoAmbientCapabilityGlobal",
+        "Fixtures/RejectedSource/Permissions/NoAmbientCapabilityGlobal/Source/Main.uv",
+        "Fixtures/RejectedSource/Permissions/NoAmbientCapabilityGlobal/Expected.uv",
+        "E-CON-0020",
+        "NAA-1"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "AttenuationParentDropWithLiveChild",
+            "Fixtures/RejectedSource/Permissions/AttenuationParentDropWithLiveChild",
+            "Fixtures/RejectedSource/Permissions/AttenuationParentDropWithLiveChild/Source/Main.uv",
+            "Fixtures/RejectedSource/Permissions/AttenuationParentDropWithLiveChild/Expected.uv",
+            expectedDiagnostic("E-MEM-3020", "req.AttenuationParentDropRejectedWithLiveChildren")
+        ),
+        "AttenuationParentDropWithLiveChild",
+        "Fixtures/RejectedSource/Permissions/AttenuationParentDropWithLiveChild",
+        "Fixtures/RejectedSource/Permissions/AttenuationParentDropWithLiveChild/Source/Main.uv",
+        "Fixtures/RejectedSource/Permissions/AttenuationParentDropWithLiveChild/Expected.uv",
+        "E-MEM-3020",
+        "req.AttenuationParentDropRejectedWithLiveChildren"
     ) {
         count = count + 1usize
     }

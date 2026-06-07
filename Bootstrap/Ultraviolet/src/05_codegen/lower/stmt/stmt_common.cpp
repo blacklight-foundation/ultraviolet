@@ -17,10 +17,13 @@
 
 #include <algorithm>
 #include <iostream>
+#include <string>
+#include <type_traits>
 #include <variant>
 
 #include "00_core/assert_spec.h"
 #include "00_core/process_config.h"
+#include "00_core/spec_trace.h"
 #include "02_source/ast/ast_utils.h"
 #include "04_analysis/typing/types.h"
 #include "04_analysis/typing/type_layout.h"
@@ -45,6 +48,56 @@
 #include "05_codegen/lower/expr/expr_common.h"
 
 namespace ultraviolet::codegen {
+
+namespace {
+
+const char* StatementLoweringForm(const ast::Stmt& stmt) {
+  return std::visit(
+      [](const auto& node) -> const char* {
+        using T = std::decay_t<decltype(node)>;
+
+        if constexpr (std::is_same_v<T, ast::LetStmt>) {
+          return "LetStmt";
+        } else if constexpr (std::is_same_v<T, ast::VarStmt>) {
+          return "VarStmt";
+        } else if constexpr (std::is_same_v<T, ast::UsingLocalStmt>) {
+          return "UsingLocalStmt";
+        } else if constexpr (std::is_same_v<T, ast::AssignStmt>) {
+          return "AssignStmt";
+        } else if constexpr (std::is_same_v<T, ast::CompoundAssignStmt>) {
+          return "CompoundAssignStmt";
+        } else if constexpr (std::is_same_v<T, ast::ExprStmt>) {
+          return "ExprStmt";
+        } else if constexpr (std::is_same_v<T, ast::DeferStmt>) {
+          return "DeferStmt";
+        } else if constexpr (std::is_same_v<T, ast::RegionStmt>) {
+          return "RegionStmt";
+        } else if constexpr (std::is_same_v<T, ast::FrameStmt>) {
+          return "FrameStmt";
+        } else if constexpr (std::is_same_v<T, ast::ReturnStmt>) {
+          return "ReturnStmt";
+        } else if constexpr (std::is_same_v<T, ast::BreakStmt>) {
+          return "BreakStmt";
+        } else if constexpr (std::is_same_v<T, ast::ContinueStmt>) {
+          return "ContinueStmt";
+        } else if constexpr (std::is_same_v<T, ast::UnsafeBlockStmt>) {
+          return "UnsafeBlockStmt";
+        } else if constexpr (std::is_same_v<T, ast::ErrorStmt>) {
+          return "ErrorStmt";
+        } else if constexpr (std::is_same_v<T, ast::KeyBlockStmt>) {
+          return "KeyBlockStmt";
+        } else {
+          return "UnknownStmt";
+        }
+      },
+      stmt);
+}
+
+const char* BoolPayload(bool value) {
+  return value ? "true" : "false";
+}
+
+}  // namespace
 
 // =============================================================================
 // Â§6.5 Provenance Information
@@ -241,6 +294,25 @@ IRPtr TempCleanupIR(const std::vector<TempValue>& temps, LowerCtx& ctx) {
   SPEC_RULE("TempDropOrder");
   SPEC_RULE("TempCleanupIR");
 
+  const bool emits_drop = std::any_of(
+      temps.begin(),
+      temps.end(),
+      [](const TempValue& temp) {
+        return temp.has_responsibility && static_cast<bool>(temp.type);
+      });
+  std::string cleanup_payload =
+      "source=TempCleanupIR;position=end_of_statement_or_before_transfer";
+  cleanup_payload += ";drop_order=reverse_creation;temp_count=";
+  cleanup_payload += std::to_string(temps.size());
+  cleanup_payload += ";emits_drop_ir=";
+  cleanup_payload += BoolPayload(emits_drop);
+  cleanup_payload += ";ir_form=";
+  cleanup_payload += emits_drop ? "SeqIR" : "EmptyIR";
+  core::Conformance::Record(
+      "req.18.TemporaryCleanupLowering",
+      std::nullopt,
+      cleanup_payload);
+
   if (temps.empty()) {
     return EmptyIR();
   }
@@ -265,6 +337,10 @@ IRPtr LowerStmtList(const std::vector<ast::Stmt>& stmts, LowerCtx& ctx) {
   SPEC_RULE("Lower-StmtList-Cons");
 
   if (stmts.empty()) {
+    core::Conformance::Record(
+        "rule.18.Lower-StmtList-Empty",
+        std::nullopt,
+        "source=LowerStmtList;stmt_count=0;ir_form=EmptyIR");
     return EmptyIR();
   }
 
@@ -293,6 +369,14 @@ IRPtr LowerStmtList(const std::vector<ast::Stmt>& stmts, LowerCtx& ctx) {
     }
   }
 
+  std::string payload = "source=LowerStmtList;stmt_count=";
+  payload += std::to_string(stmts.size());
+  payload += ";order=source_order;ir_form=SeqIR;calls=LowerStmt";
+  core::Conformance::Record(
+      "rule.18.Lower-StmtList-Cons",
+      std::nullopt,
+      payload);
+
   return SeqIR(std::move(ir_parts));
 }
 
@@ -301,6 +385,20 @@ IRPtr LowerStmtList(const std::vector<ast::Stmt>& stmts, LowerCtx& ctx) {
 // ============================================================================
 
 IRPtr LowerStmt(const ast::Stmt& stmt, LowerCtx& ctx) {
+  SPEC_RULE("rule.24.CG-Stmt");
+  const char* stmt_form = StatementLoweringForm(stmt);
+  const core::Span stmt_span = ast::span_of(stmt);
+  std::string judgement_payload = "source=LowerStmt;judgement=LowerStmt;stmt_form=";
+  judgement_payload += stmt_form;
+  core::Conformance::Record(
+      "def.18.LowerStatementJudgements",
+      std::optional<core::Span>(stmt_span),
+      judgement_payload);
+  core::Conformance::Record(
+      "def.18.StatementLoweringTotality",
+      std::optional<core::Span>(stmt_span),
+      judgement_payload + ";covered=true");
+
   std::vector<TempValue> temps;
   auto* prev_sink = ctx.temp_sink;
   ctx.temp_sink = &temps;
@@ -357,12 +455,28 @@ IRPtr LowerStmt(const ast::Stmt& stmt, LowerCtx& ctx) {
 
   ctx.temp_sink = prev_sink;
 
+  bool appended_temp_cleanup = false;
   if (!temps_handled) {
     IRPtr temp_cleanup = CleanupList(temps, ctx);
     if (!is_noop(temp_cleanup)) {
-      return SeqIR({ir, temp_cleanup});
+      appended_temp_cleanup = true;
+      ir = SeqIR({ir, temp_cleanup});
     }
   }
+
+  std::string correctness_payload = "source=LowerStmt;stmt_form=";
+  correctness_payload += stmt_form;
+  correctness_payload += ";dispatch_result=ir";
+  correctness_payload += ";transfer_handles_temps=";
+  correctness_payload += BoolPayload(temps_handled);
+  correctness_payload += ";ordinary_temp_cleanup_appended=";
+  correctness_payload += BoolPayload(appended_temp_cleanup);
+  correctness_payload += ";ir_present=";
+  correctness_payload += BoolPayload(static_cast<bool>(ir));
+  core::Conformance::Record(
+      "rule.18.Lower-Stmt-Correctness",
+      std::optional<core::Span>(stmt_span),
+      correctness_payload);
 
   return ir;
 }

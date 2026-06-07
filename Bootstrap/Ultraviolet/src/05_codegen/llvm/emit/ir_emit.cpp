@@ -4,6 +4,10 @@
 // =============================================================================
 #include "ir_instruction_visitor.h"
 
+#include "00_core/spec_trace.h"
+
+#include <optional>
+
 namespace ultraviolet::codegen {
 
 using namespace emit_detail;
@@ -33,7 +37,25 @@ using namespace emit_detail;
       g_ir_proc_perf_ctx->stack.push_back(frame);
     }
 
+    SPEC_RULE("def.24.LowerIRJudg");
+    SPEC_RULE("def.24.LLVMInstrHelpers");
 
+    if (core::Conformance::Enabled())
+    {
+      core::Conformance::Record(
+          "def.24.LowerIRJudg",
+          std::nullopt,
+          "obligation=def.24.LowerIRJudg;"
+          "lower_domain=IRInstruction;"
+          "lower_result=LLResult;"
+          "dispatch=IRInstructionVisitor");
+      core::Conformance::Record(
+          "def.24.LLVMInstrHelpers",
+          std::nullopt,
+          "obligation=def.24.LLVMInstrHelpers;"
+          "helpers=LLVMInstrList,Label,Br,BrCond,Phi,HasLabel,FreshLabel,"
+          "LLVMSSA,LLVMLabel,LLResult,SeqLL");
+    }
 
     std::visit(IRInstructionVisitor{*this, *builder}, ir->node);
     if (ir_perf_enabled && g_ir_proc_perf_ctx && !g_ir_proc_perf_ctx->stack.empty())

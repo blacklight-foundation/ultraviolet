@@ -132,14 +132,50 @@ internal procedure modalTaggedGeneralValue() -> i32 {
 }
 
 internal procedure modalLayoutReference() -> bool {
+    return layoutModalStateReference() &&
+        layoutModalReferenceTypeReference()
+}
+
+internal procedure sizeModalStateReference() -> bool {
     return sizeof(ModalReference@Closed) == 0usize &&
         sizeof(ModalReference@Open) == sizeof(i32) &&
+        sizeof(ModalNicheReference@Absent) == 0usize &&
+        sizeof(ModalNicheReference@Present) == sizeof(Ptr<i32>@Valid) &&
+        sizeof(ModalTaggedReference@Empty) == 0usize &&
+        sizeof(ModalTaggedReference@Small) == sizeof(i32) &&
+        sizeof(ModalTaggedReference@Wide) == 2usize * sizeof(i64)
+}
+
+internal procedure alignModalStateReference() -> bool {
+    return alignof(ModalReference@Closed) == 1usize &&
         alignof(ModalReference@Open) == alignof(i32) &&
+        alignof(ModalNicheReference@Absent) == 1usize &&
+        alignof(ModalNicheReference@Present) == alignof(Ptr<i32>@Valid) &&
+        alignof(ModalTaggedReference@Empty) == 1usize &&
+        alignof(ModalTaggedReference@Small) == alignof(i32) &&
+        alignof(ModalTaggedReference@Wide) == alignof(i64)
+}
+
+internal procedure layoutModalStateReference() -> bool {
+    return sizeModalStateReference() && alignModalStateReference()
+}
+
+internal procedure sizeModalReference() -> bool {
+    return sizeof(ModalReference) == 2usize * sizeof(i32) &&
         sizeof(ModalNicheReference@Absent) == 0usize &&
         sizeof(ModalNicheReference) == sizeof(Ptr<i32>@Valid) &&
+        sizeof(ModalTaggedReference) ==
+            sizeof(ModalTaggedReference@Wide) + alignof(ModalTaggedReference@Wide)
+}
+
+internal procedure alignModalReference() -> bool {
+    return alignof(ModalReference) == alignof(i32) &&
         alignof(ModalNicheReference) == alignof(Ptr<i32>@Valid) &&
-        sizeof(ModalTaggedReference) >= sizeof(ModalTaggedReference@Wide) &&
-        alignof(ModalTaggedReference) >= alignof(ModalTaggedReference@Wide)
+        alignof(ModalTaggedReference) == alignof(ModalTaggedReference@Wide)
+}
+
+internal procedure layoutModalReferenceTypeReference() -> bool {
+    return sizeModalReference() && alignModalReference()
 }
 
 /// Exercises the ModalTypes ModalDeclarations reference surface.

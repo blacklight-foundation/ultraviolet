@@ -49,6 +49,7 @@ ParseElemResult<RaceHandler> ParseRaceHandler(Parser parser) {
   RaceHandler handler;
   if (IsKw(parser, "yield")) {
     SPEC_RULE("Parse-RaceHandler-Yield");
+    SPEC_RULE("rule.21.Parse-RaceHandler-Yield");
     Parser next = parser;
     Advance(next);
     ParseElemResult<ExprPtr> expr = ParseExpr(next);
@@ -57,6 +58,7 @@ ParseElemResult<RaceHandler> ParseRaceHandler(Parser parser) {
     return {expr.parser, handler};
   }
   SPEC_RULE("Parse-RaceHandler-Return");
+  SPEC_RULE("rule.21.Parse-RaceHandler-Return");
   ParseElemResult<ExprPtr> expr = ParseExpr(parser);
   handler.kind = RaceHandlerKind::Return;
   handler.value = expr.elem;
@@ -72,6 +74,7 @@ ParseElemResult<RaceHandler> ParseRaceHandler(Parser parser) {
 
 ParseElemResult<RaceArm> ParseRaceArm(Parser parser) {
   SPEC_RULE("Parse-RaceArm");
+  SPEC_RULE("rule.21.Parse-RaceArm");
   ParseElemResult<ExprPtr> expr = ParseExpr(parser);
   if (!IsOp(expr.parser, "->")) {
     EmitParseSyntaxErr(expr.parser, TokSpan(expr.parser));
@@ -117,6 +120,7 @@ ParseElemResult<std::vector<RaceArm>> ParseRaceArmsTail(
   SkipNewlines(parser);
   if (IsPunc(parser, "}")) {
     SPEC_RULE("Parse-RaceArmsTail-End");
+    SPEC_RULE("rule.21.Parse-RaceArmsTail-End");
     return {parser, xs};
   }
   if (IsPunc(parser, ",")) {
@@ -125,9 +129,11 @@ ParseElemResult<std::vector<RaceArm>> ParseRaceArmsTail(
     SkipNewlines(after);
     if (IsPunc(after, "}")) {
       SPEC_RULE("Parse-RaceArmsTail-TrailingComma");
+      SPEC_RULE("rule.21.Parse-RaceArmsTail-TrailingComma");
       return {after, xs};
     }
     SPEC_RULE("Parse-RaceArmsTail-Comma");
+    SPEC_RULE("rule.21.Parse-RaceArmsTail-Comma");
     ParseElemResult<RaceArm> arm = ParseRaceArm(after);
     xs.push_back(arm.elem);
     return ParseRaceArmsTail(arm.parser, std::move(xs));
@@ -149,6 +155,7 @@ ParseElemResult<std::vector<RaceArm>> ParseRaceArms(Parser parser) {
     return {parser, {}};
   }
   SPEC_RULE("Parse-RaceArms-Cons");
+  SPEC_RULE("rule.21.Parse-RaceArms-Cons");
   ParseElemResult<RaceArm> first = ParseRaceArm(parser);
   std::vector<RaceArm> arms;
   arms.push_back(first.elem);
@@ -170,6 +177,7 @@ std::optional<ParseElemResult<ExprPtr>> TryParseRaceExpr(Parser parser) {
   }
 
   SPEC_RULE("Parse-Race-Expr");
+  SPEC_RULE("rule.21.Parse-Race-Expr");
   Parser next = parser;
   Advance(next);
   if (!IsPunc(next, "{")) {
@@ -209,6 +217,7 @@ std::optional<ParseElemResult<ExprPtr>> TryParseRaceExpr(Parser parser) {
 
 ParseElemResult<ExprPtr> ParseRaceExpr(Parser parser) {
   SPEC_RULE("Parse-Race-Expr");
+  SPEC_RULE("rule.21.Parse-Race-Expr");
   Parser next = parser;
   Advance(next);  // consume "race"
   if (!IsPunc(next, "{")) {

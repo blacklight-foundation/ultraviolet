@@ -48,9 +48,11 @@ static inline void SpecDefsFieldAccess() {
   SPEC_DEF("T-FieldAccess", "5.2.12");
   SPEC_DEF("T-FieldAccess-Perm", "5.2.12");
   SPEC_DEF("Union-DirectAccess-Err", "5.2.7");
+  SPEC_DEF("rule.16.Union-DirectAccess-Err", "16.2.4");
   SPEC_DEF("FieldAccess-Unknown", "5.2.12");
   SPEC_DEF("FieldAccess-NotVisible", "5.2.12");
   SPEC_DEF("FieldAccess-Enum", "5.2.12");
+  SPEC_DEF("def.16.FieldVisibility", "16.2.3");
   SPEC_DEF("Fields", "5.2.12");
   SPEC_DEF("T-Modal-Field", "5.5");
   SPEC_DEF("T-Modal-Field-Perm", "5.5");
@@ -374,7 +376,11 @@ ExprTypeResult TypeFieldAccessExprImpl(const ScopeContext& ctx,
   // Check for union type - direct field access is an error
   if (std::holds_alternative<TypeUnion>(stripped_base->node)) {
     SPEC_RULE("Union-DirectAccess-Err");
+    SPEC_RULE("rule.16.Union-DirectAccess-Err");
     result.diag_id = "E-TYP-2202";  // Union-DirectAccess-Err
+    result.diagnostic_obligation_ids = {"Union-DirectAccess-Err",
+                                        "rule.16.Union-DirectAccess-Err",
+                                        "diagnostics.DataTypesSupplement"};
     return result;
   }
 
@@ -459,6 +465,7 @@ ExprTypeResult TypeFieldAccessExprImpl(const ScopeContext& ctx,
         visible = FieldVisible(ctx, *record, expr.name, *path);
       }
       if (!visible) {
+        SPEC_RULE("def.16.FieldVisibility");
         SPEC_RULE("FieldAccess-NotVisible");
         result.diag_id = "FieldAccess-NotVisible";
         return result;

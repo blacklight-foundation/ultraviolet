@@ -1,6 +1,11 @@
 //! Rejected FFI specimen for capability-isolation diagnostics.
 
 #export("C")
-public procedure exportedCapability(value: Context) -> i32 {
-    return 0
+public procedure capabilityIsolationDiagnosticsReference() -> *mut i32 {
+    region as scratch {
+        let raw: *mut i32 = null
+        let pointer: *mut i32 = scratch ^ raw
+        return pointer
+    }
+    return null
 }

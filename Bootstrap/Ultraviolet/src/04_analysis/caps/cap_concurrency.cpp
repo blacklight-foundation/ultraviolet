@@ -15,6 +15,7 @@ namespace {
 
 static inline void SpecDefsConcurrency() {
   SPEC_DEF("ExecutionDomainClass", "18.2.4");
+  SPEC_DEF("def.14.ExecutionDomainSupportDecls", "14.9.3");
   SPEC_DEF("SpawnedModal", "18.4.2");
   SPEC_DEF("CancelTokenModal", "18.6.1");
   SPEC_DEF("TrackedModal", "5.4.4");
@@ -31,6 +32,24 @@ static std::shared_ptr<ast::Type> MakeTypeNode(const ast::TypeNode& node) {
 
 static std::shared_ptr<ast::Type> MakeTypePrimAst(std::string_view name) {
   return MakeTypeNode(ast::TypePrim{ast::Identifier{name}});
+}
+
+static std::shared_ptr<ast::Type> MakeTypeStringAst(
+    std::optional<StringState> state) {
+  std::optional<ast::StringState> ast_state;
+  if (state.has_value()) {
+    switch (*state) {
+      case StringState::Managed:
+        ast_state = ast::StringState::Managed;
+        break;
+      case StringState::View:
+        ast_state = ast::StringState::View;
+        break;
+    }
+  }
+  ast::TypeString node;
+  node.state = ast_state;
+  return MakeTypeNode(node);
 }
 
 static std::shared_ptr<ast::Type> MakeTypePathAst(
@@ -824,6 +843,7 @@ ast::TypeAliasDecl BuildExchangeAliasDecl() {
 
 ast::ClassDecl BuildExecutionDomainClassDecl() {
   SpecDefsConcurrency();
+  SPEC_RULE("def.14.ExecutionDomainSupportDecls");
   ast::ClassDecl decl{};
   decl.vis = ast::Visibility::Public;
   decl.name = "ExecutionDomain";
@@ -831,7 +851,18 @@ ast::ClassDecl BuildExecutionDomainClassDecl() {
   decl.generic_params = std::nullopt;
   decl.supers = {};
   decl.predicate_clause_opt = std::nullopt;
-  decl.items = {};
+  decl.items = {
+      MakeClassMethod("name",
+                      std::nullopt,
+                      ast::ReceiverShorthand{ast::ReceiverPerm::Const},
+                      {},
+                      MakeTypeStringAst(StringState::View)),
+      MakeClassMethod("max_concurrency",
+                      std::nullopt,
+                      ast::ReceiverShorthand{ast::ReceiverPerm::Const},
+                      {},
+                      MakeTypePrimAst("usize")),
+  };
   decl.span = core::Span{};
   decl.doc = {};
   return decl;

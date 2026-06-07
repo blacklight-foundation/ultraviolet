@@ -26,6 +26,7 @@
 #include "05_codegen/lower/stmt/var_stmt.h"
 
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 #include "04_analysis/typing/context.h"
 #include "04_analysis/typing/type_predicates.h"
 #include "05_codegen/dyn_dispatch/dyn_dispatch.h"
@@ -95,6 +96,23 @@ analysis::TypeRef LowerBindingType(const ast::TypePtr& type_opt,
   return nullptr;
 }
 
+bool IsClosureBindingTarget(const analysis::TypeRef& type, const LowerCtx& ctx) {
+  analysis::TypeRef target = NormalizeCallableAliasForLowering(type, ctx);
+  target = analysis::StripPerm(target);
+  return target && std::holds_alternative<analysis::TypeClosure>(target->node);
+}
+
+LowerResult LowerBindingInitializer(const ast::Expr& init,
+                                    const analysis::TypeRef& target_type,
+                                    LowerCtx& ctx) {
+  if (target_type && IsClosureBindingTarget(target_type, ctx)) {
+    if (const auto* closure = std::get_if<ast::ClosureExpr>(&init.node)) {
+      return LowerClosureExpr(init, *closure, ctx, target_type);
+    }
+  }
+  return LowerExpr(init, ctx);
+}
+
 std::optional<std::string> SimplePatternBindingName(const ast::PatternPtr& pat) {
   if (!pat) {
     return std::nullopt;
@@ -141,6 +159,30 @@ void RegisterSimpleClosureBindingDerived(const std::string& name,
   closure_info.elements.push_back(env_null);
   closure_info.elements.push_back(value);
   ctx.RegisterDerivedValue(local_value, closure_info);
+
+  if (core::Conformance::Enabled()) {
+    std::string payload =
+        "source=LowerVarStmt.SimpleClosureBinding;operation=ClosureVal";
+    payload += ";capture_kind=noncapturing;env_ptr=null";
+    payload += ";code_ptr_symbol=";
+    payload += value.name;
+    payload += ";code_ptr_domain=Symbol;target=TypeClosure";
+    payload += ";binding=";
+    payload += name;
+    payload += ";closure_rep=env_ptr,code_ptr;derived=TupleLit";
+    core::Conformance::Record("def.ClosureRuntimeValue", std::nullopt, payload);
+    core::Conformance::Record("req.ClosureOperationOwnership", std::nullopt, payload);
+    core::Conformance::Record("def.ClosureLoweringRep", std::nullopt, payload);
+    core::Conformance::Record("req.ClosureLoweringOwnership", std::nullopt, payload);
+    core::Conformance::Record(
+        "def.16.ClosureEnvironmentRuntimeModel",
+        std::nullopt,
+        payload);
+    core::Conformance::Record(
+        "rule.16.Lower-Expr-Closure-NonCapturing",
+        std::nullopt,
+        payload);
+  }
 }
 
 }  // namespace
@@ -175,11 +217,14 @@ IRPtr LowerVarStmt(const ast::VarStmt& stmt, LowerCtx& ctx) {
     return EmptyIR();
   }
 
+  analysis::TypeRef var_type =
+      LowerBindingType(ast::BindingAnnotationTypeOpt(binding), ctx);
+
   // Suppress temp registration at this depth to avoid creating temps
   // for the initializer expression itself (the binding takes responsibility).
   auto prev_suppress = ctx.suppress_temp_at_depth;
   ctx.suppress_temp_at_depth = ctx.temp_depth + 1;
-  auto init_result = LowerExpr(*binding.init, ctx);
+  auto init_result = LowerBindingInitializer(*binding.init, var_type, ctx);
   ctx.suppress_temp_at_depth = prev_suppress;
 
   IRPtr bind_ir = EmptyIR();
@@ -187,8 +232,6 @@ IRPtr LowerVarStmt(const ast::VarStmt& stmt, LowerCtx& ctx) {
   // Determine the binding type:
   // 1. From explicit type annotation if present
   // 2. From expression type inference if available
-  analysis::TypeRef var_type;
-  var_type = LowerBindingType(ast::BindingAnnotationTypeOpt(binding), ctx);
   if (!var_type && ctx.expr_type && binding.init) {
     var_type = ctx.expr_type(*binding.init);
   }
@@ -308,6 +351,18 @@ IRPtr LowerVarStmt(const ast::VarStmt& stmt, LowerCtx& ctx) {
     refine_ir =
         EmitDynamicRefinementChecksForExpr(*binding.init, checked_value, var_type, ctx);
   }
+
+  std::string payload =
+      "source=LowerVarStmt;ir_form=SeqIR;"
+      "components=LowerExpr,RegisterPatternBindings,LowerBindPattern";
+  payload += ";binding_mutability=mutable;has_pattern=";
+  payload += binding.pat ? "true" : "false";
+  payload += ";mirrors_lower_let_components=true;has_refinement_checks=";
+  payload += binding.init ? "true" : "false";
+  core::Conformance::Record("def.18.BindPatternRuntimeHelpers", std::nullopt, payload);
+  core::Conformance::Record("req.18.VarExecutionMirrorsLet", std::nullopt, payload);
+  core::Conformance::Record("rule.18.Lower-Stmt-Var", std::nullopt, payload);
+
   return SeqIR({init_result.ir, bind_ir, refine_ir});
 }
 

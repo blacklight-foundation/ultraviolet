@@ -4,6 +4,10 @@
 // =============================================================================
 #include "../../ir_instruction_visitor.h"
 
+#include <string>
+
+#include "00_core/spec_trace.h"
+
 namespace ultraviolet::codegen::emit_detail {
 
 namespace {
@@ -27,6 +31,128 @@ analysis::TypeRef StripPermAndRefine(const analysis::TypeRef &type)
     return current;
   }
   return nullptr;
+}
+
+std::string ModalPathText(const analysis::TypePath &path)
+{
+  std::string text;
+  for (std::size_t i = 0; i < path.size(); ++i)
+  {
+    if (i > 0)
+    {
+      text += "::";
+    }
+    text += path[i];
+  }
+  return text;
+}
+
+const ast::StateBlock *FindModalStateBlock(
+    const ast::ModalDecl &decl,
+    std::string_view state_name)
+{
+  for (const auto &state : decl.states)
+  {
+    if (analysis::IdEq(state.name, std::string(state_name)))
+    {
+      return &state;
+    }
+  }
+  return nullptr;
+}
+
+std::size_t ModalStateFieldCount(const ast::StateBlock &state)
+{
+  std::size_t count = 0;
+  for (const auto &member : state.members)
+  {
+    if (std::holds_alternative<ast::StateFieldDecl>(member))
+    {
+      ++count;
+    }
+  }
+  return count;
+}
+
+void RecordModalWidenFacts(
+    const analysis::TypeModalState &state,
+    const ast::ModalDecl &decl,
+    const analysis::layout::ModalLayout &layout,
+    std::string_view representation)
+{
+  if (!core::Conformance::Enabled())
+  {
+    return;
+  }
+
+  std::string payload = "source=LLVMEmit.Widen";
+  payload += ";modal=";
+  payload += ModalPathText(state.path);
+  payload += ";state=";
+  payload += state.state;
+  payload += ";representation=";
+  payload += representation;
+  payload += ";record_state_value=true;modal_val=true;value_type=ModalRefType";
+  payload += ";disc_type=";
+  payload += layout.disc_type.has_value() ? *layout.disc_type : "none";
+  payload += ";payload_size=";
+  payload += std::to_string(layout.payload_size);
+  payload += ";payload_align=";
+  payload += std::to_string(layout.payload_align);
+  payload += ";size=";
+  payload += std::to_string(layout.layout.size);
+  payload += ";align=";
+  payload += std::to_string(layout.layout.align);
+
+  core::Conformance::Record("def.ModalValRuntime", std::nullopt, payload);
+  core::Conformance::Record("def.RecordModalStateValueType", std::nullopt, payload);
+  core::Conformance::Record("def.ModalValValueType", std::nullopt, payload);
+  core::Conformance::Record("req.ModalRuntimeRepresentation", std::nullopt, payload);
+  core::Conformance::Record("req.ModalWideningLowering", std::nullopt, payload);
+
+  const ast::StateBlock *state_block = FindModalStateBlock(decl, state.state);
+  if (!state_block)
+  {
+    return;
+  }
+
+  const std::size_t state_fields = ModalStateFieldCount(*state_block);
+  const bool empty_state = state_fields == 0;
+
+  std::string bit_payload = payload;
+  bit_payload += ";state_value_type=TypeModalState";
+  bit_payload += ";state_fields=";
+  bit_payload += std::to_string(state_fields);
+  bit_payload += ";state_record_bits=true";
+  bit_payload += ";state_payload_kind=";
+  bit_payload += empty_state ? "empty" : "record";
+
+  core::Conformance::Record("def.ModalStateValueBits", std::nullopt, bit_payload);
+  core::Conformance::Record("def.StateRecordBits", std::nullopt, bit_payload);
+  if (empty_state)
+  {
+    core::Conformance::Record("def.EmptyRecordVal", std::nullopt, bit_payload);
+  }
+
+  if (layout.disc_type.has_value())
+  {
+    bit_payload += ";payload_bits=pad_bytes";
+    bit_payload += ";tagged_bits=true";
+    bit_payload += ";zero_padding=true";
+    core::Conformance::Record("def.ModalPayloadBits", std::nullopt, bit_payload);
+    core::Conformance::Record("req.ModalTaggedPaddingZero", std::nullopt, bit_payload);
+    core::Conformance::Record("def.ModalTaggedBits", std::nullopt, bit_payload);
+  }
+  else
+  {
+    bit_payload += ";niche_bits=true";
+    bit_payload += ";niche_case=";
+    bit_payload += empty_state ? "empty" : "payload";
+    core::Conformance::Record("def.ModalNicheBits", std::nullopt, bit_payload);
+  }
+
+  core::Conformance::Record("def.ModalBits", std::nullopt, bit_payload);
+  core::Conformance::Record("def.ModalRefValueBits", std::nullopt, bit_payload);
 }
 
 BangKind ClassifyBangType(const analysis::TypeRef &type)
@@ -177,6 +303,7 @@ void IRInstructionVisitor::operator()(const IRUnaryOp &unary) const
           current_fn->getEntryBlock().begin());
       llvm::AllocaInst *dst_slot = entry_builder.CreateAlloca(dst_ty);
       llvm::AllocaInst *src_slot = entry_builder.CreateAlloca(src->getType());
+      builder.CreateStore(llvm::Constant::getNullValue(dst_ty), dst_slot);
       builder.CreateStore(src, src_slot);
 
       llvm::Type *i8_ty = llvm::Type::getInt8Ty(emitter.GetContext());
@@ -192,12 +319,12 @@ void IRInstructionVisitor::operator()(const IRUnaryOp &unary) const
       const std::uint64_t copy_size = std::min(src_size, dst_size);
       if (copy_size > 0)
       {
-        builder.CreateMemCpy(
+        EmitAggMemcpy(
+            emitter,
             dst_i8,
-            llvm::Align(1),
             src_i8,
-            llvm::Align(1),
-            llvm::ConstantInt::get(i64_ty, copy_size));
+            llvm::ConstantInt::get(i64_ty, copy_size),
+            1);
       }
       return builder.CreateLoad(dst_ty, dst_slot);
     };
@@ -250,7 +377,7 @@ void IRInstructionVisitor::operator()(const IRUnaryOp &unary) const
                 llvm::AllocaInst *dst_slot = entry_builder.CreateAlloca(target_struct);
                 builder.CreateStore(llvm::Constant::getNullValue(target_struct), dst_slot);
 
-                llvm::Value *disc_ptr = builder.CreateStructGEP(target_struct, dst_slot, 0);
+                llvm::Value *disc_ptr = dst_slot;
                 llvm::Type *disc_ty = target_struct->getElementType(0);
                 llvm::Value *disc_value = disc_ty->isIntegerTy()
                                               ? llvm::ConstantInt::get(disc_ty, *state_index)
@@ -285,21 +412,26 @@ void IRInstructionVisitor::operator()(const IRUnaryOp &unary) const
                       std::min(src_size, modal_layout->payload_size);
                   if (copy_size > 0)
                   {
-                    builder.CreateMemCpy(
+                    EmitAggMemcpy(
+                        emitter,
                         payload_i8,
-                        llvm::Align(1),
                         src_i8,
-                        llvm::Align(1),
-                        llvm::ConstantInt::get(i64_ty, copy_size));
+                        llvm::ConstantInt::get(i64_ty, copy_size),
+                        1);
                   }
                 }
                 result = builder.CreateLoad(target_struct, dst_slot);
+                RecordModalWidenFacts(*modal_state, *modal_decl, *modal_layout, "tagged");
               }
             }
           }
           else if (target_ty)
           {
             result = bitcopy_to_type(operand, target_ty);
+            if (result)
+            {
+              RecordModalWidenFacts(*modal_state, *modal_decl, *modal_layout, "niche");
+            }
           }
         }
       }

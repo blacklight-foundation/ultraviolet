@@ -1,0 +1,411 @@
+//! Key-system accepted-project compiler conformance checks.
+
+internal let KEY_SYSTEM_CONFORMANCE_PROJECT_PATH: string@View =
+    "Fixtures/AcceptedProjects/KeySystemConformance"
+internal let KEY_SYSTEM_CONFORMANCE_LOG_NAME: string@View =
+    "key_system.conformance.log"
+
+internal procedure keySystemConformanceProjectRuns(
+    authority: TestAuthority,
+    output_suffix: string@View,
+    error_suffix: string@View,
+    out_dir_suffix: string@View
+) -> bool {
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+    return acceptedProjectRunCase(
+        authority,
+        KEY_SYSTEM_CONFORMANCE_PROJECT_PATH,
+        "",
+        output_suffix,
+        error_suffix,
+        out_dir_suffix,
+        KEY_SYSTEM_CONFORMANCE_LOG_NAME
+    )
+}
+
+internal procedure keySystemConformanceLineContains(
+    authority: TestAuthority,
+    out_dir_suffix: string@View,
+    required_marker: string@View,
+    required_payload: string@View
+) -> bool {
+    return acceptedProjectConformanceLineContains(
+        authority,
+        out_dir_suffix,
+        KEY_SYSTEM_CONFORMANCE_LOG_NAME,
+        required_marker,
+        required_payload
+    )
+}
+
+internal procedure keySystemConformanceArtifactsExist(
+    authority: TestAuthority,
+    out_dir_suffix: string@View
+) -> bool {
+    return acceptedProjectTempFileExists(
+            authority,
+            out_dir_suffix,
+            "Intermediate/Obj/Source/KeySystemConformance.obj"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            out_dir_suffix,
+            "Library/KeySystemConformance.lib"
+        )
+}
+
+#test(name: "key system compiler conformance artifact matches")
+internal procedure keySystemCompilerConformanceArtifactMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let out_dir: string@View = "KeySystemConformanceBuild"
+    return keySystemConformanceProjectRuns(
+            authority,
+            "KeySystemConformance.out",
+            "KeySystemConformance.err",
+            out_dir
+        ) &&
+        keySystemConformanceArtifactsExist(authority, out_dir) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.ConflictDetectionNoAdditionalSyntax\t",
+            "source%3DParseKeyBlockStmt%3Bsurface%3Dkey_block_stmt%3Badditional_syntax%3Dfalse"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.ConflictDetectionNoAdditionalParsingRules\t",
+            "source%3DParseKeyBlockStmt%3Bparser%3Dkey_block_stmt%3Badditional_parsing_rules%3Dfalse"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.IndexEquivalenceConservativeSubset\t",
+            "source%3DProvablyEquivalentIndexExpr%3Brecognized_subset%3Dstructural,const_eval,binding_identity,path_identity%3Bfailure_treated_as_inequivalence%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.DynamicIndexDisjointnessConservativeSubset\t",
+            "source%3DProvablyDisjointIndexExpr%3Brecognized_subset%3Dconst_eval,proof_not_equal,affine_offset,dispatch_index,loop_range%3Bfailure_treated_as_possible_overlap%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.ReadThenWriteOtherWriteForms\t",
+            "source%3DTypeKeyBlockStmt%3Bwrite_form%3Dordinary_write%3Bgoverned_by%3DRequiredMode,Covered,KeyCompatibility%3Brequired_mode%3Dwrite%3Bcovered_by_explicit_key%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.CanonicalOrderDynamicUse\t",
+            "source%3DLowerKeyBlockStmt%3Bdynamic_key_path%3Dtrue%3Bcoarsened_runtime_path%3Dtrue%3Bcanonical_sort%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.KeyConflictRuntimeCompatibility\t",
+            "source%3DLowerConflictChecks%3Bruntime_relation%3DKeyModeCompatible,KeysOverlap,KeyConflict%3Boperation%3DCheckConflict"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\tdef.19.LowerConflictChecks\t",
+            "source%3DLowerConflictChecks%3Blower_key_paths%3Dtrue%3Bcanonical_sort%3Dtrue%3Boperation%3DCheckConflict"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trule.19.Lower-Key-ConflictChecks\t",
+            "source%3DLowerConflictChecks%3Blower_key_paths%3Dtrue%3Bcanonical_sort%3Dtrue%3Boperation%3DCheckConflict"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.DynamicKeyVerificationNoAdditionalSyntax\t",
+            "source%3DTypeKeyBlockStmt%3Battribute%3Ddynamic%3Battribute_parser%3Dgeneric%3Badditional_key_syntax%3Dfalse"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.DynamicKeyVerificationNoAdditionalParsingRules\t",
+            "source%3DTypeKeyBlockStmt%3Battribute%3Ddynamic%3Battribute_parser%3Dgeneric%3Badditional_key_parse_rules%3Dfalse"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.StaticallySafeSoundProofRequired\t",
+            "statically_safe%3Dfalse%3Bcomplete_sound_proof%3Dfalse"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.NoRuntimeSyncMeaning\t",
+            "statically_safe%3Dtrue%3Bruntime_sync_required%3Dfalse"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.DynamicContextStaticSafeLowering\t",
+            "dynamic_context%3Dtrue%3Bstatically_safe%3Dtrue%3Blowering%3Dordinary_key_lowering%3Bruntime_sync_required%3Dfalse"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.RuntimeSynchronizationRequirements\t",
+            "source%3DLowerKeyBlockStmt%3Bdynamic_key_path%3Dtrue%3Bruntime_sync_emitted%3Dtrue%3Bmutual_exclusion%3DKeyConflict,KeyModeCompatible%3Bblocks_until_release%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.DynamicIndexRuntimeOrdering\t",
+            "source%3DLowerKeyBlockStmt%3Bdynamic_key_path%3Dtrue%3Bordering_relation%3Dcanonical_coarsened_path%3Btotal%3Dtrue%3Bantisymmetric%3Dtrue%3Btransitive%3Dtrue%3Bcross_task_consistent%3Dtrue%3Bvalue_deterministic%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.DynamicIndexedPathCoarsening\t",
+            "source%3DLowerKeyBlockStmt%3Bdynamic_key_path%3Dtrue%3Bcoarsened_runtime_path%3Dtrue%3Bsound_static_prefix%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.CanonicalOrderDeadlockFreedom\t",
+            "source%3DLowerKeyBlockStmt%3Bdynamic_key_path%3Dtrue%3Bcanonical_order%3Dtrue%3Bno_circular_wait%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.StaticAndRuntimeKeySafetyEquivalence\t",
+            "source%3DLowerKeyBlockStmt%3Bdynamic_key_path%3Dtrue%3Bstatically_proven_safety_equivalent_to_runtime_sync%3Dtrue%3Bobservable_behavior_preserved%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.OrderedKeyBlockOption\t",
+            "source%3DTypeKeyBlockStmt%3Boption%3Dordered%3Bsame_base_indexed_path_check%3Dtrue%3Bapplies_to_whole_path_set%3Dtrue%3Bhead_mode_unchanged%3Dtrue%3Bcanonical_order_preserved%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.ValidKeyContext\t",
+            "source%3DLowerImplicitKeyAccess%3Bkey_path_defined%3Dtrue%3Brequired_mode_defined%3Dtrue%3Bcovered%3Dfalse%3Bimplicit_acquisition%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trule.19.K-Acquire-New\t",
+            "source%3DLowerImplicitKeyAccess%3Bcovered%3Dfalse%3Bnew_scope%3Dtrue%3Bcontext_extended%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trule.19.K-Acquire-Covered\t",
+            "source%3DLowerImplicitKeyAccess%3Bcovered%3Dtrue%3Bcontext_unchanged%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trule.19.K-Block-Acquire\t",
+            "source%3DLowerKeyBlockStmt%3Bkind%3Dordinary%3Bnew_scope%3Dtrue%3Bcanonical_sort%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.KeyCoarseningInlineMarker\t",
+            "source%3DLowerKeyPaths%3Bmarked_boundary%3Dtrue%3Bacquisition_granularity%3Dmarked_position%3Bcovers_subsequent_segments%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.KeyBlockCanonicalOrderReferences\t",
+            "source%3DLowerKeyBlockStmt%3Bcanonical_order%3Dtrue%3Bcanonical_sort%3Dtrue%3Bconflict_relation%3DKeyConflict"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\tdef.19.KeyBlockRuntimeJudgments\t",
+            "source%3DLowerKeyBlockStmt%3Bjudgments%3DAcquireKeysSigma,ReleaseKeysSigma%3Bkind%3Dordinary"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\tdef.19.AcquireKeysSigma\t",
+            "source%3DLowerKeyBlockStmt%3Bkeys%3DCanonicalOrder(KeyPath(paths))%3Bacquire_lock%3Dtrue%3Bheld_keys_update%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.ScopeExitKeyRelease\t",
+            "source%3DLowerKeyBlockStmt%3Bscope_exit_registered%3Dtrue%3Brelease_before_scope_drop%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.KeyScopeBound\t",
+            "source%3DLowerKeyBlockStmt%3Bscope_exit_registered%3Dtrue%3Bkey_dependent_access_bound_to_scope%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.KeyAcquisitionEvaluationOrder\t",
+            "source%3DLowerKeyBlockStmt%3Blowered_paths%3Dtrue%3Bcanonical_sort%3Dtrue%3Bcheck_conflict_before_acquire%3Dtrue%3Bacquire_order%3Dcanonical"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.KeyPathWellFormedness\t",
+            "source%3DValidateKeyPathConformance%3Bsegments_type_valid%3Dtrue%3Bmarker_count%3D0%3Bmarker_limit%3Dat_most_one"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.KeyAnalysisSharedOnly\t",
+            "source%3DValidateKeyPathConformance%3Broot_permission%3Dshared%3Bconst_or_unique_roots_require_keys%3Dfalse"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\tdef.19.LowerKeyPathsEmpty\t",
+            "source%3DLowerKeyPaths%3Bbranch%3Dempty"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\tdef.19.LowerKeyPathsCons\t",
+            "source%3DLowerKeyPaths%3Bbranch%3Dcons"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trule.19.Lower-Stmt-KeyBlock\t",
+            "source%3DLowerKeyBlockStmt%3Bkind%3Dordinary%3Blower_key_paths%3Dtrue%3Bcanonical_sort%3Dtrue%3Bcheck_conflict_before_acquire%3Dtrue%3Bacquire_order%3Dcanonical%3Bscope_exit_registered%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\tdef.19.SpeculativeIR\t",
+            "source%3DLowerKeyBlockStmt%3Bkind%3Dspeculative%3Bhas_snapshot%3Dtrue%3Bhas_validate%3Dtrue%3Bhas_commit%3Dtrue%3Bhas_retry%3Dtrue%3Bhas_fallback%3Dtrue%3Bfallback_conflict_acquire_release%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trule.19.Lower-Stmt-KeyBlock-Speculative\t",
+            "source%3DLowerKeyBlockStmt%3Bkind%3DSpeculativeWrite%3Blower_key_paths%3Dtrue%3Bcanonical_sort%3Dtrue%3Bspec_loop%3Dtrue%3Bfallback_write_key_block%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\tdef.19.KeyLoweringForms\t",
+            "source%3DLowerKeyPaths%3Bforms%3DLowerKeyPath,LowerKeyAccess"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trule.19.Lower-KeyPath\t",
+            "source%3DLowerKeyPaths%3Bbranch%3Dcons"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trule.19.Lower-KeyAccess-Uncovered\t",
+            "source%3DLowerImplicitKeyAccess%3Bcovered%3Dfalse%3Bcheck_conflict%3Dtrue%3Bacquire_key%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trule.19.Lower-KeyAccess-Covered\t",
+            "source%3DLowerImplicitKeyAccess%3Bcovered%3Dtrue%3Bemits_ir%3Dfalse"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.MemoryOrderingDefaultsAndKeySemantics\t",
+            "source%3DLowerKeyBlockStmt%3Bdefault_access_order%3Drelaxed%3Bkey_acquire_order%3Dacquire%3Bkey_release_order%3Drelease%3Bkey_semantics_unchanged%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.MemoryOrderAttributeAttachment\t",
+            "source%3DLowerKeyBlockStmt%3Battachment%3Dkey_block"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.MemoryOrderAttributeAttachment\t",
+            "source%3DLowerAttributedExpr%3Battachment%3Dattributed_expression"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.ExpressionMemoryOrderWellFormedness\t",
+            "source%3DLowerAttributedExpr%3Battachment%3Dattributed_expression%3Bcontains_keyed_or_shared_access%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.FenceEvaluation\t",
+            "source%3DLowerExpr%3Bexpr%3DFenceExpr%3Bevent%3DFenceIR%3Bvalue%3DUnitVal"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.FenceOrderingConstraints\t",
+            "source%3DLowerExpr%3Bexpr%3DFenceExpr%3Border%3Dacquire%3Bsequenced_before_constraints%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trule.19.Lower-Expr-Fence\t",
+            "source%3DLowerExpr%3Bexpr%3DFenceExpr%3Bir%3DFenceIR%3Bvalue%3DUnitVal"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trule.19.Lower-Ordered-Access\t",
+            "source%3DApplyEffectiveOrdering%3Bcontains_shared_access%3Dtrue%3Bordered_access_ir%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.NestedReleaseNoAdditionalSyntax\t",
+            "source%3DParseKeyBlockStmt%3Bhead%3Drelease%3Badditional_syntax%3Dfalse"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.NestedReleaseNoAdditionalParsingRules\t",
+            "source%3DParseKeyBlockStmt%3Bhead%3Drelease%3Badditional_parsing_rules%3Dfalse"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\tdef.19.DirectCalleeAccesses\t",
+            "source%3DProcedureKeyAccessSummaryBuilder%3Bdirect_callee_accesses%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.NestedReleaseExecutionSequence\t",
+            "source%3DLowerKeyBlockStmt%3Bkind%3DRelease%3Brelease_outer%3Dtrue%3Bacquire_inner%3Dtrue%3Brelease_inner%3Dtrue%3Breacquire_outer%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trequirement.19.NestedReleaseInterleavingWindow\t",
+            "source%3DLowerKeyBlockStmt%3Bkind%3DRelease%3Bouter_release_before_inner_acquire%3Dtrue%3Binner_release_before_outer_reacquire%3Dtrue"
+        ) &&
+        keySystemConformanceLineContains(
+            authority,
+            out_dir,
+            "\trule.19.Lower-Stmt-KeyBlock-Release\t",
+            "source%3DLowerKeyBlockStmt%3Bkind%3DRelease%3Blower_key_paths%3Dtrue%3Bcanonical_sort%3Dtrue%3Brelease_outer%3Dtrue%3Bacquire_inner%3Dtrue%3Brelease_inner%3Dtrue%3Breacquire_outer%3Dtrue"
+        )
+}

@@ -7,12 +7,12 @@ public procedure countAbstractMachineObjectsResponsibilityAndAuthorityAuthorityM
 
 public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthorityModelObligations() -> usize {
     var count: usize = 0usize
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "conformance.NoAmbientAuthorityDiscipline",
         12118usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPermissionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -20,8 +20,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "def.CapToken",
         12134usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "capabilityTokenUniverseReference",
+        "Source/Reference/Authority/CapabilityFormalModel.uv"
     ) {
         count = count + 1usize
     }
@@ -29,8 +29,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "def.CapInTypeSignature",
         12148usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "capInTypeSignatureReference",
+        "Source/Reference/Authority/CapabilityFormalModel.uv"
     ) {
         count = count + 1usize
     }
@@ -38,8 +38,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "def.CapInTypeRootMappings",
         12162usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "capInTypeRootMappingsReference",
+        "Source/Reference/Authority/CapabilityFormalModel.uv"
     ) {
         count = count + 1usize
     }
@@ -47,8 +47,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "def.CapInTypePermission",
         12185usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "capInTypePermissionReference",
+        "Source/Reference/Authority/CapabilityFormalModel.uv"
     ) {
         count = count + 1usize
     }
@@ -56,8 +56,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "def.CapInTypeStructuralCollections",
         12199usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "capInTypeStructuralCollectionsReference",
+        "Source/Reference/Authority/CapabilityFormalModel.uv"
     ) {
         count = count + 1usize
     }
@@ -65,8 +65,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "def.CapInTypeStructuralNominal",
         12215usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "capInTypeStructuralNominalReference",
+        "Source/Reference/Authority/CapabilityFormalModel.uv"
     ) {
         count = count + 1usize
     }
@@ -74,8 +74,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "req.CapInTypeLeastFixedPointAllowed",
         12230usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "capInTypeLeastFixedPointAllowedReference",
+        "Source/Reference/Authority/CapabilityFormalModel.uv"
     ) {
         count = count + 1usize
     }
@@ -83,35 +83,35 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "req.CapInTypeCyclesTerminate",
         12244usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "capInTypeCyclesTerminateReference",
+        "Source/Reference/Authority/CapabilityFormalModel.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "NAA-1",
         12260usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPermissionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Permissions/NoAmbientCapabilityGlobal/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "NAA-2",
         12275usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/MainSignature/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "NAA-3",
         12290usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPermissionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -119,17 +119,17 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "def.CapReq",
         12307usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "capabilityRequirementSetReference",
+        "Source/Reference/Authority/CapabilityFormalModel.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "req.DirectCallCapabilityInclusion",
         12321usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPermissionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -137,8 +137,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "def.AttenuationOperations",
         12337usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "attenuationOperationsReference",
+        "Source/Reference/Authority/CapabilityFormalModel.uv"
     ) {
         count = count + 1usize
     }
@@ -146,8 +146,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "req.AttenuationMonotoneAuthority",
         12362usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "attenuationMonotoneAuthorityReference",
+        "Source/Reference/Authority/CapabilityFormalModel.uv"
     ) {
         count = count + 1usize
     }
@@ -155,8 +155,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "req.AttenuationChildLiveness",
         12376usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "attenuationChildLivenessReference",
+        "Source/Reference/Authority/CapabilityFormalModel.uv"
     ) {
         count = count + 1usize
     }
@@ -164,17 +164,17 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "req.AttenuationChildDropDoesNotDiminishParent",
         12392usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "attenuationChildDropDoesNotDiminishParentReference",
+        "Source/Reference/Authority/CapabilityFormalModel.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "req.AttenuationParentDropRejectedWithLiveChildren",
         12406usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPermissionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Permissions/AttenuationParentDropWithLiveChild/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -182,8 +182,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "req.AttenuationDelegationSubsetRouting",
         12420usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "attenuationDelegationSubsetRoutingReference",
+        "Source/Reference/Authority/CapabilityFormalModel.uv"
     ) {
         count = count + 1usize
     }
@@ -191,8 +191,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "def.ObservableEffect",
         12436usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "observableEffectVariantsReference",
+        "Source/Reference/Authority/CapabilityFormalModel.uv"
     ) {
         count = count + 1usize
     }
@@ -200,8 +200,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "def.ObservableEvent",
         12456usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "observableEventDefinitionReference",
+        "Source/Reference/Authority/CapabilityFormalModel.uv"
     ) {
         count = count + 1usize
     }
@@ -209,8 +209,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "def.ObservableBehavior",
         12475usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "observableBehaviorDefinitionReference",
+        "Source/Reference/Authority/CapabilityFormalModel.uv"
     ) {
         count = count + 1usize
     }
@@ -218,8 +218,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "req.AsIfObservablePreservation",
         12489usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "asIfObservablePreservationReference",
+        "Source/Reference/Authority/CapabilityFormalModel.uv"
     ) {
         count = count + 1usize
     }
@@ -227,8 +227,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "req.AsIfForbiddenObservableChanges",
         12509usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "asIfForbiddenObservableChangesReference",
+        "Source/Reference/Authority/CapabilityFormalModel.uv"
     ) {
         count = count + 1usize
     }
@@ -236,8 +236,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "def.SequencePoint",
         12530usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "sequencePointDefinitionReference",
+        "Source/Reference/Authority/CapabilityFormalModel.uv"
     ) {
         count = count + 1usize
     }
@@ -245,8 +245,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "def.CanonicalSequencePoints",
         12547usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "canonicalSequencePointsReference",
+        "Source/Reference/Authority/CapabilityFormalModel.uv"
     ) {
         count = count + 1usize
     }
@@ -254,17 +254,17 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "req.SequencePointLTRPreservation",
         12568usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "sequencePointLTRPreservationReference",
+        "Source/Reference/Authority/CapabilityFormalModel.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "conformance.UnsafeForeignAuthority",
         12584usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnosticOwnership/Source/Main.uv"
     ) {
         count = count + 1usize
     }

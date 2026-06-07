@@ -164,6 +164,19 @@ ParseElemResult<std::vector<SpawnOption>> ParseSpawnOptsOpt(Parser parser) {
   return {after_rbracket, std::move(opts.elem)};
 }
 
+void RecordSpawnCaptureParserEvidence(const core::Span& span) {
+  core::Conformance::Record(
+      "requirement.20.CaptureSemanticsNoAdditionalSyntax",
+      span,
+      "source=ParseSpawnExpr;body_parser=ParseBlock;"
+      "capture_surface=spawn_body;additional_syntax=false");
+  core::Conformance::Record(
+      "requirement.20.CaptureSemanticsNoAdditionalParsingRules",
+      span,
+      "source=ParseSpawnExpr;parser=spawn_expr;body_parser=ParseBlock;"
+      "capture_parser=none;additional_parsing_rules=false");
+}
+
 }  // namespace
 
 ParseElemResult<ExprPtr> ParseSpawnExpr(Parser parser) {
@@ -177,7 +190,9 @@ ParseElemResult<ExprPtr> ParseSpawnExpr(Parser parser) {
   SpawnExpr spawn;
   spawn.opts = std::move(opts.elem);
   spawn.body = body.elem;
-  return {body.parser, MakeExpr(SpanBetween(parser, body.parser), spawn)};
+  const core::Span expr_span = SpanBetween(parser, body.parser);
+  RecordSpawnCaptureParserEvidence(expr_span);
+  return {body.parser, MakeExpr(expr_span, spawn)};
 }
 
 }  // namespace ultraviolet::ast

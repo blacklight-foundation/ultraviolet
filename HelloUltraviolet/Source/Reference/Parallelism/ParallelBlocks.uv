@@ -62,6 +62,75 @@ internal procedure optionedParallelValue(context: Context) -> i32 {
     }
 }
 
+internal procedure domainOrValue(
+    context: Context,
+    should_return: bool
+) -> $ExecutionDomain | i32 {
+    if should_return {
+        return 29
+    }
+
+    return context~>inline()
+}
+
+internal procedure parallelBodyControlTarget(context: Context, should_return: bool) -> i32 {
+    return parallel context~>inline() {
+        if should_return {
+            return 23
+        }
+
+        5
+    }
+}
+
+internal procedure parallelDomainControlTarget(context: Context, should_return: bool) -> i32 {
+    return parallel domainOrValue(context, should_return)? {
+        5
+    }
+}
+
+internal procedure parallelSpawnInsideBlockValue(context: Context) -> i32 {
+    let captured_value: i32 = 8
+    return parallel context~>inline() {
+        let handle: Spawned<i32> = spawn {
+            captured_value + 5
+        }
+        wait handle
+    }
+}
+
+internal procedure parallelDispatchInsideBlockValue(context: Context) -> i32 {
+    return parallel context~>inline() {
+        dispatch index in 0usize..4usize [reduce: +, ordered] {
+            index as i32
+        }
+    }
+}
+
+internal procedure parallelBlockWellFormednessReference(context: Context) -> bool {
+    return inlineParallelValue(context) == 42 &&
+        cpuParallelValue(context) == 6 &&
+        namedParallelValue(context) == 9 &&
+        optionedParallelValue(context) == 16 &&
+        parallelSpawnInsideBlockValue(context) == 13 &&
+        parallelDispatchInsideBlockValue(context) == 6
+}
+
+internal procedure evalSigmaParallelReference(context: Context) -> bool {
+    return inlineParallelValue(context) == 42 &&
+        cpuParallelValue(context) == 6
+}
+
+internal procedure evalSigmaParallelBodyCtrlReference(context: Context) -> bool {
+    return parallelBodyControlTarget(context, false) == 5 &&
+        parallelBodyControlTarget(context, true) == 23
+}
+
+internal procedure evalSigmaParallelDomainCtrlReference(context: Context) -> bool {
+    return parallelDomainControlTarget(context, false) == 5 &&
+        parallelDomainControlTarget(context, true) == 29
+}
+
 /// Exercises the Parallelism ParallelBlocks reference surface.
 public procedure runParallelismParallelBlocksReference(context: Context) -> bool {
     let reference: ParallelReference = parallelReference(
@@ -70,5 +139,9 @@ public procedure runParallelismParallelBlocksReference(context: Context) -> bool
         namedParallelValue(context)
     )
     return parallelReferenceIsCovered(reference) &&
-        optionedParallelValue(context) == 16
+        optionedParallelValue(context) == 16 &&
+        parallelBlockWellFormednessReference(context) &&
+        evalSigmaParallelReference(context) &&
+        evalSigmaParallelBodyCtrlReference(context) &&
+        evalSigmaParallelDomainCtrlReference(context)
 }

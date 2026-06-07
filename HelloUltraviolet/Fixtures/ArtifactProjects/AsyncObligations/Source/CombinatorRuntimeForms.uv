@@ -1,0 +1,201 @@
+//! Artifact fixture coverage for async combinator wrapper runtime obligations.
+
+internal procedure asyncCompositionNoOutput() -> Async<i32, (), (), bool> {
+    return ()
+}
+
+internal procedure asyncCompositionOutputMayFail(
+    should_fail: bool,
+    value: i32
+) -> Async<i32, (), (), bool> {
+    let result: i32 = asyncCompositionOutcome(should_fail, value)?
+    yield result
+    return ()
+}
+
+internal procedure asyncCompositionKeepUnit(value: ()) -> () {
+    return value
+}
+
+internal procedure streamBoolIsCompleted(state: Stream<i32, bool>) -> bool {
+    return if state is {
+        @Suspended {
+            false
+        }
+        @Completed {
+            true
+        }
+        @Failed {
+            false
+        }
+    }
+}
+
+internal procedure runAsyncCompositionMapReference() -> bool {
+    let mapped: Stream<i32, bool> =
+        asyncCompositionSingleOutput(47)~>map(|value: i32| -> i32 value + 1)
+    return streamBoolIsSuspendedOutput(mapped, 48)
+}
+
+internal procedure runAsyncCompositionFilterReference() -> bool {
+    let filtered: Stream<i32, bool> =
+        asyncCompositionSingleOutput(49)~>filter(
+            |value: const i32| -> bool value == 49
+        )
+    return streamBoolIsSuspendedOutput(filtered, 49)
+}
+
+internal procedure runAsyncCompositionTakeReference() -> bool {
+    let taken: Stream<i32, bool> =
+        asyncCompositionSingleOutput(50)~>take(1usize)
+    return streamBoolIsSuspendedOutput(taken, 50)
+}
+
+internal procedure runAsyncCompositionFoldReference() -> bool {
+    let folded: Async<(), (), i32, bool> =
+        asyncCompositionSingleOutput(5)~>fold(
+            10,
+            |accumulator: i32, value: i32| -> i32 accumulator + value
+        )
+    let fold_result: i32 | bool = sync folded
+    return i32BoolUnionIsValue(fold_result, 15)
+}
+
+internal procedure runAsyncCompositionChainReference() -> bool {
+    let chained: Async<(), (), i32, bool> =
+        asyncCompositionSharedCompletion(7)~>chain(
+            |value: i32| -> Async<(), (), i32, bool>
+                asyncCompositionSharedCompletion(value + 1)
+        )
+    let chain_result: i32 | bool = sync chained
+    return i32BoolUnionIsValue(chain_result, 8)
+}
+
+internal procedure runAsyncCompositionMapCompletionReference() -> bool {
+    let mapped: Async<(), (), i32, bool> =
+        asyncCompositionCompletes(71)~>map(asyncCompositionKeepUnit)
+    let result: i32 | bool = sync mapped
+    return i32BoolUnionIsValue(result, 71)
+}
+
+internal procedure runAsyncCompositionMapFailureReference() -> bool {
+    let mapped: Async<(), (), i32, bool> =
+        asyncCompositionMayFail(true, 72)~>map(asyncCompositionKeepUnit)
+    let result: i32 | bool = sync mapped
+    return i32BoolUnionIsFailure(result)
+}
+
+internal procedure runAsyncCompositionFilterSkipReference() -> bool {
+    let filtered: Stream<i32, bool> =
+        asyncCompositionTwoOutputs(80, 81)~>filter(
+            |value: const i32| -> bool value == 81
+        )
+    return streamBoolIsSuspendedOutput(filtered, 81)
+}
+
+internal procedure runAsyncCompositionFilterCompletionReference() -> bool {
+    let filtered: Stream<i32, bool> =
+        asyncCompositionSingleOutput(82)~>filter(|value: const i32| -> bool false)
+    return streamBoolIsCompleted(filtered)
+}
+
+internal procedure runAsyncCompositionTakeZeroReference() -> bool {
+    let taken: Stream<i32, bool> = asyncCompositionSingleOutput(83)~>take(0usize)
+    return streamBoolIsCompleted(taken)
+}
+
+internal procedure runAsyncCompositionTakeResumeDoneReference() -> bool {
+    let taken: unique Stream<i32, bool> =
+        asyncCompositionTwoOutputs(84, 85)~>take(1usize)
+    return if taken is {
+        @Suspended { output } {
+            let resumed = taken~>resume(())
+            let resumed_completed: bool = if resumed is {
+                @Suspended {
+                    false
+                }
+                @Completed {
+                    true
+                }
+                @Failed {
+                    false
+                }
+            }
+            output == 84 && resumed_completed
+        }
+        @Completed {
+            false
+        }
+        @Failed {
+            false
+        }
+    }
+}
+
+internal procedure runAsyncCompositionTakeSourceCompleteReference() -> bool {
+    let taken: Stream<i32, bool> = asyncCompositionNoOutput()~>take(2usize)
+    return streamBoolIsCompleted(taken)
+}
+
+internal procedure runAsyncCompositionFoldFailureReference() -> bool {
+    let folded: Async<(), (), i32, bool> =
+        asyncCompositionOutputMayFail(true, 86)~>fold(
+            10,
+            |accumulator: i32, value: i32| -> i32 accumulator + value
+        )
+    let result: i32 | bool = sync folded
+    return i32BoolUnionIsFailure(result)
+}
+
+internal procedure runAsyncCompositionChainSourceFailureReference() -> bool {
+    let chained: Async<(), (), i32, bool> =
+        asyncCompositionMayFail(true, 87)~>chain(
+            |value: i32| -> Async<(), (), i32, bool>
+                asyncCompositionSharedCompletion(value + 1)
+        )
+    let result: i32 | bool = sync chained
+    return i32BoolUnionIsFailure(result)
+}
+
+internal procedure runAsyncCompositionChainSuspendedContinuationReference() -> bool {
+    let chained: Async<(), (), i32, bool> =
+        asyncCompositionSharedCompletion(88)~>chain(
+            |value: i32| -> Async<(), (), i32, bool>
+                asyncCompositionUnitSuspends(value + 1)
+        )
+    let result: i32 | bool = sync chained
+    return i32BoolUnionIsValue(result, 89)
+}
+
+internal procedure runAsyncCompositionCombinatorRuntimeReference() -> bool {
+    return runAsyncCompositionMapCompletionReference() &&
+        runAsyncCompositionMapFailureReference() &&
+        runAsyncCompositionFilterSkipReference() &&
+        runAsyncCompositionFilterCompletionReference() &&
+        runAsyncCompositionTakeZeroReference() &&
+        runAsyncCompositionTakeResumeDoneReference() &&
+        runAsyncCompositionTakeSourceCompleteReference() &&
+        runAsyncCompositionFoldFailureReference() &&
+        runAsyncCompositionChainSourceFailureReference() &&
+        runAsyncCompositionChainSuspendedContinuationReference()
+}
+
+internal procedure runAsyncCompositionCombinatorsReference() -> bool {
+    return runAsyncCompositionMapReference() &&
+        runAsyncCompositionFilterReference() &&
+        runAsyncCompositionTakeReference() &&
+        runAsyncCompositionFoldReference() &&
+        runAsyncCompositionChainReference() &&
+        runAsyncCompositionCombinatorRuntimeReference()
+}
+
+internal procedure asyncArtifactCompositionChecks() -> bool {
+    return runAsyncCompositionSyncReference() &&
+        runAsyncCompositionAllRuntimeReference() &&
+        runAsyncCompositionReturnRaceRuntimeReference() &&
+        runAsyncCompositionStreamingRaceReference() &&
+        runAsyncCompositionUntilRuntimeReference() &&
+        runAsyncCompositionAsyncIterationRuntimeReference() &&
+        runAsyncCompositionManualSteppingReference() &&
+        runAsyncCompositionCombinatorsReference()
+}

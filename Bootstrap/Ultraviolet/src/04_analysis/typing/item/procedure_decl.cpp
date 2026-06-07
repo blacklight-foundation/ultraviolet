@@ -75,6 +75,7 @@ constexpr std::string_view kMissingTargetProfileDiag =
 
 static inline void SpecDefsProcedureDecl() {
   SPEC_DEF("WF-ProcedureDecl", "5.2.14");
+  SPEC_DEF("rule.15.WF-ProcedureDecl", "15.1.4");
   SPEC_DEF("WF-ProcedureDecl-MissingReturnType", "5.2.14");
   SPEC_DEF("WF-ProcBody-ExplicitReturn-Err", "5.2.14");
   SPEC_DEF("WF-ExternProcDecl", "5.2.14");
@@ -92,6 +93,7 @@ static inline void SpecDefsProcedureDecl() {
   SPEC_DEF("MainSigOk", "5.3.1");
   SPEC_DEF("MainGeneric", "5.3.1");
   SPEC_DEF("Contract-Static-Fail", "14.7.1");
+  SPEC_DEF("requirement.23.UnwindAttributeTargetValidity", "23.4.4.3");
 }
 
 struct ProcedureTypePerfStats {
@@ -190,6 +192,7 @@ static bool MainSigOk(const ScopeContext& ctx, const ast::ProcedureDecl& decl) {
   }
   // Must have exactly one parameter
   if (decl.params.size() != 1) {
+    SPEC_RULE("NAA-2");
     return false;
   }
   const auto& param = decl.params[0];
@@ -199,6 +202,7 @@ static bool MainSigOk(const ScopeContext& ctx, const ast::ProcedureDecl& decl) {
   }
   // Parameter type must be a Context bundle.
   if (!param.type || !IsContextBundleType(ctx, *param.type)) {
+    SPEC_RULE("NAA-2");
     return false;
   }
   // Return type must be i32
@@ -231,14 +235,17 @@ static std::optional<std::string_view> ValidateTestProcedureShape(
   if (!decl.body || !ast::TypeParamsOpt(decl.generic_params).empty() ||
       !decl.visibility_explicit || !ReturnAnnOk(decl.return_type_opt) ||
       decl.params.size() > 1) {
+    SPEC_RULE("req.TestProcedureShape");
     return "E-TST-0104";
   }
 
   if (!decl.contract.has_value() || !decl.contract->postcondition) {
+    SPEC_RULE("req.TestProcedureShape");
     return "E-TST-0106";
   }
 
   if (decl.params.size() == 1 && !IsBareTestAuthorityType(decl.params[0].type)) {
+    SPEC_RULE("req.TestAuthority");
     return "E-TST-0105";
   }
 
@@ -315,6 +322,33 @@ static void EmitSupplementalBorrowDiag(
   if (primary_is_call_move_missing()) {
     EmitTypecheckDiag(diags, "E-MOD-2411", std::nullopt);
   }
+}
+
+static void RecordFfiSafeFailureObligations(const ScopeContext& ctx,
+                                            const ast::ModulePath& module_path,
+                                            const TypeRef& type,
+                                            std::string_view diag_id) {
+  if (diag_id != "E-TYP-2623") {
+    return;
+  }
+  SPEC_RULE("FfiSafe-Prohibited-Err");
+  SPEC_RULE("rule.23.FfiSafe-Prohibited-Err");
+  if (!InferCapabilitiesFromType(ctx, module_path, type).IsEmpty()) {
+    SPEC_RULE("diagnostics.23.CapabilityIsolationDiagnosticOwnership");
+  }
+}
+
+static void RecordForeignExportTypeAdmissibilityObligations(bool has_host_export) {
+  SPEC_RULE(has_host_export
+                ? "diagnostics.23.HostedExportDiagnosticOwnership"
+                : "diagnostics.23.RawExportDiagnosticOwnership");
+}
+
+static void RecordForeignExportByValueFailureObligations(bool has_host_export) {
+  RecordForeignExportTypeAdmissibilityObligations(has_host_export);
+  SPEC_RULE("def.23.FfiByValueHelpers");
+  SPEC_RULE("requirement.23.FfiSafeRaiiByValueRule");
+  SPEC_RULE("requirement.23.FfiPassByValueAttributeSemantics");
 }
 
 static void EmitBorrowMoveMissingFromRecentDiags(
@@ -743,6 +777,7 @@ struct UnwindAttrCheck {
 };
 
 static UnwindAttrCheck CheckUnwindAttr(const ast::AttributeList& attr_list) {
+  SPEC_RULE("def.23.DetermineUnwindMode");
   UnwindAttrCheck check;
   std::vector<const ast::AttributeItem*> unwind_attrs;
   for (const auto& attr : attr_list) {
@@ -762,6 +797,7 @@ static UnwindAttrCheck CheckUnwindAttr(const ast::AttributeList& attr_list) {
   }
 
   const ast::AttributeItem& attr = *unwind_attrs.front();
+  SPEC_RULE("def.23.ParseUnwindArg");
   if (attr.args.size() != 1 || attr.args.front().key.has_value()) {
     check.invalid = true;
     return check;
@@ -1651,6 +1687,118 @@ static void EmitProcedureFfiWarnings(const ast::ProcedureDecl& decl,
   }
 }
 
+static void RecordProcedureConformance(std::string_view rule_id) {
+  if (core::Conformance::Enabled()) {
+    core::Conformance::Record(rule_id);
+  }
+}
+
+static void RecordProcedureConformance(std::string_view rule_id,
+                                       std::string_view payload) {
+  if (core::Conformance::Enabled()) {
+    core::Conformance::Record(rule_id, std::nullopt, payload);
+  }
+}
+
+static void RecordForeignExportCapabilityIsolationConformance(
+    const ast::ProcedureDecl& decl,
+    bool has_host_export) {
+  const std::string_view boundary =
+      has_host_export ? "hosted_export" : "raw_export";
+  std::string payload;
+  payload.reserve(decl.name.size() + boundary.size() + 256);
+  payload += "source=TypeProcedureDecl;boundary=";
+  payload += boundary;
+  payload += ";procedure=";
+  payload += decl.name;
+  payload +=
+      ";syntax=none;parser=ordinary_procedure_with_ffi_attributes;"
+      "dedicated_ast_nodes=false;semantic_gate=foreign_visible_signature;"
+      "helpers=RegionLocalProv,RawPtrType,FFICall;"
+      "capability_values_exposed=false;region_local_raw_ptrs_rejected=true";
+
+  RecordProcedureConformance(
+      "requirement.23.CapabilityIsolationSyntaxNoAdditionalForm", payload);
+  RecordProcedureConformance(
+      "requirement.23.CapabilityIsolationParsingNoAdditionalRules", payload);
+  RecordProcedureConformance(
+      "ast.23.CapabilityIsolationNoDedicatedAst", payload);
+  RecordProcedureConformance(
+      "requirement.23.CapabilityIsolationSemantics", payload);
+  RecordProcedureConformance("def.23.CapabilityIsolationHelpers", payload);
+}
+
+static void AppendExportParamTypes(std::string& payload,
+                                   const TypeFunc& fn,
+                                   std::size_t visible_param_begin) {
+  payload += ";export_param_types=";
+  if (visible_param_begin >= fn.params.size()) {
+    payload += "[]";
+    return;
+  }
+
+  payload += "[";
+  for (std::size_t i = visible_param_begin; i < fn.params.size(); ++i) {
+    if (i != visible_param_begin) {
+      payload += ",";
+    }
+    payload += TypeToString(fn.params[i].type);
+  }
+  payload += "]";
+}
+
+static void RecordRawExportSignatureConformance(
+    const ScopeContext& ctx,
+    const ast::ProcedureDecl& decl,
+    const TypeRef& return_type,
+    const TypeFunc& fn,
+    std::size_t visible_param_begin,
+    bool catch_unwind) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  const auto export_abi = ExportAbiValue(decl.attrs);
+  const bool unwind_attr_present = HasAttribute(decl.attrs, attrs::kUnwind);
+  const bool zeroable_return = ZeroableType(ctx, return_type);
+
+  std::string payload;
+  payload.reserve(decl.name.size() + 256);
+  payload += "source=TypeProcedureDecl;boundary=raw_export;procedure=";
+  payload += decl.name;
+  payload += ";ast_node=ProcedureDecl;export_attr=true;dedicated_ast_node=false";
+  payload += ";raw_exported_procedure=true;abi=";
+  payload += export_abi.value_or("-");
+  payload += ";visibility=public";
+  payload += ";profile_ok=true";
+  payload += ";return_type=";
+  payload += TypeToString(return_type);
+  payload += ";ffi_safe_return=true;ffi_by_value_return=true";
+  payload += ";visible_param_count=";
+  payload += std::to_string(fn.params.size() - visible_param_begin);
+  payload += ";ffi_safe_params=true;ffi_by_value_params=true";
+  payload += ";export_sig_judgement=ExportSigOk";
+  payload += ";export_param_types_helper=true";
+  payload += ";zeroable_return=";
+  payload += zeroable_return ? "true" : "false";
+  payload += ";unwind_mode=";
+  payload += catch_unwind ? "catch" : "abort";
+  payload += ";zero_value_required=";
+  payload += catch_unwind ? "true" : "false";
+  payload += ";unwind_attr_present=";
+  payload += unwind_attr_present ? "true" : "false";
+  AppendExportParamTypes(payload, fn, visible_param_begin);
+
+  const std::optional<core::Span> span(decl.span);
+  core::Conformance::Record("ast.23.RawExportProcedureForm", span, payload);
+  core::Conformance::Record("def.23.RawExportedProcedureMeaning", span, payload);
+  core::Conformance::Record("def.23.ExportSignatureHelpers", span, payload);
+  core::Conformance::Record("rule.23.ExportSig-Ok", span, payload);
+  if (catch_unwind) {
+    core::Conformance::Record("def.23.ZeroValueHelpers", span, payload);
+  }
+}
+
 static std::optional<std::string_view> ValidateProcedureFfiAttributes(
     const ScopeContext& ctx,
     const ast::ProcedureDecl& decl) {
@@ -1666,6 +1814,9 @@ static std::optional<std::string_view> ValidateProcedureFfiAttributes(
 
   if (has_foreign_export && decl.vis != ast::Visibility::Public) {
     SPEC_RULE("Export-Vis-Err");
+    if (has_export) {
+      SPEC_RULE("diagnostics.23.RawExportDiagnostics");
+    }
     return "E-SYS-3353";
   }
 
@@ -1678,27 +1829,35 @@ static std::optional<std::string_view> ValidateProcedureFfiAttributes(
         !IsValidFfiAbi(*foreign_abi) ||
         !IsSupportedFfiAbiForProfile(*foreign_abi, *profile)) {
       SPEC_RULE("ExportAbi-Unknown-Err");
+      if (has_export) {
+        SPEC_RULE("diagnostics.23.RawExportDiagnosticOwnership");
+      }
       return "E-SYS-3352";
     }
   }
 
   if (mangle_check.has_attr) {
     if (mangle_check.conflicting) {
+      SPEC_RULE("requirement.23.FfiAttributeConstraints");
       return "E-SYS-3351";
     }
     if (mangle_check.invalid) {
+      SPEC_RULE("requirement.23.FfiAttributeConstraints");
       return "E-SYS-3341";
     }
     if (!has_foreign_export) {
+      SPEC_RULE("requirement.23.FfiAttributeConstraints");
       return mangle_check.none_mode ? "E-SYS-3350" : "E-SYS-3340";
     }
     if (!mangle_check.none_mode && mangle_check.explicit_name.empty()) {
+      SPEC_RULE("requirement.23.FfiAttributeConstraints");
       return "E-SYS-3341";
     }
   }
 
   if (has_unwind) {
     if (!has_foreign_export) {
+      SPEC_RULE("requirement.23.UnwindAttributeTargetValidity");
       return "E-SYS-3356";
     }
     if (unwind_check.duplicate) {
@@ -1707,37 +1866,51 @@ static std::optional<std::string_view> ValidateProcedureFfiAttributes(
     }
     if (unwind_check.invalid) {
       SPEC_RULE("UnwindMode-Invalid-Err");
+      SPEC_RULE("rule.23.UnwindMode-Invalid-Err");
+      SPEC_RULE("diagnostics.23.BoundaryUnwindingDiagnosticOwnership");
+      SPEC_RULE("diagnostics.23.BoundaryUnwindingNoAdditionalDiagnostics");
       return "E-SYS-3355";
     }
     if (unwind_check.mode == "catch" &&
         (!foreign_abi.has_value() || *foreign_abi != "C-unwind")) {
-      SPEC_RULE("UnwindMode-Invalid-Err");
+      SPEC_RULE("requirement.23.UnwindCatchAbiRequirement");
+      SPEC_RULE("diagnostics.23.BoundaryUnwindingDiagnosticOwnership");
+      SPEC_RULE("diagnostics.23.BoundaryUnwindingNoAdditionalDiagnostics");
       return "E-SYS-3355";
     }
   }
 
   if (has_foreign_export && AssemblyHasMixedForeignExportModes(ctx)) {
+    if (has_host_export) {
+      RecordProcedureConformance("rule.23.HostExport-MixedMode-Err");
+    }
     return "E-SYS-3358";
   }
 
   if (has_host_export) {
     const auto* assembly = CurrentAssembly(ctx);
     if (!assembly || assembly->kind != "library") {
+      RecordProcedureConformance("rule.23.HostExport-Library-Err");
       return "E-SYS-3357";
     }
     if (!ast::TypeParamsOpt(decl.generic_params).empty()) {
+      RecordProcedureConformance("rule.23.HostExport-Generic-Err");
       return "E-TYP-2634";
     }
     if (decl.params.empty() || !decl.params.front().type ||
         !IsContextBundleType(ctx, *decl.params.front().type)) {
+      RecordProcedureConformance("rule.23.HostExport-Context-Err");
       return "E-TYP-2632";
     }
     if (!IsHostedContextBundleType(ctx, *decl.params.front().type)) {
+      RecordProcedureConformance("rule.23.HostExport-Context-Raw-Err");
       return "E-TYP-2636";
     }
     if (decl.params.front().mode.has_value()) {
+      RecordProcedureConformance("rule.23.HostExport-Context-Move-Err");
       return "E-TYP-2633";
     }
+    RecordProcedureConformance("rule.23.HostExportSig-Ok");
   }
 
   return std::nullopt;
@@ -1820,7 +1993,9 @@ ProcedureDeclResult TypeProcedureDecl(
 
   // Check return type annotation is present
   if (!ReturnAnnOk(decl.return_type_opt)) {
+    SPEC_RULE("def.15.ReturnAnnOk");
     SPEC_RULE("WF-ProcedureDecl-MissingReturnType");
+    SPEC_RULE("rule.15.WF-ProcedureDecl-MissingReturnType");
     SPEC_RULE("ReturnAnnOk-Err");
     result.ok = false;
     result.diag_id = "WF-ProcedureDecl-MissingReturnType";
@@ -1863,12 +2038,18 @@ ProcedureDeclResult TypeProcedureDecl(
   if (IsMainProcedure(decl.name)) {
     if (MainGeneric(decl)) {
       SPEC_RULE("MainGeneric-Err");
+      SPEC_RULE("Main-Generic-Err");
+      SPEC_RULE("rule.15.Main-Generic-Err");
+      SPEC_RULE("def.15.MainDiagRefs");
       result.ok = false;
       result.diag_id = "E-MOD-2432";
       return result;
     }
     if (!MainSigOk(ctx, decl)) {
       SPEC_RULE("MainSigOk-Err");
+      SPEC_RULE("Main-Signature-Err");
+      SPEC_RULE("rule.15.Main-Signature-Err");
+      SPEC_RULE("def.15.MainDiagRefs");
       result.ok = false;
       result.diag_id = "E-MOD-2431";
       return result;
@@ -1918,15 +2099,21 @@ ProcedureDeclResult TypeProcedureDecl(
   if (has_export || has_host_export) {
     if (!FfiSafeType(proc_ctx, sig.return_type)) {
       SPEC_RULE("FfiSafe-Return-Err");
+      RecordForeignExportTypeAdmissibilityObligations(has_host_export);
       result.ok = false;
-          result.diag_id =
-              FfiSafeDiagForType(proc_ctx, module_path, sig.return_type)
-                  .value_or("E-TYP-2623");
+      const auto ffi_diag_id =
+          FfiSafeDiagForType(proc_ctx, module_path, sig.return_type)
+              .value_or("E-TYP-2623");
+      result.diag_id = ffi_diag_id;
+      RecordFfiSafeFailureObligations(
+          proc_ctx, module_path, sig.return_type, ffi_diag_id);
       return result;
     }
     if (!InferCapabilitiesFromType(proc_ctx, module_path, sig.return_type)
              .IsEmpty()) {
       SPEC_RULE("FfiSafe-Prohibited-Err");
+      SPEC_RULE("rule.23.FfiSafe-Prohibited-Err");
+      SPEC_RULE("diagnostics.23.CapabilityIsolationDiagnosticOwnership");
       result.ok = false;
       result.diag_id = "E-TYP-2623";
       return result;
@@ -1938,15 +2125,21 @@ ProcedureDeclResult TypeProcedureDecl(
         const auto& param = fn->params[i];
         if (!FfiSafeType(proc_ctx, param.type)) {
           SPEC_RULE("FfiSafe-Param-Err");
+          RecordForeignExportTypeAdmissibilityObligations(has_host_export);
           result.ok = false;
-          result.diag_id =
+          const auto ffi_diag_id =
               FfiSafeDiagForType(proc_ctx, module_path, param.type)
                   .value_or("E-TYP-2623");
+          result.diag_id = ffi_diag_id;
+          RecordFfiSafeFailureObligations(
+              proc_ctx, module_path, param.type, ffi_diag_id);
           return result;
         }
         if (!InferCapabilitiesFromType(proc_ctx, module_path, param.type)
                  .IsEmpty()) {
           SPEC_RULE("FfiSafe-Prohibited-Err");
+          SPEC_RULE("rule.23.FfiSafe-Prohibited-Err");
+          SPEC_RULE("diagnostics.23.CapabilityIsolationDiagnosticOwnership");
           result.ok = false;
           result.diag_id = "E-TYP-2623";
           return result;
@@ -1973,17 +2166,32 @@ ProcedureDeclResult TypeProcedureDecl(
 
     if (!by_value_ok) {
       SPEC_RULE("Export-ByValue-Err");
+      RecordForeignExportByValueFailureObligations(has_host_export);
       result.ok = false;
       result.diag_id = "E-TYP-2630";
       return result;
     }
+    RecordForeignExportCapabilityIsolationConformance(decl, has_host_export);
 
-    if (IsCatchUnwind(decl.attrs) && !ZeroableType(proc_ctx, sig.return_type)) {
+    const bool catch_unwind = IsCatchUnwind(decl.attrs);
+    if (catch_unwind && !ZeroableType(proc_ctx, sig.return_type)) {
       SPEC_RULE("Export-Return-NotZeroable-Err");
       result.ok = false;
       result.diag_id =
           has_host_export ? "E-TYP-2635" : "Export-Return-NotZeroable-Err";
       return result;
+    }
+
+    if (has_export) {
+      if (const auto* fn = std::get_if<TypeFunc>(&sig.func_type->node)) {
+        RecordRawExportSignatureConformance(
+            proc_ctx,
+            decl,
+            sig.return_type,
+            *fn,
+            visible_param_begin,
+            catch_unwind);
+      }
     }
   }
 
@@ -2048,7 +2256,10 @@ ProcedureDeclResult TypeProcedureDecl(
     // For non-unit return types, check for explicit return
     const bool is_unit = TypeEquiv(sig.return_type, MakeTypePrim("()")).equiv;
     if (!is_unit && !HasExplicitReturn(*decl.body)) {
+      SPEC_RULE("rule.15.WF-ProcedureDecl");
+      SPEC_RULE("def.15.ExplicitReturn");
       SPEC_RULE("WF-ProcBody-ExplicitReturn-Err");
+      SPEC_RULE("rule.15.WF-ProcBody-ExplicitReturn-Err");
       SPEC_RULE("ProcReturn-Missing-Err");
       result.ok = false;
       result.diag_id = "E-TYP-1507";
@@ -2163,6 +2374,8 @@ ProcedureDeclResult TypeProcedureDecl(
       result.diag_span = body_result.diag_span.has_value()
                              ? body_result.diag_span
                              : ProcedureBodyFailureSpan(decl.body);
+      result.diagnostic_obligation_ids =
+          body_result.diagnostic_obligation_ids;
       return result;
     }
 
@@ -2191,39 +2404,27 @@ ProcedureDeclResult TypeProcedureDecl(
       }
     }
 
-    // Borrow checking
     if (perf_on) {
       ++perf_stats.bind_checks;
-    }
-    const auto bind_result = [&]() {
-      ScopedPerfTimer bind_timer(perf_on ? &perf_stats.bind_ms : nullptr);
-      return BindCheckBody(proc_ctx, module_path, decl.params, decl.body,
-                           std::nullopt);
-    }();
-    if (!bind_result.ok) {
-      result.ok = false;
-      result.diag_id = bind_result.diag_id;
-      return result;
-    }
-
-    // Provenance/region escape checking
-    if (perf_on) {
       ++perf_stats.prov_checks;
     }
-    const auto prov_result = [&]() {
-      ScopedPerfTimer prov_timer(perf_on ? &perf_stats.prov_ms : nullptr);
-      return ProvBindCheck(proc_ctx, module_path, decl.params, decl.body,
-                           std::nullopt, &diags);
-    }();
-    if (!prov_result.ok) {
+    const auto memory_result =
+        CheckBodyMemory(proc_ctx, module_path, decl.params, decl.body,
+                        std::nullopt, &diags, perf_on);
+    if (perf_on) {
+      perf_stats.bind_ms += memory_result.borrow_ms;
+      perf_stats.prov_ms += memory_result.provenance_ms;
+    }
+    if (!memory_result.ok) {
       result.ok = false;
-      result.diag_id = prov_result.diag_id;
+      result.diag_id = memory_result.diag_id;
       return result;
     }
   }
 
   EmitDynamicNoRuntimeWarningIfNeeded(decl, diags);
   SPEC_RULE("WF-ProcedureDecl");
+  SPEC_RULE("rule.15.WF-ProcedureDecl");
   SPEC_RULE("T-Proc-Decl-Ok");
   return result;
 }
@@ -2255,7 +2456,9 @@ ProcedureDeclResult TypeProcedureDeclSignature(
 
   // Check return type annotation
   if (!ReturnAnnOk(decl.return_type_opt)) {
+    SPEC_RULE("def.15.ReturnAnnOk");
     SPEC_RULE("WF-ProcedureDecl-MissingReturnType");
+    SPEC_RULE("rule.15.WF-ProcedureDecl-MissingReturnType");
     SPEC_RULE("ReturnAnnOk-Err");
     result.ok = false;
     result.diag_id = "WF-ProcedureDecl-MissingReturnType";
@@ -2371,7 +2574,10 @@ ProcedureDeclResult TypeProcedureDeclBody(
   // Check for explicit return on non-unit types
   const bool is_unit = TypeEquiv(return_type, MakeTypePrim("()")).equiv;
   if (!is_unit && !HasExplicitReturn(*decl.body)) {
+    SPEC_RULE("rule.15.WF-ProcedureDecl");
+    SPEC_RULE("def.15.ExplicitReturn");
     SPEC_RULE("WF-ProcBody-ExplicitReturn-Err");
+    SPEC_RULE("rule.15.WF-ProcBody-ExplicitReturn-Err");
     SPEC_RULE("ProcReturn-Missing-Err");
     result.ok = false;
     result.diag_id = "E-TYP-1507";
@@ -2450,6 +2656,8 @@ ProcedureDeclResult TypeProcedureDeclBody(
     result.diag_span = body_result.diag_span.has_value()
                            ? body_result.diag_span
                            : ProcedureBodyFailureSpan(decl.body);
+    result.diagnostic_obligation_ids =
+        body_result.diagnostic_obligation_ids;
     return result;
   }
 
@@ -2473,33 +2681,20 @@ ProcedureDeclResult TypeProcedureDeclBody(
     }
   }
 
-  // Borrow check
   if (perf_on) {
     ++perf_stats.bind_checks;
-  }
-  const auto bind_result = [&]() {
-    ScopedPerfTimer bind_timer(perf_on ? &perf_stats.bind_ms : nullptr);
-    return BindCheckBody(proc_ctx, module_path, decl.params, decl.body,
-                         std::nullopt);
-  }();
-  if (!bind_result.ok) {
-    result.ok = false;
-    result.diag_id = bind_result.diag_id;
-    return result;
-  }
-
-  // Provenance/region escape checking
-  if (perf_on) {
     ++perf_stats.prov_checks;
   }
-  const auto prov_result = [&]() {
-    ScopedPerfTimer prov_timer(perf_on ? &perf_stats.prov_ms : nullptr);
-    return ProvBindCheck(proc_ctx, module_path, decl.params, decl.body,
-                         std::nullopt, &diags);
-  }();
-  if (!prov_result.ok) {
+  const auto memory_result =
+      CheckBodyMemory(proc_ctx, module_path, decl.params, decl.body,
+                      std::nullopt, &diags, perf_on);
+  if (perf_on) {
+    perf_stats.bind_ms += memory_result.borrow_ms;
+    perf_stats.prov_ms += memory_result.provenance_ms;
+  }
+  if (!memory_result.ok) {
     result.ok = false;
-    result.diag_id = prov_result.diag_id;
+    result.diag_id = memory_result.diag_id;
     return result;
   }
 

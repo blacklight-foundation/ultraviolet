@@ -76,6 +76,57 @@ static bool IsTypeEmitterTypePath(const TypePath& path) {
   return path.size() == 1 && IdEq(path[0], "TypeEmitter");
 }
 
+static bool IsNeverTypeLocal(const TypeRef& type) {
+  const TypeRef stripped = StripPerm(type);
+  const auto* prim = stripped ? std::get_if<TypePrim>(&stripped->node) : nullptr;
+  return prim && IdEq(prim->name, "!");
+}
+
+static TypeRef MakeAsyncResumeState(const AsyncSig& sig,
+                                    std::string state) {
+  return MakeTypePerm(
+      Permission::Unique,
+      MakeTypeModalState({"Async"},
+                         std::move(state),
+                         {sig.out, sig.in, sig.result, sig.err}));
+}
+
+static TypeRef MakeAsyncResumeReturnType(const AsyncSig& sig) {
+  std::vector<TypeRef> members;
+  members.push_back(MakeAsyncResumeState(sig, "Suspended"));
+  members.push_back(MakeAsyncResumeState(sig, "Completed"));
+  if (!IsNeverTypeLocal(sig.err)) {
+    members.push_back(MakeAsyncResumeState(sig, "Failed"));
+  }
+  return MakeTypeUnion(std::move(members));
+}
+
+static std::optional<BuiltinModalMemberSig> LookupAsyncResumeMemberSig(
+    const ScopeContext& ctx,
+    const TypeRef& lookup_base,
+    const TypeModalState& modal,
+    std::string_view member_name) {
+  if (!IsAsyncModalPath(modal.path) ||
+      !IdEq(modal.state, "Suspended") ||
+      !IdEq(member_name, "resume")) {
+    return std::nullopt;
+  }
+
+  const auto async_sig = AsyncSigOf(ctx, lookup_base);
+  if (!async_sig.has_value()) {
+    return std::nullopt;
+  }
+
+  SPEC_RULE("requirement.21.ManualSteppingRequirement");
+
+  BuiltinModalMemberSig sig;
+  sig.recv_perm = Permission::Unique;
+  sig.params.push_back(BuiltinModalParam{std::nullopt, async_sig->in});
+  sig.ret = MakeAsyncResumeReturnType(*async_sig);
+  sig.consumes_receiver = true;
+  return sig;
+}
+
 static std::optional<IOMethodSig> LookupProjectFilesMethodSig(std::string_view name) {
   IOMethodSig sig{};
   sig.recv_perm = Permission::Const;
@@ -203,10 +254,12 @@ static std::optional<IOMethodSig> LookupIntrospectMethodSig(
 static inline void SpecDefsMethodCall() {
   SPEC_DEF("T-MethodCall", "5.3.1");
   SPEC_DEF("T-Record-MethodCall", "5.3.2");
+  SPEC_DEF("rule.15.T-Record-MethodCall", "15.2.4");
   SPEC_DEF("T-Modal-Transition", "5.6");
   SPEC_DEF("T-Modal-Method", "5.6");
   SPEC_DEF("MethodCall-RecvPerm-Err", "5.3.1");
   SPEC_DEF("LookupMethod-NotFound", "5.3.2");
+  SPEC_DEF("rule.15.LookupMethod-NotFound", "15.3.4");
   SPEC_DEF("Transition-Source-Err", "5.6");
   SPEC_DEF("Transition-NotVisible", "5.6");
   SPEC_DEF("Modal-Method-NotFound", "5.6");
@@ -218,6 +271,11 @@ static inline void SpecDefsMethodCall() {
   SPEC_DEF("Drop-Call-Err", "10.2");
   SPEC_DEF("Drop-Call-Err-Dyn", "10.2");
   SPEC_DEF("ArgsOk", "5.2.4");
+  SPEC_DEF("rule.16.Call-ArgCount-Err", "16.4");
+  SPEC_DEF("rule.16.Call-ArgType-Err", "16.4");
+  SPEC_DEF("rule.16.Call-Move-Missing", "16.4");
+  SPEC_DEF("rule.16.Call-Move-Unexpected", "16.4");
+  SPEC_DEF("rule.16.Call-Arg-NotPlace", "16.4");
 }
 
 // Strip all permission and refinement qualifiers (recursive)
@@ -835,6 +893,9 @@ static std::optional<std::string_view> CollectArgTypes(
       }
       const bool has_source_prov = HasSourceProvenance(arg.value);
       if (has_source_prov && !IsPlaceExprForCall(arg.value)) {
+        SpecDefsMethodCall();
+        SPEC_RULE("Call-Arg-NotPlace");
+        SPEC_RULE("rule.16.Call-Arg-NotPlace");
         return "E-TYP-1603";
       }
       if (has_source_prov && type_place) {
@@ -867,6 +928,15 @@ struct InferMethodSubstResult {
   std::optional<std::string_view> diag_id;
   TypeSubst subst;
 };
+
+static bool ClassBoundPathExists(const ScopeContext& ctx,
+                                 const ast::ClassPath& path) {
+  if (IsCapabilityClassPath(path)) {
+    SPEC_RULE("req.14.CapabilityClassesGenericBounds");
+    return true;
+  }
+  return ctx.sigma.classes.find(PathKeyOf(path)) != ctx.sigma.classes.end();
+}
 
 static InferMethodSubstResult InferMethodSubst(
     const ScopeContext& ctx,
@@ -945,8 +1015,8 @@ static InferMethodSubstResult InferMethodSubst(
     const auto& param = params[i];
     const auto& arg = inferred_args[i];
     for (const auto& bound : param.bounds) {
-      if (ctx.sigma.classes.find(PathKeyOf(bound.class_path)) ==
-          ctx.sigma.classes.end()) {
+      if (!ClassBoundPathExists(ctx, bound.class_path)) {
+        SPEC_RULE("rule.14.WF-ClassPath-Err");
         result.diag_id = "E-TYP-2305";
         return result;
       }
@@ -1041,7 +1111,8 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
                               const TypeRef& expected) -> ArgCheckResult {
     const auto checked =
         CheckExprAgainst(ctx, arg_ctx_for(expected), inner, expected, env);
-    return ArgCheckResult{checked.ok, checked.diag_id};
+    return ArgCheckResult{checked.ok, checked.diag_id, checked.diag_detail,
+                          checked.diag_span};
   };
   auto lower_type = [&](const std::shared_ptr<ast::Type>& type) -> LowerTypeResult {
     const auto lowered = LowerType(ctx, type);
@@ -1190,6 +1261,8 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
       return result;
     }
 
+    SPEC_RULE("requirement.21.UntilMethodCallSurface");
+    SPEC_RULE("def.21.UntilType");
     result.ok = true;
     result.type = MakeTypePath({"Async"},
                                {MakeTypePrim("()"),
@@ -1214,6 +1287,10 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
           result.diag_id = "E-TYP-1605";
           return result;
         }
+
+        SPEC_RULE("requirement.21.AsyncMethodCallSurfaces");
+        SPEC_RULE("def.21.AsyncCombinatorTypes");
+        SPEC_RULE("requirement.21.AsyncCombinatorMemberLookup");
 
         const auto unit_type = MakeTypePrim("()");
         const auto bool_type = MakeTypePrim("bool");
@@ -1252,6 +1329,7 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
         }
 
         result.ok = true;
+        SPEC_RULE("rule.21.T-Async-Map");
         result.type = MakeTypePath({"Async"},
                                    {fn_sig->ret,
                                     async_sig->in,
@@ -1321,6 +1399,7 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
         }
 
         result.ok = true;
+        SPEC_RULE("rule.21.T-Async-Filter");
         result.type = lookup_base;
         return result;
       }
@@ -1367,6 +1446,7 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
         }
 
         result.ok = true;
+        SPEC_RULE("rule.21.T-Async-Take");
         result.type = lookup_base;
         return result;
       }
@@ -1446,6 +1526,7 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
         }
 
         result.ok = true;
+        SPEC_RULE("rule.21.T-Async-Fold");
         result.type = MakeTypePath({"Async"},
                                    {unit_type,
                                     unit_type,
@@ -1529,6 +1610,7 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
         }
 
         result.ok = true;
+        SPEC_RULE("rule.21.T-Async-Chain");
         result.type = fn_sig->ret;
         return result;
         }
@@ -1645,8 +1727,12 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
   };
 
   if (const auto* modal = std::get_if<TypeModalState>(&lookup_base->node)) {
-    if (const auto builtin_sig =
-            LookupBuiltinModalMemberSig(modal->path, modal->state, expr.name)) {
+    std::optional<BuiltinModalMemberSig> builtin_sig =
+        LookupAsyncResumeMemberSig(ctx, lookup_base, *modal, expr.name);
+    if (!builtin_sig.has_value()) {
+      builtin_sig = LookupBuiltinModalMemberSig(modal->path, modal->state, expr.name);
+    }
+    if (builtin_sig.has_value()) {
       if (!ReceiverPermissionAdmits(caller_perm, builtin_sig->recv_perm)) {
         SPEC_RULE("MethodCall-RecvPerm-Err");
         result.diag_id = "E-TYP-1605";
@@ -1661,7 +1747,9 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
         return result;
       }
       if (expr.args.size() != builtin_sig->params.size()) {
+        SpecDefsMethodCall();
         SPEC_RULE("Call-ArgCount-Err");
+        SPEC_RULE("rule.16.Call-ArgCount-Err");
         result.diag_id = "E-SEM-2532";
         return result;
       }
@@ -1670,6 +1758,7 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
         if (MissingRequiredMoveForConsuming(
                 builtin_sig->params[i].mode, expr.args[i])) {
           SPEC_RULE("Call-Move-Missing");
+          SPEC_RULE("rule.16.Call-Move-Missing");
           result.diag_id = "E-SEM-2534";
           return result;
         }
@@ -1677,6 +1766,7 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
       for (std::size_t i = 0; i < expr.args.size(); ++i) {
         if (!builtin_sig->params[i].mode.has_value() && expr.args[i].pass == ast::ArgPassKind::Move) {
           SPEC_RULE("Call-Move-Unexpected");
+          SPEC_RULE("rule.16.Call-Move-Unexpected");
           result.diag_id = "E-SEM-2535";
           return result;
         }
@@ -1705,6 +1795,7 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
           const bool has_source_prov = HasSourceProvenance(arg.value);
           if (has_source_prov && !IsPlaceExprForCall(arg.value)) {
             SPEC_RULE("Call-Arg-NotPlace");
+            SPEC_RULE("rule.16.Call-Arg-NotPlace");
             result.diag_id = "E-TYP-1603";
             return result;
           }
@@ -1769,6 +1860,7 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
           }
           if (!sub.subtype) {
             SPEC_RULE("Call-ArgType-Err");
+            SPEC_RULE("rule.16.Call-ArgType-Err");
             result.diag_id = "E-SEM-2533";
             return result;
           }
@@ -1778,7 +1870,9 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
       TypeRef ret_type = builtin_sig->ret;
       if (builtin_sig->ret_from_first_arg) {
         if (arg_types.empty()) {
+          SpecDefsMethodCall();
           SPEC_RULE("Call-ArgCount-Err");
+          SPEC_RULE("rule.16.Call-ArgCount-Err");
           result.diag_id = "E-SEM-2532";
           return result;
         }
@@ -1924,11 +2018,15 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
             sig->kind == HeapAllocatorMethodKind::AllocRaw ||
             sig->kind == HeapAllocatorMethodKind::DeallocRaw;
         if (raw_heap_method && !IsInUnsafeSpan(ctx, span)) {
+          SPEC_RULE("diag.14.CapabilityClasses");
+          SPEC_RULE("req.14.HeapAllocatorRawCallsRequireUnsafe");
           if (sig->kind == HeapAllocatorMethodKind::AllocRaw) {
             SPEC_RULE("AllocRaw-Unsafe-Err");
+            SPEC_RULE("rule.14.AllocRaw-Unsafe-Err");
             result.diag_id = "E-MEM-3030";
           } else {
             SPEC_RULE("DeallocRaw-Unsafe-Err");
+            SPEC_RULE("rule.14.DeallocRaw-Unsafe-Err");
             result.diag_id = "E-MEM-3030";
           }
           return result;
@@ -2118,6 +2216,12 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
         result.type = ret_type.type;
         return result;
       }
+      SPEC_RULE("LookupMethod-NotFound");
+      SPEC_RULE("rule.14.LookupClassMethod-NotFound");
+      result.diag_id = "LookupMethod-NotFound";
+      result.diag_detail = "method '" + std::string(expr.name) +
+                           "' on type '" + TypeToString(lookup_base) + "'";
+      return result;
     }
   }
 
@@ -2152,6 +2256,7 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
                      opaque->origin_span.end_col);
       }
       SPEC_RULE("LookupMethod-NotFound");
+      SPEC_RULE("req.14.OpaqueEquivalenceAndInterfaceExposure");
       result.diag_id = "E-TYP-2510";
       result.diag_detail = "method '" + std::string(expr.name) +
                            "' on type '" + TypeToString(lookup_base) + "'";
@@ -2214,6 +2319,8 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
     if (subst.has_value()) {
       ret_type.type = InstantiateType(ret_type.type, *subst);
     }
+    SPEC_RULE("rule.14.T-Opaque-Project");
+    SPEC_RULE("req.14.OpaqueEquivalenceAndInterfaceExposure");
     SPEC_RULE("T-MethodCall");
     emit_deprecated_warning(method->attrs);
     result.ok = true;
@@ -2350,6 +2457,7 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
                    kind);
     }
     SPEC_RULE("LookupMethod-NotFound");
+    SPEC_RULE("rule.15.LookupMethod-NotFound");
     result.diag_id = "LookupMethod-NotFound";
     result.diag_detail = "method '" + std::string(expr.name) +
                          "' on type '" + TypeToString(lookup_base) + "'";
@@ -2421,6 +2529,9 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
   }
   if (!check_shared_receiver_access(method_perm)) {
     return result;
+  }
+  if (record_method) {
+    SPEC_RULE("rule.15.T-Record-MethodCall");
   }
 
   std::optional<TypeSubst> subst;

@@ -7,6 +7,7 @@
 #include <system_error>
 #include <vector>
 
+#include "00_core/assert_spec.h"
 #include "00_core/compiler_support.h"
 #include "00_core/host/services.h"
 #include "01_project/project.h"
@@ -20,6 +21,49 @@ namespace {
 bool DirExists(const std::filesystem::path& path) {
   std::error_code ec;
   return std::filesystem::is_directory(path, ec) && !ec;
+}
+
+std::string_view BoolRecord(bool value) {
+  return value ? "true" : "false";
+}
+
+std::string_view CompilerSupportLayoutRecordName(
+    core::CompilerSupportLayoutKind layout) {
+  switch (layout) {
+    case core::CompilerSupportLayoutKind::None:
+      return "none";
+    case core::CompilerSupportLayoutKind::PackagedOut:
+      return "packaged";
+    case core::CompilerSupportLayoutKind::BuildTree:
+      return "legacy";
+  }
+  return "unknown";
+}
+
+bool LegacySidecarsBeside(const std::filesystem::path& dir) {
+  if (dir.empty()) {
+    return false;
+  }
+  for (const char* rel : {"runtime", "tools", "bin", "lib"}) {
+    if (DirExists(dir / rel)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool PackagedHostSidecarsBeside(const std::filesystem::path& dir) {
+  if (dir.empty()) {
+    return false;
+  }
+  for (const char* platform : {"windows", "macos", "linux"}) {
+    for (const char* subdir : {"tools", "bin", "lib"}) {
+      if (DirExists(dir / platform / subdir)) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 bool FileExists(const std::filesystem::path& path) {
@@ -74,6 +118,52 @@ void AppendSidecarFiles(TargetProfile profile,
   }
 }
 
+void RecordCompilerSidecarLayoutPredicates(const Project& project) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  const std::filesystem::path executable_dir = CompilerExecutableDir(project);
+  const std::filesystem::path parent_dir = executable_dir.parent_path();
+  const auto support_root = core::CompilerSupportRootPath();
+  const auto layout = core::CompilerSupportLayout();
+  const bool executable_legacy = LegacySidecarsBeside(executable_dir);
+  const bool executable_packaged = PackagedHostSidecarsBeside(executable_dir);
+  const bool parent_legacy = LegacySidecarsBeside(parent_dir);
+  const std::filesystem::path selected_root =
+      support_root.has_value() ? *support_root : executable_dir;
+  std::string root_branch = "fallback_compiler_dir";
+  if (executable_packaged) {
+    root_branch = "packaged_compiler_dir";
+  } else if (executable_legacy) {
+    root_branch = "legacy_compiler_dir";
+  } else if (parent_legacy) {
+    root_branch = "legacy_parent_dir";
+  }
+
+  SPEC_RULE("def.CompilerSidecarLayoutPredicates");
+  core::Conformance::Record(
+      "def.CompilerSidecarLayoutPredicates",
+      std::nullopt,
+      "compiler_dir=" + executable_dir.generic_string() +
+          ";legacy_beside=" +
+          std::string(BoolRecord(executable_legacy)) +
+          ";packaged_host_beside=" +
+          std::string(BoolRecord(executable_packaged)) +
+          ";parent=" + parent_dir.generic_string() +
+          ";parent_legacy_beside=" +
+          std::string(BoolRecord(parent_legacy)) +
+          ";support_root=" +
+          (support_root.has_value() ? support_root->generic_string()
+                                    : std::string("<bottom>")) +
+          ";layout=" + std::string(CompilerSupportLayoutRecordName(layout)));
+  SPEC_RULE("def.CompilerSupportRoot");
+  core::Conformance::Record(
+      "def.CompilerSupportRoot",
+      std::nullopt,
+      "branch=" + root_branch + ";value=" + selected_root.generic_string());
+}
+
 }  // namespace
 
 std::string_view PackagedSupportPlatformDir(TargetProfile profile) {
@@ -87,6 +177,7 @@ std::filesystem::path CompilerExecutableDir(const Project&) {
 }
 
 std::filesystem::path CompilerSupportRoot(const Project& project) {
+  RecordCompilerSidecarLayoutPredicates(project);
   if (const auto support_root = core::CompilerSupportRootPath();
       support_root.has_value()) {
     return *support_root;

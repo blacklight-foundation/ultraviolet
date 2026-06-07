@@ -25,6 +25,9 @@ namespace {
 static inline void SpecDefsContinueStmt() {
   SPEC_DEF("T-Continue", "5.2.11");
   SPEC_DEF("Continue-Outside-Loop", "5.2.11");
+  SPEC_DEF("rule.18.Continue-Outside-Loop", "18.9.4");
+  SPEC_DEF("diag.18.ControlTransferStatements", "18.9.7");
+  SPEC_DEF("diag.18.StatementDiagnosticsSupplement", "18.11");
 }
 
 }  // namespace
@@ -38,6 +41,9 @@ StmtTypeResult TypeContinueStmt(const ScopeContext& ctx,
   // Continue must be inside a loop
   if (type_ctx.loop_flag != LoopFlag::Loop) {
     SPEC_RULE("Continue-Outside-Loop");
+    SPEC_RULE("rule.18.Continue-Outside-Loop");
+    SPEC_RULE("diag.18.ControlTransferStatements");
+    SPEC_RULE("diag.18.StatementDiagnosticsSupplement");
     return {false, "E-SEM-3163", {}, {}};
   }
 

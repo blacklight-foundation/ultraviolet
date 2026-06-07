@@ -137,6 +137,8 @@ inline IRControlFlowSummary SummarizeIRControlFlow(const IRPtr& ir) {
         } else if constexpr (std::is_same_v<T, IRSpawn> ||
                              std::is_same_v<T, IRDispatch>) {
           return SequenceIRControlFlow(node.captured_env, node.body);
+        } else if constexpr (std::is_same_v<T, IRGpuBarrier>) {
+          return {};
         } else if constexpr (std::is_same_v<T, IRSpecLoop>) {
           IRControlFlowSummary out =
               SequenceIRControlFlow(node.snapshot_ir, node.body_ir);

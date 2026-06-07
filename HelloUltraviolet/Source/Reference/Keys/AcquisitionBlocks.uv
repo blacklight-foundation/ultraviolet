@@ -61,6 +61,19 @@ internal procedure canonicalOrderFromUnsortedPathsValue() -> i32 {
     return observed
 }
 
+internal procedure coveredRootReadValue() -> i32 {
+    var container: shared KeyContainer =
+        KeyContainer {
+            leaf: KeyLeaf { value: 8 },
+            values: [1, 2, 3, 4]
+        }
+    var observed: i32 = 0
+    %read container {
+        observed = container.leaf.value + container.values[0usize]
+    }
+    return observed
+}
+
 internal procedure keyModeContextValue() -> i32 {
     var cell: shared KeyModeContextCell = KeyModeContextCell { value: 6 }
     var observed: i32 = 0
@@ -185,19 +198,95 @@ internal procedure keyBlockReturnReleaseValue() -> i32 {
     }
 }
 
+internal procedure orderedKeyBlockOptionReference() -> bool {
+    return orderedKeyBlockValue() == 3
+}
+
+internal procedure restrictiveContextAppliesReference() -> bool {
+    return keyModeContextValue() == 26
+}
+
+internal procedure validKeyContextReference() -> bool {
+    return defaultReadKeyBlockValue() == 5 &&
+        sharedArgumentNoCallSiteAcquisitionValue() == 8
+}
+
+internal procedure kAcquireNewReference() -> bool {
+    return defaultReadKeyBlockValue() == 5
+}
+
+internal procedure kAcquireCoveredReference() -> bool {
+    return coveredRootReadValue() == 9
+}
+
+internal procedure kBlockAcquireReference() -> bool {
+    return readAndWriteKeyBlockValue() == 2 &&
+        canonicalOrderFromUnsortedPathsValue() == 31
+}
+
+internal procedure keyCoarseningInlineMarkerReference() -> bool {
+    return inlineCoarsenedFieldKeyValue() == 17 &&
+        inlineCoarsenedIndexKeyValue() == 23
+}
+
+internal procedure closureDependencySetConsumptionReference() -> bool {
+    return localClosureSharedCaptureValue() == 13 &&
+        escapingClosureSharedCaptureValue() == 31
+}
+
+internal procedure escapingClosureRuntimeIdentityCoverageReference() -> bool {
+    return escapingClosureSharedCaptureValue() == 31
+}
+
+internal procedure keyBlockCanonicalOrderReferencesReference() -> bool {
+    return canonicalOrderFromUnsortedPathsValue() == 31
+}
+
+internal procedure keyBlockRuntimeJudgmentsReference() -> bool {
+    return readAndWriteKeyBlockValue() == 2 &&
+        keyBlockBreakReleaseValue() == 29
+}
+
+internal procedure acquireKeysSigmaReference() -> bool {
+    return orderedKeyBlockValue() == 3 &&
+        canonicalOrderFromUnsortedPathsValue() == 31
+}
+
+internal procedure scopeExitKeyReleaseReference() -> bool {
+    return keyBlockBreakReleaseValue() == 29 &&
+        keyBlockContinueReleaseValue() == 12 &&
+        keyBlockReturnReleaseValue() == 37
+}
+
+internal procedure localClosureInvocationSharedCapturesReference() -> bool {
+    return localClosureSharedCaptureValue() == 13
+}
+
+internal procedure escapingClosureInvocationSharedCapturesReference() -> bool {
+    return escapingClosureSharedCaptureValue() == 31
+}
+
+internal procedure keyScopeBoundReference() -> bool {
+    return scopeExitKeyReleaseReference()
+}
+
 /// Exercises the Keys AcquisitionBlocks reference surface.
 public procedure runKeysAcquisitionBlocksReference() -> bool {
     return readAndWriteKeyBlockValue() == 2 &&
-        orderedKeyBlockValue() == 3 &&
-        defaultReadKeyBlockValue() == 5 &&
-        canonicalOrderFromUnsortedPathsValue() == 31 &&
-        keyModeContextValue() == 26 &&
-        sharedArgumentNoCallSiteAcquisitionValue() == 8 &&
-        localClosureSharedCaptureValue() == 13 &&
-        escapingClosureSharedCaptureValue() == 31 &&
-        inlineCoarsenedFieldKeyValue() == 17 &&
-        inlineCoarsenedIndexKeyValue() == 23 &&
-        keyBlockBreakReleaseValue() == 29 &&
-        keyBlockContinueReleaseValue() == 12 &&
-        keyBlockReturnReleaseValue() == 37
+        orderedKeyBlockOptionReference() &&
+        restrictiveContextAppliesReference() &&
+        validKeyContextReference() &&
+        kAcquireNewReference() &&
+        kAcquireCoveredReference() &&
+        kBlockAcquireReference() &&
+        keyCoarseningInlineMarkerReference() &&
+        closureDependencySetConsumptionReference() &&
+        escapingClosureRuntimeIdentityCoverageReference() &&
+        keyBlockCanonicalOrderReferencesReference() &&
+        keyBlockRuntimeJudgmentsReference() &&
+        acquireKeysSigmaReference() &&
+        scopeExitKeyReleaseReference() &&
+        localClosureInvocationSharedCapturesReference() &&
+        escapingClosureInvocationSharedCapturesReference() &&
+        keyScopeBoundReference()
 }

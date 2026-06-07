@@ -15,11 +15,20 @@ public record HostedPair {
 }
 
 #layout(C)
+public record HostedTriple {
+    public first: i32
+    public second: i32
+    public third: i32
+}
+
+#layout(C)
 public record HostedLarge {
     public first: i64
     public second: i64
     public third: i64
 }
+
+private var _HOSTED_STATE_REFERENCE: i32 = 5
 
 #host_export("C")
 #mangle("uv_hosted_reference_increment")
@@ -34,6 +43,40 @@ public procedure hostedReferencePairSum(
     pair: HostedPair
 ) -> i32 {
     return pair.left + pair.right
+}
+
+#host_export("C")
+#mangle("uv_hosted_reference_pair_echo")
+public procedure hostedReferencePairEcho(
+    context: HostedSystemContext,
+    pair: HostedPair
+) -> HostedPair {
+    return HostedPair {
+        left: pair.left,
+        right: pair.right
+    }
+}
+
+#host_export("C")
+#mangle("uv_hosted_reference_triple_sum")
+public procedure hostedReferenceTripleSum(
+    context: HostedSystemContext,
+    triple: HostedTriple
+) -> i32 {
+    return triple.first + triple.second + triple.third
+}
+
+#host_export("C")
+#mangle("uv_hosted_reference_triple_echo")
+public procedure hostedReferenceTripleEcho(
+    context: HostedSystemContext,
+    triple: HostedTriple
+) -> HostedTriple {
+    return HostedTriple {
+        first: triple.first,
+        second: triple.second,
+        third: triple.third
+    }
 }
 
 #host_export("C")
@@ -59,6 +102,16 @@ public procedure hostedReferenceIOProbe(
         return fallback + 1
     }
     return fallback
+}
+
+#host_export("C")
+#mangle("uv_hosted_reference_state_increment")
+public procedure hostedReferenceStateIncrement(
+    context: HostedSystemContext,
+    value: i32
+) -> i32 {
+    _HOSTED_STATE_REFERENCE = _HOSTED_STATE_REFERENCE + value
+    return _HOSTED_STATE_REFERENCE
 }
 
 #host_export("C-unwind")

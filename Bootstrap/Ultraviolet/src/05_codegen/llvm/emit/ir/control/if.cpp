@@ -4,7 +4,23 @@
 // =============================================================================
 #include "../../ir_instruction_visitor.h"
 
+#include <string>
+#include <utility>
+
 namespace ultraviolet::codegen::emit_detail {
+
+namespace {
+
+std::string EnsureBlockLabel(llvm::BasicBlock &block, const char *fallback)
+{
+  if (block.getName().empty())
+  {
+    block.setName(fallback);
+  }
+  return block.getName().str();
+}
+
+}  // namespace
 
 void IRInstructionVisitor::operator()(const IRIf &node) const
 {
@@ -47,7 +63,18 @@ void IRInstructionVisitor::operator()(const IRIf &node) const
   llvm::BasicBlock *merge_bb =
       llvm::BasicBlock::Create(emitter.GetContext(), "if.merge", func);
 
-  builder.CreateCondBr(cond, then_bb, else_bb);
+  IRBranch conditional_branch;
+  conditional_branch.cond = node.cond;
+  conditional_branch.true_label = EnsureBlockLabel(*then_bb, "if.then");
+  conditional_branch.false_label = EnsureBlockLabel(*else_bb, "if.else");
+  if (cond_defaulted)
+  {
+    builder.CreateCondBr(cond, then_bb, else_bb);
+  }
+  else
+  {
+    (*this)(conditional_branch);
+  }
   const LLVMEmitter::FlowStateSnapshot branch_state =
       emitter.SaveFlowState();
 
@@ -56,9 +83,16 @@ void IRInstructionVisitor::operator()(const IRIf &node) const
     llvm::BasicBlock *pred = nullptr;
     llvm::Value *value = nullptr;
     llvm::Value *storage = nullptr;
+    IRValue ir_value;
   };
 
   std::vector<IncomingValue> incoming;
+  auto emit_merge_branch = [&]()
+  {
+    IRBranch merge_branch;
+    merge_branch.true_label = EnsureBlockLabel(*merge_bb, "if.merge");
+    (*this)(merge_branch);
+  };
 
   builder.SetInsertPoint(then_bb);
   emitter.RestoreFlowState(branch_state);
@@ -68,8 +102,8 @@ void IRInstructionVisitor::operator()(const IRIf &node) const
   {
     llvm::Value *then_storage = emitter.GetAddressableStorage(node.then_value);
     llvm::Value *then_val = EvaluateOrDefault(node.then_value);
-    builder.CreateBr(merge_bb);
-    incoming.push_back({then_end, then_val, then_storage});
+    emit_merge_branch();
+    incoming.push_back({then_end, then_val, then_storage, node.then_value});
   }
 
   builder.SetInsertPoint(else_bb);
@@ -80,8 +114,8 @@ void IRInstructionVisitor::operator()(const IRIf &node) const
   {
     llvm::Value *else_storage = emitter.GetAddressableStorage(node.else_value);
     llvm::Value *else_val = EvaluateOrDefault(node.else_value);
-    builder.CreateBr(merge_bb);
-    incoming.push_back({else_end, else_val, else_storage});
+    emit_merge_branch();
+    incoming.push_back({else_end, else_val, else_storage, node.else_value});
   }
 
   builder.SetInsertPoint(merge_bb);
@@ -202,6 +236,26 @@ void IRInstructionVisitor::operator()(const IRIf &node) const
   if (incoming.size() == 1)
   {
     merged = coerce_in_predecessor(incoming.front().pred, incoming.front().value);
+  }
+  else if (result_type)
+  {
+    IRPhi phi_ir;
+    phi_ir.type = result_type;
+    phi_ir.value = node.result;
+    phi_ir.incoming.reserve(incoming.size());
+    for (const auto &entry : incoming)
+    {
+      if (entry.value)
+      {
+        emitter.SetTempValue(entry.ir_value, entry.value);
+      }
+      IRIncoming incoming_value;
+      incoming_value.label = EnsureBlockLabel(*entry.pred, "if.pred");
+      incoming_value.value = entry.ir_value;
+      phi_ir.incoming.push_back(std::move(incoming_value));
+    }
+    (*this)(phi_ir);
+    merged = emitter.GetTempValue(node.result);
   }
   else
   {

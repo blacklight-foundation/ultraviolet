@@ -124,6 +124,16 @@ PanicSnapshot ReadPanicRecord(const PanicAccess& access, LowerCtx& ctx) {
   read_code.result = code;
 
   IRPtr ir = SeqIR({MakeIR(std::move(read_flag)), MakeIR(std::move(read_code))});
+  core::Conformance::Record(
+      "def.24.PanicRecordOf",
+      std::nullopt,
+      "operation=PanicRecordOf;source=ReadPanicRecord;"
+      "panic_out_addr=PanicOutAddr;"
+      "panic_field_addr=FieldAddr(PanicRecord,PanicOutAddr,panic);"
+      "code_field_addr=FieldAddr(PanicRecord,PanicOutAddr,code);"
+      "reads=panic,code;record_fields=panic,code;ir=IRReadPtr,IRReadPtr;"
+      "lowering_paths=EmitCleanupActionWithUnwind,EmitFFIBoundaryCheck,"
+      "EmitPanicPropagate,EmitUnwindStep");
   return PanicSnapshot{ir, flag, code};
 }
 
@@ -140,6 +150,17 @@ IRPtr WritePanicRecord(const PanicAccess& access,
   write_code.ptr = access.code_ptr;
   write_code.value = code;
 
+  core::Conformance::Record(
+      "def.24.WritePanicRecord",
+      std::nullopt,
+      "operation=WritePanicRecord;source=WritePanicRecord;"
+      "panic_out_addr=PanicOutAddr;"
+      "panic_field_addr=FieldAddr(PanicRecord,PanicOutAddr,panic);"
+      "code_field_addr=FieldAddr(PanicRecord,PanicOutAddr,code);"
+      "writes=panic,code;record_fields=panic,code;order=panic_then_code;"
+      "ir=IRWritePtr,IRWritePtr;"
+      "lowering_paths=EmitFFIBoundaryCheck,EmitUnwindStep,"
+      "CleanupRestorePanicRecord");
   return SeqIR({MakeIR(std::move(write_flag)), MakeIR(std::move(write_code))});
 }
 

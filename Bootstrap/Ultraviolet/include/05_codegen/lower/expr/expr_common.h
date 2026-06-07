@@ -20,6 +20,7 @@
 //
 // =============================================================================
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -68,6 +69,18 @@ std::optional<ast::RangeKind> RangeIndexKindOf(const ast::Expr& expr,
 
 // Check if an expression is a move expression
 bool IsMoveExpr(const ast::ExprPtr& expr);
+
+enum class LoweringChecksJudgementMember : std::uint8_t {
+  LowerRangeExpr,
+  CheckIndex,
+  CheckRange,
+  LowerTransmute,
+  LowerRawDeref,
+};
+
+void RecordLoweringChecksJudgementMember(
+    LowerCtx& ctx,
+    LoweringChecksJudgementMember member);
 
 // True when a binding initialized from this expression owns cleanup
 // responsibility for the initialized value.

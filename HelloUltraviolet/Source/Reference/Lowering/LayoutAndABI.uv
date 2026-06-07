@@ -6,11 +6,115 @@ internal record LoweringLayoutRecord {
 }
 
 internal procedure primitiveLayoutMatches() -> bool {
+    return layoutPrimitiveReference()
+}
+
+internal procedure sizePrimitiveReference() -> bool {
     return sizeof(i8) == 1usize &&
+        sizeof(i16) == 2usize &&
         sizeof(i32) == 4usize &&
         sizeof(i64) == 8usize &&
+        sizeof(i128) == 16usize &&
+        sizeof(u8) == 1usize &&
+        sizeof(u16) == 2usize &&
+        sizeof(u32) == 4usize &&
+        sizeof(u64) == 8usize &&
+        sizeof(u128) == 16usize &&
+        sizeof(isize) == sizeof(usize) &&
+        sizeof(f16) == 2usize &&
+        sizeof(f32) == 4usize &&
+        sizeof(f64) == 8usize &&
+        sizeof(bool) == 1usize &&
+        sizeof(char) == 4usize &&
+        sizeof(()) == 0usize &&
+        sizeof(!) == 0usize
+}
+
+internal procedure alignPrimitiveReference() -> bool {
+    return alignof(i8) == 1usize &&
+        alignof(i16) == 2usize &&
         alignof(i32) == 4usize &&
-        alignof(i64) == 8usize
+        alignof(i64) == 8usize &&
+        alignof(i128) == 16usize &&
+        alignof(u8) == 1usize &&
+        alignof(u16) == 2usize &&
+        alignof(u32) == 4usize &&
+        alignof(u64) == 8usize &&
+        alignof(u128) == 16usize &&
+        alignof(isize) == alignof(usize) &&
+        alignof(f16) == 2usize &&
+        alignof(f32) == 4usize &&
+        alignof(f64) == 8usize &&
+        alignof(bool) == 1usize &&
+        alignof(char) == 4usize &&
+        alignof(()) == 1usize &&
+        alignof(!) == 1usize
+}
+
+internal procedure layoutPrimitiveReference() -> bool {
+    return sizePrimitiveReference() && alignPrimitiveReference()
+}
+
+internal procedure sizePermissionReference() -> bool {
+    return sizeof(const LoweringLayoutRecord) == sizeof(LoweringLayoutRecord) &&
+        sizeof(shared LoweringLayoutRecord) == sizeof(LoweringLayoutRecord) &&
+        sizeof(unique LoweringLayoutRecord) == sizeof(LoweringLayoutRecord)
+}
+
+internal procedure alignPermissionReference() -> bool {
+    return alignof(const LoweringLayoutRecord) == alignof(LoweringLayoutRecord) &&
+        alignof(shared LoweringLayoutRecord) == alignof(LoweringLayoutRecord) &&
+        alignof(unique LoweringLayoutRecord) == alignof(LoweringLayoutRecord)
+}
+
+internal procedure layoutPermissionReference() -> bool {
+    return sizePermissionReference() && alignPermissionReference()
+}
+
+internal procedure sizeSafePointerReference() -> bool {
+    return sizeof(Ptr<i32>) == sizeof(usize) &&
+        sizeof(Ptr<i32>@Null) == sizeof(usize) &&
+        sizeof(Ptr<i32>@Valid) == sizeof(usize) &&
+        sizeof(Ptr<i32>@Expired) == sizeof(usize)
+}
+
+internal procedure alignSafePointerReference() -> bool {
+    return alignof(Ptr<i32>) == alignof(usize) &&
+        alignof(Ptr<i32>@Null) == alignof(usize) &&
+        alignof(Ptr<i32>@Valid) == alignof(usize) &&
+        alignof(Ptr<i32>@Expired) == alignof(usize)
+}
+
+internal procedure layoutSafePointerReference() -> bool {
+    return sizeSafePointerReference() && alignSafePointerReference()
+}
+
+internal procedure sizeRawPointerReference() -> bool {
+    return sizeof(*imm i32) == sizeof(usize) &&
+        sizeof(*mut i32) == sizeof(usize)
+}
+
+internal procedure alignRawPointerReference() -> bool {
+    return alignof(*imm i32) == alignof(usize) &&
+        alignof(*mut i32) == alignof(usize)
+}
+
+internal procedure layoutRawPointerReference() -> bool {
+    return sizeRawPointerReference() && alignRawPointerReference()
+}
+
+internal procedure sizeFunctionReference() -> bool {
+    return sizeof((i32) -> i32) == sizeof(usize) &&
+        sizeof(() -> i32) == sizeof(usize)
+}
+
+internal procedure alignFunctionReference() -> bool {
+    return alignof((i32) -> i32) == alignof(usize) &&
+        alignof(() -> i32) == alignof(usize)
+}
+
+internal procedure layoutFunctionReference() -> bool {
+    return sizeFunctionReference() && alignFunctionReference()
 }
 
 internal procedure aggregateLayoutMatches() -> bool {
@@ -23,5 +127,9 @@ internal procedure aggregateLayoutMatches() -> bool {
 /// Exercises the Lowering LayoutAndABI reference surface.
 public procedure runLoweringLayoutAndABIReference() -> bool {
     return primitiveLayoutMatches() &&
+        layoutPermissionReference() &&
+        layoutSafePointerReference() &&
+        layoutRawPointerReference() &&
+        layoutFunctionReference() &&
         aggregateLayoutMatches()
 }

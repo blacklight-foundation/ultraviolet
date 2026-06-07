@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -36,6 +37,14 @@ struct ExprProvMapResult {
   ExprProvenanceMap expr_prov;
   ExprRegionMap expr_region_tags;
   ExprRegionMap expr_region_targets;
+};
+
+struct BodyMemoryCheckResult {
+  bool ok = false;
+  std::optional<std::string_view> diag_id;
+  std::optional<core::Span> span;
+  std::uint64_t borrow_ms = 0;
+  std::uint64_t provenance_ms = 0;
 };
 
 struct ProvExprTrackResult {
@@ -89,6 +98,15 @@ ProvCheckResult ProvBindCheck(const ScopeContext& ctx,
                               const std::shared_ptr<ast::Block>& body,
                               const std::optional<BindSelfParam>& self_param,
                               core::DiagnosticStream* diags = nullptr);
+
+BodyMemoryCheckResult CheckBodyMemory(
+    const ScopeContext& ctx,
+    const ast::ModulePath& module_path,
+    const std::vector<ast::Param>& params,
+    const std::shared_ptr<ast::Block>& body,
+    const std::optional<BindSelfParam>& self_param,
+    core::DiagnosticStream* diags = nullptr,
+    bool collect_timing = false);
 
 // Debug-only profiling summary for provenance checks.
 void LogProvenancePerfSummary();

@@ -9,19 +9,19 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendOutputAndBacke
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "req.24.OutputBackendDiagnosticsOwnership",
-        100599usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
+        100601usize,
+        "HelloUltraviolet::Audit",
+        "outputDiagnosticFixturesExecuteAndEmitExpectedDiagnostics",
+        "Source/Audit/OutputDiagnosticExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "diag.24.OutputBackendDiagnostics",
-        100612usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
+        100614usize,
+        "HelloUltraviolet::Audit",
+        "outputDiagnosticFixturesExecuteAndEmitExpectedDiagnostics",
+        "Source/Audit/OutputDiagnosticExecution.uv"
     ) {
         count = count + 1usize
     }

@@ -1,0 +1,12 @@
+[[assembly]]
+name = "LinkerToolResolveFailure"
+kind = "executable"
+root = "Source"
+
+[toolchain]
+llvm_bin = "MissingLinkerTools"
+target_profile = "x86_64-win64"
+
+[build]
+incremental = true
+progress = false

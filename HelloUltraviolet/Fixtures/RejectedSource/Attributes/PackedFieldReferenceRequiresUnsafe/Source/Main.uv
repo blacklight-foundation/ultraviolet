@@ -1,0 +1,16 @@
+//! Rejected layout attribute specimen for packed-field reference safety.
+
+#layout(packed)
+public record PackedFieldReferencePayload {
+    public value: i32
+}
+
+public procedure packedFieldBorrowTarget(value: i32) -> i32 {
+    return value
+}
+
+public procedure packedFieldReferenceRequiresUnsafe() -> i32 {
+    let payload: PackedFieldReferencePayload =
+        PackedFieldReferencePayload { value: 1 }
+    return packedFieldBorrowTarget(payload.value)
+}

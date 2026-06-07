@@ -66,6 +66,7 @@
 #include <cstdio>
 #include <functional>
 #include <map>
+#include <mutex>
 #include <optional>
 #include <set>
 #include <string>
@@ -118,6 +119,7 @@ static inline void SpecDefsBorrowBind() {
   SPEC_DEF("ParamTypeMap", "5.2.15");
   SPEC_DEF("ParamMov", "5.2.15");
   SPEC_DEF("ParamResp", "5.2.15");
+  SPEC_DEF("rule.16.Call-Arg-NotPlace", "16.4");
   SPEC_DEF("JoinState", "5.2.15");
   SPEC_DEF("JoinBindInfo", "5.2.15");
   SPEC_DEF("JoinScope_B", "5.2.15");
@@ -129,11 +131,42 @@ static inline void SpecDefsBorrowBind() {
   SPEC_DEF("LoopFix", "5.2.15");
   SPEC_DEF("B-Transition", "5.2.15");
   SPEC_DEF("B-Pipeline", "5.2.15");
+  SPEC_DEF("rule.16.Capture-Unique-Err", "16.9.4");
+  SPEC_DEF("rule.16.B-Closure-NonCapturing", "16.9.4");
+  SPEC_DEF("rule.16.B-Closure-Capturing", "16.9.4");
+  SPEC_DEF("rule.16.B-Closure-MoveCapture-Moved-Err", "16.9.4");
+  SPEC_DEF("rule.16.B-Closure-MoveCapture-Immovable-Err", "16.9.4");
+  SPEC_DEF("rule.16.B-Closure-RefCapture-Moved-Err", "16.9.4");
+  SPEC_DEF("rule.18.B-LetVar-UniqueNonMove-Err", "18.2.3");
+  SPEC_DEF("diag.18.BindingStatements", "18.2.7");
 }
 
 static inline void SpecRuleTransitionAnchor() {
   SPEC_RULE("B-Transition");
 }
+
+static void RecordBorrowStateObligationOnce(std::once_flag& flag,
+                                            std::string_view id,
+                                            std::string_view payload) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  std::call_once(flag, [id, payload]() {
+    core::Conformance::Record(id, std::optional<core::Span>{}, payload);
+  });
+}
+
+static std::once_flag g_binding_environment_obligation_once;
+static std::once_flag g_permission_environment_obligation_once;
+static std::once_flag g_initial_binding_environment_obligation_once;
+static std::once_flag g_initial_permission_environment_obligation_once;
+static std::once_flag g_binding_environment_join_obligation_once;
+static std::once_flag g_permission_environment_join_obligation_once;
+static std::once_flag g_movability_assign_obligation_once;
+static std::once_flag g_movability_colon_assign_obligation_once;
+static std::once_flag g_mov_eff_resp_mov_obligation_once;
+static std::once_flag g_mov_eff_resp_immov_obligation_once;
+static std::once_flag g_mov_eff_alias_obligation_once;
 
 struct BorrowBindPerfStats {
   std::uint64_t body_calls = 0;
@@ -743,6 +776,10 @@ static std::optional<BindEnv> Join_B(const BindEnv& lhs, const BindEnv& rhs) {
     }
     out.push_back(*scope);
   }
+  RecordBorrowStateObligationOnce(
+      g_binding_environment_join_obligation_once,
+      "def.BindingEnvironmentJoin",
+      "operation=Join_B;result=success");
   return out;
 }
 
@@ -785,6 +822,10 @@ static std::optional<PermEnv> JoinPerm(const PermEnv& lhs, const PermEnv& rhs) {
   for (std::size_t i = 0; i < lhs.size(); ++i) {
     out.push_back(JoinScope_Pi(lhs[i], rhs[i]));
   }
+  RecordBorrowStateObligationOnce(
+      g_permission_environment_join_obligation_once,
+      "def.PermissionEnvironmentJoin",
+      "operation=JoinPerm;result=success");
   return out;
 }
 
@@ -1403,8 +1444,16 @@ static bool AccessOk(const ScopeContext& ctx,
 
 static Movability MovOf(const ast::Token& op) {
   if (op.lexeme == ":=") {
+    RecordBorrowStateObligationOnce(
+        g_movability_colon_assign_obligation_once,
+        "def.BindingMovabilityOperator",
+        "operator=colon_assign;result=immov");
     return Movability::Immov;
   }
+  RecordBorrowStateObligationOnce(
+      g_movability_assign_obligation_once,
+      "def.BindingMovabilityOperator",
+      "operator=assign;result=mov");
   return Movability::Mov;
 }
 
@@ -1452,7 +1501,22 @@ static Responsibility RespOfInit(const ScopeContext& ctx,
 
 static Movability MovEff(Movability mv, Responsibility resp) {
   if (resp == Responsibility::Alias) {
+    RecordBorrowStateObligationOnce(
+        g_mov_eff_alias_obligation_once,
+        "def.EffectiveMovability",
+        "responsibility=alias;input=mov;result=immov");
     return Movability::Immov;
+  }
+  if (mv == Movability::Mov) {
+    RecordBorrowStateObligationOnce(
+        g_mov_eff_resp_mov_obligation_once,
+        "def.EffectiveMovability",
+        "responsibility=resp;input=mov;result=mov");
+  } else {
+    RecordBorrowStateObligationOnce(
+        g_mov_eff_resp_immov_obligation_once,
+        "def.EffectiveMovability",
+        "responsibility=resp;input=immov;result=immov");
   }
   return mv;
 }
@@ -1986,8 +2050,15 @@ static ArgPassResult ArgPass(const ScopeContext& ctx,
 
   const auto& param = params[idx];
   const auto& arg = args[idx];
+  std::optional<bool> has_source_provenance;
+  auto arg_has_source_provenance = [&]() {
+    if (!has_source_provenance.has_value()) {
+      has_source_provenance = HasSourceProvenance(arg.value);
+    }
+    return *has_source_provenance;
+  };
   if (param.mode.has_value() && ast::IsRefArg(arg) && IsMoveMissing(arg.value) &&
-      HasSourceProvenance(arg.value)) {
+      arg_has_source_provenance()) {
     SPEC_RULE("B-ArgPass-Move-Missing");
     return ArgError("E-MOD-2411", arg.span);
   }
@@ -2006,11 +2077,12 @@ static ArgPassResult ArgPass(const ScopeContext& ctx,
   }
 
   if (!param.mode.has_value()) {
-    if (HasSourceProvenance(arg.value) && !IsPlaceExprForCall(arg.value)) {
+    if (arg_has_source_provenance() && !IsPlaceExprForCall(arg.value)) {
       SPEC_RULE("Call-Arg-NotPlace");
+      SPEC_RULE("rule.16.Call-Arg-NotPlace");
       return ArgError("E-TYP-1603", arg.span);
     }
-    if (!HasSourceProvenance(arg.value)) {
+    if (!arg_has_source_provenance()) {
       return ArgPass(ctx, params, args, eval.state, idx + 1);
     }
   }
@@ -2142,6 +2214,16 @@ static std::vector<ParamInfo> ParamInfosFromFunc(const TypeFunc& func) {
   return params;
 }
 
+static std::vector<ParamInfo> ParamInfosFromProcedureDecl(
+    const ast::ProcedureDecl& proc) {
+  std::vector<ParamInfo> params;
+  params.reserve(proc.params.size());
+  for (const auto& param : proc.params) {
+    params.push_back(ParamInfo{LowerParamMode(param.mode)});
+  }
+  return params;
+}
+
 static const ast::ASTModule* FindModuleByPathForCallParams(
     const ScopeContext& ctx,
     const ast::ModulePath& path) {
@@ -2180,12 +2262,7 @@ static std::optional<std::vector<ParamInfo>> ParamsFromProcedureDecl(
   if (!proc) {
     return std::nullopt;
   }
-  std::vector<ParamInfo> params;
-  params.reserve(proc->params.size());
-  for (const auto& param : proc->params) {
-    params.push_back(ParamInfo{LowerParamMode(param.mode)});
-  }
-  return params;
+  return ParamInfosFromProcedureDecl(*proc);
 }
 
 static std::optional<std::vector<ParamInfo>> ParamsFromUniqueProcedureName(
@@ -2205,18 +2282,21 @@ static std::optional<std::vector<ParamInfo>> ParamsFromUniqueProcedureName(
   if (!matched) {
     return std::nullopt;
   }
-  std::vector<ParamInfo> params;
-  params.reserve(matched->params.size());
-  for (const auto& param : matched->params) {
-    params.push_back(ParamInfo{LowerParamMode(param.mode)});
-  }
-  return params;
+  return ParamInfosFromProcedureDecl(*matched);
 }
 
 static std::optional<std::vector<ParamInfo>> ParamsForCall(
     const ScopeContext& ctx,
     const TypeEnv& env,
-    const ast::ExprPtr& callee) {
+    const ast::CallExpr& call) {
+  if (ctx.selected_call_targets) {
+    const auto selected = ctx.selected_call_targets->find(&call);
+    if (selected != ctx.selected_call_targets->end() && selected->second.proc) {
+      return ParamInfosFromProcedureDecl(*selected->second.proc);
+    }
+  }
+
+  const ast::ExprPtr& callee = call.callee;
   const auto type = ExprTypeOf(ctx, env, callee);
   if (!type.has_value() || !*type) {
     // Fall through to declaration-lookup fallback.
@@ -2497,7 +2577,7 @@ static BindResult BindCallExpr(const ScopeContext& ctx,
     callee_state = std::move(callee_res.state);
   }
 
-  auto params = ParamsForCall(ctx, callee_state.env, call.callee);
+  auto params = ParamsForCall(ctx, callee_state.env, call);
   if (!params.has_value()) {
     BindStateBundle current = callee_state;
     for (const auto& arg : call.args) {
@@ -2568,15 +2648,24 @@ static BindResult BindMethodCallExpr(const ScopeContext& ctx,
     return OkResult(current);
   }
 
+  std::optional<bool> receiver_has_source_provenance;
+  auto receiver_has_source = [&]() {
+    if (!receiver_has_source_provenance.has_value()) {
+      receiver_has_source_provenance = HasSourceProvenance(call.receiver);
+    }
+    return *receiver_has_source_provenance;
+  };
+
   if (recv_mode.has_value() && !is_transition && IsMoveMissing(call.receiver) &&
-      HasSourceProvenance(call.receiver)) {
+      receiver_has_source()) {
     SPEC_RULE("B-ArgPass-Move-Missing");
     return ErrorResult(std::string_view("E-MOD-2411"), std::optional<core::Span>(call.receiver->span));
   }
 
-  if (!recv_mode.has_value() && HasSourceProvenance(call.receiver) &&
+  if (!recv_mode.has_value() && receiver_has_source() &&
       !IsPlaceExprForCall(call.receiver)) {
     SPEC_RULE("Call-Arg-NotPlace");
+    SPEC_RULE("rule.16.Call-Arg-NotPlace");
     return ErrorResult(std::string_view("E-TYP-1603"), std::optional<core::Span>(call.receiver->span));
   }
 
@@ -3013,6 +3102,7 @@ static BindResult BindClosureExpr(const ScopeContext& ctx,
 
   if (collector.captures.empty()) {
     SPEC_RULE("B-Closure-NonCapturing");
+    SPEC_RULE("rule.16.B-Closure-NonCapturing");
     return OkResult(in);
   }
 
@@ -3035,6 +3125,8 @@ static BindResult BindClosureExpr(const ScopeContext& ctx,
     if (PermOfType(binding->type) == Permission::Unique &&
         move_caps.find(name) == move_caps.end()) {
       SPEC_RULE("Capture-Unique-NoMove-Err");
+      SPEC_RULE("Capture-Unique-Err");
+      SPEC_RULE("rule.16.Capture-Unique-Err");
       return ErrorResult(std::string_view("E-CON-0120"),
                          expr ? std::optional<core::Span>(expr->span)
                               : std::optional<core::Span>{});
@@ -3048,12 +3140,14 @@ static BindResult BindClosureExpr(const ScopeContext& ctx,
     }
     if (info->mov == Movability::Immov) {
       SPEC_RULE("B-Closure-MoveCapture-Immovable-Err");
+      SPEC_RULE("rule.16.B-Closure-MoveCapture-Immovable-Err");
       return ErrorResult(std::string_view("E-MEM-3006"),
                          expr ? std::optional<core::Span>(expr->span)
                               : std::optional<core::Span>{});
     }
     if (info->state.kind != BindStateKind::Valid) {
       SPEC_RULE("B-Closure-MoveCapture-Moved-Err");
+      SPEC_RULE("rule.16.B-Closure-MoveCapture-Moved-Err");
       return ErrorResult(std::string_view("E-CON-0121"),
                          expr ? std::optional<core::Span>(expr->span)
                               : std::optional<core::Span>{});
@@ -3070,6 +3164,7 @@ static BindResult BindClosureExpr(const ScopeContext& ctx,
     }
     if (info->state.kind != BindStateKind::Valid) {
       SPEC_RULE("B-Closure-RefCapture-Moved-Err");
+      SPEC_RULE("rule.16.B-Closure-RefCapture-Moved-Err");
       return ErrorResult(std::string_view("E-MEM-3001"),
                          expr ? std::optional<core::Span>(expr->span)
                               : std::optional<core::Span>{});
@@ -3087,6 +3182,7 @@ static BindResult BindClosureExpr(const ScopeContext& ctx,
     (void)Update_B_inplace(out.binds, name, updated);
   }
   SPEC_RULE("B-Closure-Capturing");
+  SPEC_RULE("rule.16.B-Closure-Capturing");
   return OkResult(out);
 }
 
@@ -3247,6 +3343,8 @@ static BindResult BindStmt(const ScopeContext& ctx,
           if (PermOfType(*bind_type) == Permission::Unique &&
               IsPlaceExpr(binding.init) && !IsMoveExpr(binding.init)) {
             SPEC_RULE("B-LetVar-UniqueNonMove-Err");
+            SPEC_RULE("rule.18.B-LetVar-UniqueNonMove-Err");
+            SPEC_RULE("diag.18.BindingStatements");
             return ErrorResult(std::string_view("E-MEM-3007"), std::optional<core::Span>(binding.init->span));
           }
 
@@ -3565,34 +3663,98 @@ static const ast::ASTModule* FindModuleByPath(
   return nullptr;
 }
 
-static BindScope StaticBindInfo(const ScopeContext& ctx,
-                                const ast::StaticDecl& decl,
-                                TypeEnv& env) {
-  BindScope out;
+struct StaticBindEntry {
+  std::vector<std::pair<IdKey, TypeBinding>> env_bindings;
+  BindScope bind_info;
+};
+
+static std::optional<StaticBindEntry> BuildStaticBindEntry(
+    const ScopeContext& ctx,
+    const ast::StaticDecl& decl) {
   const auto ann_type = ast::BindingAnnotationTypeOpt(decl.binding);
   if (!ann_type) {
-    return out;
+    return std::nullopt;
   }
   const auto ann = LocalLowerType(ctx, ann_type);
   if (!ann.ok) {
-    return out;
+    return std::nullopt;
   }
   const auto pat = TypePatternAgainstType(ctx, decl.binding.pat, ann.type);
   if (!pat.ok) {
-    return out;
+    return std::nullopt;
   }
+
+  StaticBindEntry entry;
+  entry.env_bindings.reserve(pat.bindings.size());
   for (const auto& [name, type] : pat.bindings) {
-    if (env.scopes.empty()) {
-      env.scopes.emplace_back();
-    }
-    env.scopes.front()[IdKeyOf(name)] = TypeBinding{decl.mut, type};
+    entry.env_bindings.emplace_back(IdKeyOf(name),
+                                    TypeBinding{decl.mut, type});
   }
+
   const auto type_map = BindTypeMapFromBindings(pat.bindings);
   const auto resp = RespOfInit(ctx, decl.binding.init);
   const auto mv = MovOf(decl.binding.op);
-  const auto info = BindInfoMap(type_map, resp, mv, decl.mut);
-  out.insert(info.begin(), info.end());
-  return out;
+  entry.bind_info = BindInfoMap(type_map, resp, mv, decl.mut);
+  return entry;
+}
+
+static const std::vector<StaticBindEntry>& StaticBindEntriesForModule(
+    const ScopeContext& ctx,
+    const ast::ModulePath& module_path) {
+  struct StaticBindEntryCache {
+    const Sigma* sigma_key = nullptr;
+    const ast::ASTModule* mods_data = nullptr;
+    std::size_t mods_size = 0;
+    const NameResolutionTables* name_resolution_tables = nullptr;
+    PathKey current_module_key;
+    std::map<PathKey, std::vector<StaticBindEntry>> entries_by_module;
+  };
+
+  static thread_local StaticBindEntryCache cache;
+  const Sigma* sigma_key = ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
+  const PathKey current_module_key = PathKeyOf(ctx.current_module);
+  if (cache.sigma_key != sigma_key ||
+      cache.mods_data != sigma_key->mods.data() ||
+      cache.mods_size != sigma_key->mods.size() ||
+      cache.name_resolution_tables != ctx.name_resolution_tables ||
+      cache.current_module_key != current_module_key) {
+    cache.sigma_key = sigma_key;
+    cache.mods_data = sigma_key->mods.data();
+    cache.mods_size = sigma_key->mods.size();
+    cache.name_resolution_tables = ctx.name_resolution_tables;
+    cache.current_module_key = current_module_key;
+    cache.entries_by_module.clear();
+  }
+
+  const PathKey module_key = PathKeyOf(module_path);
+  const auto cached = cache.entries_by_module.find(module_key);
+  if (cached != cache.entries_by_module.end()) {
+    return cached->second;
+  }
+
+  std::vector<StaticBindEntry> entries;
+  const auto* module = FindModuleByPath(ctx, module_path);
+  if (module) {
+    auto& perf = BorrowPerfStats();
+    const bool perf_on = BorrowPerfActive();
+    for (const auto& item : module->items) {
+      if (perf_on) {
+        ++perf.static_bind_items_scanned;
+      }
+      const auto* decl = std::get_if<ast::StaticDecl>(&item);
+      if (!decl) {
+        continue;
+      }
+      auto entry = BuildStaticBindEntry(ctx, *decl);
+      if (entry.has_value()) {
+        entries.push_back(std::move(*entry));
+      }
+    }
+  }
+
+  const auto inserted =
+      cache.entries_by_module.emplace(module_key, std::move(entries));
+  return inserted.first->second;
 }
 
 static BindScope StaticBindMap(const ScopeContext& ctx,
@@ -3602,20 +3764,15 @@ static BindScope StaticBindMap(const ScopeContext& ctx,
   const bool perf_on = BorrowPerfActive();
   ScopedBorrowTimer timer(perf_on ? &perf.static_bind_map_us : nullptr);
   BindScope out;
-  const auto* module = FindModuleByPath(ctx, module_path);
-  if (!module) {
-    return out;
-  }
-  for (const auto& item : module->items) {
-    if (perf_on) {
-      ++perf.static_bind_items_scanned;
+  const auto& entries = StaticBindEntriesForModule(ctx, module_path);
+  for (const auto& entry : entries) {
+    if (env.scopes.empty()) {
+      env.scopes.emplace_back();
     }
-    const auto* decl = std::get_if<ast::StaticDecl>(&item);
-    if (!decl) {
-      continue;
+    for (const auto& [name, binding] : entry.env_bindings) {
+      env.scopes.front()[name] = binding;
     }
-    const auto info = StaticBindInfo(ctx, *decl, env);
-    out.insert(info.begin(), info.end());
+    out.insert(entry.bind_info.begin(), entry.bind_info.end());
   }
   return out;
 }
@@ -3744,6 +3901,22 @@ BindCheckResult BindCheckBody(const ScopeContext& ctx,
   binds.emplace_back();
   binds = IntroAll_B(binds, param_info);
   ParamTypeMap(ctx, params, self_param, env);
+  RecordBorrowStateObligationOnce(
+      g_binding_environment_obligation_once,
+      "def.BindingEnvironment",
+      "definition=BindingEnvironment;scopes=static+params");
+  RecordBorrowStateObligationOnce(
+      g_permission_environment_obligation_once,
+      "def.PermissionEnvironment",
+      "definition=PermissionEnvironment;scopes=static+params");
+  RecordBorrowStateObligationOnce(
+      g_initial_binding_environment_obligation_once,
+      "def.InitialBindingEnvironment",
+      "definition=InitialBindingEnvironment;static_scope=present;param_scope=present");
+  RecordBorrowStateObligationOnce(
+      g_initial_permission_environment_obligation_once,
+      "def.InitialPermissionEnvironment",
+      "definition=InitialPermissionEnvironment;static_scope=present;param_scope=present");
 
   BindStateBundle state{binds, perms, env};
   const auto checked = [&]() {

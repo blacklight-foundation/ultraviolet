@@ -37,9 +37,9 @@ public procedure validatedConformanceAndNotationBehaviorTypesObligations() -> us
     if acceptedObligationEntryMatches(
         "def.JudgmentSubjectAndEnvironment",
         587usize,
-        "HelloUltraviolet::Reference::Conformance",
-        "runConformanceBehaviorClassificationReference",
-        "Source/Reference/Conformance/BehaviorClassification.uv"
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -154,18 +154,18 @@ public procedure validatedConformanceAndNotationBehaviorTypesObligations() -> us
     if acceptedObligationEntryMatches(
         "def.RuntimeCheck",
         784usize,
-        "HelloUltraviolet::Reference::Conformance",
-        "runConformanceBehaviorClassificationReference",
-        "Source/Reference/Conformance/BehaviorClassification.uv"
+        "HelloUltraviolet::Audit",
+        "artifactProjectRuntimeCheckBehaviorExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if artifactBehaviorObligationEntryMatches(
         "def.RuntimeCheckBehavior",
         798usize,
-        "HelloUltraviolet::Reference::Conformance",
-        "runConformanceBehaviorClassificationReference",
-        "Source/Reference/Conformance/BehaviorClassification.uv"
+        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
+        "validatedArtifactProjectFixtureCount",
+        "Fixtures/ArtifactProjects/IntegerOverflowPanic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

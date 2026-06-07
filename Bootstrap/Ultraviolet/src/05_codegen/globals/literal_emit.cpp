@@ -49,8 +49,14 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <optional>
+#include <string>
 #include <string_view>
+#include <type_traits>
+#include <unordered_map>
 #include <unordered_set>
+#include <utility>
+#include <variant>
 #include <vector>
 
 #include "04_analysis/layout/layout.h"
@@ -61,6 +67,7 @@
 #include "05_codegen/intrinsics/intrinsics_interface.h"
 #include "00_core/assert_spec.h"
 #include "00_core/hash.h"
+#include "00_core/spec_trace.h"
 #include "00_core/symbols.h"
 
 namespace ultraviolet::codegen {
@@ -68,6 +75,16 @@ namespace ultraviolet::codegen {
 std::optional<LiteralKind> LiteralKindOfImmediate(const IRValue& value) {
   if (value.kind != IRValue::Kind::Immediate || value.bytes.empty()) {
     return std::nullopt;
+  }
+
+  if (value.literal_kind.has_value()) {
+    switch (*value.literal_kind) {
+      case IRImmediateLiteralKind::String: return LiteralKind::String;
+      case IRImmediateLiteralKind::Bytes: return LiteralKind::Bytes;
+      case IRImmediateLiteralKind::Char: return LiteralKind::Char;
+      case IRImmediateLiteralKind::Int: return LiteralKind::Int;
+      case IRImmediateLiteralKind::Float: return LiteralKind::Float;
+    }
   }
 
   const std::string_view lexeme = value.name;
@@ -139,6 +156,274 @@ bool IsLiteralSymbol(const std::string& symbol) {
   return symbol.rfind(kLiteralPrefix, 0) == 0;
 }
 
+namespace {
+
+std::string_view LiteralSourceKindName(IRImmediateLiteralKind kind) {
+  switch (kind) {
+    case IRImmediateLiteralKind::String: return "StringLiteral";
+    case IRImmediateLiteralKind::Bytes: return "BytesLiteral";
+    case IRImmediateLiteralKind::Char: return "CharLiteral";
+    case IRImmediateLiteralKind::Int: return "IntLiteral";
+    case IRImmediateLiteralKind::Float: return "FloatLiteral";
+  }
+  return "UnknownLiteral";
+}
+
+bool IsStringLiteralLexeme(std::string_view lexeme) {
+  return lexeme.size() >= 2 && lexeme.front() == '"' && lexeme.back() == '"';
+}
+
+std::optional<IRImmediateLiteralKind> SourceLiteralKindOfImmediate(
+    const IRValue& value,
+    LiteralKind emitted_kind) {
+  if (emitted_kind == LiteralKind::Bytes && IsStringLiteralLexeme(value.name)) {
+    return IRImmediateLiteralKind::String;
+  }
+  return value.literal_kind;
+}
+
+void AppendLiteralPayloadField(std::string& payload,
+                               std::string_view key,
+                               std::string_view value) {
+  if (!payload.empty()) {
+    payload += ';';
+  }
+  payload.append(key.data(), key.size());
+  payload += '=';
+  payload.append(value.data(), value.size());
+}
+
+void AppendLiteralPayloadField(std::string& payload,
+                               std::string_view key,
+                               std::size_t value) {
+  AppendLiteralPayloadField(payload, key, std::to_string(value));
+}
+
+void AppendLiteralPayloadField(std::string& payload,
+                               std::string_view key,
+                               bool value) {
+  AppendLiteralPayloadField(
+      payload,
+      key,
+      std::string_view(value ? "true" : "false"));
+}
+
+bool IsUtf8ContinuationByte(std::uint8_t byte) {
+  return (byte & 0xC0u) == 0x80u;
+}
+
+bool IsUtf8Valid(const std::vector<std::uint8_t>& bytes) {
+  std::size_t index = 0;
+  while (index < bytes.size()) {
+    const std::uint8_t first = bytes[index];
+    if (first <= 0x7Fu) {
+      ++index;
+      continue;
+    }
+
+    if (first >= 0xC2u && first <= 0xDFu) {
+      if (index + 1 >= bytes.size() ||
+          !IsUtf8ContinuationByte(bytes[index + 1])) {
+        return false;
+      }
+      index += 2;
+      continue;
+    }
+
+    if (first == 0xE0u) {
+      if (index + 2 >= bytes.size() ||
+          bytes[index + 1] < 0xA0u ||
+          bytes[index + 1] > 0xBFu ||
+          !IsUtf8ContinuationByte(bytes[index + 2])) {
+        return false;
+      }
+      index += 3;
+      continue;
+    }
+
+    if ((first >= 0xE1u && first <= 0xECu) ||
+        (first >= 0xEEu && first <= 0xEFu)) {
+      if (index + 2 >= bytes.size() ||
+          !IsUtf8ContinuationByte(bytes[index + 1]) ||
+          !IsUtf8ContinuationByte(bytes[index + 2])) {
+        return false;
+      }
+      index += 3;
+      continue;
+    }
+
+    if (first == 0xEDu) {
+      if (index + 2 >= bytes.size() ||
+          bytes[index + 1] < 0x80u ||
+          bytes[index + 1] > 0x9Fu ||
+          !IsUtf8ContinuationByte(bytes[index + 2])) {
+        return false;
+      }
+      index += 3;
+      continue;
+    }
+
+    if (first == 0xF0u) {
+      if (index + 3 >= bytes.size() ||
+          bytes[index + 1] < 0x90u ||
+          bytes[index + 1] > 0xBFu ||
+          !IsUtf8ContinuationByte(bytes[index + 2]) ||
+          !IsUtf8ContinuationByte(bytes[index + 3])) {
+        return false;
+      }
+      index += 4;
+      continue;
+    }
+
+    if (first >= 0xF1u && first <= 0xF3u) {
+      if (index + 3 >= bytes.size() ||
+          !IsUtf8ContinuationByte(bytes[index + 1]) ||
+          !IsUtf8ContinuationByte(bytes[index + 2]) ||
+          !IsUtf8ContinuationByte(bytes[index + 3])) {
+        return false;
+      }
+      index += 4;
+      continue;
+    }
+
+    if (first == 0xF4u) {
+      if (index + 3 >= bytes.size() ||
+          bytes[index + 1] < 0x80u ||
+          bytes[index + 1] > 0x8Fu ||
+          !IsUtf8ContinuationByte(bytes[index + 2]) ||
+          !IsUtf8ContinuationByte(bytes[index + 3])) {
+        return false;
+      }
+      index += 4;
+      continue;
+    }
+
+    return false;
+  }
+  return true;
+}
+
+std::string LiteralEvidencePayload(
+    LiteralKind kind,
+    const std::vector<std::uint8_t>& source_bytes,
+    const GlobalConst& global,
+    std::string_view source,
+    std::optional<IRImmediateLiteralKind> source_literal_kind = std::nullopt) {
+  const std::string_view kind_name = LiteralKindToString(kind);
+  std::string payload;
+  AppendLiteralPayloadField(payload, "source", source);
+  AppendLiteralPayloadField(payload, "kind", kind_name);
+  AppendLiteralPayloadField(payload, "byte_count", source_bytes.size());
+  if (source_literal_kind.has_value()) {
+    AppendLiteralPayloadField(
+        payload,
+        "source_literal_kind",
+        LiteralSourceKindName(*source_literal_kind));
+  }
+  if (kind == LiteralKind::Bytes) {
+    const bool from_string =
+        source_literal_kind.has_value() &&
+        *source_literal_kind == IRImmediateLiteralKind::String;
+    AppendLiteralPayloadField(
+        payload,
+        "raw_bytes_from",
+        from_string ? std::string_view("StringBytes")
+                    : std::string_view("RawBytes"));
+  }
+  AppendLiteralPayloadField(payload, "global_const", true);
+  AppendLiteralPayloadField(payload, "symbol_present", !global.symbol.empty());
+  AppendLiteralPayloadField(payload, "bytes_preserved", global.bytes == source_bytes);
+  AppendLiteralPayloadField(payload, "string_bytes", kind == LiteralKind::String);
+  AppendLiteralPayloadField(payload, "raw_bytes", kind == LiteralKind::Bytes);
+  AppendLiteralPayloadField(
+      payload,
+      "string_raw_bytes_equivalent",
+      kind == LiteralKind::String && global.bytes == source_bytes);
+  AppendLiteralPayloadField(
+      payload,
+      "utf8_valid",
+      kind == LiteralKind::String && IsUtf8Valid(source_bytes));
+  return payload;
+}
+
+void RecordLiteralDataEvidence(LiteralKind kind,
+                               const std::vector<std::uint8_t>& bytes,
+                               const GlobalConst& global,
+                               std::string_view source,
+                               std::optional<IRImmediateLiteralKind>
+                                   source_literal_kind = std::nullopt) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  const std::string payload =
+      LiteralEvidencePayload(kind, bytes, global, source, source_literal_kind);
+  core::Conformance::Record("def.24.LiteralEmitJudg", std::nullopt, payload);
+  core::Conformance::Record(
+      "rule.24.EmitLiteralData-Decl", std::nullopt, payload);
+  switch (kind) {
+    case LiteralKind::Bytes:
+      core::Conformance::Record("rule.24.EmitLiteral-Bytes", std::nullopt, payload);
+      core::Conformance::Record(
+          "req.24.EmitLiteral-Bytes-UndefinedRawBytes", std::nullopt, payload);
+      break;
+    case LiteralKind::Char:
+      core::Conformance::Record("rule.24.EmitLiteral-Char", std::nullopt, payload);
+      break;
+    case LiteralKind::Int:
+      core::Conformance::Record("rule.24.EmitLiteral-Int", std::nullopt, payload);
+      break;
+    case LiteralKind::Float:
+      core::Conformance::Record("rule.24.EmitLiteral-Float", std::nullopt, payload);
+      break;
+    case LiteralKind::String:
+      break;
+  }
+}
+
+void RecordStringLiteralEvidence(const std::vector<std::uint8_t>& bytes,
+                                 const GlobalConst& global,
+                                 std::string_view source) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  const std::string payload =
+      LiteralEvidencePayload(
+          LiteralKind::String,
+          bytes,
+          global,
+          source,
+          IRImmediateLiteralKind::String);
+  core::Conformance::Record(
+      "def.24.StringBytesAndRawBytes", std::nullopt, payload);
+  core::Conformance::Record("rule.24.EmitLiteral-String", std::nullopt, payload);
+  core::Conformance::Record(
+      "req.24.EmitLiteral-String-Utf8Valid", std::nullopt, payload);
+}
+
+void RecordBytesLiteralEvidence(const std::vector<std::uint8_t>& bytes,
+                                const GlobalConst& global,
+                                std::string_view source,
+                                std::optional<IRImmediateLiteralKind>
+                                    source_literal_kind = std::nullopt) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  const std::string payload =
+      LiteralEvidencePayload(
+          LiteralKind::Bytes,
+          bytes,
+          global,
+          source,
+          source_literal_kind);
+  core::Conformance::Record(
+      "def.24.StringBytesAndRawBytes", std::nullopt, payload);
+  core::Conformance::Record("rule.24.EmitLiteral-Bytes", std::nullopt, payload);
+  core::Conformance::Record(
+      "req.24.EmitLiteral-Bytes-UndefinedRawBytes", std::nullopt, payload);
+}
+
+}  // namespace
+
 // ============================================================================
 // Section 6.12.14 Literal IR Declaration Generation
 // ============================================================================
@@ -149,6 +434,7 @@ IRDecl EmitLiteralData(LiteralKind kind, const std::vector<std::uint8_t>& bytes)
   GlobalConst gc;
   gc.symbol = LiteralSym(kind, bytes);
   gc.bytes = bytes;
+  RecordLiteralDataEvidence(kind, bytes, gc, "EmitLiteralData");
   return gc;
 }
 
@@ -156,16 +442,29 @@ IRDecl EmitStringLitDecl(std::string_view content) {
   SPEC_RULE("EmitLiteral-String");
 
   std::vector<std::uint8_t> bytes(content.begin(), content.end());
-  return EmitLiteralData(LiteralKind::String, bytes);
+  IRDecl decl = EmitLiteralData(LiteralKind::String, bytes);
+  if (const auto* global = std::get_if<GlobalConst>(&decl)) {
+    RecordStringLiteralEvidence(bytes, *global, "EmitStringLitDecl");
+  }
+  return decl;
 }
 
 IRDecl EmitBytesLitDecl(const std::vector<std::uint8_t>& content) {
   SPEC_RULE("EmitLiteral-Bytes");
-  return EmitLiteralData(LiteralKind::Bytes, content);
+  IRDecl decl = EmitLiteralData(LiteralKind::Bytes, content);
+  if (const auto* global = std::get_if<GlobalConst>(&decl)) {
+    RecordBytesLiteralEvidence(
+        content,
+        *global,
+        "EmitBytesLitDecl",
+        IRImmediateLiteralKind::Bytes);
+  }
+  return decl;
 }
 
 IRDecl EmitCharLitDecl(char32_t codepoint) {
   SPEC_RULE("EmitLiteral-Char");
+  SPEC_RULE("rule.24.EmitLiteral-Char");
 
   std::vector<std::uint8_t> bytes(4);
   bytes[0] = static_cast<std::uint8_t>(codepoint & 0xFF);
@@ -177,11 +476,13 @@ IRDecl EmitCharLitDecl(char32_t codepoint) {
 
 IRDecl EmitIntLitDecl(const std::vector<std::uint8_t>& bytes) {
   SPEC_RULE("EmitLiteral-Int");
+  SPEC_RULE("rule.24.EmitLiteral-Int");
   return EmitLiteralData(LiteralKind::Int, bytes);
 }
 
 IRDecl EmitFloatLitDecl(const std::vector<std::uint8_t>& bytes) {
   SPEC_RULE("EmitLiteral-Float");
+  SPEC_RULE("rule.24.EmitLiteral-Float");
   return EmitLiteralData(LiteralKind::Float, bytes);
 }
 
@@ -192,41 +493,59 @@ IRDecl EmitFloatLitDecl(const std::vector<std::uint8_t>& bytes) {
 namespace {
 
 void CollectLiteralRefsFromIR(const IRPtr& ir,
-                               std::vector<std::pair<LiteralKind, std::vector<std::uint8_t>>>& out);
+                               std::vector<LiteralRefInfo>& out);
 void CollectLiteralRefsFromValue(const IRValue& value,
-                                  std::vector<std::pair<LiteralKind, std::vector<std::uint8_t>>>& out);
+                                  std::vector<LiteralRefInfo>& out);
 
-std::vector<std::pair<LiteralKind, std::vector<std::uint8_t>>> DedupLiteralRefs(
-    std::vector<std::pair<LiteralKind, std::vector<std::uint8_t>>> refs) {
-  auto key_of = [](const std::pair<LiteralKind, std::vector<std::uint8_t>>& item) {
-    return LiteralSym(item.first, item.second);
-  };
-  std::sort(refs.begin(), refs.end(),
-            [&](const auto& lhs, const auto& rhs) { return key_of(lhs) < key_of(rhs); });
-  refs.erase(
-      std::unique(refs.begin(), refs.end(),
-                  [&](const auto& lhs, const auto& rhs) { return key_of(lhs) == key_of(rhs); }),
-      refs.end());
-  return refs;
+std::vector<LiteralRefInfo> DedupLiteralRefs(std::vector<LiteralRefInfo> refs) {
+  std::vector<LiteralRefInfo> unique_refs;
+  std::unordered_map<std::string, std::size_t> index_by_symbol;
+
+  for (auto& ref : refs) {
+    const std::string symbol = LiteralSym(ref.kind, ref.bytes);
+    const auto existing = index_by_symbol.find(symbol);
+    if (existing == index_by_symbol.end()) {
+      index_by_symbol.emplace(symbol, unique_refs.size());
+      unique_refs.push_back(std::move(ref));
+      continue;
+    }
+
+    LiteralRefInfo& stored = unique_refs[existing->second];
+    if (!stored.source_literal_kind.has_value() &&
+        ref.source_literal_kind.has_value()) {
+      stored.source_literal_kind = ref.source_literal_kind;
+    } else if (
+        stored.kind == LiteralKind::Bytes &&
+        ref.source_literal_kind.has_value() &&
+        *ref.source_literal_kind == IRImmediateLiteralKind::String) {
+      stored.source_literal_kind = ref.source_literal_kind;
+    }
+  }
+
+  return unique_refs;
 }
 
 void CollectLiteralRefsFromOptionalValue(
     const std::optional<IRValue>& value,
-    std::vector<std::pair<LiteralKind, std::vector<std::uint8_t>>>& out) {
+    std::vector<LiteralRefInfo>& out) {
   if (value.has_value()) {
     CollectLiteralRefsFromValue(*value, out);
   }
 }
 
 void CollectLiteralRefsFromValue(const IRValue& value,
-                                  std::vector<std::pair<LiteralKind, std::vector<std::uint8_t>>>& out) {
+                                  std::vector<LiteralRefInfo>& out) {
   if (auto kind = LiteralKindOfImmediate(value); kind.has_value()) {
-    out.emplace_back(*kind, value.bytes);
+    out.push_back(LiteralRefInfo{
+        *kind,
+        value.bytes,
+        SourceLiteralKindOfImmediate(value, *kind),
+    });
   }
 }
 
 void CollectLiteralRefsFromIR(const IRPtr& ir,
-                               std::vector<std::pair<LiteralKind, std::vector<std::uint8_t>>>& out) {
+                               std::vector<LiteralRefInfo>& out) {
   if (!ir) return;
 
   std::visit([&](const auto& node) {
@@ -322,6 +641,8 @@ void CollectLiteralRefsFromIR(const IRPtr& ir,
       CollectLiteralRefsFromIR(node.iter_ir, out);
       CollectLiteralRefsFromIR(node.cond_ir, out);
       CollectLiteralRefsFromIR(node.body_ir, out);
+      CollectLiteralRefsFromIR(node.invariant_entry_ir, out);
+      CollectLiteralRefsFromIR(node.invariant_backedge_ir, out);
       CollectLiteralRefsFromOptionalValue(node.iter_value, out);
       CollectLiteralRefsFromOptionalValue(node.cond_value, out);
       CollectLiteralRefsFromValue(node.body_value, out);
@@ -380,8 +701,18 @@ void CollectLiteralRefsFromIR(const IRPtr& ir,
     } else if constexpr (std::is_same_v<T, IRWait>) {
       CollectLiteralRefsFromValue(node.handle, out);
       CollectLiteralRefsFromValue(node.result, out);
+    } else if constexpr (std::is_same_v<T, IRCancelCreate>) {
+      CollectLiteralRefsFromValue(node.result, out);
+    } else if constexpr (std::is_same_v<T, IRCancelRequest>) {
+      CollectLiteralRefsFromValue(node.token, out);
+      CollectLiteralRefsFromValue(node.result, out);
+    } else if constexpr (std::is_same_v<T, IRCancelWait>) {
+      CollectLiteralRefsFromValue(node.token, out);
+      CollectLiteralRefsFromValue(node.result, out);
     } else if constexpr (std::is_same_v<T, IRCancelCheck>) {
       CollectLiteralRefsFromValue(node.token, out);
+      CollectLiteralRefsFromValue(node.result, out);
+    } else if constexpr (std::is_same_v<T, IRGpuBarrier>) {
       CollectLiteralRefsFromValue(node.result, out);
     } else if constexpr (std::is_same_v<T, IRDispatch>) {
       CollectLiteralRefsFromValue(node.range, out);
@@ -396,6 +727,7 @@ void CollectLiteralRefsFromIR(const IRPtr& ir,
       CollectLiteralRefsFromOptionalValue(node.reduce_fn, out);
       CollectLiteralRefsFromValue(node.result, out);
       CollectLiteralRefsFromOptionalValue(node.chunk_size, out);
+      CollectLiteralRefsFromValue(node.workgroup_size, out);
     } else if constexpr (std::is_same_v<T, IRYield>) {
       CollectLiteralRefsFromValue(node.value, out);
       CollectLiteralRefsFromValue(node.result, out);
@@ -425,6 +757,7 @@ void CollectLiteralRefsFromIR(const IRPtr& ir,
       CollectLiteralRefsFromValue(node.result, out);
     } else if constexpr (std::is_same_v<T, IRSync>) {
       CollectLiteralRefsFromValue(node.async_value, out);
+      CollectLiteralRefsFromOptionalValue(node.runtime_receiver, out);
       CollectLiteralRefsFromValue(node.result, out);
     } else if constexpr (std::is_same_v<T, IRRaceReturn>) {
       for (const auto& arm : node.arms) {
@@ -465,16 +798,14 @@ void CollectLiteralRefsFromIR(const IRPtr& ir,
 
 }  // namespace
 
-std::vector<std::pair<LiteralKind, std::vector<std::uint8_t>>>
-LiteralRefs(const IRPtr& ir) {
-  std::vector<std::pair<LiteralKind, std::vector<std::uint8_t>>> refs;
+std::vector<LiteralRefInfo> LiteralRefs(const IRPtr& ir) {
+  std::vector<LiteralRefInfo> refs;
   CollectLiteralRefsFromIR(ir, refs);
   return DedupLiteralRefs(std::move(refs));
 }
 
-std::vector<std::pair<LiteralKind, std::vector<std::uint8_t>>>
-LiteralRefs(const IRDecls& decls) {
-  std::vector<std::pair<LiteralKind, std::vector<std::uint8_t>>> refs;
+std::vector<LiteralRefInfo> LiteralRefs(const IRDecls& decls) {
+  std::vector<LiteralRefInfo> refs;
 
   for (const auto& decl : decls) {
     if (const auto* proc = std::get_if<ProcIR>(&decl)) {
@@ -525,18 +856,32 @@ analysis::TypeRef StaticTypeForConst(const GlobalConst& global,
 // Section 6.12.14 Literal Deduplication
 // ============================================================================
 
-std::vector<IRDecl> UniqueLiterals(
-    const std::vector<std::pair<LiteralKind, std::vector<std::uint8_t>>>& lits) {
+std::vector<IRDecl> UniqueLiterals(const std::vector<LiteralRefInfo>& lits) {
   SPEC_RULE("UniqueEmits-Literal");
 
   std::unordered_set<std::string> seen_symbols;
   std::vector<IRDecl> unique_decls;
 
-  for (const auto& [kind, bytes] : lits) {
+  for (const auto& lit : lits) {
+    const LiteralKind kind = lit.kind;
+    const std::vector<std::uint8_t>& bytes = lit.bytes;
     std::string sym = LiteralSym(kind, bytes);
     if (seen_symbols.find(sym) == seen_symbols.end()) {
       seen_symbols.insert(sym);
-      unique_decls.push_back(EmitLiteralData(kind, bytes));
+      IRDecl decl =
+          EmitLiteralData(kind, bytes);
+      if (const auto* global = std::get_if<GlobalConst>(&decl)) {
+        if (kind == LiteralKind::String) {
+          RecordStringLiteralEvidence(bytes, *global, "UniqueLiterals");
+        } else if (kind == LiteralKind::Bytes) {
+          RecordBytesLiteralEvidence(
+              bytes,
+              *global,
+              "UniqueLiterals",
+              lit.source_literal_kind);
+        }
+      }
+      unique_decls.push_back(std::move(decl));
     }
   }
 

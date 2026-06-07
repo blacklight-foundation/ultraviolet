@@ -1,0 +1,18 @@
+//! Rejected polymorphism specimen for inherited class methods with incompatible signatures.
+
+internal class MethodConflictLeft {
+    internal procedure inheritedConflict(~) -> i32 {
+        return 1
+    }
+}
+
+internal class MethodConflictRight {
+    internal procedure inheritedConflict(~) -> bool {
+        return true
+    }
+}
+
+internal class InheritedMethodSignatureConflictClass <:
+    MethodConflictLeft +
+    MethodConflictRight {
+}

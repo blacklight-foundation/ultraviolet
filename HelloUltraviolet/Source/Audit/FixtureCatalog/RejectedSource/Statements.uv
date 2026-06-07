@@ -1,7 +1,7 @@
 //! Rejected statement specimens.
 
 public procedure statementsRejectedSourceFixtureCount() -> usize {
-    return 36usize
+    return 39usize
 }
 
 public procedure validatedStatementsRejectedSourceFixtureCount() -> usize {
@@ -173,6 +173,40 @@ public procedure validatedStatementsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Statements/MissingRequiredTerminator/Expected.uv",
         "E-SRC-0510",
         "rule.18.ConsumeTerminatorOpt-Req-No"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "MissingRequiredTerminator",
+            "Fixtures/RejectedSource/Statements/MissingRequiredTerminator",
+            "Fixtures/RejectedSource/Statements/MissingRequiredTerminator/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/MissingRequiredTerminator/Expected.uv",
+            expectedDiagnostic("E-SRC-0510", "req.16.ControlExpressionDiagnosticOwnership")
+        ),
+        "MissingRequiredTerminator",
+        "Fixtures/RejectedSource/Statements/MissingRequiredTerminator",
+        "Fixtures/RejectedSource/Statements/MissingRequiredTerminator/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/MissingRequiredTerminator/Expected.uv",
+        "E-SRC-0510",
+        "req.16.ControlExpressionDiagnosticOwnership"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "MissingRequiredTerminator",
+            "Fixtures/RejectedSource/Statements/MissingRequiredTerminator",
+            "Fixtures/RejectedSource/Statements/MissingRequiredTerminator/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/MissingRequiredTerminator/Expected.uv",
+            expectedDiagnostic("E-SRC-0510", "def.18.RequiredStatementTerminators")
+        ),
+        "MissingRequiredTerminator",
+        "Fixtures/RejectedSource/Statements/MissingRequiredTerminator",
+        "Fixtures/RejectedSource/Statements/MissingRequiredTerminator/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/MissingRequiredTerminator/Expected.uv",
+        "E-SRC-0510",
+        "def.18.RequiredStatementTerminators"
     ) {
         count = count + 1usize
     }
@@ -411,6 +445,23 @@ public procedure validatedStatementsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Statements/BlocksDiagnostic/Expected.uv",
         "E-SRC-0520",
         "diag.18.Blocks"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "BlocksDiagnostic",
+            "Fixtures/RejectedSource/Statements/BlocksDiagnostic",
+            "Fixtures/RejectedSource/Statements/BlocksDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/BlocksDiagnostic/Expected.uv",
+            expectedDiagnostic("E-SRC-0520", "req.16.ControlExpressionDiagnosticOwnership")
+        ),
+        "BlocksDiagnostic",
+        "Fixtures/RejectedSource/Statements/BlocksDiagnostic",
+        "Fixtures/RejectedSource/Statements/BlocksDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/BlocksDiagnostic/Expected.uv",
+        "E-SRC-0520",
+        "req.16.ControlExpressionDiagnosticOwnership"
     ) {
         count = count + 1usize
     }

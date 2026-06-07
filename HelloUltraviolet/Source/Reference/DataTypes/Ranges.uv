@@ -54,7 +54,137 @@ internal procedure rangeReferencesProduceSpecifiedSliceBounds() -> bool {
         full[4usize] == 50
 }
 
+internal procedure evalSigmaRangeReference() -> bool {
+    let values: [i32; 5] = [10, 20, 30, 40, 50]
+    let lower: usize = 1usize
+    let upper: usize = 3usize
+    let selected: [i32] = values[lower..upper]
+    return selected[0usize] == 20 &&
+        selected[1usize] == 30
+}
+
+internal procedure rangeLowerBoundControlReference(should_return: bool) -> usize {
+    let values: [i32; 5] = [10, 20, 30, 40, 50]
+    let selected: [i32] = values[
+        (if should_return {
+            return 41usize
+        } else {
+            1usize
+        })..3usize
+    ]
+    if selected[0usize] == 20 && selected[1usize] == 30 {
+        return 34usize
+    }
+    return 0usize
+}
+
+internal procedure rangeUpperBoundControlReference(should_return: bool) -> usize {
+    let values: [i32; 5] = [10, 20, 30, 40, 50]
+    let selected: [i32] = values[
+        1usize..(if should_return {
+            return 43usize
+        } else {
+            3usize
+        })
+    ]
+    if selected[0usize] == 20 && selected[1usize] == 30 {
+        return 34usize
+    }
+    return 0usize
+}
+
+internal procedure evalSigmaRangeCtrlReference() -> bool {
+    return rangeLowerBoundControlReference(true) == 41usize &&
+        rangeLowerBoundControlReference(false) == 34usize
+}
+
+internal procedure evalSigmaRangeCtrlHiReference() -> bool {
+    return rangeUpperBoundControlReference(true) == 43usize &&
+        rangeUpperBoundControlReference(false) == 34usize
+}
+
+internal procedure sizeRangeReference() -> bool {
+    return sizeof(Range<usize>) == sizeof((usize, usize))
+}
+
+internal procedure alignRangeReference() -> bool {
+    return alignof(Range<usize>) == alignof((usize, usize))
+}
+
+internal procedure layoutRangeReference() -> bool {
+    return sizeRangeReference() && alignRangeReference()
+}
+
+internal procedure sizeRangeInclusiveReference() -> bool {
+    return sizeof(RangeInclusive<usize>) == sizeof((usize, usize))
+}
+
+internal procedure alignRangeInclusiveReference() -> bool {
+    return alignof(RangeInclusive<usize>) == alignof((usize, usize))
+}
+
+internal procedure layoutRangeInclusiveReference() -> bool {
+    return sizeRangeInclusiveReference() && alignRangeInclusiveReference()
+}
+
+internal procedure sizeRangeFromReference() -> bool {
+    return sizeof(RangeFrom<usize>) == sizeof(usize)
+}
+
+internal procedure alignRangeFromReference() -> bool {
+    return alignof(RangeFrom<usize>) == alignof(usize)
+}
+
+internal procedure layoutRangeFromReference() -> bool {
+    return sizeRangeFromReference() && alignRangeFromReference()
+}
+
+internal procedure sizeRangeToReference() -> bool {
+    return sizeof(RangeTo<usize>) == sizeof(usize)
+}
+
+internal procedure alignRangeToReference() -> bool {
+    return alignof(RangeTo<usize>) == alignof(usize)
+}
+
+internal procedure layoutRangeToReference() -> bool {
+    return sizeRangeToReference() && alignRangeToReference()
+}
+
+internal procedure sizeRangeToInclusiveReference() -> bool {
+    return sizeof(RangeToInclusive<usize>) == sizeof(usize)
+}
+
+internal procedure alignRangeToInclusiveReference() -> bool {
+    return alignof(RangeToInclusive<usize>) == alignof(usize)
+}
+
+internal procedure layoutRangeToInclusiveReference() -> bool {
+    return sizeRangeToInclusiveReference() && alignRangeToInclusiveReference()
+}
+
+internal procedure sizeRangeFullReference() -> bool {
+    return sizeof(RangeFull) == 0usize
+}
+
+internal procedure alignRangeFullReference() -> bool {
+    return alignof(RangeFull) == 1usize
+}
+
+internal procedure layoutRangeFullReference() -> bool {
+    return sizeRangeFullReference() && alignRangeFullReference()
+}
+
 /// Exercises the DataTypes Ranges reference surface.
 public procedure runDataTypesRangesReference() -> bool {
-    return rangeReferencesProduceSpecifiedSliceBounds()
+    return rangeReferencesProduceSpecifiedSliceBounds() &&
+        evalSigmaRangeReference() &&
+        evalSigmaRangeCtrlReference() &&
+        evalSigmaRangeCtrlHiReference() &&
+        layoutRangeReference() &&
+        layoutRangeInclusiveReference() &&
+        layoutRangeFromReference() &&
+        layoutRangeToReference() &&
+        layoutRangeToInclusiveReference() &&
+        layoutRangeFullReference()
 }

@@ -4,6 +4,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <variant>
 #include <vector>
 
@@ -113,6 +114,9 @@ IRPtr LowerPanic(PanicReason reason, LowerCtx& ctx);
 
 // §6.8 PanicSym - the runtime panic handler symbol
 std::string PanicSym();
+
+void RecordRuntimeCheckPanicBehavior(std::string_view check_kind,
+                                     std::string_view source);
 
 // §6.8 ClearPanic - emit IR to clear the panic flag
 IRPtr ClearPanic(LowerCtx& ctx);

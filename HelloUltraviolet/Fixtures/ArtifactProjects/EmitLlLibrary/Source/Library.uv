@@ -5,8 +5,900 @@ public record EmitLlSRetPair {
     public right: string@View
 }
 
+public record EmitLlSystemExitContext {
+    public sys: System
+}
+
+#layout(C)
+public record EmitLlForeignByRefRecord {
+    public first: u64
+    public second: u64
+    public third: u64
+}
+
+#ffi_pass_by_value
+#layout(C)
+public record EmitLlDroppingFfiByValueRecord {
+    public value: unique i32
+
+    public procedure drop(~!) -> () {
+    }
+}
+
+#layout(C)
+public record EmitLlGenericFfiBox<TValue> |: FfiSafe(TValue)
+{
+    public value: TValue
+}
+
+public record EmitLlCleanupProbe {
+    public owned_value: unique i32
+    public visible_value: i32
+
+    public procedure drop(~!) -> () {
+    }
+}
+
+internal let EMIT_LL_STATIC_CLEANUP_PROBE: EmitLlCleanupProbe =
+    EmitLlCleanupProbe { owned_value: 67, visible_value: 67 }
+
+internal let EMIT_LL_CONST_BYTES_INT: i32 = 73
+internal let EMIT_LL_CONST_BYTES_FLOAT: f64 = 6.25f64
+internal let EMIT_LL_CONST_BYTES_NULL: *mut i32 = null
+internal let EMIT_LL_CONST_BYTES_UNIT: () = ()
+
+public type EmitLlAlias = i32
+
+public type EmitLlTaggedUnion = i32 | bool
+
+public type EmitLlNicheUnion = () | Ptr<i32>@Valid
+
+public type EmitLlUnaryClosure = |i32| -> i32
+
+public type EmitLlPositiveI32 = i32 |: { self >= 0 }
+
+public record EmitLlPaddedRecord {
+    public flag: bool
+    public count: i32
+}
+
+public record EmitLlPermissionAdmissibilityRecord {
+    public value: i32
+
+    public procedure readValue(~) -> i32 {
+        return self.value
+    }
+
+    public procedure replaceValue(~!, value: i32) -> i32 {
+        self.value = value
+        return self.value
+    }
+}
+
+public enum EmitLlTaggedEnum {
+    Empty
+    Count(i32)
+    Named { value: i32, is_ready: bool }
+}
+
+public enum EmitLlValueBitsEnum {
+    Empty
+    TupleCase(i8, i64)
+    RecordCase { flag: bool, count: i64 }
+}
+
+public class EmitLlDynamicReadable {
+    public procedure readValue(~) -> i32
+
+    public procedure shiftedValue(~, delta: i32) -> i32
+}
+
+public record EmitLlDynamicOwner <: EmitLlDynamicReadable {
+    public value: i32
+
+    public procedure readValue(~) -> i32 {
+        return self.value
+    }
+
+    public procedure shiftedValue(~, delta: i32) -> i32 {
+        return self.value + delta
+    }
+}
+
+public class EmitLlDynamicDefaultReadable {
+    public procedure defaultValue(~) -> i32 {
+        return 17
+    }
+}
+
+public record EmitLlDynamicDefaultOwner <: EmitLlDynamicDefaultReadable {
+    public value: i32
+}
+
+public class EmitLlFirstMethodPrimary {
+    public procedure selectedFirstMethod(~) -> i32 {
+        return 31
+    }
+}
+
+public class EmitLlFirstMethodDuplicate {
+    public procedure selectedFirstMethod(~) -> i32 {
+        return 37
+    }
+}
+
+public class EmitLlFirstMethodSelection <:
+    EmitLlFirstMethodPrimary +
+    EmitLlFirstMethodDuplicate {
+}
+
+public class EmitLlFirstFieldPrimary {
+    public first_field_value: i32
+}
+
+public class EmitLlFirstFieldDuplicate {
+    public first_field_value: i32
+}
+
+public class EmitLlFirstFieldSelection <:
+    EmitLlFirstFieldPrimary +
+    EmitLlFirstFieldDuplicate {
+    public procedure selectedFirstField(~) -> i32 {
+        return self.first_field_value
+    }
+}
+
+public record EmitLlFirstFieldOwner <: EmitLlFirstFieldSelection {
+    public first_field_value: i32
+}
+
+public class EmitLlRuntimeSilentClass {
+}
+
+public class EmitLlAssociatedCarrierClass {
+    public type ErasedAssocItem
+
+    public procedure associatedCarrier(~, value: Self::ErasedAssocItem) -> Self::ErasedAssocItem
+}
+
+public record EmitLlAssociatedOwner <: EmitLlAssociatedCarrierClass {
+    public type ErasedAssocItem = i32
+
+    public value: i32
+
+    public procedure associatedCarrier(~, value: i32) -> i32 {
+        return self.value + value
+    }
+}
+
+public class EmitLlOpaqueReadableClass {
+    public procedure readOpaqueValue(~) -> i32
+}
+
+public record EmitLlOpaqueOwner <: EmitLlOpaqueReadableClass {
+    public value: i32
+
+    public procedure readOpaqueValue(~) -> i32 {
+        return self.value
+    }
+}
+
+public record EmitLlHashLawValue <: Eq, Hash {
+    public value: i32
+
+    public procedure eq(~, other: const EmitLlHashLawValue) -> bool {
+        return self.value == other.value
+    }
+
+    public procedure hash(~, hasher: unique $Hasher) -> () {
+        hasher~>write(bytes::view_string("EmitLlHashLawValue"))
+        return ()
+    }
+}
+
+public record EmitLlFnvHasher <: Hasher {
+    public state: u64
+
+    public procedure write(~!, data: bytes@View) -> () {
+        let data_slice: const [u8] = bytes::as_slice(data)
+        var index: usize = 0usize
+        loop index < bytes::length(data) {
+            self.state = (self.state ^ (data_slice[index] as u64)) * 1099511628211u64
+            index = index + 1usize
+        }
+        return ()
+    }
+
+    public procedure finish(~) -> u64 {
+        return self.state
+    }
+}
+
+public modal EmitLlNicheModal {
+    @Absent {}
+
+    @Present {
+        public pointer: Ptr<i32>@Valid
+    }
+}
+
+public modal EmitLlTaggedModal {
+    @Empty {}
+
+    @Small {
+        public value: i32
+
+        public procedure readValue(~) -> i32 {
+            return self.value
+        }
+
+        public transition finishWide(right: i32) -> @Wide {
+            return EmitLlTaggedModal@Wide {
+                left: self.value as i64,
+                right: right
+            }
+        }
+    }
+
+    @Wide {
+        public left: i64
+        public right: i32
+    }
+}
+
 public procedure emitLlLibraryValue() -> i32 {
     return 11
+}
+
+public procedure emitLlConstBytesEncodingProbe() -> i32 {
+    let empty_value: () = EMIT_LL_CONST_BYTES_UNIT
+    let empty_size: usize = sizeof(())
+    let empty_text: bytes@View = bytes::view_string("")
+    let empty_text_size: usize = bytes::length(empty_text)
+    if EMIT_LL_CONST_BYTES_NULL == null && EMIT_LL_CONST_BYTES_FLOAT > 6.0f64 {
+        return EMIT_LL_CONST_BYTES_INT
+    }
+    return (empty_size + empty_text_size) as i32
+}
+
+internal procedure emitLlCleanupNoop() -> () {
+}
+
+public procedure emitLlLocalDropCleanupProbe(value: i32) -> i32 {
+    let payload: EmitLlCleanupProbe =
+        EmitLlCleanupProbe { owned_value: 0, visible_value: value }
+    return payload.visible_value
+}
+
+public procedure emitLlStaticCleanupProbe() -> i32 {
+    return EMIT_LL_STATIC_CLEANUP_PROBE.visible_value
+}
+
+public procedure emitLlDeferCleanupProbe(value: i32) -> i32 {
+    defer {
+        emitLlCleanupNoop()
+    }
+    return value
+}
+
+public procedure emitLlAssociatedTypeErasureProbe(value: i32) -> i32 {
+    let owner: EmitLlAssociatedOwner = EmitLlAssociatedOwner { value: 13 }
+    return owner~>associatedCarrier(value)
+}
+
+public procedure emitLlOpaqueConcreteReturnProbe(value: i32) -> opaque EmitLlOpaqueReadableClass {
+    return EmitLlOpaqueOwner { value: value }
+}
+
+public procedure emitLlOpaqueConcreteProjectProbe(
+    value: opaque EmitLlOpaqueReadableClass
+) -> i32 {
+    return value~>readOpaqueValue()
+}
+
+public procedure emitLlPrimitiveTypeProbe(value: i32) -> i32 {
+    return value
+}
+
+public procedure emitLlAliasTypeProbe(value: EmitLlAlias) -> EmitLlAlias {
+    return value
+}
+
+public procedure emitLlRefinementTypeProbe(value: EmitLlPositiveI32) -> i32 {
+    return value
+}
+
+public procedure emitLlRecordTypeProbe(flag: bool, count: i32) -> EmitLlPaddedRecord {
+    return EmitLlPaddedRecord {
+        flag: flag,
+        count: count
+    }
+}
+
+public procedure emitLlPermissionLayoutProbe(value: const EmitLlPaddedRecord) -> usize {
+    return sizeof(EmitLlPaddedRecord) +
+        alignof(EmitLlPaddedRecord) +
+        sizeof(const EmitLlPaddedRecord) +
+        alignof(const EmitLlPaddedRecord) +
+        sizeof(shared EmitLlPaddedRecord) +
+        alignof(shared EmitLlPaddedRecord) +
+        sizeof(unique EmitLlPaddedRecord) +
+        alignof(unique EmitLlPaddedRecord)
+}
+
+public procedure emitLlPermissionAdmissibilityReceiverProbe(
+    value: unique EmitLlPermissionAdmissibilityRecord
+) -> i32 {
+    let observed: i32 = value~>readValue()
+    return value~>replaceValue(observed + 1)
+}
+
+public procedure emitLlTupleTypeProbe(value: i32, flag: bool) -> (i32, bool) {
+    return (value, flag)
+}
+
+public procedure emitLlTupleValueBitsConsume(value: (i8, i64)) -> i64 {
+    return value.1
+}
+
+public procedure emitLlTupleValueBitsProbe(seed: i8) -> i64 {
+    return emitLlTupleValueBitsConsume((seed, 37 as i64))
+}
+
+public procedure emitLlPrimitiveValueBitsConsume(value: (bool, char, (), i32, f64)) -> i32 {
+    if value.0 && value.1 == 'Q' && value.4 > 2.0f64 {
+        return value.3
+    }
+    return 0
+}
+
+public procedure emitLlPrimitiveValueBitsProbe() -> i32 {
+    let raw_null: *mut i32 = null
+    if raw_null == null {
+        return emitLlPrimitiveValueBitsConsume((true, 'Q', (), 19, 2.5f64))
+    }
+    return 0
+}
+
+public procedure emitLlNeverReturnTypeProbe(
+    context: EmitLlSystemExitContext,
+    code: i32
+) -> ! {
+    return context.sys~>exit(code)
+}
+
+public procedure emitLlPermissionValueBitsConsume(value: (const i32, bool)) -> i32 {
+    if value.1 {
+        return value.0
+    }
+    return 0
+}
+
+public procedure emitLlPermissionValueBitsProbe() -> i32 {
+    return emitLlPermissionValueBitsConsume((23, true))
+}
+
+public procedure emitLlEnumValueBitsConsume(value: EmitLlValueBitsEnum) -> i64 {
+    return if value is {
+        EmitLlValueBitsEnum::Empty {
+            0 as i64
+        }
+        EmitLlValueBitsEnum::TupleCase(seed_value, payload_value) {
+            payload_value + (seed_value as i64) - (seed_value as i64)
+        }
+        EmitLlValueBitsEnum::RecordCase {
+            flag: is_ready,
+            count: payload_value
+        } {
+            if is_ready { payload_value } else { payload_value - 1 }
+        }
+    }
+}
+
+public procedure emitLlEnumValueBitsUnitProbe() -> i64 {
+    return emitLlEnumValueBitsConsume(EmitLlValueBitsEnum::Empty)
+}
+
+public procedure emitLlEnumValueBitsTupleProbe(seed: i8) -> i64 {
+    return emitLlEnumValueBitsConsume(EmitLlValueBitsEnum::TupleCase(seed, 41 as i64))
+}
+
+public procedure emitLlEnumValueBitsRecordProbe(flag: bool) -> i64 {
+    return emitLlEnumValueBitsConsume(EmitLlValueBitsEnum::RecordCase {
+        flag: flag,
+        count: 43 as i64
+    })
+}
+
+public procedure emitLlArrayTypeProbe() -> [i32; 4] {
+    return [1, 2, 3, 4]
+}
+
+public procedure emitLlSliceTypeProbe(values: [i32]) -> usize {
+    return sizeof([i32])
+}
+
+public procedure emitLlRangeTypeProbe(value: Range<usize>) -> Range<usize> {
+    return value
+}
+
+public procedure emitLlRangeInclusiveTypeProbe(
+    value: RangeInclusive<usize>
+) -> RangeInclusive<usize> {
+    return value
+}
+
+public procedure emitLlRangeFromTypeProbe(value: RangeFrom<usize>) -> RangeFrom<usize> {
+    return value
+}
+
+public procedure emitLlRangeToTypeProbe(value: RangeTo<usize>) -> RangeTo<usize> {
+    return value
+}
+
+public procedure emitLlRangeToInclusiveTypeProbe(
+    value: RangeToInclusive<usize>
+) -> RangeToInclusive<usize> {
+    return value
+}
+
+public procedure emitLlRangeFullTypeProbe(value: RangeFull) -> RangeFull {
+    return value
+}
+
+public procedure emitLlRangeLowerOptProbe() -> usize {
+    let full: RangeFull = ..
+    let from_start: RangeFrom<usize> = 1usize..
+    let to_end: RangeTo<usize> = ..3usize
+    let to_inclusive_end: RangeToInclusive<usize> = ..=4usize
+    let exclusive: Range<usize> = 1usize..5usize
+    let inclusive: RangeInclusive<usize> = 2usize..=6usize
+    return sizeof(RangeFull) +
+        sizeof(RangeFrom<usize>) +
+        sizeof(RangeTo<usize>) +
+        sizeof(RangeToInclusive<usize>) +
+        sizeof(Range<usize>) +
+        sizeof(RangeInclusive<usize>)
+}
+
+public procedure emitLlEnumTypeProbe(tagged: EmitLlTaggedEnum) -> i32 {
+    return if tagged is {
+        EmitLlTaggedEnum::Empty {
+            0
+        }
+        EmitLlTaggedEnum::Count(count) {
+            count
+        }
+        EmitLlTaggedEnum::Named { value, is_ready } {
+            if is_ready {
+                value
+            } else {
+                0
+            }
+        }
+    }
+}
+
+public procedure emitLlTaggedUnionTypeProbe(value: EmitLlTaggedUnion) -> i32 {
+    return if value is {
+        number: i32 {
+            number
+        }
+        flag: bool {
+            if flag {
+                1
+            } else {
+                0
+            }
+        }
+    }
+}
+
+public procedure emitLlNicheUnionTypeProbe(value: EmitLlNicheUnion) -> usize {
+    return sizeof(EmitLlNicheUnion)
+}
+
+public procedure emitLlClosureTypeProbe(callback: EmitLlUnaryClosure, value: i32) -> i32 {
+    return callback(value)
+}
+
+public procedure emitLlClosureEnvReferenceCaptureProbe(value: i32) -> i32 {
+    let left_bias: i32 = 7
+    let is_enabled: bool = true
+    let closure: EmitLlUnaryClosure = |input: i32| -> i32 {
+        if is_enabled {
+            return input + left_bias
+        }
+        return input
+    }
+    return closure(value)
+}
+
+public procedure emitLlClosureEnvEmptyProbe(value: i32) -> i32 {
+    let closure: EmitLlUnaryClosure = |input: i32| -> i32 input + 3
+    return closure(value)
+}
+
+public procedure emitLlClosureEnvMoveCaptureProbe(value: i32) -> i32 {
+    let captured: i32 = value + 4
+    let closure = || -> i32 move captured
+    return closure()
+}
+
+public procedure emitLlPipelineIncrement(value: i32) -> i32 {
+    return value + 1
+}
+
+public procedure emitLlPipelineFunctionProbe(value: i32) -> i32 {
+    return value => emitLlPipelineIncrement
+}
+
+public procedure emitLlPipelineClosureProbe(value: i32) -> i32 {
+    let bias: i32 = 5
+    let closure: EmitLlUnaryClosure = |input: i32| -> i32 input + bias
+    return value => closure
+}
+
+public procedure emitLlStringViewTypeProbe(text: string@View) -> usize {
+    return sizeof(string@View)
+}
+
+public procedure emitLlStringManagedTypeProbe(move text: unique string@Managed) -> usize {
+    return sizeof(string@Managed)
+}
+
+public procedure emitLlBytesViewTypeProbe(data: bytes@View) -> usize {
+    return sizeof(bytes@View)
+}
+
+public procedure emitLlBytesManagedTypeProbe(move data: unique bytes@Managed) -> usize {
+    return sizeof(bytes@Managed)
+}
+
+public procedure emitLlModalStringTypeProbe(text: string) -> usize {
+    return sizeof(string)
+}
+
+public procedure emitLlModalBytesTypeProbe(data: bytes) -> usize {
+    return sizeof(bytes)
+}
+
+public procedure emitLlNicheModalTypeProbe(value: EmitLlNicheModal) -> usize {
+    return sizeof(EmitLlNicheModal)
+}
+
+public procedure emitLlTaggedModalTypeProbe(value: EmitLlTaggedModal) -> usize {
+    return sizeof(EmitLlTaggedModal)
+}
+
+public procedure emitLlModalStateTypeProbe(value: EmitLlTaggedModal@Wide) -> i32 {
+    return value.right
+}
+
+public procedure emitLlNicheModalLayoutProbe(value: EmitLlNicheModal) -> i32 {
+    return if value is {
+        @Absent {
+            0
+        }
+        @Present { pointer } {
+            *pointer
+        }
+    }
+}
+
+public procedure emitLlTaggedModalLayoutProbe(value: EmitLlTaggedModal) -> i32 {
+    return if value is {
+        @Empty {
+            0
+        }
+        @Small { value: small_value } {
+            small_value
+        }
+        @Wide { left, right } {
+            (left as i32) + right
+        }
+    }
+}
+
+public procedure emitLlNicheModalWidenProbe(pointer: Ptr<i32>@Valid) -> i32 {
+    let present: EmitLlNicheModal@Present = EmitLlNicheModal@Present {
+        pointer: pointer
+    }
+    let general: EmitLlNicheModal = widen present
+    return emitLlNicheModalLayoutProbe(general)
+}
+
+public procedure emitLlNicheModalAbsentWidenProbe() -> i32 {
+    let absent: EmitLlNicheModal@Absent = EmitLlNicheModal@Absent {}
+    let general: EmitLlNicheModal = widen absent
+    return emitLlNicheModalLayoutProbe(general)
+}
+
+public procedure emitLlTaggedModalWidenProbe() -> i32 {
+    let wide: EmitLlTaggedModal@Wide = EmitLlTaggedModal@Wide {
+        left: 40,
+        right: 3
+    }
+    let general: EmitLlTaggedModal = widen wide
+    return emitLlTaggedModalLayoutProbe(general)
+}
+
+public procedure emitLlModalMethodAndTransitionParamsProbe() -> i32 {
+    let small_for_read: unique EmitLlTaggedModal@Small =
+        EmitLlTaggedModal@Small { value: 19 }
+    let read_value: i32 = small_for_read~>readValue()
+
+    let small_for_transition: unique EmitLlTaggedModal@Small =
+        EmitLlTaggedModal@Small { value: 23 }
+    let wide: EmitLlTaggedModal@Wide = small_for_transition~>finishWide(read_value)
+    return wide.right
+}
+
+public procedure emitLlDynamicTypeProbe(value: $EmitLlDynamicReadable) -> usize {
+    return sizeof($EmitLlDynamicReadable)
+}
+
+public procedure emitLlDynamicDispatchProbe(value: i32, delta: i32) -> i32 {
+    let owner: EmitLlDynamicOwner = EmitLlDynamicOwner { value: value }
+    let dynamic_owner: $EmitLlDynamicReadable = owner as $EmitLlDynamicReadable
+    return dynamic_owner~>readValue() + dynamic_owner~>shiftedValue(delta)
+}
+
+public procedure emitLlDynamicDefaultDispatchProbe(value: i32) -> i32 {
+    let owner: EmitLlDynamicDefaultOwner = EmitLlDynamicDefaultOwner { value: value }
+    let dynamic_owner: $EmitLlDynamicDefaultReadable =
+        owner as $EmitLlDynamicDefaultReadable
+    return dynamic_owner~>defaultValue()
+}
+
+public procedure emitLlHashRequiresEqProbe(value: i32) -> bool {
+    let left: EmitLlHashLawValue = EmitLlHashLawValue { value: value }
+    let right: EmitLlHashLawValue = EmitLlHashLawValue { value: value }
+    let first_hasher_owner: unique EmitLlFnvHasher =
+        EmitLlFnvHasher { state: 14695981039346656037u64 }
+    let second_hasher_owner: unique EmitLlFnvHasher =
+        EmitLlFnvHasher { state: 14695981039346656037u64 }
+    left~>hash(first_hasher_owner)
+    right~>hash(second_hasher_owner)
+    return left~>eq(right) &&
+        first_hasher_owner~>finish() == second_hasher_owner~>finish()
+}
+
+public procedure emitLlFoundationalEqIntrinsicProbe(left: i32, right: i32) -> bool {
+    return left~>eq(right)
+}
+
+public procedure emitLlFoundationalDiscreteIntrinsicProbe(value: i32) -> i32 {
+    let successor: i32 | () = value~>successor()
+    let predecessor: i32 | () = value~>predecessor()
+    let successor_value: i32 = if successor is {
+        next_value: i32 {
+            next_value
+        }
+        empty_value: () {
+            value
+        }
+    }
+    let predecessor_value: i32 = if predecessor is {
+        previous_value: i32 {
+            previous_value
+        }
+        empty_value: () {
+            value
+        }
+    }
+    return successor_value - predecessor_value
+}
+
+public procedure emitLlFirstFieldByNameProbe(value: i32) -> i32 {
+    let owner: EmitLlFirstFieldOwner = EmitLlFirstFieldOwner {
+        first_field_value: value
+    }
+    return owner~>selectedFirstField()
+}
+
+public procedure emitLlUnknownPointerAttrsProbe(pointer: Ptr<i32>) -> usize {
+    return sizeof(Ptr<i32>)
+}
+
+public procedure emitLlValidPointerAttrsProbe(pointer: Ptr<i32>@Valid) -> usize {
+    return sizeof(Ptr<i32>@Valid)
+}
+
+public procedure emitLlConstPointerArgAttrsProbe(pointer: const Ptr<i32>@Valid) -> usize {
+    return sizeof(const Ptr<i32>@Valid)
+}
+
+public procedure emitLlUniquePointerArgAttrsProbe(pointer: unique Ptr<i32>@Valid) -> usize {
+    return sizeof(unique Ptr<i32>@Valid)
+}
+
+public procedure emitLlPermissionAdmissibilityArgumentProbe(
+    pointer: unique Ptr<i32>@Valid
+) -> usize {
+    let const_size: usize = emitLlConstPointerArgAttrsProbe(pointer)
+    let unique_size: usize = emitLlUniquePointerArgAttrsProbe(pointer)
+    return const_size + unique_size
+}
+
+public procedure emitLlRawPointerAttrsProbe(pointer: *mut i32) -> usize {
+    return sizeof(*mut i32)
+}
+
+#export("C")
+#mangle("uv_emit_ll_raw_pointer_foreign_attrs_probe")
+public procedure emitLlRawPointerForeignAttrsProbe(pointer: *mut i32) -> usize {
+    return sizeof(*mut i32)
+}
+
+public procedure emitLlSelectedOverload(value: i32) -> i32 {
+    return value + 1
+}
+
+public procedure emitLlSelectedOverload(value: bool) -> i32 {
+    if value {
+        return 13
+    }
+
+    return 0
+}
+
+public procedure emitLlNoRuntimeOverloadSearchProbe(value: i32) -> i32 {
+    return emitLlSelectedOverload(value) + emitLlSelectedOverload(true)
+}
+
+#dynamic
+public procedure emitLlLoopInvariantRuntimeProbe(limit: i32) -> i32 {
+    var index: i32 = 0
+    loop index < limit |: { index >= 0 } {
+        index = index + 1
+        if index < 2 {
+            continue
+        }
+    }
+    return index
+}
+
+#dynamic
+public procedure emitLlDynamicProcedureContractProbe(value: i32) -> i32
+|: value >= 0 |= @result == @entry(value) + 1
+{
+    return value + 1
+}
+
+extern "C" {
+    #dynamic
+    public procedure emitLlDynamicForeignContract(value: i32) -> i32
+        |: @foreign_assumes(value >= 0)
+        |: @foreign_ensures(@result >= 0)
+
+    #dynamic
+    public procedure emitLlNullableForeignContract(value: i32) -> *mut i32
+        |: @foreign_ensures(@null_result: @result == null)
+
+    public procedure emitLlStaticForeignContract(value: i32) -> i32
+        |: @foreign_ensures(@result >= 0)
+}
+
+extern "C-unwind" {
+    #unwind("abort")
+    public procedure emitLlUnwindAbortImport(value: i32) -> i32
+
+    #unwind("catch")
+    public procedure emitLlUnwindCatchImport(value: i32) -> i32
+}
+
+public procedure emitLlDynamicForeignContractProbe(value: i32) -> i32 {
+    return unsafe { emitLlDynamicForeignContract(value) }
+}
+
+public procedure emitLlNullableForeignContractProbe(value: i32) -> *mut i32 {
+    return unsafe { emitLlNullableForeignContract(value) }
+}
+
+public procedure emitLlStaticForeignContractProbe() -> EmitLlPositiveI32 {
+    let result: i32 = unsafe { emitLlStaticForeignContract(1) }
+    let refined: EmitLlPositiveI32 = result
+    return refined
+}
+
+public procedure emitLlUnwindAbortImportProbe(value: i32) -> i32 {
+    return unsafe { emitLlUnwindAbortImport(value) }
+}
+
+public procedure emitLlUnwindCatchImportProbe(value: i32) -> i32 {
+    return unsafe { emitLlUnwindCatchImport(value) }
+}
+
+#export("C-unwind")
+#unwind("abort")
+#mangle("uv_emit_ll_unwind_abort_export_probe")
+#dynamic
+public procedure emitLlUnwindAbortExportProbe(index: usize) -> i32 {
+    let values: [i32; 1] = [17]
+    return values[index]
+}
+
+#export("C-unwind")
+#unwind("catch")
+#mangle("uv_emit_ll_unwind_catch_export_probe")
+#dynamic
+public procedure emitLlUnwindCatchExportProbe(index: usize) -> i32 {
+    let values: [i32; 1] = [19]
+    return values[index]
+}
+
+#export("C")
+#mangle("uv_emit_ll_foreign_byref_record_probe")
+public procedure emitLlForeignByRefRecordProbe(payload: EmitLlForeignByRefRecord) -> u64 {
+    return payload.first
+}
+
+#export("C")
+#mangle("uv_emit_ll_dropping_by_value_probe")
+public procedure emitLlDroppingByValueProbe(
+    payload: EmitLlDroppingFfiByValueRecord
+) -> i32 {
+    return 31
+}
+
+#export("C")
+#mangle("uv_emit_ll_generic_ffi_box_probe")
+public procedure emitLlGenericFfiBoxProbe(payload: EmitLlGenericFfiBox<i32>) -> i32 {
+    return payload.value
+}
+
+#export("C-unwind")
+#unwind("catch")
+#mangle("uv_emit_ll_raw_catch_return_probe")
+public procedure emitLlRawCatchReturnProbe(value: i32) -> i32 {
+    return value
+}
+
+public procedure emitLlNullPointerConstructorProbe() -> Ptr<i32> {
+    return Ptr::null()
+}
+
+public procedure emitLlExpiredPointerConstructorProbe(
+    pointer: Ptr<i32>@Expired
+) -> Ptr<i32>@Expired {
+    return pointer
+}
+
+public procedure emitLlSafePointerReadProbe(pointer: Ptr<i32>@Valid) -> i32 {
+    return *pointer
+}
+
+public procedure emitLlSafePointerWriteProbe(
+    pointer: Ptr<i32>@Valid,
+    value: i32
+) -> i32 {
+    *pointer = value
+    return value
+}
+
+public procedure emitLlSafePointerNullReadProbe(pointer: Ptr<i32>) -> i32 {
+    return *pointer
+}
+
+public procedure emitLlSafePointerNullWriteProbe(pointer: Ptr<i32>, value: i32) -> i32 {
+    *pointer = value
+    return value
+}
+
+public procedure emitLlRawPointerReadProbe(pointer: *mut i32) -> i32 {
+    return unsafe { *pointer }
+}
+
+public procedure emitLlRawPointerWriteProbe(pointer: *mut i32, value: i32) -> i32 {
+    unsafe {
+        *pointer = value
+    }
+    return value
+}
+
+public procedure emitLlConstFunctionArgAttrsProbe(callback: const () -> i32) -> usize {
+    return sizeof(const () -> i32)
 }
 
 public procedure emitLlSRetPair(left: string@View, right: string@View) -> EmitLlSRetPair {

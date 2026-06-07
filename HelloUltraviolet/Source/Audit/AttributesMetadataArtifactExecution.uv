@@ -1,0 +1,390 @@
+//! Attribute and metadata artifact execution checks.
+
+internal procedure attributesMetadataArtifactConformanceLineContains(
+    authority: TestAuthority,
+    required_marker: string@View,
+    required_payload: string@View
+) -> bool {
+    return acceptedProjectConformanceLineContains(
+        authority,
+        "AttributeSemanticsBuild",
+        "attributes.conformance.log",
+        required_marker,
+        required_payload
+    )
+}
+
+internal procedure attributesMetadataArtifactIrContains(
+    authority: TestAuthority,
+    required_text: string@View
+) -> bool {
+    return acceptedProjectTempFileContains(
+        authority,
+        "AttributeSemanticsBuild",
+        "Intermediate/IR/Source/AttributeSemantics.ll",
+        required_text
+    )
+}
+
+internal procedure attributesMetadataLayoutEvidenceMatches(
+    authority: TestAuthority
+) -> bool {
+    return attributesMetadataArtifactConformanceLineContains(
+        authority,
+        "\tgrammar.LayoutAttributeSyntax\t",
+        "source%3DParseAttributeItem%3Bparser%3Dattribute_list%3B"
+    ) &&
+        attributesMetadataArtifactConformanceLineContains(
+            authority,
+            "\treq.LayoutAttributeParserReuse\t",
+            "ast_attachment%3Dtrue"
+        ) &&
+        attributesMetadataArtifactConformanceLineContains(
+            authority,
+            "\tdef.LayoutAttributeAstAttachment\t",
+            "ast_attachment%3Dtrue"
+        ) &&
+        attributesMetadataArtifactConformanceLineContains(
+            authority,
+            "\treq.LayoutExplicitEnumDiscriminant\t",
+            "source%3DEnumLayoutOf%3Bvariants%3D2%3Bdisc_type%3Du8%3B"
+        ) &&
+        attributesMetadataArtifactConformanceLineContains(
+            authority,
+            "\treq.LayoutPackedRecordSemantics\t",
+            "source%3DRecordLayoutOf%3Bfields%3D2%3Bpacked%3Dtrue%3B"
+        ) &&
+        attributesMetadataArtifactConformanceLineContains(
+            authority,
+            "\treq.LayoutAlignSemantics\t",
+            "source%3DRecordLayoutOf%3Bfields%3D1%3Bpacked%3Dfalse%3Bmin_align%3D16"
+        ) &&
+        attributesMetadataArtifactConformanceLineContains(
+            authority,
+            "\tdef.ValidLayoutAttributeCombinations\t",
+            "source%3DRecordLayoutOf%3Bfields%3D2%3Bpacked%3Dtrue"
+        ) &&
+        attributesMetadataArtifactConformanceLineContains(
+            authority,
+            "\tconformance.LayoutAttributeDynamicSemantics\t",
+            "runtime%3Dnone%3Bstatic_only%3Dtrue"
+        ) &&
+        attributesMetadataArtifactConformanceLineContains(
+            authority,
+            "\tconformance.LayoutAttributeLowering\t",
+            "lowering%3Drecord-layout"
+        ) &&
+        attributesMetadataArtifactConformanceLineContains(
+            authority,
+            "\tconformance.LayoutAttributeLowering\t",
+            "lowering%3Denum-layout"
+        )
+}
+
+internal procedure attributesMetadataOptimizationEvidenceMatches(
+    authority: TestAuthority
+) -> bool {
+    return attributesMetadataArtifactConformanceLineContains(
+        authority,
+        "\tconformance.OptimizationAttributeLowering\t",
+        "symbol%3DAttributeSemantics_x3a_x3aattributeNeverInlineValue%3B"
+    ) &&
+        attributesMetadataArtifactConformanceLineContains(
+            authority,
+            "\tconformance.OptimizationAttributeLowering\t",
+            "inline_mode%3Dnever%3Bcold%3Dfalse%3Bllvm_alwaysinline%3Dfalse%3B"
+        ) &&
+        attributesMetadataArtifactConformanceLineContains(
+            authority,
+            "\tconformance.OptimizationAttributeLowering\t",
+            "llvm_noinline%3Dtrue%3Bllvm_cold%3Dfalse%3Bbody_emitted%3Dtrue"
+        ) &&
+        attributesMetadataArtifactConformanceLineContains(
+            authority,
+            "\tconformance.OptimizationAttributeLowering\t",
+            "symbol%3DAttributeSemantics_x3a_x3aattributeColdValue%3B"
+        ) &&
+        attributesMetadataArtifactConformanceLineContains(
+            authority,
+            "\tconformance.OptimizationAttributeLowering\t",
+            "cold%3Dtrue%3Bllvm_alwaysinline%3Dfalse%3Bllvm_noinline%3Dfalse%3B"
+        ) &&
+        attributesMetadataArtifactConformanceLineContains(
+            authority,
+            "\tconformance.OptimizationAttributeLowering\t",
+            "llvm_cold%3Dtrue%3Bbody_emitted%3Dtrue"
+        ) &&
+        attributesMetadataArtifactIrContains(
+            authority,
+            "define i32 @AttributeSemantics_x3a_x3aattributeNeverInlineValue"
+        ) &&
+        attributesMetadataArtifactIrContains(
+            authority,
+            "define i32 @AttributeSemantics_x3a_x3aattributeColdValue"
+        )
+}
+
+#test(name: "attributes metadata artifact obligations exercise real lowering")
+internal procedure attributesMetadataArtifactObligationsExecute(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+
+    if !artifactProjectRunCase(
+        authority,
+        "Fixtures/ArtifactProjects/AttributeSemantics",
+        authority.target_profile,
+        "off",
+        "AttributeSemantics.out",
+        "AttributeSemantics.err",
+        "AttributeSemanticsBuild",
+        "attributes.conformance.log"
+    ) {
+        return false
+    }
+
+    return acceptedProjectTempFileExists(
+        authority,
+        "AttributeSemanticsBuild",
+        "Intermediate/IR/Source/AttributeSemantics.ll"
+    ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "AttributeSemanticsBuild",
+            "Intermediate/Obj/Source/AttributeSemantics.obj"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "AttributeSemanticsBuild",
+            "Library/AttributeSemantics.lib"
+        ) &&
+        attributesMetadataLayoutEvidenceMatches(authority) &&
+        attributesMetadataOptimizationEvidenceMatches(authority)
+}
+
+internal procedure attributesMetadataRunTestCommand(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    target_profile: string@View,
+    test_name: string@View,
+    output_path: string@View,
+    error_path: string@View,
+    out_dir_path: string@View,
+    conformance_log_name: string@View
+) -> i32 {
+    let created: Outcome<unique string@Managed, AllocationError> =
+        string::from("", authority.heap)
+    return if move created is {
+        @Value { value } {
+            var command_ready: bool =
+                outputDiagnosticAppendCommandStart(value, authority)
+            command_ready =
+                diagnosticAppendText(value, " test ", authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendQuotedProjectPath(value, authority, fixture_path) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, " --target-profile ", authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, target_profile, authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, " --test ", authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendQuoted(value, test_name, authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(
+                    value,
+                    " --build-progress off --out-dir ",
+                    authority.heap
+                ) && command_ready
+            command_ready =
+                diagnosticAppendQuoted(value, out_dir_path, authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, " --conformance ", authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, conformance_log_name, authority.heap) &&
+                command_ready
+            if command_ready {
+                outputDiagnosticRunCommand(
+                    authority,
+                    value,
+                    output_path,
+                    error_path
+                )
+            } else {
+                -1
+            }
+        }
+        @Error {
+            -1
+        }
+    }
+}
+
+internal procedure attributesMetadataRunTestCaseWithPaths(
+    authority: TestAuthority,
+    output_path: string@View,
+    error_path: string@View,
+    out_dir_path: string@View
+) -> bool {
+    let _ = authority.io~>remove(output_path)
+    let _ = authority.io~>remove(error_path)
+    let _ = authority.io~>ensure_dir(out_dir_path)
+    let status: i32 = attributesMetadataRunTestCommand(
+        authority,
+        "Fixtures/ArtifactProjects/AttributeTestHarness",
+        authority.target_profile,
+        "attribute harness generation fixture",
+        output_path,
+        error_path,
+        out_dir_path,
+        "attributes_test_harness.conformance.log"
+    )
+    if status != 0 {
+        return diagnosticReportFixtureFailure(
+            authority,
+            "attribute test harness run failed: ",
+            "Fixtures/ArtifactProjects/AttributeTestHarness"
+        )
+    }
+    return true
+}
+
+internal procedure attributesMetadataRunTestCase(authority: TestAuthority) -> bool {
+    let output_created: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move output_created is {
+        @Value { value: output_path } {
+            let error_created: Outcome<unique string@Managed, AllocationError> =
+                string::from(authority.temporary_directory, authority.heap)
+            if move error_created is {
+                @Value { value: error_path } {
+                    let out_dir_created: Outcome<unique string@Managed, AllocationError> =
+                        string::from(authority.temporary_directory, authority.heap)
+                    if move out_dir_created is {
+                        @Value { value: out_dir_path } {
+                            if !diagnosticBuildPath(
+                                output_path,
+                                "AttributeTestHarness.out",
+                                authority.heap
+                            ) ||
+                                !diagnosticBuildPath(
+                                    error_path,
+                                    "AttributeTestHarness.err",
+                                    authority.heap
+                                ) ||
+                                !diagnosticBuildPath(
+                                    out_dir_path,
+                                    "AttributeTestHarnessRun",
+                                    authority.heap
+                                ) {
+                                false
+                            } else {
+                                attributesMetadataRunTestCaseWithPaths(
+                                    authority,
+                                    string::as_view(output_path),
+                                    string::as_view(error_path),
+                                    string::as_view(out_dir_path)
+                                )
+                            }
+                        }
+                        @Error {
+                            false
+                        }
+                    }
+                }
+                @Error {
+                    false
+                }
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure attributesSourceNativeHarnessConformanceLineContains(
+    authority: TestAuthority,
+    required_payload: string@View
+) -> bool {
+    return acceptedProjectConformanceLineContains(
+        authority,
+        "AttributeTestHarnessRun",
+        "attributes_test_harness.conformance.log",
+        "\tlowering.TestHarnessGeneration\t",
+        required_payload
+    )
+}
+
+#test(name: "attributes source-native harness generation emits real harness artifact")
+internal procedure attributesSourceNativeHarnessGenerationExecute(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+
+    if !attributesMetadataRunTestCase(authority) {
+        return false
+    }
+
+    return acceptedProjectTempFileExists(
+        authority,
+        "AttributeTestHarnessRun",
+        "Tests/AttributeTestHarness/Source/Main.uv"
+    ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AttributeTestHarnessRun",
+            "Tests/AttributeTestHarness/Source/Main.uv",
+            "public procedure main(context: Context) -> i32"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AttributeTestHarnessRun",
+            "Tests/AttributeTestHarness/Source/Main.uv",
+            "let authority: TestAuthority = TestAuthority"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AttributeTestHarnessRun",
+            "Tests/AttributeTestHarness/Source/Main.uv",
+            "time: context.time"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AttributeTestHarnessRun",
+            "Tests/AttributeTestHarness/Source/Main.uv",
+            "AttributeTestHarness::Tests::attributeHarnessRecordsAuthority(authority)"
+        ) &&
+        attributesSourceNativeHarnessConformanceLineContains(
+            authority,
+            "source%3DBuildAndRunSourceNativeTestHarness%3Bassembly%3DAttributeTestHarness"
+        ) &&
+        attributesSourceNativeHarnessConformanceLineContains(
+            authority,
+            "selected_tests%3D1%3Bharness_module%3DAttributeTestHarness::Tests::GeneratedHarness"
+        ) &&
+        attributesSourceNativeHarnessConformanceLineContains(
+            authority,
+            "ephemeral%3Dtrue%3Bcompiled_with_harness_entrypoint%3Dtrue"
+        )
+}

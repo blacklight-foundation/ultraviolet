@@ -1,38 +1,456 @@
 //! Reference specimens for Authority / Capabilities.
 
-internal enum CapabilityReferenceKind {
-    IO
-    Network
-    HeapAllocator
-    Reactor
-    ExecutionDomain
-    System
+internal record CapabilityNominalCarrier {
+    internal io: $IO
 }
 
-internal record CapabilityReference {
-    internal kind: CapabilityReferenceKind
-    internal explicit_parameter: bool
+internal record CapabilityAppliedCarrier<TValue> {
+    internal value: TValue
 }
 
-internal procedure capabilityReference(
-    kind: CapabilityReferenceKind,
-    explicit_parameter: bool
-) -> CapabilityReference {
-    return CapabilityReference {
-        kind: kind,
-        explicit_parameter: explicit_parameter
+internal record CapabilityCompositeCarrier {
+    internal io: $IO
+    internal net: $Network
+    internal heap: $HeapAllocator
+    internal reactor: $Reactor
+    internal sys: System
+    internal time: $Time
+    internal domain: $ExecutionDomain
+}
+
+internal enum CapabilityEnumCarrier {
+    Io($IO)
+    System(System)
+}
+
+internal modal CapabilityModalCarrier {
+    @Empty {}
+
+    @Io {
+        internal io: $IO
     }
 }
 
-internal procedure capabilityHasAuthority(reference: CapabilityReference) -> bool {
-    return reference.explicit_parameter
+internal record CapabilityRecursiveCarrier {
+    internal io: $IO
+    internal next: *mut CapabilityRecursiveCarrier
+}
+
+internal type CapabilityIOAlias = $IO
+
+internal procedure capabilityIOCanObserve(io: $IO) -> bool {
+    return io~>exists("HelloUltraviolet")
+}
+
+internal procedure capabilityIOCanAttenuate(io: $IO) -> bool {
+    let child_observed: bool = {
+        let restricted: $IO = io~>restrict("HelloUltraviolet")
+        restricted~>exists("Source") &&
+            !restricted~>exists("../README.md")
+    }
+    return child_observed && capabilityIOCanObserve(io)
+}
+
+internal procedure capabilityNetworkCanAttenuate(net: $Network) -> bool {
+    let child_observed: bool = {
+        let restricted: $Network = net~>restrict_to_host("localhost")
+        let _ = restricted~>restrict_to_host("localhost")
+        true
+    }
+    let _ = net~>restrict_to_host("localhost")
+    return child_observed
+}
+
+internal procedure capabilityHeapCanAttenuate(heap: $HeapAllocator) -> bool {
+    let child_observed: bool = {
+        let limited: $HeapAllocator = heap~>with_quota(64usize)
+        let nested: $HeapAllocator = limited~>with_quota(32usize)
+        let _ = nested~>with_quota(16usize)
+        true
+    }
+    let _ = heap~>with_quota(64usize)
+    return child_observed
+}
+
+internal procedure capabilityReactorCanTrack(reactor: $Reactor) -> bool {
+    let tracked: Tracked<i32, bool> =
+        reactor~>register(capabilityFutureValue(17))
+    let result: i32 | bool = wait tracked
+    return capabilityUnionI32Is(result, 17)
+}
+
+internal procedure capabilitySystemCanObserve(sys: System) -> bool {
+    return string::length(sys~>current_directory()) > 0usize
+}
+
+internal procedure capabilityMonotonicCanAttenuate(clock: $MonotonicTime) -> bool {
+    let resolution: Duration = clock~>resolution()
+    let child_observed: bool = {
+        let coarsened: Outcome<$MonotonicTime, TimeError> =
+            clock~>coarsen(resolution)
+        if coarsened is {
+            @Value {
+                true
+            }
+            @Error {
+                false
+            }
+        }
+    }
+    return child_observed && clock~>resolution().nanoseconds > 0u128
+}
+
+internal procedure capabilityWallCanAttenuate(
+    clock: $WallTime,
+    resolution: Duration
+) -> bool {
+    let child_observed: bool = {
+        let coarsened: Outcome<$WallTime, TimeError> = clock~>coarsen(resolution)
+        if coarsened is {
+            @Value {
+                true
+            }
+            @Error {
+                false
+            }
+        }
+    }
+    return child_observed &&
+        if clock~>resolution() is {
+            @Value { value } {
+                value.nanoseconds > 0u128
+            }
+            @Error {
+                false
+            }
+        }
+}
+
+internal procedure capabilityTimeCanAttenuate(time: $Time) -> bool {
+    let monotonic: $MonotonicTime = time~>monotonic()
+    let wall: $WallTime = time~>wall()
+    let resolution: Duration = monotonic~>resolution()
+    return capabilityMonotonicCanAttenuate(monotonic) &&
+        capabilityWallCanAttenuate(wall, resolution) &&
+        if wall~>resolution() is {
+            @Value { value } {
+                value.nanoseconds > 0u128
+            }
+            @Error {
+                false
+            }
+        }
+}
+
+internal procedure capabilityDomainCanObserve(domain: $ExecutionDomain) -> bool {
+    return string::length(domain~>name()) > 0usize &&
+        domain~>max_concurrency() > 0usize
+}
+
+internal procedure capabilityContextAttenuationOperations(context: Context) -> bool {
+    let inline_domain: $ExecutionDomain = context~>inline()
+    let cpu_domain: $ExecutionDomain = context~>cpu()
+    let gpu_domain: $ExecutionDomain = context~>gpu()
+    return capabilityDomainCanObserve(inline_domain) &&
+        capabilityDomainCanObserve(cpu_domain) &&
+        capabilityDomainCanObserve(gpu_domain)
+}
+
+internal procedure capabilityFutureValue(value: i32) -> Future<i32, bool> {
+    return value
+}
+
+internal procedure capabilityUnionI32Is(value: i32 | bool, expected: i32) -> bool {
+    return if value is {
+        actual: i32 {
+            actual == expected
+        }
+        _: bool {
+            false
+        }
+    }
+}
+
+internal procedure capabilityFromContext(context: Context) -> bool {
+    return capabilityIOCanObserve(context.io) &&
+        capabilityIOCanAttenuate(context.io) &&
+        capabilityNetworkCanAttenuate(context.net) &&
+        capabilityHeapCanAttenuate(context.heap) &&
+        capabilityReactorCanTrack(context.reactor) &&
+        capabilitySystemCanObserve(context.sys) &&
+        capabilityTimeCanAttenuate(context.time) &&
+        capabilityDomainCanObserve(context~>inline()) &&
+        capabilityContextAttenuationOperations(context)
+}
+
+internal procedure capabilityFromPermission(io: const $IO) -> bool {
+    return capabilityIOCanObserve(io)
+}
+
+internal procedure capabilityFromTuple(carrier: ($IO, i32)) -> bool {
+    return capabilityIOCanObserve(carrier.0) && carrier.1 == 11
+}
+
+internal procedure capabilityFromArray(carrier: [$IO; 1]) -> bool {
+    return capabilityIOCanObserve(carrier[0usize])
+}
+
+internal procedure capabilityFromSlice(carrier: [$IO]) -> bool {
+    return capabilityIOCanObserve(carrier[0usize])
+}
+
+internal procedure capabilityFromNominal(carrier: CapabilityNominalCarrier) -> bool {
+    return capabilityIOCanObserve(carrier.io)
+}
+
+internal procedure capabilityFromAlias(io: CapabilityIOAlias) -> bool {
+    return capabilityIOCanObserve(io)
+}
+
+internal procedure capabilityFromApplied(
+    carrier: CapabilityAppliedCarrier<$IO>
+) -> bool {
+    return capabilityIOCanObserve(carrier.value)
+}
+
+internal procedure capabilityFromUnion(value: $IO | System) -> bool {
+    return if value is {
+        io: $IO {
+            capabilityIOCanObserve(io)
+        }
+        sys: System {
+            capabilitySystemCanObserve(sys)
+        }
+    }
+}
+
+internal procedure capabilityFromEnum(value: CapabilityEnumCarrier) -> bool {
+    return if value is {
+        CapabilityEnumCarrier::Io(io) {
+            capabilityIOCanObserve(io)
+        }
+        CapabilityEnumCarrier::System(sys) {
+            capabilitySystemCanObserve(sys)
+        }
+    }
+}
+
+internal procedure capabilityFromModal(value: CapabilityModalCarrier@Io) -> bool {
+    return capabilityIOCanObserve(value.io)
+}
+
+internal procedure capabilityFromRecursiveNominal(
+    carrier: CapabilityRecursiveCarrier
+) -> bool {
+    return carrier.next == null && capabilityIOCanObserve(carrier.io)
+}
+
+internal procedure capabilityFromComposite(carrier: CapabilityCompositeCarrier) -> bool {
+    return capabilityIOCanObserve(carrier.io) &&
+        capabilityNetworkCanAttenuate(carrier.net) &&
+        capabilityHeapCanAttenuate(carrier.heap) &&
+        capabilityReactorCanTrack(carrier.reactor) &&
+        capabilitySystemCanObserve(carrier.sys) &&
+        capabilityTimeCanAttenuate(carrier.time) &&
+        capabilityDomainCanObserve(carrier.domain)
+}
+
+internal procedure capabilityStructuralTypeRequirements(context: Context) -> bool {
+    let tuple_carrier: ($IO, i32) = (context.io, 11)
+    let array_carrier: [$IO; 1] = [context.io]
+    let slice_carrier: [$IO] = array_carrier[..]
+    let nominal_carrier: CapabilityNominalCarrier = CapabilityNominalCarrier {
+        io: context.io
+    }
+    let composite_carrier: CapabilityCompositeCarrier = CapabilityCompositeCarrier {
+        io: context.io,
+        net: context.net,
+        heap: context.heap,
+        reactor: context.reactor,
+        sys: context.sys,
+        time: context.time,
+        domain: context~>inline()
+    }
+    let union_io: $IO | System = context.io
+    let union_system: $IO | System = context.sys
+    let applied_carrier: CapabilityAppliedCarrier<$IO> =
+        CapabilityAppliedCarrier { value: context.io }
+    let enum_io: CapabilityEnumCarrier = CapabilityEnumCarrier::Io(context.io)
+    let enum_system: CapabilityEnumCarrier = CapabilityEnumCarrier::System(context.sys)
+    let modal_io: CapabilityModalCarrier@Io = CapabilityModalCarrier@Io {
+        io: context.io
+    }
+    let recursive_carrier: CapabilityRecursiveCarrier = CapabilityRecursiveCarrier {
+        io: context.io,
+        next: null
+    }
+
+    return capabilityFromPermission(context.io) &&
+        capabilityFromTuple(tuple_carrier) &&
+        capabilityFromArray(array_carrier) &&
+        capabilityFromSlice(slice_carrier) &&
+        capabilityFromNominal(nominal_carrier) &&
+        capabilityFromAlias(context.io) &&
+        capabilityFromApplied(applied_carrier) &&
+        capabilityFromUnion(union_io) &&
+        capabilityFromUnion(union_system) &&
+        capabilityFromEnum(enum_io) &&
+        capabilityFromEnum(enum_system) &&
+        capabilityFromModal(modal_io) &&
+        capabilityFromRecursiveNominal(recursive_carrier) &&
+        capabilityFromComposite(composite_carrier)
+}
+
+internal procedure capabilityDirectCallRequiresIO(io: $IO) -> bool {
+    return capabilityIOCanObserve(io)
+}
+
+internal procedure capabilityDirectCallRequiresComposite(
+    carrier: CapabilityCompositeCarrier
+) -> bool {
+    return capabilityFromComposite(carrier)
+}
+
+internal procedure capabilityDirectCallRequiresContext(context: Context) -> bool {
+    return capabilityFromContext(context)
+}
+
+internal procedure capabilityRecursiveContextProvider() -> Context {
+    return capabilityRecursiveContextProvider()
+}
+
+internal procedure capabilityAllRootTokensSatisfyContextRequirement(
+    io: $IO,
+    net: $Network,
+    heap: $HeapAllocator,
+    reactor: $Reactor,
+    sys: System,
+    time: $Time,
+    domain: $ExecutionDomain
+) -> bool {
+    let tokens_are_operational: bool = capabilityIOCanObserve(io) &&
+        capabilityNetworkCanAttenuate(net) &&
+        capabilityHeapCanAttenuate(heap) &&
+        capabilityReactorCanTrack(reactor) &&
+        capabilitySystemCanObserve(sys) &&
+        capabilityTimeCanAttenuate(time) &&
+        capabilityDomainCanObserve(domain)
+    if false {
+        let context: Context = capabilityRecursiveContextProvider()
+        return capabilityDirectCallRequiresContext(context)
+    }
+    return tokens_are_operational
+}
+
+internal procedure capabilityDirectCallRequirementsSatisfied(context: Context) -> bool {
+    let carrier: CapabilityCompositeCarrier = CapabilityCompositeCarrier {
+        io: context.io,
+        net: context.net,
+        heap: context.heap,
+        reactor: context.reactor,
+        sys: context.sys,
+        time: context.time,
+        domain: context~>inline()
+    }
+    return capabilityDirectCallRequiresIO(context.io) &&
+        capabilityDirectCallRequiresComposite(carrier) &&
+        capabilityAllRootTokensSatisfyContextRequirement(
+            context.io,
+            context.net,
+            context.heap,
+            context.reactor,
+            context.sys,
+            context.time,
+            context~>inline()
+        )
+}
+
+internal procedure capabilityIoUnitSucceeded(result: Outcome<(), IoError>) -> bool {
+    return if result is {
+        @Value {
+            true
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure capabilityIoTextEquals(
+    move result: Outcome<unique string@Managed, IoError>,
+    expected: string@View
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            auditTextEquals(string::as_view(value), expected)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure capabilityAppendObservableStep(
+    io: $IO,
+    path: string@View,
+    text: string@View
+) -> bool {
+    let opened: Outcome<unique File@Append, IoError> = io~>open_append(path)
+    return if move opened is {
+        @Value { value } {
+            let write_result: Outcome<(), IoError> =
+                value~>write(bytes::view_string(text))
+            let flush_result: Outcome<(), IoError> = value~>flush()
+            let closed: File@Closed = value~>close()
+            let _ = closed
+            capabilityIoUnitSucceeded(write_result) &&
+                capabilityIoUnitSucceeded(flush_result)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure capabilityObservableSequenceReference(context: Context) -> bool {
+    let io: $IO = context.io
+    let root: string@View = "HelloUltraviolet/Build/AuthorityCapabilitySequence"
+    let path: string@View =
+        "HelloUltraviolet/Build/AuthorityCapabilitySequence/Trace.txt"
+
+    let _ = io~>remove(path)
+    let _ = io~>remove(root)
+
+    let root_ready: Outcome<(), IoError> = io~>ensure_dir(root)
+    let file_ready: Outcome<(), IoError> = io~>write_file(path, bytes::view_string(""))
+    let left_then_right: bool =
+        capabilityAppendObservableStep(io, path, "L") &&
+        capabilityAppendObservableStep(io, path, "R")
+    let short_circuit: bool =
+        false && capabilityAppendObservableStep(io, path, "X")
+    let branch_step: bool = if left_then_right {
+        capabilityAppendObservableStep(io, path, "I")
+    } else {
+        capabilityAppendObservableStep(io, path, "E")
+    }
+    let trace_matches: bool = capabilityIoTextEquals(io~>read_file(path), "LRI")
+    let remove_file: Outcome<(), IoError> = io~>remove(path)
+    let remove_root: Outcome<(), IoError> = io~>remove(root)
+
+    return capabilityIoUnitSucceeded(root_ready) &&
+        capabilityIoUnitSucceeded(file_ready) &&
+        left_then_right &&
+        !short_circuit &&
+        branch_step &&
+        trace_matches &&
+        capabilityIoUnitSucceeded(remove_file) &&
+        capabilityIoUnitSucceeded(remove_root)
 }
 
 /// Exercises the Authority Capabilities reference surface.
-public procedure runAuthorityCapabilitiesReference() -> bool {
-    let io: CapabilityReference =
-        capabilityReference(CapabilityReferenceKind::IO, true)
-    let system: CapabilityReference =
-        capabilityReference(CapabilityReferenceKind::System, true)
-    return capabilityHasAuthority(io) && capabilityHasAuthority(system)
+public procedure runAuthorityCapabilitiesReference(context: Context) -> bool {
+    return capabilityFromContext(context) &&
+        capabilityStructuralTypeRequirements(context) &&
+        capabilityDirectCallRequirementsSatisfied(context) &&
+        capabilityObservableSequenceReference(context)
 }

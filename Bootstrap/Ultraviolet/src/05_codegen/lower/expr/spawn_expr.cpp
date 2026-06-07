@@ -27,11 +27,14 @@
 #include <cctype>
 #include <cstdio>
 #include <set>
+#include <string>
+#include <string_view>
 #include <unordered_map>
 #include <unordered_set>
 #include <variant>
 #include <vector>
 
+#include "00_core/spec_trace.h"
 #include "05_codegen/lower/lower_expr.h"
 #include "05_codegen/lower/lower_proc.h"
 #include "05_codegen/lower/expr/expr_common.h"
@@ -108,6 +111,43 @@ bool IsUnitType(const analysis::TypeRef& type) {
     return prim->name == "()";
   }
   return false;
+}
+
+void AppendSpawnPayloadField(std::string& payload,
+                             std::string_view key,
+                             std::string_view value) {
+  if (!payload.empty()) {
+    payload += ';';
+  }
+  payload += key;
+  payload += '=';
+  payload += value;
+}
+
+void RecordParallelPanicPropagationInputs(const ast::Expr& expr,
+                                          const ProcIR& proc,
+                                          const IRParam& panic_param,
+                                          std::string_view wrapper_sym) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload;
+  AppendSpawnPayloadField(payload, "source", "LowerSpawnExpr");
+  AppendSpawnPayloadField(payload, "ast_node", "SpawnExpr");
+  AppendSpawnPayloadField(payload, "wrapper_symbol", wrapper_sym);
+  AppendSpawnPayloadField(payload, "wrapper_abi", proc.abi.value_or("-"));
+  AppendSpawnPayloadField(payload, "panic_out", "present");
+  AppendSpawnPayloadField(payload, "panic_param", panic_param.name);
+  AppendSpawnPayloadField(payload, "panic_param_index", "3");
+  AppendSpawnPayloadField(payload, "result_ptr", "present");
+  AppendSpawnPayloadField(payload, "spawn_handle_state", "Pending");
+  AppendSpawnPayloadField(payload, "runtime_symbol", "uv_spawn_create");
+  AppendSpawnPayloadField(payload, "parallel_join_propagates", "true");
+  core::Conformance::Record(
+      "ast.20.ParallelPanicPropagationInputs",
+      expr.span,
+      payload);
 }
 
 std::string SpawnModuleSuffix(const LowerCtx& ctx) {
@@ -615,6 +655,9 @@ struct LowerCtxSnapshot {
   std::optional<CaptureEnvInfo> capture_env;
   analysis::TypeRef proc_ret_type;
   std::vector<std::string> active_region_aliases;
+  std::vector<ActiveKeyScopeInfo> active_key_scopes;
+  std::unordered_map<std::uint64_t, std::string> implicit_key_scope_names;
+  std::optional<AccessOrdering> current_access_order;
 
   explicit LowerCtxSnapshot(const LowerCtx& ctx)
       : scope_stack(ctx.scope_stack),
@@ -627,7 +670,10 @@ struct LowerCtxSnapshot {
         parallel_collect_depth(ctx.parallel_collect_depth),
         capture_env(ctx.capture_env),
         proc_ret_type(ctx.proc_ret_type),
-        active_region_aliases(ctx.active_region_aliases) {}
+        active_region_aliases(ctx.active_region_aliases),
+        active_key_scopes(ctx.active_key_scopes),
+        implicit_key_scope_names(ctx.implicit_key_scope_names),
+        current_access_order(ctx.current_access_order) {}
 
   void Restore(LowerCtx& ctx) const {
     ctx.scope_stack = scope_stack;
@@ -646,6 +692,9 @@ struct LowerCtxSnapshot {
     ctx.capture_env = capture_env;
     ctx.proc_ret_type = proc_ret_type;
     ctx.active_region_aliases = active_region_aliases;
+    ctx.active_key_scopes = active_key_scopes;
+    ctx.implicit_key_scope_names = implicit_key_scope_names;
+    ctx.current_access_order = current_access_order;
   }
 };
 
@@ -679,6 +728,7 @@ LowerResult LowerSpawnExpr(const ast::Expr& expr,
                            const ast::SpawnExpr& node,
                            LowerCtx& ctx) {
   SPEC_RULE("Lower-Expr-Spawn");
+  SPEC_RULE("rule.20.Lower-Expr-Spawn");
 
   // Step 1: Collect all captures from the spawn body
   std::vector<CaptureBinding> captures;
@@ -751,24 +801,6 @@ LowerResult LowerSpawnExpr(const ast::Expr& expr,
   if (!body_type) {
     body_type = analysis::MakeTypePrim("()");
   }
-  std::uint64_t result_size_val = 0;
-  if (ctx.sigma) {
-    if (const auto size = ::ultraviolet::analysis::layout::SizeOf(scope, body_type)) {
-      result_size_val = *size;
-    } else {
-      ctx.ReportCodegenFailure();
-    }
-  }
-  if (core::IsDebugEnabled("spawn")) {
-    const int has_tail = (node.body && node.body->tail_opt) ? 1 : 0;
-    const std::string body_type_text = analysis::TypeToString(body_type);
-    std::fprintf(stderr,
-                 "[uv] spawn lower: tail=%d body_type=%s result_size=%llu\n",
-                 has_tail,
-                 body_type_text.c_str(),
-                 static_cast<unsigned long long>(result_size_val));
-  }
-  IRValue result_size = USizeImmediate(result_size_val);
 
   // Step 5: Generate wrapper procedure
   std::string wrapper_sym = NextSpawnSynthSymbol(ctx, "body");
@@ -803,6 +835,7 @@ LowerResult LowerSpawnExpr(const ast::Expr& expr,
 
   IRParam panic_param = PanicOutParam();
   proc.params.push_back(panic_param);
+  RecordParallelPanicPropagationInputs(expr, proc, panic_param, wrapper_sym);
 
   // Step 6: Generate wrapper body with saved/restored context
   {
@@ -817,20 +850,23 @@ LowerResult LowerSpawnExpr(const ast::Expr& expr,
     ctx.parallel_collect_depth = 0;
     ctx.capture_env.reset();
     ctx.proc_ret_type = analysis::MakeTypePrim("()");
+    ctx.active_key_scopes.clear();
+    ctx.implicit_key_scope_names.clear();
+    ctx.current_access_order.reset();
 
     ctx.PushScope(false, false);
     ctx.RegisterVar(env_param.name, env_ptr_type, false, false);
     proc.params[1].stable_name = ctx.StableBindingName(env_param.name);
-    ctx.RegisterVar(result_param.name, result_ptr_type, false, false);
-    proc.params[2].stable_name = ctx.StableBindingName(result_param.name);
     ctx.RegisterVar(panic_param.name, panic_param.type, true, false);
     proc.params[3].stable_name = ctx.StableBindingName(panic_param.name);
+    const std::string env_param_binding_name =
+        proc.params[1].stable_name.empty() ? env_param.name : proc.params[1].stable_name;
 
     IRPtr proc_region_ir = EnterSyntheticProcedureRegion(ctx);
 
     IRValue env_param_val;
     env_param_val.kind = IRValue::Kind::Local;
-    env_param_val.name = env_param.name;
+    env_param_val.name = env_param_binding_name;
     ctx.BindAll(ctx.LoadEnv(env_param_val, env_info.env_type, env_info.captures));
 
     // Lower the spawn body
@@ -843,13 +879,44 @@ LowerResult LowerSpawnExpr(const ast::Expr& expr,
     }
     ctx.active_region_aliases.pop_back();
 
+    if (analysis::TypeRef lowered_body_type = ctx.LookupValueType(body_result.value)) {
+      if (analysis::TypeRef stripped_lowered = analysis::StripPerm(lowered_body_type)) {
+        lowered_body_type = stripped_lowered;
+      }
+      if (IsUnitType(body_type) && !IsUnitType(lowered_body_type)) {
+        body_type = lowered_body_type;
+      } else if (!IsUnitType(body_type) && !IsUnitType(lowered_body_type)) {
+        const auto equiv = analysis::TypeEquiv(body_type, lowered_body_type);
+        if (!equiv.equiv) {
+          const std::string spawn_type_text = analysis::TypeToString(body_type);
+          const std::string lowered_type_text = analysis::TypeToString(lowered_body_type);
+          std::fprintf(stderr,
+                       "[uv] codegen failure: spawn lowered result type mismatch; "
+                       "spawn=%s lowered=%s\n",
+                       spawn_type_text.c_str(),
+                       lowered_type_text.c_str());
+          ctx.ReportCodegenFailure();
+        }
+      }
+    }
+
+    result_ptr_type = analysis::MakeTypePtr(body_type, analysis::PtrState::Valid);
+    result_param.type = result_ptr_type;
+    proc.params[2].type = result_ptr_type;
+    ctx.RegisterVar(result_param.name, result_ptr_type, false, false);
+    proc.params[2].stable_name = ctx.StableBindingName(result_param.name);
+    const std::string result_param_binding_name =
+        proc.params[2].stable_name.empty()
+            ? result_param.name
+            : proc.params[2].stable_name;
+
     // Store result if not unit type
     IRPtr store_ir = EmptyIR();
     if (!IsUnitType(body_type)) {
       IRWritePtr write;
       IRValue result_ptr_val;
       result_ptr_val.kind = IRValue::Kind::Local;
-      result_ptr_val.name = result_param.name;
+      result_ptr_val.name = result_param_binding_name;
       write.ptr = result_ptr_val;
       write.value = body_result.value;
       store_ir = MakeIR(std::move(write));
@@ -866,6 +933,7 @@ LowerResult LowerSpawnExpr(const ast::Expr& expr,
     ret.value = unit_ret;
 
     std::vector<IRPtr> parts;
+    SPEC_RULE("requirement.20.SpawnDispatchCancellationLowering");
     parts.push_back(MakeIR(IRCancelSuppress{}));
     if (proc_region_ir && !std::holds_alternative<IROpaque>(proc_region_ir->node)) {
       parts.push_back(proc_region_ir);
@@ -884,6 +952,25 @@ LowerResult LowerSpawnExpr(const ast::Expr& expr,
 
     snapshot.Restore(ctx);
   }
+
+  std::uint64_t result_size_val = 0;
+  if (ctx.sigma) {
+    if (const auto size = ::ultraviolet::analysis::layout::SizeOf(scope, body_type)) {
+      result_size_val = *size;
+    } else {
+      ctx.ReportCodegenFailure();
+    }
+  }
+  if (core::IsDebugEnabled("spawn")) {
+    const int has_tail = (node.body && node.body->tail_opt) ? 1 : 0;
+    const std::string body_type_text = analysis::TypeToString(body_type);
+    std::fprintf(stderr,
+                 "[uv] spawn lower: tail=%d body_type=%s result_size=%llu\n",
+                 has_tail,
+                 body_type_text.c_str(),
+                 static_cast<unsigned long long>(result_size_val));
+  }
+  IRValue result_size = USizeImmediate(result_size_val);
 
   ctx.QueueExtraProc(std::move(proc), LinkageKind::Internal);
 

@@ -66,45 +66,54 @@ LinkageKind LinkageOf(const ast::ProcedureDecl& proc) {
 
   if (IsExternalVisibility(proc.vis)) {
     SPEC_RULE("Linkage-UserItem");
+    SPEC_RULE("rule.24.Linkage-UserItem");
     return LinkageKind::External;
   }
 
   SPEC_RULE("Linkage-UserItem-Internal");
+  SPEC_RULE("rule.24.Linkage-UserItem-Internal");
   return LinkageKind::Internal;
 }
 
 LinkageKind LinkageOf([[maybe_unused]] const ast::ExternProcDecl& proc) {
   SPEC_RULE("Linkage-ExternProc");
+  SPEC_RULE("rule.24.Linkage-ExternProc");
   return LinkageKind::External;
 }
 
 LinkageKind LinkageOf(const ast::StaticDecl& decl) {
   if (IsExternalVisibility(decl.vis)) {
     SPEC_RULE("Linkage-UserItem");
+    SPEC_RULE("rule.24.Linkage-UserItem");
     return LinkageKind::External;
   }
 
   SPEC_RULE("Linkage-UserItem-Internal");
+  SPEC_RULE("rule.24.Linkage-UserItem-Internal");
   return LinkageKind::Internal;
 }
 
 LinkageKind LinkageOf(const ast::MethodDecl& method) {
   if (IsExternalVisibility(method.vis)) {
     SPEC_RULE("Linkage-UserItem");
+    SPEC_RULE("rule.24.Linkage-UserItem");
     return LinkageKind::External;
   }
 
   SPEC_RULE("Linkage-UserItem-Internal");
+  SPEC_RULE("rule.24.Linkage-UserItem-Internal");
   return LinkageKind::Internal;
 }
 
 LinkageKind LinkageOfStaticBinding(ast::Visibility vis) {
   if (IsExternalVisibility(vis)) {
     SPEC_RULE("Linkage-StaticBinding");
+    SPEC_RULE("rule.24.Linkage-StaticBinding");
     return LinkageKind::External;
   }
 
   SPEC_RULE("Linkage-StaticBinding-Internal");
+  SPEC_RULE("rule.24.Linkage-StaticBinding-Internal");
   return LinkageKind::Internal;
 }
 
@@ -118,10 +127,12 @@ LinkageKind LinkageOf(const ast::ClassMethodDecl& method) {
 
   if (IsExternalVisibilityWithProtected(method.vis)) {
     SPEC_RULE("Linkage-ClassMethod");
+    SPEC_RULE("rule.24.Linkage-ClassMethod");
     return LinkageKind::External;
   }
 
   SPEC_RULE("Linkage-ClassMethod-Internal");
+  SPEC_RULE("rule.24.Linkage-ClassMethod-Internal");
   return LinkageKind::Internal;
 }
 
@@ -132,20 +143,24 @@ LinkageKind LinkageOf(const ast::ClassMethodDecl& method) {
 LinkageKind LinkageOf(const ast::StateMethodDecl& method) {
   if (IsExternalVisibilityWithProtected(method.vis)) {
     SPEC_RULE("Linkage-StateMethod");
+    SPEC_RULE("rule.24.Linkage-StateMethod");
     return LinkageKind::External;
   }
 
   SPEC_RULE("Linkage-StateMethod-Internal");
+  SPEC_RULE("rule.24.Linkage-StateMethod-Internal");
   return LinkageKind::Internal;
 }
 
 LinkageKind LinkageOf(const ast::TransitionDecl& trans) {
   if (IsExternalVisibilityWithProtected(trans.vis)) {
     SPEC_RULE("Linkage-Transition");
+    SPEC_RULE("rule.24.Linkage-Transition");
     return LinkageKind::External;
   }
 
   SPEC_RULE("Linkage-Transition-Internal");
+  SPEC_RULE("rule.24.Linkage-Transition-Internal");
   return LinkageKind::Internal;
 }
 
@@ -155,26 +170,31 @@ LinkageKind LinkageOf(const ast::TransitionDecl& trans) {
 
 LinkageKind LinkageOfVTable() {
   SPEC_RULE("Linkage-VTable");
+  SPEC_RULE("rule.24.Linkage-VTable");
   return LinkageKind::Internal;
 }
 
 LinkageKind LinkageOfLiteral() {
   SPEC_RULE("Linkage-LiteralData");
+  SPEC_RULE("rule.24.Linkage-LiteralData");
   return LinkageKind::Internal;
 }
 
 LinkageKind LinkageOfDropGlue() {
   SPEC_RULE("Linkage-DropGlue");
+  SPEC_RULE("rule.24.Linkage-DropGlue");
   return LinkageKind::Internal;
 }
 
 LinkageKind LinkageOfDefaultImpl(ast::Visibility method_vis) {
   if (IsExternalVisibilityWithProtected(method_vis)) {
     SPEC_RULE("Linkage-DefaultImpl");
+    SPEC_RULE("rule.24.Linkage-DefaultImpl");
     return LinkageKind::External;
   }
 
   SPEC_RULE("Linkage-DefaultImpl-Internal");
+  SPEC_RULE("rule.24.Linkage-DefaultImpl-Internal");
   return LinkageKind::Internal;
 }
 
@@ -184,31 +204,37 @@ LinkageKind LinkageOfDefaultImpl(ast::Visibility method_vis) {
 
 LinkageKind LinkageOfInitFn() {
   SPEC_RULE("Linkage-InitFn");
+  SPEC_RULE("rule.24.Linkage-InitFn");
   return LinkageKind::Internal;
 }
 
 LinkageKind LinkageOfDeinitFn() {
   SPEC_RULE("Linkage-DeinitFn");
+  SPEC_RULE("rule.24.Linkage-DeinitFn");
   return LinkageKind::Internal;
 }
 
 LinkageKind LinkageOfPanicSym() {
   SPEC_RULE("Linkage-PanicSym");
+  SPEC_RULE("rule.24.Linkage-PanicSym");
   return LinkageKind::Internal;
 }
 
 LinkageKind LinkageOfBuiltinModalSym() {
   SPEC_RULE("Linkage-BuiltinModalSym");
+  SPEC_RULE("rule.24.Linkage-BuiltinModalSym");
   return LinkageKind::Internal;
 }
 
 LinkageKind LinkageOfBuiltinSym() {
   SPEC_RULE("Linkage-BuiltinSym");
+  SPEC_RULE("rule.24.Linkage-BuiltinSym");
   return LinkageKind::Internal;
 }
 
 LinkageKind LinkageOfEntrySym() {
   SPEC_RULE("Linkage-EntrySym");
+  SPEC_RULE("rule.24.Linkage-EntrySym");
   return LinkageKind::External;
 }
 

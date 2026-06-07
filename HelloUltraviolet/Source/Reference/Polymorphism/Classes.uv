@@ -26,6 +26,36 @@ internal class ClassCombined <: ClassDerived + ClassInspectable {
     }
 }
 
+internal class ClassFirstMethodPrimary {
+    internal procedure firstByNameValue(~) -> i32 {
+        return 41
+    }
+}
+
+internal class ClassFirstMethodDuplicate {
+    internal procedure firstByNameValue(~) -> i32 {
+        return 43
+    }
+}
+
+internal class ClassFirstFieldPrimary {
+    internal first_field_value: i32
+}
+
+internal class ClassFirstFieldDuplicate {
+    internal first_field_value: i32
+}
+
+internal class ClassFirstSelection <:
+    ClassFirstMethodPrimary +
+    ClassFirstMethodDuplicate +
+    ClassFirstFieldPrimary +
+    ClassFirstFieldDuplicate {
+    internal procedure firstFieldByNameValue(~) -> i32 {
+        return self.first_field_value
+    }
+}
+
 internal class ClassReceiverPermissions {
     internal procedure readConst(~) -> i32
 
@@ -37,6 +67,10 @@ internal class ClassReceiverPermissions {
 internal record ClassOwner <: ClassCombined {
     internal value: i32
     internal inspected_value: i32
+}
+
+internal record ClassFirstSelectionOwner <: ClassFirstSelection {
+    internal first_field_value: i32
 }
 
 internal record ClassPermissionOwner <: ClassReceiverPermissions {
@@ -58,6 +92,8 @@ internal record ClassPermissionOwner <: ClassReceiverPermissions {
 /// Exercises the Polymorphism Classes reference surface.
 public procedure runPolymorphismClassesReference() -> bool {
     let owner: ClassOwner = ClassOwner { value: 19, inspected_value: 23 }
+    let first_selection_owner: ClassFirstSelectionOwner =
+        ClassFirstSelectionOwner { first_field_value: 47 }
     let const_permission_owner: const ClassPermissionOwner =
         ClassPermissionOwner { value: 29 }
     var shared_permission_owner: shared ClassPermissionOwner =
@@ -75,6 +111,8 @@ public procedure runPolymorphismClassesReference() -> bool {
             owner~>derivedValue() == 13 &&
             owner~>combinedValue() == 17 &&
             owner~>inspectedValue() == 23 &&
+            first_selection_owner~>firstByNameValue() == 41 &&
+            first_selection_owner~>firstFieldByNameValue() == 47 &&
             permission_score == 100 &&
             owner.value == 19,
         true

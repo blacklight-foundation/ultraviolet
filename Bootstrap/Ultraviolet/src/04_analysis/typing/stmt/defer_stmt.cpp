@@ -34,6 +34,10 @@ static inline void SpecDefsDeferStmt() {
   SPEC_DEF("Defer-NonUnit-Err", "5.2.11");
   SPEC_DEF("Defer-NonLocal-Err", "5.2.11");
   SPEC_DEF("DeferSafe", "5.2.11");
+  SPEC_DEF("rule.18.Defer-NonUnit-Err", "18.6.4");
+  SPEC_DEF("rule.18.Defer-NonLocal-Err", "18.6.4");
+  SPEC_DEF("diag.18.Defer", "18.6.7");
+  SPEC_DEF("diag.18.StatementDiagnosticsSupplement", "18.11");
 }
 
 // Check for non-local control flow in a block
@@ -305,10 +309,13 @@ StmtTypeResult TypeDeferStmt(const ScopeContext& ctx,
   }
 
   if (type_ctx.in_speculative) {
+    SPEC_RULE("rule.19.K-Spec-No-Defer");
     return {false, "E-CON-0093", {}, {}};
   }
 
   if (LocalBlockNeedsKeyAccess(ctx, type_ctx, *node.body, env)) {
+    SPEC_RULE("requirement.19.KeyEscapeRestrictions");
+    SPEC_RULE("requirement.19.KeyEscapeDiagnosticPrecedence");
     return {false, "E-CON-0006", {}, {}};
   }
 
@@ -320,6 +327,9 @@ StmtTypeResult TypeDeferStmt(const ScopeContext& ctx,
   if (!check.ok) {
     if (!check.diag_id.has_value() || *check.diag_id == "E-SEM-2526") {
       SPEC_RULE("Defer-NonUnit-Err");
+      SPEC_RULE("rule.18.Defer-NonUnit-Err");
+      SPEC_RULE("diag.18.Defer");
+      SPEC_RULE("diag.18.StatementDiagnosticsSupplement");
       return {false, "E-SEM-3151", {}, {}};
     }
     return {false, check.diag_id, {}, {}};
@@ -328,6 +338,9 @@ StmtTypeResult TypeDeferStmt(const ScopeContext& ctx,
   // Check that defer block doesn't contain non-local control flow
   if (!LocalDeferSafe(*node.body)) {
     SPEC_RULE("Defer-NonLocal-Err");
+    SPEC_RULE("rule.18.Defer-NonLocal-Err");
+    SPEC_RULE("diag.18.Defer");
+    SPEC_RULE("diag.18.StatementDiagnosticsSupplement");
     return {false, "E-SEM-3152", {}, {}};
   }
 

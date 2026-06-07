@@ -4,6 +4,10 @@
 // =============================================================================
 #include "../../ir_instruction_visitor.h"
 
+#include <string>
+
+#include "00_core/spec_trace.h"
+
 namespace ultraviolet::codegen::emit_detail {
 
 void IRInstructionVisitor::operator()(const IRCast &cast) const
@@ -63,6 +67,19 @@ void IRInstructionVisitor::operator()(const IRCast &cast) const
   }
   else if (src_ty->isIntegerTy() && target_ty->isFloatingPointTy())
   {
+    SPEC_RULE("req.16.IntToFloatLoweringPreservesSignedness");
+    if (core::Conformance::Enabled())
+    {
+      const char *instruction = signed_src ? "SIToFP" : "UIToFP";
+      std::string payload = "source=IRCast;operation=IntToFloat;instruction=";
+      payload += instruction;
+      payload += ";source_signed=";
+      payload += signed_src ? "true" : "false";
+      core::Conformance::Record(
+          "req.16.IntToFloatLoweringPreservesSignedness",
+          std::nullopt,
+          payload);
+    }
     out = signed_src
               ? builder.CreateSIToFP(src, target_ty)
               : builder.CreateUIToFP(src, target_ty);

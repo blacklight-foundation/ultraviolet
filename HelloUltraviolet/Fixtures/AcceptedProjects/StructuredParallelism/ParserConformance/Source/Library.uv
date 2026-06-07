@@ -1,0 +1,33 @@
+//! Accepted project fixture for structured-parallelism compiler conformance.
+
+public procedure structuredParallelismCompilerConformanceEntryPoint(
+    context: Context
+) -> i32 {
+    let token: CancelToken@Active = CancelToken::new()
+    let child: CancelToken@Active = token~>child()
+    token~>cancel()
+    let cancelled: bool = child~>is_cancelled()
+
+    let observed: i32 = parallel context~>inline() [cancel: child] {
+        let spawned: Spawned<i32> = spawn {
+            if child~>is_cancelled() {
+                3
+            } else {
+                1
+            }
+        }
+        let reduced: i32 = dispatch index in 0usize..4usize [reduce: +, ordered] {
+            index as i32
+        }
+        let nested: i32 = parallel context~>inline() {
+            5
+        }
+        (wait spawned) + reduced + nested
+    }
+
+    if cancelled {
+        observed
+    } else {
+        observed + 1
+    }
+}

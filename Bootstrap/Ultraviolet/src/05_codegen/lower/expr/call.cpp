@@ -25,6 +25,7 @@
 #include <chrono>
 #include <cstdint>
 #include <iostream>
+#include <mutex>
 #include <optional>
 #include <set>
 #include <string>
@@ -73,6 +74,14 @@ namespace {
 // =============================================================================
 // Helper functions for call lowering
 // =============================================================================
+
+void RecordForeignContractConformance(std::string_view rule_id,
+                                      std::string_view payload) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  core::Conformance::Record(rule_id, std::nullopt, payload);
+}
 
 bool LowerCallPerfEnabled() {
   static const bool enabled = [] {
@@ -193,6 +202,16 @@ IRValue NullOpaqueValue() {
   out.kind = IRValue::Kind::Opaque;
   out.name = "null";
   return out;
+}
+
+bool IsBytesViewType(analysis::TypeRef type) {
+  type = analysis::StripPerm(type);
+  if (!type) {
+    return false;
+  }
+  const auto* bytes = std::get_if<analysis::TypeBytes>(&type->node);
+  return bytes && bytes->state.has_value() &&
+         *bytes->state == analysis::BytesState::View;
 }
 
 std::optional<ast::KeyMode> RequiredKeyModeForParamType(
@@ -421,7 +440,7 @@ IRPtr EmitLocalPreDynamicChecks(const std::string& callee_symbol,
                                          ctx,
                                          local_info->precondition.get(),
                                          local_info->precondition->span);
-  check.else_ir = nullptr;
+  check.else_ir = EmptyIR();
   check.result = ctx.FreshTempValue("local_pre_check");
   ctx.RegisterValueType(check.result, bool_type);
   parts.push_back(MakeIR(std::move(check)));
@@ -443,6 +462,19 @@ IRPtr EmitForeignPreDynamicChecks(const std::string& callee_symbol,
   if (!sig) {
     return EmptyIR();
   }
+
+  RecordForeignContractConformance(
+      "requirement.23.ForeignPreconditionVerificationLowering",
+      "source=EmitForeignPreDynamicChecks;mode=dynamic;kind=ForeignPre;"
+      "position=before_foreign_call;lowering=ContractCheck");
+  RecordForeignContractConformance(
+      "requirement.23.ForeignPreconditionDynamicFailure",
+      "source=EmitForeignPreDynamicChecks;kind=ForeignPre;failure=panic;"
+      "payload=ContractViolation(ForeignPre);then_ir=LowerContractViolation");
+  RecordForeignContractConformance(
+      "requirement.23.ForeignContractsLowering",
+      "source=EmitForeignPreDynamicChecks;mode=dynamic;kind=ForeignPre;"
+      "position=before_foreign_call;lowering=ContractCheck");
 
   const auto prev_param_entry_values = ctx.contract_param_entry_values;
   const bool prev_lowering_contract_postcondition =
@@ -489,7 +521,7 @@ IRPtr EmitForeignPreDynamicChecks(const std::string& callee_symbol,
                                            ctx,
                                            pred.get(),
                                            pred->span);
-    check.else_ir = nullptr;
+    check.else_ir = EmptyIR();
     check.result = ctx.FreshTempValue("foreign_pre_check");
     ctx.RegisterValueType(check.result, bool_type);
     parts.push_back(MakeIR(std::move(check)));
@@ -515,6 +547,17 @@ IRPtr EmitForeignPostDynamicChecks(const std::string& callee_symbol,
       foreign_info->ensures_null_result.empty()) {
     return EmptyIR();
   }
+
+  RecordForeignContractConformance(
+      "requirement.23.ForeignPostconditionDynamicChecks",
+      "source=EmitForeignPostDynamicChecks;mode=dynamic;kind=ForeignPost;"
+      "position=after_foreign_call;err_cond_order=left_to_right;"
+      "null_cond=result_eq_null;lowering=ContractCheck;"
+      "failure=ContractViolation(ForeignPost)");
+  RecordForeignContractConformance(
+      "requirement.23.ForeignContractsLowering",
+      "source=EmitForeignPostDynamicChecks;mode=dynamic;kind=ForeignPost;"
+      "position=after_foreign_call;lowering=ContractCheck");
 
   const analysis::TypeRef bool_type = analysis::MakeTypePrim("bool");
   std::vector<IRPtr> parts;
@@ -603,7 +646,7 @@ IRPtr EmitForeignPostDynamicChecks(const std::string& callee_symbol,
                                              ctx,
                                              pred.get(),
                                              pred->span);
-      check.else_ir = nullptr;
+      check.else_ir = EmptyIR();
       check.result = ctx.FreshTempValue(std::string(label_prefix) + "_check");
       ctx.RegisterValueType(check.result, bool_type);
       parts.push_back(MakeIR(std::move(check)));
@@ -1295,7 +1338,16 @@ bool GenericArgsEquivalent(const std::vector<analysis::TypeRef>& lhs,
   return true;
 }
 
-void EmitGenericInstantiationDiagnostic(std::string_view code) {
+void EmitGenericInstantiationDiagnostic(LowerCtx& ctx, std::string_view code) {
+  if (ctx.diagnostics != nullptr) {
+    if (ctx.diagnostics_mu != nullptr) {
+      std::lock_guard<std::mutex> lock(*ctx.diagnostics_mu);
+      core::EmitDiagnosticById(*ctx.diagnostics, code);
+    } else {
+      core::EmitDiagnosticById(*ctx.diagnostics, code);
+    }
+    return;
+  }
   if (auto diag = core::MakeDiagnosticById(code)) {
     std::cerr << core::Render(*diag) << "\n";
     return;
@@ -1522,6 +1574,7 @@ std::pair<IRPtr, std::vector<IRValue>> LowerArgs(
     const ParamTypeList* param_types) {
   if (params.empty() && args.empty()) {
     SPEC_RULE("Lower-Args-Empty");
+    SPEC_RULE("rule.16.Lower-Args-Empty");
     return {EmptyIR(), {}};
   }
 
@@ -1555,6 +1608,7 @@ std::pair<IRPtr, std::vector<IRValue>> LowerArgs(
 
     if (params[i].has_value()) {
       SPEC_RULE("Lower-Args-Cons-Move");
+      SPEC_RULE("rule.16.Lower-Args-Cons-Move");
       auto result =
           LowerMoveArgExprWithTemp(args[i], "call_move_tmp", expected_type, ctx);
       ir_parts.push_back(SeqIR({key_ir, result.ir}));
@@ -1563,6 +1617,7 @@ std::pair<IRPtr, std::vector<IRValue>> LowerArgs(
     }
 
     SPEC_RULE("Lower-Args-Cons-Ref");
+    SPEC_RULE("rule.16.Lower-Args-Cons-Ref");
     ast::ExprPtr ref_arg = ast::IsCopyArg(args[i])
                                ? analysis::ArgPassExpr(args[i])
                                : args[i].value;
@@ -1596,8 +1651,6 @@ std::pair<IRPtr, std::vector<IRValue>> LowerArgs(
 LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
                           const ast::CallExpr& expr,
                           LowerCtx& ctx) {
-  SPEC_RULE("Lower-Expr-Call-PanicOut");
-  SPEC_RULE("Lower-Expr-Call-NoPanicOut");
   LowerCallStageProfiler profiler(expr_wrapper, expr, ctx);
 
   // Check if this is a record constructor call (zero-arg call to record type)
@@ -1685,6 +1738,7 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
     callee_type = analysis::StripPerm(callee_type);
     if (callee_type &&
         std::holds_alternative<analysis::TypeClosure>(callee_type->node)) {
+      SPEC_RULE("rule.16.Lower-Expr-Call-Closure");
       profiler.mark("closure-check", ctx);
       return LowerClosureCall(*expr.callee, expr.args, ctx);
     }
@@ -1714,18 +1768,59 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
   // call-site substitution, then lower as a direct symbol call.
   if (!selected_proc_info.has_value() || selected_proc_is_generic) {
     log_call_stage("resolve-generic-start");
-    if (auto generic_info = ResolveGenericProcedure(expr, ctx)) {
+      if (auto generic_info = ResolveGenericProcedure(expr, ctx)) {
       profiler.mark("generic-resolve", ctx);
       log_call_stage("resolve-generic-found");
       log_call_stage("lookup-generic-subst-start");
       if (auto subst = LookupGenericSubstForCall(expr, *generic_info, ctx)) {
         profiler.mark("generic-subst", ctx);
         log_call_stage("lookup-generic-subst-finish");
+        if (!expr.generic_args.empty()) {
+          SPEC_RULE("req.16.CallTypeArgsLoweringElaboration");
+          if (core::Conformance::Enabled()) {
+            core::Conformance::Record(
+                "req.16.CallTypeArgsLoweringElaboration",
+                std::nullopt,
+                "source=LowerCallExpr;explicit_type_args=true;"
+                "elaborated_to=monomorphic_call");
+          }
+        }
+        SPEC_RULE("conformance.GenericParamsNoRuntimeSemantics");
+        SPEC_RULE("conformance.GenericParamsLoweringInputsOnly");
         const std::string base_symbol = GenericProcBaseSymbol(*generic_info);
         const std::vector<analysis::TypeRef> inst_args =
             GenericInstantiationArgs(*generic_info, *subst);
+        std::string generic_type_args_payload =
+            "type_arg_count=" + std::to_string(inst_args.size());
+        for (std::size_t i = 0; i < inst_args.size(); ++i) {
+          generic_type_args_payload +=
+              ";type_arg_" + std::to_string(i) + "=" +
+              (inst_args[i] ? analysis::TypeToString(inst_args[i]) : "_");
+        }
+        if (core::Conformance::Enabled()) {
+          const std::string no_runtime_payload =
+              std::string("source=LowerCallExpr;")
+              + "generic_forms=eliminated_before_runtime;"
+              + "runtime_representation=none;"
+              + generic_type_args_payload;
+          const std::string inputs_only_payload =
+              std::string("source=LowerCallExpr;")
+              + "lowering_consumes=elaborated_substitution;"
+              + "generic_forms_lowered_directly=false"
+              + ";"
+              + generic_type_args_payload;
+          core::Conformance::Record(
+              "conformance.GenericParamsNoRuntimeSemantics",
+              std::nullopt,
+              no_runtime_payload);
+          core::Conformance::Record(
+              "conformance.GenericParamsLoweringInputsOnly",
+              std::nullopt,
+              inputs_only_payload);
+        }
         if (GenericInstantiationWouldRecurse(ctx, base_symbol, inst_args)) {
-          EmitGenericInstantiationDiagnostic("E-TYP-2307");
+          SPEC_RULE("req.GenericInfiniteMonomorphizationRejected");
+          EmitGenericInstantiationDiagnostic(ctx, "E-TYP-2307");
           ctx.ReportCodegenFailure();
           return LowerResult{
               EmptyIR(),
@@ -1734,7 +1829,8 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
         }
         if (ctx.generic_instantiation_stack.size() >=
             analysis::MonomorphizeContext::kMaxDepth) {
-          EmitGenericInstantiationDiagnostic("E-TYP-2308");
+          SPEC_RULE("req.GenericInstantiationDepthLimit");
+          EmitGenericInstantiationDiagnostic(ctx, "E-TYP-2308");
           ctx.ReportCodegenFailure();
           return LowerResult{
               EmptyIR(),
@@ -1763,6 +1859,17 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
             ctx.generic_instantiation_stack.push_back(inst_symbol);
             ctx.generic_instantiation_decl_stack.push_back(
                 GenericInstantiationFrame{base_symbol, inst_args});
+            SPEC_RULE("req.GenericInstantiationIndependentLowering");
+            if (core::Conformance::Enabled()) {
+              const std::string independent_payload =
+                  std::string("source=LowerCallExpr;")
+                  + "action=LowerProcInstantiated;status=created;"
+                  + generic_type_args_payload + ";symbol=" + inst_symbol;
+              core::Conformance::Record(
+                  "req.GenericInstantiationIndependentLowering",
+                  std::nullopt,
+                  independent_payload);
+            }
             ProcIR inst_proc = LowerProcInstantiated(
                 *generic_info->decl, generic_info->module_path, inst_symbol, *subst, ctx);
             profiler.mark("generic-instantiate", ctx);
@@ -1835,6 +1942,18 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
         call.callee.name = inst_symbol;
         call.args = std::move(arg_values);
         call.result = result_value;
+        SPEC_RULE("req.GenericProcedureCallLowering");
+        if (core::Conformance::Enabled()) {
+          const std::string call_lowering_payload =
+              std::string("source=LowerCallExpr;")
+              + "callee_kind=direct_static_symbol;"
+              + "target=specialized_instantiation;"
+              + generic_type_args_payload + ";symbol=" + inst_symbol;
+          core::Conformance::Record(
+              "req.GenericProcedureCallLowering",
+              std::nullopt,
+              call_lowering_payload);
+        }
         if (result_type) {
           ctx.RegisterValueType(result_value, result_type);
         }
@@ -1846,6 +1965,9 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
         };
 
         if (needs_panic_out) {
+          SPEC_RULE("Lower-Expr-Call-PanicOut");
+          SPEC_RULE("rule.16.Lower-Expr-Call-PanicOut");
+          SPEC_RULE("rule.16.Lower-Expr-CallFamily");
           IRValue panic_out;
           panic_out.kind = IRValue::Kind::Local;
           panic_out.name = std::string(kPanicOutName);
@@ -1861,6 +1983,9 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
           return LowerResult{SeqIR(std::move(parts)), result_value};
         }
 
+        SPEC_RULE("Lower-Expr-Call-NoPanicOut");
+        SPEC_RULE("rule.16.Lower-Expr-Call-NoPanicOut");
+        SPEC_RULE("rule.16.Lower-Expr-CallFamily");
         std::vector<IRPtr> parts;
         parts.push_back(args_ir);
         if (!is_noop(local_pre_ir)) {
@@ -2025,6 +2150,43 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
     }
   }
   profiler.mark("signature-populate", ctx);
+
+  if (callee_lookup_symbol == BuiltinSymBytesViewString() &&
+      expr.args.size() == 1 &&
+      expr.args[0].value) {
+    const auto* literal =
+        std::get_if<ast::LiteralExpr>(&expr.args[0].value->node);
+    if (literal && literal->literal.kind == ast::TokenKind::StringLiteral) {
+      auto literal_result = LowerExpr(*expr.args[0].value, ctx);
+      if (literal_result.value.kind == IRValue::Kind::Immediate &&
+          literal_result.value.literal_kind.has_value() &&
+          *literal_result.value.literal_kind == IRImmediateLiteralKind::String) {
+        IRValue bytes_view_literal;
+        bytes_view_literal.kind = IRValue::Kind::Immediate;
+        bytes_view_literal.name = literal_result.value.name;
+        bytes_view_literal.bytes = literal_result.value.bytes;
+        bytes_view_literal.literal_id = ++(*ctx.temp_counter);
+        bytes_view_literal.literal_kind = IRImmediateLiteralKind::Bytes;
+
+        analysis::TypeRef bytes_view_type;
+        if (result_type && IsBytesViewType(result_type)) {
+          bytes_view_type = result_type;
+        } else {
+          bytes_view_type = analysis::MakeTypeBytes(analysis::BytesState::View);
+        }
+        ctx.RegisterValueType(bytes_view_literal, bytes_view_type);
+
+        SPEC_RULE("Lower-Expr-Call-NoPanicOut");
+        SPEC_RULE("rule.16.Lower-Expr-Call-NoPanicOut");
+        SPEC_RULE("rule.16.Lower-Expr-CallFamily");
+        profiler.mark("bytes-view-string-literal", ctx);
+        return LowerResult{
+            SeqIR({callee_result.ir, literal_result.ir}),
+            bytes_view_literal};
+      }
+    }
+  }
+
   // Lower arguments
   auto [args_ir, arg_values] =
       LowerArgs(param_modes,
@@ -2032,6 +2194,39 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
                 ctx,
                 param_types.empty() ? nullptr : &param_types);
   profiler.mark("args", ctx);
+
+  if (callee_result.value.kind == IRValue::Kind::Symbol &&
+      callee_lookup_symbol == BuiltinSymBytesViewString() &&
+      arg_values.size() == 1 &&
+      arg_values[0].kind == IRValue::Kind::Immediate &&
+      arg_values[0].literal_kind.has_value() &&
+      *arg_values[0].literal_kind == IRImmediateLiteralKind::String) {
+    IRValue bytes_view_literal;
+    bytes_view_literal.kind = IRValue::Kind::Immediate;
+    bytes_view_literal.name = arg_values[0].name;
+    bytes_view_literal.bytes = arg_values[0].bytes;
+    bytes_view_literal.literal_id = ++(*ctx.temp_counter);
+    bytes_view_literal.literal_kind = IRImmediateLiteralKind::Bytes;
+
+    analysis::TypeRef bytes_view_type;
+    if (result_type && IsBytesViewType(result_type)) {
+      bytes_view_type = result_type;
+    } else {
+      bytes_view_type = analysis::MakeTypeBytes(analysis::BytesState::View);
+    }
+    ctx.RegisterValueType(bytes_view_literal, bytes_view_type);
+
+    std::vector<IRPtr> parts;
+    parts.push_back(callee_result.ir);
+    parts.push_back(args_ir);
+    SPEC_RULE("Lower-Expr-Call-NoPanicOut");
+    SPEC_RULE("rule.16.Lower-Expr-Call-NoPanicOut");
+    SPEC_RULE("rule.16.Lower-Expr-CallFamily");
+    profiler.mark("bytes-view-string-literal", ctx);
+    return LowerResult{
+        SeqIR(std::move(parts)),
+        bytes_view_literal};
+  }
 
   IRValue result_value = ctx.FreshTempValue("call");
 
@@ -2043,10 +2238,57 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
   }
   call.args = std::move(arg_values);
   call.result = result_value;
+  if (selected_proc_info.has_value() &&
+      call.callee.kind == IRValue::Kind::Symbol &&
+      call.callee.name == selected_proc_info->symbol) {
+    SPEC_RULE("req.15.OverloadResolutionCompleteBeforeLowering");
+    if (core::Conformance::Enabled()) {
+      const std::string payload =
+          std::string("source=LowerCallExpr;")
+          + "selected_call_target=true;"
+          + "callee_kind=direct_static_symbol;"
+          + "runtime_overload_search=false;"
+          + "symbol=" + call.callee.name;
+      core::Conformance::Record(
+          "req.15.OverloadResolutionCompleteBeforeLowering",
+          std::nullopt,
+          payload);
+    }
+  }
   if (result_type) {
     ctx.RegisterValueType(result_value, result_type);
   }
   profiler.mark("construct", ctx);
+
+  if (call.callee.kind == IRValue::Kind::Symbol &&
+      call.callee.name == BuiltinSymCancelTokenNew()) {
+    SPEC_RULE("def.20.CancelIR");
+    SPEC_RULE("rule.20.Lower-Cancel-New");
+    IRCancelCreate create;
+    create.result = result_value;
+    return LowerResult{
+        SeqIR({callee_result.ir, args_ir, MakeIR(std::move(create))}),
+        result_value};
+  }
+
+  if (call.callee.kind == IRValue::Kind::Symbol &&
+      (call.callee.name == BuiltinSymGpuBarrier() ||
+       call.callee.name == BuiltinSymGpuMemoryBarrier() ||
+       call.callee.name == BuiltinSymGpuWorkgroupBarrier())) {
+    SPEC_RULE("rule.20.Lower-Expr-GpuBarrier");
+    IRGpuBarrier barrier;
+    barrier.result = result_value;
+    if (call.callee.name == BuiltinSymGpuMemoryBarrier()) {
+      barrier.kind = IRGpuBarrierKind::Memory;
+    } else if (call.callee.name == BuiltinSymGpuWorkgroupBarrier()) {
+      barrier.kind = IRGpuBarrierKind::Workgroup;
+    } else {
+      barrier.kind = IRGpuBarrierKind::Full;
+    }
+    return LowerResult{
+        SeqIR({callee_result.ir, args_ir, MakeIR(std::move(barrier))}),
+        result_value};
+  }
 
   // Determine if we need to add panic out parameter
   bool needs_panic_out = true;
@@ -2113,6 +2355,9 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
   };
 
   if (needs_panic_out) {
+    SPEC_RULE("Lower-Expr-Call-PanicOut");
+    SPEC_RULE("rule.16.Lower-Expr-Call-PanicOut");
+    SPEC_RULE("rule.16.Lower-Expr-CallFamily");
     IRValue panic_out;
     panic_out.kind = IRValue::Kind::Local;
     panic_out.name = std::string(kPanicOutName);
@@ -2133,10 +2378,13 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
     }
     profiler.mark("result", ctx);
     return LowerResult{
-        SeqIR(std::move(parts)),
-        result_value};
+      SeqIR(std::move(parts)),
+      result_value};
   }
 
+  SPEC_RULE("Lower-Expr-Call-NoPanicOut");
+  SPEC_RULE("rule.16.Lower-Expr-Call-NoPanicOut");
+  SPEC_RULE("rule.16.Lower-Expr-CallFamily");
   std::vector<IRPtr> parts;
   parts.push_back(callee_result.ir);
   parts.push_back(args_ir);

@@ -24,6 +24,12 @@ static inline void SpecDefsUnary() {
   SPEC_DEF("T-Modal-Widen-Perm", "5.2.13");
   SPEC_DEF("Widen-AlreadyGeneral", "5.2.13");
   SPEC_DEF("Widen-NonModal", "5.2.13");
+  SPEC_DEF("rule.13.T-Modal-Widen", "13.5.4");
+  SPEC_DEF("rule.13.T-Modal-Widen-Perm", "13.5.4");
+  SPEC_DEF("rule.13.Widen-AlreadyGeneral", "13.5.4");
+  SPEC_DEF("rule.13.Widen-NonModal", "13.5.4");
+  SPEC_DEF("diag.ModalWidening", "13.5.7");
+  SPEC_DEF("req.16.WidenTypingDiagnosticsOwnershipForCastTransmute", "16.5.4");
 }
 
 }  // namespace
@@ -61,6 +67,7 @@ ExprTypeResult TypeUnaryExprImpl(const ScopeContext& ctx,
                                  const ast::UnaryExpr& expr,
                                  const TypeEnv& env,
                                  const core::Span& span) {
+  SpecDefsUnary();
   ExprTypeResult result;
 
   // Type the operand
@@ -75,6 +82,7 @@ ExprTypeResult TypeUnaryExprImpl(const ScopeContext& ctx,
 
   // Handle widen operator for modal types
   if (op == "widen") {
+    SPEC_RULE("req.16.WidenTypingDiagnosticsOwnershipForCastTransmute");
     const auto stripped = StripPerm(operand.type);
     if (!stripped) {
       return result;
@@ -93,27 +101,31 @@ ExprTypeResult TypeUnaryExprImpl(const ScopeContext& ctx,
       // Preserve permission if present
       if (const auto* perm = std::get_if<TypePerm>(&operand.type->node)) {
         SPEC_RULE("T-Modal-Widen-Perm");
+        SPEC_RULE("rule.13.T-Modal-Widen-Perm");
         result.ok = true;
         result.type = MakeTypePerm(perm->perm, ModalRefType(modal->modal_ref));
         return result;
       }
 
       SPEC_RULE("T-Modal-Widen");
+      SPEC_RULE("rule.13.T-Modal-Widen");
       result.ok = true;
       result.type = ModalRefType(modal->modal_ref);
       return result;
     }
 
     // Check if already a general modal (error)
-      if (const auto* path = AppliedTypePath(*stripped)) {
-        if (LookupModalDecl(ctx, *path)) {
-          SPEC_RULE("Widen-AlreadyGeneral");
-          result.diag_id = "Widen-AlreadyGeneral";
+    if (const auto* path = AppliedTypePath(*stripped)) {
+      if (LookupModalDecl(ctx, *path)) {
+        SPEC_RULE("Widen-AlreadyGeneral");
+        SPEC_RULE("rule.13.Widen-AlreadyGeneral");
+        result.diag_id = "Widen-AlreadyGeneral";
         return result;
       }
     }
 
     SPEC_RULE("Widen-NonModal");
+    SPEC_RULE("rule.13.Widen-NonModal");
     result.diag_id = "Widen-NonModal";
     return result;
   }

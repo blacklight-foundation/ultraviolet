@@ -45,7 +45,10 @@
 
 #include "04_analysis/layout/layout.h"
 
+#include <string>
+
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 
 namespace ultraviolet::analysis::layout {
 
@@ -55,6 +58,21 @@ LayoutEnv LayoutEnvOf(ultraviolet::project::TargetProfile target_profile) {
   env.ptr_size = static_cast<std::uint64_t>(
       ultraviolet::project::PtrSizeBytes(target_profile));
   env.ptr_align = env.ptr_size;
+  if (ultraviolet::core::Conformance::Enabled()) {
+    std::string payload = "target_profile=";
+    payload += ultraviolet::project::TargetProfileName(target_profile);
+    payload += ";ptr_size=";
+    payload += std::to_string(env.ptr_size);
+    payload += ";ptr_align=";
+    payload += std::to_string(env.ptr_align);
+    payload += ";endianness=little";
+    ultraviolet::core::Conformance::Record(
+        "def.24.PointerPrimitiveSizeAndAlignment", std::nullopt, payload);
+    ultraviolet::core::Conformance::Record(
+        "def.24.LayoutJudgements",
+        std::nullopt,
+        "judgements=sizeof,alignof,layout");
+  }
   return env;
 }
 
@@ -82,6 +100,7 @@ std::uint64_t PtrAlign(const ultraviolet::analysis::ScopeContext& ctx) {
 std::optional<std::uint64_t> PrimSize(const LayoutEnv& env,
                                       std::string_view name) {
   SPEC_RULE("Size-Prim");
+  SPEC_RULE("rule.24.Size-Prim");
   if (name == "i8" || name == "u8") return 1;
   if (name == "i16" || name == "u16") return 2;
   if (name == "i32" || name == "u32") return 4;
@@ -100,6 +119,7 @@ std::optional<std::uint64_t> PrimSize(const LayoutEnv& env,
 std::optional<std::uint64_t> PrimAlign(const LayoutEnv& env,
                                        std::string_view name) {
   SPEC_RULE("Align-Prim");
+  SPEC_RULE("rule.24.Align-Prim");
   if (name == "i8" || name == "u8") return 1;
   if (name == "i16" || name == "u16") return 2;
   if (name == "i32" || name == "u32") return 4;

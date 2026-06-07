@@ -1,0 +1,27 @@
+//! Rejected modal and special-type specimens.
+
+public procedure modalAndSpecialTypesRejectedSourceFixtureCount() -> usize {
+    return 1usize
+}
+
+public procedure validatedModalAndSpecialTypesRejectedSourceFixtureCount() -> usize {
+    var count: usize = 0usize
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SpecialModalRecordLiteral",
+            "Fixtures/RejectedSource/ModalAndSpecialTypes/SpecialModalRecordLiteral",
+            "Fixtures/RejectedSource/ModalAndSpecialTypes/SpecialModalRecordLiteral/Source/Main.uv",
+            "Fixtures/RejectedSource/ModalAndSpecialTypes/SpecialModalRecordLiteral/Expected.uv",
+            expectedDiagnostic("E-TYP-2073", "rule.13.Record-FileDir-Err")
+        ),
+        "SpecialModalRecordLiteral",
+        "Fixtures/RejectedSource/ModalAndSpecialTypes/SpecialModalRecordLiteral",
+        "Fixtures/RejectedSource/ModalAndSpecialTypes/SpecialModalRecordLiteral/Source/Main.uv",
+        "Fixtures/RejectedSource/ModalAndSpecialTypes/SpecialModalRecordLiteral/Expected.uv",
+        "E-TYP-2073",
+        "rule.13.Record-FileDir-Err"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

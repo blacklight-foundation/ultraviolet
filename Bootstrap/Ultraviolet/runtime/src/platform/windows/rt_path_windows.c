@@ -45,6 +45,93 @@ static int uv_rt_path_is_root_relative(const uint8_t* data, uint64_t len) {
   return data[0] == '/' || data[0] == '\\';
 }
 
+static int uv_rt_wide_starts_with(const wchar_t* text,
+                                  uint32_t text_len,
+                                  const wchar_t* prefix,
+                                  uint32_t prefix_len) {
+  if (!text || !prefix || text_len < prefix_len) {
+    return 0;
+  }
+  for (uint32_t index = 0u; index < prefix_len; ++index) {
+    if (text[index] != prefix[index]) {
+      return 0;
+    }
+  }
+  return 1;
+}
+
+static wchar_t* uv_rt_path_extend_wide_if_needed(wchar_t* wide,
+                                                 uint32_t wide_len,
+                                                 uint32_t* out_len) {
+  static const wchar_t extended_prefix[] = L"\\\\?\\";
+  static const wchar_t device_prefix[] = L"\\\\.\\";
+  static const wchar_t unc_extended_prefix[] = L"\\\\?\\UNC\\";
+  const uint32_t extended_prefix_len = 4u;
+  const uint32_t device_prefix_len = 4u;
+  const uint32_t unc_extended_prefix_len = 8u;
+
+  if (!wide) {
+    return NULL;
+  }
+  if (wide_len < 240u ||
+      uv_rt_wide_starts_with(wide, wide_len, extended_prefix, extended_prefix_len) ||
+      uv_rt_wide_starts_with(wide, wide_len, device_prefix, device_prefix_len)) {
+    if (out_len) {
+      *out_len = wide_len;
+    }
+    return wide;
+  }
+
+  if (wide_len >= 3u &&
+      ((wide[0] >= L'A' && wide[0] <= L'Z') ||
+       (wide[0] >= L'a' && wide[0] <= L'z')) &&
+      wide[1] == L':' &&
+      wide[2] == L'\\') {
+    uint32_t extended_len = extended_prefix_len + wide_len;
+    wchar_t* extended =
+        (wchar_t*)uv_heap_alloc_raw(sizeof(wchar_t) * ((size_t)extended_len + 1u));
+    if (!extended) {
+      uv_heap_free_raw(wide);
+      return NULL;
+    }
+    uv_memcpy(extended, extended_prefix, sizeof(wchar_t) * extended_prefix_len);
+    uv_memcpy(extended + extended_prefix_len, wide, sizeof(wchar_t) * wide_len);
+    extended[extended_len] = 0;
+    uv_heap_free_raw(wide);
+    if (out_len) {
+      *out_len = extended_len;
+    }
+    return extended;
+  }
+
+  if (wide_len >= 3u && wide[0] == L'\\' && wide[1] == L'\\') {
+    uint32_t extended_len = unc_extended_prefix_len + wide_len - 2u;
+    wchar_t* extended =
+        (wchar_t*)uv_heap_alloc_raw(sizeof(wchar_t) * ((size_t)extended_len + 1u));
+    if (!extended) {
+      uv_heap_free_raw(wide);
+      return NULL;
+    }
+    uv_memcpy(extended,
+              unc_extended_prefix,
+              sizeof(wchar_t) * unc_extended_prefix_len);
+    uv_memcpy(extended + unc_extended_prefix_len,
+              wide + 2u,
+              sizeof(wchar_t) * (wide_len - 2u));
+    extended[extended_len] = 0;
+    uv_heap_free_raw(wide);
+    if (out_len) {
+      *out_len = extended_len;
+    }
+    return extended;
+  }
+
+  if (out_len) {
+    *out_len = wide_len;
+  }
+  return wide;
+}
+
 int uv_rt_path_is_absolute_utf8(const uint8_t* data, uint64_t len) {
   return uv_rt_path_is_drive_rooted(data, len) ||
          uv_rt_path_is_unc(data, len) ||
@@ -398,8 +485,5 @@ wchar_t* uv_rt_path_utf8_to_native_wide(const uint8_t* utf8,
     }
     return rooted;
   }
-  if (out_len) {
-    *out_len = wide_len;
-  }
-  return wide;
+  return uv_rt_path_extend_wide_if_needed(wide, wide_len, out_len);
 }

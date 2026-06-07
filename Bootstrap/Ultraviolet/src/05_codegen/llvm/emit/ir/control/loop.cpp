@@ -4,7 +4,76 @@
 // =============================================================================
 #include "../../ir_instruction_visitor.h"
 
+#include "00_core/assert_spec.h"
+
+#include <string>
+#include <variant>
+
 namespace ultraviolet::codegen::emit_detail {
+
+namespace {
+
+const char *LoopLoweringKindName(IRLoopKind kind)
+{
+  switch (kind)
+  {
+  case IRLoopKind::Infinite:
+    return "infinite";
+  case IRLoopKind::Conditional:
+    return "conditional";
+  case IRLoopKind::Iter:
+    return "iter";
+  }
+  return "unknown";
+}
+
+const char *LoopLoweringBlockList(IRLoopKind kind)
+{
+  switch (kind)
+  {
+  case IRLoopKind::Infinite:
+    return "loop.head,loop.body,loop.end";
+  case IRLoopKind::Conditional:
+    return "loop.cond,loop.body,loop.end";
+  case IRLoopKind::Iter:
+    return "loop.cond,loop.body,loop.inc,loop.end";
+  }
+  return "loop.end";
+}
+
+void RecordLoopLoweringConformance(IRLoopKind kind)
+{
+  if (!core::Conformance::Enabled())
+  {
+    return;
+  }
+
+  core::Conformance::Record(
+      "def.24.StructuredIRLoweringForms",
+      std::nullopt,
+      "obligation=def.24.StructuredIRLoweringForms;"
+      "structured_form=LoopIRForm;"
+      "structured_lower_form=LoopLowerForm;"
+      "source=IRLoopEmission");
+
+  std::string payload =
+      "obligation=rule.24.Lower-LoopIR;"
+      "ir_form=LoopIRForm;"
+      "lower_form=LoopLowerForm;"
+      "kind=";
+  payload += LoopLoweringKindName(kind);
+  payload += ";llvm_blocks=";
+  payload += LoopLoweringBlockList(kind);
+  payload += ";result=value";
+  core::Conformance::Record("rule.24.Lower-LoopIR", std::nullopt, payload);
+}
+
+bool HasEffectIR(const IRPtr &ir)
+{
+  return ir && !std::holds_alternative<IROpaque>(ir->node);
+}
+
+}  // namespace
 
 void IRInstructionVisitor::operator()(const IRLoop &loop) const
 {
@@ -70,30 +139,61 @@ void IRInstructionVisitor::operator()(const IRLoop &loop) const
   }
 
   auto *loop_end = llvm::BasicBlock::Create(emitter.GetContext(), "loop.end", func);
+  auto emit_optional_ir = [&](const IRPtr &ir)
+  {
+    if (HasEffectIR(ir))
+    {
+      emitter.EmitIR(ir);
+    }
+  };
+  auto branch_if_open = [&](llvm::BasicBlock *target)
+  {
+    if (!builder.GetInsertBlock()->getTerminator())
+    {
+      builder.CreateBr(target);
+    }
+  };
 
   if (loop.kind == IRLoopKind::Infinite)
   {
     auto *loop_head = llvm::BasicBlock::Create(emitter.GetContext(), "loop.head", func);
     auto *loop_body = llvm::BasicBlock::Create(emitter.GetContext(), "loop.body", func);
-    builder.CreateBr(loop_head);
+    auto *loop_backedge =
+        HasEffectIR(loop.invariant_backedge_ir)
+            ? llvm::BasicBlock::Create(
+                  emitter.GetContext(), "loop.invariant.backedge", func)
+            : loop_head;
+
+    emit_optional_ir(loop.invariant_entry_ir);
+    branch_if_open(loop_head);
 
     builder.SetInsertPoint(loop_head);
     builder.CreateBr(loop_body);
 
     builder.SetInsertPoint(loop_body);
-    emitter.PushLoopTargets(loop_end, loop_head, loop_result_slot, loop_result_type);
+    emitter.PushLoopTargets(loop_end, loop_backedge, loop_result_slot, loop_result_type);
     emitter.EmitIR(loop.body_ir);
     emitter.PopLoopTargets();
-    if (!builder.GetInsertBlock()->getTerminator())
+    branch_if_open(loop_backedge);
+
+    if (loop_backedge != loop_head)
     {
-      builder.CreateBr(loop_head);
+      builder.SetInsertPoint(loop_backedge);
+      emit_optional_ir(loop.invariant_backedge_ir);
+      branch_if_open(loop_head);
     }
   }
   else if (loop.kind == IRLoopKind::Conditional)
   {
     auto *loop_cond = llvm::BasicBlock::Create(emitter.GetContext(), "loop.cond", func);
     auto *loop_body = llvm::BasicBlock::Create(emitter.GetContext(), "loop.body", func);
-    builder.CreateBr(loop_cond);
+    auto *loop_backedge =
+        HasEffectIR(loop.invariant_backedge_ir)
+            ? llvm::BasicBlock::Create(
+                  emitter.GetContext(), "loop.invariant.backedge", func)
+            : loop_cond;
+    emit_optional_ir(loop.invariant_entry_ir);
+    branch_if_open(loop_cond);
 
     builder.SetInsertPoint(loop_cond);
     emitter.EmitIR(loop.cond_ir);
@@ -105,12 +205,16 @@ void IRInstructionVisitor::operator()(const IRLoop &loop) const
     builder.CreateCondBr(cond, loop_body, loop_end);
 
     builder.SetInsertPoint(loop_body);
-    emitter.PushLoopTargets(loop_end, loop_cond, loop_result_slot, loop_result_type);
+    emitter.PushLoopTargets(loop_end, loop_backedge, loop_result_slot, loop_result_type);
     emitter.EmitIR(loop.body_ir);
     emitter.PopLoopTargets();
-    if (!builder.GetInsertBlock()->getTerminator())
+    branch_if_open(loop_backedge);
+
+    if (loop_backedge != loop_cond)
     {
-      builder.CreateBr(loop_cond);
+      builder.SetInsertPoint(loop_backedge);
+      emit_optional_ir(loop.invariant_backedge_ir);
+      branch_if_open(loop_cond);
     }
   }
   else
@@ -189,12 +293,12 @@ void IRInstructionVisitor::operator()(const IRLoop &loop) const
               const std::uint64_t copy_size = std::min(src_size, dst_size);
               if (copy_size > 0)
               {
-                builder.CreateMemCpy(
+                EmitAggMemcpy(
+                    emitter,
                     dst_i8,
-                    llvm::Align(1),
                     src_i8,
-                    llvm::Align(1),
-                    llvm::ConstantInt::get(i64_ty, copy_size));
+                    llvm::ConstantInt::get(i64_ty, copy_size),
+                    1);
               }
               return builder.CreateLoad(dst_ty, dst_slot);
             };
@@ -385,13 +489,19 @@ void IRInstructionVisitor::operator()(const IRLoop &loop) const
                 llvm::BasicBlock::Create(emitter.GetContext(), "loop.body", func);
             auto *loop_resume =
                 llvm::BasicBlock::Create(emitter.GetContext(), "loop.resume", func);
+            auto *loop_backedge =
+                HasEffectIR(loop.invariant_backedge_ir)
+                    ? llvm::BasicBlock::Create(
+                          emitter.GetContext(), "loop.invariant.backedge", func)
+                    : loop_resume;
             auto *loop_failed = failed_disc.has_value()
                                     ? llvm::BasicBlock::Create(
                                           emitter.GetContext(),
                                           "loop.failed",
                                           func)
                                     : nullptr;
-            builder.CreateBr(loop_cond);
+            emit_optional_ir(loop.invariant_entry_ir);
+            branch_if_open(loop_cond);
 
             builder.SetInsertPoint(loop_cond);
             llvm::Value *current_async = builder.CreateLoad(iter_async_ty, iter_async_slot);
@@ -411,12 +521,16 @@ void IRInstructionVisitor::operator()(const IRLoop &loop) const
 
             builder.SetInsertPoint(loop_body);
             bind_async_iter_pattern(extract_async_payload(current_async, async_sig->out));
-            emitter.PushLoopTargets(loop_end, loop_resume, loop_result_slot, loop_result_type);
+            emitter.PushLoopTargets(loop_end, loop_backedge, loop_result_slot, loop_result_type);
             emitter.EmitIR(loop.body_ir);
             emitter.PopLoopTargets();
-            if (!builder.GetInsertBlock()->getTerminator())
+            branch_if_open(loop_backedge);
+
+            if (loop_backedge != loop_resume)
             {
-              builder.CreateBr(loop_resume);
+              builder.SetInsertPoint(loop_backedge);
+              emit_optional_ir(loop.invariant_backedge_ir);
+              branch_if_open(loop_resume);
             }
 
             builder.SetInsertPoint(loop_resume);
@@ -500,8 +614,7 @@ void IRInstructionVisitor::operator()(const IRLoop &loop) const
                       outer_async_slot);
 
                   llvm::Type *outer_disc_ty = outer_async_struct->getElementType(0);
-                  llvm::Value *outer_disc_ptr =
-                      builder.CreateStructGEP(outer_async_struct, outer_async_slot, 0);
+                  llvm::Value *outer_disc_ptr = outer_async_slot;
                   builder.CreateStore(
                       llvm::ConstantInt::get(outer_disc_ty, *outer_failed_disc),
                       outer_disc_ptr);
@@ -558,12 +671,12 @@ void IRInstructionVisitor::operator()(const IRLoop &loop) const
                           dl.getTypeAllocSize(outer_err_ty));
                       if (copy_size > 0)
                       {
-                        builder.CreateMemCpy(
+                        EmitAggMemcpy(
+                            emitter,
                             outer_payload_i8,
-                            llvm::Align(1),
                             src_i8,
-                            llvm::Align(1),
-                            llvm::ConstantInt::get(i64_ty, copy_size));
+                            llvm::ConstantInt::get(i64_ty, copy_size),
+                            1);
                       }
                     }
                   }
@@ -659,7 +772,7 @@ void IRInstructionVisitor::operator()(const IRLoop &loop) const
           }
           if (range_iter)
           {
-            if (!iter_elem_type || !analysis::BuiltinStepType(iter_elem_type))
+            if (!iter_elem_type || !analysis::BuiltinDiscreteType(iter_elem_type))
             {
               if (active_ctx)
               {
@@ -787,9 +900,13 @@ void IRInstructionVisitor::operator()(const IRLoop &loop) const
                     << "\n";
         }
 
-        if ((iter_is_range_type && !range_iter) ||
-            (!range_iter && !indexed_iter.has_value()) ||
-            (range_iter && trip_count.has_value() && *trip_count == 0))
+        emit_optional_ir(loop.invariant_entry_ir);
+        if (builder.GetInsertBlock()->getTerminator())
+        {
+        }
+        else if ((iter_is_range_type && !range_iter) ||
+                 (!range_iter && !indexed_iter.has_value()) ||
+                 (range_iter && trip_count.has_value() && *trip_count == 0))
         {
           builder.CreateBr(loop_end);
         }
@@ -886,6 +1003,11 @@ void IRInstructionVisitor::operator()(const IRLoop &loop) const
           auto *loop_cond = llvm::BasicBlock::Create(emitter.GetContext(), "loop.cond", func);
           auto *loop_body = llvm::BasicBlock::Create(emitter.GetContext(), "loop.body", func);
           auto *loop_inc = llvm::BasicBlock::Create(emitter.GetContext(), "loop.inc", func);
+          auto *loop_backedge =
+              HasEffectIR(loop.invariant_backedge_ir)
+                  ? llvm::BasicBlock::Create(
+                        emitter.GetContext(), "loop.invariant.backedge", func)
+                  : loop_inc;
           builder.CreateBr(loop_cond);
 
           builder.SetInsertPoint(loop_cond);
@@ -956,12 +1078,16 @@ void IRInstructionVisitor::operator()(const IRLoop &loop) const
               bind_iter_pattern_value(elem);
             }
           }
-          emitter.PushLoopTargets(loop_end, loop_inc, loop_result_slot, loop_result_type);
+          emitter.PushLoopTargets(loop_end, loop_backedge, loop_result_slot, loop_result_type);
           emitter.EmitIR(loop.body_ir);
           emitter.PopLoopTargets();
-          if (!builder.GetInsertBlock()->getTerminator())
+          branch_if_open(loop_backedge);
+
+          if (loop_backedge != loop_inc)
           {
-            builder.CreateBr(loop_inc);
+            builder.SetInsertPoint(loop_backedge);
+            emit_optional_ir(loop.invariant_backedge_ir);
+            branch_if_open(loop_inc);
           }
 
           builder.SetInsertPoint(loop_inc);
@@ -1067,6 +1193,7 @@ void IRInstructionVisitor::operator()(const IRLoop &loop) const
   {
     emitter.SetTempValue(loop.result, DefaultFor(loop.result));
   }
+  RecordLoopLoweringConformance(loop.kind);
 }
 
 } // namespace ultraviolet::codegen::emit_detail

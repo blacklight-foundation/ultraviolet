@@ -1,0 +1,10 @@
+//! Source-native tests for async audit artifact obligations.
+
+using HelloUltraviolet::Audit::{ asyncArtifactObligationsExecute }
+
+#test(name: "audit async artifact obligations execute")
+internal procedure auditAsyncArtifactObligationsExecute(authority: TestAuthority) -> bool
+|: |= @result
+{
+    return asyncArtifactObligationsExecute(authority)
+}

@@ -24,6 +24,7 @@
 
 #include "05_codegen/llvm/llvm_call.h"
 
+#include "01_project/target_platform.h"
 #include "00_core/spec_trace.h"
 #include "00_core/symbols.h"
 #include "04_analysis/typing/type_predicates.h"
@@ -42,7 +43,9 @@
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/IRBuilder.h"
+#include "llvm/Support/raw_ostream.h"
 
+#include <atomic>
 #include <iostream>
 #include "llvm/IR/Instructions.h"
 
@@ -52,6 +55,7 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace ultraviolet::codegen {
@@ -61,6 +65,354 @@ namespace {
 
 using emit_detail::BuildScope;
 
+std::atomic<int> llvm_call_lowering_oracle_state{0};
+
+std::string LLVMTypeTrace(llvm::Type* type) {
+  if (!type) {
+    return "null";
+  }
+  std::string text;
+  llvm::raw_string_ostream os(text);
+  type->print(os);
+  os.flush();
+  return text;
+}
+
+const char* PassKindTrace(PassKind kind) {
+  switch (kind) {
+    case PassKind::ByValue:
+      return "ByValue";
+    case PassKind::ByRef:
+      return "ByRef";
+    case PassKind::SRet:
+      return "SRet";
+  }
+  return "Unknown";
+}
+
+const char* CarrierTrace(ABIArgCarrierKind carrier) {
+  switch (carrier) {
+    case ABIArgCarrierKind::Direct:
+      return "Direct";
+    case ABIArgCarrierKind::Indirect:
+      return "Indirect";
+  }
+  return "Unknown";
+}
+
+const char* ByRefAccessTrace(ByRefAccessKind access) {
+  switch (access) {
+    case ByRefAccessKind::ReadOnly:
+      return "ro";
+    case ByRefAccessKind::ReadWrite:
+      return "rw";
+  }
+  return "unknown";
+}
+
+std::string AttrSpecTrace(const AttrSpec& attr) {
+  switch (attr.kind) {
+    case AttrKind::NonNull:
+      return "nonnull";
+    case AttrKind::NoUndef:
+      return "noundef";
+    case AttrKind::NoAlias:
+      return "noalias";
+    case AttrKind::ReadOnly:
+      return "readonly";
+    case AttrKind::Dereferenceable:
+      return "dereferenceable(" + std::to_string(attr.value) + ")";
+    case AttrKind::Alignment:
+      return "align(" + std::to_string(attr.value) + ")";
+    case AttrKind::StructRet:
+      return "sret(" + LLVMTypeTrace(attr.type) + ")";
+    case AttrKind::ByVal:
+      return "byval(" + LLVMTypeTrace(attr.type) + ")";
+    case AttrKind::NoCapture:
+      return "nocapture";
+    case AttrKind::NoReturn:
+      return "noreturn";
+    case AttrKind::NoUnwind:
+      return "nounwind";
+  }
+  return "unknown";
+}
+
+std::string AttrSetTrace(const AttrSet& attrs) {
+  if (attrs.empty()) {
+    return "empty";
+  }
+  std::string text;
+  for (std::size_t i = 0; i < attrs.size(); ++i) {
+    if (i > 0) {
+      text += ",";
+    }
+    text += AttrSpecTrace(attrs[i]);
+  }
+  return text;
+}
+
+std::string SourceTypeTrace(const analysis::TypeRef& type) {
+  return type ? analysis::TypeToString(type) : std::string("null");
+}
+
+void RecordArgLowerOracleCase(std::string_view rule_id,
+                              std::string_view case_name,
+                              const std::string& param_name,
+                              const analysis::TypeRef& type,
+                              PassKind pass_kind,
+                              llvm::Type* llvm_type,
+                              const AttrSet& attrs) {
+  std::string payload = "check=llvm-arg-lower-oracle;case=";
+  payload += case_name;
+  payload += ";param=";
+  payload += param_name;
+  payload += ";pass=";
+  payload += PassKindTrace(pass_kind);
+  payload += ";source_type=";
+  payload += SourceTypeTrace(type);
+  payload += ";llvm_type=";
+  payload += LLVMTypeTrace(llvm_type);
+  payload += ";attrs=";
+  payload += AttrSetTrace(attrs);
+  payload += ";attr_count=";
+  payload += std::to_string(attrs.size());
+  core::Conformance::Record(rule_id, std::nullopt, payload);
+}
+
+void RecordRetLowerOracleCase(std::string_view rule_id,
+                              std::string_view case_name,
+                              const analysis::TypeRef& type,
+                              PassKind pass_kind,
+                              llvm::Type* llvm_type) {
+  std::string payload = "check=llvm-ret-lower-oracle;case=";
+  payload += case_name;
+  payload += ";pass=";
+  payload += PassKindTrace(pass_kind);
+  payload += ";source_type=";
+  payload += SourceTypeTrace(type);
+  payload += ";llvm_type=";
+  payload += LLVMTypeTrace(llvm_type);
+  payload += ";result=";
+  payload += llvm_type ? "ok" : "error";
+  core::Conformance::Record(rule_id, std::nullopt, payload);
+}
+
+void RecordCallABIOracleCase(std::string_view rule_id,
+                             std::string_view case_name,
+                             const ABICallResult& abi) {
+  std::string payload = "check=llvm-call-sig-oracle;case=";
+  payload += case_name;
+  payload += ";result=";
+  payload += abi.valid ? "ok" : "error";
+  payload += ";ret_kind=";
+  payload += PassKindTrace(abi.ret_kind);
+  payload += ";llvm_ret=";
+  payload += LLVMTypeTrace(abi.ret_type);
+  payload += ";has_sret=";
+  payload += abi.has_sret ? "true" : "false";
+  payload += ";sret_attr=";
+  payload += abi.out_param_uses_sret_attr ? "true" : "false";
+  payload += ";llvm_param_count=";
+  payload += std::to_string(abi.param_types.size());
+  payload += ";source_param_count=";
+  payload += std::to_string(abi.param_kinds.size());
+  if (!abi.param_types.empty()) {
+    payload += ";llvm_params=";
+    for (std::size_t i = 0; i < abi.param_types.size(); ++i) {
+      if (i > 0) {
+        payload += ",";
+      }
+      payload += LLVMTypeTrace(abi.param_types[i]);
+    }
+  }
+  if (!abi.param_kinds.empty()) {
+    payload += ";param_kinds=";
+    for (std::size_t i = 0; i < abi.param_kinds.size(); ++i) {
+      if (i > 0) {
+        payload += ",";
+      }
+      payload += PassKindTrace(abi.param_kinds[i]);
+    }
+  }
+  if (!abi.param_carriers.empty()) {
+    payload += ";param_carriers=";
+    for (std::size_t i = 0; i < abi.param_carriers.size(); ++i) {
+      if (i > 0) {
+        payload += ",";
+      }
+      payload += CarrierTrace(abi.param_carriers[i]);
+    }
+  }
+  core::Conformance::Record(rule_id, std::nullopt, payload);
+}
+
+void RecordCallDefinitionOracleCases(std::string_view case_name,
+                                     const ABICallResult& abi) {
+  RecordCallABIOracleCase("def.24.LLVMCallJudg", case_name, abi);
+  RecordCallABIOracleCase("def.24.LLVMCallSigFields", case_name, abi);
+  RecordCallABIOracleCase("def.24.LLVMCallArgLists", case_name, abi);
+}
+
+void RecordByRefAccessOracleCase(std::string_view case_name,
+                                 const analysis::TypeRef& type,
+                                 ByRefAccessKind access) {
+  std::string payload = "check=llvm-byref-access-oracle;case=";
+  payload += case_name;
+  payload += ";source_type=";
+  payload += SourceTypeTrace(type);
+  payload += ";result=";
+  payload += ByRefAccessTrace(access);
+  core::Conformance::Record("def.24.ByRefAccess", std::nullopt, payload);
+}
+
+analysis::TypeRef MakeOracleOpaqueType() {
+  analysis::TypeOpaque opaque;
+  opaque.class_path = {"LLVMCallLoweringOracleOpaque"};
+  return analysis::MakeType(opaque);
+}
+
+void EnsureLLVMCallLoweringOracle(LLVMEmitter& emitter) {
+  if (!core::Conformance::Enabled() || !emitter.GetCurrentCtx()) {
+    return;
+  }
+
+  int expected = 0;
+  if (!llvm_call_lowering_oracle_state.compare_exchange_strong(expected, 1)) {
+    return;
+  }
+
+  LowerCtx* current_ctx = emitter.GetCurrentCtx();
+  auto i32 = analysis::MakeTypePrim("i32");
+  auto unit = analysis::MakeTypePrim("()");
+  auto u64 = analysis::MakeTypePrim("u64");
+  auto valid_ptr = analysis::MakeTypePtr(i32, analysis::PtrState::Valid);
+  auto large_array = analysis::MakeTypeArray(u64, 3);
+  auto opaque = MakeOracleOpaqueType();
+
+  const AttrSet byvalue_ptr_attrs =
+      ComputeLoweredParamAttrs("oracle_byvalue_ptr_valid",
+                               valid_ptr,
+                               PassKind::ByValue,
+                               current_ctx);
+  RecordArgLowerOracleCase("LLVMArgLower-ByValue-PtrValid",
+                           "byvalue-ptr-valid",
+                           "oracle_byvalue_ptr_valid",
+                           valid_ptr,
+                           PassKind::ByValue,
+                           emitter.GetLLVMType(valid_ptr),
+                           byvalue_ptr_attrs);
+
+  const AttrSet byvalue_other_attrs =
+      ComputeLoweredParamAttrs("oracle_byvalue_i32",
+                               i32,
+                               PassKind::ByValue,
+                               current_ctx);
+  RecordArgLowerOracleCase("LLVMArgLower-ByValue-Other",
+                           "byvalue-other-i32",
+                           "oracle_byvalue_i32",
+                           i32,
+                           PassKind::ByValue,
+                           emitter.GetLLVMType(i32),
+                           byvalue_other_attrs);
+
+  const AttrSet byref_attrs =
+      ComputeLoweredParamAttrs("oracle_byref_i32",
+                               i32,
+                               PassKind::ByRef,
+                               current_ctx);
+  RecordArgLowerOracleCase("LLVMArgLower-ByRef",
+                           "byref-i32",
+                           "oracle_byref_i32",
+                           i32,
+                           PassKind::ByRef,
+                           emitter.GetOpaquePtr(),
+                           byref_attrs);
+
+  const auto zst_ret =
+      ComputeLLVMReturnType(emitter, unit, PassKind::ByValue);
+  RecordRetLowerOracleCase("LLVMRetLower-ByValue-ZST",
+                           "byvalue-unit",
+                           unit,
+                           PassKind::ByValue,
+                           zst_ret.value_or(nullptr));
+
+  const auto value_ret =
+      ComputeLLVMReturnType(emitter, i32, PassKind::ByValue);
+  RecordRetLowerOracleCase("LLVMRetLower-ByValue",
+                           "byvalue-i32",
+                           i32,
+                           PassKind::ByValue,
+                           value_ret.value_or(nullptr));
+
+  const auto sret_ret =
+      ComputeLLVMReturnType(emitter, large_array, PassKind::SRet);
+  RecordRetLowerOracleCase("LLVMRetLower-SRet",
+                           "sret-array-u64-3",
+                           large_array,
+                           PassKind::SRet,
+                           sret_ret.value_or(nullptr));
+
+  std::vector<IRParam> arg_err_params = {
+      {std::nullopt,
+       "oracle_arg_error",
+       "oracle_arg_error",
+       opaque}
+  };
+  const auto arg_err =
+      ComputeLLVMParamTypes(emitter, arg_err_params, {PassKind::ByValue}, false);
+  core::Conformance::Record(
+      "LLVMArgLower-Err",
+      std::nullopt,
+      std::string("check=llvm-arg-lower-oracle;case=arg-error-opaque;result=") +
+          (arg_err.has_value() ? "unexpected-ok" : "error"));
+
+  const auto ret_err =
+      ComputeLLVMReturnType(emitter, opaque, PassKind::ByValue);
+  RecordRetLowerOracleCase("LLVMRetLower-Err",
+                           "ret-error-opaque",
+                           opaque,
+                           PassKind::ByValue,
+                           ret_err.value_or(nullptr));
+
+  auto unique_i32 = analysis::MakeTypePerm(analysis::Permission::Unique, i32);
+  auto const_i32 = analysis::MakeTypePerm(analysis::Permission::Const, i32);
+  RecordByRefAccessOracleCase("unique", unique_i32, ByRefAccess(unique_i32));
+  RecordByRefAccessOracleCase("const", const_i32, ByRefAccess(const_i32));
+
+  std::vector<IRParam> byvalue_params = {
+      {std::nullopt,
+       "oracle_byvalue_i32",
+       "oracle_byvalue_i32",
+       i32}
+  };
+  const ABICallResult byvalue_abi =
+      ComputeCallABI(emitter,
+                     byvalue_params,
+                     i32,
+                     false,
+                     true,
+                     false);
+  RecordCallABIOracleCase("LLVMCall-ByValue",
+                          "byvalue-i32-to-i32",
+                          byvalue_abi);
+  RecordCallDefinitionOracleCases("byvalue-i32-to-i32", byvalue_abi);
+
+  const ABICallResult sret_abi =
+      ComputeCallABI(emitter,
+                     byvalue_params,
+                     large_array,
+                     false,
+                     true,
+                     false);
+  RecordCallABIOracleCase("LLVMCall-SRet",
+                          "sret-array-u64-3",
+                          sret_abi);
+  RecordCallDefinitionOracleCases("sret-array-u64-3", sret_abi);
+
+  llvm_call_lowering_oracle_state.store(2);
+}
+
 analysis::TypeRef StripPermLocal(const analysis::TypeRef& type) {
   if (!type) {
     return type;
@@ -69,6 +421,71 @@ analysis::TypeRef StripPermLocal(const analysis::TypeRef& type) {
     return StripPermLocal(perm->base);
   }
   return type;
+}
+
+bool HasUnresolvedOpaqueLLVMType(const analysis::ScopeContext& scope,
+                                 const analysis::TypeRef& type) {
+  if (!type) {
+    return false;
+  }
+  analysis::TypeRef stripped = StripPermLocal(type);
+  if (!stripped) {
+    return false;
+  }
+  if (const auto* refine = std::get_if<analysis::TypeRefine>(&stripped->node)) {
+    return HasUnresolvedOpaqueLLVMType(scope, refine->base);
+  }
+  if (const auto* opaque = std::get_if<analysis::TypeOpaque>(&stripped->node)) {
+    const auto it = scope.sigma.opaque_underlying_by_class_path.find(
+        analysis::PathKeyOf(opaque->class_path));
+    if (it == scope.sigma.opaque_underlying_by_class_path.end() ||
+        !it->second || it->second.get() == stripped.get()) {
+      return true;
+    }
+    return HasUnresolvedOpaqueLLVMType(scope, it->second);
+  }
+  if (const auto* tuple = std::get_if<analysis::TypeTuple>(&stripped->node)) {
+    for (const auto& element : tuple->elements) {
+      if (HasUnresolvedOpaqueLLVMType(scope, element)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  if (const auto* array = std::get_if<analysis::TypeArray>(&stripped->node)) {
+    return HasUnresolvedOpaqueLLVMType(scope, array->element);
+  }
+  if (const auto* slice = std::get_if<analysis::TypeSlice>(&stripped->node)) {
+    return HasUnresolvedOpaqueLLVMType(scope, slice->element);
+  }
+  if (const auto* union_type = std::get_if<analysis::TypeUnion>(&stripped->node)) {
+    for (const auto& member : union_type->members) {
+      if (HasUnresolvedOpaqueLLVMType(scope, member)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  if (const auto* range = std::get_if<analysis::TypeRange>(&stripped->node)) {
+    return HasUnresolvedOpaqueLLVMType(scope, range->base);
+  }
+  if (const auto* range =
+          std::get_if<analysis::TypeRangeInclusive>(&stripped->node)) {
+    return HasUnresolvedOpaqueLLVMType(scope, range->base);
+  }
+  if (const auto* range =
+          std::get_if<analysis::TypeRangeFrom>(&stripped->node)) {
+    return HasUnresolvedOpaqueLLVMType(scope, range->base);
+  }
+  if (const auto* range =
+          std::get_if<analysis::TypeRangeTo>(&stripped->node)) {
+    return HasUnresolvedOpaqueLLVMType(scope, range->base);
+  }
+  if (const auto* range =
+          std::get_if<analysis::TypeRangeToInclusive>(&stripped->node)) {
+    return HasUnresolvedOpaqueLLVMType(scope, range->base);
+  }
+  return false;
 }
 
 const char* UnwindPersonalitySymbolForModule(const llvm::Module& module) {
@@ -243,6 +660,11 @@ bool IsValidPtrType(const analysis::TypeRef& type) {
   return false;
 }
 
+bool IsSafePtrType(const analysis::TypeRef& type) {
+  const auto stripped = StripPermLocal(type);
+  return stripped && std::holds_alternative<analysis::TypePtr>(stripped->node);
+}
+
 bool IsRawPtrType(const analysis::TypeRef& type) {
   const auto stripped = StripPermLocal(type);
   return stripped && std::holds_alternative<analysis::TypeRawPtr>(stripped->node);
@@ -294,10 +716,6 @@ bool IsForeignAbiAggregateLLVMType(llvm::Type* ty) {
   return ty && (ty->isStructTy() || ty->isArrayTy());
 }
 
-bool IsWin64CAbiAggregateDirectSize(std::uint64_t size) {
-  return size == 1 || size == 2 || size == 4 || size == 8;
-}
-
 bool ContainsFloatingLLVMType(llvm::Type* ty) {
   if (!ty) {
     return false;
@@ -319,103 +737,32 @@ bool ContainsFloatingLLVMType(llvm::Type* ty) {
   return false;
 }
 
-bool IsRegisterPairCAbiAggregateDirectSize(std::uint64_t size) {
-  return size <= 16;
-}
-
-bool CAbiAggregateReturnUsesSRet(project::TargetProfile profile,
-                                 std::uint64_t size) {
-  if (size == 0) {
-    return false;
-  }
-
-  switch (profile) {
-    case project::TargetProfile::X86_64Win64:
-      return !IsWin64CAbiAggregateDirectSize(size);
-    case project::TargetProfile::X86_64SysV:
-    case project::TargetProfile::AArch64AAPCS64:
-    case project::TargetProfile::AArch64Darwin:
-      return !IsRegisterPairCAbiAggregateDirectSize(size);
-  }
-
-  return true;
-}
-
-llvm::Type* Win64CAbiDirectAggregateCarrier(llvm::LLVMContext& ctx,
-                                            std::uint64_t size) {
-  switch (size) {
-    case 1:
-      return llvm::Type::getInt8Ty(ctx);
-    case 2:
-      return llvm::Type::getInt16Ty(ctx);
-    case 4:
-      return llvm::Type::getInt32Ty(ctx);
-    case 8:
-      return llvm::Type::getInt64Ty(ctx);
-    default:
+llvm::Type* TargetAggregateCarrierLLVMType(
+    llvm::LLVMContext& ctx,
+    const project::TargetAggregateCarrier& carrier) {
+  switch (carrier.kind) {
+    case project::TargetAggregateCarrierKind::None:
+    case project::TargetAggregateCarrierKind::Indirect:
       return nullptr;
-  }
-}
-
-llvm::Type* SysVCAbiDirectAggregateCarrier(llvm::LLVMContext& ctx,
-                                           llvm::Type* source_ty,
-                                           std::uint64_t size) {
-  if (size == 0 || size > 16 || ContainsFloatingLLVMType(source_ty)) {
-    return nullptr;
-  }
-  if (size <= 8) {
-    return llvm::IntegerType::get(ctx, static_cast<unsigned>(size * 8));
-  }
-
-  llvm::Type* low = llvm::Type::getInt64Ty(ctx);
-  llvm::Type* high =
-      llvm::IntegerType::get(ctx, static_cast<unsigned>((size - 8) * 8));
-  return llvm::StructType::get(ctx, {low, high}, /*isPacked=*/size != 16);
-}
-
-llvm::Type* AArch64CAbiDirectAggregateReturnCarrier(
-    llvm::LLVMContext& ctx,
-    std::uint64_t size,
-    std::uint64_t align) {
-  if (size == 0 || size > 16) {
-    return nullptr;
-  }
-  if (size <= 8) {
-    return llvm::IntegerType::get(ctx, static_cast<unsigned>(size * 8));
-  }
-  if (size == 16 && align >= 16) {
-    return llvm::IntegerType::get(ctx, 128);
-  }
-  if (size == 16) {
-    return llvm::ArrayType::get(llvm::Type::getInt64Ty(ctx), 2);
-  }
-
-  llvm::Type* low = llvm::Type::getInt64Ty(ctx);
-  llvm::Type* high =
-      llvm::IntegerType::get(ctx, static_cast<unsigned>((size - 8) * 8));
-  return llvm::StructType::get(ctx, {low, high}, /*isPacked=*/true);
-}
-
-llvm::Type* ForeignAbiDirectAggregateCarrier(
-    project::TargetProfile profile,
-    llvm::LLVMContext& ctx,
-    llvm::Type* source_ty,
-    std::uint64_t size,
-    std::optional<std::uint64_t> align = std::nullopt) {
-  if (!IsForeignAbiAggregateLLVMType(source_ty)) {
-    return nullptr;
-  }
-  switch (profile) {
-    case project::TargetProfile::X86_64Win64:
-      return Win64CAbiDirectAggregateCarrier(ctx, size);
-    case project::TargetProfile::X86_64SysV:
-      return SysVCAbiDirectAggregateCarrier(ctx, source_ty, size);
-    case project::TargetProfile::AArch64AAPCS64:
-    case project::TargetProfile::AArch64Darwin:
-      return AArch64CAbiDirectAggregateReturnCarrier(
+    case project::TargetAggregateCarrierKind::Integer:
+      return llvm::IntegerType::get(
           ctx,
-          size,
-          align.value_or(1));
+          static_cast<unsigned>(carrier.primary_bits));
+    case project::TargetAggregateCarrierKind::IntegerPair: {
+      llvm::Type* low = llvm::IntegerType::get(
+          ctx,
+          static_cast<unsigned>(carrier.primary_bits));
+      llvm::Type* high = llvm::IntegerType::get(
+          ctx,
+          static_cast<unsigned>(carrier.secondary_bits));
+      return llvm::StructType::get(ctx, {low, high}, carrier.packed);
+    }
+    case project::TargetAggregateCarrierKind::IntegerArray:
+      return llvm::ArrayType::get(
+          llvm::IntegerType::get(
+              ctx,
+              static_cast<unsigned>(carrier.element_bits)),
+          carrier.element_count);
   }
   return nullptr;
 }
@@ -447,7 +794,11 @@ AttrSet ComputeLoweredParamAttrs(const std::string& param_name,
         return attrs;
       }
       SPEC_RULE("LLVMArgLower-ByValue-Other");
-      return ComputeArgAttrsExt(param_name, type);
+      AttrSet attrs = ComputeArgAttrsExt(param_name, type);
+      if (IsSafePtrType(type) || IsRawPtrType(type)) {
+        MergeUniqueAttrs(attrs, ComputePtrAttrs(type, ctx));
+      }
+      return attrs;
     }
     case PassKind::SRet:
       break;
@@ -487,6 +838,36 @@ AttrSet ComputeExplicitOutParamAttrs(const analysis::TypeRef& ret_type,
   return attrs;
 }
 
+AttrSet ComputeForeignByValueAggregateParamAttrs(
+    const analysis::TypeRef& type,
+    llvm::Type* llvm_type,
+    const LowerCtx* ctx) {
+  AttrSet attrs;
+  if (!type || !llvm_type) {
+    return attrs;
+  }
+
+  analysis::TypeRef wrapper = analysis::MakeTypePtr(
+      analysis::MakeTypePerm(analysis::Permission::Const, type),
+      analysis::PtrState::Valid);
+  MergeUniqueAttrs(attrs, ComputePtrAttrs(wrapper, ctx));
+  AppendUniqueAttr(attrs, AttrSpec{AttrKind::ByVal, 0, llvm_type});
+  return attrs;
+}
+
+bool UsesForeignByValueAggregatePointer(
+    project::TargetProfile target_profile,
+    bool foreign_boundary_mode_independent,
+    const IRParam& param,
+    llvm::Type* llvm_type) {
+  return foreign_boundary_mode_independent &&
+         param.mode.has_value() &&
+         *param.mode == analysis::ParamMode::Move &&
+         IsForeignAbiAggregateLLVMType(llvm_type) &&
+         project::TargetForeignByValueAggregateIndirectParamUsesByVal(
+             target_profile);
+}
+
 llvm::Align RequiredAllocaAlignment(const llvm::DataLayout& data_layout,
                                     llvm::Type* ty) {
   if (!ty) {
@@ -494,6 +875,26 @@ llvm::Align RequiredAllocaAlignment(const llvm::DataLayout& data_layout,
   }
 
   llvm::Align required = data_layout.getABITypeAlign(ty);
+  if (ty->isPointerTy()) {
+    required = std::max(required, llvm::Align(8));
+  } else if (auto* integer_ty = llvm::dyn_cast<llvm::IntegerType>(ty)) {
+    const unsigned bit_width = integer_ty->getBitWidth();
+    if (bit_width >= 128) {
+      required = std::max(required, llvm::Align(16));
+    } else if (bit_width >= 64) {
+      required = std::max(required, llvm::Align(8));
+    } else if (bit_width >= 32) {
+      required = std::max(required, llvm::Align(4));
+    } else if (bit_width >= 16) {
+      required = std::max(required, llvm::Align(2));
+    }
+  } else if (ty->isDoubleTy()) {
+    required = std::max(required, llvm::Align(8));
+  } else if (ty->isFloatTy()) {
+    required = std::max(required, llvm::Align(4));
+  } else if (ty->isHalfTy()) {
+    required = std::max(required, llvm::Align(2));
+  }
   auto merge_child = [&](llvm::Type* child_ty) {
     const llvm::Align child_align =
         RequiredAllocaAlignment(data_layout, child_ty);
@@ -603,6 +1004,50 @@ llvm::AllocaInst* AcquireReusableEntryAlloca(llvm::Function* func,
   return result;
 }
 
+llvm::Value* ReinterpretFirstClassValueBits(llvm::IRBuilder<>* builder,
+                                            llvm::Value* value,
+                                            llvm::Type* target,
+                                            std::string_view slot_name) {
+  if (!builder || !value || !target) {
+    return nullptr;
+  }
+  if (value->getType() == target) {
+    return value;
+  }
+  if (!value->getType()->isFirstClassType() || !target->isFirstClassType()) {
+    return nullptr;
+  }
+
+  llvm::BasicBlock* insert_block = builder->GetInsertBlock();
+  llvm::Function* fn = insert_block ? insert_block->getParent() : nullptr;
+  llvm::Module* module = fn ? fn->getParent() : nullptr;
+  if (!fn || !module) {
+    return nullptr;
+  }
+
+  const llvm::DataLayout& layout = module->getDataLayout();
+  const std::uint64_t src_bits = layout.getTypeSizeInBits(value->getType());
+  const std::uint64_t dst_bits = layout.getTypeSizeInBits(target);
+  if (src_bits == 0 || src_bits != dst_bits) {
+    return nullptr;
+  }
+
+  const std::string slot_name_string(slot_name);
+  llvm::AllocaInst* slot =
+      CreateEntryAlloca(fn, value->getType(), slot_name_string);
+  if (!slot) {
+    return nullptr;
+  }
+
+  llvm::StoreInst* stored = builder->CreateStore(value, slot);
+  stored->setAlignment(slot->getAlign());
+  llvm::Value* cast_ptr =
+      builder->CreateBitCast(slot, llvm::PointerType::get(target, 0));
+  llvm::LoadInst* loaded = builder->CreateLoad(target, cast_ptr);
+  loaded->setAlignment(llvm::Align(1));
+  return loaded;
+}
+
 llvm::Value* CoerceValue(llvm::IRBuilderBase* builder_base,
                          llvm::Value* value,
                          llvm::Type* target) {
@@ -705,24 +1150,10 @@ llvm::Value* CoerceValue(llvm::IRBuilderBase* builder_base,
     }
   }
   if (value->getType()->isFirstClassType() && target->isFirstClassType()) {
-    llvm::BasicBlock* insert_block = builder->GetInsertBlock();
-    llvm::Function* fn = insert_block ? insert_block->getParent() : nullptr;
-    llvm::Module* module = fn ? fn->getParent() : nullptr;
-    if (fn && module) {
-      const llvm::DataLayout& layout = module->getDataLayout();
-      const std::uint64_t src_bits = layout.getTypeSizeInBits(value->getType());
-      const std::uint64_t dst_bits = layout.getTypeSizeInBits(target);
-      if (src_bits == dst_bits && src_bits > 0 &&
-          !llvm::CastInst::isBitCastable(value->getType(), target)) {
-        llvm::AllocaInst* slot = CreateEntryAlloca(fn, value->getType(), "coerce_bits");
-        if (slot) {
-          builder->CreateStore(value, slot);
-          llvm::Value* cast_ptr =
-              builder->CreateBitCast(slot, llvm::PointerType::get(target, 0));
-          llvm::LoadInst* loaded = builder->CreateLoad(target, cast_ptr);
-          loaded->setAlignment(llvm::Align(1));
-          return loaded;
-        }
+    if (!llvm::CastInst::isBitCastable(value->getType(), target)) {
+      if (llvm::Value* reinterpreted =
+              ReinterpretFirstClassValueBits(builder, value, target, "coerce_bits")) {
+        return reinterpreted;
       }
     }
   }
@@ -731,6 +1162,27 @@ llvm::Value* CoerceValue(llvm::IRBuilderBase* builder_base,
     return builder->CreateBitCast(value, target);
   }
   return llvm::Constant::getNullValue(target);
+}
+
+llvm::Value* ReconstructABIReturnValue(llvm::IRBuilderBase* builder_base,
+                                       llvm::Value* value,
+                                       llvm::Type* target) {
+  if (!builder_base || !value || !target) {
+    return value;
+  }
+
+  auto* builder = static_cast<llvm::IRBuilder<>*>(builder_base);
+  if (value->getType() == target) {
+    return value;
+  }
+  if (llvm::Value* reinterpreted =
+          ReinterpretFirstClassValueBits(builder, value, target, "abi_return")) {
+    return reinterpreted;
+  }
+  if (llvm::CastInst::isBitCastable(value->getType(), target)) {
+    return builder->CreateBitCast(value, target);
+  }
+  return CoerceValue(builder, value, target);
 }
 
 // -----------------------------------------------------------------------------
@@ -1680,9 +2132,37 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
   if (ffi_import_boundary) {
     if (ffi_import_catch) {
       SPEC_RULE("CodeGen-UnwindCatch-Import");
+      core::Conformance::Record(
+          "rule.23.CodeGen-UnwindCatch-Import",
+          std::nullopt,
+          "source=EmitABICall;boundary=import;mode=catch;"
+          "instruction=invoke;unwind=landingpad;catch_result=null_phi");
     } else {
       SPEC_RULE("CodeGen-UnwindAbort-Import");
+      core::Conformance::Record(
+          "rule.23.CodeGen-UnwindAbort-Import",
+          std::nullopt,
+          "source=EmitABICall;boundary=import;mode=abort;"
+          "instruction=invoke;unwind=landingpad;failure=runtime_panic");
     }
+    core::Conformance::Record(
+        "requirement.23.BoundaryUnwindDynamicEffects",
+        std::nullopt,
+        ffi_import_catch
+            ? "source=EmitABICall;boundary=import;mode=catch;"
+              "dynamic_effect=catch_foreign_exception"
+            : "source=EmitABICall;boundary=import;mode=abort;"
+              "dynamic_effect=abort_on_foreign_exception");
+    core::Conformance::Record(
+        "def.23.BoundaryUnwindCodeGenerationEffects",
+        std::nullopt,
+        "source=EmitABICall;boundary=import;instruction=invoke;"
+        "unwind_block=landingpad;cleanup=true");
+    core::Conformance::Record(
+        "requirement.23.GeneralDestructionAndUnwindCleanupReference",
+        std::nullopt,
+        "source=EmitABICall;landingpad_cleanup=true;"
+        "cleanup_framework=section_24_5");
 
     llvm::Type* i32_ty = llvm::Type::getInt32Ty(emitter.GetContext());
     llvm::FunctionType* personality_ty =
@@ -1804,7 +2284,7 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
     if (ret_type) {
       llvm::Type* expected = emitter.GetLLVMType(ret_type);
       if (expected && direct_result->getType() != expected) {
-        direct_result = CoerceValue(builder, direct_result, expected);
+        direct_result = ReconstructABIReturnValue(builder, direct_result, expected);
       }
     }
     return direct_result;
@@ -1855,6 +2335,23 @@ bool IsExternC(std::string_view symbol) {
   return symbol.find("::") == std::string_view::npos;
 }
 
+void ObserveNeverReturnValueBits(const analysis::ScopeContext& scope,
+                                 const analysis::TypeRef& ret_type) {
+  if (!core::Conformance::Enabled() || !ret_type) {
+    return;
+  }
+  const auto* prim = std::get_if<analysis::TypePrim>(&ret_type->node);
+  if (!prim || prim->name != "!") {
+    return;
+  }
+
+  ast::Token ignored_lit;
+  const auto bits = analysis::layout::EncodeConst(ret_type, ignored_lit);
+  if (bits.has_value()) {
+    (void)analysis::layout::ValidValue(scope, ret_type, *bits);
+  }
+}
+
 // -----------------------------------------------------------------------------
 // Procedure ABI Lowering
 // -----------------------------------------------------------------------------
@@ -1865,8 +2362,48 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
                              bool use_c_abi_aggregate_sret,
                              bool foreign_boundary_mode_independent,
                              bool force_explicit_out_result) {
-  SPEC_RULE("LLVMCall-ByValue");
-  SPEC_RULE("LLVMCall-SRet");
+  EnsureLLVMCallLoweringOracle(emitter);
+  SPEC_DEF("def.24.DefaultCallingConventionAndTargetArtifacts", "");
+  SPEC_DEF("def.24.ExternAbiSetAndConventionMapping", "");
+  SPEC_DEF("def.24.ConventionLayout", "");
+  SPEC_DEF("def.24.AssignParamRegs", "");
+  SPEC_DEF("def.24.StackFrameForm", "");
+  if (core::Conformance::Enabled()) {
+    std::string abi_payload = "source=ComputeCallABI";
+    abi_payload += ";default_calling_convention=target";
+    abi_payload += ";foreign_boundary=";
+    abi_payload += foreign_boundary_mode_independent ? "true" : "false";
+    abi_payload += ";c_aggregate_sret=";
+    abi_payload += use_c_abi_aggregate_sret ? "true" : "false";
+    abi_payload += ";force_out_result=";
+    abi_payload += force_explicit_out_result ? "true" : "false";
+    core::Conformance::Record(
+        "def.24.DefaultCallingConventionAndTargetArtifacts",
+        std::nullopt,
+        abi_payload);
+    core::Conformance::Record(
+        "def.24.ExternAbiSetAndConventionMapping",
+        std::nullopt,
+        abi_payload);
+    core::Conformance::Record(
+        "def.24.ConventionLayout", std::nullopt, abi_payload);
+    core::Conformance::Record(
+        "def.24.AssignParamRegs", std::nullopt, abi_payload);
+    core::Conformance::Record(
+        "def.24.StackFrameForm", std::nullopt, abi_payload);
+    if (foreign_boundary_mode_independent) {
+      core::Conformance::Record(
+          "requirement.24.ForeignVisibleABIUsesForeignJudgements",
+          std::nullopt,
+          abi_payload);
+    }
+  }
+  SPEC_RULE("rule.24.StackFrame-Layout");
+  SPEC_RULE("rule.24.Conv-Compatible");
+  if (foreign_boundary_mode_independent) {
+    SPEC_RULE("rule.24.Conv-FFI-Required");
+    SPEC_RULE("requirement.24.ForeignVisibleABIUsesForeignJudgements");
+  }
 
   ABICallResult result;
   LowerCtx* current_ctx = emitter.GetCurrentCtx();
@@ -1942,18 +2479,27 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
                 << "\n";
     }
     if (current_ctx) {
-      current_ctx->ReportCodegenFailure();
+      bool unresolved_opaque_type = HasUnresolvedOpaqueLLVMType(scope, ret_type);
+      for (const auto& param : params) {
+        unresolved_opaque_type =
+            HasUnresolvedOpaqueLLVMType(scope, param.type) || unresolved_opaque_type;
+      }
+      if (unresolved_opaque_type) {
+        SPEC_RULE("LLVMTy-Err");
+        current_ctx->ReportCodegenFailure(
+            LowerCtx::CodegenFailureKind::LLVMTypeMapping);
+      } else {
+        current_ctx->ReportCodegenFailure();
+      }
     }
     return result;
   }
 
   result.param_kinds = call_info->param_kinds;
+  result.ret_kind = call_info->ret_kind;
   result.param_carriers.assign(params.size(), ABIArgCarrierKind::Direct);
 
   const bool c_abi_return_boundary = use_c_abi_aggregate_sret;
-  const bool win64_foreign_param_abi =
-      foreign_boundary_mode_independent &&
-      emitter.GetTargetProfile() == project::TargetProfile::X86_64Win64;
   const bool foreign_c_abi = use_c_abi_aggregate_sret;
   const auto ret_size =
       ret_type ? ::ultraviolet::analysis::layout::SizeOf(scope, ret_type)
@@ -1968,8 +2514,9 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
 
   bool c_abi_sret = false;
   if (c_abi_aggregate_return) {
-    c_abi_sret =
-        CAbiAggregateReturnUsesSRet(emitter.GetTargetProfile(), *ret_size);
+    c_abi_sret = project::TargetCAggregateReturnUsesIndirect(
+        emitter.GetTargetProfile(),
+        *ret_size);
   }
 
   result.has_sret =
@@ -1993,6 +2540,7 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
       return invalidate();
     }
     if (*ret_size == 0) {
+      ObserveNeverReturnValueBits(scope, ret_type);
       SPEC_RULE("LLVMRetLower-ByValue-ZST");
       result.ret_type = llvm::Type::getVoidTy(emitter.GetContext());
     } else {
@@ -2001,15 +2549,18 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
       if (foreign_c_abi && ret_type && ret_size.has_value() &&
           *ret_size > 0 && ret_align.has_value() &&
           IsForeignAbiAggregateLLVMType(result.ret_type)) {
-        if (llvm::Type* carrier = ForeignAbiDirectAggregateCarrier(
-                emitter.GetTargetProfile(),
-                emitter.GetContext(),
-                result.ret_type,
-                *ret_size,
-                ret_align)) {
+        const auto carrier_desc = project::TargetCAggregateDirectReturnCarrier(
+            emitter.GetTargetProfile(),
+            *ret_size,
+            *ret_align,
+            ContainsFloatingLLVMType(result.ret_type));
+        if (llvm::Type* carrier =
+                TargetAggregateCarrierLLVMType(emitter.GetContext(),
+                                               carrier_desc)) {
           result.ret_type = carrier;
-        } else if (emitter.GetTargetProfile() ==
-                   project::TargetProfile::X86_64Win64) {
+        } else if (project::TargetCAggregateReturnUsesIndirect(
+                       emitter.GetTargetProfile(),
+                       *ret_size)) {
           result.ret_type = llvm::Type::getVoidTy(emitter.GetContext());
         }
       }
@@ -2044,12 +2595,21 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
     }
     if (kind == PassKind::ByRef) {
       SPEC_RULE("LLVMArgLower-ByRef");
+      llvm::Type* llvm_ty = emitter.GetLLVMType(params[i].type);
+      AttrSet param_attrs =
+          UsesForeignByValueAggregatePointer(
+              emitter.GetTargetProfile(),
+              foreign_boundary_mode_independent,
+              params[i],
+              llvm_ty)
+              ? ComputeForeignByValueAggregateParamAttrs(
+                    params[i].type, llvm_ty, current_ctx)
+              : ComputeLoweredParamAttrs(params[i].name,
+                                         params[i].type,
+                                         kind,
+                                         current_ctx);
       result.param_types.push_back(emitter.GetOpaquePtr());
-      result.llvm_param_attrs.push_back(
-          ComputeLoweredParamAttrs(params[i].name,
-                                   params[i].type,
-                                   kind,
-                                   current_ctx));
+      result.llvm_param_attrs.push_back(std::move(param_attrs));
       result.param_indices[i] = llvm_index++;
       result.param_carriers[i] = ABIArgCarrierKind::Indirect;
       continue;
@@ -2066,25 +2626,23 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
     }
 
     llvm::Type* llvm_ty = emitter.GetLLVMType(params[i].type);
-    if (win64_foreign_param_abi && llvm_ty &&
+    if (foreign_boundary_mode_independent && foreign_c_abi && llvm_ty &&
         IsForeignAbiAggregateLLVMType(llvm_ty)) {
+      const auto align =
+          ::ultraviolet::analysis::layout::AlignOf(scope, params[i].type);
+      const auto carrier_desc = project::TargetCAggregateByValueParamCarrier(
+          emitter.GetTargetProfile(),
+          *size,
+          align.value_or(1),
+          ContainsFloatingLLVMType(llvm_ty));
       if (llvm::Type* carrier =
-              Win64CAbiDirectAggregateCarrier(emitter.GetContext(), *size)) {
+              TargetAggregateCarrierLLVMType(emitter.GetContext(),
+                                             carrier_desc)) {
         llvm_ty = carrier;
-      } else {
+      } else if (carrier_desc.kind ==
+                 project::TargetAggregateCarrierKind::Indirect) {
         llvm_ty = emitter.GetOpaquePtr();
         result.param_carriers[i] = ABIArgCarrierKind::Indirect;
-      }
-    }
-    if (foreign_c_abi &&
-        emitter.GetTargetProfile() == project::TargetProfile::X86_64SysV &&
-        llvm_ty && IsForeignAbiAggregateLLVMType(llvm_ty)) {
-      if (llvm::Type* carrier = ForeignAbiDirectAggregateCarrier(
-              emitter.GetTargetProfile(),
-              emitter.GetContext(),
-              llvm_ty,
-              *size)) {
-        llvm_ty = carrier;
       }
     }
     if (!llvm_ty) {
@@ -2100,6 +2658,11 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
   result.func_type =
       llvm::FunctionType::get(result.ret_type, result.param_types, false);
   result.valid = true;
+  if (result.ret_kind == PassKind::SRet && result.out_param_uses_sret_attr) {
+    SPEC_RULE("LLVMCall-SRet");
+  } else if (result.ret_kind == PassKind::ByValue) {
+    SPEC_RULE("LLVMCall-ByValue");
+  }
   if (use_cache) {
     call_abi_caches[&emitter].emplace(cache_key, result);
   }

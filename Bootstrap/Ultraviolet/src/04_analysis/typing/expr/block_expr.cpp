@@ -38,8 +38,10 @@ ExprTypeResult TypeBlockExprImpl(const ScopeContext& ctx,
     return {false, std::nullopt, {}};
   }
 
-  return TypeBlock(ctx, type_ctx, *expr.block, env, type_expr,
-                   type_ident, type_place, type_ctx.env_ref);
+  StmtTypeContext body_ctx = type_ctx;
+  body_ctx.env_ref = nullptr;
+  return TypeBlock(ctx, body_ctx, *expr.block, env, type_expr,
+                   type_ident, type_place);
 }
 
 // Check block expression against expected type
@@ -57,8 +59,10 @@ CheckResult CheckBlockExprImpl(const ScopeContext& ctx,
     return {};
   }
 
-  return CheckBlock(ctx, type_ctx, *expr.block, env, expected, type_expr,
-                    type_ident, type_place, type_ctx.env_ref);
+  StmtTypeContext body_ctx = type_ctx;
+  body_ctx.env_ref = nullptr;
+  return CheckBlock(ctx, body_ctx, *expr.block, env, expected, type_expr,
+                    type_ident, type_place);
 }
 
 }  // namespace ultraviolet::analysis::expr

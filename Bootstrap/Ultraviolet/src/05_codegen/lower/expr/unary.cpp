@@ -88,6 +88,42 @@ bool IsSignedIntegerOperandType(const analysis::TypeRef& type) {
          name == "i128" || name == "isize";
 }
 
+std::string PrimitiveOperandName(const analysis::TypeRef& type) {
+  const analysis::TypeRef stripped = StripPermType(type);
+  if (!stripped) {
+    return "unknown";
+  }
+  const auto* prim = std::get_if<analysis::TypePrim>(&stripped->node);
+  if (!prim) {
+    return "nonprimitive";
+  }
+  return prim->name;
+}
+
+void RecordUnaryNegationCheckDecision(const ast::Expr& operand,
+                                      const analysis::TypeRef& operand_type,
+                                      bool needs_check) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  const std::string type_name = PrimitiveOperandName(operand_type);
+  const std::string predicate_payload =
+      "predicate=NeedsUnOpPanicCheck;op=-;type=" + type_name +
+      ";result=" + (needs_check ? "true" : "false");
+  core::Conformance::Record(
+      "def.16.UnaryOperatorLoweringPanicCheck",
+      std::optional<core::Span>{operand.span},
+      predicate_payload);
+
+  const std::string requirement_payload =
+      "requirement=UnaryNegationLoweringOverflowChecks;op=-;type=" + type_name +
+      ";check=" + (needs_check ? "present" : "absent");
+  core::Conformance::Record(
+      "req.16.UnaryNegationLoweringOverflowChecks",
+      std::optional<core::Span>{operand.span},
+      requirement_payload);
+}
+
 }  // namespace
 
 // =============================================================================
@@ -114,9 +150,6 @@ bool IsSignedIntegerOperandType(const analysis::TypeRef& type) {
 LowerResult LowerUnOp(const std::string& op,
                       const ast::Expr& operand,
                       LowerCtx& ctx) {
-  SPEC_RULE("Lower-UnOp-Ok");
-  SPEC_RULE("Lower-UnOp-Panic");
-
   // The operand value is consumed by the unary operator, so it should not be
   // tracked as a temporary requiring cleanup.
   auto prev_suppress = ctx.suppress_temp_at_depth;
@@ -142,6 +175,8 @@ LowerResult LowerUnOp(const std::string& op,
   // Only signed-integer negation can overflow (e.g., -INT_MIN).
   bool needs_check = (op == "-") && IsSignedIntegerOperandType(operand_type);
   if (needs_check) {
+    SPEC_RULE("Lower-UnOp-Panic");
+    SPEC_RULE("rule.16.Lower-UnOp-Panic");
     IRCheckOp check;
     check.op = op;
     check.reason = PanicReasonString(UnOpPanicReason(op));
@@ -149,6 +184,12 @@ LowerResult LowerUnOp(const std::string& op,
     // rhs is not set for unary operators (std::optional remains empty)
     parts.push_back(MakeIR(std::move(check)));
     parts.push_back(PanicFollowup(ctx));
+  } else {
+    SPEC_RULE("Lower-UnOp-Ok");
+    SPEC_RULE("rule.16.Lower-UnOp-Ok");
+  }
+  if (op == "-") {
+    RecordUnaryNegationCheckDecision(operand, operand_type, needs_check);
   }
 
   // Emit the unary operation
@@ -181,6 +222,7 @@ LowerResult LowerUnOp(const std::string& op,
 
 LowerResult LowerUnaryExpr(const ast::UnaryExpr& expr, LowerCtx& ctx) {
   SPEC_RULE("Lower-Expr-Unary");
+  SPEC_RULE("rule.16.Lower-Expr-Unary");
   return LowerUnOp(expr.op, *expr.value, ctx);
 }
 

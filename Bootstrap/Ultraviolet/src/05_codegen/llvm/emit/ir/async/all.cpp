@@ -96,6 +96,10 @@ void IRInstructionVisitor::operator()(const IRAll &all) const
     return;
   }
 
+  SPEC_RULE("requirement.21.AllJoinIRSemantics");
+  SPEC_RULE("requirement.21.AllRuntimeSemantics");
+  SPEC_RULE("rule.21.EvalSigma-All");
+
   llvm::IRBuilder<> entry_builder(
       &func->getEntryBlock(),
       func->getEntryBlock().begin());
@@ -134,12 +138,12 @@ void IRInstructionVisitor::operator()(const IRAll &all) const
     const std::uint64_t copy_size = std::min(src_size, dst_size);
     if (copy_size > 0)
     {
-      builder.CreateMemCpy(
+      EmitAggMemcpy(
+          emitter,
           dst_i8,
-          llvm::Align(1),
           src_i8,
-          llvm::Align(1),
-          llvm::ConstantInt::get(i64_ty, copy_size));
+          llvm::ConstantInt::get(i64_ty, copy_size),
+          1);
     }
     return builder.CreateLoad(dst_ty, dst_slot);
   };

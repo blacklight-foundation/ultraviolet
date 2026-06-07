@@ -68,6 +68,39 @@ internal procedure timeErrorIsClockUnavailable(error: TimeError) -> bool {
     }
 }
 
+internal procedure timeErrorIsInvalidResolution(error: TimeError) -> bool {
+    return if error is {
+        TimeError::Unsupported {
+            false
+        }
+        TimeError::ClockUnavailable {
+            false
+        }
+        TimeError::OutOfRange {
+            false
+        }
+        TimeError::InvalidResolution {
+            true
+        }
+        TimeError::ClockMismatch {
+            false
+        }
+    }
+}
+
+internal procedure timeOutcomeErrorIsInvalidResolution<TValue>(
+    result: Outcome<TValue, TimeError>
+) -> bool {
+    return if result is {
+        @Value {
+            false
+        }
+        @Error { error } {
+            timeErrorIsInvalidResolution(error)
+        }
+    }
+}
+
 internal procedure wallInstantReferenceObserved(result: Outcome<UtcInstant, TimeError>) -> bool {
     return if result is {
         @Value {
@@ -101,6 +134,37 @@ internal procedure wallCoarsenReferenceSucceeded(result: Outcome<$WallTime, Time
     }
 }
 
+public procedure authorityTimePrimitiveCallsReference(context: Context) -> bool {
+    let monotonic: $MonotonicTime = context.time~>monotonic()
+    let wall: $WallTime = context.time~>wall()
+
+    let start: MonotonicInstant = monotonic~>now()
+    let end: MonotonicInstant = monotonic~>now()
+    let monotonic_resolution: Duration = monotonic~>resolution()
+    let invalid_resolution: Duration = Duration { nanoseconds: 0u128 }
+    let elapsed: Outcome<Duration, TimeError> = monotonic~>elapsed(start, end)
+    let coarsened_monotonic: Outcome<$MonotonicTime, TimeError> =
+        monotonic~>coarsen(monotonic_resolution)
+    let invalid_monotonic_coarsen: Outcome<$MonotonicTime, TimeError> =
+        monotonic~>coarsen(invalid_resolution)
+
+    let wall_now: Outcome<UtcInstant, TimeError> = wall~>now_utc()
+    let wall_resolution: Outcome<Duration, TimeError> = wall~>resolution()
+    let coarsened_wall: Outcome<$WallTime, TimeError> =
+        wall~>coarsen(monotonic_resolution)
+    let invalid_wall_coarsen: Outcome<$WallTime, TimeError> =
+        wall~>coarsen(invalid_resolution)
+
+    return durationReferenceIsPositive(monotonic_resolution) &&
+        elapsedReferenceSucceeded(elapsed) &&
+        monotonicCoarsenReferenceSucceeded(coarsened_monotonic) &&
+        timeOutcomeErrorIsInvalidResolution(invalid_monotonic_coarsen) &&
+        wallInstantReferenceObserved(wall_now) &&
+        wallResolutionReferenceObserved(wall_resolution) &&
+        wallCoarsenReferenceSucceeded(coarsened_wall) &&
+        timeOutcomeErrorIsInvalidResolution(invalid_wall_coarsen)
+}
+
 /// Exercises the Authority Time reference surface.
 public procedure runAuthorityTimeReference(context: Context) -> bool {
     let monotonic: $MonotonicTime = context.time~>monotonic()
@@ -109,19 +173,26 @@ public procedure runAuthorityTimeReference(context: Context) -> bool {
     let start: MonotonicInstant = monotonic~>now()
     let end: MonotonicInstant = monotonic~>now()
     let monotonic_resolution: Duration = monotonic~>resolution()
+    let invalid_resolution: Duration = Duration { nanoseconds: 0u128 }
     let elapsed: Outcome<Duration, TimeError> = monotonic~>elapsed(start, end)
     let coarsened_monotonic: Outcome<$MonotonicTime, TimeError> =
         monotonic~>coarsen(monotonic_resolution)
+    let invalid_monotonic_coarsen: Outcome<$MonotonicTime, TimeError> =
+        monotonic~>coarsen(invalid_resolution)
 
     let wall_now: Outcome<UtcInstant, TimeError> = wall~>now_utc()
     let wall_resolution: Outcome<Duration, TimeError> = wall~>resolution()
     let coarsened_wall: Outcome<$WallTime, TimeError> =
         wall~>coarsen(monotonic_resolution)
+    let invalid_wall_coarsen: Outcome<$WallTime, TimeError> =
+        wall~>coarsen(invalid_resolution)
 
     return durationReferenceIsPositive(monotonic_resolution) &&
         elapsedReferenceSucceeded(elapsed) &&
         monotonicCoarsenReferenceSucceeded(coarsened_monotonic) &&
+        timeOutcomeErrorIsInvalidResolution(invalid_monotonic_coarsen) &&
         wallInstantReferenceObserved(wall_now) &&
         wallResolutionReferenceObserved(wall_resolution) &&
-        wallCoarsenReferenceSucceeded(coarsened_wall)
+        wallCoarsenReferenceSucceeded(coarsened_wall) &&
+        timeOutcomeErrorIsInvalidResolution(invalid_wall_coarsen)
 }

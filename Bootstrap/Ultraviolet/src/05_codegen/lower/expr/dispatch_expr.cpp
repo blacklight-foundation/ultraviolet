@@ -133,6 +133,30 @@ IRValue USizeImmediate(std::uint64_t value, const LowerCtx& ctx) {
   return v;
 }
 
+IRValue Dim3Immediate(std::uint64_t x,
+                      std::uint64_t y,
+                      std::uint64_t z,
+                      LowerCtx& ctx,
+                      std::string_view name) {
+  analysis::TypeRef usize_type = analysis::MakeTypePrim("usize");
+  IRValue x_value = USizeImmediate(x, ctx);
+  IRValue y_value = USizeImmediate(y, ctx);
+  IRValue z_value = USizeImmediate(z, ctx);
+  ctx.RegisterValueType(x_value, usize_type);
+  ctx.RegisterValueType(y_value, usize_type);
+  ctx.RegisterValueType(z_value, usize_type);
+
+  IRValue tuple_value = ctx.FreshTempValue(std::string(name));
+  DerivedValueInfo info;
+  info.kind = DerivedValueInfo::Kind::TupleLit;
+  info.elements = {x_value, y_value, z_value};
+  ctx.RegisterDerivedValue(tuple_value, info);
+  ctx.RegisterValueType(
+      tuple_value,
+      analysis::MakeTypeTuple({usize_type, usize_type, usize_type}));
+  return tuple_value;
+}
+
 // Create a null pointer via transmute
 IRValue MakeNullPtr(const analysis::TypeRef& ptr_type,
                     LowerCtx& ctx,
@@ -621,6 +645,7 @@ LowerResult LowerDispatchExpr(
     const ast::DispatchExpr& node,
     LowerCtx& ctx) {
   SPEC_RULE("Lower-Expr-Dispatch");
+  SPEC_RULE("rule.20.Lower-Expr-Dispatch");
 
   // 1. Lower the range expression
   auto range_result = LowerExpr(*node.range, ctx);
@@ -977,17 +1002,25 @@ LowerResult LowerDispatchExpr(
     proc.params[3].stable_name = ctx.StableBindingName(result_param.name);
     ctx.RegisterVar(panic_param.name, panic_param.type, true, false);
     proc.params[4].stable_name = ctx.StableBindingName(panic_param.name);
+    const std::string elem_param_binding_name =
+        proc.params[1].stable_name.empty() ? elem_param.name : proc.params[1].stable_name;
+    const std::string env_param_binding_name =
+        proc.params[2].stable_name.empty() ? env_param.name : proc.params[2].stable_name;
+    const std::string result_param_binding_name =
+        proc.params[3].stable_name.empty()
+            ? result_param.name
+            : proc.params[3].stable_name;
 
     IRPtr proc_region_ir = EnterSyntheticProcedureRegion(ctx);
 
     IRValue env_param_val;
     env_param_val.kind = IRValue::Kind::Local;
-    env_param_val.name = env_param.name;
+    env_param_val.name = env_param_binding_name;
     ctx.BindAll(ctx.LoadEnv(env_param_val, env_info.env_type, env_info.captures));
 
     IRValue elem_ptr_val;
     elem_ptr_val.kind = IRValue::Kind::Local;
-    elem_ptr_val.name = elem_param.name;
+    elem_ptr_val.name = elem_param_binding_name;
     IRValue elem_val = ctx.FreshTempValue("dispatch_elem");
     IRReadPtr read_elem;
     read_elem.ptr = elem_ptr_val;
@@ -1014,7 +1047,7 @@ LowerResult LowerDispatchExpr(
       IRWritePtr write;
       IRValue result_ptr_val;
       result_ptr_val.kind = IRValue::Kind::Local;
-      result_ptr_val.name = result_param.name;
+      result_ptr_val.name = result_param_binding_name;
       write.ptr = result_ptr_val;
       write.value = body_result.value;
       store_ir = MakeIR(std::move(write));
@@ -1029,6 +1062,7 @@ LowerResult LowerDispatchExpr(
     ret.value = unit_ret;
 
     std::vector<IRPtr> parts;
+    SPEC_RULE("requirement.20.SpawnDispatchCancellationLowering");
     parts.push_back(MakeIR(IRCancelSuppress{}));
     if (proc_region_ir && !std::holds_alternative<IROpaque>(proc_region_ir->node)) {
       parts.push_back(proc_region_ir);
@@ -1070,6 +1104,7 @@ LowerResult LowerDispatchExpr(
   dispatch.reduce_op = reduce_op;
   dispatch.reduce_fn = reduce_fn;
   dispatch.result = ctx.FreshTempValue("dispatch_result");
+  dispatch.workgroup_size = Dim3Immediate(64, 1, 1, ctx, "dispatch_workgroup");
   IRValue dispatch_result = dispatch.result;
   if (has_reduce) {
     ctx.RegisterValueType(dispatch_result, body_type);
@@ -1078,21 +1113,32 @@ LowerResult LowerDispatchExpr(
   }
 
   // Handle chunk and ordered options
-  IRPtr chunk_ir = EmptyIR();
+  std::vector<IRPtr> option_parts;
   for (const auto& opt : node.opts) {
     if (opt.kind == ast::DispatchOptionKind::Ordered) {
       dispatch.ordered = true;
     } else if (opt.kind == ast::DispatchOptionKind::Chunk && opt.chunk_expr) {
       auto chunk_result = LowerExpr(*opt.chunk_expr, ctx);
-      chunk_ir = chunk_result.ir;
+      if (chunk_result.ir &&
+          !std::holds_alternative<IROpaque>(chunk_result.ir->node)) {
+        option_parts.push_back(chunk_result.ir);
+      }
       dispatch.chunk_size = chunk_result.value;
+    } else if (opt.kind == ast::DispatchOptionKind::Workgroup &&
+               opt.workgroup_expr) {
+      auto workgroup_result = LowerExpr(*opt.workgroup_expr, ctx);
+      if (workgroup_result.ir &&
+          !std::holds_alternative<IROpaque>(workgroup_result.ir->node)) {
+        option_parts.push_back(workgroup_result.ir);
+      }
+      dispatch.workgroup_size = workgroup_result.value;
     }
   }
 
   std::vector<IRPtr> call_parts;
   call_parts.push_back(range_result.ir);
-  if (chunk_ir && !std::holds_alternative<IROpaque>(chunk_ir->node)) {
-    call_parts.push_back(chunk_ir);
+  for (auto& option_ir : option_parts) {
+    call_parts.push_back(option_ir);
   }
   call_parts.push_back(MakeIR(std::move(dispatch)));
   return LowerResult{SeqIR(std::move(call_parts)), dispatch_result};

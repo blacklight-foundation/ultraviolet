@@ -60,16 +60,23 @@ jobs:
         if: always()
         run: |
           set +e
-          mkdir -p artifacts/crash-reports
+          mkdir -p artifacts/crash-reports artifacts/runtime-logs/macos
+          export UV_RUNTIME_SINK=both
+          export UV_RUNTIME_PATH="$PWD/artifacts/runtime-logs/macos/lldb-hello-ultraviolet.log"
+          export UV_RUNTIME_ROOT="$PWD"
+          export UV_RUNTIME_FILTER=all
+          export UV_RUNTIME_LEVEL=trace
+          rm -f "$UV_RUNTIME_PATH"
           executable="HelloUltraviolet/Build/Binary/HelloUltraviolet"
           if [ -x "$executable" ]; then
             cp "$executable" artifacts/HelloUltraviolet || true
             xcrun lldb --batch \
               -o "settings set target.process.thread.step-avoid-regexp '^$'" \
               -o "run" \
-              -o "bt all" \
-              -o "register read" \
-              -o "image list" \
+              -k "bt all" \
+              -k "register read" \
+              -k "disassemble -n uv_dispatch_run" \
+              -k "image list" \
               -- "$executable" \
               > artifacts/lldb-hello-ultraviolet.txt \
               2>&1

@@ -1,0 +1,18 @@
+//! Shared-library consumer fixture for linked-call image lifecycle host execution.
+
+public import SharedLibraryImageLifecycleProvider
+
+#export("C")
+#mangle("uv_shared_lifecycle_run_linked_calls")
+public procedure sharedLifecycleRunLinkedCalls(destroy_probe: *mut i32) -> i32 {
+    let installed: i32 =
+        SharedLibraryImageLifecycleProvider::linkedLifecycleInstallDestroyProbe(destroy_probe)
+    let first: i32 = SharedLibraryImageLifecycleProvider::linkedLifecycleIncrement(5)
+    let second: i32 = SharedLibraryImageLifecycleProvider::linkedLifecycleIncrement(7)
+    let state: i32 = SharedLibraryImageLifecycleProvider::linkedLifecycleState()
+
+    if installed == 211 && first == 216 && second == 223 && state == 223 {
+        return 0
+    }
+    return 1
+}

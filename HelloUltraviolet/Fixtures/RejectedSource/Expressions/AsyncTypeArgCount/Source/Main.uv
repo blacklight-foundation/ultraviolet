@@ -1,5 +1,5 @@
-//! Rejected async type specimen for Async with an invalid argument count.
+//! Rejected async type specimen for Async with too many arguments.
 
-public procedure asyncTypeArgCountReference() -> Async<i32> {
+public procedure asyncTypeArgCountReference() -> Async<i32, i32, i32, i32, i32> {
     return
 }

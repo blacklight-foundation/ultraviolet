@@ -9,88 +9,88 @@ public procedure validatedStructuredParallelismPanicHandlingObligations() -> usi
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "requirement.20.PanicHandlingNoAdditionalSyntax",
-        78512usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismPanicHandlingReference",
-        "Source/Reference/Parallelism/PanicHandling.uv"
+        78514usize,
+        "HelloUltraviolet::Audit::Catalog::StructuredParallelism",
+        "structuredParallelismCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/StructuredParallelism/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.20.PanicHandlingNoAdditionalParsingRules",
-        78527usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismPanicHandlingReference",
-        "Source/Reference/Parallelism/PanicHandling.uv"
+        78529usize,
+        "HelloUltraviolet::Audit::Catalog::StructuredParallelism",
+        "structuredParallelismCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/StructuredParallelism/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "ast.20.ParallelPanicPropagationInputs",
-        78542usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismPanicHandlingReference",
-        "Source/Reference/Parallelism/PanicHandling.uv"
+        78544usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectStructuredParallelLoweringEvidenceExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.20.PanicHandlingNoAdditionalStaticTypingRules",
-        78557usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismPanicHandlingReference",
-        "Source/Reference/Parallelism/PanicHandling.uv"
+        78559usize,
+        "HelloUltraviolet::Audit::Catalog::StructuredParallelism",
+        "structuredParallelismCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/StructuredParallelism/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.20.ParallelWorkItemPanicSemantics",
-        78572usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismPanicHandlingReference",
-        "Source/Reference/Parallelism/PanicHandling.uv"
+        78574usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectStructuredParallelLoweringEvidenceExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.20.EvalSigma-Parallel-Spawn-Panic",
-        78589usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismPanicHandlingReference",
-        "Source/Reference/Parallelism/PanicHandling.uv"
+        78591usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectStructuredParallelLoweringEvidenceExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.20.ParallelPanicCancellationRequest",
-        78605usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismPanicHandlingReference",
-        "Source/Reference/Parallelism/PanicHandling.uv"
+        78607usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectStructuredParallelLoweringEvidenceExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.20.FirstCompletedFailure",
-        78618usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismPanicHandlingReference",
-        "Source/Reference/Parallelism/PanicHandling.uv"
+        78620usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectStructuredParallelLoweringEvidenceExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.20.Lower-Parallel-Join-Panic",
-        78633usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismPanicHandlingReference",
-        "Source/Reference/Parallelism/PanicHandling.uv"
+        78635usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectReducedEmptyDispatchPanicExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if diagnosticSourceObligationEntryMatches(
         "diagnostics.20.PanicHandling",
-        78650usize,
+        78652usize,
         "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedParallelismDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Parallelism/PanicHandlingNoAdditionalDiagnostics/Source/Main.uv"

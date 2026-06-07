@@ -1,0 +1,99 @@
+//! Artifact fixture for structured-parallel lowering obligations.
+
+internal procedure queuedCancellationRuntimeEvidence(context: Context) -> i32 {
+    let token: CancelToken@Active = CancelToken::new()
+    let child: CancelToken@Active = token~>child()
+    token~>cancel()
+
+    return parallel context~>inline() [cancel: child] {
+        let spawned: Spawned<i32> = spawn {
+            41
+        }
+        let reduced: i32 = dispatch index in 0usize..3usize [reduce: +, ordered] {
+            7
+        }
+        (wait spawned) + reduced
+    }
+}
+
+internal procedure midExecutionCancellationRuntimeEvidence(context: Context) -> i32 {
+    let token: CancelToken@Active = CancelToken::new()
+    let child: CancelToken@Active = token~>child()
+
+    return parallel context~>inline() [cancel: child] {
+        let spawned: Spawned<i32> = spawn {
+            let spawn_pending = child~>wait_cancelled()
+            let _ = spawn_pending
+            child~>cancel()
+            if child~>is_cancelled() {
+                5
+            } else {
+                99
+            }
+        }
+        wait spawned
+    }
+}
+
+internal procedure cancellationLoweringEvidence(context: Context) -> i32 {
+    return queuedCancellationRuntimeEvidence(context) +
+        midExecutionCancellationRuntimeEvidence(context)
+}
+
+internal procedure nestedParallelLoweringEvidence(context: Context) -> i32 {
+    return parallel context~>inline() {
+        parallel context~>inline() {
+            8
+        }
+    }
+}
+
+internal procedure operatorUndefinedPanicValue(divisor: i32) -> i32 {
+    let numerator: i32 = 42
+    return numerator / divisor
+}
+
+internal procedure integerOverflowPanicValue(delta: i32) -> i32 {
+    let maximum: i32 = 2147483647i32
+    return maximum + delta
+}
+
+internal procedure parallelSpawnPanicEvidence(context: Context) -> i32 {
+    let token: CancelToken@Active = CancelToken::new()
+    let child: CancelToken@Active = token~>child()
+
+    return parallel context~>inline() [cancel: child] {
+        let first: Spawned<i32> = spawn {
+            operatorUndefinedPanicValue(0)
+        }
+        let second: Spawned<i32> = spawn {
+            integerOverflowPanicValue(1)
+        }
+        (wait first) + (wait second)
+    }
+}
+
+internal procedure runtimeEvidenceSucceeded(context: Context) -> bool {
+    let cancellation_result: i32 = cancellationLoweringEvidence(context)
+    let nested_result: i32 = nestedParallelLoweringEvidence(context)
+    return cancellation_result == 5 && nested_result == 8
+}
+
+public procedure main(context: Context) -> i32 {
+    if !runtimeEvidenceSucceeded(context) {
+        return 1
+    }
+
+    if context.sys~>argument_count() > 1usize {
+        let evidence_path: string@View = context.sys~>argument(0usize)
+        let _ = context.io~>write_file(
+            evidence_path,
+            bytes::view_string(
+                "queued_unstarted_suppression=0;mid_execution_checkpoint=5"
+            )
+        )
+        return 0
+    }
+
+    return parallelSpawnPanicEvidence(context)
+}

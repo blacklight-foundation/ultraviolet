@@ -155,6 +155,9 @@ std::optional<Diagnostic> MakeDiagnosticById(
   if (!diag.has_value()) {
     return std::nullopt;
   }
+  if (diag_id != std::string_view(diag->code)) {
+    diag->obligation_ids.emplace_back(diag_id);
+  }
   return ApplyNoSpanExternal(*diag, origin);
 }
 

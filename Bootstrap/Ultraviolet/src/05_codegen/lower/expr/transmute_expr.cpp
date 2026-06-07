@@ -13,6 +13,7 @@
 
 #include "05_codegen/lower/expr/transmute_expr.h"
 #include "05_codegen/checks/checks.h"
+#include "05_codegen/lower/expr/expr_common.h"
 #include "04_analysis/layout/layout.h"
 #include "00_core/assert_spec.h"
 
@@ -35,6 +36,7 @@ LowerResult LowerTransmuteExpr(const ast::Expr& expr,
                                const ast::TransmuteExpr& transmute,
                                LowerCtx& ctx) {
     SPEC_RULE("Lower-Expr-Transmute");
+    SPEC_RULE("rule.16.Lower-Expr-Transmute");
 
     // Resolve the target type from the syntax
     analysis::TypeRef to_type;
@@ -67,7 +69,11 @@ LowerResult LowerTransmuteExpr(const ast::Expr& expr,
     }
 
     // Delegate to LowerTransmute which handles size checking and IR emission
-    return LowerTransmute(from_type, to_type, *transmute.value, ctx);
+    auto result = LowerTransmute(from_type, to_type, *transmute.value, ctx);
+    RecordLoweringChecksJudgementMember(
+        ctx,
+        LoweringChecksJudgementMember::LowerTransmute);
+    return result;
 }
 
 }  // namespace ultraviolet::codegen

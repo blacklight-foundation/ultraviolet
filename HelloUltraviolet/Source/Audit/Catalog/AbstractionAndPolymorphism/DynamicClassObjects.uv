@@ -9,7 +9,7 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.14.DynamicClassObjects",
-        50573usize,
+        50575usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismDynamicClassObjectsReference",
         "Source/Reference/Polymorphism/DynamicClassObjects.uv"
@@ -18,7 +18,7 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     }
     if acceptedObligationEntryMatches(
         "req.14.DynamicMethodCallSurfaceSyntax",
-        50589usize,
+        50591usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismDynamicClassObjectsReference",
         "Source/Reference/Polymorphism/DynamicClassObjects.uv"
@@ -27,7 +27,7 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     }
     if acceptedObligationEntryMatches(
         "rule.14.Parse-Dynamic-Type",
-        50604usize,
+        50606usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismDynamicClassObjectsReference",
         "Source/Reference/Polymorphism/DynamicClassObjects.uv"
@@ -36,7 +36,7 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     }
     if acceptedObligationEntryMatches(
         "req.14.DynamicCastUsesOrdinaryCastParsing",
-        50620usize,
+        50622usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismDynamicClassObjectsReference",
         "Source/Reference/Polymorphism/DynamicClassObjects.uv"
@@ -45,7 +45,7 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     }
     if acceptedObligationEntryMatches(
         "def.14.TypeDynamicAst",
-        50635usize,
+        50637usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismDynamicClassObjectsReference",
         "Source/Reference/Polymorphism/DynamicClassObjects.uv"
@@ -54,25 +54,25 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     }
     if acceptedObligationEntryMatches(
         "def.14.DynamicClassLayoutFields",
-        50648usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismDynamicClassObjectsReference",
-        "Source/Reference/Polymorphism/DynamicClassObjects.uv"
+        50650usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.14.DynamicClassRuntimeValue",
-        50662usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismDynamicClassObjectsReference",
-        "Source/Reference/Polymorphism/DynamicClassObjects.uv"
+        50664usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.14.SelfOccurs",
-        50675usize,
+        50677usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismDynamicClassObjectsReference",
         "Source/Reference/Polymorphism/DynamicClassObjects.uv"
@@ -81,7 +81,7 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     }
     if rejectedSourceObligationEntryMatches(
         "def.14.DynamicDispatchEligibility",
-        50702usize,
+        50704usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/DynamicGenericMethodNonDispatchable/Source/Main.uv"
@@ -90,7 +90,7 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     }
     if acceptedObligationEntryMatches(
         "rule.14.WF-Dynamic",
-        50720usize,
+        50722usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismDynamicClassObjectsReference",
         "Source/Reference/Polymorphism/DynamicClassObjects.uv"
@@ -99,7 +99,7 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     }
     if rejectedSourceObligationEntryMatches(
         "rule.14.WF-Dynamic-Err",
-        50736usize,
+        50738usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/DynamicUndefinedClassType/Source/Main.uv"
@@ -108,7 +108,7 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     }
     if acceptedObligationEntryMatches(
         "rule.14.T-Equiv-Dynamic",
-        50752usize,
+        50754usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismDynamicClassObjectsReference",
         "Source/Reference/Polymorphism/DynamicClassObjects.uv"
@@ -117,7 +117,7 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     }
     if acceptedObligationEntryMatches(
         "rule.14.T-Dynamic-Form",
-        50768usize,
+        50770usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismDynamicClassObjectsReference",
         "Source/Reference/Polymorphism/DynamicClassObjects.uv"
@@ -126,7 +126,7 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     }
     if rejectedSourceObligationEntryMatches(
         "rule.14.Dynamic-NonDispatchable",
-        50784usize,
+        50786usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/DynamicSelfParameterNonDispatchable/Source/Main.uv"
@@ -135,7 +135,7 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     }
     if acceptedObligationEntryMatches(
         "def.14.LookupMethod",
-        50800usize,
+        50802usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismDynamicClassObjectsReference",
         "Source/Reference/Polymorphism/DynamicClassObjects.uv"
@@ -144,7 +144,7 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     }
     if acceptedObligationEntryMatches(
         "rule.14.T-Dynamic-MethodCall",
-        50815usize,
+        50817usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismDynamicClassObjectsReference",
         "Source/Reference/Polymorphism/DynamicClassObjects.uv"
@@ -153,7 +153,7 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     }
     if rejectedSourceObligationEntryMatches(
         "rule.14.LookupClassMethod-NotFound",
-        50831usize,
+        50833usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/DynamicMissingMethod/Source/Main.uv"
@@ -162,7 +162,7 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     }
     if rejectedSourceObligationEntryMatches(
         "req.14.DynamicDispatchDispatchableClassesOnly",
-        50847usize,
+        50849usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/DynamicNonDispatchableRequirement/Source/Main.uv"
@@ -171,7 +171,7 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     }
     if acceptedObligationEntryMatches(
         "def.14.DynamicValueType",
-        50862usize,
+        50864usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismDynamicClassObjectsReference",
         "Source/Reference/Polymorphism/DynamicClassObjects.uv"
@@ -180,7 +180,7 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     }
     if acceptedObligationEntryMatches(
         "rule.14.Eval-Dynamic-Form",
-        50875usize,
+        50877usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismDynamicClassObjectsReference",
         "Source/Reference/Polymorphism/DynamicClassObjects.uv"
@@ -189,7 +189,7 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     }
     if acceptedObligationEntryMatches(
         "rule.14.Eval-Dynamic-Form-Ctrl",
-        50891usize,
+        50893usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismDynamicClassObjectsReference",
         "Source/Reference/Polymorphism/DynamicClassObjects.uv"
@@ -198,7 +198,7 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     }
     if acceptedObligationEntryMatches(
         "def.14.DynamicDispatchSelection",
-        50907usize,
+        50909usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismDynamicClassObjectsReference",
         "Source/Reference/Polymorphism/DynamicClassObjects.uv"
@@ -207,7 +207,7 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     }
     if acceptedObligationEntryMatches(
         "def.14.DynamicMethodTarget",
-        50922usize,
+        50924usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismDynamicClassObjectsReference",
         "Source/Reference/Polymorphism/DynamicClassObjects.uv"
@@ -216,79 +216,79 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     }
     if acceptedObligationEntryMatches(
         "rule.14.Layout-DynamicClass",
-        50937usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismDynamicClassObjectsReference",
-        "Source/Reference/Polymorphism/DynamicClassObjects.uv"
+        50939usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.14.Size-DynamicClass",
-        50952usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismDynamicClassObjectsReference",
-        "Source/Reference/Polymorphism/DynamicClassObjects.uv"
+        50954usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.14.Align-DynamicClass",
-        50968usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismDynamicClassObjectsReference",
-        "Source/Reference/Polymorphism/DynamicClassObjects.uv"
+        50970usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.14.ABI-Dynamic",
-        50984usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismDynamicClassObjectsReference",
-        "Source/Reference/Polymorphism/DynamicClassObjects.uv"
+        50986usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.14.DynamicValueBits",
-        51000usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismDynamicClassObjectsReference",
-        "Source/Reference/Polymorphism/DynamicClassObjects.uv"
+        51002usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.14.DynamicDispatchLoweringJudgements",
-        51013usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismDynamicClassObjectsReference",
-        "Source/Reference/Polymorphism/DynamicClassObjects.uv"
+        51015usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.14.DispatchSym-Impl",
-        51027usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismDynamicClassObjectsReference",
-        "Source/Reference/Polymorphism/DynamicClassObjects.uv"
+        51029usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.14.DispatchSym-Default-None",
-        51043usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismDynamicClassObjectsReference",
-        "Source/Reference/Polymorphism/DynamicClassObjects.uv"
+        51045usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.14.DispatchSym-Default-Mismatch",
-        51059usize,
+        51061usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismDynamicClassObjectsReference",
         "Source/Reference/Polymorphism/DynamicClassObjects.uv"
@@ -297,52 +297,52 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     }
     if acceptedObligationEntryMatches(
         "rule.14.VTable-Order",
-        51075usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismDynamicClassObjectsReference",
-        "Source/Reference/Polymorphism/DynamicClassObjects.uv"
+        51077usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.14.VSlot-Entry",
-        51091usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismDynamicClassObjectsReference",
-        "Source/Reference/Polymorphism/DynamicClassObjects.uv"
+        51093usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.14.Lower-Dynamic-Form",
-        51107usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismDynamicClassObjectsReference",
-        "Source/Reference/Polymorphism/DynamicClassObjects.uv"
+        51109usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.14.Lower-DynCall",
-        51123usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismDynamicClassObjectsReference",
-        "Source/Reference/Polymorphism/DynamicClassObjects.uv"
+        51125usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.14.EmitVTable-Decl",
-        51139usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismDynamicClassObjectsReference",
-        "Source/Reference/Polymorphism/DynamicClassObjects.uv"
+        51141usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if rejectedSourceObligationEntryMatches(
         "diag.14.DynamicClassObjects",
-        51157usize,
+        51159usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/DynamicClassObjectDiagnostics/Source/Main.uv"

@@ -17,7 +17,6 @@
 #include <string_view>
 
 #include "00_core/assert_spec.h"
-#include "00_core/diagnostic_messages.h"
 #include "04_analysis/typing/context.h"
 #include "04_analysis/typing/type_infer.h"
 #include "04_analysis/typing/type_stmt.h"
@@ -44,18 +43,13 @@ ExprTypeResult TypeIdentifierExprImpl(const ScopeContext& ctx,
                                        const IdentTypeFn& type_ident) {
   SpecDefsIdentifier();
   (void)ctx;
-  (void)type_ctx;
 
   ExprTypeResult result;
 
   // First try the type environment
   const auto binding = BindOf(env, expr.name);
   if (binding.has_value()) {
-    if (binding->stale_after_release && !binding->stale_ok && type_ctx.diags) {
-      if (auto diag = core::MakeDiagnosticById("W-CON-0011", core::Span{})) {
-        core::Emit(*type_ctx.diags, *diag);
-      }
-    }
+    EmitStaleBindingReferenceWarning(*binding, type_ctx, std::nullopt);
     SPEC_RULE("Syn-Ident");
     result.ok = true;
     result.type = binding->type;
@@ -90,17 +84,12 @@ ExprTypeResult TypeIdentifierExpr(const ScopeContext& ctx,
                                    const TypeEnv& env) {
   SpecDefsIdentifier();
   (void)ctx;
-  (void)type_ctx;
 
   ExprTypeResult result;
 
   const auto binding = BindOf(env, expr.name);
   if (binding.has_value()) {
-    if (binding->stale_after_release && !binding->stale_ok && type_ctx.diags) {
-      if (auto diag = core::MakeDiagnosticById("W-CON-0011", core::Span{})) {
-        core::Emit(*type_ctx.diags, *diag);
-      }
-    }
+    EmitStaleBindingReferenceWarning(*binding, type_ctx, std::nullopt);
     SPEC_RULE("Syn-Ident");
     result.ok = true;
     result.type = binding->type;

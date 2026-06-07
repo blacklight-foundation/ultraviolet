@@ -300,6 +300,7 @@ public:
   
   // T-LLVM-015: Entrypoint Generation
   void EmitEntryPoint();
+  void EmitLifecycleBridges();
   void EmitLibraryEntryPoint();
   void EmitCtorDtorLibraryLifecycleHooks();
   void EmitHostedLifecycleExports();

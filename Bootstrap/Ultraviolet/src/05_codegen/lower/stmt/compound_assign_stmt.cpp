@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 #include "05_codegen/checks/checks.h"
 #include "05_codegen/ir/ir_model.h"
 #include "05_codegen/lower/lower_expr.h"
@@ -101,6 +102,20 @@ IRPtr LowerCompoundAssignStmt(const ast::CompoundAssignStmt& stmt,
 
   // Write the new value back to the place
   IRPtr write_ir = LowerWritePlace(*stmt.place, new_value, ctx);
+
+  std::string payload =
+      "source=LowerCompoundAssignStmt;ir_form=SeqIR;"
+      "components=LowerReadPlace,LowerExpr,BinOp,LowerWritePlace";
+  payload += ";compound_op=";
+  payload += stmt.op;
+  payload += ";simple_op=";
+  payload += op;
+  payload += ";runtime_check=";
+  payload += panic_reason.has_value() ? PanicReasonString(*panic_reason) : "none";
+  core::Conformance::Record(
+      "rule.18.Lower-Stmt-CompoundAssign",
+      std::nullopt,
+      payload);
 
   return SeqIR({lhs_result.ir, rhs_result.ir, op_ir, write_ir});
 }

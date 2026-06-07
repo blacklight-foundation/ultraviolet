@@ -1,0 +1,12 @@
+[[assembly]]
+name = "RuntimeLibMissing"
+kind = "executable"
+root = "Source"
+
+[toolchain]
+runtime_lib = "MissingRuntime/UltravioletRT.lib"
+target_profile = "x86_64-win64"
+
+[build]
+incremental = true
+progress = false

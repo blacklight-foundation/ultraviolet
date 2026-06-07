@@ -30,17 +30,18 @@ std::optional<analysis::TypeRef> ExtractWaitSpawnedInner(
     if (!type) {
         return std::nullopt;
     }
-    const auto* path = std::get_if<analysis::TypePathType>(&type->node);
-    if (!path) {
+    const auto* path = analysis::AppliedTypePath(*type);
+    const auto* args = analysis::AppliedTypeArgs(*type);
+    if (!path || !args) {
         return std::nullopt;
     }
-    if (!analysis::IsSpawnedTypePath(path->path)) {
+    if (!analysis::IsSpawnedTypePath(*path)) {
         return std::nullopt;
     }
-    if (path->generic_args.size() != 1) {
+    if (args->size() != 1) {
         return std::nullopt;
     }
-    return path->generic_args[0];
+    return (*args)[0];
 }
 
 std::optional<std::pair<analysis::TypeRef, analysis::TypeRef>>
@@ -48,17 +49,27 @@ ExtractWaitTrackedArgs(const analysis::TypeRef& type) {
     if (!type) {
         return std::nullopt;
     }
-    const auto* path = std::get_if<analysis::TypePathType>(&type->node);
-    if (!path) {
+    const auto* path = analysis::AppliedTypePath(*type);
+    const auto* args = analysis::AppliedTypeArgs(*type);
+    if (!path || !args) {
         return std::nullopt;
     }
-    if (!analysis::IsTrackedTypePath(path->path)) {
+    if (!analysis::IsTrackedTypePath(*path)) {
         return std::nullopt;
     }
-    if (path->generic_args.size() != 2) {
+    if (args->size() != 2) {
         return std::nullopt;
     }
-    return std::make_pair(path->generic_args[0], path->generic_args[1]);
+    return std::make_pair((*args)[0], (*args)[1]);
+}
+
+bool HasActiveHeldKeys(const LowerCtx& ctx) {
+    for (const auto& scope : ctx.active_key_scopes) {
+        if (!scope.implicit && !scope.acquired_paths.empty()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 }  // namespace
@@ -81,6 +92,18 @@ ExtractWaitTrackedArgs(const analysis::TypeRef& type) {
 
 LowerResult LowerWaitExpr(const ast::WaitExpr& expr, LowerCtx& ctx) {
     SPEC_RULE("Lower-Expr-Wait");
+    SPEC_RULE("def.21.SuspensionLoweringForms");
+
+    if (HasActiveHeldKeys(ctx)) {
+        SPEC_RULE("rule.21.Lower-Wait-Key-Illegal");
+        core::Conformance::Record(
+            "rule.21.Lower-Wait-Key-Illegal",
+            std::nullopt,
+            "source=LowerWaitExpr;held_keys=true;result=codegen_failed;"
+            "ir_form=EmptyIR");
+        ctx.ReportCodegenFailure();
+        return LowerResult{EmptyIR(), IRValue{}};
+    }
 
     // Lower the handle expression
     auto handle_result = LowerExpr(*expr.handle, ctx);
@@ -101,8 +124,12 @@ LowerResult LowerWaitExpr(const ast::WaitExpr& expr, LowerCtx& ctx) {
         analysis::TypeRef wait_type;
         if (stripped) {
             if (const auto inner = ExtractWaitSpawnedInner(stripped)) {
+                SPEC_RULE("rule.21.Lower-Wait-Spawned");
+                wait.kind = IRWaitKind::Spawned;
                 wait_type = *inner;
             } else if (const auto tracked = ExtractWaitTrackedArgs(stripped)) {
+                SPEC_RULE("rule.21.Lower-Wait-Tracked");
+                wait.kind = IRWaitKind::Tracked;
                 std::vector<analysis::TypeRef> members;
                 members.push_back(tracked->first);
                 members.push_back(tracked->second);

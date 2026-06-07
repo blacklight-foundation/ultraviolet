@@ -1,0 +1,71 @@
+//! Shared-library provider fixture for image lifecycle host-harness execution.
+
+private var _RAW_IMAGE_STATE: i32 = 101
+private var _LINKED_IMAGE_STATE: i32 = 211
+private var _RAW_DESTROY_PROBE: *mut i32 = null
+private var _LINKED_DESTROY_PROBE: *mut i32 = null
+
+internal procedure incrementDestroyProbe(probe: *mut i32) -> () {
+    if probe != null {
+        unsafe {
+            let current: i32 = *probe
+            *probe = current + 1
+        }
+    }
+}
+
+internal record RawImageDestroySentinel {
+    internal token: unique i32
+
+    internal procedure drop(~!) -> () {
+        incrementDestroyProbe(_RAW_DESTROY_PROBE)
+    }
+}
+
+internal record LinkedImageDestroySentinel {
+    internal token: unique i32
+
+    internal procedure drop(~!) -> () {
+        incrementDestroyProbe(_LINKED_DESTROY_PROBE)
+    }
+}
+
+private let _RAW_IMAGE_DESTROY_SENTINEL: RawImageDestroySentinel =
+    RawImageDestroySentinel { token: 1 }
+
+private let _LINKED_IMAGE_DESTROY_SENTINEL: LinkedImageDestroySentinel =
+    LinkedImageDestroySentinel { token: 1 }
+
+#export("C")
+#mangle("uv_shared_lifecycle_install_raw_destroy_probe")
+public procedure sharedLifecycleInstallRawDestroyProbe(probe: *mut i32) -> i32 {
+    _RAW_DESTROY_PROBE = probe
+    return _RAW_IMAGE_STATE
+}
+
+#export("C")
+#mangle("uv_shared_lifecycle_raw_increment")
+public procedure sharedLifecycleRawIncrement(amount: i32) -> i32 {
+    _RAW_IMAGE_STATE = _RAW_IMAGE_STATE + amount
+    return _RAW_IMAGE_STATE
+}
+
+#export("C")
+#mangle("uv_shared_lifecycle_raw_state")
+public procedure sharedLifecycleRawState() -> i32 {
+    return _RAW_IMAGE_STATE
+}
+
+public procedure linkedLifecycleInstallDestroyProbe(probe: *mut i32) -> i32 {
+    _LINKED_DESTROY_PROBE = probe
+    return _LINKED_IMAGE_STATE
+}
+
+public procedure linkedLifecycleIncrement(amount: i32) -> i32 {
+    _LINKED_IMAGE_STATE = _LINKED_IMAGE_STATE + amount
+    return _LINKED_IMAGE_STATE
+}
+
+public procedure linkedLifecycleState() -> i32 {
+    return _LINKED_IMAGE_STATE
+}

@@ -38,6 +38,8 @@ namespace ultraviolet::codegen {
 
 LowerResult LowerSyncExpr(const ast::SyncExpr& expr, LowerCtx& ctx) {
     SPEC_RULE("Lower-Expr-Sync");
+    SPEC_RULE("def.21.AsyncComposeIR");
+    SPEC_RULE("rule.21.Lower-Expr-Sync");
 
     // Lower the async expression
     auto async_result = LowerExpr(*expr.value, ctx);

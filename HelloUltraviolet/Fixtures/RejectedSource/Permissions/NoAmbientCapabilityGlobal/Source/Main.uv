@@ -1,0 +1,11 @@
+//! Rejected authority specimen for a module-scope capability root.
+
+internal procedure noAmbientRecursiveIOProvider() -> $IO {
+    return noAmbientRecursiveIOProvider()
+}
+
+internal let AMBIENT_IO: $IO = noAmbientRecursiveIOProvider()
+
+public procedure noAmbientCapabilityGlobalReference() -> bool {
+    return true
+}

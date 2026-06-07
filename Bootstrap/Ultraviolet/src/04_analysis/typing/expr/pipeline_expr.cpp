@@ -35,10 +35,14 @@ namespace ultraviolet::analysis {
 namespace {
 
 static inline void SpecDefsPipeline() {
-  SPEC_DEF("T-Pipeline", "Docs/SPECIFICATION.md Lines 8848-8852");
-  SPEC_DEF("T-Pipeline-NotCallable-Err", "Docs/SPECIFICATION.md Lines 8855-8859");
-  SPEC_DEF("T-Pipeline-TypeMismatch-Err", "Docs/SPECIFICATION.md Lines 8861-8866");
-  SPEC_DEF("T-Pipeline-ArgCount-Err", "Docs/SPECIFICATION.md Lines 8868-8872");
+  SPEC_DEF("T-Pipeline", "16.9.4");
+  SPEC_DEF("T-Pipeline-NotCallable-Err", "16.9.4");
+  SPEC_DEF("T-Pipeline-TypeMismatch-Err", "16.9.4");
+  SPEC_DEF("T-Pipeline-ArgCount-Err", "16.9.4");
+  SPEC_DEF("rule.16.T-Pipeline", "16.9.4");
+  SPEC_DEF("rule.16.T-Pipeline-NotCallable-Err", "16.9.4");
+  SPEC_DEF("rule.16.T-Pipeline-TypeMismatch-Err", "16.9.4");
+  SPEC_DEF("rule.16.T-Pipeline-ArgCount-Err", "16.9.4");
 }
 
 struct AliasExpandResult {
@@ -208,11 +212,10 @@ ExprTypeResult TypePipelineExpr(const ast::PipelineExpr& expr,
 
   // Check if RHS is a function type
   if (const auto* func = std::get_if<TypeFunc>(&stripped->node)) {
-    SPEC_RULE("T-Pipeline");
-
     // Check argument count
     if (func->params.size() != 1) {
       SPEC_RULE("T-Pipeline-ArgCount-Err");
+      SPEC_RULE("rule.16.T-Pipeline-ArgCount-Err");
       result.diag_id = "E-SEM-2539";
       return result;
     }
@@ -221,11 +224,14 @@ ExprTypeResult TypePipelineExpr(const ast::PipelineExpr& expr,
     const auto sub = Subtyping(ctx, lhs_result.type, func->params[0].type);
     if (!sub.ok || !sub.subtype) {
       SPEC_RULE("T-Pipeline-TypeMismatch-Err");
+      SPEC_RULE("rule.16.T-Pipeline-TypeMismatch-Err");
       result.diag_id = "E-SEM-2539";
       return result;
     }
 
     // Result type is the function's return type
+    SPEC_RULE("T-Pipeline");
+    SPEC_RULE("rule.16.T-Pipeline");
     result.ok = true;
     result.type = func->ret;
     return result;
@@ -233,11 +239,10 @@ ExprTypeResult TypePipelineExpr(const ast::PipelineExpr& expr,
 
   // Check if RHS is a closure type
   if (const auto* closure = std::get_if<TypeClosure>(&stripped->node)) {
-    SPEC_RULE("T-Pipeline");
-
     // Check argument count
     if (closure->params.size() != 1) {
       SPEC_RULE("T-Pipeline-ArgCount-Err");
+      SPEC_RULE("rule.16.T-Pipeline-ArgCount-Err");
       result.diag_id = "E-SEM-2539";
       return result;
     }
@@ -246,11 +251,14 @@ ExprTypeResult TypePipelineExpr(const ast::PipelineExpr& expr,
     const auto sub = Subtyping(ctx, lhs_result.type, closure->params[0].second);
     if (!sub.ok || !sub.subtype) {
       SPEC_RULE("T-Pipeline-TypeMismatch-Err");
+      SPEC_RULE("rule.16.T-Pipeline-TypeMismatch-Err");
       result.diag_id = "E-SEM-2539";
       return result;
     }
 
     // Result type is the closure's return type
+    SPEC_RULE("T-Pipeline");
+    SPEC_RULE("rule.16.T-Pipeline");
     result.ok = true;
     result.type = closure->ret;
     return result;
@@ -258,6 +266,7 @@ ExprTypeResult TypePipelineExpr(const ast::PipelineExpr& expr,
 
   // RHS is not callable
   SPEC_RULE("T-Pipeline-NotCallable-Err");
+  SPEC_RULE("rule.16.T-Pipeline-NotCallable-Err");
   result.diag_id = "E-SEM-2538";
   return result;
 }

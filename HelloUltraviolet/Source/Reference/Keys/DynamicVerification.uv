@@ -28,20 +28,19 @@ internal procedure dynamicParallelRuntimeSynchronizedWriteValue(
     index: usize
 ) -> i32 {
     var backing: shared [i32; 4] = [1, 2, 3, 4]
-    let values: shared [i32] = backing[..]
     return parallel context~>inline() {
         let first: Spawned<i32> = spawn {
             var observed: i32 = 0
-            %write values[index] {
-                values[index] = 11
+            %write backing[index] {
+                backing[index] = 11
                 observed = 11
             }
             observed
         }
         let second: Spawned<i32> = spawn {
             var observed: i32 = 0
-            %write values[index] {
-                values[index] = 13
+            %write backing[index] {
+                backing[index] = 13
                 observed = 13
             }
             observed
@@ -89,12 +88,63 @@ internal procedure dynamicUniqueOriginSharedViewValue() -> i32 {
     return readSharedLeafForDynamic(leaf)
 }
 
+internal procedure dynamicKeyVerificationNoAdditionalSyntaxReference() -> bool {
+    return dynamicKeyBlockValue(2usize) == 3
+}
+
+internal procedure dynamicKeyVerificationNoAdditionalParsingRulesReference() -> bool {
+    return dynamicRuntimeSynchronizedWriteValue(0usize, 2usize) == 30
+}
+
+internal procedure staticallySafeSoundProofRequiredReference() -> bool {
+    return dynamicUniqueOriginSharedViewValue() == 33 &&
+        dynamicSpeculativeOnlyWriteValue(1usize) == 12
+}
+
+internal procedure noRuntimeSyncMeaningReference() -> bool {
+    return dynamicUniqueOriginSharedViewValue() == 33
+}
+
+internal procedure runtimeSynchronizationRequirementsReference(context: Context) -> bool {
+    return dynamicRuntimeSynchronizedWriteValue(0usize, 2usize) == 30 &&
+        dynamicParallelRuntimeSynchronizedWriteValue(context, 1usize) == 24
+}
+
+internal procedure dynamicIndexRuntimeOrderingReference(context: Context) -> bool {
+    return dynamicRuntimeSynchronizedWriteValue(2usize, 0usize) == 30 &&
+        dynamicParallelRuntimeSynchronizedWriteValue(context, 1usize) == 24
+}
+
+internal procedure dynamicIndexedPathCoarseningReference() -> bool {
+    return dynamicPrefixCoarsenedReadValue(2usize) == 12
+}
+
+internal procedure canonicalOrderDeadlockFreedomReference(context: Context) -> bool {
+    return dynamicRuntimeSynchronizedWriteValue(3usize, 1usize) == 30 &&
+        dynamicParallelRuntimeSynchronizedWriteValue(context, 1usize) == 24
+}
+
+internal procedure staticAndRuntimeKeySafetyEquivalenceReference() -> bool {
+    return dynamicSpeculativeOnlyWriteValue(1usize) == 12 &&
+        dynamicRuntimeSynchronizedWriteValue(1usize, 2usize) == 30
+}
+
+internal procedure dynamicContextStaticSafeLoweringReference() -> bool {
+    return dynamicUniqueOriginSharedViewValue() == 33
+}
+
 /// Exercises the Keys DynamicVerification reference surface.
 public procedure runKeysDynamicVerificationReference(context: Context) -> bool {
-    return dynamicKeyBlockValue(2usize) == 3 &&
-        dynamicRuntimeSynchronizedWriteValue(0usize, 2usize) == 30 &&
+    return dynamicKeyVerificationNoAdditionalSyntaxReference() &&
+        dynamicKeyVerificationNoAdditionalParsingRulesReference() &&
+        staticallySafeSoundProofRequiredReference() &&
+        noRuntimeSyncMeaningReference() &&
+        runtimeSynchronizationRequirementsReference(context) &&
+        dynamicIndexRuntimeOrderingReference(context) &&
+        dynamicIndexedPathCoarseningReference() &&
+        canonicalOrderDeadlockFreedomReference(context) &&
+        staticAndRuntimeKeySafetyEquivalenceReference() &&
+        dynamicContextStaticSafeLoweringReference() &&
         dynamicParallelRuntimeSynchronizedWriteValue(context, 1usize) == 24 &&
-        dynamicPrefixCoarsenedReadValue(2usize) == 12 &&
-        dynamicSpeculativeOnlyWriteValue(1usize) == 12 &&
-        dynamicUniqueOriginSharedViewValue() == 33
+        dynamicSpeculativeOnlyWriteValue(1usize) == 12
 }

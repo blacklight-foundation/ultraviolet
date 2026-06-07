@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 #include "05_codegen/cleanup/cleanup.h"
 #include "05_codegen/ir/ir_model.h"
 #include "05_codegen/lower/lower_expr.h"
@@ -77,6 +78,21 @@ IRPtr LowerBreakStmt(const ast::BreakStmt& stmt,
   IRBreak brk;
   brk.value = break_value;
   ir_parts.push_back(MakeIR(std::move(brk)));
+
+  core::Conformance::Record(
+      break_value.has_value() ? "rule.18.Lower-Stmt-Break"
+                              : "rule.18.Lower-Stmt-Break-Unit",
+      std::nullopt,
+      break_value.has_value()
+          ? "source=LowerBreakStmt;ir_form=SeqIR;has_value=true;"
+            "cleanup_before_transfer=true;transfer_ir=IRBreak"
+          : "source=LowerBreakStmt;ir_form=SeqIR;has_value=false;"
+            "unit_break=true;cleanup_before_transfer=true;transfer_ir=IRBreak");
+  core::Conformance::Record(
+      "req.18.ControlTransferTemporaryCleanupLowering",
+      std::nullopt,
+      "source=LowerBreakStmt;transfer=break;statement_temp_cleanup_before_transfer=true;"
+      "scope_cleanup_before_transfer=true");
 
   return SeqIR(std::move(ir_parts));
 }

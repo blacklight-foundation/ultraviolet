@@ -6,8 +6,85 @@
 
 namespace ultraviolet::codegen::emit_detail {
 
+namespace {
+
+std::string GpuBarrierSymbol(IRGpuBarrierKind kind)
+{
+  switch (kind)
+  {
+    case IRGpuBarrierKind::Memory:
+      return BuiltinSymGpuMemoryBarrier();
+    case IRGpuBarrierKind::Workgroup:
+      return BuiltinSymGpuWorkgroupBarrier();
+    case IRGpuBarrierKind::Full:
+      return BuiltinSymGpuBarrier();
+  }
+  return BuiltinSymGpuBarrier();
+}
+
+} // namespace
+
+void IRInstructionVisitor::operator()(const IRGpuBarrier &barrier) const
+{
+  SPEC_RULE("rule.20.Lower-Expr-GpuBarrier");
+
+  const std::string barrier_sym = GpuBarrierSymbol(barrier.kind);
+  std::optional<RuntimeFuncInfo> barrier_info = GetRuntimeFuncInfo(barrier_sym);
+  if (barrier_info.has_value())
+  {
+    llvm::Function *barrier_fn = emitter.GetModule().getFunction(barrier_sym);
+    const bool runtime_c_aggregate_boundary = RuntimeUsesCAggregateABI(barrier_sym);
+    const bool runtime_foreign_boundary = RuntimeUsesForeignABI(barrier_sym);
+    const bool use_c_abi_aggregate_sret = runtime_c_aggregate_boundary;
+    if (!barrier_fn)
+    {
+      ABICallResult barrier_abi = ComputeCallABI(
+          emitter,
+          barrier_info->params,
+          barrier_info->ret,
+          use_c_abi_aggregate_sret,
+          /*foreign_boundary_mode_independent=*/runtime_foreign_boundary);
+      if (barrier_abi.func_type)
+      {
+        barrier_fn = llvm::Function::Create(
+            barrier_abi.func_type,
+            llvm::GlobalValue::ExternalLinkage,
+            barrier_sym,
+            &emitter.GetModule());
+        barrier_fn->setCallingConv(llvm::CallingConv::C);
+      }
+    }
+    if (barrier_fn)
+    {
+      (void)EmitABICall(
+          emitter,
+          &builder,
+          barrier_fn,
+          barrier_info->params,
+          barrier_info->ret,
+          {},
+          use_c_abi_aggregate_sret,
+          /*ffi_import_boundary=*/false,
+          /*ffi_import_catch=*/false,
+          std::nullopt,
+          nullptr,
+          nullptr,
+          nullptr,
+          runtime_foreign_boundary);
+    }
+  }
+
+  emitter.SetTempValue(barrier.result, DefaultFor(barrier.result));
+}
+
 void IRInstructionVisitor::operator()(const IRDispatch &dispatch) const
 {
+  SPEC_RULE("rule.20.Lower-Expr-Dispatch");
+  if (dispatch.ordered)
+  {
+    SPEC_RULE("rule.20.Lower-Deterministic-Dispatch");
+  }
+
   emitter.EmitIR(dispatch.captured_env);
   emitter.EmitIR(dispatch.body);
 
@@ -212,6 +289,7 @@ void IRInstructionVisitor::operator()(const IRDispatch &dispatch) const
         EvaluateOrDefault(*dispatch.chunk_size),
         llvm::ConstantInt::get(usize_ty, 0));
   }
+  llvm::Value *workgroup_size = EvaluateOrDefault(dispatch.workgroup_size);
 
   if (dispatch_info.has_value())
   {
@@ -240,8 +318,22 @@ void IRInstructionVisitor::operator()(const IRDispatch &dispatch) const
     }
     if (dispatch_fn)
     {
+      if (!workgroup_size && dispatch_info->params.size() > 11)
+      {
+        if (llvm::Type *workgroup_ty =
+                emitter.GetLLVMType(dispatch_info->params[11].type))
+        {
+          workgroup_size = llvm::Constant::getNullValue(workgroup_ty);
+        }
+      }
+      if (!workgroup_size)
+      {
+        llvm::Type *fields[] = {usize_ty, usize_ty, usize_ty};
+        workgroup_size = llvm::Constant::getNullValue(
+            llvm::StructType::get(emitter.GetContext(), fields));
+      }
       std::vector<llvm::Value *> dispatch_args;
-      dispatch_args.reserve(11);
+      dispatch_args.reserve(12);
       dispatch_args.push_back(range);
       dispatch_args.push_back(elem_size);
       dispatch_args.push_back(result_size);
@@ -253,6 +345,8 @@ void IRInstructionVisitor::operator()(const IRDispatch &dispatch) const
       dispatch_args.push_back(reduce_fn);
       dispatch_args.push_back(ordered);
       dispatch_args.push_back(chunk_size);
+      dispatch_args.push_back(workgroup_size);
+
       (void)EmitABICall(
           emitter,
           &builder,

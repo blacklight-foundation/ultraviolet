@@ -20,6 +20,27 @@ internal procedure applyModalClosureUnion(closure: ModalClosureGroupedUnion, val
     return closure(value)
 }
 
+/// Exercises the closure value size equation.
+public procedure sizeClosureReference() -> bool {
+    return sizeof(ModalClosureNoCapture) == 2usize * sizeof(usize) &&
+        sizeof(ModalClosureWithCapture) == 2usize * sizeof(usize) &&
+        sizeof(ModalClosureGroupedUnion) == 2usize * sizeof(usize) &&
+        sizeof(ModalClosureSharedDependency) == 2usize * sizeof(usize)
+}
+
+/// Exercises the closure value alignment equation.
+public procedure alignClosureReference() -> bool {
+    return alignof(ModalClosureNoCapture) == alignof(usize) &&
+        alignof(ModalClosureWithCapture) == alignof(usize) &&
+        alignof(ModalClosureGroupedUnion) == alignof(usize) &&
+        alignof(ModalClosureSharedDependency) == alignof(usize)
+}
+
+/// Exercises the closure value layout tuple.
+public procedure layoutClosureReference() -> bool {
+    return sizeClosureReference() && alignClosureReference()
+}
+
 /// Exercises the ModalTypes Closures reference surface.
 public procedure runModalTypesClosuresReference() -> bool {
     let captured: i32 = 9
@@ -43,6 +64,5 @@ public procedure runModalTypesClosuresReference() -> bool {
     return applyModalClosure(add_captured, 3) == 12 &&
         applyModalFunctionNoCapture(no_capture) == 4 &&
         applyModalClosureUnion(union_reader, 7) == 7 &&
-        sizeof(ModalClosureNoCapture) == 2usize * sizeof(usize) &&
-        sizeof(ModalClosureSharedDependency) == 2usize * sizeof(usize)
+        layoutClosureReference()
 }

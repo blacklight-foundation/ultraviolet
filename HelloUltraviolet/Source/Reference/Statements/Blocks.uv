@@ -1,5 +1,7 @@
 //! Reference specimens for Statements / Blocks.
 
+using HelloUltraviolet::Audit::{ auditTextContains }
+
 internal procedure blockTailExpressionValue() -> i32 {
     let value: i32 = {
         let left: i32 = 10
@@ -61,13 +63,126 @@ internal procedure statementSequenceStopsOnReturnValue() -> i32 {
     return value
 }
 
-/// Exercises the Statements Blocks reference surface.
-public procedure runStatementsBlocksReference() -> bool {
+internal procedure loopIterStatementBlockValue() -> usize {
+    var total: usize = 0usize
+    loop value: usize in [1usize, 2usize, 3usize] {
+        total = total + value
+    }
+    return total
+}
+
+/// Exercises the required-terminator surface for statement sequences and block tails.
+public procedure requiredStatementTerminatorsReference() -> bool {
     return blockTailExpressionValue() == 15 &&
         blockTailExpressionAfterNewlineValue() == 21 &&
         blockUnitNoTailValue() == 3 &&
-        emptyBlockSequenceValue() == 5 &&
+        emptyBlockSequenceValue() == 5
+}
+
+/// Exercises scope push/pop and nearest-scope binding lookup for nested blocks.
+public procedure bindingEnvironmentHelpersReference() -> bool {
+    return nestedBlockScopeValue() == 15
+}
+
+/// Exercises the statement lowering judgement family through representative statements.
+public procedure lowerStatementJudgementsReference() -> bool {
+    return lowerStmtAssignReference() &&
+        lowerStmtLetReference() &&
+        lowerStmtExprReference() &&
+        lowerStmtDeferReference() &&
+        lowerStmtRegionReference() &&
+        lowerStmtFrameImplicitReference() &&
+        lowerStmtReturnUnitReference() &&
+        lowerStmtUnsafeBlockReference()
+}
+
+/// Exercises statement lowering correctness through statement effects and control transfer.
+public procedure lowerStmtCorrectnessReference() -> bool {
+    return blockUnitNoTailValue() == 3 &&
+        statementSequenceStopsOnReturnValue() == 7
+}
+
+/// Exercises block lowering correctness through block tail and return-tail behavior.
+public procedure lowerBlockCorrectnessReference() -> bool {
+    return blockTailExpressionValue() == 15 &&
+        blockReturnTailValue() == 29
+}
+
+/// Exercises lowering totality across the statement forms represented in the HUV corpus.
+public procedure statementLoweringTotalityReference() -> bool {
+    return lowerStatementJudgementsReference() &&
+        lowerStmtCompoundAssignReference() &&
+        lowerStmtVarReference() &&
+        lowerStmtUsingLocalReference() &&
+        lowerStmtFrameExplicitReference() &&
+        lowerStmtBreakReference() &&
+        lowerStmtBreakUnitReference() &&
+        lowerStmtContinueReference()
+}
+
+/// Exercises Lower-StmtList-Empty with an empty block sequence.
+public procedure lowerStmtListEmptyReference() -> bool {
+    return emptyBlockSequenceValue() == 5
+}
+
+/// Exercises Lower-StmtList-Cons with ordered statement effects before control transfer.
+public procedure lowerStmtListConsReference() -> bool {
+    return statementSequenceStopsOnReturnValue() == 7
+}
+
+/// Exercises Lower-Block-Tail by preserving a tail expression value after statements.
+public procedure lowerBlockTailReference() -> bool {
+    return blockTailExpressionValue() == 15 &&
+        blockTailExpressionAfterNewlineValue() == 21
+}
+
+/// Exercises Lower-Block-Unit by preserving unit-valued block side effects.
+public procedure lowerBlockUnitReference() -> bool {
+    return blockUnitNoTailValue() == 3 &&
+        emptyBlockSequenceValue() == 5
+}
+
+/// Exercises temporary cleanup lowering around nonlocal statement control.
+public procedure temporaryCleanupLoweringReference() -> bool {
+    return returnTemporaryCleanupValue() == 19
+}
+
+/// Exercises lowering coverage for the block-owned loop statement family.
+public procedure blockLoopLoweringTotalityReference() -> bool {
+    return lowerLoopInfiniteReference() &&
+        lowerLoopCondReference() &&
+        lowerLoopIterReference()
+}
+
+/// Exercises Lower-Loop-Infinite with a break-terminated infinite loop.
+public procedure lowerLoopInfiniteReference() -> bool {
+    return breakUnitReferenceValue() == 15
+}
+
+/// Exercises Lower-Loop-Cond with a condition-form loop expression.
+public procedure lowerLoopCondReference() -> bool {
+    return breakValueReference() == 11
+}
+
+/// Exercises Lower-Loop-Iter with an iterator loop used as a statement.
+public procedure lowerLoopIterReference() -> bool {
+    return loopIterStatementBlockValue() == 6usize
+}
+
+/// Exercises the Statements Blocks reference surface.
+public procedure runStatementsBlocksReference() -> bool {
+    return requiredStatementTerminatorsReference() &&
+        bindingEnvironmentHelpersReference() &&
+        lowerStatementJudgementsReference() &&
+        lowerStmtCorrectnessReference() &&
+        lowerBlockCorrectnessReference() &&
+        statementLoweringTotalityReference() &&
+        lowerStmtListEmptyReference() &&
+        lowerStmtListConsReference() &&
+        lowerBlockTailReference() &&
+        lowerBlockUnitReference() &&
+        temporaryCleanupLoweringReference() &&
+        blockLoopLoweringTotalityReference() &&
         blockReturnTailValue() == 29 &&
-        nestedBlockScopeValue() == 15 &&
         statementSequenceStopsOnReturnValue() == 7
 }

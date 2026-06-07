@@ -70,11 +70,13 @@
 #include <atomic>
 #include <chrono>
 #include <cstdint>
+#include <filesystem>
 #include <fstream>
 #include <functional>
 #include <mutex>
 #include <sstream>
 #include <thread>
+#include <unordered_set>
 
 #include "00_core/path.h"
 
@@ -89,6 +91,7 @@ struct TraceState {
   std::string domain;
   std::string phase;
   std::string root;
+  std::unordered_set<std::string> empty_rule_records;
   std::atomic<bool> enabled{false};
 };
 
@@ -216,12 +219,19 @@ void Conformance::Init(const std::string& path, std::string_view domain) {
   state.out.rdbuf()->pubsetbuf(state.out_buffer.data(),
                                static_cast<std::streamsize>(
                                    state.out_buffer.size()));
-  state.out.open(path, std::ios::binary | std::ios::trunc);
+  const std::filesystem::path trace_path(path);
+  if (const std::filesystem::path parent_path = trace_path.parent_path();
+      !parent_path.empty()) {
+    std::error_code ec;
+    std::filesystem::create_directories(HostFilesystemPath(parent_path), ec);
+  }
+  state.out.open(HostFilesystemPath(trace_path), std::ios::binary | std::ios::trunc);
   if (!state.out) {
     return;
   }
   state.domain = std::string(domain);
   state.phase = "";
+  state.empty_rule_records.clear();
   state.enabled.store(true, std::memory_order_relaxed);
   state.out << "compile_conformance_v1\n";
 }
@@ -248,6 +258,17 @@ void Conformance::Record(std::string_view rule_id,
   std::lock_guard<std::mutex> lock(state.mutex);
   if (!state.enabled.load(std::memory_order_relaxed)) {
     return;
+  }
+  if (!span.has_value() && payload.empty()) {
+    std::string record_key;
+    record_key.reserve(state.phase.size() + rule_id.size() + 1);
+    record_key += state.phase.empty() ? "-" : state.phase;
+    record_key += '\t';
+    record_key += std::string(rule_id);
+    const auto [_, inserted] = state.empty_rule_records.insert(std::move(record_key));
+    if (!inserted) {
+      return;
+    }
   }
   const std::string file =
       span.has_value() ? RelPath(span->file, state.root) : "-";
@@ -302,4 +323,3 @@ bool Conformance::Enabled() {
 }
 
 }  // namespace ultraviolet::core
-

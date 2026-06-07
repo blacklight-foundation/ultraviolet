@@ -1,0 +1,15 @@
+[[assembly]]
+name = "HostedImportProvider"
+kind = "library"
+link_kind = "static"
+root = "Source/HostedImportProvider"
+
+[[assembly]]
+name = "HostedImportGraph"
+kind = "library"
+link_kind = "shared"
+root = "Source/HostedImportGraph"
+
+[build]
+incremental = true
+progress = false

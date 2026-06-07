@@ -18,6 +18,14 @@ namespace ultraviolet::codegen {
 struct IR;
 using IRPtr = std::shared_ptr<IR>;
 
+enum class IRImmediateLiteralKind {
+  String,
+  Bytes,
+  Char,
+  Int,
+  Float,
+};
+
 struct IRValue {
   enum class Kind {
     Opaque,
@@ -32,6 +40,7 @@ struct IRValue {
   // Stable identity for immediate literals so lowering can track per-literal
   // type info without conflating same-lexeme constants across contexts.
   std::uint64_t literal_id = 0;
+  std::optional<IRImmediateLiteralKind> literal_kind;
   // Dynamic-object values carry the implementing vtable symbol so shared
   // lowering helpers can recover VTableRefs from lowered IR.
   std::string vtable_sym;
@@ -174,6 +183,7 @@ struct IRCallVTable {
   std::vector<IRValue> args;
   IRValue result;
   analysis::TypeRef ret_type;  // Return type of the method (for correct LLVM type)
+  bool check_dynamic_receiver_addr_active = false;
 };
 
 struct IRStoreGlobal {
@@ -365,6 +375,8 @@ struct IRLoop {
   IRPtr cond_ir;
   std::optional<IRValue> cond_value;
   IRPtr body_ir;
+  IRPtr invariant_entry_ir;
+  IRPtr invariant_backedge_ir;
   IRValue body_value;
   IRValue result;
 };
@@ -464,23 +476,57 @@ struct IRSpawn {
   IRValue env_size;                     // Size of captured environment (usize)
   IRValue body_fn;                      // Wrapper function symbol
   IRValue result_size;                  // Result size (usize)
+  std::optional<std::string> runtime_symbol;
+  std::optional<IRValue> runtime_receiver;
   std::optional<IRValue> affinity_mask; // Optional CpuSet mask hint
   std::optional<IRValue> priority;      // Optional Priority value
   std::string name;                     // Optional debug name
 };
 
 // §10.3 Wait expression IR
+enum class IRWaitKind {
+  Unknown,
+  Spawned,
+  Tracked,
+};
+
 struct IRWait {
   IRValue handle;                       // Spawned<T>
   IRValue result;                       // T (extracted from Spawned)
+  IRWaitKind kind = IRWaitKind::Unknown;
 };
 
 // §18.6 Explicit cancellation check IR
+struct IRCancelCreate {
+  IRValue result;                       // CancelToken@Active
+};
+
+struct IRCancelRequest {
+  IRValue token;                        // Addressable CancelToken@Active receiver
+  IRValue result;                       // ()
+};
+
+struct IRCancelWait {
+  IRValue token;                        // Addressable CancelToken@Active receiver
+  IRValue result;                       // Async<()>
+};
+
 struct IRCancelSuppress {};
 
 struct IRCancelCheck {
   IRValue token;                        // Address of CancelToken@Active receiver
   IRValue result;                       // bool
+};
+
+enum class IRGpuBarrierKind {
+  Full,
+  Memory,
+  Workgroup,
+};
+
+struct IRGpuBarrier {
+  IRGpuBarrierKind kind = IRGpuBarrierKind::Full;
+  IRValue result;                       // ()
 };
 
 // §18.5 Dispatch expression IR
@@ -499,6 +545,7 @@ struct IRDispatch {
   IRValue result;                       // T if reduce, () otherwise
   bool ordered = false;                 // [ordered] flag
   std::optional<IRValue> chunk_size;    // [chunk:] value
+  IRValue workgroup_size;               // GPU workgroup topology
 };
 
 // UVX Extension: Asynchronous Operations IR nodes (§19)
@@ -564,6 +611,8 @@ struct IRSync {
   analysis::TypeRef async_type;         // Type of async value
   analysis::TypeRef result_type;        // Result type
   analysis::TypeRef error_type;         // Error type
+  std::optional<std::string> runtime_symbol;
+  std::optional<IRValue> runtime_receiver;
 };
 
 // §19.3.4 Race expression IR (first-completion mode)
@@ -670,8 +719,12 @@ struct IR {
                IRParallel,
                IRSpawn,
                IRWait,
+               IRCancelCreate,
+               IRCancelRequest,
+               IRCancelWait,
                IRCancelSuppress,
                IRCancelCheck,
+               IRGpuBarrier,
                IRDispatch,
                // UVX Extension: Asynchronous Operations (§19)
                IRYield,

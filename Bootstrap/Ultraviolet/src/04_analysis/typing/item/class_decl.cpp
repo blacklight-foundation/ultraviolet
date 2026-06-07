@@ -328,6 +328,7 @@ ClassDeclResult TypeClassDecl(
   const auto method_names = MethodNames(decl.items);
   if (!DistinctClassMemberNameKeys(method_names)) {
     SPEC_RULE("WF-Class-Method-Duplicate");
+    SPEC_RULE("rule.14.WF-Class");
     result.ok = false;
     result.diag_id = "E-TYP-2500";
     return result;
@@ -595,6 +596,7 @@ ClassDeclResult TypeClassDecl(
     if (method_table.diag_id.has_value() &&
         *method_table.diag_id == "E-TYP-2508") {
       SPEC_RULE("Superclass-Cycle");
+      SPEC_RULE("rule.14.Superclass-Cycle");
     }
     result.ok = false;
     result.diag_id = method_table.diag_id;
@@ -606,6 +608,7 @@ ClassDeclResult TypeClassDecl(
     if (field_table.diag_id.has_value() &&
         *field_table.diag_id == "E-TYP-2508") {
       SPEC_RULE("Superclass-Cycle");
+      SPEC_RULE("rule.14.Superclass-Cycle");
     }
     result.ok = false;
     result.diag_id = field_table.diag_id;
@@ -669,6 +672,7 @@ ClassDeclResult TypeClassDeclSignature(
   const auto method_names = MethodNames(decl.items);
   if (!DistinctClassMemberNameKeys(method_names)) {
     SPEC_RULE("WF-Class-Method-Duplicate");
+    SPEC_RULE("rule.14.WF-Class");
     result.ok = false;
     result.diag_id = "E-TYP-2500";
     return result;

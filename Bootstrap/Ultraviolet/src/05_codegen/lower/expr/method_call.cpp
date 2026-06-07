@@ -55,13 +55,289 @@
 #include "00_core/symbols.h"
 
 #include <algorithm>
+#include <cctype>
 #include <cstdint>
+#include <cstdio>
 #include <iostream>
+#include <mutex>
+#include <string>
+#include <string_view>
+#include <unordered_map>
+#include <utility>
 #include <variant>
 
 namespace ultraviolet::codegen {
 
 namespace {
+
+void RecordMethodRegionConformanceOnce(
+    std::once_flag& flag,
+    std::string_view rule_id,
+    std::string payload
+) {
+    if (!core::Conformance::Enabled()) {
+        return;
+    }
+    std::call_once(flag, [rule_id = std::string(rule_id),
+                          payload = std::move(payload)]() {
+        core::Conformance::Record(rule_id, std::nullopt, payload);
+    });
+}
+
+void AppendMethodRegionPayloadField(
+    std::string& payload,
+    std::string_view key,
+    std::string_view value
+) {
+    if (!payload.empty()) {
+        payload += ';';
+    }
+    payload += key;
+    payload += '=';
+    payload += value;
+}
+
+void AppendMethodRegionPayloadField(
+    std::string& payload,
+    std::string_view key,
+    const char* value
+) {
+    AppendMethodRegionPayloadField(
+        payload,
+        key,
+        std::string_view(value ? value : "-")
+    );
+}
+
+void AppendMethodRegionPayloadField(
+    std::string& payload,
+    std::string_view key,
+    bool value
+) {
+    AppendMethodRegionPayloadField(
+        payload,
+        key,
+        std::string_view(value ? "true" : "false")
+    );
+}
+
+void AppendMethodPayloadField(
+    std::string& payload,
+    std::string_view key,
+    std::string_view value
+) {
+    if (!payload.empty()) {
+        payload += ';';
+    }
+    payload += key;
+    payload += '=';
+    payload += value;
+}
+
+void AppendMethodPayloadField(
+    std::string& payload,
+    std::string_view key,
+    const char* value
+) {
+    AppendMethodPayloadField(
+        payload,
+        key,
+        std::string_view(value ? value : "-")
+    );
+}
+
+void AppendMethodPayloadField(
+    std::string& payload,
+    std::string_view key,
+    bool value
+) {
+    AppendMethodPayloadField(
+        payload,
+        key,
+        std::string_view(value ? "true" : "false")
+    );
+}
+
+std::string BuiltinCapabilityClassName(const analysis::TypePath& path) {
+    if (path.empty()) {
+        return "-";
+    }
+    if (analysis::IsIOClassPath(path)) {
+        return "IO";
+    }
+    if (analysis::IsNetworkClassPath(path)) {
+        return "Network";
+    }
+    if (analysis::IsHeapAllocatorClassPath(path)) {
+        return "HeapAllocator";
+    }
+    if (analysis::IsExecutionDomainClassPath(path)) {
+        return "ExecutionDomain";
+    }
+    if (analysis::IsReactorClassPath(path)) {
+        return "Reactor";
+    }
+    if (analysis::IsTimeClassPath(path)) {
+        return "Time";
+    }
+    if (analysis::IsMonotonicTimeClassPath(path)) {
+        return "MonotonicTime";
+    }
+    if (analysis::IsWallTimeClassPath(path)) {
+        return "WallTime";
+    }
+    return core::StringOfPath(path);
+}
+
+void SpecDefsCapabilityMethodLowering() {
+    SPEC_DEF("def.14.CapabilityLoweringSupport", "14.9.3");
+}
+
+void RecordBuiltinCapabilityMethodLoweringConformance(
+    const analysis::TypePath& class_path,
+    std::string_view method_name,
+    std::string_view callee_sym,
+    bool builtin_method_symbol
+) {
+    SpecDefsCapabilityMethodLowering();
+    SPEC_RULE("req.14.CapabilityClassesUseDynamicDispatchModel");
+    SPEC_RULE("req.14.CapabilityBuiltinMethodLowering");
+    if (!core::Conformance::Enabled()) {
+        return;
+    }
+
+    const std::string class_name = BuiltinCapabilityClassName(class_path);
+    std::string payload;
+    AppendMethodPayloadField(payload, "source", "LowerMethodCall");
+    AppendMethodPayloadField(payload, "receiver_type", "TypeDynamic");
+    AppendMethodPayloadField(payload, "class", class_name);
+    AppendMethodPayloadField(payload, "method", method_name);
+    AppendMethodPayloadField(payload, "callee", callee_sym);
+    AppendMethodPayloadField(payload, "builtin_method_symbol", builtin_method_symbol);
+    AppendMethodPayloadField(payload, "lower_recv_arg", true);
+    AppendMethodPayloadField(payload, "lower_args", true);
+    AppendMethodPayloadField(payload, "vtable_call", false);
+    AppendMethodPayloadField(payload, "dynamic_class_object_model", true);
+    AppendMethodPayloadField(payload, "primitive_implementation", true);
+
+    core::Conformance::Record(
+        "def.14.CapabilityLoweringSupport",
+        std::nullopt,
+        payload
+    );
+    core::Conformance::Record(
+        "req.14.CapabilityClassesUseDynamicDispatchModel",
+        std::nullopt,
+        payload
+    );
+    core::Conformance::Record(
+        "req.14.CapabilityBuiltinMethodLowering",
+        std::nullopt,
+        payload
+    );
+}
+
+void RecordContextDomainLoweringConformance(
+    std::string_view method_name,
+    std::string_view callee_sym,
+    const analysis::TypeRef& result_type
+) {
+    std::string_view rule_id;
+    if (analysis::IdEq(method_name, "cpu")) {
+        rule_id = "rule.20.Lower-Domain-CPU";
+    } else if (analysis::IdEq(method_name, "gpu")) {
+        rule_id = "rule.20.Lower-Domain-GPU";
+    } else if (analysis::IdEq(method_name, "inline")) {
+        rule_id = "rule.20.Lower-Domain-Inline";
+    } else {
+        return;
+    }
+
+    if (!core::Conformance::Enabled()) {
+        return;
+    }
+
+    std::string payload;
+    AppendMethodPayloadField(payload, "source", "LowerMethodCall");
+    AppendMethodPayloadField(payload, "receiver", "Context");
+    AppendMethodPayloadField(payload, "method", method_name);
+    AppendMethodPayloadField(payload, "callee", callee_sym);
+    const std::string result_type_name =
+        result_type ? analysis::TypeToString(result_type) : std::string("-");
+    AppendMethodPayloadField(payload, "result_type", std::string_view(result_type_name));
+    core::Conformance::Record(rule_id, std::nullopt, payload);
+}
+
+void RecordOrdinaryDynamicMethodDispatchConformance(
+    const analysis::TypePath& class_path,
+    std::string_view method_name
+) {
+    SpecDefsCapabilityMethodLowering();
+    SPEC_RULE("req.14.CapabilityClassesUseDynamicDispatchModel");
+    if (!core::Conformance::Enabled()) {
+        return;
+    }
+
+    std::string payload;
+    AppendMethodPayloadField(payload, "source", "LowerMethodCall");
+    AppendMethodPayloadField(payload, "receiver_type", "TypeDynamic");
+    AppendMethodPayloadField(payload, "class", core::StringOfPath(class_path));
+    AppendMethodPayloadField(payload, "method", method_name);
+    AppendMethodPayloadField(payload, "builtin_capability", false);
+    AppendMethodPayloadField(payload, "ordinary_dynamic_dispatch_path", true);
+    AppendMethodPayloadField(payload, "vtable_call", true);
+
+    core::Conformance::Record(
+        "req.14.CapabilityClassesUseDynamicDispatchModel",
+        std::nullopt,
+        payload
+    );
+}
+
+void RecordFoundationalIntrinsicCallLoweringConformance(
+    std::string_view method_name,
+    std::string_view callee_sym
+) {
+    SPEC_RULE("req.14.FoundationalIntrinsicCallLowering");
+    if (!core::Conformance::Enabled()) {
+        return;
+    }
+
+    std::string payload;
+    AppendMethodPayloadField(payload, "source", "LowerMethodCall");
+    AppendMethodPayloadField(payload, "method", method_name);
+    AppendMethodPayloadField(
+        payload,
+        "builtin",
+        analysis::IdEq(method_name, "eq") ? "Eq.eq" :
+            (analysis::IdEq(method_name, "successor")
+                ? "Discrete.successor"
+                : "Discrete.predecessor")
+    );
+    AppendMethodPayloadField(payload, "callee", callee_sym);
+    AppendMethodPayloadField(payload, "intrinsic_call", true);
+    AppendMethodPayloadField(payload, "ordinary_method_call", false);
+
+    core::Conformance::Record(
+        "req.14.FoundationalIntrinsicCallLowering",
+        std::nullopt,
+        payload
+    );
+}
+
+std::string FreshRuntimeRegionTagsPayload() {
+    std::string payload;
+    AppendMethodRegionPayloadField(payload, "operation", "FreshTags");
+    AppendMethodRegionPayloadField(payload, "source", "LowerMethodCall");
+    AppendMethodRegionPayloadField(payload, "runtime_symbol", "Region::reset_unchecked");
+    AppendMethodRegionPayloadField(payload, "runtime_impl", "uv_region_count_target_entries");
+    AppendMethodRegionPayloadField(payload, "generator", "uv_region_fresh_token");
+    AppendMethodRegionPayloadField(payload, "distinct_tags", true);
+    AppendMethodRegionPayloadField(payload, "retags_matching_target", true);
+    return payload;
+}
+
+std::once_flag g_fresh_runtime_region_tags_obligation_once;
 
 ast::KeyMode KeyModeForReceiverPerm(analysis::Permission perm) {
     return perm == analysis::Permission::Const ? ast::KeyMode::Read
@@ -180,6 +456,89 @@ std::optional<std::pair<analysis::TypePath, std::string>> ModalStateInfo(
         return std::make_pair(modal->path, modal->state);
     }
     return std::nullopt;
+}
+
+enum class ModalStaticLoweringKind {
+    None,
+    StateMethod,
+    Transition,
+};
+
+struct ModalStaticLoweringEvidence {
+    ModalStaticLoweringKind kind = ModalStaticLoweringKind::None;
+    analysis::TypePath modal_path;
+    std::string source_state;
+    std::string target_state;
+};
+
+void RecordStateMethodLoweringConformance(
+    const ModalStaticLoweringEvidence& evidence,
+    std::string_view method_name,
+    std::string_view callee_sym
+) {
+    if (evidence.kind != ModalStaticLoweringKind::StateMethod) {
+        return;
+    }
+
+    SPEC_RULE("req.StateMethodLowering");
+    if (!core::Conformance::Enabled()) {
+        return;
+    }
+
+    std::string payload;
+    AppendMethodPayloadField(payload, "source", "LowerMethodCall");
+    AppendMethodPayloadField(payload, "operation", "state_method");
+    AppendMethodPayloadField(payload, "modal", core::StringOfPath(evidence.modal_path));
+    AppendMethodPayloadField(payload, "state", evidence.source_state);
+    AppendMethodPayloadField(payload, "method", method_name);
+    AppendMethodPayloadField(payload, "callee", callee_sym);
+    AppendMethodPayloadField(payload, "receiver_type", "ModalSelfType");
+    AppendMethodPayloadField(payload, "receiver_state_concrete", true);
+    AppendMethodPayloadField(payload, "dispatch", "static");
+    AppendMethodPayloadField(payload, "direct_ir", "IRCall");
+    AppendMethodPayloadField(payload, "tag_dispatch", false);
+
+    core::Conformance::Record(
+        "req.StateMethodLowering",
+        std::nullopt,
+        payload
+    );
+}
+
+void RecordTransitionLoweringConformance(
+    const ModalStaticLoweringEvidence& evidence,
+    std::string_view method_name,
+    std::string_view callee_sym,
+    bool receiver_moved
+) {
+    if (evidence.kind != ModalStaticLoweringKind::Transition) {
+        return;
+    }
+
+    SPEC_RULE("req.TransitionLowering");
+    if (!core::Conformance::Enabled()) {
+        return;
+    }
+
+    std::string payload;
+    AppendMethodPayloadField(payload, "source", "LowerMethodCall");
+    AppendMethodPayloadField(payload, "operation", "transition");
+    AppendMethodPayloadField(payload, "modal", core::StringOfPath(evidence.modal_path));
+    AppendMethodPayloadField(payload, "source_state", evidence.source_state);
+    AppendMethodPayloadField(payload, "target_state", evidence.target_state);
+    AppendMethodPayloadField(payload, "method", method_name);
+    AppendMethodPayloadField(payload, "callee", callee_sym);
+    AppendMethodPayloadField(payload, "receiver_moved", receiver_moved);
+    AppendMethodPayloadField(payload, "dispatch", "static");
+    AppendMethodPayloadField(payload, "direct_ir", "IRCall");
+    AppendMethodPayloadField(payload, "direct_modal_method_body", true);
+    AppendMethodPayloadField(payload, "in_place_tag_mutation", false);
+
+    core::Conformance::Record(
+        "req.TransitionLowering",
+        std::nullopt,
+        payload
+    );
 }
 
 std::optional<analysis::TypePath> ResolveDispatchTypePath(
@@ -407,7 +766,16 @@ bool GenericArgsEquivalent(const std::vector<analysis::TypeRef>& lhs,
     return true;
 }
 
-void EmitGenericInstantiationDiagnostic(std::string_view code) {
+void EmitGenericInstantiationDiagnostic(LowerCtx& ctx, std::string_view code) {
+    if (ctx.diagnostics != nullptr) {
+        if (ctx.diagnostics_mu != nullptr) {
+            std::lock_guard<std::mutex> lock(*ctx.diagnostics_mu);
+            core::EmitDiagnosticById(*ctx.diagnostics, code);
+        } else {
+            core::EmitDiagnosticById(*ctx.diagnostics, code);
+        }
+        return;
+    }
     if (auto diag = core::MakeDiagnosticById(code)) {
         std::cerr << core::Render(*diag) << "\n";
         return;
@@ -474,13 +842,15 @@ std::optional<std::string> EnsureGenericStateMethodInstantiation(
     const std::vector<analysis::TypeRef> inst_args =
         GenericStateMethodArgs(*modal_decl, *subst);
     if (GenericInstantiationWouldRecurse(ctx, base_symbol, inst_args)) {
-        EmitGenericInstantiationDiagnostic("E-TYP-2307");
+        SPEC_RULE("req.GenericInfiniteMonomorphizationRejected");
+        EmitGenericInstantiationDiagnostic(ctx, "E-TYP-2307");
         ctx.ReportCodegenFailure();
         return std::nullopt;
     }
     if (ctx.generic_instantiation_stack.size() >=
         analysis::MonomorphizeContext::kMaxDepth) {
-        EmitGenericInstantiationDiagnostic("E-TYP-2308");
+        SPEC_RULE("req.GenericInstantiationDepthLimit");
+        EmitGenericInstantiationDiagnostic(ctx, "E-TYP-2308");
         ctx.ReportCodegenFailure();
         return std::nullopt;
     }
@@ -708,6 +1078,17 @@ std::optional<ParamModeList> BuiltinCapabilityParamModes(
         return std::nullopt;
     }
 
+    if (analysis::IsReactorClassPath(class_path)) {
+        const ast::ClassDecl reactor_decl = analysis::BuildReactorClassDecl();
+        for (const auto& item : reactor_decl.items) {
+            const auto* method = std::get_if<ast::ClassMethodDecl>(&item);
+            if (method && method->name == method_name) {
+                return ParamModesFromParams(method->params);
+            }
+        }
+        return std::nullopt;
+    }
+
   if (analysis::IsExecutionDomainTypePath(cap_path)) {
     if (const auto sig = analysis::LookupExecutionDomainMethodSig(method_name)) {
       return ParamModesFromParams(sig->params);
@@ -778,6 +1159,14 @@ std::optional<ParamTypeList> BuiltinCapabilityParamTypes(
         return std::nullopt;
     }
 
+    if (analysis::IsReactorClassPath(class_path)) {
+        if (const auto* method =
+                analysis::LookupClassMethod(scope, class_path, method_name)) {
+            return ParamTypesFromParams(scope, method->params);
+        }
+        return std::nullopt;
+    }
+
     if (analysis::IsExecutionDomainTypePath(cap_path)) {
         if (const auto sig = analysis::LookupExecutionDomainMethodSig(method_name)) {
             return ParamTypesFromParams(scope, sig->params);
@@ -793,6 +1182,29 @@ std::optional<ParamTypeList> BuiltinCapabilityParamTypes(
     }
 
     return std::nullopt;
+}
+
+analysis::TypeRef ReactorStripTypeShell(const analysis::TypeRef& type);
+
+void SpecializeReactorParamTypes(const ast::MethodCallExpr& expr,
+                                 ParamTypeList& param_types,
+                                 LowerCtx& ctx) {
+    if (!analysis::IdEq(expr.name, "run") &&
+        !analysis::IdEq(expr.name, "register")) {
+        return;
+    }
+    if (param_types.size() != 1 || expr.args.size() != 1 ||
+        !expr.args.front().value || !ctx.expr_type) {
+        return;
+    }
+
+    const analysis::ScopeContext& scope = ScopeForLowering(ctx);
+    analysis::TypeRef arg_type =
+        InstantiateActiveGenericType(ctx.expr_type(*expr.args.front().value), ctx);
+    arg_type = ReactorStripTypeShell(arg_type);
+    if (analysis::AsyncSigOf(scope, arg_type).has_value()) {
+        param_types[0] = arg_type;
+    }
 }
 
 std::optional<std::string> AsyncCombinatorRuntimeSymbol(std::string_view name) {
@@ -954,6 +1366,362 @@ void SyncRegionAliasForMethodResult(const ast::MethodCallExpr& expr,
     RemoveActiveRegionAlias(ctx, *root);
 }
 
+IRValue LocalValue(std::string name) {
+    IRValue value;
+    value.kind = IRValue::Kind::Local;
+    value.name = std::move(name);
+    return value;
+}
+
+analysis::TypeRef ReactorMethodResultType(
+    const ast::Expr& expr_wrapper,
+    const analysis::TypeRef& fallback,
+    LowerCtx& ctx) {
+    analysis::TypeRef result_type = fallback;
+    if (ctx.expr_type) {
+        if (analysis::TypeRef typed = ctx.expr_type(expr_wrapper)) {
+            result_type = InstantiateActiveGenericType(typed, ctx);
+        }
+    }
+    return result_type;
+}
+
+analysis::TypeRef ReactorTrackedValueType(
+    const analysis::TypeRef& method_result_type,
+    const analysis::AsyncSig& future_sig) {
+    if (const auto tracked = analysis::ExtractTrackedArgs(method_result_type)) {
+        return analysis::MakeTypeUnion({tracked->first, tracked->second});
+    }
+    return analysis::MakeTypeUnion({future_sig.result, future_sig.err});
+}
+
+analysis::TypeRef ReactorStripTypeShell(const analysis::TypeRef& type) {
+    if (!type) {
+        return type;
+    }
+
+    return std::visit(
+        [&](const auto& node) -> analysis::TypeRef {
+            using T = std::decay_t<decltype(node)>;
+            if constexpr (std::is_same_v<T, analysis::TypePerm>) {
+                return ReactorStripTypeShell(node.base);
+            } else if constexpr (std::is_same_v<T, analysis::TypeRefine>) {
+                return ReactorStripTypeShell(node.base);
+            }
+            return type;
+        },
+        type->node);
+}
+
+analysis::TypeRef ReactorPointerElementType(const analysis::TypeRef& type) {
+    analysis::TypeRef stripped = ReactorStripTypeShell(type);
+    if (!stripped) {
+        return nullptr;
+    }
+    if (const auto* ptr = std::get_if<analysis::TypePtr>(&stripped->node)) {
+        return ptr->element;
+    }
+    if (const auto* raw_ptr = std::get_if<analysis::TypeRawPtr>(&stripped->node)) {
+        return raw_ptr->element;
+    }
+    return nullptr;
+}
+
+analysis::TypeRef ReactorFutureTypeFromMethodResult(
+    const analysis::TypeRef& method_result_type) {
+    analysis::TypeRef stripped = ReactorStripTypeShell(method_result_type);
+    if (!stripped) {
+        return nullptr;
+    }
+    if (const auto tracked = analysis::ExtractTrackedArgs(stripped)) {
+        return analysis::MakeTypePath({"Future"}, {tracked->first, tracked->second});
+    }
+    if (const auto* union_type = std::get_if<analysis::TypeUnion>(&stripped->node)) {
+        if (union_type->members.size() == 2) {
+            return analysis::MakeTypePath(
+                {"Future"},
+                {union_type->members[0], union_type->members[1]});
+        }
+    }
+    return nullptr;
+}
+
+analysis::TypeRef ReactorFutureCandidateType(
+    const analysis::ScopeContext& scope,
+    const analysis::TypeRef& candidate) {
+    analysis::TypeRef stripped = ReactorStripTypeShell(candidate);
+    if (!stripped) {
+        return nullptr;
+    }
+    if (const analysis::TypeRef element = ReactorPointerElementType(stripped)) {
+        stripped = ReactorStripTypeShell(element);
+    }
+    if (analysis::AsyncSigOf(scope, stripped).has_value()) {
+        return stripped;
+    }
+    return nullptr;
+}
+
+struct ReactorFutureArg {
+    IRValue value;
+    analysis::TypeRef type;
+    IRPtr read_ir;
+};
+
+std::optional<ReactorFutureArg> PrepareReactorFutureArg(
+    const ast::MethodCallExpr& expr,
+    const std::vector<IRValue>& arg_values,
+    const ParamTypeList& param_types,
+    const analysis::TypeRef& method_result_type,
+    LowerCtx& ctx) {
+    if (arg_values.empty()) {
+        return std::nullopt;
+    }
+
+    const analysis::ScopeContext& scope = ScopeForLowering(ctx);
+    const IRValue& source_value = arg_values.front();
+    const analysis::TypeRef source_type =
+        InstantiateActiveGenericType(ctx.LookupValueType(source_value), ctx);
+
+    analysis::TypeRef future_type;
+    if (ctx.expr_type && !expr.args.empty() &&
+        expr.args.front().value) {
+        future_type = ReactorFutureCandidateType(
+            scope,
+            InstantiateActiveGenericType(ctx.expr_type(*expr.args.front().value), ctx));
+    }
+    if (!future_type) {
+        future_type = ReactorFutureCandidateType(scope, source_type);
+    }
+    if (!future_type) {
+        future_type = ReactorFutureCandidateType(
+            scope,
+            ReactorFutureTypeFromMethodResult(method_result_type));
+    }
+    if (!future_type && !param_types.empty()) {
+        future_type = ReactorFutureCandidateType(
+            scope,
+            InstantiateActiveGenericType(param_types.front(), ctx));
+    }
+    if (!future_type) {
+        return std::nullopt;
+    }
+
+    ReactorFutureArg future;
+    future.type = future_type;
+    future.value = source_value;
+
+    if (ReactorPointerElementType(source_type)) {
+        IRReadPtr read_future;
+        read_future.ptr = source_value;
+        read_future.result = ctx.FreshTempValue("reactor_future");
+        ctx.RegisterValueType(read_future.result, future_type);
+        future.value = read_future.result;
+        future.read_ir = MakeIR(std::move(read_future));
+    }
+
+    return future;
+}
+
+std::vector<IRPtr> ReactorMethodPrefix(
+    IRPtr recv_key_ir,
+    IRPtr recv_ir,
+    IRPtr args_ir) {
+    std::vector<IRPtr> parts;
+    parts.reserve(4);
+    parts.push_back(std::move(recv_key_ir));
+    parts.push_back(std::move(recv_ir));
+    parts.push_back(std::move(args_ir));
+    return parts;
+}
+
+std::optional<LowerResult> LowerReactorRunCall(
+    const ast::MethodCallExpr& expr,
+    IRPtr recv_key_ir,
+    IRPtr recv_ir,
+    IRPtr args_ir,
+    const std::vector<IRValue>& arg_values,
+    const ParamTypeList& param_types,
+    const IRValue& receiver_value,
+    const IRValue& result_value,
+    LowerCtx& ctx) {
+    const auto future =
+        PrepareReactorFutureArg(expr, arg_values, param_types, nullptr, ctx);
+    if (!future.has_value()) {
+        ctx.ReportCodegenFailure();
+        return LowerResult{SeqIR({std::move(recv_key_ir), std::move(recv_ir), std::move(args_ir)}),
+                           result_value};
+    }
+
+    const analysis::ScopeContext& scope = ScopeForLowering(ctx);
+    const auto future_sig = analysis::AsyncSigOf(scope, future->type);
+
+    SPEC_RULE("rule.24.Prim-Reactor-Run");
+    IRSync sync;
+    sync.async_value = future->value;
+    sync.result = result_value;
+    sync.async_type = future->type;
+    sync.result_type = future_sig->result;
+    sync.error_type = future_sig->err;
+    sync.runtime_symbol = BuiltinSymReactorRun();
+    sync.runtime_receiver = receiver_value;
+
+    auto parts = ReactorMethodPrefix(std::move(recv_key_ir),
+                                     std::move(recv_ir),
+                                     std::move(args_ir));
+    if (future->read_ir) {
+        parts.push_back(future->read_ir);
+    }
+    parts.push_back(MakeIR(std::move(sync)));
+    return LowerResult{SeqIR(std::move(parts)), result_value};
+}
+
+std::optional<LowerResult> LowerReactorRegisterCall(
+    const ast::MethodCallExpr& expr,
+    IRPtr recv_key_ir,
+    IRPtr recv_ir,
+    IRPtr args_ir,
+    const std::vector<IRValue>& arg_values,
+    const ParamTypeList& param_types,
+    const analysis::TypeRef& method_result_type,
+    const IRValue& receiver_value,
+    const IRValue& result_value,
+    LowerCtx& ctx) {
+    const auto future = PrepareReactorFutureArg(
+        expr, arg_values, param_types, method_result_type, ctx);
+    if (!future.has_value()) {
+        ctx.ReportCodegenFailure();
+        return LowerResult{SeqIR({std::move(recv_key_ir), std::move(recv_ir), std::move(args_ir)}),
+                           result_value};
+    }
+
+    const analysis::ScopeContext& scope = ScopeForLowering(ctx);
+    const auto future_sig = analysis::AsyncSigOf(scope, future->type);
+
+    SPEC_RULE("rule.24.Prim-Reactor-Register");
+
+    const analysis::TypeRef tracked_value_type =
+        ReactorTrackedValueType(method_result_type, *future_sig);
+    std::uint64_t result_size_val = 0;
+    if (ctx.sigma) {
+        if (const auto size = ::ultraviolet::analysis::layout::SizeOf(
+                scope, tracked_value_type)) {
+            result_size_val = *size;
+        } else {
+            ctx.ReportCodegenFailure();
+        }
+    }
+
+    std::uint64_t future_size_val = 0;
+    if (ctx.sigma) {
+        if (const auto size = ::ultraviolet::analysis::layout::SizeOf(
+                scope, future->type)) {
+            future_size_val = *size;
+        } else {
+            ctx.ReportCodegenFailure();
+        }
+    }
+
+    IRValue future_ptr = ctx.FreshTempValue("reactor_future_ptr");
+    ctx.RegisterValueType(
+        future_ptr,
+        analysis::MakeTypePtr(future->type, analysis::PtrState::Valid));
+
+    std::vector<IRPtr> future_storage_parts;
+    if (!ctx.active_region_aliases.empty()) {
+        IRAlloc alloc_future;
+        alloc_future.value = future->value;
+        alloc_future.result = future_ptr;
+        alloc_future.type = future->type;
+        alloc_future.region = LocalValue(ctx.active_region_aliases.back());
+        future_storage_parts.push_back(MakeIR(std::move(alloc_future)));
+    } else {
+        IRValue future_storage =
+            LocalValue(ctx.FreshTempValue("reactor_future_storage").name);
+        ctx.RegisterValueType(future_storage, future->type);
+
+        IRBindVar bind_future;
+        bind_future.name = future_storage.name;
+        bind_future.value = future->value;
+        bind_future.type = future->type;
+        future_storage_parts.push_back(MakeIR(std::move(bind_future)));
+
+        DerivedValueInfo future_addr;
+        future_addr.kind = DerivedValueInfo::Kind::AddrLocal;
+        future_addr.name = future_storage.name;
+        ctx.RegisterDerivedValue(future_ptr, future_addr);
+    }
+
+    IRSpawn spawn;
+    spawn.body = EmptyIR();
+    spawn.body_result = UnitValue();
+    spawn.env_ptr = future_ptr;
+    spawn.env_size = USizeImmediate(static_cast<std::size_t>(future_size_val));
+    spawn.body_fn = UnitValue();
+    spawn.result_size = USizeImmediate(static_cast<std::size_t>(result_size_val));
+    spawn.result = result_value;
+    spawn.runtime_symbol = BuiltinSymReactorRegister();
+    spawn.runtime_receiver = receiver_value;
+
+    auto parts = ReactorMethodPrefix(std::move(recv_key_ir),
+                                     std::move(recv_ir),
+                                     std::move(args_ir));
+    if (future->read_ir) {
+        parts.push_back(future->read_ir);
+    }
+    spawn.captured_env = SeqIR(std::move(future_storage_parts));
+    parts.push_back(MakeIR(std::move(spawn)));
+    return LowerResult{SeqIR(std::move(parts)), result_value};
+}
+
+std::optional<LowerResult> LowerReactorMethodCall(
+    const ast::Expr& expr_wrapper,
+    const ast::MethodCallExpr& expr,
+    const std::string& callee_sym,
+    IRPtr recv_key_ir,
+    IRPtr recv_ir,
+    IRPtr args_ir,
+    const std::vector<IRValue>& arg_values,
+    const ParamTypeList& param_types,
+    const analysis::TypeRef& fallback_result_type,
+    const IRValue& receiver_value,
+    const IRValue& result_value,
+    LowerCtx& ctx) {
+    if (callee_sym != BuiltinSymReactorRun() &&
+        callee_sym != BuiltinSymReactorRegister()) {
+        return std::nullopt;
+    }
+
+    const analysis::TypeRef method_result_type =
+        ReactorMethodResultType(expr_wrapper, fallback_result_type, ctx);
+    if (method_result_type) {
+        ctx.RegisterValueType(result_value, method_result_type);
+    }
+
+    if (callee_sym == BuiltinSymReactorRun()) {
+        return LowerReactorRunCall(expr,
+                                   std::move(recv_key_ir),
+                                   std::move(recv_ir),
+                                   std::move(args_ir),
+                                   arg_values,
+                                   param_types,
+                                   receiver_value,
+                                   result_value,
+                                   ctx);
+    }
+
+    return LowerReactorRegisterCall(expr,
+                                    std::move(recv_key_ir),
+                                    std::move(recv_ir),
+                                    std::move(args_ir),
+                                    arg_values,
+                                    param_types,
+                                    method_result_type,
+                                    receiver_value,
+                                    result_value,
+                                    ctx);
+}
+
 }  // namespace
 
 // =============================================================================
@@ -1008,6 +1776,7 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
         expr.args[0].value &&
         expr.args[1].value) {
         SPEC_RULE("Lower-MethodCall-Until");
+        SPEC_RULE("requirement.21.UntilRuntimeSemantics");
 
         auto recv_result = LowerExpr(*expr.receiver, ctx);
 
@@ -1120,6 +1889,19 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
          (method_expr_type && analysis::AsyncSigOf(scope, method_expr_type).has_value())) &&
         async_combinator_symbol.has_value()) {
         SPEC_RULE("Lower-MethodCall-AsyncCombinator");
+        SPEC_RULE("requirement.21.AsyncCombinatorWrapperLowering");
+        SPEC_RULE("requirement.21.AsyncWrapperLoweringSemantics");
+        if (analysis::IdEq(expr.name, "map")) {
+            SPEC_RULE("rule.21.Lower-Async-Map");
+        } else if (analysis::IdEq(expr.name, "filter")) {
+            SPEC_RULE("rule.21.Lower-Async-Filter");
+        } else if (analysis::IdEq(expr.name, "take")) {
+            SPEC_RULE("rule.21.Lower-Async-Take");
+        } else if (analysis::IdEq(expr.name, "fold")) {
+            SPEC_RULE("rule.21.Lower-Async-Fold");
+        } else if (analysis::IdEq(expr.name, "chain")) {
+            SPEC_RULE("rule.21.Lower-Async-Chain");
+        }
         auto recv_result = LowerExpr(*expr.receiver, ctx);
         analysis::TypeRef recv_result_type = recv_type;
         if (ctx.expr_type && expr.receiver) {
@@ -1209,6 +1991,7 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
     ParamTypeList param_types;
     bool move_receiver = false;
     ast::KeyMode receiver_key_mode = ast::KeyMode::Read;
+    ModalStaticLoweringEvidence modal_static_lowering_evidence;
     auto lower_type = [&](const std::shared_ptr<ast::Type>& type)
         -> analysis::LowerTypeResult {
         return analysis::LowerType(scope, type);
@@ -1254,6 +2037,10 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
             if (result_type) {
                 ctx.RegisterValueType(result_value, result_type);
             }
+            RecordContextDomainLoweringConformance(
+                expr.name,
+                callee_sym,
+                result_type);
 
             IRCall call;
             call.callee = IRValue{IRValue::Kind::Symbol, callee_sym, {}};
@@ -1335,10 +2122,14 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
             if (analysis::IdEq(expr.name, "eq")) {
                 callee_sym = BuiltinSymEqEq();
             } else if (analysis::IdEq(expr.name, "successor")) {
-                callee_sym = BuiltinSymStepSuccessor();
+                callee_sym = BuiltinSymDiscreteSuccessor();
             } else {
-                callee_sym = BuiltinSymStepPredecessor();
+                callee_sym = BuiltinSymDiscretePredecessor();
             }
+            RecordFoundationalIntrinsicCallLoweringConformance(
+                expr.name,
+                callee_sym
+            );
 
             IRValue result_value = ctx.FreshTempValue("method_call");
             ctx.RegisterValueType(result_value, foundational_sig->ret);
@@ -1366,6 +2157,7 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
         // Capability methods (IO, HeapAllocator, etc.)
         if (is_builtin) {
             SPEC_RULE("Lower-MethodCall-Capability");
+            SPEC_RULE("rule.16.Lower-MethodCallFamily");
             if (const auto builtin_param_modes =
                     BuiltinCapabilityParamModes(dyn_type->path, expr.name)) {
                 param_modes = *builtin_param_modes;
@@ -1373,6 +2165,9 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
             if (const auto builtin_param_types =
                     BuiltinCapabilityParamTypes(scope, dyn_type->path, expr.name)) {
                 param_types = *builtin_param_types;
+            }
+            if (analysis::IsReactorClassPath(dyn_type->path)) {
+                SpecializeReactorParamTypes(expr, param_types, ctx);
             }
             auto recv_result = LowerRecvArgExpr(expr.receiver, ctx, recv_type);
             auto [args_ir, arg_values] =
@@ -1386,11 +2181,34 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
             all_args.insert(all_args.end(), arg_values.begin(), arg_values.end());
 
             std::string callee_sym = expr.name;
+            bool builtin_method_symbol = false;
             if (auto sym = BuiltinMethodSym(dyn_type->path, expr.name)) {
                 callee_sym = *sym;
+                builtin_method_symbol = true;
             }
+            RecordBuiltinCapabilityMethodLoweringConformance(
+                dyn_type->path,
+                expr.name,
+                callee_sym,
+                builtin_method_symbol
+            );
 
             IRValue result_value = ctx.FreshTempValue("method_call");
+            if (auto reactor_result =
+                    LowerReactorMethodCall(expr_wrapper,
+                                           expr,
+                                           callee_sym,
+                                           EmptyIR(),
+                                           recv_result.ir,
+                                           args_ir,
+                                           arg_values,
+                                           param_types,
+                                           nullptr,
+                                           recv_result.value,
+                                           result_value,
+                                           ctx)) {
+                return *reactor_result;
+            }
 
             IRCall call;
             call.callee = IRValue{IRValue::Kind::Symbol, callee_sym, {}};
@@ -1411,6 +2229,11 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
 
         if (class_decl) {
             SPEC_RULE("Lower-MethodCall-Dynamic");
+            SPEC_RULE("rule.16.Lower-MethodCallFamily");
+            RecordOrdinaryDynamicMethodDispatchConformance(
+                dyn_type->path,
+                expr.name
+            );
             auto recv_result = LowerExpr(*expr.receiver, ctx);
             auto [args_ir, arg_values] =
                 LowerArgs(param_modes,
@@ -1458,6 +2281,11 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
                         LowerMethodReturnType(scope, state_method->return_type_opt, ctx);
                     resolved_method_result_type =
                         ApplyModalSubst(resolved_method_result_type, modal_subst);
+                    modal_static_lowering_evidence.kind =
+                        ModalStaticLoweringKind::StateMethod;
+                    modal_static_lowering_evidence.modal_path = modal_path;
+                    modal_static_lowering_evidence.source_state =
+                        modal_info->second;
                 } else if (const auto* transition =
                                analysis::LookupTransitionDecl(*modal_decl, modal_info->second, expr.name)) {
                     param_modes = ParamModesFromParams(transition->params);
@@ -1465,6 +2293,13 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
                     ApplyModalSubstToParams(param_types, modal_subst);
                     move_receiver = true;
                     receiver_key_mode = ast::KeyMode::Write;
+                    modal_static_lowering_evidence.kind =
+                        ModalStaticLoweringKind::Transition;
+                    modal_static_lowering_evidence.modal_path = modal_path;
+                    modal_static_lowering_evidence.source_state =
+                        modal_info->second;
+                    modal_static_lowering_evidence.target_state =
+                        transition->target_state;
                 }
             }
         } else if (stripped) {
@@ -1539,6 +2374,7 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
     std::vector<IRValue> all_args;
     all_args.push_back(recv_result.value);
     all_args.insert(all_args.end(), arg_values.begin(), arg_values.end());
+    SPEC_RULE("req.15.MethodsLowerAsProceduresWithReceiverFirst");
 
     // Resolve method symbol
     std::string callee_sym = expr.name;
@@ -1628,12 +2464,59 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
     }
     SyncRegionAliasForMethodResult(expr, method_result_type, ctx);
 
+    if (auto reactor_result =
+            LowerReactorMethodCall(expr_wrapper,
+                                   expr,
+                                   callee_sym,
+                                   recv_key_ir,
+                                   recv_result.ir,
+                                   args_ir,
+                                   arg_values,
+                                   param_types,
+                                   method_result_type,
+                                   recv_result.value,
+                                   result_value,
+                                   ctx)) {
+        return *reactor_result;
+    }
+
+    if (callee_sym == BuiltinModalSymRegionResetUnchecked()) {
+        RecordMethodRegionConformanceOnce(
+            g_fresh_runtime_region_tags_obligation_once,
+            "def.FreshRuntimeRegionTags",
+            FreshRuntimeRegionTagsPayload()
+        );
+    }
+
     if (callee_sym == BuiltinSymCancelTokenActiveIsCancelled()) {
+        SPEC_RULE("def.20.CancelIR");
         IRCancelCheck check;
         check.token = recv_result.value;
         check.result = result_value;
         return LowerResult{
             SeqIR({recv_key_ir, recv_result.ir, args_ir, MakeIR(std::move(check))}),
+            result_value};
+    }
+
+    if (callee_sym == BuiltinSymCancelTokenActiveCancel()) {
+        SPEC_RULE("def.20.CancelIR");
+        SPEC_RULE("rule.20.Lower-Cancel-Request");
+        IRCancelRequest request;
+        request.token = recv_result.value;
+        request.result = result_value;
+        return LowerResult{
+            SeqIR({recv_key_ir, recv_result.ir, args_ir, MakeIR(std::move(request))}),
+            result_value};
+    }
+
+    if (callee_sym == BuiltinSymCancelTokenActiveWaitCancelled()) {
+        SPEC_RULE("def.20.CancelIR");
+        SPEC_RULE("rule.20.Lower-Cancel-Wait");
+        IRCancelWait wait;
+        wait.token = recv_result.value;
+        wait.result = result_value;
+        return LowerResult{
+            SeqIR({recv_key_ir, recv_result.ir, args_ir, MakeIR(std::move(wait))}),
             result_value};
     }
 
@@ -1647,18 +2530,33 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
     // The runtime forwards panic_out to that callback, so resume calls must
     // always receive a concrete panic record pointer.
     if (callee_sym == BuiltinSymAsyncResume()) {
+        SPEC_RULE("requirement.21.ManualSteppingRuntimeSemantics");
         needs_panic_out = true;
     }
 
     if (needs_panic_out) {
         SPEC_RULE("Lower-MethodCall-Static-PanicOut");
+        SPEC_RULE("rule.16.Lower-MethodCallFamily");
         IRValue panic_out;
         panic_out.kind = IRValue::Kind::Local;
         panic_out.name = std::string(kPanicOutName);
         call.args.push_back(panic_out);
     } else {
         SPEC_RULE("Lower-MethodCall-Static-NoPanicOut");
+        SPEC_RULE("rule.16.Lower-MethodCallFamily");
     }
+
+    RecordStateMethodLoweringConformance(
+        modal_static_lowering_evidence,
+        expr.name,
+        callee_sym
+    );
+    RecordTransitionLoweringConformance(
+        modal_static_lowering_evidence,
+        expr.name,
+        callee_sym,
+        move_receiver
+    );
 
     if (needs_panic_out) {
         return LowerResult{

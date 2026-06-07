@@ -50,6 +50,7 @@ ParseElemResult<std::optional<PtrState>> ParsePtrState(Parser parser) {
   // Parse-PtrState-Expired
   if (tok && IsIdentTok(*tok) && tok->lexeme == "Expired") {
     SPEC_RULE("Parse-PtrState-Expired");
+    SPEC_RULE("rule.13.Parse-PtrState-Expired");
     Advance(next);
     return {next, PtrState::Expired};
   }

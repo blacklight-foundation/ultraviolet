@@ -1,0 +1,9 @@
+//! Rejected pattern specimen for bare type names in if-is pattern position.
+
+public procedure patternDiagnosticsSupplementBareTypeReference() -> bool {
+    return if 7 is i32 {
+        true
+    } else {
+        false
+    }
+}

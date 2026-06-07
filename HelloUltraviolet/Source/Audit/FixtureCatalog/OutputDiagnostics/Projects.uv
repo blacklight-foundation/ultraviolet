@@ -1,78 +1,368 @@
 //! Output-diagnostic project-loader specimens.
 
+internal procedure outputProjectDiagnosticEntryMatches(
+    specimen_name: string@View,
+    fixture_path: string@View,
+    manifest_path: string@View,
+    expected_path: string@View,
+    diagnostic_code: string@View,
+    obligation_id: string@View
+) -> bool {
+    return diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            specimen_name,
+            fixture_path,
+            manifest_path,
+            expected_path,
+            expectedDiagnostic(diagnostic_code, obligation_id)
+        ),
+        specimen_name,
+        fixture_path,
+        manifest_path,
+        expected_path,
+        diagnostic_code,
+        obligation_id
+    )
+}
+
+internal procedure outputProjectDiagnosticEntryCount(
+    specimen_name: string@View,
+    fixture_path: string@View,
+    manifest_path: string@View,
+    expected_path: string@View,
+    diagnostic_code: string@View,
+    obligation_id: string@View
+) -> usize {
+    if outputProjectDiagnosticEntryMatches(
+        specimen_name,
+        fixture_path,
+        manifest_path,
+        expected_path,
+        diagnostic_code,
+        obligation_id
+    ) {
+        return 1usize
+    }
+    return 0usize
+}
+
 public procedure outputProjectDiagnosticFixtureCount() -> usize {
-    return 4usize
+    return 39usize
 }
 
 public procedure validatedOutputProjectDiagnosticFixtureCount() -> usize {
     var count: usize = 0usize
-    if diagnosticSpecimenMatches(
-        diagnosticSpecimen(
-            "ManifestParseError",
-            "Fixtures/OutputDiagnostics/Projects/ManifestParseError",
-            "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml",
-            "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Expected.uv",
-            expectedDiagnostic("E-PRJ-0102", "Parse-Manifest-Err")
-        ),
+    count = count + outputProjectDiagnosticEntryCount(
         "ManifestParseError",
         "Fixtures/OutputDiagnostics/Projects/ManifestParseError",
         "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml",
         "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Expected.uv",
         "E-PRJ-0102",
         "Parse-Manifest-Err"
-    ) {
-        count = count + 1usize
-    }
-    if diagnosticSpecimenMatches(
-        diagnosticSpecimen(
-            "ManifestParseError",
-            "Fixtures/OutputDiagnostics/Projects/ManifestParseError",
-            "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml",
-            "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Expected.uv",
-            expectedDiagnostic("E-PRJ-0102", "Step-Parse-Err")
-        ),
+    )
+    count = count + outputProjectDiagnosticEntryCount(
         "ManifestParseError",
         "Fixtures/OutputDiagnostics/Projects/ManifestParseError",
         "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml",
         "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Expected.uv",
         "E-PRJ-0102",
         "Step-Parse-Err"
-    ) {
-        count = count + 1usize
-    }
-    if diagnosticSpecimenMatches(
-        diagnosticSpecimen(
-            "ManifestParseError",
-            "Fixtures/OutputDiagnostics/Projects/ManifestParseError",
-            "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml",
-            "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Expected.uv",
-            expectedDiagnostic("E-PRJ-0102", "LoadProject-Err")
-        ),
+    )
+    count = count + outputProjectDiagnosticEntryCount(
         "ManifestParseError",
         "Fixtures/OutputDiagnostics/Projects/ManifestParseError",
         "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml",
         "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Expected.uv",
         "E-PRJ-0102",
         "LoadProject-Err"
-    ) {
-        count = count + 1usize
-    }
-    if diagnosticSpecimenMatches(
-        diagnosticSpecimen(
-            "ManifestParseError",
-            "Fixtures/OutputDiagnostics/Projects/ManifestParseError",
-            "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml",
-            "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Expected.uv",
-            expectedDiagnostic("E-PRJ-0102", "diagnostics.ProjectDiagnostics")
-        ),
+    )
+    count = count + outputProjectDiagnosticEntryCount(
         "ManifestParseError",
         "Fixtures/OutputDiagnostics/Projects/ManifestParseError",
         "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml",
         "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Expected.uv",
         "E-PRJ-0102",
         "diagnostics.ProjectDiagnostics"
-    ) {
-        count = count + 1usize
-    }
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestMissing",
+        "Fixtures/OutputDiagnostics/Projects/ManifestMissing",
+        "Fixtures/OutputDiagnostics/Projects/ManifestMissing/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestMissing/Expected.uv",
+        "E-PRJ-0101",
+        "Parse-Manifest-Missing"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestMissing",
+        "Fixtures/OutputDiagnostics/Projects/ManifestMissing",
+        "Fixtures/OutputDiagnostics/Projects/ManifestMissing/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestMissing/Expected.uv",
+        "E-PRJ-0101",
+        "Step-Parse-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestMissing",
+        "Fixtures/OutputDiagnostics/Projects/ManifestMissing",
+        "Fixtures/OutputDiagnostics/Projects/ManifestMissing/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestMissing/Expected.uv",
+        "E-PRJ-0101",
+        "LoadProject-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "DirSeqReadFailure",
+        "Fixtures/OutputDiagnostics/Projects/DirSeqReadFailure",
+        "Fixtures/OutputDiagnostics/Projects/DirSeqReadFailure/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/DirSeqReadFailure/Expected.uv",
+        "E-PRJ-0305",
+        "DirSeq-Read-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "DirSeqReadFailure",
+        "Fixtures/OutputDiagnostics/Projects/DirSeqReadFailure",
+        "Fixtures/OutputDiagnostics/Projects/DirSeqReadFailure/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/DirSeqReadFailure/Expected.uv",
+        "E-PRJ-0305",
+        "Modules-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "DirSeqReadFailure",
+        "Fixtures/OutputDiagnostics/Projects/DirSeqReadFailure",
+        "Fixtures/OutputDiagnostics/Projects/DirSeqReadFailure/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/DirSeqReadFailure/Expected.uv",
+        "E-PRJ-0305",
+        "BuildAssembly-Err-Modules"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestRequiredTypesInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestRequiredTypesInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestRequiredTypesInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestRequiredTypesInvalid/Expected.uv",
+        "E-PRJ-0103",
+        "WF-Assembly-Required-Types-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestRequiredTypesInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestRequiredTypesInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestRequiredTypesInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestRequiredTypesInvalid/Expected.uv",
+        "E-PRJ-0103",
+        "Step-Validate-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestRequiredTypesInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestRequiredTypesInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestRequiredTypesInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestRequiredTypesInvalid/Expected.uv",
+        "E-PRJ-0103",
+        "LoadProject-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestOutDirTypeInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestOutDirTypeInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestOutDirTypeInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestOutDirTypeInvalid/Expected.uv",
+        "E-PRJ-0301",
+        "WF-Assembly-OutDirType-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestOutDirTypeInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestOutDirTypeInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestOutDirTypeInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestOutDirTypeInvalid/Expected.uv",
+        "E-PRJ-0301",
+        "Step-Validate-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestOutDirTypeInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestOutDirTypeInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestOutDirTypeInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestOutDirTypeInvalid/Expected.uv",
+        "E-PRJ-0301",
+        "LoadProject-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestEmitIRTypeInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestEmitIRTypeInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestEmitIRTypeInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestEmitIRTypeInvalid/Expected.uv",
+        "E-PRJ-0204",
+        "WF-Assembly-EmitIRType-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestEmitIRTypeInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestEmitIRTypeInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestEmitIRTypeInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestEmitIRTypeInvalid/Expected.uv",
+        "E-PRJ-0204",
+        "Step-Validate-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestEmitIRTypeInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestEmitIRTypeInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestEmitIRTypeInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestEmitIRTypeInvalid/Expected.uv",
+        "E-PRJ-0204",
+        "LoadProject-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestLinkKindTypeInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindTypeInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindTypeInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindTypeInvalid/Expected.uv",
+        "E-PRJ-0207",
+        "WF-Assembly-LinkKindType-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestLinkKindTypeInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindTypeInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindTypeInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindTypeInvalid/Expected.uv",
+        "E-PRJ-0207",
+        "Step-Validate-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestLinkKindTypeInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindTypeInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindTypeInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindTypeInvalid/Expected.uv",
+        "E-PRJ-0207",
+        "LoadProject-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestLinkKindInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindInvalid/Expected.uv",
+        "E-PRJ-0207",
+        "WF-Assembly-LinkKind-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestLinkKindInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindInvalid/Expected.uv",
+        "E-PRJ-0207",
+        "Step-Validate-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestLinkKindInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindInvalid/Expected.uv",
+        "E-PRJ-0207",
+        "LoadProject-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestLinkKindUseInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindUseInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindUseInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindUseInvalid/Expected.uv",
+        "E-PRJ-0208",
+        "WF-Assembly-LinkKind-Use-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestLinkKindUseInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindUseInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindUseInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindUseInvalid/Expected.uv",
+        "E-PRJ-0208",
+        "Step-Validate-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestLinkKindUseInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindUseInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindUseInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestLinkKindUseInvalid/Expected.uv",
+        "E-PRJ-0208",
+        "LoadProject-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestToolchainInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestToolchainInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestToolchainInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestToolchainInvalid/Expected.uv",
+        "E-PRJ-0110",
+        "WF-Toolchain-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestToolchainInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestToolchainInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestToolchainInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestToolchainInvalid/Expected.uv",
+        "E-PRJ-0110",
+        "Step-Validate-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestToolchainInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestToolchainInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestToolchainInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestToolchainInvalid/Expected.uv",
+        "E-PRJ-0110",
+        "LoadProject-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "HostedImportGraph",
+        "Fixtures/OutputDiagnostics/Projects/HostedImportGraph",
+        "Fixtures/OutputDiagnostics/Projects/HostedImportGraph/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/HostedImportGraph/Expected.uv",
+        "E-PRJ-0210",
+        "def.HostedLibraryImportsLinkedLibrary"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "HostedImportGraph",
+        "Fixtures/OutputDiagnostics/Projects/HostedImportGraph",
+        "Fixtures/OutputDiagnostics/Projects/HostedImportGraph/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/HostedImportGraph/Expected.uv",
+        "E-PRJ-0210",
+        "Assembly-Graph-HostedImport-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestEmitIRInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestEmitIRInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestEmitIRInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestEmitIRInvalid/Expected.uv",
+        "E-PRJ-0204",
+        "WF-Assembly-EmitIR-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestEmitIRInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestEmitIRInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestEmitIRInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestEmitIRInvalid/Expected.uv",
+        "E-PRJ-0204",
+        "Step-Validate-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestEmitIRInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestEmitIRInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestEmitIRInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestEmitIRInvalid/Expected.uv",
+        "E-PRJ-0204",
+        "LoadProject-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestOutDirPathInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestOutDirPathInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestOutDirPathInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestOutDirPathInvalid/Expected.uv",
+        "E-PRJ-0301",
+        "WF-Assembly-OutDir-Path-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestOutDirPathInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestOutDirPathInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestOutDirPathInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestOutDirPathInvalid/Expected.uv",
+        "E-PRJ-0301",
+        "Step-Validate-Err"
+    )
+    count = count + outputProjectDiagnosticEntryCount(
+        "ManifestOutDirPathInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestOutDirPathInvalid",
+        "Fixtures/OutputDiagnostics/Projects/ManifestOutDirPathInvalid/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestOutDirPathInvalid/Expected.uv",
+        "E-PRJ-0301",
+        "LoadProject-Err"
+    )
     return count
 }

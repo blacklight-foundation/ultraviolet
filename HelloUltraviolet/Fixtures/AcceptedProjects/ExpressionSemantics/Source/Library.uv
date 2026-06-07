@@ -1,5 +1,42 @@
 //! Accepted project fixture for rule-level expression typing obligations.
 
+internal let LOWER_EXPR_PATH_STATIC: i32 = 43
+internal type ControlLoweringUnion = i32 | bool
+internal type LowerClosureCallFunction = |i32| -> i32
+
+public enum EnumLoweringPayload {
+    Unit
+    Count(i32)
+    Named {
+        value: i32
+    }
+}
+
+internal procedure effectfulLoweringOutcome(should_fail: bool, value: i32) -> i32 | bool {
+    if should_fail {
+        return true
+    }
+    return value
+}
+
+internal procedure enumLoweringPayloadValue(value: EnumLoweringPayload) -> i32 {
+    return if value is {
+        EnumLoweringPayload::Unit {
+            1
+        }
+        EnumLoweringPayload::Count(payload_value) {
+            payload_value
+        }
+        EnumLoweringPayload::Named { value: payload_value } {
+            payload_value
+        }
+    }
+}
+
+internal procedure statementLoweringEvidenceSink(value: i32) -> i32 {
+    return value
+}
+
 public procedure checkedIntLiteralReference() -> i8 {
     let value: i8 = 12
     return value
@@ -19,14 +56,115 @@ public procedure argsTConsRefReference() -> i32 {
     return referenceArgumentValue(value)
 }
 
+public procedure lowerCallNoArgsReference() -> i32 {
+    return 67
+}
+
+public procedure lowerArgsEmptyReference() -> i32 {
+    return lowerCallNoArgsReference()
+}
+
+public procedure lowerExprCallClosureReference() -> i32 {
+    let bias: i32 = 3
+    let closure: LowerClosureCallFunction = |value: i32| -> i32 value + bias
+    return closure(64)
+}
+
+public procedure lowerExprCastReference() -> f64 {
+    let value: i32 = -7
+    return value as f64
+}
+
+public procedure intToFloatUnsignedLoweringReference() -> f64 {
+    let value: u32 = 3000000000u32
+    return value as f64
+}
+
+public procedure lowerExprTransmuteReference() -> u32 {
+    return unsafe {
+        transmute<i32, u32>(-1)
+    }
+}
+
+public procedure lowerExprPathReference() -> i32 {
+    return ExpressionSemantics::LOWER_EXPR_PATH_STATIC
+}
+
 public procedure addressOfReference() -> i32 {
     var value: i32 = 9
     let pointer: Ptr<i32> = &value
-    return *pointer
+    let dereferenced: i32 = *pointer
+    return dereferenced
+}
+
+public procedure localUsingAliasReference() -> i32 {
+    var source_value: i32 = 37
+    using source_value as alias_value
+    alias_value = 41
+    return source_value
+}
+
+public procedure statementLoweringEvidenceReference() -> i32 {
+    var total: i32 = 0
+    let let_value: i32 = 1
+    var var_value: i32 = 2
+    var_value += let_value
+    total = total + var_value
+
+    using total as total_alias
+    total_alias = total_alias + 1
+
+    statementLoweringEvidenceSink(total)
+
+    if total >= 0 {
+    }
+
+    let valued_break: i32 = loop true {
+        break 4
+    }
+    total = total + valued_break
+
+    var loop_index: i32 = 0
+    loop {
+        loop_index = loop_index + 1
+        if loop_index == 2 {
+            continue
+        }
+        total = total + loop_index
+        if loop_index >= 3 {
+            break
+        }
+    }
+
+    {
+        defer {
+            total = total + 5
+        }
+        total = total + 1
+    }
+
+    region as scratch {
+        frame {
+            total = total + 1
+        }
+        scratch.frame {
+            total = total + 1
+        }
+    }
+
+    unsafe {
+        total = total + 1
+    }
+
+    return total
 }
 
 public procedure rawDerefReference(pointer: *imm i32) -> i32 {
     return unsafe { *pointer }
+}
+
+public procedure rawImmutableDerefPlaceReference(pointer: *imm i32) -> Ptr<const i32> {
+    return unsafe { &*pointer }
 }
 
 public procedure derefPlaceReference(pointer: *mut i32) -> i32 {
@@ -36,11 +174,187 @@ public procedure derefPlaceReference(pointer: *mut i32) -> i32 {
     return unsafe { *pointer }
 }
 
+public procedure lowerExprAllocReference() -> i32 {
+    var score: i32 = 0
+    region as scratch {
+        let implicit_value: i32 = ^41
+        if implicit_value == 41 {
+            score = score + 1
+        }
+
+        let explicit_value: i32 = (scratch) ^ 43
+        if explicit_value == 43 {
+            score = score + 1
+        }
+    }
+    return score
+}
+
+public procedure lowerExprPropagateSuccessReference() -> bool {
+    let value: i32 = effectfulLoweringOutcome(false, 47)?
+    return value == 47
+}
+
+public procedure lowerExprPropagateReturnReference() -> bool {
+    let value: i32 = effectfulLoweringOutcome(true, 0)?
+    return false
+}
+
+public procedure asyncTryReference(should_fail: bool, value: i32) -> Async<(), (), i32, bool> {
+    let propagated: i32 = effectfulLoweringOutcome(should_fail, value)?
+    return propagated + 1
+}
+
 public procedure asyncIteratorLoopReference(stream: Stream<i32, !>) -> Async<(), (), (), !> {
     loop value in stream {
         let copied_value: i32 = value
     }
     return
+}
+
+internal record AsyncCompositionArtifactCell {
+    internal value: i32
+}
+
+internal procedure asyncCompositionArtifactCompletes(
+    value: i32
+) -> Async<(), (), i32, bool> {
+    return value
+}
+
+internal procedure asyncCompositionArtifactMayFail(
+    should_fail: bool,
+    value: i32
+) -> Async<(), (), i32, bool> {
+    let result: i32 = effectfulLoweringOutcome(should_fail, value)?
+    return result
+}
+
+internal procedure asyncCompositionArtifactStreamMayFail(
+    should_fail: bool,
+    value: i32
+) -> Async<i32, (), i32, bool> {
+    let result: i32 = effectfulLoweringOutcome(should_fail, value)?
+    yield result
+    return result
+}
+
+internal procedure asyncCompositionArtifactSingleOutput(
+    value: i32
+) -> Async<i32, (), (), bool> {
+    yield value
+    return ()
+}
+
+internal procedure asyncCompositionArtifactUnitSuspends(
+    value: i32
+) -> Async<(), (), i32, bool> {
+    yield ()
+    return value
+}
+
+internal procedure asyncKeyArtifactSuspends(
+    value: i32
+) -> Async<i32, i32, i32, bool> {
+    let resumed: i32 = yield value
+    return resumed
+}
+
+internal procedure asyncKeyArtifactFails(
+    value: i32
+) -> Async<i32, i32, i32, bool> {
+    let result: i32 = effectfulLoweringOutcome(true, value)?
+    yield result
+    return result
+}
+
+public procedure asyncCompositionSyncArtifactReference() -> i32 | bool {
+    return sync asyncCompositionArtifactUnitSuspends(101)
+}
+
+public procedure asyncCompositionAllArtifactReference() -> (i32, i32) | bool {
+    return all {
+        asyncCompositionArtifactMayFail(false, 102),
+        asyncCompositionArtifactMayFail(false, 103),
+    }
+}
+
+public procedure asyncCompositionRaceReturnArtifactReference() -> i32 | bool {
+    return race {
+        asyncCompositionArtifactMayFail(false, 104) -> |value| value + 1,
+        asyncCompositionArtifactMayFail(false, 105) -> |value| value + 1
+    }
+}
+
+public procedure asyncCompositionRaceStreamArtifactReference() ->
+    Async<(), (), Stream<i32, bool>, !> {
+    return race {
+        asyncCompositionArtifactStreamMayFail(false, 106) -> |output| yield output,
+        asyncCompositionArtifactStreamMayFail(false, 107) -> |output| yield output,
+    }
+}
+
+public procedure asyncCompositionCombinatorArtifactReference() -> bool {
+    let mapped: Stream<i32, bool> =
+        asyncCompositionArtifactSingleOutput(108)~>map(|value: i32| -> i32 value + 1)
+    let filtered: Stream<i32, bool> =
+        asyncCompositionArtifactSingleOutput(109)~>filter(
+            |value: const i32| -> bool value == 109
+        )
+    let taken: Stream<i32, bool> =
+        asyncCompositionArtifactSingleOutput(110)~>take(1usize)
+    let folded: Async<(), (), i32, bool> =
+        asyncCompositionArtifactSingleOutput(111)~>fold(
+            10,
+            |acc: i32, value: i32| -> i32 acc + value
+        )
+    let folded_result: i32 | bool = sync folded
+    let chained: Async<(), (), i32, bool> =
+        asyncCompositionArtifactCompletes(112)~>chain(
+            |value: i32| -> Async<(), (), i32, bool> asyncCompositionArtifactCompletes(value + 1)
+        )
+    let chained_result: i32 | bool = sync chained
+    return true
+}
+
+public procedure asyncCompositionUntilArtifactReference() -> i32 {
+    var cell: shared AsyncCompositionArtifactCell =
+        AsyncCompositionArtifactCell { value: 113 }
+    let completed: Async<(), (), i32, !> = cell~>until(
+        |value: const AsyncCompositionArtifactCell| -> bool value.value == 113,
+        |value: unique AsyncCompositionArtifactCell| -> i32 value.value + 1
+    )
+    return sync completed
+}
+
+public procedure asyncKeyYieldReleaseArtifactReference(
+    value: i32
+) -> Async<i32, i32, i32, bool> {
+    var shared_value: shared i32 = value
+    %read shared_value {
+        let resumed: i32 = yield release value
+        return resumed
+    }
+}
+
+public procedure asyncKeyYieldReleaseFromArtifactReference(
+    value: i32
+) -> Async<i32, i32, i32, bool> {
+    var shared_value: shared i32 = value
+    %read shared_value {
+        let resumed: i32 = yield release from asyncKeyArtifactSuspends(value)
+        return resumed + 1
+    }
+}
+
+public procedure asyncKeyYieldReleaseFailureArtifactReference(
+    value: i32
+) -> Async<i32, i32, i32, bool> {
+    var shared_value: shared i32 = value
+    %read shared_value {
+        let result: i32 = yield release from asyncKeyArtifactFails(value)
+        return result
+    }
 }
 
 public record MoveDomainPayload {
@@ -53,6 +367,44 @@ public record CopyDomainPayload <: Bitcopy {
 
 public record NoDropDomainPayload {
     public value: unique i32
+}
+
+public record DefaultCtorPayload {
+    public value: i32 = 61
+    public flag: bool = true
+}
+
+public record LowerMethodCallFamilyReceiver {
+    public value: i32
+
+    public procedure readValue(~) -> i32 {
+        return self.value
+    }
+}
+
+public procedure lowerMethodCallFamilyReference() -> i32 {
+    let receiver: LowerMethodCallFamilyReceiver =
+        LowerMethodCallFamilyReceiver { value: 71 }
+    return receiver~>readValue()
+}
+
+public procedure lowerGenericIdentity<TValue>(value: TValue) -> TValue
+|: Bitcopy(TValue)
+{
+    return value
+}
+
+public procedure callTypeArgsLoweringElaborationReference() -> i32 {
+    let value: i32 = lowerGenericIdentity<
+        i32,
+    >(73)
+    let flag: bool = lowerGenericIdentity<
+        bool,
+    >(true)
+    if flag {
+        return value
+    }
+    return 0
 }
 
 public procedure consumeMoveDomainPayload(move payload: MoveDomainPayload) -> i32 {
@@ -74,6 +426,13 @@ public procedure copyCreatesIndependentProvenanceReference() -> i32 {
     return source.value + duplicate.value
 }
 
+public procedure bindingMovabilityOperatorReference() -> i32 {
+    let movable: CopyDomainPayload = CopyDomainPayload { value: 13 }
+    let field_alias: i32 = movable.value
+    let immovable: CopyDomainPayload := CopyDomainPayload { value: 17 }
+    return field_alias + immovable.value
+}
+
 public procedure returnMoveOwnershipDestinationReference() -> MoveDomainPayload {
     let payload: MoveDomainPayload = MoveDomainPayload { value: 23 }
     return payload
@@ -91,4 +450,154 @@ public procedure returnCopiedPayloadReference() -> CopyDomainPayload {
 public procedure noDropFinalOwnerDomainReleaseReference() -> i32 {
     let payload: NoDropDomainPayload = NoDropDomainPayload { value: 41 }
     return consumeNoDropDomainPayload(move payload)
+}
+
+public procedure recordDefaultCtorReference() -> i32 {
+    let payload: DefaultCtorPayload = DefaultCtorPayload()
+    if payload.flag {
+        return payload.value
+    }
+    return 0
+}
+
+public procedure operatorRangeTypingReference() -> i32 {
+    let values: [i32; 5] = [10, 20, 30, 40, 50]
+    let full: [i32] = values[..]
+    let to: [i32] = values[..3usize]
+    let to_inclusive: [i32] = values[..=2usize]
+    let from_slice: [i32] = values[2usize..]
+    let exclusive: [i32] = values[1usize..3usize]
+    let inclusive: [i32] = values[1usize..=3usize]
+
+    return full[0usize] +
+        to[1usize] +
+        to_inclusive[2usize] +
+        from_slice[0usize] +
+        exclusive[1usize] +
+        inclusive[2usize]
+}
+
+public procedure operatorRangeLoweringReference() -> Range<usize> {
+    return 1usize..3usize
+}
+
+public procedure tupleLoweringReference() -> (i32, bool) {
+    return (37, true)
+}
+
+public procedure tupleAccessLoweringReference() -> i32 {
+    let value: (i32, i32) = (37, 41)
+    return value.1
+}
+
+public procedure arrayLoweringReference() -> i32 {
+    let values: [i32; 3] = [3, 5, 7]
+    return values[1usize]
+}
+
+public procedure enumLoweringReference() -> i32 {
+    let unit: EnumLoweringPayload = EnumLoweringPayload::Unit
+    let tuple: EnumLoweringPayload = EnumLoweringPayload::Count(11)
+    let named: EnumLoweringPayload = EnumLoweringPayload::Named { value: 13 }
+    return enumLoweringPayloadValue(unit) +
+        enumLoweringPayloadValue(tuple) +
+        enumLoweringPayloadValue(named)
+}
+
+public procedure controlLoweringReference(
+    flag: bool,
+    input: ControlLoweringUnion
+) -> i32 {
+    let if_value: i32 = if flag {
+        1
+    } else {
+        2
+    }
+
+    let if_is_value: i32 = if input is value: i32 {
+        value
+    } else {
+        3
+    }
+
+    let if_cases_value: i32 = if input is {
+        value: i32 {
+            value
+        }
+        case_flag: bool {
+            if case_flag {
+                4
+            } else {
+                5
+            }
+        }
+    }
+
+    var infinite_count: i32 = 0
+    loop {
+        infinite_count = infinite_count + 1
+        if infinite_count == 1 {
+            break
+        }
+    }
+
+    var conditional_count: i32 = 0
+    loop conditional_count < 1 {
+        conditional_count = conditional_count + 1
+    }
+
+    let iter_values: [i32; 2] = [1, 2]
+    var iter_total: i32 = 0
+    loop value: i32 in iter_values {
+        iter_total = iter_total + value
+    }
+
+    let block_value: i32 = {
+        let local_value: i32 = 6
+        local_value + 1
+    }
+
+    return if_value +
+        if_is_value +
+        if_cases_value +
+        infinite_count +
+        conditional_count +
+        iter_total +
+        block_value
+}
+
+public procedure operatorUnaryTypingReference(
+    flag: bool,
+    value: i32,
+    float_value: f64
+) -> bool {
+    let logical_not: bool = !flag
+    let bitwise_not: i32 = !value
+    let negative_int: i32 = -value
+    let negative_float: f64 = -float_value
+
+    return logical_not ||
+        bitwise_not == negative_int ||
+        negative_float < 0.0f64
+}
+
+public procedure operatorBinaryTypingReference(
+    left: i32,
+    right: i32,
+    shift_count: u32,
+    left_flag: bool,
+    right_flag: bool
+) -> bool {
+    let arithmetic: i32 = left + right
+    let bitwise: i32 = left & right
+    let shifted: i32 = left << shift_count
+    let equal: bool = left == right
+    let ordered: bool = left < right
+    let logical: bool = left_flag && right_flag
+
+    return arithmetic != bitwise ||
+        shifted == left ||
+        equal ||
+        ordered ||
+        logical
 }

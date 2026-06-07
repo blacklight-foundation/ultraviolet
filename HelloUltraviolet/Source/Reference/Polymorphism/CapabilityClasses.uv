@@ -1,27 +1,156 @@
 //! Reference specimens for Polymorphism / CapabilityClasses.
 
-internal procedure capabilityPathExists(
-    io: $IO,
-    path: string@View
-) -> bool {
-    return io~>exists(path)
-}
-
-internal procedure restrictedCapabilityPathExists(
-    io: $IO,
-    path: string@View
-) -> bool {
-    let restricted_file_system: $IO = io~>restrict(".")
-    return restricted_file_system~>exists(path)
-}
-
 /// Exercises the Polymorphism CapabilityClasses reference surface.
 public procedure runPolymorphismCapabilityClassesReference(context: Context) -> bool {
     let reference: PolymorphismReference = polymorphismReference(
-        4usize,
-        capabilityPathExists(context.io, "HelloUltraviolet") &&
-            restrictedCapabilityPathExists(context.io, "HelloUltraviolet"),
+        21usize,
+        capabilityClassSyntaxAndTypeModelReference(context) &&
+            capabilityClassBuiltinValueDeclarationsReference(context) &&
+            capabilityContextAndSystemDeclarationsReference(context) &&
+            capabilityExecutionDomainSupportReference(context) &&
+            capabilityReactorDeclarationReference(context) &&
+            capabilityMethodSignatureAndReceiverReference(context) &&
+            capabilityContextBundleReference(context) &&
+            capabilityClassesGenericBoundsReference() &&
+            capabilityAllocationErrorReference(),
         true
     )
     return polymorphismReferenceIsCovered(reference) && reference.dynamically_dispatchable
+}
+
+/// Exercises ordinary class and dynamic type syntax for built-in capability classes.
+public procedure capabilityClassSyntaxAndTypeModelReference(context: Context) -> bool {
+    let io: $IO = context.io
+    let net: $Network = context.net
+    let heap: $HeapAllocator = context.heap
+    let execution_domain: $ExecutionDomain = context~>cpu()
+    let reactor: $Reactor = context.reactor
+    let time: $Time = context.time
+    let monotonic: $MonotonicTime = time~>monotonic()
+    let wall: $WallTime = time~>wall()
+    let _ = io
+    let _ = net
+    let _ = heap
+    let _ = execution_domain
+    let _ = reactor
+    let _ = monotonic
+    let _ = wall
+    return capabilityClassSetReference() &&
+        capabilityClassTypeReference() &&
+        capabilityClassDynamicParameterReference(
+            io,
+            net,
+            heap,
+            execution_domain,
+            reactor,
+            time,
+            monotonic,
+            wall
+        )
+}
+
+internal procedure capabilityClassDynamicParameterReference(
+    io: $IO,
+    net: $Network,
+    heap: $HeapAllocator,
+    execution_domain: $ExecutionDomain,
+    reactor: $Reactor,
+    time: $Time,
+    monotonic: $MonotonicTime,
+    wall: $WallTime
+) -> bool {
+    let _ = io
+    let _ = net
+    let _ = heap
+    let _ = execution_domain
+    let _ = reactor
+    let _ = time
+    let _ = monotonic
+    let _ = wall
+    return capabilityClassTypeReference()
+}
+
+/// Exercises the complete built-in capability class set.
+public procedure capabilityClassSetReference() -> bool {
+    return capabilityClassesGenericBoundsReference()
+}
+
+/// Exercises the `$Class` dynamic type form for every built-in capability class.
+public procedure capabilityClassTypeReference() -> bool {
+    return sizeof($IO) > 0usize &&
+        sizeof($Network) > 0usize &&
+        sizeof($HeapAllocator) > 0usize &&
+        sizeof($ExecutionDomain) > 0usize &&
+        sizeof($Reactor) > 0usize &&
+        sizeof($Time) > 0usize &&
+        sizeof($MonotonicTime) > 0usize &&
+        sizeof($WallTime) > 0usize
+}
+
+/// Exercises built-in value declarations associated with capability classes.
+public procedure capabilityClassBuiltinValueDeclarationsReference(context: Context) -> bool {
+    return capabilityIOInterfaceObserved(context.io) &&
+        capabilityFileKindVariantKnown(FileKind::File) &&
+        capabilityFileKindVariantKnown(FileKind::Dir) &&
+        capabilityFileKindVariantKnown(FileKind::Other) &&
+        capabilityIoErrorVariantKnown(IoError::NotFound) &&
+        capabilityIoErrorVariantKnown(IoError::PermissionDenied) &&
+        capabilityIoErrorVariantKnown(IoError::AlreadyExists) &&
+        capabilityIoErrorVariantKnown(IoError::InvalidPath) &&
+        capabilityIoErrorVariantKnown(IoError::Busy) &&
+        capabilityIoErrorVariantKnown(IoError::IoFailure) &&
+        capabilityIoErrorVariantKnown(IoError::DirectoryNotEmpty) &&
+        capabilityAllocationErrorReference()
+}
+
+/// Exercises the Context and System built-in declaration surfaces.
+public procedure capabilityContextAndSystemDeclarationsReference(context: Context) -> bool {
+    return capabilitySystemObserved(context.sys) &&
+        capabilityPathExists(context.io, "HelloUltraviolet") &&
+        capabilityNetworkRestricts(context.net) &&
+        capabilityHeapAllocates(context.heap) &&
+        capabilityReactorRuns(context.reactor) &&
+        capabilityTimeObserved(context.time)
+}
+
+/// Exercises execution-domain declarations and context domain constructors.
+public procedure capabilityExecutionDomainSupportReference(context: Context) -> bool {
+    return capabilityExecutionDomainSupport(context)
+}
+
+/// Exercises the Reactor declaration through both declared methods.
+public procedure capabilityReactorDeclarationReference(context: Context) -> bool {
+    return capabilityReactorRuns(context.reactor)
+}
+
+/// Exercises capability method signatures and receiver forms across built-ins.
+public procedure capabilityMethodSignatureAndReceiverReference(context: Context) -> bool {
+    return capabilityIOInterfaceObserved(context.io) &&
+        capabilityNetworkRestricts(context.net) &&
+        capabilityHeapAllocates(context.heap) &&
+        capabilityReactorRuns(context.reactor) &&
+        capabilityTimeObserved(context.time)
+}
+
+/// Exercises Context bundle field typing, field values, and nested bundle shape.
+public procedure capabilityContextBundleReference(context: Context) -> bool {
+    return capabilityContextBundleObserved(context)
+}
+
+/// Exercises the `AllocationError` value forms.
+public procedure capabilityAllocationErrorReference() -> bool {
+    return capabilityAllocationErrorValueKnown(AllocationError::OutOfMemory(1usize)) &&
+        capabilityAllocationErrorValueKnown(AllocationError::QuotaExceeded(2usize))
+}
+
+/// Exercises capability classes as generic bounds for every built-in capability class.
+public procedure capabilityClassesGenericBoundsReference() -> bool {
+    return capabilityBoundAcceptsIO<$IO>() &&
+        capabilityBoundAcceptsNetwork<$Network>() &&
+        capabilityBoundAcceptsHeapAllocator<$HeapAllocator>() &&
+        capabilityBoundAcceptsExecutionDomain<$ExecutionDomain>() &&
+        capabilityBoundAcceptsReactor<$Reactor>() &&
+        capabilityBoundAcceptsTime<$Time>() &&
+        capabilityBoundAcceptsMonotonicTime<$MonotonicTime>() &&
+        capabilityBoundAcceptsWallTime<$WallTime>()
 }

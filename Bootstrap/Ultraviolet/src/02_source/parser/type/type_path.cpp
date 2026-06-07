@@ -26,6 +26,15 @@ bool IsGpuPtrHead(const TypePath& path) {
   return path.size() == 1 && path.front() == "GpuPtr";
 }
 
+bool IsAsyncTypeHead(const TypePath& path) {
+  if (path.size() != 1) {
+    return false;
+  }
+  const std::string& head = path.front();
+  return head == "Async" || head == "Future" || head == "Sequence" ||
+         head == "Stream" || head == "Pipe" || head == "Exchange";
+}
+
 bool IsGpuPtrAddrSpaceArg(const std::shared_ptr<Type>& arg) {
   if (!arg) {
     return false;
@@ -152,6 +161,9 @@ ParseElemResult<std::shared_ptr<Type>> ParseTypePathType(
   if (gen.args.has_value()) {
     std::vector<std::shared_ptr<Type>> args = std::move(*gen.args);
     ValidateGpuPtrArgs(gen.parser, path, args);
+    if (IsAsyncTypeHead(path)) {
+      SPEC_RULE("requirement.21.AsyncTypeNoAdditionalConcreteGrammar");
+    }
     SPEC_RULE("Parse-Type-Apply");
     TypeApply apply;
     apply.path = std::move(path);
@@ -159,6 +171,9 @@ ParseElemResult<std::shared_ptr<Type>> ParseTypePathType(
     return {gen.parser, MakeTypeNode(SpanBetween(start, gen.parser), apply)};
   }
 
+  if (IsAsyncTypeHead(path)) {
+    SPEC_RULE("requirement.21.AsyncTypeNoAdditionalConcreteGrammar");
+  }
   SPEC_RULE("Parse-Type-Path");
   TypePathType ty_path;
   ty_path.path = std::move(path);

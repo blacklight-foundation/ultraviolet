@@ -78,6 +78,8 @@ namespace ultraviolet::codegen {
 std::optional<std::string> LinkName(const ast::AttributeList& attrs,
                                     const std::string& raw_name) {
   SPEC_DEF("LinkName", "6.3.1");
+  SPEC_DEF("def.24.LinkName", "24.3");
+  SPEC_RULE("def.24.AttributeSymbolHelpers");
 
   auto normalize_attr_literal = [](std::string value) {
     if (value.size() >= 2 &&
@@ -116,10 +118,27 @@ std::optional<std::string> LinkName(const ast::AttributeList& attrs,
     }
     if (mode == "none" && tok->kind != lexer::TokenKind::StringLiteral) {
       SPEC_RULE("LinkName-NoMangle");
+      SPEC_RULE("def.24.ScopedRawAndHostBodySymbols");
+      core::Conformance::Record(
+          "def.24.AttributeSymbolHelpers",
+          std::nullopt,
+          "source=LinkName;attribute=mangle;mode=none");
+      core::Conformance::Record(
+          "def.24.LinkName",
+          std::nullopt,
+          "source=LinkName;mode=none;symbol=" + raw_name);
       return raw_name;
     }
     if (tok->kind == lexer::TokenKind::StringLiteral) {
       SPEC_RULE("LinkName-Symbol");
+      core::Conformance::Record(
+          "def.24.AttributeSymbolHelpers",
+          std::nullopt,
+          "source=LinkName;attribute=mangle;mode=symbol;symbol=" + mode);
+      core::Conformance::Record(
+          "def.24.LinkName",
+          std::nullopt,
+          "source=LinkName;mode=symbol;symbol=" + mode);
       return mode;
     }
     return std::nullopt;
@@ -131,16 +150,32 @@ std::optional<std::string> LinkName(const ast::AttributeList& attrs,
 
 std::string HostBodySym(const ast::ModulePath& module_path,
                         const ast::ProcedureDecl& proc) {
+  SPEC_RULE("def.24.ScopedRawAndHostBodySymbols");
   const std::string scoped = ScopedSym(ItemPathProc(module_path, proc));
-  return ScopedSym({scoped, "__host_body"});
+  const std::string host_body = ScopedSym({scoped, "__host_body"});
+  core::Conformance::Record(
+      "def.24.ScopedRawAndHostBodySymbols",
+      std::nullopt,
+      "source=HostBodySym;host_export=true;symbol=" + host_body);
+  return host_body;
 }
 
 std::string HostThunkLinkName(const ast::ModulePath& module_path,
                               const ast::ProcedureDecl& proc) {
+  SPEC_DEF("def.24.HostThunkLinkNameAndItemName", "24.3");
   if (auto link_name = LinkName(proc.attrs, proc.name)) {
+    core::Conformance::Record(
+        "def.24.HostThunkLinkNameAndItemName",
+        std::nullopt,
+        "source=HostThunkLinkName;host_export=true;link_name=" + *link_name);
     return *link_name;
   }
-  return ScopedSym(ItemPathProc(module_path, proc));
+  const std::string thunk = ScopedSym(ItemPathProc(module_path, proc));
+  core::Conformance::Record(
+      "def.24.HostThunkLinkNameAndItemName",
+      std::nullopt,
+      "source=HostThunkLinkName;host_export=true;link_name=" + thunk);
+  return thunk;
 }
 
 namespace {
@@ -434,6 +469,7 @@ std::string DropGluePathSig(const analysis::TypeRef& type) {
 std::string ScopedSym(const std::vector<std::string>& item_path) {
   SPEC_DEF("ScopedSym", "6.3.1");
   SPEC_DEF("PathSig", "6.3.1");
+  SPEC_RULE("def.24.ScopedRawAndHostBodySymbols");
 
   // ScopedSym(item) = PathSig(ItemPath(item))
   // PathSig(p) = mangle(StringOfPath(p))
@@ -443,12 +479,14 @@ std::string ScopedSym(const std::vector<std::string>& item_path) {
 std::string MangleClosure(const std::string& enclosing_sym,
                           std::uint64_t closure_index) {
   SPEC_RULE("Mangle-Closure");
+  SPEC_RULE("rule.24.Mangle-Closure");
   return ScopedSym(
       {enclosing_sym, "_closure" + std::to_string(closure_index)});
 }
 
 std::string MangleClosureEnv(const std::string& closure_sym) {
   SPEC_RULE("Mangle-ClosureEnv");
+  SPEC_RULE("rule.24.Mangle-ClosureEnv");
   return ScopedSym({closure_sym, "_env"});
 }
 
@@ -460,6 +498,7 @@ std::string MangleProc(const ast::ModulePath& module_path,
                        const ast::ProcedureDecl& proc) {
   if (analysis::HasAttribute(proc.attrs, analysis::attrs::kHostExport)) {
     SPEC_RULE("Mangle-HostExport-Proc");
+    SPEC_RULE("rule.24.Mangle-HostExport-Proc");
     return HostBodySym(module_path, proc);
   }
 
@@ -471,8 +510,10 @@ std::string MangleProc(const ast::ModulePath& module_path,
 
   if (proc.name == "main") {
     SPEC_RULE("Mangle-Main");
+    SPEC_RULE("rule.24.Mangle-Main");
   } else {
     SPEC_RULE("Mangle-Proc");
+    SPEC_RULE("rule.24.Mangle-Proc");
   }
 
   return ScopedSym(ItemPathProc(module_path, proc));
@@ -521,6 +562,7 @@ std::string MangleProcInModule(const ast::ASTModule& module,
 std::string MangleMethod(const analysis::TypePath& record_path,
                          const ast::MethodDecl& method) {
   SPEC_RULE("Mangle-Record-Method");
+  SPEC_RULE("rule.24.Mangle-Record-Method");
 
   return ScopedSym(ItemPathMethod(record_path, method));
 }
@@ -528,6 +570,7 @@ std::string MangleMethod(const analysis::TypePath& record_path,
 std::string MangleClassMethod(const analysis::TypePath& class_path,
                               const ast::ClassMethodDecl& method) {
   SPEC_RULE("Mangle-Class-Method");
+  SPEC_RULE("rule.24.Mangle-Class-Method");
 
   return ScopedSym(ItemPathClassMethod(class_path, method));
 }
@@ -536,6 +579,7 @@ std::string MangleStateMethod(const analysis::TypePath& modal_path,
                               const std::string& state,
                               const ast::StateMethodDecl& method) {
   SPEC_RULE("Mangle-State-Method");
+  SPEC_RULE("rule.24.Mangle-State-Method");
 
   return ScopedSym(ItemPathStateMethod(modal_path, state, method));
 }
@@ -544,6 +588,7 @@ std::string MangleTransition(const analysis::TypePath& modal_path,
                              const std::string& state,
                              const ast::TransitionDecl& trans) {
   SPEC_RULE("Mangle-Transition");
+  SPEC_RULE("rule.24.Mangle-Transition");
 
   return ScopedSym(ItemPathTransition(modal_path, state, trans));
 }
@@ -551,6 +596,7 @@ std::string MangleTransition(const analysis::TypePath& modal_path,
 std::string MangleStatic(const ast::ModulePath& module_path,
                          const ast::StaticDecl& decl) {
   SPEC_RULE("Mangle-Static");
+  SPEC_RULE("rule.24.Mangle-Static");
 
   return ScopedSym(ItemPathStatic(module_path, decl));
 }
@@ -558,6 +604,7 @@ std::string MangleStatic(const ast::ModulePath& module_path,
 std::string MangleStaticBinding(const ast::ModulePath& module_path,
                                 const std::string& binding_name) {
   SPEC_RULE("Mangle-StaticBinding");
+  SPEC_RULE("rule.24.Mangle-StaticBinding");
 
   return ScopedSym(ItemPathStaticBinding(module_path, binding_name));
 }
@@ -565,6 +612,7 @@ std::string MangleStaticBinding(const ast::ModulePath& module_path,
 std::string MangleVTable(const analysis::TypeRef& type,
                          const analysis::TypePath& class_path) {
   SPEC_RULE("Mangle-VTable");
+  SPEC_RULE("rule.24.Mangle-VTable");
 
   return ScopedSym(ItemPathVTable(type, class_path));
 }
@@ -572,6 +620,7 @@ std::string MangleVTable(const analysis::TypeRef& type,
 std::string MangleLiteral(const std::string& kind,
                           std::span<const std::uint8_t> contents) {
   SPEC_RULE("Mangle-Literal");
+  SPEC_RULE("rule.24.Mangle-Literal");
   SPEC_DEF("LiteralData", "6.3.1");
 
   // Mangle(LiteralData(kind, contents)) = PathSig(["ultraviolet", "runtime", "literal", LiteralID(kind, contents)])
@@ -583,6 +632,7 @@ std::string MangleDefaultImpl(const analysis::TypeRef& type,
                               const analysis::TypePath& class_path,
                               const std::string& method_name) {
   SPEC_RULE("Mangle-DefaultImpl");
+  SPEC_RULE("rule.24.Mangle-DefaultImpl");
 
   return ScopedSym(ItemPathDefaultImpl(type, class_path, method_name));
 }

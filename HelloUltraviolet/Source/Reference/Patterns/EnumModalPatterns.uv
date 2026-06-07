@@ -10,7 +10,9 @@ public procedure runPatternsEnumModalPatternsReference() -> bool {
         EnumReference::Idle {
             false
         }
-        EnumReference::Count(value,) {
+        EnumReference::Count(
+            value,
+        ) {
             value == 41
         }
         EnumReference::Named { value } {

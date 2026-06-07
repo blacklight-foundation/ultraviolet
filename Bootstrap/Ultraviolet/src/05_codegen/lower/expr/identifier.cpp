@@ -22,12 +22,63 @@
 #include "05_codegen/lower/expr/identifier.h"
 #include "05_codegen/lower/expr/expr_common.h"
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
+#include "04_analysis/typing/type_predicates.h"
+#include "04_analysis/typing/types.h"
 #include "05_codegen/cleanup/cleanup.h"
 #include "05_codegen/intrinsics/builtins.h"
+
+#include <optional>
+#include <string>
+#include <variant>
 
 namespace ultraviolet::codegen {
 
 namespace {
+
+bool IsFunctionRuntimeValue(const analysis::TypeRef& type) {
+    analysis::TypeRef stripped = analysis::StripPerm(type);
+    if (!stripped) {
+        stripped = type;
+    }
+    return stripped && std::holds_alternative<analysis::TypeFunc>(stripped->node);
+}
+
+std::string QualifiedPathText(const std::vector<std::string>& path,
+                              const std::string& name) {
+    std::string text;
+    for (const auto& segment : path) {
+        if (!text.empty()) {
+            text += "::";
+        }
+        text += segment;
+    }
+    if (!name.empty()) {
+        if (!text.empty()) {
+            text += "::";
+        }
+        text += name;
+    }
+    return text;
+}
+
+void RecordFunctionRuntimeValue(const std::vector<std::string>& full,
+                                const std::string& resolved_name,
+                                const IRValue& value,
+                                const analysis::TypeRef& value_type) {
+    if (!core::Conformance::Enabled() || !IsFunctionRuntimeValue(value_type)) {
+        return;
+    }
+
+    std::string payload =
+        "source=LowerStaticIdentifierRead;operation=FuncVal;symbol=";
+    payload += value.name;
+    payload += ";symbol_domain=Symbol;type=TypeFunc;resolved_name=";
+    payload += resolved_name;
+    payload += ";qualified_path=";
+    payload += QualifiedPathText(full, resolved_name);
+    core::Conformance::Record("def.FunctionRuntimeValue", std::nullopt, payload);
+}
 
 LowerResult LowerLocalIdentifierRead(const ast::Expr& expr,
                                      const BindingState& binding,
@@ -113,9 +164,13 @@ LowerResult LowerStaticIdentifierRead(const ast::Expr& expr,
         }
     }
 
+    analysis::TypeRef value_type;
     if (ctx.expr_type) {
-        ctx.RegisterValueType(value, ctx.expr_type(expr));
+        value_type = ctx.expr_type(expr);
+        ctx.RegisterValueType(value, value_type);
     }
+
+    RecordFunctionRuntimeValue(full, resolved_name, value, value_type);
 
     IRPtr key_ir = LowerImplicitKeyAccess(expr, ast::KeyMode::Read, ctx);
     return LowerResult{SeqIR({key_ir, MakeIR(std::move(read))}), value};
@@ -202,6 +257,7 @@ LowerResult LowerIdentifier(const ast::Expr& expr,
     // Case 1: Local binding - check if binding exists in scope
     if (const BindingState* binding = ctx.GetBindingState(name)) {
         SPEC_RULE("Lower-Expr-Ident-Local");
+        SPEC_RULE("rule.16.Lower-Expr-Ident-Local");
         const std::string ir_name =
             binding->stable_name.empty() ? name : binding->stable_name;
         return LowerLocalIdentifierRead(expr, *binding, ir_name, ctx);
@@ -215,6 +271,7 @@ LowerResult LowerIdentifier(const ast::Expr& expr,
 
     // Case 3: Path/global - resolve name to module path
     SPEC_RULE("Lower-Expr-Ident-Path");
+    SPEC_RULE("rule.16.Lower-Expr-Ident-Path");
 
     std::vector<std::string> full;
     std::string resolved_name = name;

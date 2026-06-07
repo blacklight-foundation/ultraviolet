@@ -28,6 +28,9 @@ static inline void SpecDefsBreakStmt() {
   SPEC_DEF("T-Break-Value", "5.2.11");
   SPEC_DEF("T-Break-Unit", "5.2.11");
   SPEC_DEF("Break-Outside-Loop", "5.2.11");
+  SPEC_DEF("rule.18.Break-Outside-Loop", "18.9.4");
+  SPEC_DEF("diag.18.ControlTransferStatements", "18.9.7");
+  SPEC_DEF("diag.18.StatementDiagnosticsSupplement", "18.11");
 }
 
 static ExprTypeResult TypeExprWithCurrentEnv(const ScopeContext& ctx,
@@ -61,6 +64,9 @@ StmtTypeResult TypeBreakStmt(const ScopeContext& ctx,
   // Break must be inside a loop
   if (type_ctx.loop_flag != LoopFlag::Loop) {
     SPEC_RULE("Break-Outside-Loop");
+    SPEC_RULE("rule.18.Break-Outside-Loop");
+    SPEC_RULE("diag.18.ControlTransferStatements");
+    SPEC_RULE("diag.18.StatementDiagnosticsSupplement");
     return {false, "E-SEM-3162", {}, {}};
   }
 

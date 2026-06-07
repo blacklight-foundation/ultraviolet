@@ -284,6 +284,7 @@ ast::RecordDecl BuildTestAuthorityRecordDecl() {
       MakeField("io", MakeTypeDynamicAst({"IO"})),
       MakeField("sys", MakeTypePathAst({"System"})),
       MakeField("heap", MakeTypeDynamicAst({"HeapAllocator"})),
+      MakeField("time", MakeTypeDynamicAst({"Time"})),
       MakeField("temporary_directory", MakeTypeStringAst(StringState::View)),
       MakeField("target_profile", MakeTypeStringAst(StringState::View)),
       MakeField("compiler_executable_path", MakeTypeStringAst(StringState::View)),

@@ -117,6 +117,10 @@ static inline void SpecDefsLiterals() {
   SPEC_DEF("InRange", "5.2.10");
   SPEC_DEF("RangeOf", "5.2.10");
   SPEC_DEF("NullLiteralExpected", "5.2.10");
+  SPEC_DEF("def.16.NullLiteralExpected", "16.1.4");
+  SPEC_DEF("rule.16.Chk-Int-Literal", "16.1.4");
+  SPEC_DEF("rule.16.Chk-Float-Literal-Explicit", "16.1.4");
+  SPEC_DEF("diag.16.LiteralAndNameExpressions", "16.1.7");
 }
 
 static constexpr unsigned kPointerSizeBytes = 8;
@@ -431,6 +435,7 @@ bool NullLiteralExpected(const TypeRef& expected) {
   if (!expected) {
     return false;
   }
+  SPEC_RULE("def.16.NullLiteralExpected");
   TypeRef cur = expected;
   while (cur) {
     if (const auto* perm = std::get_if<TypePerm>(&cur->node)) {
@@ -484,9 +489,12 @@ LiteralCheckResult CheckLiteralExpr(const ScopeContext& ctx,
       return result;
     }
     if (!InRangeInt(*value, prim->name)) {
+      SPEC_RULE("rule.16.Chk-Int-Literal");
+      SPEC_RULE("diag.16.LiteralAndNameExpressions");
       return result;
     }
     SPEC_RULE("Chk-Int-Literal");
+    SPEC_RULE("rule.16.Chk-Int-Literal");
     result.ok = true;
     return result;
   }
@@ -506,11 +514,13 @@ LiteralCheckResult CheckLiteralExpr(const ScopeContext& ctx,
     // Explicit suffix must match expected type
     if (*suffix == prim->name) {
       SPEC_RULE("Chk-Float-Literal-Explicit");
+      SPEC_RULE("rule.16.Chk-Float-Literal-Explicit");
       result.ok = true;
       return result;
     }
     // Explicit suffix mismatch - error
     SPEC_RULE("Chk-Float-Literal-Mismatch-Err");
+    SPEC_RULE("rule.16.Chk-Float-Literal-Explicit");
     result.diag_id = "E-TYP-1531";
     return result;
   }

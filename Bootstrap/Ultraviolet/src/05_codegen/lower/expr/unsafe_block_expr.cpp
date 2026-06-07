@@ -37,6 +37,7 @@ namespace ultraviolet::codegen {
 
 LowerResult LowerUnsafeBlockExpr(const ast::UnsafeBlockExpr& expr, LowerCtx& ctx) {
     SPEC_RULE("Lower-Expr-UnsafeBlock");
+    SPEC_RULE("rule.16.Lower-Expr-UnsafeBlock");
 
     // An unsafe block is lowered exactly like a regular block
     // The safety implications are handled during semantic analysis

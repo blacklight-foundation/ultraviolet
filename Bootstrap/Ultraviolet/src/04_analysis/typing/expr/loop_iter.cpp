@@ -404,6 +404,8 @@ ExprTypeResult TypeLoopIterExpr(const ScopeContext& ctx,
     // Reject iterator type annotations and loop invariants in async iteration.
     if (expr.type_opt || expr.invariant_opt.has_value()) {
       SPEC_RULE("Loop-Async-Err");
+      SPEC_RULE("rule.16.AsyncIteratorLoopTypingFamily");
+      SPEC_RULE("rule.21.Loop-Async-Err");
       result.diag_id = "E-CON-0240";
       return result;
     }
@@ -413,6 +415,8 @@ ExprTypeResult TypeLoopIterExpr(const ScopeContext& ctx,
     const auto proc_async_sig = AsyncSigOf(ctx, type_ctx.return_type);
     if (!proc_async_sig.has_value() || !IsUnitType(iter_async_sig->in)) {
       SPEC_RULE("Loop-Async-Err");
+      SPEC_RULE("rule.16.AsyncIteratorLoopTypingFamily");
+      SPEC_RULE("rule.21.Loop-Async-Err");
       result.diag_id = "E-CON-0240";  // Async loop outside async context
       return result;
     }
@@ -428,6 +432,8 @@ ExprTypeResult TypeLoopIterExpr(const ScopeContext& ctx,
     }
 
     SPEC_RULE("T-Loop-Iter-Async");
+    SPEC_RULE("rule.16.AsyncIteratorLoopTypingFamily");
+    SPEC_RULE("rule.21.T-Loop-Iter-Async");
   }
 
   // 3. Determine element type from iterator
@@ -443,7 +449,7 @@ ExprTypeResult TypeLoopIterExpr(const ScopeContext& ctx,
     element_type = *elem;
 
     if (RequiresLoopStepBound(iter_type.type) &&
-        !CheckClassBound(ctx, element_type, TypePath{"Step"})) {
+        !CheckClassBound(ctx, element_type, TypePath{"Discrete"})) {
       result.diag_id = "E-SEM-3133";
       return result;
     }

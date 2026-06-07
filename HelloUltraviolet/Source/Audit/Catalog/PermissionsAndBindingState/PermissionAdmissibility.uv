@@ -9,7 +9,7 @@ public procedure validatedPermissionsAndBindingStatePermissionAdmissibilityOblig
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "req.PermissionAdmissibilityNoAdditionalSyntax",
-        29648usize,
+        29650usize,
         "HelloUltraviolet::Reference::Permissions",
         "runPermissionsAdmissibilityReference",
         "Source/Reference/Permissions/Admissibility.uv"
@@ -18,7 +18,7 @@ public procedure validatedPermissionsAndBindingStatePermissionAdmissibilityOblig
     }
     if acceptedObligationEntryMatches(
         "req.PermissionAdmissibilityNoAdditionalParsing",
-        29664usize,
+        29666usize,
         "HelloUltraviolet::Reference::Permissions",
         "runPermissionsAdmissibilityReference",
         "Source/Reference/Permissions/Admissibility.uv"
@@ -27,7 +27,7 @@ public procedure validatedPermissionsAndBindingStatePermissionAdmissibilityOblig
     }
     if acceptedObligationEntryMatches(
         "def.PermissionAdmissibilityAstInputs",
-        29680usize,
+        29682usize,
         "HelloUltraviolet::Reference::Permissions",
         "runPermissionsAdmissibilityReference",
         "Source/Reference/Permissions/Admissibility.uv"
@@ -36,7 +36,7 @@ public procedure validatedPermissionsAndBindingStatePermissionAdmissibilityOblig
     }
     if acceptedObligationEntryMatches(
         "req.PermissionAdmissibilityScope",
-        29699usize,
+        29701usize,
         "HelloUltraviolet::Reference::Permissions",
         "runPermissionsAdmissibilityReference",
         "Source/Reference/Permissions/Admissibility.uv"
@@ -45,7 +45,7 @@ public procedure validatedPermissionsAndBindingStatePermissionAdmissibilityOblig
     }
     if acceptedObligationEntryMatches(
         "def.PermAdmitsJudgementSet",
-        29715usize,
+        29717usize,
         "HelloUltraviolet::Reference::Permissions",
         "runPermissionsAdmissibilityReference",
         "Source/Reference/Permissions/Admissibility.uv"
@@ -54,16 +54,16 @@ public procedure validatedPermissionsAndBindingStatePermissionAdmissibilityOblig
     }
     if acceptedObligationEntryMatches(
         "def.PermissionAdmissibilityPairs",
-        29729usize,
+        29731usize,
         "HelloUltraviolet::Reference::Permissions",
-        "runPermissionsAdmissibilityReference",
+        "permissionAdmissibilityPairsReference",
         "Source/Reference/Permissions/Admissibility.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "req.PermAdmitsUseSitesNoTypeRewrite",
-        29749usize,
+        29751usize,
         "HelloUltraviolet::Reference::Permissions",
         "runPermissionsAdmissibilityReference",
         "Source/Reference/Permissions/Admissibility.uv"
@@ -72,7 +72,7 @@ public procedure validatedPermissionsAndBindingStatePermissionAdmissibilityOblig
     }
     if acceptedObligationEntryMatches(
         "def.MethodReceiverPermissionAdmissibility",
-        29763usize,
+        29765usize,
         "HelloUltraviolet::Reference::Permissions",
         "runPermissionsAdmissibilityReference",
         "Source/Reference/Permissions/Admissibility.uv"
@@ -81,7 +81,7 @@ public procedure validatedPermissionsAndBindingStatePermissionAdmissibilityOblig
     }
     if acceptedObligationEntryMatches(
         "def.MethodReceiverPermissionMatrix",
-        29781usize,
+        29783usize,
         "HelloUltraviolet::Reference::Permissions",
         "runPermissionsAdmissibilityReference",
         "Source/Reference/Permissions/Admissibility.uv"
@@ -90,7 +90,7 @@ public procedure validatedPermissionsAndBindingStatePermissionAdmissibilityOblig
     }
     if acceptedObligationEntryMatches(
         "req.PermissionAdmissibilityNoImplicitConversion",
-        29799usize,
+        29801usize,
         "HelloUltraviolet::Reference::Permissions",
         "runPermissionsAdmissibilityReference",
         "Source/Reference/Permissions/Admissibility.uv"
@@ -99,7 +99,7 @@ public procedure validatedPermissionsAndBindingStatePermissionAdmissibilityOblig
     }
     if acceptedObligationEntryMatches(
         "req.PermissionQualifiedSubtypingPermissionEquality",
-        29815usize,
+        29817usize,
         "HelloUltraviolet::Reference::Permissions",
         "runPermissionsAdmissibilityReference",
         "Source/Reference/Permissions/Admissibility.uv"
@@ -108,16 +108,16 @@ public procedure validatedPermissionsAndBindingStatePermissionAdmissibilityOblig
     }
     if acceptedObligationEntryMatches(
         "conformance.PermissionAdmissibilityRuntimeIdentity",
-        29829usize,
+        29831usize,
         "HelloUltraviolet::Reference::Permissions",
-        "runPermissionsAdmissibilityReference",
+        "permissionAdmissibilityRuntimeIdentityReference",
         "Source/Reference/Permissions/Admissibility.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "conformance.PermissionAdmissibilitySharedKeyGate",
-        29845usize,
+        29847usize,
         "HelloUltraviolet::Reference::Permissions",
         "runPermissionsAdmissibilityReference",
         "Source/Reference/Permissions/Admissibility.uv"
@@ -126,16 +126,16 @@ public procedure validatedPermissionsAndBindingStatePermissionAdmissibilityOblig
     }
     if acceptedObligationEntryMatches(
         "conformance.PermissionAdmissibilityLowering",
-        29859usize,
-        "HelloUltraviolet::Reference::Permissions",
-        "runPermissionsAdmissibilityReference",
-        "Source/Reference/Permissions/Admissibility.uv"
+        29861usize,
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.PermissionAdmissibility",
-        29875usize,
+        29877usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPermissionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Permissions/ReceiverPermissionMismatch/Source/Main.uv"

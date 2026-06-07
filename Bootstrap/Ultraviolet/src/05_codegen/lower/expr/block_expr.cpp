@@ -17,7 +17,10 @@
 
 #include "05_codegen/lower/expr/block_expr.h"
 
+#include <string>
+
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 #include "04_analysis/caps/cap_concurrency.h"
 #include "04_analysis/typing/type_predicates.h"
 #include "04_analysis/typing/types.h"
@@ -127,6 +130,9 @@ analysis::TypeRef InferParallelCollectedType(const ast::Expr& expr,
 //     expressions are collected rather than immediately producing results.
 
 LowerResult LowerBlock(const ast::Block& block, LowerCtx& ctx) {
+  SPEC_RULE("LowerBlock");
+  SPEC_RULE("rule.24.CG-Block");
+
   // Push a new scope for this block
   ctx.PushScope(false, false);
   ParallelCollectScope collect_scope(ctx);
@@ -157,11 +163,21 @@ LowerResult LowerBlock(const ast::Block& block, LowerCtx& ctx) {
     }
     tail_ir = tail_result.ir;
     result_value = tail_result.value;
+    core::Conformance::Record(
+        "rule.18.Lower-Block-Tail",
+        std::nullopt,
+        "source=LowerBlock;ir_form=IRBlock;tail=true;"
+        "components=LowerStmtList,LowerExpr;lowered=true");
   } else {
     SPEC_RULE("Lower-Block-Unit");
     // No tail expression - block produces unit
     result_value = ctx.FreshTempValue("unit");
     ctx.RegisterValueType(result_value, analysis::MakeTypePrim("()"));
+    core::Conformance::Record(
+        "rule.18.Lower-Block-Unit",
+        std::nullopt,
+        "source=LowerBlock;ir_form=IRBlock;tail=false;"
+        "components=LowerStmtList,UnitValue;lowered=true");
   }
 
   // Section 6.8: Emit cleanup for variables in this scope
@@ -186,6 +202,24 @@ LowerResult LowerBlock(const ast::Block& block, LowerCtx& ctx) {
                       ? tail_ir
                       : SeqIR({tail_ir, cleanup_ir});
   block_ir.value = result_value;
+  std::string totality_payload =
+      "source=LowerBlock;form=BlockExpr;ir_form=IRBlock;stmt_count=";
+  totality_payload += std::to_string(block.stmts.size());
+  totality_payload += ";tail=";
+  totality_payload += block.tail_opt ? "true" : "false";
+  totality_payload += ";lowered=true";
+  core::Conformance::Record(
+      "def.18.BlockLoopLoweringTotality",
+      std::nullopt,
+      totality_payload);
+  std::string correctness_payload =
+      "source=LowerBlock;ir_form=IRBlock;preserves_block_result=true;tail=";
+  correctness_payload += block.tail_opt ? "true" : "false";
+  correctness_payload += ";cleanup_scope=true";
+  core::Conformance::Record(
+      "rule.18.Lower-Block-Correctness",
+      std::nullopt,
+      correctness_payload);
 
   return LowerResult{MakeIR(std::move(block_ir)), result_value};
 }

@@ -55,8 +55,14 @@ bool IsPackagedSupportRootCandidate(const std::filesystem::path& candidate) {
   if (candidate.empty()) {
     return false;
   }
-  return DirExists(candidate / "windows") || DirExists(candidate / "macos") ||
-         DirExists(candidate / "linux");
+  for (const char* platform : {"windows", "macos", "linux"}) {
+    for (const char* subdir : {"tools", "bin", "lib"}) {
+      if (DirExists(candidate / platform / subdir)) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 struct SupportLayout {

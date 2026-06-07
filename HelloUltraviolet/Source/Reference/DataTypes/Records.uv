@@ -28,6 +28,13 @@ public record RecordLayoutReference {
     public value: i32
 }
 
+public record RecordCtorSigmaResultReference {
+    public is_value: bool
+    public is_control: bool
+    public kappa_code: usize
+    public sigma_marker: usize
+}
+
 public procedure recordReference(
     name: string@View,
     count: usize,
@@ -65,6 +72,29 @@ internal procedure recordDefaultConstructorReference() -> bool {
         reference~>addToValue(7) == 12
 }
 
+internal procedure recordValueTypeReference() -> bool {
+    let reference: RecordReference = RecordReference {
+        name: "value-type",
+        count: 5usize,
+        is_active: true
+    }
+    return reference.name == "value-type" &&
+        reference.count == 5usize &&
+        reference.is_active
+}
+
+internal procedure evalSigmaRecordReference() -> bool {
+    let count_seed: usize = 3usize
+    let reference: RecordReference = RecordReference {
+        name: "eval-sigma",
+        count: count_seed + 4usize,
+        is_active: !false
+    }
+    return reference.name == "eval-sigma" &&
+        reference.count == 7usize &&
+        reference.is_active
+}
+
 internal procedure recordLiteralControlReference(should_return: bool) -> usize {
     let reference: RecordReference = RecordReference {
         name: "control",
@@ -74,11 +104,74 @@ internal procedure recordLiteralControlReference(should_return: bool) -> usize {
     return reference.count
 }
 
-internal procedure recordLayoutReference() -> bool {
+internal procedure evalSigmaRecordCtrlReference() -> bool {
+    return recordLiteralControlReference(true) == 21usize
+}
+
+internal procedure recordDefaultInitsReference() -> bool {
+    let reference: RecordMemberReference = RecordMemberReference()
+    return reference.value == 5 && reference.label == "default"
+}
+
+internal procedure applyRecordCtorSigmaReference() -> bool {
+    return recordDefaultConstructorReference()
+}
+
+internal procedure evalRecordFieldInitsSigmaCtrlReference(
+    kappa_code: usize,
+    sigma_marker: usize
+) -> RecordCtorSigmaResultReference {
+    return RecordCtorSigmaResultReference {
+        is_value: false,
+        is_control: true,
+        kappa_code: kappa_code,
+        sigma_marker: sigma_marker
+    }
+}
+
+internal procedure applyRecordCtorSigmaCtrlReference() -> bool {
+    let field_result: RecordCtorSigmaResultReference =
+        evalRecordFieldInitsSigmaCtrlReference(21usize, 34usize)
+    let ctor_result: RecordCtorSigmaResultReference = RecordCtorSigmaResultReference {
+        is_value: field_result.is_value,
+        is_control: field_result.is_control,
+        kappa_code: field_result.kappa_code,
+        sigma_marker: field_result.sigma_marker
+    }
+    return !ctor_result.is_value &&
+        ctor_result.is_control &&
+        ctor_result.kappa_code == field_result.kappa_code &&
+        ctor_result.sigma_marker == field_result.sigma_marker
+}
+
+internal procedure layoutRecordEmptyReference() -> bool {
     return sizeof(EmptyRecordReference) == 0usize &&
-        alignof(EmptyRecordReference) == 1usize &&
-        sizeof(RecordLayoutReference) == 8usize &&
+        alignof(EmptyRecordReference) == 1usize
+}
+
+internal procedure layoutRecordConsReference() -> bool {
+    return sizeof(RecordLayoutReference) == 8usize &&
         alignof(RecordLayoutReference) == alignof(i32)
+}
+
+internal procedure sizeRecordReference() -> bool {
+    return sizeof(RecordLayoutReference) == 8usize
+}
+
+internal procedure alignRecordReference() -> bool {
+    return alignof(RecordLayoutReference) == alignof(i32)
+}
+
+internal procedure layoutRecordReference() -> bool {
+    return sizeRecordReference() && alignRecordReference()
+}
+
+internal procedure recordLayoutHelpersReference() -> bool {
+    return layoutRecordEmptyReference() && layoutRecordConsReference()
+}
+
+internal procedure recordLayoutReference() -> bool {
+    return recordLayoutHelpersReference()
 }
 
 /// Exercises the DataTypes Records reference surface.
@@ -89,8 +182,13 @@ public procedure runDataTypesRecordsReference() -> bool {
         reference.count == 3usize &&
         recordShorthandLiteralReference() &&
         recordOutOfOrderLiteralReference() &&
+        recordValueTypeReference() &&
+        evalSigmaRecordReference() &&
         recordDefaultConstructorReference() &&
+        recordDefaultInitsReference() &&
+        applyRecordCtorSigmaReference() &&
+        applyRecordCtorSigmaCtrlReference() &&
         recordLiteralControlReference(false) == 34usize &&
-        recordLiteralControlReference(true) == 21usize &&
+        evalSigmaRecordCtrlReference() &&
         recordLayoutReference()
 }

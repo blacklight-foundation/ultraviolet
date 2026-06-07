@@ -51,6 +51,7 @@ ExprTypeResult TypeAllocExprImpl(const ScopeContext& ctx,
       return result;
     }
     if (!RegionActiveType(binding->type)) {
+      SPEC_RULE("diag.16.EffectfulCoreExpressions");
       SPEC_RULE("Alloc-Region-NotFound-Err");
       result.diag_id = "E-MEM-1206";
       return result;
@@ -61,6 +62,7 @@ ExprTypeResult TypeAllocExprImpl(const ScopeContext& ctx,
       return result;
     }
     SPEC_RULE("T-Alloc-Explicit");
+    SPEC_RULE("rule.16.T-Alloc-Explicit");
     result.ok = true;
     result.type = inner.type;
     return result;
@@ -69,6 +71,7 @@ ExprTypeResult TypeAllocExprImpl(const ScopeContext& ctx,
   // Implicit region allocation: ^value (inside region block)
   const auto region = InnermostActiveRegion(env);
   if (!region.has_value()) {
+    SPEC_RULE("diag.16.EffectfulCoreExpressions");
     SPEC_RULE("Alloc-Implicit-NoRegion-Err");
     result.diag_id = "E-MEM-3021";
     return result;
@@ -80,6 +83,7 @@ ExprTypeResult TypeAllocExprImpl(const ScopeContext& ctx,
     return result;
   }
   SPEC_RULE("T-Alloc-Implicit");
+  SPEC_RULE("rule.16.T-Alloc-Implicit");
   result.ok = true;
   result.type = inner.type;
   return result;

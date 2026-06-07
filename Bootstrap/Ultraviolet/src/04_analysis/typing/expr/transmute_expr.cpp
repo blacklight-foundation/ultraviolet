@@ -29,6 +29,12 @@ static inline void SpecDefsTransmute() {
   SPEC_DEF("T-Transmute-AlignEq", "5.2.12");
   SPEC_DEF("Transmute-Unsafe-Err", "5.2.12");
   SPEC_DEF("W-Transmute-Invalid-Target", "5.2.12");
+  SPEC_DEF("rule.16.T-Transmute", "16.5.4");
+  SPEC_DEF("rule.16.T-Transmute-SizeEq", "16.5.4");
+  SPEC_DEF("rule.16.T-Transmute-AlignEq", "16.5.4");
+  SPEC_DEF("rule.16.Transmute-Unsafe-Err", "16.5.4");
+  SPEC_DEF("def.16.ValidTransmuteTarget", "16.5.4");
+  SPEC_DEF("diag.18.UnsafeRequiredOperationOwnership", "18.10.4");
 }
 
 std::optional<std::uint64_t> SizeOfInternal(const ScopeContext& ctx,
@@ -62,6 +68,7 @@ static bool IsNumericPrim(std::string_view name) {
 }
 
 static bool KnownInvalidTransmuteTarget(const TypeRef& type) {
+  SPEC_RULE("def.16.ValidTransmuteTarget");
   const auto stripped = StripPerm(type);
   if (!stripped) {
     return false;
@@ -275,6 +282,7 @@ ExprTypeResult TypeTransmuteExprImpl(const ScopeContext& ctx,
                                      const ast::TransmuteExpr& expr,
                                      const TypeEnv& env,
                                      const core::Span& span) {
+  SpecDefsTransmute();
   ExprTypeResult result;
 
   // Transmute not allowed in pure context (contracts)
@@ -286,6 +294,8 @@ ExprTypeResult TypeTransmuteExprImpl(const ScopeContext& ctx,
   // Check unsafe context requirement
   if (!IsInUnsafeSpan(ctx, span)) {
     SPEC_RULE("Transmute-Unsafe-Err");
+    SPEC_RULE("rule.16.Transmute-Unsafe-Err");
+    SPEC_RULE("diag.18.UnsafeRequiredOperationOwnership");
     result.diag_id = "Transmute-Unsafe-Err";
     return result;
   }
@@ -331,10 +341,12 @@ ExprTypeResult TypeTransmuteExprImpl(const ScopeContext& ctx,
   }
   if (*from_size != *to_size) {
     SPEC_RULE("T-Transmute-SizeEq");
+    SPEC_RULE("rule.16.T-Transmute-SizeEq");
     result.diag_id = "T-Transmute-SizeEq";
     return result;
   }
   SPEC_RULE("T-Transmute-SizeEq");
+  SPEC_RULE("rule.16.T-Transmute-SizeEq");
 
   // Check alignment compatibility
   const auto from_align = AlignOfInternal(ctx, from.type);
@@ -344,10 +356,12 @@ ExprTypeResult TypeTransmuteExprImpl(const ScopeContext& ctx,
   }
   if (*from_align != *to_align) {
     SPEC_RULE("T-Transmute-AlignEq");
+    SPEC_RULE("rule.16.T-Transmute-AlignEq");
     result.diag_id = "T-Transmute-AlignEq";
     return result;
   }
   SPEC_RULE("T-Transmute-AlignEq");
+  SPEC_RULE("rule.16.T-Transmute-AlignEq");
 
   const auto value_check =
       CheckExprAgainst(ctx, type_ctx, expr.value, from.type, env);
@@ -364,6 +378,7 @@ ExprTypeResult TypeTransmuteExprImpl(const ScopeContext& ctx,
   }
 
   SPEC_RULE("T-Transmute");
+  SPEC_RULE("rule.16.T-Transmute");
   result.ok = true;
   result.type = to.type;
   return result;

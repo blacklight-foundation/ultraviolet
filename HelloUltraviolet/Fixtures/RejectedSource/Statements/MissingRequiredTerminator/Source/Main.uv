@@ -1,5 +1,15 @@
 //! Rejected statement specimen for a missing required statement terminator.
 
+internal procedure missingRequiredTerminatorSink(value: i32) -> i32 {
+    return value
+}
+
 public procedure missingRequiredTerminatorReference() -> i32 {
-    let value: i32 = 1 return value
+    var value: i32 = 1
+    let increment: i32 = 2
+    using value as alias_value
+    alias_value = alias_value + increment
+    alias_value += 1
+    missingRequiredTerminatorSink(alias_value)
+    let result: i32 = alias_value return result
 }

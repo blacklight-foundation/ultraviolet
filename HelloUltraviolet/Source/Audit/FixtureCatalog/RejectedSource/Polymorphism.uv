@@ -1,7 +1,7 @@
 //! Rejected polymorphism specimens.
 
 public procedure polymorphismRejectedSourceFixtureCount() -> usize {
-    return 48usize
+    return 51usize
 }
 
 public procedure validatedPolymorphismRejectedSourceFixtureCount() -> usize {
@@ -552,6 +552,23 @@ public procedure validatedPolymorphismRejectedSourceFixtureCount() -> usize {
     }
     if rejectedSpecimenMatches(
         rejectedSpecimen(
+            "HashWithoutEq",
+            "Fixtures/RejectedSource/Polymorphism/HashWithoutEq",
+            "Fixtures/RejectedSource/Polymorphism/HashWithoutEq/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/HashWithoutEq/Expected.uv",
+            expectedDiagnostic("E-TYP-2503", "req.14.HashRequiresEqAndEqualValuesHashEqual")
+        ),
+        "HashWithoutEq",
+        "Fixtures/RejectedSource/Polymorphism/HashWithoutEq",
+        "Fixtures/RejectedSource/Polymorphism/HashWithoutEq/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/HashWithoutEq/Expected.uv",
+        "E-TYP-2503",
+        "req.14.HashRequiresEqAndEqualValuesHashEqual"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
             "RefinementPredicateNonBool",
             "Fixtures/RejectedSource/Polymorphism/RefinementPredicateNonBool",
             "Fixtures/RejectedSource/Polymorphism/RefinementPredicateNonBool/Source/Main.uv",
@@ -700,6 +717,40 @@ public procedure validatedPolymorphismRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Polymorphism/DuplicateClassProcedureName/Expected.uv",
         "E-TYP-2500",
         "rule.14.WF-Class"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "InheritedMethodSignatureConflict",
+            "Fixtures/RejectedSource/Polymorphism/InheritedMethodSignatureConflict",
+            "Fixtures/RejectedSource/Polymorphism/InheritedMethodSignatureConflict/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/InheritedMethodSignatureConflict/Expected.uv",
+            expectedDiagnostic("E-TYP-2505", "rule.14.EffMethods-Conflict")
+        ),
+        "InheritedMethodSignatureConflict",
+        "Fixtures/RejectedSource/Polymorphism/InheritedMethodSignatureConflict",
+        "Fixtures/RejectedSource/Polymorphism/InheritedMethodSignatureConflict/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/InheritedMethodSignatureConflict/Expected.uv",
+        "E-TYP-2505",
+        "rule.14.EffMethods-Conflict"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "InheritedFieldSignatureConflict",
+            "Fixtures/RejectedSource/Polymorphism/InheritedFieldSignatureConflict",
+            "Fixtures/RejectedSource/Polymorphism/InheritedFieldSignatureConflict/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/InheritedFieldSignatureConflict/Expected.uv",
+            expectedDiagnostic("E-TYP-2505", "rule.14.EffFields-Conflict")
+        ),
+        "InheritedFieldSignatureConflict",
+        "Fixtures/RejectedSource/Polymorphism/InheritedFieldSignatureConflict",
+        "Fixtures/RejectedSource/Polymorphism/InheritedFieldSignatureConflict/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/InheritedFieldSignatureConflict/Expected.uv",
+        "E-TYP-2505",
+        "rule.14.EffFields-Conflict"
     ) {
         count = count + 1usize
     }

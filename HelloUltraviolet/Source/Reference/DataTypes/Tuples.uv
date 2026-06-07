@@ -22,6 +22,17 @@ internal procedure tuplePlaceProjectionReference() -> bool {
     return pair.0 == 7 && pair.1
 }
 
+internal procedure tupleValueTypeReference() -> bool {
+    let pair: (i32, bool) = (5, true)
+    return pair.0 == 5 && pair.1
+}
+
+internal procedure evalSigmaTupleReference() -> bool {
+    let seed: i32 = 8
+    let pair: (i32, bool) = (seed + 2, !false)
+    return pair.0 == 10 && pair.1
+}
+
 internal procedure tupleConstructionControlReference(flag: bool) -> i32 {
     let pair: (i32, i32) = (
         if flag {
@@ -34,6 +45,15 @@ internal procedure tupleConstructionControlReference(flag: bool) -> i32 {
     return pair.0
 }
 
+internal procedure evalSigmaTupleCtrlReference() -> bool {
+    return tupleConstructionControlReference(true) == 11
+}
+
+internal procedure evalSigmaTupleAccessReference() -> bool {
+    let pair: (i32, bool) = (17, true)
+    return pair.0 == 17 && pair.1
+}
+
 internal procedure tupleAccessControlReference(flag: bool) -> i32 {
     return (if flag {
         return 13
@@ -42,13 +62,40 @@ internal procedure tupleAccessControlReference(flag: bool) -> i32 {
     }).0
 }
 
-internal procedure tupleLayoutReference() -> bool {
+internal procedure evalSigmaTupleAccessCtrlReference() -> bool {
+    return tupleAccessControlReference(true) == 13
+}
+
+internal procedure layoutTupleEmptyReference() -> bool {
     return sizeof(()) == 0usize &&
-        alignof(()) == 1usize &&
-        sizeof((i32;)) == sizeof(i32) &&
+        alignof(()) == 1usize
+}
+
+internal procedure layoutTupleConsReference() -> bool {
+    return sizeof((i32;)) == sizeof(i32) &&
         alignof((i32;)) == alignof(i32) &&
         sizeof((i32, bool)) == 8usize &&
         alignof((i32, bool)) == alignof(i32)
+}
+
+internal procedure sizeTupleReference() -> bool {
+    return sizeof((i32, bool)) == 8usize
+}
+
+internal procedure alignTupleReference() -> bool {
+    return alignof((i32, bool)) == alignof(i32)
+}
+
+internal procedure layoutTupleShapeReference() -> bool {
+    return sizeTupleReference() && alignTupleReference()
+}
+
+internal procedure tupleLayoutJudgementSetReference() -> bool {
+    return layoutTupleEmptyReference() && layoutTupleConsReference()
+}
+
+internal procedure tupleLayoutReference() -> bool {
+    return tupleLayoutJudgementSetReference()
 }
 
 /// Exercises the DataTypes Tuples reference surface.
@@ -63,9 +110,12 @@ public procedure runDataTypesTuplesReference() -> bool {
         pair.1 &&
         tupleNestedScannerReference() &&
         tuplePlaceProjectionReference() &&
+        tupleValueTypeReference() &&
+        evalSigmaTupleReference() &&
         tupleConstructionControlReference(false) == 1 &&
-        tupleConstructionControlReference(true) == 11 &&
+        evalSigmaTupleCtrlReference() &&
+        evalSigmaTupleAccessReference() &&
         tupleAccessControlReference(false) == 1 &&
-        tupleAccessControlReference(true) == 13 &&
+        evalSigmaTupleAccessCtrlReference() &&
         tupleLayoutReference()
 }

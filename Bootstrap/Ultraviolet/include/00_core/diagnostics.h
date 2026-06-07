@@ -39,6 +39,7 @@ struct Diagnostic {
   std::string message;
   std::optional<Span> span;
   std::optional<std::string> label;     // Inline label for primary caret line
+  std::vector<std::string> obligation_ids;
   std::vector<SubDiagnostic> children;  // Notes, help labels, fix-its
 };
 

@@ -27,6 +27,7 @@ enum class TerminatorPolicy {
 struct Parser {
   const std::vector<Token>* tokens = nullptr;
   std::shared_ptr<std::vector<Token>> owned_tokens;
+  std::shared_ptr<std::vector<std::size_t>> split_shift_right_indices;
   const core::SourceFile* source = nullptr;
   std::size_t index = 0;
   const std::vector<DocComment>* docs = nullptr;

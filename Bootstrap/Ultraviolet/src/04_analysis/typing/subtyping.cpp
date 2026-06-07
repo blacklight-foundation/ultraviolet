@@ -65,21 +65,28 @@ static bool IsFloatType(std::string_view name) {
   return false;
 }
 
-static bool IsNumericMismatch(const TypeRef& lhs, const TypeRef& rhs) {
+enum class NumericMismatchKind {
+  None,
+  Integer,
+  Float,
+};
+
+static NumericMismatchKind NumericMismatchKindOf(const TypeRef& lhs,
+                                                 const TypeRef& rhs) {
   const auto* lprim = std::get_if<TypePrim>(&lhs->node);
   const auto* rprim = std::get_if<TypePrim>(&rhs->node);
   if (!lprim || !rprim) {
-    return false;
+    return NumericMismatchKind::None;
   }
   if (IsIntType(lprim->name) && IsIntType(rprim->name) &&
       lprim->name != rprim->name) {
-    return true;
+    return NumericMismatchKind::Integer;
   }
   if (IsFloatType(lprim->name) && IsFloatType(rprim->name) &&
       lprim->name != rprim->name) {
-    return true;
+    return NumericMismatchKind::Float;
   }
-  return false;
+  return NumericMismatchKind::None;
 }
 
 static bool IsNeverType(const TypeRef& type) {
@@ -360,6 +367,13 @@ struct SubtypingMemoKeyHash {
 
 struct SubtypingMemoState {
   int depth = 0;
+  const Sigma* sigma_key = nullptr;
+  const ast::ASTModule* mods_data = nullptr;
+  std::size_t mods_size = 0;
+  const NameResolutionTables* name_resolution_tables = nullptr;
+  PathKey current_module_key;
+  const Scope* scopes_data = nullptr;
+  std::size_t scopes_size = 0;
   std::unordered_map<AliasNormalizeMemoKey,
                      AliasExpandResult,
                      AliasNormalizeMemoKeyHash>
@@ -373,12 +387,44 @@ SubtypingMemoState& CurrentSubtypingMemo() {
   return state;
 }
 
+void ResetSubtypingMemo(SubtypingMemoState& state) {
+  state.alias_normalize.clear();
+  state.subtype.clear();
+}
+
+void RefreshSubtypingMemoForContext(SubtypingMemoState& state,
+                                    const ScopeContext& ctx) {
+  const Sigma* sigma_key = ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
+  const ast::ASTModule* mods_data = sigma_key->mods.data();
+  const std::size_t mods_size = sigma_key->mods.size();
+  const PathKey current_module_key = PathKeyOf(ctx.current_module);
+  const Scope* scopes_data = ctx.scopes.data();
+  const std::size_t scopes_size = ctx.scopes.size();
+  if (state.sigma_key == sigma_key &&
+      state.mods_data == mods_data &&
+      state.mods_size == mods_size &&
+      state.name_resolution_tables == ctx.name_resolution_tables &&
+      state.current_module_key == current_module_key &&
+      state.scopes_data == scopes_data &&
+      state.scopes_size == scopes_size) {
+    return;
+  }
+
+  state.sigma_key = sigma_key;
+  state.mods_data = mods_data;
+  state.mods_size = mods_size;
+  state.name_resolution_tables = ctx.name_resolution_tables;
+  state.current_module_key = current_module_key;
+  state.scopes_data = scopes_data;
+  state.scopes_size = scopes_size;
+  ResetSubtypingMemo(state);
+}
+
 struct SubtypingMemoScope {
-  SubtypingMemoScope() {
+  explicit SubtypingMemoScope(const ScopeContext& ctx) {
     auto& state = CurrentSubtypingMemo();
     if (state.depth == 0) {
-      state.alias_normalize.clear();
-      state.subtype.clear();
+      RefreshSubtypingMemoForContext(state, ctx);
     }
     state.depth += 1;
   }
@@ -386,10 +432,6 @@ struct SubtypingMemoScope {
   ~SubtypingMemoScope() {
     auto& state = CurrentSubtypingMemo();
     state.depth -= 1;
-    if (state.depth == 0) {
-      state.alias_normalize.clear();
-      state.subtype.clear();
-    }
   }
 };
 
@@ -795,6 +837,11 @@ static SubtypingResult SubtypingUncached(const ScopeContext& ctx,
     return {true, std::nullopt, true};
   }
 
+  if (IsNeverType(lhs)) {
+    SPEC_RULE("Sub-Never");
+    return {true, std::nullopt, true};
+  }
+
   if (const auto* lref = std::get_if<TypeRefine>(&lhs->node)) {
     if (const auto* rref = std::get_if<TypeRefine>(&rhs->node)) {
       const auto base_eq = TypeEquiv(lref->base, rref->base);
@@ -838,13 +885,15 @@ static SubtypingResult SubtypingUncached(const ScopeContext& ctx,
     return {true, std::nullopt, false};
   }
 
-  if (IsNumericMismatch(lhs, rhs)) {
-    return {true, std::nullopt, false};
-  }
-
-  if (IsNeverType(lhs)) {
-    SPEC_RULE("Sub-Never");
-    return {true, std::nullopt, true};
+  switch (NumericMismatchKindOf(lhs, rhs)) {
+    case NumericMismatchKind::Integer:
+      SPEC_RULE("req.NoIntegerNumericSubtyping");
+      return {true, std::nullopt, false};
+    case NumericMismatchKind::Float:
+      SPEC_RULE("req.NoFloatNumericSubtyping");
+      return {true, std::nullopt, false};
+    case NumericMismatchKind::None:
+      break;
   }
 
   if (const auto lpath = GetAppliedTypeView(lhs)) {
@@ -1306,7 +1355,7 @@ static SubtypingResult SubtypingUncached(const ScopeContext& ctx,
 SubtypingResult Subtyping(const ScopeContext& ctx,
                           const TypeRef& lhs_in,
                           const TypeRef& rhs_in) {
-  SubtypingMemoScope memo_scope;
+  SubtypingMemoScope memo_scope(ctx);
   if (!lhs_in || !rhs_in) {
     return SubtypingUncached(ctx, lhs_in, rhs_in);
   }

@@ -1,0 +1,80 @@
+//! Artifact fixture coverage for async iteration, manual stepping, and until.
+
+internal procedure runAsyncCompositionUntilReference() -> bool {
+    var cell: shared AsyncUntilCell = AsyncUntilCell { value: 51 }
+    let completed: Async<(), (), i32, !> = cell~>until(
+        |value: const AsyncUntilCell| -> bool value.value == 51,
+        |value: unique AsyncUntilCell| -> i32 value.value + 1
+    )
+    let result: i32 = sync completed
+    return result == 52
+}
+
+internal procedure runAsyncCompositionUntilRuntimeReference() -> bool {
+    var cell: shared AsyncUntilCell = AsyncUntilCell { value: 52 }
+    let completed: Async<(), (), i32, !> = cell~>until(
+        |value: const AsyncUntilCell| -> bool value.value == 52,
+        |value: unique AsyncUntilCell| -> i32 value.value + 2
+    )
+    let result: i32 = sync completed
+    return result == 54
+}
+
+internal procedure runAsyncCompositionLoopIterationReference() -> bool {
+    let iterated: Async<(), (), i32, bool> = asyncCompositionIterates(69, 70)
+    let result: i32 | bool = sync iterated
+    return i32BoolUnionIsValue(result, 139)
+}
+
+internal procedure asyncCompositionIteratesFailure() -> Async<(), (), i32, bool> {
+    var total: i32 = 0
+    loop value in asyncCompositionStreamMayFail(true, 79) {
+        total = total + value
+    }
+    return total
+}
+
+internal procedure runAsyncCompositionAsyncIterationRuntimeReference() -> bool {
+    let failed: i32 | bool = sync asyncCompositionIteratesFailure()
+    return runAsyncCompositionLoopIterationReference() &&
+        i32BoolUnionIsFailure(failed)
+}
+
+internal procedure runAsyncCompositionManualSteppingReference() -> bool {
+    let state: unique Async<i32, (), (), bool> = asyncCompositionTwoOutputs(80, 81)
+    return if state is {
+        @Suspended { output } {
+            let resumed = state~>resume(())
+            let resumed_ok: bool = if resumed is {
+                @Suspended { output: resumed_output } {
+                    let completed = resumed~>resume(())
+                    let completed_ok: bool = if completed is {
+                        @Suspended {
+                            false
+                        }
+                        @Completed {
+                            true
+                        }
+                        @Failed {
+                            false
+                        }
+                    }
+                    resumed_output == 81 && completed_ok
+                }
+                @Completed {
+                    false
+                }
+                @Failed {
+                    false
+                }
+            }
+            output == 80 && resumed_ok
+        }
+        @Completed {
+            false
+        }
+        @Failed {
+            false
+        }
+    }
+}

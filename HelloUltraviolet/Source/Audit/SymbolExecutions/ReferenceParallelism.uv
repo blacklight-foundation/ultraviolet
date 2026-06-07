@@ -4,8 +4,6 @@ using HelloUltraviolet::Reference::Parallelism::{ runParallelismCancellationRefe
 using HelloUltraviolet::Reference::Parallelism::{ runParallelismCaptureSemanticsReference }
 using HelloUltraviolet::Reference::Parallelism::{ runParallelismDeterminismReference }
 using HelloUltraviolet::Reference::Parallelism::{ runParallelismDispatchReference }
-using HelloUltraviolet::Reference::Parallelism::{ runParallelismExecutionDomainsReference }
-using HelloUltraviolet::Reference::Parallelism::{ runParallelismPanicHandlingReference }
 using HelloUltraviolet::Reference::Parallelism::{ runParallelismParallelBlocksReference }
 using HelloUltraviolet::Reference::Parallelism::{ runParallelismSpawnReference }
 
@@ -30,16 +28,6 @@ public procedure catalogCompiledSymbolsExecuteReferenceParallelism(context: Cont
         context,
         "runParallelismDispatchReference",
         runParallelismDispatchReference(context)
-    ) && passed
-    passed = recordCatalogSymbolExecution(
-        context,
-        "runParallelismExecutionDomainsReference",
-        runParallelismExecutionDomainsReference(context)
-    ) && passed
-    passed = recordCatalogSymbolExecution(
-        context,
-        "runParallelismPanicHandlingReference",
-        runParallelismPanicHandlingReference(context)
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,

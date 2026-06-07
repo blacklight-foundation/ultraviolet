@@ -498,6 +498,8 @@ std::optional<std::string_view> CheckCapturePermission(
 
   const auto perm = PermOfType(type);
   if (perm == Permission::Unique && !is_explicit_move) {
+    SPEC_RULE("Parallel-Closure-Capture-Unique-Err");
+    SPEC_RULE("rule.20.Parallel-Closure-Capture-Unique-Err");
     return "E-CON-0120";  // unique binding captured without explicit move
   }
 
@@ -530,6 +532,7 @@ ExprTypeResult TypeSpawnExpr(const ScopeContext& ctx,
 
   // Check that we're inside a parallel block
   if (!type_ctx.in_parallel) {
+    SPEC_RULE("requirement.20.SpawnRequiresParallelContext");
     result.diag_id = "E-CON-0101";  // spawn without enclosing parallel block
     return result;
   }
@@ -577,7 +580,9 @@ ExprTypeResult TypeSpawnExpr(const ScopeContext& ctx,
   }
 
   // Type check spawn body
-  ExprTypeResult body_result = TypeBlock(ctx, type_ctx, *expr.body, env,
+  StmtTypeContext body_ctx = type_ctx;
+  body_ctx.env_ref = nullptr;
+  ExprTypeResult body_result = TypeBlock(ctx, body_ctx, *expr.body, env,
                                          type_expr, type_ident, type_place);
   if (!body_result.ok) {
     result.diag_id = body_result.diag_id;
@@ -601,6 +606,8 @@ ExprTypeResult TypeSpawnExpr(const ScopeContext& ctx,
     if (is_explicit_move &&
         IsOuterParallelBinding(type_ctx, captured_name) &&
         !ClaimFirstChildMove(type_ctx, captured_name)) {
+      SPEC_RULE("Parallel-Closure-Capture-OuterMove-Err");
+      SPEC_RULE("rule.20.Parallel-Closure-Capture-OuterMove-Err");
       result.diag_id = "E-CON-0122";
       return result;
     }

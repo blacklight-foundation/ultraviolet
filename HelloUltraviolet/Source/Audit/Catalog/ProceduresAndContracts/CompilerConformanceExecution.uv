@@ -1,0 +1,97 @@
+//! Procedure and contract compiler conformance checks.
+
+internal let PROCEDURES_CONTRACT_FLOW_PROOF_PROJECT_PATH: string@View =
+    "Fixtures/ArtifactProjects/FlowProofRuntimeErasure"
+internal let PROCEDURES_CONTRACT_FLOW_PROOF_LOG_NAME: string@View =
+    "flow-contract-clauses.conformance.log"
+internal let PROCEDURES_CONTRACT_FLOW_PROOF_OUT_DIR: string@View =
+    "ProcedureContractClauseFlowProofBuild"
+internal let PROCEDURES_CONTRACT_FLOW_PROOF_IR: string@View =
+    "Intermediate/IR/Source/FlowProofRuntimeErasure.ll"
+
+internal procedure proceduresContractClauseFlowProofRuns(
+    authority: TestAuthority
+) -> bool {
+    return artifactProjectRunCase(
+        authority,
+        PROCEDURES_CONTRACT_FLOW_PROOF_PROJECT_PATH,
+        authority.target_profile,
+        "off",
+        "ProcedureContractClauseFlowProof.out",
+        "ProcedureContractClauseFlowProof.err",
+        PROCEDURES_CONTRACT_FLOW_PROOF_OUT_DIR,
+        PROCEDURES_CONTRACT_FLOW_PROOF_LOG_NAME
+    )
+}
+
+internal procedure proceduresContractClauseConformanceLineMatches(
+    authority: TestAuthority,
+    marker: string@View,
+    payload: string@View
+) -> bool {
+    return acceptedProjectConformanceLineContains(
+        authority,
+        PROCEDURES_CONTRACT_FLOW_PROOF_OUT_DIR,
+        PROCEDURES_CONTRACT_FLOW_PROOF_LOG_NAME,
+        marker,
+        payload
+    )
+}
+
+internal procedure proceduresContractClauseFlowProofArtifactsMatch(
+    authority: TestAuthority
+) -> bool {
+    return acceptedProjectTempFileExists(
+            authority,
+            PROCEDURES_CONTRACT_FLOW_PROOF_OUT_DIR,
+            PROCEDURES_CONTRACT_FLOW_PROOF_IR
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            PROCEDURES_CONTRACT_FLOW_PROOF_OUT_DIR,
+            "Intermediate/Obj/Source/FlowProofRuntimeErasure.obj"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            PROCEDURES_CONTRACT_FLOW_PROOF_OUT_DIR,
+            "Library/FlowProofRuntimeErasure.lib"
+        ) &&
+        artifactProjectTempFileExcludes(
+            authority,
+            PROCEDURES_CONTRACT_FLOW_PROOF_OUT_DIR,
+            PROCEDURES_CONTRACT_FLOW_PROOF_IR,
+            "VerificationFact"
+        ) &&
+        artifactProjectTempFileExcludes(
+            authority,
+            PROCEDURES_CONTRACT_FLOW_PROOF_OUT_DIR,
+            PROCEDURES_CONTRACT_FLOW_PROOF_IR,
+            "ContractViolation"
+        ) &&
+        artifactProjectTempFileExcludes(
+            authority,
+            PROCEDURES_CONTRACT_FLOW_PROOF_OUT_DIR,
+            PROCEDURES_CONTRACT_FLOW_PROOF_IR,
+            "Precondition"
+        )
+}
+
+#test(name: "procedure contract clause runtime conformance matches")
+internal procedure proceduresContractClauseRuntimeConformanceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return proceduresContractClauseFlowProofRuns(authority) &&
+        proceduresContractClauseFlowProofArtifactsMatch(authority) &&
+        proceduresContractClauseConformanceLineMatches(
+            authority,
+            "\treq.15.ContractClausesNoIndependentRuntimeEffect\t",
+            "source%3DCheckContractClause%3Bprecondition%3Dpresent%3Bpostcondition%3Dabsent%3Bdynamic%3Dfalse%3Bruntime_effect%3Dnone%3Boperational_impact%3Dverification_and_contract_checks"
+        ) &&
+        proceduresContractClauseConformanceLineMatches(
+            authority,
+            "\treq.15.ContractClauseLoweringViaVerificationResults\t",
+            "source%3DCheckContractClause%3Bprecondition%3Dpresent%3Bpostcondition%3Dabsent%3Bdynamic%3Dfalse%3Bdirect_lowering%3Dfalse%3Blowering_inputs%3Dverification_results%3Bcontract_checks%3Downed_by_15_8"
+        )
+}

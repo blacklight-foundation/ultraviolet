@@ -1,0 +1,17 @@
+//! Narrow command-line diagnostic gate for Appendix D row 280.
+
+#test(name: "appendix d command line diagnostics exercise")
+internal procedure appendixDCommandLineDiagnosticsExercise(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+    let result: DiagnosticFixtureExecutionResult =
+        outputDiagnosticUnknownCommand(authority)
+    return result.passed && result.count == 2usize
+}

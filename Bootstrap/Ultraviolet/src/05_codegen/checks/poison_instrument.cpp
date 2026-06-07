@@ -81,6 +81,10 @@ namespace ultraviolet::codegen {
 std::vector<std::string> PoisonSetFor(const std::string& module_path,
                                       const LowerCtx& ctx) {
   SPEC_RULE("PoisonSetFor");
+  core::Conformance::Record(
+      "def.24.PoisonSet",
+      std::nullopt,
+      "source=PoisonSetFor;module=" + module_path);
 
   std::vector<std::string> out;
   if (ctx.init_modules.empty()) {
@@ -148,6 +152,7 @@ std::vector<std::string> PoisonSetFor(const std::string& module_path,
 // Set poison flag for a binding
 void EmitSetPoison(LLVMEmitter& emitter, const std::string& module_name, bool value) {
   SPEC_RULE("PoisonFlag-Set");
+  SPEC_RULE("rule.24.SetPoison-OnInitFail");
 
   std::vector<std::string> module_path = SplitModulePathString(module_name);
   llvm::Value* flag = GetPoisonFlagPtr(emitter, module_path);

@@ -38,6 +38,13 @@ void IRInstructionVisitor::operator()(const IRRaceYield &r) const
     return;
   }
 
+  SPEC_RULE("requirement.21.RaceInitIRSemantics");
+  SPEC_RULE("requirement.21.RaceResumeIRSemantics");
+  SPEC_RULE("requirement.21.RaceStreamingRuntimeSemantics");
+  SPEC_RULE("rule.21.EvalSigma-Race-Stream");
+  SPEC_RULE("rule.21.EvalSigma-Race-Stream-Resume");
+  SPEC_RULE("requirement.21.StreamingRaceResumptionOrder");
+
   llvm::IRBuilder<> entry_builder(
       &func->getEntryBlock(),
       func->getEntryBlock().begin());
@@ -133,7 +140,7 @@ void IRInstructionVisitor::operator()(const IRRaceYield &r) const
     llvm::AllocaInst *stream_slot = entry_builder.CreateAlloca(stream_struct);
     builder.CreateStore(llvm::Constant::getNullValue(stream_struct), stream_slot);
     llvm::Type *disc_ty = stream_struct->getElementType(0);
-    llvm::Value *disc_ptr = builder.CreateStructGEP(stream_struct, stream_slot, 0);
+    llvm::Value *disc_ptr = stream_slot;
     builder.CreateStore(
         llvm::ConstantInt::get(disc_ty, suspended_disc),
         disc_ptr);
@@ -181,12 +188,12 @@ void IRInstructionVisitor::operator()(const IRRaceYield &r) const
               static_cast<std::uint64_t>(dl.getTypeAllocSize(out_ll));
           if (copy_size > 0)
           {
-            builder.CreateMemCpy(
+            EmitAggMemcpy(
+                emitter,
                 payload_i8,
-                llvm::Align(1),
                 src_i8,
-                llvm::Align(1),
-                llvm::ConstantInt::get(i64_ty, copy_size));
+                llvm::ConstantInt::get(i64_ty, copy_size),
+                1);
           }
         }
       }

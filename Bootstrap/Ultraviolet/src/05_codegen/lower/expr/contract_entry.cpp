@@ -33,17 +33,19 @@ namespace ultraviolet::codegen {
 
 LowerResult LowerEntryExpr(const ast::EntryExpr& expr, LowerCtx& ctx) {
     SPEC_RULE("Lower-Expr-Entry");
+    SPEC_RULE("req.15.ContractEntryRuntimeCapture");
+    SPEC_RULE("req.15.PostconditionLoweringRepresentation");
     if (const auto it = ctx.contract_entry_values.find(&expr);
         it != ctx.contract_entry_values.end()) {
         return LowerResult{EmptyIR(), it->second};
     }
 
-    // Fallback for malformed/missing capture setup.
-    if (expr.expr) {
-        return LowerExpr(*expr.expr, ctx);
-    }
     ctx.ReportCodegenFailure();
-    return LowerResult{EmptyIR(), ctx.FreshTempValue("entry_val_missing")};
+    IRValue fallback = ctx.FreshTempValue("entry_val_missing");
+    if (expr.expr && ctx.expr_type) {
+        ctx.RegisterValueType(fallback, ctx.expr_type(*expr.expr));
+    }
+    return LowerResult{EmptyIR(), fallback};
 }
 
 }  // namespace ultraviolet::codegen

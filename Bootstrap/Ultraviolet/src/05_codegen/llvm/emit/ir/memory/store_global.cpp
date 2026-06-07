@@ -4,9 +4,64 @@
 // =============================================================================
 #include "../../ir_instruction_visitor.h"
 
+#include "00_core/spec_trace.h"
 #include "04_analysis/layout/layout.h"
 
+#include <optional>
+#include <string>
+
 namespace ultraviolet::codegen::emit_detail {
+
+namespace {
+
+void RecordGlobalStateRef(const char *operation)
+{
+  SPEC_RULE("def.24.StateRefJudg");
+  SPEC_RULE("rule.24.StateRef-Global");
+  if (!core::Conformance::Enabled())
+  {
+    return;
+  }
+
+  std::string payload = "source=IRStoreGlobal;operation=";
+  payload += operation;
+  payload += ";state_ref=global;slot=llvm_global_address;hosted_state=false";
+  core::Conformance::Record("def.24.StateRefJudg", std::nullopt, payload);
+  core::Conformance::Record("rule.24.StateRef-Global", std::nullopt, payload);
+}
+
+void RecordGlobalStoreMemoryHelper()
+{
+  SPEC_RULE("def.24.MemoryInstructionHelpers");
+  if (!core::Conformance::Enabled())
+  {
+    return;
+  }
+
+  core::Conformance::Record(
+      "def.24.MemoryInstructionHelpers",
+      std::nullopt,
+      "source=IRStoreGlobal;helper=Store;lower_form=llvm.store");
+}
+
+void RecordLowerStoreGlobal(bool has_static_type, bool has_hosted_state_slot)
+{
+  SPEC_RULE("rule.24.Lower-StoreGlobal");
+  if (!core::Conformance::Enabled())
+  {
+    return;
+  }
+
+  std::string payload =
+      "source=IRStoreGlobal;ir_form=StoreGlobal;lower_form=llvm.store";
+  payload += ";static_type=";
+  payload += has_static_type ? "true" : "false";
+  payload += ";state_ref=";
+  payload += has_hosted_state_slot ? "hosted_session" : "global";
+  core::Conformance::Record("rule.24.Lower-StoreGlobal", std::nullopt, payload);
+}
+
+} // namespace
 
 void IRInstructionVisitor::operator()(const IRStoreGlobal &store) const
 {
@@ -98,7 +153,13 @@ void IRInstructionVisitor::operator()(const IRStoreGlobal &store) const
     value = llvm::Constant::getNullValue(target_ty);
   }
 
+  if (!has_hosted_state_slot)
+  {
+    RecordGlobalStateRef("store");
+  }
+  RecordGlobalStoreMemoryHelper();
   llvm::StoreInst *stored = builder.CreateStore(value, target_ptr);
+  RecordLowerStoreGlobal(target_type != nullptr, has_hosted_state_slot);
   llvm::Align store_align =
       global_var ? global_var->getAlign().valueOrOne() : llvm::Align(1);
   if (target_type && active_ctx)

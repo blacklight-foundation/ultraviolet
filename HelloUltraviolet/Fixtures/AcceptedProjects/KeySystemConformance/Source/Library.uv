@@ -1,0 +1,171 @@
+//! Accepted project fixture for key-system compiler conformance.
+
+public record KeySystemConformanceLeaf {
+    public value: i32
+}
+
+internal record KeySystemConformanceContainer {
+    internal leaf: KeySystemConformanceLeaf
+    internal values: [i32; 4]
+}
+
+public procedure keySystemOrdinaryLoweringReference() -> i32 {
+    var values: shared [i32; 3] = [1, 2, 3]
+    %write values[2usize], values[0usize] [ordered] {
+        let left: i32 = values[0usize] + 0
+        let right: i32 = values[2usize] + 0
+        values[0usize] = right
+        values[2usize] = left
+    }
+    return values[0usize] + values[2usize]
+}
+
+internal procedure keySystemImplicitSharedAccessReference() -> i32 {
+    var shared_value: shared i32 = 5
+    return shared_value + 0
+}
+
+internal procedure keySystemInlineCoarsenedReference() -> i32 {
+    var container: shared KeySystemConformanceContainer =
+        KeySystemConformanceContainer {
+            leaf: KeySystemConformanceLeaf { value: 17 },
+            values: [1, 2, 3, 4]
+        }
+    var observed: i32 = 0
+    %read container.#leaf.value {
+        observed = container.leaf.value + 0
+    }
+    return observed
+}
+
+public procedure keySystemDirectCalleeAccess(value: shared KeySystemConformanceLeaf) -> i32 {
+    %read value {
+        return value.value + 0
+    }
+    return 0
+}
+
+public procedure keySystemNestedReleaseConformanceReference() -> i32 {
+    var leaf: shared KeySystemConformanceLeaf =
+        KeySystemConformanceLeaf { value: 7 }
+    var observed: i32 = 0
+    %write leaf {
+        %release read leaf {
+            observed = keySystemDirectCalleeAccess(leaf)
+        }
+        leaf.value = observed + 1
+    }
+    return leaf.value + 0
+}
+
+public procedure keySystemMemoryOrderingConformanceReference() -> i32 {
+    var shared_value: shared i32 = 1
+    var observed: i32 = 0
+    #relaxed
+    %read shared_value {
+        observed = observed + (#seqcst shared_value)
+        fence(acquire)
+    }
+    #acquire
+    %read shared_value {
+        observed = observed + (#relaxed shared_value)
+        fence(release)
+    }
+    #seqcst
+    %write shared_value {
+        fence(seqcst)
+        shared_value = observed + 1
+    }
+    return shared_value + 0
+}
+
+public procedure keySystemDynamicStaticSafeReference(index: usize) -> i32 {
+    var values: shared [i32; 4] = [1, 2, 3, 4]
+    var observed: i32 = 0
+    #dynamic
+    %read values[index] {
+        observed = values[index] + 0
+    }
+    return observed
+}
+
+#dynamic
+public procedure keySystemDynamicRuntimeSyncReference(
+    context: Context,
+    index: usize
+) -> i32
+|: index >= 0usize
+{
+    var backing: shared [i32; 4] = [1, 2, 3, 4]
+    let values: shared [i32] = backing[..]
+    return parallel context~>inline() {
+        let first: Spawned<i32> = spawn {
+            var observed: i32 = 0
+            #dynamic
+            %write values[index] {
+                values[index] = 11
+                observed = 11
+            }
+            observed
+        }
+        let second: Spawned<i32> = spawn {
+            var observed: i32 = 0
+            #dynamic
+            %write values[index] {
+                values[index] = 13
+                observed = 13
+            }
+            observed
+        }
+        (wait first) + (wait second)
+    }
+}
+
+#dynamic
+internal procedure keySystemDynamicEquivalentIndexProofReference(index: usize) -> i32 {
+    var backing: shared [i32; 4] = [1, 2, 3, 4]
+    let values: shared [i32] = backing[..]
+    #dynamic
+    %write values[index] {
+        values[index] = values[index] + 1
+    }
+    return values[index] + 0
+}
+
+#dynamic
+internal procedure keySystemDynamicDisjointIndexProofReference(index: usize) -> i32 {
+    var backing: shared [i32; 4] = [1, 2, 3, 4]
+    let values: shared [i32] = backing[..]
+    #dynamic
+    %write values[index], values[index + 1usize] {
+        values[index] = values[index + 1usize]
+    }
+    return values[index] + 0
+}
+
+public procedure keySystemSpeculativeLoweringReference() -> i32 {
+    var values: shared [i32; 2] = [3, 5]
+    %speculative write values[1usize], values[0usize] {
+        let left: i32 = values[0usize] + 0
+        let right: i32 = values[1usize] + 0
+        values[0usize] = right
+        values[1usize] = left
+    }
+    return values[0usize] + values[1usize]
+}
+
+public procedure keySystemConformanceEntryPoint(
+    context: Context,
+    index: usize
+) -> i32 {
+    return keySystemOrdinaryLoweringReference() +
+        keySystemImplicitSharedAccessReference() +
+        keySystemInlineCoarsenedReference() +
+        keySystemDynamicStaticSafeReference(index) +
+        keySystemDynamicRuntimeSyncReference(context, index) +
+        keySystemDynamicEquivalentIndexProofReference(0usize) +
+        keySystemDynamicDisjointIndexProofReference(0usize) +
+        keySystemSpeculativeLoweringReference() +
+        keySystemNestedReleaseConformanceReference() +
+        keySystemMemoryOrderingConformanceReference()
+}

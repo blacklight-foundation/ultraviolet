@@ -45,6 +45,12 @@ enum class LiteralKind {
   Array,   // array literal
 };
 
+struct LiteralRefInfo {
+  LiteralKind kind;
+  std::vector<std::uint8_t> bytes;
+  std::optional<IRImmediateLiteralKind> source_literal_kind;
+};
+
 // Convert literal kind to string for mangling
 std::string_view LiteralKindToString(LiteralKind kind);
 
@@ -97,12 +103,10 @@ IRDecl EmitFloatLitDecl(const std::vector<std::uint8_t>& bytes);
 
 // (LiteralRefs): Collect all literal references from IR
 // Returns a list of (kind, bytes) pairs for each literal used in the IR
-std::vector<std::pair<LiteralKind, std::vector<std::uint8_t>>>
-LiteralRefs(const IRPtr& ir);
+std::vector<LiteralRefInfo> LiteralRefs(const IRPtr& ir);
 
 // (LiteralRefs for decls): Collect literals from declarations
-std::vector<std::pair<LiteralKind, std::vector<std::uint8_t>>>
-LiteralRefs(const IRDecls& decls);
+std::vector<LiteralRefInfo> LiteralRefs(const IRDecls& decls);
 
 std::optional<LiteralKind> LiteralKindOfImmediate(const IRValue& value);
 bool LiteralRef(const IRPtr& ir,
@@ -128,8 +132,7 @@ analysis::TypeRef StaticTypeForConst(const GlobalConst& global,
 
 // (UniqueLiterals): Deduplicate literal declarations
 // Multiple identical literals should share the same global constant
-std::vector<IRDecl> UniqueLiterals(
-    const std::vector<std::pair<LiteralKind, std::vector<std::uint8_t>>>& lits);
+std::vector<IRDecl> UniqueLiterals(const std::vector<LiteralRefInfo>& lits);
 
 // ============================================================================
 // §6.12.14 String/Bytes View Construction

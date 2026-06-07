@@ -15,17 +15,20 @@
 
 #include "05_codegen/lower/pattern/typed_pattern.h"
 
+#include <optional>
+#include <string>
 #include <variant>
 
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 #include "04_analysis/generics/monomorphize.h"
+#include "04_analysis/layout/layout.h"
 #include "04_analysis/resolve/scopes.h"
 #include "04_analysis/resolve/scopes_lookup.h"
 #include "04_analysis/typing/type_equiv.h"
 #include "04_analysis/typing/type_layout.h"
 #include "04_analysis/typing/type_predicates.h"
 #include "05_codegen/ir/ir_model.h"
-#include "04_analysis/layout/layout.h"
 #include "05_codegen/lower/lower_pat.h"
 
 namespace ultraviolet::codegen {
@@ -107,7 +110,9 @@ analysis::TypeRef ResolveAliasTypeForPattern(const analysis::TypeRef& type,
   return ResolveAliasTypeForPattern(inst, ctx, depth + 1);
 }
 
-bool TypeEquivForUnionMatch(analysis::TypeRef lhs, analysis::TypeRef rhs) {
+bool TypeEquivForUnionMatch(analysis::TypeRef lhs,
+                            analysis::TypeRef rhs,
+                            LowerCtx& ctx) {
   auto strip_perm_refine = [](analysis::TypeRef type) -> analysis::TypeRef {
     while (type) {
       if (const auto* perm = std::get_if<analysis::TypePerm>(&type->node)) {
@@ -122,10 +127,31 @@ bool TypeEquivForUnionMatch(analysis::TypeRef lhs, analysis::TypeRef rhs) {
     }
     return type;
   };
+  lhs = ResolveAliasTypeForPattern(lhs, ctx);
+  rhs = ResolveAliasTypeForPattern(rhs, ctx);
   lhs = strip_perm_refine(lhs);
   rhs = strip_perm_refine(rhs);
   const auto equiv = analysis::TypeEquiv(lhs, rhs);
   return equiv.ok && equiv.equiv;
+}
+
+void RecordNonCapturingClosureValue(const IRValue& code_value) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload =
+      "source=LowerTypedPatternBindings;operation=ClosureVal";
+  payload += ";capture_kind=noncapturing;env_ptr=null;code_ptr_symbol=";
+  payload += code_value.name;
+  payload += ";code_ptr_domain=Symbol;target=TypeClosure";
+  payload += ";closure_rep=env_ptr,code_ptr";
+  core::Conformance::Record("def.ClosureRuntimeValue", std::nullopt, payload);
+  core::Conformance::Record("req.ClosureOperationOwnership", std::nullopt, payload);
+  core::Conformance::Record("def.ClosureLoweringRep", std::nullopt, payload);
+  core::Conformance::Record("req.ClosureLoweringOwnership", std::nullopt, payload);
+  core::Conformance::Record("def.16.ClosureEnvironmentRuntimeModel", std::nullopt, payload);
+  core::Conformance::Record("rule.16.Lower-Expr-Closure-NonCapturing", std::nullopt, payload);
 }
 
 }  // namespace
@@ -218,7 +244,7 @@ IRPtr LowerTypedPatternBindings(const ast::TypedPattern& pattern,
 
           // Find which union member matches the target type
           for (std::size_t i = 0; i < members.size(); ++i) {
-            if (TypeEquivForUnionMatch(target, members[i])) {
+            if (TypeEquivForUnionMatch(target, members[i], ctx)) {
               member_index = i;
               break;
             }
@@ -232,6 +258,7 @@ IRPtr LowerTypedPatternBindings(const ast::TypedPattern& pattern,
             info.base = value;
             info.union_index = *member_index;
             ctx.RegisterDerivedValue(payload, info);
+            ctx.RegisterValueType(payload, target);
             bind_value = payload;
           }
         }
@@ -275,6 +302,7 @@ IRPtr LowerTypedPatternBindings(const ast::TypedPattern& pattern,
       closure_info.elements.push_back(env_null);
       closure_info.elements.push_back(bind_value);
       ctx.RegisterDerivedValue(local_value, closure_info);
+      RecordNonCapturingClosureValue(bind_value);
     }
   }
 

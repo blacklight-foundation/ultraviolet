@@ -42,6 +42,8 @@
 
 #include "04_analysis/layout/layout.h"
 
+#include <string>
+
 #include "00_core/assert_spec.h"
 
 namespace ultraviolet::analysis::layout {
@@ -58,6 +60,22 @@ DynLayout DynLayoutOf(const ultraviolet::analysis::ScopeContext& ctx) {
   out.fields.push_back(
       ultraviolet::analysis::MakeTypeRawPtr(ultraviolet::analysis::RawPtrQual::Imm,
                                         ultraviolet::analysis::MakeTypePath({"VTable"})));
+  if (ultraviolet::core::Conformance::Enabled()) {
+    std::string payload;
+    payload.reserve(96);
+    payload += "source=DynLayoutOf;field0=data;field1=vtable;size=";
+    payload += std::to_string(out.layout.size);
+    payload += ";align=";
+    payload += std::to_string(out.layout.align);
+    ultraviolet::core::Conformance::Record(
+        "def.14.DynamicClassLayoutFields", std::nullopt, payload);
+    ultraviolet::core::Conformance::Record(
+        "rule.14.Layout-DynamicClass", std::nullopt, payload);
+    ultraviolet::core::Conformance::Record(
+        "rule.14.Size-DynamicClass", std::nullopt, payload);
+    ultraviolet::core::Conformance::Record(
+        "rule.14.Align-DynamicClass", std::nullopt, payload);
+  }
   return out;
 }
 

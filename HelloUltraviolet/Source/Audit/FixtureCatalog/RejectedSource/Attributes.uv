@@ -1,7 +1,7 @@
 //! Rejected attribute specimens.
 
 public procedure attributesRejectedSourceFixtureCount() -> usize {
-    return 20usize
+    return 30usize
 }
 
 internal procedure attributeRejectedFixtureMatches(
@@ -222,12 +222,112 @@ public procedure validatedAttributesRejectedSourceFixtureCount() -> usize {
         count = count + 1usize
     }
     if attributeRejectedFixtureMatches(
+        "LayoutPackedAlignConflict",
+        "Fixtures/RejectedSource/Attributes/LayoutPackedAlignConflict",
+        "Fixtures/RejectedSource/Attributes/LayoutPackedAlignConflict/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/LayoutPackedAlignConflict/Expected.uv",
+        "E-MOD-2455",
+        "def.InvalidLayoutAttributeCombinations"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
+        "LayoutPackedAlignConflict",
+        "Fixtures/RejectedSource/Attributes/LayoutPackedAlignConflict",
+        "Fixtures/RejectedSource/Attributes/LayoutPackedAlignConflict/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/LayoutPackedAlignConflict/Expected.uv",
+        "E-MOD-2455",
+        "req.LayoutAttributeConstraints"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
+        "LayoutPackedAlignConflict",
+        "Fixtures/RejectedSource/Attributes/LayoutPackedAlignConflict",
+        "Fixtures/RejectedSource/Attributes/LayoutPackedAlignConflict/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/LayoutPackedAlignConflict/Expected.uv",
+        "E-MOD-2455",
+        "diagnostics.LayoutAttributeDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
+        "LayoutInvalidAlign",
+        "Fixtures/RejectedSource/Attributes/LayoutInvalidAlign",
+        "Fixtures/RejectedSource/Attributes/LayoutInvalidAlign/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/LayoutInvalidAlign/Expected.uv",
+        "E-MOD-2453",
+        "req.LayoutAttributeConstraints"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
+        "LayoutInvalidAlign",
+        "Fixtures/RejectedSource/Attributes/LayoutInvalidAlign",
+        "Fixtures/RejectedSource/Attributes/LayoutInvalidAlign/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/LayoutInvalidAlign/Expected.uv",
+        "E-MOD-2453",
+        "diagnostics.LayoutAttributeDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
+        "LayoutWrongTarget",
+        "Fixtures/RejectedSource/Attributes/LayoutWrongTarget",
+        "Fixtures/RejectedSource/Attributes/LayoutWrongTarget/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/LayoutWrongTarget/Expected.uv",
+        "E-MOD-2452",
+        "def.LayoutAttributeApplicability"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
+        "LayoutWrongTarget",
+        "Fixtures/RejectedSource/Attributes/LayoutWrongTarget",
+        "Fixtures/RejectedSource/Attributes/LayoutWrongTarget/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/LayoutWrongTarget/Expected.uv",
+        "E-MOD-2452",
+        "diagnostics.AttributeDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
+        "PackedFieldReferenceRequiresUnsafe",
+        "Fixtures/RejectedSource/Attributes/PackedFieldReferenceRequiresUnsafe",
+        "Fixtures/RejectedSource/Attributes/PackedFieldReferenceRequiresUnsafe/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/PackedFieldReferenceRequiresUnsafe/Expected.uv",
+        "E-TYP-2105",
+        "req.PackedFieldReferenceRequiresUnsafe"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
+        "PackedFieldReferenceRequiresUnsafe",
+        "Fixtures/RejectedSource/Attributes/PackedFieldReferenceRequiresUnsafe",
+        "Fixtures/RejectedSource/Attributes/PackedFieldReferenceRequiresUnsafe/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/PackedFieldReferenceRequiresUnsafe/Expected.uv",
+        "E-TYP-2105",
+        "diagnostics.LayoutAttributeDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
         "ReservedVendorNamespace",
         "Fixtures/RejectedSource/Attributes/ReservedVendorNamespace",
         "Fixtures/RejectedSource/Attributes/ReservedVendorNamespace/Source/Main.uv",
         "Fixtures/RejectedSource/Attributes/ReservedVendorNamespace/Expected.uv",
         "E-CNF-0402",
         "diagnostics.VendorAttributeDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
+        "ReservedVendorNamespace",
+        "Fixtures/RejectedSource/Attributes/ReservedVendorNamespace",
+        "Fixtures/RejectedSource/Attributes/ReservedVendorNamespace/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/ReservedVendorNamespace/Expected.uv",
+        "E-CNF-0402",
+        "conformance.VendorAttributeLowering"
     ) {
         count = count + 1usize
     }

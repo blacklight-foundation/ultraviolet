@@ -10,11 +10,103 @@ internal procedure byteReferenceAt(text: string@View, index: usize) -> u8 {
 }
 
 internal procedure bytesReferenceLayoutMatches() -> bool {
-    return sizeof(bytes@View) == 2usize * sizeof(usize) &&
-        sizeof(bytes@Managed) == 3usize * sizeof(usize) &&
-        sizeof(bytes) >= sizeof(bytes@View) &&
-        alignof(bytes@View) == alignof(usize) &&
-        alignof(bytes@Managed) == alignof(usize)
+    return layoutBytesViewReference() &&
+        layoutBytesManagedReference() &&
+        sizeBytesModalReference() &&
+        alignBytesModalReference()
+}
+
+internal procedure managedBytesRuntimeLengthResultMatches(
+    move result: Outcome<unique bytes@Managed, AllocationError>,
+    expected_length: usize
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            bytes::length(bytes::as_view(value)) == expected_length
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure bytesViewConversionsReference() -> bool {
+    let text: string@View = "bytes"
+    let text_view: bytes@View = bytes::view_string(text)
+    let text_data: const [u8] = bytes::as_slice(text_view)
+    let octets: [u8; 3] = [3u8, 5u8, 8u8]
+    let octet_slice: const [u8] = octets[..]
+    let octet_view: bytes@View = bytes::view(octet_slice)
+    let octet_data: const [u8] = bytes::as_slice(octet_view)
+    return bytes::length(text_view) == string::length(text) &&
+        text_data[0usize] == 98u8 &&
+        text_data[4usize] == 115u8 &&
+        bytes::length(octet_view) == 3usize &&
+        octet_data[0usize] == 3u8 &&
+        octet_data[2usize] == 8u8
+}
+
+/// Exercises the managed bytes size equation.
+public procedure sizeBytesManagedReference() -> bool {
+    return sizeof(bytes@Managed) == 3usize * sizeof(usize)
+}
+
+/// Exercises the managed bytes alignment equation.
+public procedure alignBytesManagedReference() -> bool {
+    return alignof(bytes@Managed) == alignof(usize)
+}
+
+/// Exercises the managed bytes layout tuple.
+public procedure layoutBytesManagedReference() -> bool {
+    return sizeBytesManagedReference() && alignBytesManagedReference()
+}
+
+/// Exercises the bytes view size equation.
+public procedure sizeBytesViewReference() -> bool {
+    return sizeof(bytes@View) == 2usize * sizeof(usize)
+}
+
+/// Exercises the bytes view alignment equation.
+public procedure alignBytesViewReference() -> bool {
+    return alignof(bytes@View) == alignof(usize)
+}
+
+/// Exercises the bytes view layout tuple.
+public procedure layoutBytesViewReference() -> bool {
+    return sizeBytesViewReference() && alignBytesViewReference()
+}
+
+/// Exercises the general bytes modal size equation.
+public procedure sizeBytesModalReference() -> bool {
+    return sizeof(bytes) == 4usize * sizeof(usize)
+}
+
+/// Exercises the general bytes modal alignment equation.
+public procedure alignBytesModalReference() -> bool {
+    return alignof(bytes) == alignof(usize)
+}
+
+/// Exercises the bytes runtime length semantics for view and managed values.
+public procedure bytesRuntimeLengthReference(heap: $HeapAllocator) -> bool {
+    let text: string@View = "bytes"
+    let empty_text: string@View = ""
+    let view: bytes@View = bytes::view_string(text)
+    let empty_view: bytes@View = bytes::view_string(empty_text)
+    let octets: [u8; 4] = [3u8, 5u8, 8u8, 13u8]
+    let octet_slice: const [u8] = octets[..]
+    let octet_view: bytes@View = bytes::view(octet_slice)
+    let from_slice_result: Outcome<unique bytes@Managed, AllocationError> =
+        bytes::from_slice(octet_slice, heap)
+    let to_managed_result: Outcome<unique bytes@Managed, AllocationError> =
+        bytes::to_managed(view, heap)
+    let empty_result: Outcome<unique bytes@Managed, AllocationError> =
+        bytes::to_managed(empty_view, heap)
+    return bytes::length(view) == 5usize &&
+        bytes::length(octet_view) == 4usize &&
+        bytes::length(empty_view) == 0usize &&
+        managedBytesRuntimeLengthResultMatches(move from_slice_result, 4usize) &&
+        managedBytesRuntimeLengthResultMatches(move to_managed_result, 5usize) &&
+        managedBytesRuntimeLengthResultMatches(move empty_result, 0usize)
 }
 
 /// Exercises the ModalTypes Bytes reference surface.
@@ -34,5 +126,6 @@ public procedure runModalTypesBytesReference() -> bool {
         data[0usize] == 98u8 &&
         byteReferenceAt(text, 4usize) == 115u8 &&
         octet_data[2usize] == 8u8 &&
+        bytesViewConversionsReference() &&
         bytesReferenceLayoutMatches()
 }

@@ -118,6 +118,8 @@ void CollectReturns(const IRPtr& ir, std::vector<const IRReturn*>& out) {
           CollectReturns(node.iter_ir, out);
           CollectReturns(node.cond_ir, out);
           CollectReturns(node.body_ir, out);
+          CollectReturns(node.invariant_entry_ir, out);
+          CollectReturns(node.invariant_backedge_ir, out);
         } else if constexpr (std::is_same_v<T, IRIfCase>) {
           for (const IRIfCaseClause& arm : node.arms) {
             CollectReturns(arm.body, out);
@@ -134,6 +136,8 @@ void CollectReturns(const IRPtr& ir, std::vector<const IRReturn*>& out) {
         } else if constexpr (std::is_same_v<T, IRSpawn>) {
           CollectReturns(node.captured_env, out);
           CollectReturns(node.body, out);
+        } else if constexpr (std::is_same_v<T, IRGpuBarrier>) {
+          return;
         } else if constexpr (std::is_same_v<T, IRDispatch>) {
           CollectReturns(node.body, out);
           CollectReturns(node.captured_env, out);
@@ -409,6 +413,8 @@ bool NodeRefsName(const IR& ir,
                  refs_ir(node.cond_ir) ||
                  (node.cond_value.has_value() && refs(*node.cond_value)) ||
                  refs_ir(node.body_ir) ||
+                 refs_ir(node.invariant_entry_ir) ||
+                 refs_ir(node.invariant_backedge_ir) ||
                  refs(node.body_value);
         } else if constexpr (std::is_same_v<T, IRIfCase>) {
           if (refs(node.scrutinee)) {
@@ -447,13 +453,23 @@ bool NodeRefsName(const IR& ir,
                  refs(node.env_size) ||
                  refs(node.body_fn) ||
                  refs(node.result_size) ||
+                 (node.runtime_receiver.has_value() &&
+                  refs(*node.runtime_receiver)) ||
                  (node.affinity_mask.has_value() &&
                   refs(*node.affinity_mask)) ||
                  (node.priority.has_value() && refs(*node.priority));
         } else if constexpr (std::is_same_v<T, IRWait>) {
           return refs(node.handle);
+        } else if constexpr (std::is_same_v<T, IRCancelCreate>) {
+          return false;
+        } else if constexpr (std::is_same_v<T, IRCancelRequest>) {
+          return refs(node.token);
+        } else if constexpr (std::is_same_v<T, IRCancelWait>) {
+          return refs(node.token);
         } else if constexpr (std::is_same_v<T, IRCancelCheck>) {
           return refs(node.token);
+        } else if constexpr (std::is_same_v<T, IRGpuBarrier>) {
+          return false;
         } else if constexpr (std::is_same_v<T, IRDispatch>) {
           return refs(node.range) ||
                  refs_ir(node.body) ||
@@ -465,7 +481,8 @@ bool NodeRefsName(const IR& ir,
                  refs(node.result_size) ||
                  refs(node.result_ptr) ||
                  (node.reduce_fn.has_value() && refs(*node.reduce_fn)) ||
-                 (node.chunk_size.has_value() && refs(*node.chunk_size));
+                 (node.chunk_size.has_value() && refs(*node.chunk_size)) ||
+                 refs(node.workgroup_size);
         } else if constexpr (std::is_same_v<T, IRYield>) {
           return refs(node.value) ||
                  refs(node.result) ||
@@ -492,7 +509,9 @@ bool NodeRefsName(const IR& ir,
                  refs_ir(node.fallback_ir) ||
                  refs(node.result);
         } else if constexpr (std::is_same_v<T, IRSync>) {
-          return refs(node.async_value);
+          return refs(node.async_value) ||
+                 (node.runtime_receiver.has_value() &&
+                  refs(*node.runtime_receiver));
         } else if constexpr (std::is_same_v<T, IRRaceReturn>) {
           for (const IRRaceArm& arm : node.arms) {
             if (refs_ir(arm.async_ir) ||
@@ -697,6 +716,8 @@ bool NodeEscapesReturnLocal(const IR& ir,
                  escapes_ir(node.cond_ir) ||
                  (node.cond_value.has_value() && refs(*node.cond_value)) ||
                  escapes_ir(node.body_ir) ||
+                 escapes_ir(node.invariant_entry_ir) ||
+                 escapes_ir(node.invariant_backedge_ir) ||
                  refs(node.body_value);
         } else if constexpr (std::is_same_v<T, IRIfCase>) {
           for (const IRIfCaseClause& arm : node.arms) {

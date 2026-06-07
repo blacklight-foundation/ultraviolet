@@ -1,0 +1,13 @@
+//! Artifact fixture for failed Spawned wait panic propagation.
+
+public procedure main(context: Context) -> i32 {
+    return parallel context~>cpu() {
+        let handle: Spawned<i32> = spawn {
+            let value: i32 = dispatch index in 0usize..0usize [reduce: +] {
+                index as i32
+            }
+            value
+        }
+        wait handle
+    }
+}

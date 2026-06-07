@@ -4,6 +4,54 @@ public procedure slicedSecondValue(values: [i32]) -> i32 {
     return values[1usize]
 }
 
+internal procedure sliceValueTypeReference() -> bool {
+    let values: [i32; 3] = [4, 5, 6]
+    let slice: [i32] = values[..]
+    return slicedSecondValue(slice) == 5
+}
+
+internal procedure sliceRuntimeIndexHelpersReference() -> bool {
+    let values: [i32; 4] = [10, 20, 30, 40]
+    let middle_values: [i32] = values[1usize..3usize]
+    let from_second: [i32] = values[1usize..]
+    return middle_values[0usize] == 20 &&
+        middle_values[1usize] == 30 &&
+        from_second[2usize] == 40
+}
+
+internal procedure evalSigmaIndexRangeReference() -> bool {
+    let values: [i32; 4] = [10, 20, 30, 40]
+    var middle_values: [i32] = values[1usize..3usize]
+    let through_third: [i32] = values[..=2usize]
+    return middle_values[0usize] == 20 &&
+        middle_values[1usize] == 30 &&
+        through_third[2usize] == 30
+}
+
+internal procedure sizeSliceReference() -> bool {
+    return sizeof([i32]) == sizeof(Ptr<const i32>) + sizeof(Ptr<const i32>)
+}
+
+internal procedure alignSliceReference() -> bool {
+    return alignof([i32]) == alignof(Ptr<const i32>)
+}
+
+internal procedure layoutSliceReference() -> bool {
+    return sizeSliceReference() && alignSliceReference()
+}
+
+internal procedure sliceIndexUpdateReference() -> bool {
+    var values: [i32; 4] = [10, 20, 30, 40]
+    var middle_values: [i32] = values[1usize..3usize]
+    middle_values[1usize] = 99
+    return values[0usize] == 10 &&
+        values[1usize] == 20 &&
+        values[2usize] == 99 &&
+        values[3usize] == 40 &&
+        middle_values[0usize] == 20 &&
+        middle_values[1usize] == 99
+}
+
 /// Exercises the DataTypes Slices reference surface.
 public procedure runDataTypesSlicesReference() -> bool {
     let values: [i32; 4] = [10, 20, 30, 40]
@@ -16,5 +64,10 @@ public procedure runDataTypesSlicesReference() -> bool {
         middle_values[0usize] == 20 &&
         middle_values[1usize] == 30 &&
         through_third[2usize] == 30 &&
-        from_second[2usize] == 40
+        from_second[2usize] == 40 &&
+        sliceValueTypeReference() &&
+        sliceRuntimeIndexHelpersReference() &&
+        evalSigmaIndexRangeReference() &&
+        layoutSliceReference() &&
+        sliceIndexUpdateReference()
 }

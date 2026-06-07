@@ -18,6 +18,7 @@
 #include "05_codegen/lower/stmt/unsafe_block_stmt.h"
 
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 #include "04_analysis/typing/types.h"
 #include "05_codegen/ir/ir_model.h"
 #include "05_codegen/lower/lower_expr.h"
@@ -57,6 +58,12 @@ IRPtr LowerUnsafeBlockStmt(const ast::UnsafeBlockStmt& stmt, LowerCtx& ctx) {
     }
     ctx.RegisterTempValue(body_result.value, result_type);
   }
+
+  core::Conformance::Record(
+      "rule.18.Lower-Stmt-UnsafeBlock",
+      std::nullopt,
+      "source=LowerUnsafeBlockStmt;ir_form=LowerBlockIR;body_lowered=LowerBlock;"
+      "codegen_safety_context_changed=false");
 
   return body_result.ir;
 }

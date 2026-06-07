@@ -1,6 +1,5 @@
 //! Compiled symbol execution checks for ReferenceAsync.
 
-using HelloUltraviolet::Reference::Async::{ runAsyncAsyncKeyIntegrationReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncAsyncTypeReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionChainReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionCombinatorsReference }
@@ -8,18 +7,13 @@ using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFilterReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFoldReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFormsReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionMapReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionSyncSuspendedUnitReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionTakeReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionUntilReference }
-using HelloUltraviolet::Reference::Async::{ runAsyncStateMachineReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncSuspensionFormsReference }
 
 public procedure catalogCompiledSymbolsExecuteReferenceAsync(context: Context) -> bool {
     var passed: bool = true
-    passed = recordCatalogSymbolExecution(
-        context,
-        "runAsyncAsyncKeyIntegrationReference",
-        runAsyncAsyncKeyIntegrationReference()
-    ) && passed
     passed = recordCatalogSymbolExecution(
         context,
         "runAsyncAsyncTypeReference",
@@ -57,6 +51,11 @@ public procedure catalogCompiledSymbolsExecuteReferenceAsync(context: Context) -
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
+        "runAsyncCompositionSyncSuspendedUnitReference",
+        runAsyncCompositionSyncSuspendedUnitReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
         "runAsyncCompositionTakeReference",
         runAsyncCompositionTakeReference()
     ) && passed
@@ -64,11 +63,6 @@ public procedure catalogCompiledSymbolsExecuteReferenceAsync(context: Context) -
         context,
         "runAsyncCompositionUntilReference",
         runAsyncCompositionUntilReference()
-    ) && passed
-    passed = recordCatalogSymbolExecution(
-        context,
-        "runAsyncStateMachineReference",
-        runAsyncStateMachineReference()
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,

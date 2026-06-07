@@ -11,7 +11,7 @@
 //   - EmitParseSyntaxErr: Emit syntax error diagnostic
 //
 // Synchronization sets:
-//   - SyncStmt: {";", "}", EOF}
+//   - SyncStmt: {";", Newline, "}", EOF}
 //   - SyncItem: {procedure, record, enum, modal, class, type, using, let, var, "}", EOF}
 //   - SyncType: {",", ";", Newline, ")", "]", "}", EOF}
 //
@@ -37,6 +37,7 @@ static inline void SpecDefsParserRecovery() {
   SPEC_DEF("StmtParseErrRule", "5.8");
   SPEC_DEF("ItemParseErrRule", "5.8");
   SPEC_DEF("Phase1DiagRules", "5.9");
+  SPEC_DEF("def.18.SyncStmt", "18.1.2");
 }
 
 // =============================================================================
@@ -62,10 +63,11 @@ bool IsSyncItemToken(const Token& tok) {
 // IsTerminatorToken - Check if token is a statement terminator
 // =============================================================================
 //
-// SPEC: ParseRecovery sync set for statements: {";", "}", EOF}
+// SPEC: ParseRecovery sync set for statements: {";", Newline, "}", EOF}
 
 bool IsTerminatorToken(const Token& tok) {
-  return tok.kind == TokenKind::Punctuator && tok.lexeme == ";";
+  return tok.kind == TokenKind::Newline ||
+         (tok.kind == TokenKind::Punctuator && tok.lexeme == ";");
 }
 
 }  // namespace
@@ -139,6 +141,9 @@ void EmitSpliceOutsideQuoteErr(Parser& parser, const core::Span& span) {
 //   SyncStmt(P) => SyncStmt(Advance(P))
 
 void SyncStmt(Parser& parser) {
+  SpecDefsParserRecovery();
+  SPEC_RULE("def.18.SyncStmt");
+
   for (;;) {
     if (AtEof(parser)) {
       SPEC_RULE("Sync-Stmt-Stop");

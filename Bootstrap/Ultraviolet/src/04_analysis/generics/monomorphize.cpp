@@ -469,6 +469,8 @@ bool MonomorphizeContext::ProcessToFixedPoint() {
       // Non-terminating type-level recursion
       // SPEC: "Implementations MUST detect and reject infinite monomorphization recursion."
       SPEC_RULE("Mono-NonTerminating");
+      SPEC_RULE("req.GenericInfiniteMonomorphizationRejected");
+      SPEC_RULE("req.GenericInstantiationDepthLimit");
       return false;
     }
 
@@ -1001,6 +1003,7 @@ BoundCheckResult CheckBoundsSatisfied(
 
     for (const auto& bound : param.bounds) {
       if (bound.class_path.empty()) {
+        SPEC_RULE("rule.14.WF-ClassPath-Err");
         result.ok = false;
         result.diag_id = "E-TYP-2305";
         result.param_name = param.name;

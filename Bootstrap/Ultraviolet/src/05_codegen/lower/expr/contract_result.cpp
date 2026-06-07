@@ -33,6 +33,8 @@ namespace ultraviolet::codegen {
 
 LowerResult LowerResultExpr(const ast::ResultExpr& /*expr*/, LowerCtx& ctx) {
     SPEC_RULE("Lower-Expr-Result");
+    SPEC_RULE("req.15.PostconditionResultRuntimeBinding");
+    SPEC_RULE("req.15.PostconditionLoweringRepresentation");
     if (ctx.contract_result_value.has_value()) {
         if (ctx.proc_ret_type) {
             ctx.RegisterValueType(*ctx.contract_result_value, ctx.proc_ret_type);

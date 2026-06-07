@@ -53,10 +53,25 @@ internal procedure deferCleanupAfterBlockTailValue() -> i32 {
     return value + block_value
 }
 
+/// Exercises defer cleanup small-step behavior on scope exit and nested cleanup order.
+public procedure deferCleanupSmallStepReference() -> bool {
+    return deferScopeExitValue() == 3 &&
+        deferNestedCleanupValue() == 9
+}
+
+/// Exercises defer cleanup big-step behavior around block tail completion.
+public procedure deferCleanupBigStepReference() -> bool {
+    return deferCleanupAfterBlockTailValue() == 12
+}
+
+/// Exercises Lower-Stmt-Defer with deferred block execution and local loop control.
+public procedure lowerStmtDeferReference() -> bool {
+    return deferCleanupSmallStepReference() &&
+        deferSafeLoopControlValue() == 2 &&
+        deferCleanupBigStepReference()
+}
+
 /// Exercises the Statements Defer reference surface.
 public procedure runStatementsDeferReference() -> bool {
-    return deferScopeExitValue() == 3 &&
-        deferNestedCleanupValue() == 9 &&
-        deferSafeLoopControlValue() == 2 &&
-        deferCleanupAfterBlockTailValue() == 12
+    return lowerStmtDeferReference()
 }

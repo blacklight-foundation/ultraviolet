@@ -1,0 +1,9 @@
+//! Rejected authority specimen for parent attenuation drop with a live child.
+
+public procedure attenuationParentDropWithLiveChildReference(context: Context) -> bool {
+    let escaped: $IO = {
+        let parent: $IO = context.io~>restrict("HelloUltraviolet")
+        parent~>restrict("Source")
+    }
+    return escaped~>exists("Reference")
+}

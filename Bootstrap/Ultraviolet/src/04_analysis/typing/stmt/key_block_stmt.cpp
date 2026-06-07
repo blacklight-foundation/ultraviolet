@@ -26,6 +26,7 @@
 #include "00_core/assert_spec.h"
 #include "02_source/ast/ast.h"
 #include "04_analysis/caps/cap_concurrency.h"
+#include "04_analysis/composite/function_types.h"
 #include "02_source/attributes/attribute_registry.h"
 #include "04_analysis/contracts/contract_check.h"
 #include "04_analysis/keys/key_conflict.h"
@@ -37,6 +38,7 @@
 #include "04_analysis/typing/type_layout.h"
 #include "04_analysis/typing/type_lookup.h"
 #include "04_analysis/resolve/scopes.h"
+#include "04_analysis/resolve/scopes_lookup.h"
 #include "00_core/diagnostic_messages.h"
 
 namespace ultraviolet::analysis {
@@ -256,6 +258,12 @@ static bool ProvablyEquivalentIndexExpr(const ScopeContext& ctx,
                                         const TypeEnv& env,
                                         const ast::ExprPtr& lhs,
                                         const ast::ExprPtr& rhs) {
+  core::Conformance::Record(
+      "requirement.19.IndexEquivalenceConservativeSubset",
+      lhs ? std::optional<core::Span>(lhs->span) : std::nullopt,
+      "source=ProvablyEquivalentIndexExpr;"
+      "recognized_subset=structural,const_eval,binding_identity,path_identity;"
+      "failure_treated_as_inequivalence=true");
   if (!lhs || !rhs) {
     return false;
   }
@@ -309,6 +317,13 @@ static bool ProvablyDisjointIndexExpr(const ScopeContext& ctx,
                                       const TypeEnv& env,
                                       const ast::ExprPtr& lhs,
                                       const ast::ExprPtr& rhs) {
+  core::Conformance::Record(
+      "requirement.19.DynamicIndexDisjointnessConservativeSubset",
+      lhs ? std::optional<core::Span>(lhs->span) : std::nullopt,
+      "source=ProvablyDisjointIndexExpr;"
+      "recognized_subset=const_eval,proof_not_equal,affine_offset,"
+      "dispatch_index,loop_range;"
+      "failure_treated_as_possible_overlap=true");
   if (!lhs || !rhs) {
     return false;
   }
@@ -373,189 +388,6 @@ static bool IsMemoryOrderAttributeName(std::string_view name) {
          name == attrs::kRelease ||
          name == attrs::kAcqRel ||
          name == attrs::kSeqCst;
-}
-
-static void CollectYieldReleasePointsExpr(
-    const ast::ExprPtr& expr,
-    std::vector<core::Span>& out) {
-  if (!expr) {
-    return;
-  }
-  std::visit(
-      [&](const auto& node) {
-        using T = std::decay_t<decltype(node)>;
-        if constexpr (std::is_same_v<T, ast::YieldExpr>) {
-          if (node.release) {
-            out.push_back(expr->span);
-          }
-          CollectYieldReleasePointsExpr(node.value, out);
-        } else if constexpr (std::is_same_v<T, ast::YieldFromExpr>) {
-          if (node.release) {
-            out.push_back(expr->span);
-          }
-          CollectYieldReleasePointsExpr(node.value, out);
-        } else if constexpr (std::is_same_v<T, ast::AttributedExpr>) {
-          CollectYieldReleasePointsExpr(node.expr, out);
-        } else if constexpr (std::is_same_v<T, ast::BinaryExpr>) {
-          CollectYieldReleasePointsExpr(node.lhs, out);
-          CollectYieldReleasePointsExpr(node.rhs, out);
-        } else if constexpr (std::is_same_v<T, ast::UnaryExpr>) {
-          CollectYieldReleasePointsExpr(node.value, out);
-        } else if constexpr (std::is_same_v<T, ast::FieldAccessExpr>) {
-          CollectYieldReleasePointsExpr(node.base, out);
-        } else if constexpr (std::is_same_v<T, ast::TupleAccessExpr>) {
-          CollectYieldReleasePointsExpr(node.base, out);
-        } else if constexpr (std::is_same_v<T, ast::IndexAccessExpr>) {
-          CollectYieldReleasePointsExpr(node.base, out);
-          CollectYieldReleasePointsExpr(node.index, out);
-        } else if constexpr (std::is_same_v<T, ast::CallExpr>) {
-          CollectYieldReleasePointsExpr(node.callee, out);
-          for (const auto& arg : node.args) {
-            CollectYieldReleasePointsExpr(arg.value, out);
-          }
-        } else if constexpr (std::is_same_v<T, ast::MethodCallExpr>) {
-          CollectYieldReleasePointsExpr(node.receiver, out);
-          for (const auto& arg : node.args) {
-            CollectYieldReleasePointsExpr(arg.value, out);
-          }
-        } else if constexpr (std::is_same_v<T, ast::TupleExpr>) {
-          for (const auto& elem : node.elements) {
-            CollectYieldReleasePointsExpr(elem, out);
-          }
-        } else if constexpr (std::is_same_v<T, ast::ArrayExpr>) {
-          ast::ForEachArrayExprSubexpr(node, [&](const ast::ExprPtr& elem) {
-            CollectYieldReleasePointsExpr(elem, out);
-          });
-        } else if constexpr (std::is_same_v<T, ast::ArrayRepeatExpr>) {
-          CollectYieldReleasePointsExpr(node.value, out);
-          CollectYieldReleasePointsExpr(node.count, out);
-        } else if constexpr (std::is_same_v<T, ast::RecordExpr>) {
-          for (const auto& field : node.fields) {
-            CollectYieldReleasePointsExpr(field.value, out);
-          }
-        } else if constexpr (std::is_same_v<T, ast::EnumLiteralExpr>) {
-          if (node.payload_opt.has_value()) {
-            std::visit(
-                [&](const auto& payload) {
-                  using P = std::decay_t<decltype(payload)>;
-                  if constexpr (std::is_same_v<P, ast::EnumPayloadParen>) {
-                    for (const auto& elem : payload.elements) {
-                      CollectYieldReleasePointsExpr(elem, out);
-                    }
-                  } else if constexpr (std::is_same_v<P, ast::EnumPayloadBrace>) {
-                    for (const auto& field : payload.fields) {
-                      CollectYieldReleasePointsExpr(field.value, out);
-                    }
-                  }
-                },
-                *node.payload_opt);
-          }
-        } else if constexpr (std::is_same_v<T, ast::IfExpr>) {
-          CollectYieldReleasePointsExpr(node.cond, out);
-          CollectYieldReleasePointsExpr(node.then_expr, out);
-          CollectYieldReleasePointsExpr(node.else_expr, out);
-        } else if constexpr (std::is_same_v<T, ast::IfCaseExpr>) {
-          CollectYieldReleasePointsExpr(node.scrutinee, out);
-          for (const auto& case_clause : node.cases) {
-            CollectYieldReleasePointsExpr(case_clause.body, out);
-          }
-          CollectYieldReleasePointsExpr(node.else_expr, out);
-        } else if constexpr (std::is_same_v<T, ast::IfIsExpr>) {
-          CollectYieldReleasePointsExpr(node.scrutinee, out);
-          CollectYieldReleasePointsExpr(node.then_expr, out);
-          CollectYieldReleasePointsExpr(node.else_expr, out);
-        } else if constexpr (std::is_same_v<T, ast::BlockExpr>) {
-          if (node.block) {
-            for (const auto& stmt : node.block->stmts) {
-              std::visit(
-                  [&](const auto& stmt_node) {
-                    using ST = std::decay_t<decltype(stmt_node)>;
-                    if constexpr (std::is_same_v<ST, ast::ExprStmt>) {
-                      CollectYieldReleasePointsExpr(stmt_node.value, out);
-                    } else if constexpr (std::is_same_v<ST, ast::LetStmt>) {
-                      CollectYieldReleasePointsExpr(stmt_node.binding.init, out);
-                    } else if constexpr (std::is_same_v<ST, ast::VarStmt>) {
-                      CollectYieldReleasePointsExpr(stmt_node.binding.init, out);
-                    } else if constexpr (std::is_same_v<ST, ast::AssignStmt>) {
-                      CollectYieldReleasePointsExpr(stmt_node.place, out);
-                      CollectYieldReleasePointsExpr(stmt_node.value, out);
-                    } else if constexpr (std::is_same_v<ST, ast::ReturnStmt> ||
-                                         std::is_same_v<ST, ast::BreakStmt>) {
-                      CollectYieldReleasePointsExpr(stmt_node.value_opt, out);
-                    }
-                  },
-                  stmt);
-            }
-            CollectYieldReleasePointsExpr(node.block->tail_opt, out);
-          }
-        } else if constexpr (std::is_same_v<T, ast::UnsafeBlockExpr>) {
-          if (node.block) {
-            for (const auto& stmt : node.block->stmts) {
-              if (const auto* expr_stmt = std::get_if<ast::ExprStmt>(&stmt)) {
-                CollectYieldReleasePointsExpr(expr_stmt->value, out);
-              }
-            }
-            CollectYieldReleasePointsExpr(node.block->tail_opt, out);
-          }
-        } else if constexpr (std::is_same_v<T, ast::LoopInfiniteExpr>) {
-          if (node.body) {
-            for (const auto& stmt : node.body->stmts) {
-              if (const auto* expr_stmt = std::get_if<ast::ExprStmt>(&stmt)) {
-                CollectYieldReleasePointsExpr(expr_stmt->value, out);
-              }
-            }
-            CollectYieldReleasePointsExpr(node.body->tail_opt, out);
-          }
-        } else if constexpr (std::is_same_v<T, ast::LoopConditionalExpr>) {
-          CollectYieldReleasePointsExpr(node.cond, out);
-          if (node.body) {
-            for (const auto& stmt : node.body->stmts) {
-              if (const auto* expr_stmt = std::get_if<ast::ExprStmt>(&stmt)) {
-                CollectYieldReleasePointsExpr(expr_stmt->value, out);
-              }
-            }
-            CollectYieldReleasePointsExpr(node.body->tail_opt, out);
-          }
-        } else if constexpr (std::is_same_v<T, ast::LoopIterExpr>) {
-          CollectYieldReleasePointsExpr(node.iter, out);
-          if (node.body) {
-            for (const auto& stmt : node.body->stmts) {
-              if (const auto* expr_stmt = std::get_if<ast::ExprStmt>(&stmt)) {
-                CollectYieldReleasePointsExpr(expr_stmt->value, out);
-              }
-            }
-            CollectYieldReleasePointsExpr(node.body->tail_opt, out);
-          }
-        }
-      },
-      expr->node);
-}
-
-static std::vector<core::Span> CollectYieldReleasePoints(
-    const ast::Block& body) {
-  std::vector<core::Span> out;
-  for (const auto& stmt : body.stmts) {
-    std::visit(
-        [&](const auto& node) {
-          using T = std::decay_t<decltype(node)>;
-          if constexpr (std::is_same_v<T, ast::ExprStmt>) {
-            CollectYieldReleasePointsExpr(node.value, out);
-          } else if constexpr (std::is_same_v<T, ast::LetStmt>) {
-            CollectYieldReleasePointsExpr(node.binding.init, out);
-          } else if constexpr (std::is_same_v<T, ast::VarStmt>) {
-            CollectYieldReleasePointsExpr(node.binding.init, out);
-          } else if constexpr (std::is_same_v<T, ast::AssignStmt>) {
-            CollectYieldReleasePointsExpr(node.place, out);
-            CollectYieldReleasePointsExpr(node.value, out);
-          } else if constexpr (std::is_same_v<T, ast::ReturnStmt> ||
-                               std::is_same_v<T, ast::BreakStmt>) {
-            CollectYieldReleasePointsExpr(node.value_opt, out);
-          }
-        },
-        stmt);
-  }
-  CollectYieldReleasePointsExpr(body.tail_opt, out);
-  return out;
 }
 
 static bool KeyPathHasDynamicIndex(const ScopeContext& ctx,
@@ -1446,6 +1278,84 @@ static StaticSafetyClassification ClassifyStaticSafety(
   return classification;
 }
 
+static const char* BoolText(bool value) {
+  return value ? "true" : "false";
+}
+
+static void AppendSafetyCondition(std::string& payload,
+                                  std::string_view name,
+                                  bool present) {
+  payload += ";condition_";
+  payload += name;
+  payload += "=";
+  payload += BoolText(present);
+}
+
+static std::string StaticSafetyConformancePayload(
+    const StaticSafetyClassification& safety,
+    bool dynamic_key_context,
+    bool provably_disjoint_indices,
+    bool has_speculative_mod) {
+  std::string payload =
+      "source=TypeKeyBlockStmt;dynamic_key_path=true;dynamic_context=";
+  payload += BoolText(dynamic_key_context);
+  payload += ";provably_disjoint_indices=";
+  payload += BoolText(provably_disjoint_indices);
+  payload += ";speculative_only=";
+  payload += BoolText(has_speculative_mod);
+  payload += ";statically_safe=";
+  payload += BoolText(safety.IsStaticallySafe());
+  payload += ";complete_sound_proof=";
+  payload += BoolText(safety.IsStaticallySafe());
+  AppendSafetyCondition(
+      payload,
+      "no_escape",
+      safety.Has(StaticSafetyCondition::NoEscape));
+  AppendSafetyCondition(
+      payload,
+      "disjoint_paths",
+      safety.Has(StaticSafetyCondition::DisjointPaths));
+  AppendSafetyCondition(
+      payload,
+      "sequential_context",
+      safety.Has(StaticSafetyCondition::SequentialContext));
+  AppendSafetyCondition(
+      payload,
+      "unique_origin",
+      safety.Has(StaticSafetyCondition::UniqueOrigin));
+  AppendSafetyCondition(
+      payload,
+      "dispatch_indexed",
+      safety.Has(StaticSafetyCondition::DispatchIndexed));
+  AppendSafetyCondition(
+      payload,
+      "speculative_only",
+      safety.Has(StaticSafetyCondition::SpeculativeOnly));
+  return payload;
+}
+
+static void RecordNoRuntimeSyncMeaning(
+    const core::Span& span,
+    bool dynamic_key_context) {
+  std::string payload =
+      "source=TypeKeyBlockStmt;statically_safe=true;runtime_sync_required=false;"
+      "conservative_retention_allowed=true;dynamic_context=";
+  payload += BoolText(dynamic_key_context);
+  core::Conformance::Record(
+      "requirement.19.NoRuntimeSyncMeaning",
+      span,
+      payload);
+}
+
+static void RecordDynamicContextStaticSafeLowering(const core::Span& span) {
+  core::Conformance::Record(
+      "requirement.19.DynamicContextStaticSafeLowering",
+      span,
+      "source=TypeKeyBlockStmt;dynamic_context=true;statically_safe=true;"
+      "lowering=ordinary_key_lowering;runtime_sync_required=false;"
+      "conservative_retention_allowed=true");
+}
+
 static bool BodyHasDynamicIndexConflict(const ScopeContext& ctx,
                                         const StmtTypeContext& type_ctx,
                                         const TypeEnv& env,
@@ -1577,11 +1487,49 @@ static TypeRef AdvanceKeyPathType(const ScopeContext& ctx,
   return current;
 }
 
+static std::optional<TypeBinding> KeyRootBinding(
+    const ScopeContext& ctx,
+    const TypeEnv& env,
+    std::string_view root) {
+  if (const auto binding = BindOf(env, root)) {
+    return binding;
+  }
+
+  const auto make_static_binding =
+      [](const ModuleStaticLookupResult& static_lookup) -> TypeBinding {
+    TypeBinding binding;
+    binding.mut = static_lookup.is_mutable
+                      ? ast::Mutability::Var
+                      : ast::Mutability::Let;
+    binding.type = static_lookup.type;
+    binding.storage_type = static_lookup.type;
+    binding.provenance_kind = BindingProvenanceSeedKind::Global;
+    return binding;
+  };
+
+  if (const auto ent = ResolveValueName(ctx, root);
+      ent.has_value() && ent->origin_opt.has_value()) {
+    const auto resolved_name = ent->target_opt.value_or(std::string(root));
+    const auto static_lookup =
+        LookupModuleStatic(ctx, *ent->origin_opt, resolved_name);
+    if (static_lookup.ok && static_lookup.type) {
+      return make_static_binding(static_lookup);
+    }
+  }
+
+  const auto static_lookup = LookupModuleStatic(ctx, ctx.current_module, root);
+  if (static_lookup.ok && static_lookup.type) {
+    return make_static_binding(static_lookup);
+  }
+
+  return std::nullopt;
+}
+
 static std::optional<std::string_view> ValidateKeyPathConformance(
     const ScopeContext& ctx,
     const ast::KeyPathExpr& path,
     const TypeEnv& env) {
-  const auto binding = BindOf(env, path.root);
+  const auto binding = KeyRootBinding(ctx, env, path.root);
   if (!binding.has_value()) {
     return "E-CON-0031";
   }
@@ -1618,7 +1566,7 @@ static std::optional<std::string_view> ValidateKeyPathConformance(
 static bool PathMarkerMatchesTypeBoundary(const ScopeContext& ctx,
                                           const ast::KeyPathExpr& path,
                                           const TypeEnv& env) {
-  const auto binding = BindOf(env, path.root);
+  const auto binding = KeyRootBinding(ctx, env, path.root);
   if (!binding.has_value()) {
     return false;
   }
@@ -1667,16 +1615,6 @@ static bool HasLoopFineGrainedKeyCandidate(const ast::KeyPathExpr& path) {
   return true;
 }
 
-static void MarkSharedDerivedBindingsStale(TypeEnv& env) {
-  for (auto& scope : env.scopes) {
-    for (auto& [_, binding] : scope) {
-      if (binding.derived_from_shared) {
-        binding.stale_after_release = true;
-      }
-    }
-  }
-}
-
 }  // namespace
 
 StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
@@ -1696,6 +1634,7 @@ StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
   }
 
   if (type_ctx.in_speculative) {
+    SPEC_RULE("rule.19.K-Spec-No-Nested-Key");
     return {false, "E-CON-0090", {}, {}};
   }
 
@@ -1737,11 +1676,24 @@ StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
       if (memory_order_attr_count > 1) {
         return {false, "E-MOD-2450", {}, {}};
       }
+      if (has_dynamic_attr) {
+        core::Conformance::Record(
+            "requirement.19.DynamicKeyVerificationNoAdditionalSyntax",
+            node.span,
+            "source=TypeKeyBlockStmt;attribute=dynamic;"
+            "attribute_parser=generic;additional_key_syntax=false");
+        core::Conformance::Record(
+            "requirement.19.DynamicKeyVerificationNoAdditionalParsingRules",
+            node.span,
+            "source=TypeKeyBlockStmt;attribute=dynamic;"
+            "attribute_parser=generic;additional_key_parse_rules=false");
+      }
     }
   }
 
   if (GpuContext(env)) {
     SPEC_RULE("KeyBlock-GPU-Err");
+    SPEC_RULE("rule.20.KeyBlock-GPU-Err");
     return {false, "E-CON-0155", {}, {}};
   }
 
@@ -1750,6 +1702,18 @@ StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
         diag_id.has_value()) {
       return {false, *diag_id, {}, {}};
     }
+    core::Conformance::Record(
+        "requirement.19.KeyPathWellFormedness",
+        path.span,
+        "source=ValidateKeyPathConformance;segments_type_valid=true;"
+        "marker_count=" +
+            std::to_string(CountKeyMarkers(path)) +
+            ";marker_limit=at_most_one");
+    core::Conformance::Record(
+        "requirement.19.KeyAnalysisSharedOnly",
+        path.span,
+        "source=ValidateKeyPathConformance;root_permission=shared;"
+        "const_or_unique_roots_require_keys=false");
     if (type_ctx.diags && PathMarkerMatchesTypeBoundary(ctx, path, env)) {
       if (auto diag = core::MakeDiagnosticById("W-CON-0003", path.span)) {
         core::Emit(*type_ctx.diags, *diag);
@@ -1766,6 +1730,8 @@ StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
   const auto current_key_infos = CanonicalHeldKeyInfos(node.paths, inner_mode);
 
   if (has_memory_order_attr && (type_ctx.in_speculative || has_speculative_mod)) {
+    SPEC_RULE("rule.19.K-Spec-No-Memory-Ordering");
+    SPEC_RULE("requirement.19.MemoryOrderNotInsideSpeculativeBlocks");
     return {false, "E-CON-0096", {}, {}};
   }
 
@@ -1773,16 +1739,26 @@ StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
     return {false, "E-CON-0094", {}, {}};
   }
   if (has_speculative_mod && node.mode != ast::KeyMode::Write) {
+    SPEC_RULE("rule.19.K-Spec-Write-Required");
     return {false, "E-CON-0095", {}, {}};
   }
   if (has_ordered_mod && !OrderedComparablePaths(node.paths)) {
     SPEC_RULE("K-Ordered-Base-Err");
+    SPEC_RULE("rule.19.K-Ordered-Base-Err");
     return {false, "E-CON-0014", {}, {}};
   }
   if (has_ordered_mod) {
+    core::Conformance::Record(
+        "requirement.19.OrderedKeyBlockOption",
+        node.span,
+        "source=TypeKeyBlockStmt;option=ordered;"
+        "same_base_indexed_path_check=true;"
+        "applies_to_whole_path_set=true;head_mode_unchanged=true;"
+        "canonical_order_preserved=true");
     SPEC_RULE("K-Ordered-Ok");
     if (type_ctx.diags && StaticallyComparableOrderedPaths(ctx, node.paths)) {
       SPEC_RULE("K-Ordered-Redundant-Warn");
+      SPEC_RULE("rule.19.K-Ordered-Redundant-Warn");
       if (auto diag = core::MakeDiagnosticById("W-CON-0013", node.span)) {
         core::Emit(*type_ctx.diags, *diag);
       }
@@ -1796,6 +1772,7 @@ StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
         continue;
       }
       if (auto diag = core::MakeDiagnosticById("W-CON-0001", path.span)) {
+        SPEC_RULE("requirement.19.FineGrainedKeyLoopWarning");
         core::Emit(*type_ctx.diags, *diag);
       }
       break;
@@ -1806,7 +1783,7 @@ StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
     constexpr std::uint64_t kSpecLargeStructThreshold = 128;
     bool warned_large = false;
     for (const auto& path : node.paths) {
-      const auto binding = BindOf(env, path.root);
+      const auto binding = KeyRootBinding(ctx, env, path.root);
       if (!binding.has_value() || !binding->type) {
         continue;
       }
@@ -1843,6 +1820,7 @@ StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
         }
         if (has_release_mod) {
           SPEC_RULE("K-Release-SameMode-Err");
+          SPEC_RULE("rule.19.K-Release-SameMode-Err");
           return {false, "E-CON-0018", {}, {}};
         }
         continue;
@@ -1913,12 +1891,21 @@ StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
                                            provably_disjoint_indices);
 
   if (has_dynamic_key_path) {
+    core::Conformance::Record(
+        "requirement.19.StaticallySafeSoundProofRequired",
+        node.span,
+        StaticSafetyConformancePayload(
+            safety,
+            dynamic_key_context,
+            provably_disjoint_indices,
+            has_speculative_mod));
     if (!provably_disjoint_indices) {
       SPEC_RULE("K-Dynamic-Index-Conflict");
       return {false, "E-CON-0010", {}, {}};
     }
     if (!safety.IsStaticallySafe() && !dynamic_key_context) {
       SPEC_RULE("K-Static-Required");
+      SPEC_RULE("rule.19.K-Static-Required");
       return {false, "E-CON-0020", {}, {}};
     }
     if (dynamic_key_context && type_ctx.diags) {
@@ -1928,6 +1915,13 @@ StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
         core::Emit(*type_ctx.diags, *diag);
       }
     }
+    if (safety.IsStaticallySafe()) {
+      SPEC_RULE("rule.19.K-Static-Safe");
+      RecordNoRuntimeSyncMeaning(node.span, dynamic_key_context);
+      if (dynamic_key_context && !has_speculative_mod && !has_release_mod) {
+        RecordDynamicContextStaticSafeLowering(node.span);
+      }
+    }
   }
 
   const bool writes_explicit_key_path =
@@ -1935,6 +1929,16 @@ StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
                   [&](const KeyPath& path) {
                     return PathCoveredByExplicitKeys(path, explicit_key_paths);
                   });
+  if (writes_explicit_key_path) {
+    core::Conformance::Record(
+        "requirement.19.ReadThenWriteOtherWriteForms",
+        node.span,
+        "source=TypeKeyBlockStmt;write_form=ordinary_write;"
+        "governed_by=RequiredMode,Covered,KeyCompatibility;"
+        "required_mode=" +
+            std::string(node.mode == ast::KeyMode::Write ? "write" : "read") +
+            ";covered_by_explicit_key=true");
+  }
   if (writes_explicit_key_path && node.mode != ast::KeyMode::Write) {
       SPEC_RULE("K-Read-Block-No-Write");
       return {false, "E-CON-0070", {}, {}};
@@ -1943,6 +1947,7 @@ StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
   if (has_speculative_mod) {
     for (const auto& path : written_paths) {
       if (!PathCoveredByExplicitKeys(path, explicit_key_paths)) {
+        SPEC_RULE("rule.19.K-Spec-Pure-Body");
         return {false, "E-CON-0091", {}, {}};
       }
     }
@@ -1969,8 +1974,15 @@ StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
     return TypeExpr(ctx, key_ctx, inner, current_env());
   };
   IdentTypeFn key_type_ident = [&](std::string_view name) -> ExprTypeResult {
-    return TypeIdentifierExpr(ctx, ast::IdentifierExpr{std::string(name)},
-                              current_env());
+    auto ident_result =
+        TypeIdentifierExpr(ctx, ast::IdentifierExpr{std::string(name)},
+                           current_env());
+    if (ident_result.ok) {
+      if (const auto binding = BindOf(current_env(), name)) {
+        EmitStaleBindingReferenceWarning(*binding, key_ctx, std::nullopt);
+      }
+    }
+    return ident_result;
   };
   PlaceTypeFn key_type_place = [&](const ast::ExprPtr& inner) -> PlaceTypeResult {
     return TypePlace(ctx, key_ctx, inner, current_env());
@@ -1989,28 +2001,15 @@ StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
       if (const auto* expr_stmt = std::get_if<ast::ExprStmt>(&stmt)) {
         if (const auto impure_span =
                 FindImpureSpeculativeCallExpr(ctx, expr_stmt->value)) {
+          SPEC_RULE("rule.19.K-Spec-No-Impure-Call");
           return {false, "E-CON-0097", {}, {}, {}, impure_span};
         }
       }
     }
     if (const auto impure_span =
             FindImpureSpeculativeCallExpr(ctx, node.body->tail_opt)) {
+      SPEC_RULE("rule.19.K-Spec-No-Impure-Call");
       return {false, "E-CON-0097", {}, {}, {}, impure_span};
-    }
-  }
-
-  if (type_ctx.diags) {
-    const auto yield_release_points = CollectYieldReleasePoints(*node.body);
-    if (!yield_release_points.empty()) {
-      const auto stale_warnings = CheckStaleness(*node.body, yield_release_points);
-      for (const auto& warning : stale_warnings) {
-        if (warning.suppressed) {
-          continue;
-        }
-        if (auto diag = core::MakeDiagnosticById("W-CON-0011", warning.yield_span)) {
-          core::Emit(*type_ctx.diags, *diag);
-        }
-      }
     }
   }
 

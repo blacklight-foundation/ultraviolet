@@ -24,6 +24,9 @@ static inline void SpecDefsWait() {
   SPEC_DEF("T-Wait-Spawn", "17.2.4");
   SPEC_DEF("T-Wait-Future", "17.2.4");
   SPEC_DEF("Wait-Handle-Err", "18.4.3");
+  SPEC_DEF("rule.21.T-Wait", "21.2.4");
+  SPEC_DEF("rule.21.T-Wait-Future", "21.2.4");
+  SPEC_DEF("rule.21.Wait-Handle-Err", "21.2.4");
 }
 
 std::optional<TypeRef> ExtractWaitSpawnedInner(const TypeRef& type) {
@@ -94,16 +97,19 @@ ExprTypeResult TypeWaitExpr(const ScopeContext& ctx,
                             const ExprTypeFn& type_expr,
                             const IdentTypeFn& /*type_ident*/,
                             const PlaceTypeFn& type_place) {
-  SPEC_RULE("T-Wait");
+  SpecDefsWait();
   ExprTypeResult result;
 
   if (type_ctx.in_speculative) {
+    SPEC_RULE("rule.19.K-Spec-No-Wait");
     result.diag_id = "E-CON-0092";
     return result;
   }
 
   // Check key restriction - wait is ill-formed when keys are held
+  SPEC_RULE("requirement.21.SuspensionKeyRestrictionsReference");
   if (type_ctx.keys_held) {
+    SPEC_RULE("requirement.21.AsyncKeyRestrictions");
     result.diag_id = "E-CON-0133";  // wait while key is held
     return result;
   }
@@ -123,7 +129,10 @@ ExprTypeResult TypeWaitExpr(const ScopeContext& ctx,
     const auto stripped = StripPerm(value_result.type);
     auto inner = ExtractWaitSpawnedInner(stripped);
     if (inner) {
+      SPEC_RULE("T-Wait");
       SPEC_RULE("T-Wait-Spawn");
+      SPEC_RULE("requirements.21.AsyncCapabilityRequirements");
+      SPEC_RULE("rule.21.T-Wait");
       result.ok = true;
       result.type = *inner;
       return result;
@@ -133,11 +142,14 @@ ExprTypeResult TypeWaitExpr(const ScopeContext& ctx,
     const auto future_args = ExtractWaitTrackedArgs(stripped);
     if (!future_args.has_value()) {
       SPEC_RULE("Wait-Handle-Err");
+      SPEC_RULE("rule.21.Wait-Handle-Err");
       result.diag_id = "E-CON-0132";  // wait operand is not Spawned/Tracked
       return result;
     }
 
     SPEC_RULE("T-Wait-Future");
+    SPEC_RULE("requirements.21.AsyncCapabilityRequirements");
+    SPEC_RULE("rule.21.T-Wait-Future");
     const auto union_type =
         MakeTypeUnion({future_args->first, future_args->second});
     result.ok = true;
@@ -158,7 +170,10 @@ ExprTypeResult TypeWaitExpr(const ScopeContext& ctx,
   const auto stripped = StripPerm(handle_result.type);
   auto inner = ExtractWaitSpawnedInner(stripped);
   if (inner) {
+    SPEC_RULE("T-Wait");
     SPEC_RULE("T-Wait-Spawn");
+    SPEC_RULE("requirements.21.AsyncCapabilityRequirements");
+    SPEC_RULE("rule.21.T-Wait");
     result.ok = true;
     result.type = *inner;
     return result;
@@ -168,11 +183,14 @@ ExprTypeResult TypeWaitExpr(const ScopeContext& ctx,
   const auto future_args = ExtractWaitTrackedArgs(stripped);
   if (!future_args.has_value()) {
     SPEC_RULE("Wait-Handle-Err");
+    SPEC_RULE("rule.21.Wait-Handle-Err");
     result.diag_id = "E-CON-0132";  // wait operand is not Spawned/Tracked
     return result;
   }
 
   SPEC_RULE("T-Wait-Future");
+  SPEC_RULE("requirements.21.AsyncCapabilityRequirements");
+  SPEC_RULE("rule.21.T-Wait-Future");
   const auto union_type = MakeTypeUnion({future_args->first, future_args->second});
   result.ok = true;
   if (union_type && std::holds_alternative<TypeUnion>(union_type->node)) {

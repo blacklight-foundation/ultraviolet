@@ -907,6 +907,7 @@ std::filesystem::path SourceRootForModule(
 ComptimeResult ComptimePass(const std::vector<ast::ASTModule>& modules,
                             const ComptimePassOptions& options) {
   SPEC_RULE("ComptimePass");
+  SPEC_RULE("requirement.22.ComptimePassExecutionRequirements");
   const auto snapshot_start = std::chrono::steady_clock::now();
   const bool needs_project_files = ComptimeMayNeedProjectFiles(modules);
   std::shared_ptr<comptime_internal::ProjectFileSnapshot> project_files;
@@ -944,6 +945,7 @@ ComptimeResult ComptimePass(const std::vector<ast::ASTModule>& modules,
        ++module_index) {
     SPEC_RULE("ComptimePass-Cons");
     SPEC_RULE("Phase2-Deterministic-Dependency-Order");
+    SPEC_RULE("requirement.22.Phase2ExecutionPosition");
     const auto& module = modules[module_index];
     available_modules.clear();
     for (const std::size_t processed_index : processed_modules) {
@@ -1010,6 +1012,7 @@ ComptimeResult ExecuteComptime(const std::vector<ast::ASTModule>& modules,
                                const ComptimePassOptions& options) {
   SPEC_RULE("ExecuteComptime");
   SPEC_RULE("ExecuteComptime-By-ComptimePass");
+  SPEC_RULE("requirement.22.Phase2ExecutionPosition");
   return ComptimePass(modules, options);
 }
 

@@ -1,0 +1,519 @@
+//! Source-native execution checks for async artifact obligations.
+
+internal let ASYNC_ARTIFACT_EXECUTED_OBLIGATION_COUNT: usize = 132usize
+
+internal procedure asyncArtifactConformanceContains(
+    authority: TestAuthority,
+    required_text: string@View
+) -> bool {
+    return acceptedProjectConformanceContains(
+        authority,
+        "ArtifactProjectAsyncObligationsBuild",
+        "asyncobligations.conformance.log",
+        required_text
+    )
+}
+
+internal procedure asyncArtifactConformanceTextContains(
+    conformance_text: string@View,
+    required_text: string@View
+) -> bool {
+    return auditTextContains(conformance_text, required_text)
+}
+
+internal procedure asyncArtifactIrContains(
+    authority: TestAuthority,
+    required_text: string@View
+) -> bool {
+    return acceptedProjectTempFileContains(
+        authority,
+        "ArtifactProjectAsyncObligationsBuild",
+        "Intermediate/IR/Source/AsyncObligations.ll",
+        required_text
+    )
+}
+
+internal procedure asyncArtifactObjectPath(
+    authority: TestAuthority,
+    windows_path: string@View,
+    native_path: string@View
+) -> string@View {
+    if auditTextEquals(authority.target_profile, "x86_64-win64") {
+        return windows_path
+    }
+    return native_path
+}
+
+internal procedure asyncArtifactExecutablePath(
+    authority: TestAuthority,
+    windows_path: string@View,
+    native_path: string@View
+) -> string@View {
+    if auditTextEquals(authority.target_profile, "x86_64-win64") {
+        return windows_path
+    }
+    return native_path
+}
+
+internal procedure asyncFailedSpawnedWaitPanicConformanceContains(
+    authority: TestAuthority,
+    required_text: string@View
+) -> bool {
+    return acceptedProjectConformanceContains(
+        authority,
+        "ArtifactProjectAsyncFailedSpawnedWaitPanicBuild",
+        "async_failed_spawned_wait_panic.conformance.log",
+        required_text
+    )
+}
+
+internal procedure asyncFailedSpawnedWaitPanicArtifactContains(
+    authority: TestAuthority,
+    required_path: string@View,
+    required_text: string@View
+) -> bool {
+    return acceptedProjectTempFileContains(
+        authority,
+        "ArtifactProjectAsyncFailedSpawnedWaitPanicBuild",
+        required_path,
+        required_text
+    )
+}
+
+internal procedure asyncFailedSpawnedWaitPanicMapEvidenceMatches(
+    authority: TestAuthority
+) -> bool {
+    if !auditTextEquals(authority.target_profile, "x86_64-win64") {
+        return true
+    }
+
+    return asyncFailedSpawnedWaitPanicArtifactContains(
+        authority,
+        "Binary/AsyncFailedSpawnedWaitPanic.map",
+        "uv_parallel_raise_panic"
+    ) &&
+        asyncFailedSpawnedWaitPanicArtifactContains(
+            authority,
+            "Binary/AsyncFailedSpawnedWaitPanic.map",
+            "uv_parallel_work_panic"
+        ) &&
+        asyncFailedSpawnedWaitPanicArtifactContains(
+            authority,
+            "Binary/AsyncFailedSpawnedWaitPanic.map",
+            "uv_panic"
+        )
+}
+
+internal procedure asyncArtifactObligationIdsMatch(
+    conformance_text: string@View
+) -> bool {
+    return asyncArtifactConformanceTextContains(conformance_text,
+        "\trequirement.21.AsyncFailedUninhabitedForNeverError\t"
+    ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\tdef.21.AsyncTypeLoweringForms\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncNeverErrorLowering\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.Lower-Async-Type\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.Lower-Async-Alias\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncTypeNoAdditionalConcreteGrammar\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.ReservedAsyncTypeConstructors\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncParameterDefaults\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.ReservedAsyncStates\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncTypeDynamicSemanticsReference\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.WaitRuntimeSemantics\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.20.Lower-Expr-Spawn\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text, "\tdef.21.WaitRuntimeHelpers\t") &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Wait-Spawned-Ready\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Wait-Spawned-Pending\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Wait-Tracked-Ready\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Wait-Tracked-Pending\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Wait-Ctrl\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.YieldRuntimeSemantics\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text, "\tdef.21.ResumptionHelpers\t") &&
+        asyncArtifactConformanceTextContains(conformance_text, "\trule.21.EvalSigma-Yield\t") &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Yield-Release\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-Yield-Resume\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.YieldFromRuntimeSemantics\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-YieldFrom-Suspended\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-YieldFrom-Completed\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-YieldFrom-Failed\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalSigma-YieldFrom-Resume\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\tdef.21.EvalYieldFromContinueSignature\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalYieldFromContinue-Suspended\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalYieldFromContinue-Completed\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.EvalYieldFromContinue-Failed\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\tdef.21.SuspensionLoweringForms\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.Lower-Wait-Spawned\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.Lower-Wait-Tracked\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text, "\trule.21.Lower-Yield\t") &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.Lower-Yield-Release\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.YieldReleaseReacquireLowering\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text, "\trule.21.Lower-YieldFrom\t") &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.YieldFromEnterLoweringLoop\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncStateMachineSyntaxSurface\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\tdef.21.AsyncProcedureDefinition\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncStateMachineParsingSurface\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\tdef.21.AsyncStateMachineHelperForms\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncFrameStoredState\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text, "\tdef.21.LiveAcrossSuspension\t") &&
+        asyncArtifactConformanceTextContains(conformance_text, "\trule.21.P-Async-Create\t") &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncErrorPropagationTypingReference\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncProcedureCallRuntimeSemantics\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncSettlementRuntimeSemantics\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncResumeRuntimeSemantics\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncFailureRuntimeSemantics\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\tdef.21.AsyncStateMachineLoweringJudgements\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\tdef.21.AsyncStateMachineFrameHelpers\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text, "\trule.21.Lower-Async-Proc\t") &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncFrameInitIRSemantics\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.Lower-Async-Resume\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncResumeSwitchIRSemantics\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.Lower-Async-Suspend\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.Lower-Async-Complete\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text, "\trule.21.Lower-Async-Fail\t") &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncFailStateIRSemantics\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncKeySyntaxSurface\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncKeyParsingSurface\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncKeyNoAdditionalAstVariants\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirements.21.AsyncCapabilityRequirements\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncSuspensionAccessRights\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.YieldReleaseRuntimeReference\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.AsyncKeyFailureHandlingReference\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.Lower-Yield-Release-Keys\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.Lower-YieldFrom-Release-Keys\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trequirement.21.SuspensionKeyRestrictionsReference\t"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text, "\tdef.21.AsyncKeyIR\t") &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "\trule.21.Lower-Closure-Yield-Shared\t"
+        ) &&
+        asyncArtifactCompositionObligationIdsMatch(conformance_text)
+}
+
+internal procedure asyncArtifactAsyncKeyIrEvidenceMatches(
+    conformance_text: string@View
+) -> bool {
+    return asyncArtifactConformanceTextContains(conformance_text,
+        "component%3DSnapshotHeldKeysIR"
+    ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "component%3DReleaseHeldKeysIR"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "component%3DReacquireHeldKeysIR"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "component%3DStaleValueMarkIR"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "operation%3DClosureYieldReleaseShared"
+        ) &&
+        asyncArtifactConformanceTextContains(conformance_text,
+            "captured_key_snapshot%3Dclosure_async_frame"
+        )
+}
+
+internal procedure asyncArtifactIrEvidenceMatches(
+    authority: TestAuthority,
+    conformance_text: string@View
+) -> bool {
+    return asyncArtifactIrContains(authority, "yield.resume.") &&
+        asyncArtifactIrContains(authority, "yield_from.loop") &&
+        asyncArtifactIrContains(authority, "async.resume.") &&
+        asyncArtifactIrContains(
+            authority,
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3aasync_x3a_x3aresume("
+        ) &&
+        asyncArtifactIrContains(authority, "call ptr @uv_key_release_all(") &&
+        asyncArtifactIrContains(authority, "call void @uv_key_reacquire(") &&
+        asyncArtifactIrContains(authority, "call ptr @uv_spawn_create(") &&
+        asyncArtifactIrContains(authority, "call ptr @uv_spawn_wait(") &&
+        asyncArtifactAsyncKeyIrEvidenceMatches(conformance_text) &&
+        asyncArtifactCompositionIrEvidenceMatches(authority) &&
+        asyncArtifactReactorIrEvidenceMatches(authority)
+}
+
+internal procedure asyncFailedSpawnedWaitPanicMatches(authority: TestAuthority) -> bool {
+    if !artifactProjectRunCase(
+        authority,
+        "Fixtures/ArtifactProjects/AsyncFailedSpawnedWaitPanic",
+        authority.target_profile,
+        "off",
+        "ArtifactProjectAsyncFailedSpawnedWaitPanic.out",
+        "ArtifactProjectAsyncFailedSpawnedWaitPanic.err",
+        "ArtifactProjectAsyncFailedSpawnedWaitPanicBuild",
+        "async_failed_spawned_wait_panic.conformance.log"
+    ) {
+        return false
+    }
+
+    return acceptedProjectTempFileExists(
+        authority,
+        "ArtifactProjectAsyncFailedSpawnedWaitPanicBuild",
+        "Intermediate/IR/Source/AsyncFailedSpawnedWaitPanic.ll"
+    ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectAsyncFailedSpawnedWaitPanicBuild",
+            asyncArtifactExecutablePath(
+                authority,
+                "Binary/AsyncFailedSpawnedWaitPanic.exe",
+                "Binary/AsyncFailedSpawnedWaitPanic"
+            )
+        ) &&
+        asyncFailedSpawnedWaitPanicConformanceContains(
+            authority,
+            "\trequirement.21.FailedSpawnedWaitHandledByParallelPanic\t"
+        ) &&
+        asyncFailedSpawnedWaitPanicArtifactContains(
+            authority,
+            "Intermediate/IR/Source/AsyncFailedSpawnedWaitPanic.ll",
+            "call ptr @uv_spawn_wait("
+        ) &&
+        asyncFailedSpawnedWaitPanicMapEvidenceMatches(authority) &&
+        artifactProjectRunExecutableNonZero(
+            authority,
+            "ArtifactProjectAsyncFailedSpawnedWaitPanicBuild",
+            asyncArtifactExecutablePath(
+                authority,
+                "Binary/AsyncFailedSpawnedWaitPanic.exe",
+                "Binary/AsyncFailedSpawnedWaitPanic"
+            )
+        )
+}
+
+internal procedure asyncArtifactObligationsExercise(
+    authority: TestAuthority
+) -> DiagnosticFixtureExecutionResult {
+    if !artifactProjectRunCase(
+        authority,
+        "Fixtures/ArtifactProjects/AsyncObligations",
+        authority.target_profile,
+        "off",
+        "ArtifactProjectAsyncObligations.out",
+        "ArtifactProjectAsyncObligations.err",
+        "ArtifactProjectAsyncObligationsBuild",
+        "asyncobligations.conformance.log"
+    ) {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+
+    let artifacts_exist: bool =
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectAsyncObligationsBuild",
+            "Intermediate/IR/Source/AsyncObligations.ll"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectAsyncObligationsBuild",
+            asyncArtifactObjectPath(
+                authority,
+                "Intermediate/Obj/Source/AsyncObligations.obj",
+                "Intermediate/Obj/Source/AsyncObligations.o"
+            )
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectAsyncObligationsBuild",
+            asyncArtifactExecutablePath(
+                authority,
+                "Binary/AsyncObligations.exe",
+                "Binary/AsyncObligations"
+            )
+        )
+    if !artifacts_exist {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+
+    let path_result: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move path_result is {
+        @Value { value } {
+            if !diagnosticBuildPath(
+                value,
+                "ArtifactProjectAsyncObligationsBuild",
+                authority.heap
+            ) ||
+                !diagnosticBuildPath(value, "Logs", authority.heap) ||
+                !diagnosticBuildPath(value, "Conformance", authority.heap) ||
+                !diagnosticBuildPath(
+                    value,
+                    "asyncobligations.conformance.log",
+                    authority.heap
+                ) {
+                diagnosticFixtureExecutionResult(false, 0usize)
+            } else {
+                let path: string@View = string::as_view(value)
+                let read_result: Outcome<unique string@Managed, IoError> =
+                    authority.io~>read_file(path)
+                return if move read_result is {
+                    @Value { value: conformance_text } {
+                        let conformance_view: string@View =
+                            string::as_view(conformance_text)
+                        let passed: bool =
+                            asyncArtifactObligationIdsMatch(conformance_view) &&
+                            asyncArtifactIrEvidenceMatches(
+                                authority,
+                                conformance_view
+                            ) &&
+                            asyncFailedSpawnedWaitPanicMatches(authority) &&
+                            artifactProjectRunExecutable(
+                                authority,
+                                "ArtifactProjectAsyncObligationsBuild",
+                                asyncArtifactExecutablePath(
+                                    authority,
+                                    "Binary/AsyncObligations.exe",
+                                    "Binary/AsyncObligations"
+                                ),
+                                0
+                            )
+                        if !passed {
+                            diagnosticFixtureExecutionResult(false, 0usize)
+                        } else {
+                            diagnosticFixtureExecutionResult(
+                                true,
+                                ASYNC_ARTIFACT_EXECUTED_OBLIGATION_COUNT
+                            )
+                        }
+                    }
+                    @Error {
+                        diagnosticFixtureExecutionResult(false, 0usize)
+                    }
+                }
+            }
+        }
+        @Error {
+            diagnosticFixtureExecutionResult(false, 0usize)
+        }
+    }
+}
+
+internal procedure asyncArtifactObligationsExecute(authority: TestAuthority) -> bool {
+    let result: DiagnosticFixtureExecutionResult =
+        asyncArtifactObligationsExercise(authority)
+    return result.passed &&
+        result.count == ASYNC_ARTIFACT_EXECUTED_OBLIGATION_COUNT
+}

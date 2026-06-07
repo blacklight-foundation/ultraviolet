@@ -18,6 +18,9 @@
 #include "04_analysis/typing/type_predicates.h"
 #include "04_analysis/typing/typecheck.h"
 
+#include <string>
+#include <string_view>
+
 namespace ultraviolet::analysis::expr {
 
 namespace {
@@ -31,8 +34,56 @@ static inline void SpecDefsDeref() {
   SPEC_DEF("Deref-Null", "5.2.12");
   SPEC_DEF("Deref-Expired", "5.2.12");
   SPEC_DEF("Deref-Raw-Unsafe", "5.2.12");
+  SPEC_DEF("rule.13.T-Deref-Raw", "13.9.4");
+  SPEC_DEF("rule.13.P-Deref-Raw-Imm", "13.9.4");
+  SPEC_DEF("rule.13.P-Deref-Raw-Mut", "13.9.4");
+  SPEC_DEF("rule.13.Deref-Raw-Unsafe", "13.9.4");
+  SPEC_DEF("rule.16.T-Deref-Ptr", "16.8.4");
+  SPEC_DEF("rule.16.T-Deref-Raw", "16.8.4");
+  SPEC_DEF("rule.16.DerefPlaceTypingFamily", "16.8.4");
   SPEC_DEF("ValueUse-NonBitcopyPlace", "5.2.12");
+  SPEC_DEF("rule.16.ValueUse-NonBitcopyPlace", "16.2.4");
+  SPEC_DEF("GpuPtr-Deref-Visible", "20.2.5");
+  SPEC_DEF("rule.20.GpuPtr-Deref-Visible", "20.2.5");
   SPEC_DEF("GpuPtr-Deref-Err", "20.2.5");
+}
+
+static bool IsSingleSegmentTypePath(const TypePath& path, std::string_view name) {
+  if (path.size() != 1) {
+    return false;
+  }
+  const std::string& segment = path.front();
+  return segment.size() == name.size() &&
+         segment.compare(0, segment.size(), name.data(), name.size()) == 0;
+}
+
+static bool IsGpuPtrAddressSpaceType(const TypeRef& type) {
+  if (!type) {
+    return false;
+  }
+  const auto* path = AppliedTypePath(*type);
+  const auto* args = AppliedTypeArgs(*type);
+  if (!path || !args || !args->empty()) {
+    return false;
+  }
+  return IsSingleSegmentTypePath(*path, "Global") ||
+         IsSingleSegmentTypePath(*path, "Shared") ||
+         IsSingleSegmentTypePath(*path, "Private");
+}
+
+static bool TryGpuPtrDerefElementType(const TypeRef& type, TypeRef& element) {
+  if (!type) {
+    return false;
+  }
+  const auto* path = AppliedTypePath(*type);
+  const auto* args = AppliedTypeArgs(*type);
+  if (!path || !args || args->size() != 2 ||
+      !IsSingleSegmentTypePath(*path, "GpuPtr") ||
+      !(*args)[0] || !IsGpuPtrAddressSpaceType((*args)[1])) {
+    return false;
+  }
+  element = (*args)[0];
+  return true;
 }
 
 static TypeRef StripPermDeepLocal(const TypeRef& type) {
@@ -218,6 +269,7 @@ ExprTypeResult TypeDerefExprImpl(const ScopeContext& ctx,
 
   if (IsGpuHostPointerDeref(env, expr.value)) {
     SPEC_RULE("GpuPtr-Deref-Err");
+    SPEC_RULE("rule.20.GpuPtr-Deref-Err");
     result.diag_id = "E-CON-0150";
     return result;
   }
@@ -233,14 +285,37 @@ ExprTypeResult TypeDerefExprImpl(const ScopeContext& ctx,
     return result;
   }
 
+  TypeRef gpu_ptr_element;
+  if (TryGpuPtrDerefElementType(stripped_base, gpu_ptr_element)) {
+    if (!GpuContext(env)) {
+      SPEC_RULE("GpuPtr-Deref-Err");
+      SPEC_RULE("rule.20.GpuPtr-Deref-Err");
+      result.diag_id = "E-CON-0150";
+      return result;
+    }
+    if (!BitcopyType(ctx, gpu_ptr_element)) {
+      SPEC_RULE("ValueUse-NonBitcopyPlace");
+      SPEC_RULE("rule.16.ValueUse-NonBitcopyPlace");
+      result.diag_id = "ValueUse-NonBitcopyPlace";
+      return result;
+    }
+    SPEC_RULE("GpuPtr-Deref-Visible");
+    SPEC_RULE("rule.20.GpuPtr-Deref-Visible");
+    result.ok = true;
+    result.type = gpu_ptr_element;
+    return result;
+  }
+
   // Safe pointer dereference
   if (const auto* type_ptr = std::get_if<TypePtr>(&stripped_base->node)) {
     if (type_ptr->state == PtrState::Null) {
+      SPEC_RULE("diag.16.EffectfulCoreExpressions");
       SPEC_RULE("Deref-Null");
       result.diag_id = "Deref-Null";
       return result;
     }
     if (type_ptr->state == PtrState::Expired) {
+      SPEC_RULE("diag.16.EffectfulCoreExpressions");
       SPEC_RULE("Deref-Expired");
       result.diag_id = "Deref-Expired";
       return result;
@@ -248,10 +323,12 @@ ExprTypeResult TypeDerefExprImpl(const ScopeContext& ctx,
     // Value use requires Bitcopy type
     if (!BitcopyType(ctx, type_ptr->element)) {
       SPEC_RULE("ValueUse-NonBitcopyPlace");
+      SPEC_RULE("rule.16.ValueUse-NonBitcopyPlace");
       result.diag_id = "ValueUse-NonBitcopyPlace";
       return result;
     }
     SPEC_RULE("T-Deref-Ptr");
+    SPEC_RULE("rule.16.T-Deref-Ptr");
     result.ok = true;
     result.type = type_ptr->element;
     return result;
@@ -260,17 +337,22 @@ ExprTypeResult TypeDerefExprImpl(const ScopeContext& ctx,
   // Raw pointer dereference (requires unsafe)
   if (const auto* raw_ptr = std::get_if<TypeRawPtr>(&stripped_base->node)) {
     if (!IsInUnsafeSpan(ctx, span)) {
+      SPEC_RULE("diag.16.EffectfulCoreExpressions");
       SPEC_RULE("Deref-Raw-Unsafe");
+      SPEC_RULE("rule.13.Deref-Raw-Unsafe");
       result.diag_id = "Deref-Raw-Unsafe";
       return result;
     }
     // Value use requires Bitcopy type
     if (!BitcopyType(ctx, raw_ptr->element)) {
       SPEC_RULE("ValueUse-NonBitcopyPlace");
+      SPEC_RULE("rule.16.ValueUse-NonBitcopyPlace");
       result.diag_id = "ValueUse-NonBitcopyPlace";
       return result;
     }
     SPEC_RULE("T-Deref-Raw");
+    SPEC_RULE("rule.13.T-Deref-Raw");
+    SPEC_RULE("rule.16.T-Deref-Raw");
     result.ok = true;
     result.type = raw_ptr->element;
     return result;
@@ -296,6 +378,7 @@ PlaceTypeResult TypeDerefPlaceImpl(const ScopeContext& ctx,
 
   if (IsGpuHostPointerDeref(env, expr.value)) {
     SPEC_RULE("GpuPtr-Deref-Err");
+    SPEC_RULE("rule.20.GpuPtr-Deref-Err");
     result.diag_id = "E-CON-0150";
     return result;
   }
@@ -311,19 +394,37 @@ PlaceTypeResult TypeDerefPlaceImpl(const ScopeContext& ctx,
     return result;
   }
 
+  TypeRef gpu_ptr_element;
+  if (TryGpuPtrDerefElementType(stripped_base, gpu_ptr_element)) {
+    if (!GpuContext(env)) {
+      SPEC_RULE("GpuPtr-Deref-Err");
+      SPEC_RULE("rule.20.GpuPtr-Deref-Err");
+      result.diag_id = "E-CON-0150";
+      return result;
+    }
+    SPEC_RULE("GpuPtr-Deref-Visible");
+    SPEC_RULE("rule.20.GpuPtr-Deref-Visible");
+    result.ok = true;
+    result.type = gpu_ptr_element;
+    return result;
+  }
+
   // Safe pointer place
   if (const auto* type_ptr = std::get_if<TypePtr>(&stripped_base->node)) {
     if (type_ptr->state == PtrState::Null) {
+      SPEC_RULE("diag.16.EffectfulCoreExpressions");
       SPEC_RULE("Deref-Null");
       result.diag_id = "Deref-Null";
       return result;
     }
     if (type_ptr->state == PtrState::Expired) {
+      SPEC_RULE("diag.16.EffectfulCoreExpressions");
       SPEC_RULE("Deref-Expired");
       result.diag_id = "Deref-Expired";
       return result;
     }
     SPEC_RULE("P-Deref-Ptr");
+    SPEC_RULE("rule.16.DerefPlaceTypingFamily");
     result.ok = true;
     result.type = type_ptr->element;
     return result;
@@ -332,19 +433,25 @@ PlaceTypeResult TypeDerefPlaceImpl(const ScopeContext& ctx,
   // Raw pointer place (requires unsafe)
   if (const auto* raw_ptr = std::get_if<TypeRawPtr>(&stripped_base->node)) {
     if (!IsInUnsafeSpan(ctx, span)) {
+      SPEC_RULE("diag.16.EffectfulCoreExpressions");
       SPEC_RULE("Deref-Raw-Unsafe");
+      SPEC_RULE("rule.13.Deref-Raw-Unsafe");
       result.diag_id = "Deref-Raw-Unsafe";
       return result;
     }
     // *imm T produces const T place
     if (raw_ptr->qual == RawPtrQual::Imm) {
       SPEC_RULE("P-Deref-Raw-Imm");
+      SPEC_RULE("rule.13.P-Deref-Raw-Imm");
+      SPEC_RULE("rule.16.DerefPlaceTypingFamily");
       result.ok = true;
       result.type = MakeTypePerm(Permission::Const, raw_ptr->element);
       return result;
     }
     // *mut T produces unique T place
     SPEC_RULE("P-Deref-Raw-Mut");
+    SPEC_RULE("rule.13.P-Deref-Raw-Mut");
+    SPEC_RULE("rule.16.DerefPlaceTypingFamily");
     result.ok = true;
     result.type = MakeTypePerm(Permission::Unique, raw_ptr->element);
     return result;

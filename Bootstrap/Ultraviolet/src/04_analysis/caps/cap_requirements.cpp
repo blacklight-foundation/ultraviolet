@@ -830,7 +830,6 @@ bool CapabilitySet::IsSubsetOf(const CapabilitySet& other) const {
   if (has_reactor && !other.has_reactor) return false;
   if (has_system && !other.has_system) return false;
   if (has_time && !other.has_time) return false;
-  if (has_context && !other.has_context) return false;
   return true;
 }
 
@@ -875,17 +874,13 @@ std::string CapabilitySet::ToString() const {
     oss << name;
     first = false;
   };
-  if (has_context) {
-    append("Context");
-  } else {
-    if (has_io) append("IO");
-    if (has_network) append("Network");
-    if (has_heap) append("HeapAllocator");
-    if (has_execution_domain) append("ExecutionDomain");
-    if (has_reactor) append("Reactor");
-    if (has_system) append("System");
-    if (has_time) append("Time");
-  }
+  if (has_io) append("IO");
+  if (has_network) append("Network");
+  if (has_heap) append("HeapAllocator");
+  if (has_execution_domain) append("ExecutionDomain");
+  if (has_reactor) append("Reactor");
+  if (has_system) append("System");
+  if (has_time) append("Time");
   oss << "}";
   return oss.str();
 }
@@ -1416,4 +1411,3 @@ CapabilitySet ExpressionUsesCapabilities(const ast::Expr& expr) {
 }
 
 }  // namespace ultraviolet::analysis
-

@@ -1,0 +1,426 @@
+//! Artifact fixture for async type, suspension, and state-machine obligations.
+
+/// Async computation used to exercise output, input, result, and error payloads.
+public type AsyncArtifactComputation = Async<i32, i32, i32, bool>
+
+/// Future alias used to exercise async alias lowering and reactor entry points.
+public type AsyncArtifactFuture = Future<i32, bool>
+
+/// Infallible async value used to exercise omission of the failed state.
+public type AsyncArtifactNever = Async<(), (), i32, !>
+
+/// Defaulted async value used to exercise AsyncSig parameter defaults.
+public type AsyncArtifactDefaulted = Async<i32>
+
+internal procedure asyncArtifactOutcome(should_fail: bool, value: i32) -> i32 | bool {
+    if should_fail {
+        return true
+    }
+    return value
+}
+
+internal procedure asyncArtifactCompleted(value: i32) -> Future<i32, bool> {
+    return value
+}
+
+internal procedure asyncArtifactFailed(value: i32) -> Future<i32, bool> {
+    let result: i32 = asyncArtifactOutcome(true, value)?
+    return result
+}
+
+internal procedure asyncArtifactSuspended(value: i32) -> Future<i32, bool> {
+    yield ()
+    return value
+}
+
+internal procedure asyncArtifactYield(value: i32) -> AsyncArtifactComputation {
+    let resumed: i32 = yield value
+    return resumed + 1
+}
+
+internal procedure asyncArtifactYieldRelease(value: i32) -> AsyncArtifactComputation {
+    let resumed: i32 = yield release value
+    return resumed + 1
+}
+
+internal procedure asyncArtifactYieldFrom(value: i32) -> AsyncArtifactComputation {
+    let resumed: i32 = yield from asyncArtifactYield(value)
+    return resumed + 1
+}
+
+internal procedure asyncArtifactYieldReleaseFrom(value: i32) -> AsyncArtifactComputation {
+    let resumed: i32 = yield release from asyncArtifactYield(value)
+    return resumed + 1
+}
+
+internal procedure asyncArtifactYieldReleaseWithKey(value: i32) -> AsyncArtifactComputation {
+    var shared_value: shared i32 = value
+    %read shared_value {
+        let resumed: i32 = yield release value
+        return resumed
+    }
+}
+
+internal procedure asyncArtifactYieldReleaseFromWithKey(value: i32) -> AsyncArtifactComputation {
+    var shared_value: shared i32 = value
+    %read shared_value {
+        let resumed: i32 = yield release from asyncArtifactYield(value)
+        return resumed + 1
+    }
+}
+
+internal procedure asyncArtifactFailedComputation(value: i32) -> AsyncArtifactComputation {
+    let result: i32 = asyncArtifactOutcome(true, value)?
+    return result
+}
+
+internal procedure asyncArtifactYieldFromFailed(value: i32) -> AsyncArtifactComputation {
+    let result: i32 = yield from asyncArtifactFailedComputation(value)
+    return result
+}
+
+internal procedure asyncArtifactYieldReleaseFromFailedWithKey(
+    value: i32
+) -> AsyncArtifactComputation {
+    var shared_value: shared i32 = value
+    %read shared_value {
+        let result: i32 = yield release from asyncArtifactFailedComputation(value)
+        return result
+    }
+}
+
+internal procedure asyncArtifactInfallible(value: i32) -> AsyncArtifactNever {
+    return value
+}
+
+internal procedure asyncArtifactDefaulted(value: i32) -> AsyncArtifactDefaulted {
+    yield value
+    return ()
+}
+
+internal procedure asyncArtifactValueIs(value: i32 | bool, expected: i32) -> bool {
+    return if value is {
+        actual: i32 {
+            actual == expected
+        }
+        failed: bool {
+            false
+        }
+    }
+}
+
+internal procedure asyncArtifactFailureIs(value: i32 | bool) -> bool {
+    return if value is {
+        actual: i32 {
+            false
+        }
+        failed: bool {
+            failed
+        }
+    }
+}
+
+internal procedure asyncArtifactManualResume(value: i32) -> bool {
+    let suspended: unique AsyncArtifactComputation = asyncArtifactYield(value)
+    return if suspended is {
+        @Suspended { output } {
+            let resumed = suspended~>resume(output + 1)
+            if resumed is {
+                @Completed { value: completed_value } {
+                    completed_value == output + 2
+                }
+                @Suspended {
+                    false
+                }
+                @Failed {
+                    false
+                }
+            }
+        }
+        @Completed {
+            false
+        }
+        @Failed {
+            false
+        }
+    }
+}
+
+internal procedure asyncArtifactManualReleaseResume(value: i32) -> bool {
+    let suspended: unique AsyncArtifactComputation = asyncArtifactYieldRelease(value)
+    return if suspended is {
+        @Suspended { output } {
+            let resumed = suspended~>resume(output + 1)
+            if resumed is {
+                @Completed { value: completed_value } {
+                    completed_value == output + 2
+                }
+                @Suspended {
+                    false
+                }
+                @Failed {
+                    false
+                }
+            }
+        }
+        @Completed {
+            false
+        }
+        @Failed {
+            false
+        }
+    }
+}
+
+internal procedure asyncArtifactManualYieldFromResume(value: i32) -> bool {
+    let suspended: unique AsyncArtifactComputation = asyncArtifactYieldFrom(value)
+    return if suspended is {
+        @Suspended { output } {
+            let resumed = suspended~>resume(output + 1)
+            if resumed is {
+                @Completed { value: completed_value } {
+                    completed_value == output + 3
+                }
+                @Suspended {
+                    false
+                }
+                @Failed {
+                    false
+                }
+            }
+        }
+        @Completed {
+            false
+        }
+        @Failed {
+            false
+        }
+    }
+}
+
+internal procedure asyncArtifactManualYieldReleaseFromResume(value: i32) -> bool {
+    let suspended: unique AsyncArtifactComputation = asyncArtifactYieldReleaseFrom(value)
+    return if suspended is {
+        @Suspended { output } {
+            let resumed = suspended~>resume(output + 1)
+            if resumed is {
+                @Completed { value: completed_value } {
+                    completed_value == output + 3
+                }
+                @Suspended {
+                    false
+                }
+                @Failed {
+                    false
+                }
+            }
+        }
+        @Completed {
+            false
+        }
+        @Failed {
+            false
+        }
+    }
+}
+
+internal procedure asyncArtifactManualKeyReleaseResume(value: i32) -> bool {
+    let suspended: unique AsyncArtifactComputation =
+        asyncArtifactYieldReleaseWithKey(value)
+    return if suspended is {
+        @Suspended { output } {
+            let resumed = suspended~>resume(output + 1)
+            if resumed is {
+                @Completed { value: completed_value } {
+                    completed_value == output + 1
+                }
+                @Suspended {
+                    false
+                }
+                @Failed {
+                    false
+                }
+            }
+        }
+        @Completed {
+            false
+        }
+        @Failed {
+            false
+        }
+    }
+}
+
+internal procedure asyncArtifactManualKeyReleaseFromResume(value: i32) -> bool {
+    let suspended: unique AsyncArtifactComputation =
+        asyncArtifactYieldReleaseFromWithKey(value)
+    return if suspended is {
+        @Suspended { output } {
+            let resumed = suspended~>resume(output + 1)
+            if resumed is {
+                @Completed { value: completed_value } {
+                    completed_value == output + 3
+                }
+                @Suspended {
+                    false
+                }
+                @Failed {
+                    false
+                }
+            }
+        }
+        @Completed {
+            false
+        }
+        @Failed {
+            false
+        }
+    }
+}
+
+internal procedure asyncArtifactYieldFromFailure() -> bool {
+    let failed: AsyncArtifactComputation = asyncArtifactYieldFromFailed(41)
+    return if failed is {
+        @Suspended {
+            false
+        }
+        @Completed {
+            false
+        }
+        @Failed { error } {
+            error
+        }
+    }
+}
+
+internal procedure asyncArtifactKeyReleaseFromFailure() -> bool {
+    let failed: AsyncArtifactComputation =
+        asyncArtifactYieldReleaseFromFailedWithKey(107)
+    return if failed is {
+        @Suspended {
+            false
+        }
+        @Completed {
+            false
+        }
+        @Failed { error } {
+            error
+        }
+    }
+}
+
+internal procedure asyncArtifactInfallibleCompleted() -> bool {
+    let completed: AsyncArtifactNever = asyncArtifactInfallible(43)
+    return if completed is {
+        @Suspended {
+            false
+        }
+        @Completed { value } {
+            value == 43
+        }
+    }
+}
+
+internal procedure asyncArtifactDefaultedSuspends(value: i32) -> bool {
+    let suspended: AsyncArtifactDefaulted = asyncArtifactDefaulted(value)
+    return if suspended is {
+        @Suspended { output } {
+            output == value
+        }
+        @Completed {
+            false
+        }
+    }
+}
+
+internal procedure asyncArtifactSpawnedReady(context: Context) -> i32 {
+    return parallel context~>inline() {
+        let handle: Spawned<i32> = spawn {
+            47
+        }
+        wait handle
+    }
+}
+
+internal procedure asyncArtifactSpawnedPending(context: Context) -> i32 {
+    return parallel context~>cpu() {
+        let handle: Spawned<i32> = spawn {
+            53
+        }
+        wait handle
+    }
+}
+
+internal procedure asyncArtifactTrackedReady(context: Context) -> bool {
+    let tracked: Tracked<i32, bool> =
+        context.reactor~>register(asyncArtifactCompleted(59))
+    let result: i32 | bool = wait tracked
+    return asyncArtifactValueIs(result, 59)
+}
+
+internal procedure asyncArtifactTrackedPending(context: Context) -> bool {
+    let tracked: Tracked<i32, bool> =
+        context.reactor~>register(asyncArtifactSuspended(61))
+    let result: i32 | bool = wait tracked
+    return asyncArtifactValueIs(result, 61)
+}
+
+internal procedure asyncArtifactSharedClosureYieldRelease(value: i32) -> bool {
+    var shared_value: shared i32 = value
+    let producer = || -> Async<i32, (), (), !> {
+        %read shared_value {
+            yield release value
+        }
+        return
+    }
+    let suspended: unique Async<i32, (), (), !> = producer()
+    return if suspended is {
+        @Suspended { output } {
+            let resumed = suspended~>resume(())
+            let resumed_ok: bool = if resumed is {
+                @Suspended {
+                    false
+                }
+                @Completed {
+                    true
+                }
+            }
+            output == value && resumed_ok
+        }
+        @Completed {
+            false
+        }
+    }
+}
+
+/// Runs the async obligation artifact checks in a real executable.
+public procedure main(context: Context) -> i32 {
+    let completed: i32 | bool =
+        context.reactor~>run(asyncArtifactCompleted(67))
+    let failed: i32 | bool =
+        context.reactor~>run(asyncArtifactFailed(71))
+    let suspended: i32 | bool =
+        context.reactor~>run(asyncArtifactSuspended(73))
+    if asyncArtifactValueIs(completed, 67) &&
+        asyncArtifactFailureIs(failed) &&
+        asyncArtifactValueIs(suspended, 73) &&
+        asyncArtifactManualResume(79) &&
+        asyncArtifactManualReleaseResume(83) &&
+        asyncArtifactManualYieldFromResume(89) &&
+        asyncArtifactManualYieldReleaseFromResume(97) &&
+        asyncArtifactManualKeyReleaseResume(101) &&
+        asyncArtifactManualKeyReleaseFromResume(103) &&
+        asyncArtifactYieldFromFailure() &&
+        asyncArtifactKeyReleaseFromFailure() &&
+        asyncArtifactInfallibleCompleted() &&
+        asyncArtifactDefaultedSuspends(109) &&
+        asyncArtifactSpawnedReady(context) == 47 &&
+        asyncArtifactSpawnedPending(context) == 53 &&
+        asyncArtifactTrackedReady(context) &&
+        asyncArtifactTrackedPending(context) &&
+        asyncArtifactSharedClosureYieldRelease(103) &&
+        asyncArtifactCompositionChecks() {
+        return 0
+    }
+    return 1
+}

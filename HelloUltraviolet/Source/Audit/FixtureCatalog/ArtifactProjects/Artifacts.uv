@@ -1,5 +1,7 @@
 //! Runtime path checks for artifact project fixture source artifacts.
 
+using HelloUltraviolet::Audit::{ auditTargetProfile }
+using HelloUltraviolet::Audit::{ auditTargetProfileIsWindows }
 using HelloUltraviolet::Audit::{ auditTextContains }
 
 internal procedure artifactProjectSourceArtifactsExist(
@@ -21,6 +23,11 @@ public procedure artifactProjectFixtureSourceArtifactsExist(context: Context) ->
             context,
             "HelloUltraviolet/Fixtures/ArtifactProjects/RawDylibLibrary/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/ArtifactProjects/RawDylibLibrary/Source/Main.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/HostHarness/SharedLibraryImageLifecycleHarness.c"
         ) &&
         artifactProjectSourceArtifactsExist(
             context,
@@ -48,6 +55,11 @@ public procedure artifactProjectFixtureSourceArtifactsExist(context: Context) ->
         "HelloUltraviolet/Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv"
     ) &&
         artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/RuntimeInterfaceSymbols/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/RuntimeInterfaceSymbols/Source/Library.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
         context,
         "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/Ultraviolet.toml",
         "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/Source/Library.uv"
@@ -64,13 +76,98 @@ public procedure artifactProjectFixtureSourceArtifactsExist(context: Context) ->
         ) &&
         artifactProjectSourceArtifactsExist(
             context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/ArrayIndexOOBPanic/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/ArrayIndexOOBPanic/Source/Main.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/RawPointerNullReadPanic/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/RawPointerNullReadPanic/Source/Main.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/RawPointerNullWritePanic/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/RawPointerNullWritePanic/Source/Main.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/DynamicReceiverExpiredPanic/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/DynamicReceiverExpiredPanic/Source/Main.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/RefinementRuntimePanic/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/RefinementRuntimePanic/Source/Main.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/SliceRangeOOBPanic/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/SliceRangeOOBPanic/Source/Main.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/CastPanic/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/CastPanic/Source/Main.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/OperatorUndefinedPanic/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/OperatorUndefinedPanic/Source/Main.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/GpuRuntimeEvidence/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/GpuRuntimeEvidence/Source/Main.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
             "HelloUltraviolet/Fixtures/ArtifactProjects/ReducedEmptyDispatchPanic/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/ArtifactProjects/ReducedEmptyDispatchPanic/Source/Main.uv"
         ) &&
         artifactProjectSourceArtifactsExist(
             context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/StructuredParallelLoweringEvidence/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/StructuredParallelLoweringEvidence/Source/Main.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/SystemExitExecutable/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/SystemExitExecutable/Source/Main.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
             "HelloUltraviolet/Fixtures/ArtifactProjects/AArch64DependencyObject/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/ArtifactProjects/AArch64DependencyObject/Source/Library.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/EmptyDependencyObject/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/EmptyDependencyObject/Source/.keep"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/ModalSpecialLowering/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/ModalSpecialLowering/Source/Library.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/LexerTokenizerOutput/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/LexerTokenizerOutput/Source/Library.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/AttributeSemantics/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/AttributeSemantics/Source/Main.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/AttributeTestHarness/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/AttributeTestHarness/Source/Tests/Harness.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/ModuleDiscoveryOrdering/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/ModuleDiscoveryOrdering/Source/Alpha/Extra.uv"
         )
 }
 
@@ -213,15 +310,22 @@ public procedure artifactProjectAArch64DependencyObjectArtifactsExist(context: C
 }
 
 public procedure artifactProjectEmitBcLibraryArtifactsExist(context: Context) -> bool {
+    let target_profile: string@View = auditTargetProfile(context.sys)
+    let object_path: string@View = if auditTargetProfileIsWindows(target_profile) {
+        "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/Build/Intermediate/Obj/Source/EmitBcLibrary.obj"
+    } else {
+        "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/Build/Intermediate/Obj/Source/EmitBcLibrary.o"
+    }
+    let library_path: string@View = if auditTargetProfileIsWindows(target_profile) {
+        "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/Build/Library/EmitBcLibrary.lib"
+    } else {
+        "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/Build/Library/libEmitBcLibrary.a"
+    }
     return context.io~>exists(
         "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/Build/Intermediate/IR/Source/EmitBcLibrary.bc"
     ) &&
-        context.io~>exists(
-            "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/Build/Intermediate/Obj/Source/EmitBcLibrary.obj"
-        ) &&
-        context.io~>exists(
-            "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/Build/Library/EmitBcLibrary.lib"
-        )
+        context.io~>exists(object_path) &&
+        context.io~>exists(library_path)
 }
 
 public procedure artifactProjectMacOSExecutableOutputArtifactsExist(context: Context) -> bool {

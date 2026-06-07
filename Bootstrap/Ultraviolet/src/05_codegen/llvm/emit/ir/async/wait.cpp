@@ -6,8 +6,60 @@
 
 namespace ultraviolet::codegen::emit_detail {
 
+namespace {
+
+bool WaitHandleHasPath(const analysis::TypeRef &type,
+                       bool (*predicate)(const analysis::TypePath &))
+{
+  if (!type)
+  {
+    return false;
+  }
+  analysis::TypeRef stripped = analysis::StripPerm(type);
+  if (!stripped)
+  {
+    stripped = type;
+  }
+  const auto *path = analysis::AppliedTypePath(*stripped);
+  return path && predicate(*path);
+}
+
+} // namespace
+
 void IRInstructionVisitor::operator()(const IRWait &wait) const
 {
+  SPEC_RULE("requirement.21.WaitRuntimeSemantics");
+  SPEC_RULE("def.21.WaitRuntimeHelpers");
+
+  IRWaitKind wait_kind = wait.kind;
+  if (wait_kind == IRWaitKind::Unknown)
+  {
+    const LowerCtx *active_ctx = emitter.GetCurrentCtx();
+    const analysis::TypeRef handle_type =
+        active_ctx ? active_ctx->LookupValueType(wait.handle) : nullptr;
+    if (WaitHandleHasPath(handle_type, analysis::IsSpawnedTypePath))
+    {
+      wait_kind = IRWaitKind::Spawned;
+    }
+    else if (WaitHandleHasPath(handle_type, analysis::IsTrackedTypePath))
+    {
+      wait_kind = IRWaitKind::Tracked;
+    }
+  }
+
+  if (wait_kind == IRWaitKind::Spawned)
+  {
+    SPEC_RULE("rule.21.EvalSigma-Wait-Spawned-Ready");
+    SPEC_RULE("rule.21.EvalSigma-Wait-Spawned-Pending");
+    SPEC_RULE("requirement.21.FailedSpawnedWaitHandledByParallelPanic");
+  }
+  else if (wait_kind == IRWaitKind::Tracked)
+  {
+    SPEC_RULE("rule.21.EvalSigma-Wait-Tracked-Ready");
+    SPEC_RULE("rule.21.EvalSigma-Wait-Tracked-Pending");
+  }
+  SPEC_RULE("rule.21.EvalSigma-Wait-Ctrl");
+
   llvm::Type *ptr_ty = emitter.GetOpaquePtr();
   llvm::Value *handle = CoerceTo(&builder, EvaluateOrDefault(wait.handle), ptr_ty);
   if (!handle)

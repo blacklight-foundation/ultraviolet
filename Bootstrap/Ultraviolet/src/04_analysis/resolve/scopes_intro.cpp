@@ -39,6 +39,22 @@ bool ReservedLanguageRoot(std::string_view name) {
   return IdEq(name, project::ActiveLanguageProfile().runtime_root);
 }
 
+bool IsCapabilityClassReservedKey(const IdKey& key) {
+  return key == IdKeyOf("IO") || key == IdKeyOf("Network") ||
+         key == IdKeyOf("HeapAllocator") ||
+         key == IdKeyOf("ExecutionDomain") || key == IdKeyOf("Reactor") ||
+         key == IdKeyOf("Time") || key == IdKeyOf("MonotonicTime") ||
+         key == IdKeyOf("WallTime");
+}
+
+bool IsFoundationalClassReservedKey(const IdKey& key) {
+  return key == IdKeyOf("Bitcopy") || key == IdKeyOf("Clone") ||
+         key == IdKeyOf("Drop") || key == IdKeyOf("FfiSafe") ||
+         key == IdKeyOf("Eq") || key == IdKeyOf("Hasher") ||
+         key == IdKeyOf("Hash") || key == IdKeyOf("Iterator") ||
+         key == IdKeyOf("Discrete");
+}
+
 std::optional<core::Span> SpanForKey(
     const std::unordered_map<IdKey, std::optional<core::Span>>& name_spans,
     const IdKey& key) {
@@ -98,6 +114,12 @@ IntroResult Intro(ScopeContext& ctx, std::string_view name, const Entity& ent) {
       return {false, "Validate-Module-Prim-Shadow-Err"};
     }
     if (ContainsKey(SpecialTypeKeys(), key)) {
+      if (IsCapabilityClassReservedKey(key)) {
+        SPEC_RULE("req.14.CapabilityClassNamesReserved");
+      }
+      if (IsFoundationalClassReservedKey(key)) {
+        SPEC_RULE("req.14.FoundationalClassesSyntaxAndReservedNames");
+      }
       SPEC_RULE("Validate-Module-Special-Shadow-Err");
       return {false, "Validate-Module-Special-Shadow-Err"};
     }
@@ -190,6 +212,12 @@ ValidateModuleNamesResult ValidateModuleNames(
   }
   for (const auto& key : keys) {
     if (ContainsKey(SpecialTypeKeys(), key)) {
+      if (IsCapabilityClassReservedKey(key)) {
+        SPEC_RULE("req.14.CapabilityClassNamesReserved");
+      }
+      if (IsFoundationalClassReservedKey(key)) {
+        SPEC_RULE("req.14.FoundationalClassesSyntaxAndReservedNames");
+      }
       SPEC_RULE("Validate-Module-Special-Shadow-Err");
       return {false, "Validate-Module-Special-Shadow-Err", SpanForKey(name_spans, key)};
     }

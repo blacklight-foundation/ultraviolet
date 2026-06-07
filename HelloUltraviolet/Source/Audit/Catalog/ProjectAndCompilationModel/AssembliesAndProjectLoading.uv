@@ -43,7 +43,7 @@ public procedure validatedProjectAndCompilationModelAssembliesAndProjectLoadingO
     ) {
         count = count + 1usize
     }
-    if artifactBehaviorObligationEntryMatches(
+    if acceptedObligationEntryMatches(
         "Step-Parse-Err",
         3599usize,
         "HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics",
@@ -109,9 +109,9 @@ public procedure validatedProjectAndCompilationModelAssembliesAndProjectLoadingO
     if acceptedObligationEntryMatches(
         "def.FirstFail",
         3712usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsManifestModelReference",
-        "Source/Reference/Projects/ManifestModel.uv"
+        "HelloUltraviolet::Audit",
+        "outputDiagnosticManifestLinkKindInvalidExercise",
+        "Source/Audit/OutputDiagnosticExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -253,9 +253,9 @@ public procedure validatedProjectAndCompilationModelAssembliesAndProjectLoadingO
     if acceptedObligationEntryMatches(
         "BuildAssembly-Err-Modules",
         4002usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsAssemblyModelReference",
-        "Source/Reference/Projects/AssemblyModel.uv"
+        "HelloUltraviolet::Audit",
+        "outputDiagnosticDirSeqReadFailureExercise",
+        "Source/Audit/OutputDiagnosticExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -268,7 +268,7 @@ public procedure validatedProjectAndCompilationModelAssembliesAndProjectLoadingO
     ) {
         count = count + 1usize
     }
-    if artifactBehaviorObligationEntryMatches(
+    if acceptedObligationEntryMatches(
         "LoadProject-Err",
         4040usize,
         "HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics",
@@ -307,9 +307,9 @@ public procedure validatedProjectAndCompilationModelAssembliesAndProjectLoadingO
     if acceptedObligationEntryMatches(
         "req.DependencyAssemblyNoFinalArtifact",
         4102usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsAssemblyModelReference",
-        "Source/Reference/Projects/AssemblyModel.uv"
+        "HelloUltraviolet::Audit",
+        "artifactProjectEmitLlDependencyExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }

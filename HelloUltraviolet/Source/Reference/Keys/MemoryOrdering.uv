@@ -80,11 +80,67 @@ internal procedure fenceOrderingValue() -> i32 {
     return observed
 }
 
+internal procedure fenceHeldKeyContextValue() -> i32 {
+    var shared_value: shared i32 = 1
+    %write shared_value {
+        fence(acquire)
+        shared_value = 2
+        fence(release)
+        shared_value = shared_value + 3
+        fence(seqcst)
+    }
+    return shared_value + 0
+}
+
+internal procedure fenceNoProgramVisibleStorageAccessValue() -> i32 {
+    var observed: i32 = 4
+    fence(acquire)
+    fence(release)
+    fence(seqcst)
+    return observed
+}
+
+internal procedure memoryOrderingDefaultsAndKeySemanticsReference() -> bool {
+    return acquireOrderedKeyReadValue() == 1 &&
+        keyBlockDefaultMemoryOrderingValue() == 7
+}
+
+internal procedure memoryOrderAttributeAttachmentReference() -> bool {
+    return keyBlockDefaultMemoryOrderingValue() == 7 &&
+        expressionOrderingOverridesKeyBlockDefaultValue() == 8
+}
+
+internal procedure expressionMemoryOrderWellFormednessReference() -> bool {
+    return expressionMemoryOrderingValue() == 15 &&
+        expressionOrderingOverridesKeyBlockDefaultValue() == 8
+}
+
+internal procedure memoryOrderDoesNotAlterKeySemanticsReference() -> bool {
+    return acquireOrderedKeyReadValue() == 1 &&
+        keyBlockDefaultMemoryOrderingValue() == 7 &&
+        expressionOrderingOverridesKeyBlockDefaultValue() == 8
+}
+
+internal procedure fenceContextAndHeldKeysReference() -> bool {
+    return fenceHeldKeyContextValue() == 5
+}
+
+internal procedure fenceEvaluationReference() -> bool {
+    return fenceOrderingValue() == 2 &&
+        fenceHeldKeyContextValue() == 5
+}
+
+internal procedure fenceNoProgramVisibleStorageAccessReference() -> bool {
+    return fenceNoProgramVisibleStorageAccessValue() == 4
+}
+
 /// Exercises the Keys MemoryOrdering reference surface.
 public procedure runKeysMemoryOrderingReference() -> bool {
-    return acquireOrderedKeyReadValue() == 1 &&
-        expressionMemoryOrderingValue() == 15 &&
-        keyBlockDefaultMemoryOrderingValue() == 7 &&
-        expressionOrderingOverridesKeyBlockDefaultValue() == 8 &&
-        fenceOrderingValue() == 2
+    return memoryOrderingDefaultsAndKeySemanticsReference() &&
+        memoryOrderAttributeAttachmentReference() &&
+        expressionMemoryOrderWellFormednessReference() &&
+        memoryOrderDoesNotAlterKeySemanticsReference() &&
+        fenceContextAndHeldKeysReference() &&
+        fenceEvaluationReference() &&
+        fenceNoProgramVisibleStorageAccessReference()
 }

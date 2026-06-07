@@ -27,10 +27,70 @@
 #include "00_core/spec_trace.h"
 #include <cstdio>
 #include <cstdlib>
+#include <string>
+#include <string_view>
 
 namespace ultraviolet::codegen {
 
 namespace {
+
+void AppendParallelPayloadField(std::string& payload,
+                                std::string_view key,
+                                std::string_view value) {
+  if (!payload.empty()) {
+    payload += ';';
+  }
+  payload += key;
+  payload += '=';
+  payload += value;
+}
+
+bool IsGpuDomainType(const analysis::TypeRef& type) {
+  analysis::TypeRef stripped = analysis::StripPerm(type);
+  if (!stripped) {
+    return false;
+  }
+  if (const auto* dyn = std::get_if<analysis::TypeDynamic>(&stripped->node)) {
+    return analysis::IsGpuDomainTypePath(dyn->path);
+  }
+  if (const auto* path = std::get_if<analysis::TypePathType>(&stripped->node)) {
+    return analysis::IsGpuDomainTypePath(path->path);
+  }
+  return false;
+}
+
+void RecordGpuParallelLoweringConformance(
+    const ast::ParallelExpr& node,
+    const IRValue& domain_value,
+    const IRValue& result_value,
+    LowerCtx& ctx) {
+  if (!ctx.expr_type || !node.domain) {
+    return;
+  }
+
+  analysis::TypeRef domain_type = ctx.expr_type(*node.domain);
+  if (!IsGpuDomainType(domain_type)) {
+    return;
+  }
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  const std::string domain_type_name =
+      domain_type ? analysis::TypeToString(domain_type) : std::string("-");
+  std::string payload;
+  AppendParallelPayloadField(payload, "source", "LowerParallelExpr");
+  AppendParallelPayloadField(payload, "domain_type", std::string_view(domain_type_name));
+  AppendParallelPayloadField(payload, "domain_value", std::string_view(domain_value.name));
+  AppendParallelPayloadField(payload, "result", std::string_view(result_value.name));
+  AppendParallelPayloadField(payload, "kernel_launch_ir", "true");
+  AppendParallelPayloadField(payload, "gpu_dispatch_ir", "true");
+  AppendParallelPayloadField(payload, "parallel_join", "true");
+  core::Conformance::Record(
+      "rule.20.Lower-Expr-Parallel-GPU",
+      std::nullopt,
+      payload);
+}
 
 // Check if a dispatch expression has a reduce option.
 bool DispatchHasReduce(const ast::DispatchExpr& expr) {
@@ -81,6 +141,8 @@ bool IsCollectableParallelExpr(const ast::Expr& expr, bool& needs_wait) {
 //
 LowerResult LowerParallelExpr(const ast::ParallelExpr& node, LowerCtx& ctx) {
   SPEC_RULE("Lower-Expr-Parallel");
+  SPEC_RULE("def.20.ParallelLoweringJudgments");
+  SPEC_RULE("rule.20.Lower-Expr-Parallel");
 
   // Lower domain expression
   auto domain_result = LowerExpr(*node.domain, ctx);
@@ -144,6 +206,7 @@ LowerResult LowerParallelExpr(const ast::ParallelExpr& node, LowerCtx& ctx) {
         IRWait wait;
         wait.handle = item.value;
         wait.result = ctx.FreshTempValue("parallel_wait");
+        wait.kind = IRWaitKind::Spawned;
         analysis::TypeRef wait_type = item.value_type;
         if (!wait_type) {
           analysis::TypeRef handle_type = ctx.LookupValueType(item.value);
@@ -218,6 +281,7 @@ LowerResult LowerParallelExpr(const ast::ParallelExpr& node, LowerCtx& ctx) {
   // Handle options (cancel, name)
   for (const auto& opt : node.opts) {
     if (opt.kind == ast::ParallelOptionKind::Cancel && opt.value) {
+      SPEC_RULE("requirement.20.SpawnDispatchCancellationLowering");
       auto cancel_result = LowerExpr(*opt.value, ctx);
       parallel.cancel_token = cancel_result.value;
     } else if (opt.kind == ast::ParallelOptionKind::Name && opt.value) {
@@ -231,6 +295,11 @@ LowerResult LowerParallelExpr(const ast::ParallelExpr& node, LowerCtx& ctx) {
   parts.push_back(domain_result.ir);
   parts.push_back(MakeIR(std::move(parallel)));
   parts.push_back(join_ir);
+  RecordGpuParallelLoweringConformance(
+      node,
+      domain_result.value,
+      result_value,
+      ctx);
 
   return LowerResult{SeqIR(std::move(parts)), result_value};
 }

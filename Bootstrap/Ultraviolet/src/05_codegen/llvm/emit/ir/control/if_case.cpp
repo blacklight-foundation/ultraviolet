@@ -4,7 +4,42 @@
 // =============================================================================
 #include "../../ir_instruction_visitor.h"
 
+#include "00_core/assert_spec.h"
+
+#include <string>
+
 namespace ultraviolet::codegen::emit_detail {
+
+namespace {
+
+void RecordIfCaseLoweringConformance(std::size_t arm_count,
+                                      const char *result_form)
+{
+  if (!core::Conformance::Enabled())
+  {
+    return;
+  }
+
+  core::Conformance::Record(
+      "def.24.StructuredIRLoweringForms",
+      std::nullopt,
+      "obligation=def.24.StructuredIRLoweringForms;"
+      "structured_form=IfCaseIRForm;"
+      "structured_lower_form=IfCaseLowerForm;"
+      "source=IRIfCaseEmission");
+
+  std::string payload =
+      "obligation=rule.24.Lower-IfCaseIR;"
+      "ir_form=IfCaseIRForm;"
+      "lower_form=IfCaseLowerForm;"
+      "arm_count=";
+  payload += std::to_string(arm_count);
+  payload += ";llvm_condbr=true;merge=ifcase.merge;result=";
+  payload += result_form ? result_form : "value";
+  core::Conformance::Record("rule.24.Lower-IfCaseIR", std::nullopt, payload);
+}
+
+}  // namespace
 
 void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
 {
@@ -1606,6 +1641,7 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
   {
     emitter.ForgetTempStorage(if_case.result);
     emitter.SetTempStorage(if_case.result, merged_storage);
+    RecordIfCaseLoweringConformance(if_case.arms.size(), "aggregate-storage");
     return;
   }
 
@@ -1655,6 +1691,7 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
         coerce_in_predecessor(incoming.front().pred,
                               incoming.front().value,
                               incoming.front().source_type));
+    RecordIfCaseLoweringConformance(if_case.arms.size(), "single-value");
     return;
   }
 
@@ -1667,6 +1704,7 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
                      entry.pred);
   }
   emitter.SetTempValue(if_case.result, phi);
+  RecordIfCaseLoweringConformance(if_case.arms.size(), "phi-value");
 }
 
 } // namespace ultraviolet::codegen::emit_detail

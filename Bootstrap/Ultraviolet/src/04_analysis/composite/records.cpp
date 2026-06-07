@@ -74,6 +74,9 @@ static inline void SpecDefsRecords() {
   SPEC_DEF("DefaultConstructible", "5.2.8");
   SPEC_DEF("RecordPath", "5.2.8");
   SPEC_DEF("RecordCallee", "5.2.8");
+  SPEC_DEF("def.16.RecordDefaultConstructionEligibility", "16.6.4");
+  SPEC_DEF("rule.16.Record-Default-Init-Err", "16.6.4");
+  SPEC_DEF("diagnostics.Records", "12.6.7");
 }
 
 static bool DefaultConstructible(
@@ -162,6 +165,7 @@ RecordWfResult CheckRecordWf(const ScopeContext& ctx,
     const auto key = IdKeyOf(field->name);
     if (!seen.insert(key).second) {
       SPEC_RULE("WF-Record-DupField");
+      SPEC_RULE("diagnostics.Records");
       result.diag_id = "E-TYP-1901";
       return result;
     }
@@ -215,7 +219,9 @@ ExprTypeResult TypeRecordDefaultCall(const ScopeContext& ctx,
 
   const auto fields = RecordFields(*callee_result.record);
   if (!DefaultConstructible(fields)) {
+    SPEC_RULE("def.16.RecordDefaultConstructionEligibility");
     SPEC_RULE("Record-Default-Init-Err");
+    SPEC_RULE("rule.16.Record-Default-Init-Err");
     result.diag_id = "Record-Default-Init-Err";
     return result;
   }

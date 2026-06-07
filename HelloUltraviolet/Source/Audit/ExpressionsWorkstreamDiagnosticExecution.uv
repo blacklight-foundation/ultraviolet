@@ -1,0 +1,158 @@
+//! Narrow diagnostic execution gates for Expressions workstream 18.
+
+internal procedure expressionsWorkstreamRejectedFixture(
+    authority: TestAuthority,
+    fixture_path: string@View
+) -> DiagnosticFixtureExecutionResult {
+    return diagnosticExerciseProjectFixtureDirectory(authority, fixture_path, true)
+}
+
+#test(name: "expressions workstream rejected diagnostics exercise")
+internal procedure expressionsWorkstreamRejectedDiagnosticsExercise(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+
+    var result: DiagnosticFixtureExecutionResult =
+        diagnosticFixtureExecutionResult(true, 0usize)
+    result = outputDiagnosticMergeResult(
+        result,
+        expressionsWorkstreamRejectedFixture(
+            authority,
+            "Fixtures/RejectedSource/Expressions/ParsePlaceError"
+        )
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        expressionsWorkstreamRejectedFixture(
+            authority,
+            "Fixtures/RejectedSource/Expressions/FieldVisibility"
+        )
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        expressionsWorkstreamRejectedFixture(
+            authority,
+            "Fixtures/RejectedSource/Expressions/IndexClassification"
+        )
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        expressionsWorkstreamRejectedFixture(
+            authority,
+            "Fixtures/RejectedSource/Expressions/UnionDirectAccess"
+        )
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        expressionsWorkstreamRejectedFixture(
+            authority,
+            "Fixtures/RejectedSource/Expressions/ValueUseNonBitcopyPlace"
+        )
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        expressionsWorkstreamRejectedFixture(
+            authority,
+            "Fixtures/RejectedSource/Expressions/TupleAccessNonTuple"
+        )
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        expressionsWorkstreamRejectedFixture(
+            authority,
+            "Fixtures/RejectedSource/Expressions/ExpressionDiagnosticsSupplement"
+        )
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        expressionsWorkstreamRejectedFixture(
+            authority,
+            "Fixtures/RejectedSource/Expressions/QualifiedNameResolution"
+        )
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        expressionsWorkstreamRejectedFixture(
+            authority,
+            "Fixtures/RejectedSource/Expressions/NullLiteralExpected"
+        )
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        expressionsWorkstreamRejectedFixture(
+            authority,
+            "Fixtures/RejectedSource/Expressions/IntLiteralCheckRange"
+        )
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        expressionsWorkstreamRejectedFixture(
+            authority,
+            "Fixtures/RejectedSource/Expressions/FloatLiteralExplicitRequirement"
+        )
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        expressionsWorkstreamRejectedFixture(
+            authority,
+            "Fixtures/RejectedSource/Expressions/PtrNullExpectedRequirement"
+        )
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        expressionsWorkstreamRejectedFixture(
+            authority,
+            "Fixtures/RejectedSource/Expressions/PtrNullSynthesis"
+        )
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        expressionsWorkstreamRejectedFixture(
+            authority,
+            "Fixtures/RejectedSource/Expressions/PtrNullCheck"
+        )
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        expressionsWorkstreamRejectedFixture(
+            authority,
+            "Fixtures/RejectedSource/Expressions/ExprUnresolved"
+        )
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        expressionsWorkstreamRejectedFixture(
+            authority,
+            "Fixtures/RejectedSource/Expressions/QualifiedNameEliminatedBeforeTyping"
+        )
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        expressionsWorkstreamRejectedFixture(
+            authority,
+            "Fixtures/RejectedSource/Expressions/FloatSuffixMismatch"
+        )
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        expressionsWorkstreamRejectedFixture(
+            authority,
+            "Fixtures/RejectedSource/Expressions/OperatorStaticTypes"
+        )
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        expressionsWorkstreamRejectedFixture(
+            authority,
+            "Fixtures/RejectedSource/Expressions/OperatorOperandMismatch"
+        )
+    )
+    return result.passed && result.count == 24usize
+}

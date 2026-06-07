@@ -208,20 +208,102 @@ std::filesystem::path ResolveManifestToolchainPath(
   return (project.root / path).lexically_normal();
 }
 
+std::string RenderBool(bool value) {
+  return value ? "true" : "false";
+}
+
+std::string RenderPath(const std::filesystem::path& path) {
+  return path.generic_string();
+}
+
+std::string RenderPathList(const std::vector<std::filesystem::path>& paths) {
+  std::string out = "[";
+  bool first = true;
+  for (const auto& path : paths) {
+    if (!first) {
+      out += ",";
+    }
+    first = false;
+    out += RenderPath(path);
+  }
+  out += "]";
+  return out;
+}
+
+std::string RenderObjectFormat(ObjectFormat format) {
+  switch (format) {
+    case ObjectFormat::Coff:
+      return "coff";
+    case ObjectFormat::Elf:
+      return "elf";
+    case ObjectFormat::MachO:
+      return "macho";
+  }
+  return "unknown";
+}
+
+void RecordCompilerToolBinDir(const Project& project,
+                              TargetProfile target_profile,
+                              const std::filesystem::path& tool_bin_dir,
+                              bool exists) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  SPEC_RULE("def.CompilerToolBinDir");
+  core::Conformance::Record(
+      "def.CompilerToolBinDir",
+      std::nullopt,
+      "assembly=" + project.assembly.name +
+          ";target=" + std::string(TargetProfileName(target_profile)) +
+          ";object_format=" +
+          RenderObjectFormat(ObjectFormatOf(target_profile)) +
+          ";path=" + RenderPath(tool_bin_dir) +
+          ";exists=" + RenderBool(exists));
+}
+
+void RecordSearchDirs(const Project& project,
+                      TargetProfile target_profile,
+                      std::string_view branch,
+                      const std::vector<std::filesystem::path>& dirs) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  SPEC_RULE("def.SearchDirs");
+  core::Conformance::Record(
+      "def.SearchDirs",
+      std::nullopt,
+      "assembly=" + project.assembly.name +
+          ";target=" + std::string(TargetProfileName(target_profile)) +
+          ";branch=" + std::string(branch) +
+          ";count=" + std::to_string(dirs.size()) +
+          ";dirs=" + RenderPathList(dirs));
+}
+
 }  // namespace
 
 std::vector<std::filesystem::path> SearchDirs(const Project& project,
                                              TargetProfile target_profile) {
   if (project.toolchain.llvm_bin.has_value() &&
       !project.toolchain.llvm_bin->empty()) {
-    return {ResolveManifestToolchainPath(project, *project.toolchain.llvm_bin)};
+    std::vector<std::filesystem::path> dirs{
+        ResolveManifestToolchainPath(project, *project.toolchain.llvm_bin)};
+    RecordSearchDirs(project, target_profile, "toolchain", dirs);
+    return dirs;
   }
 
   const auto tool_bin_dir = CompilerToolBinDir(project, target_profile);
   std::error_code ec;
-  if (!tool_bin_dir.empty() &&
-      std::filesystem::is_directory(tool_bin_dir, ec) && !ec) {
-    return {tool_bin_dir};
+  const bool tool_bin_exists =
+      !tool_bin_dir.empty() && std::filesystem::is_directory(tool_bin_dir, ec) &&
+      !ec;
+  RecordCompilerToolBinDir(project,
+                           target_profile,
+                           tool_bin_dir,
+                           tool_bin_exists);
+  if (tool_bin_exists) {
+    std::vector<std::filesystem::path> dirs{tool_bin_dir};
+    RecordSearchDirs(project, target_profile, "compiler_tool_bin", dirs);
+    return dirs;
   }
 
   std::vector<std::filesystem::path> dirs;
@@ -231,6 +313,7 @@ std::vector<std::filesystem::path> SearchDirs(const Project& project,
       AddUniquePath(dirs, path);
     }
   }
+  RecordSearchDirs(project, target_profile, "path", dirs);
   return dirs;
 }
 

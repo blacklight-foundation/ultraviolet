@@ -1,0 +1,22 @@
+//! Artifact fixture for extern ABI parser forms.
+
+import ExternAbiForms::Support
+using ExternAbiForms::Support::{ supportUsingValue }
+
+internal let EXTERN_ABI_FORMS_STATIC: i32 = Support::supportValue()
+
+extern {
+    public procedure externAbiDefaultValue() -> i32
+}
+
+extern "C" {
+    public procedure externAbiStringValue() -> i32
+}
+
+extern C {
+    public procedure externAbiIdentValue() -> i32
+}
+
+public procedure externAbiFormsMarker() -> i32 {
+    return EXTERN_ABI_FORMS_STATIC + supportUsingValue()
+}

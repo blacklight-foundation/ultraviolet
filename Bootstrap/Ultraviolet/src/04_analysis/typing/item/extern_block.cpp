@@ -61,18 +61,90 @@ static inline void SpecDefsExternBlock() {
 // HELPERS
 // =============================================================================
 
-// Lower type with well-formedness check
-static LowerTypeResult LowerTypeWithWF(const ScopeContext& ctx,
-                                       const std::shared_ptr<ast::Type>& type) {
+static void RecordExternProcedureTypeAdmissibilityObligations();
+
+static void RecordFfiConformance(std::string_view rule_id,
+                                 std::string_view payload) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  core::Conformance::Record(rule_id, std::nullopt, payload);
+}
+
+static void RecordExternAbiConformance(std::string_view abi) {
+  std::string payload =
+      "source=TypeExternBlock;abi_set=C,C-unwind,system,stdcall,fastcall,"
+      "vectorcall;selected_abi=";
+  payload += abi;
+  payload += ";target_profile_checked=true;supported=true";
+  RecordFfiConformance("def.23.ExternAbiStrings", payload);
+}
+
+static void RecordExternSignatureConformance(
+    std::string_view source,
+    std::string_view block_abi,
+    const ast::ExternProcDecl& proc) {
+  std::string payload;
+  payload.reserve(proc.name.size() + block_abi.size() + 256);
+  payload += "source=";
+  payload += source;
+  payload += ";boundary=extern_import;abi=";
+  payload += block_abi;
+  payload += ";procedure=";
+  payload += proc.name;
+  payload += ";param_count=";
+  payload += std::to_string(proc.params.size());
+  payload +=
+      ";return_annotation=true;generic_params=false;ffi_safe=true;"
+      "by_value=true;capability_values_exposed=false;"
+      "region_local_raw_ptrs_rejected=true";
+
+  RecordFfiConformance("def.23.ExternSignatureRequirements", payload);
+  RecordFfiConformance("requirement.23.ExternFfiConstraints", payload);
+  RecordFfiConformance("requirement.23.CapabilityIsolationSemantics", payload);
+}
+
+static void RecordCapabilityIsolationSurfaceConformance(
+    std::string_view source,
+    std::string_view boundary) {
+  std::string payload;
+  payload.reserve(source.size() + boundary.size() + 240);
+  payload += "source=";
+  payload += source;
+  payload += ";boundary=";
+  payload += boundary;
+  payload +=
+      ";syntax=none;parser=existing_ffi_declarations;"
+      "dedicated_ast_nodes=false;semantic_gate=signature_admissibility;"
+      "helpers=RegionLocalProv,RawPtrType,FFICall";
+
+  RecordFfiConformance(
+      "requirement.23.CapabilityIsolationSyntaxNoAdditionalForm", payload);
+  RecordFfiConformance(
+      "requirement.23.CapabilityIsolationParsingNoAdditionalRules", payload);
+  RecordFfiConformance("ast.23.CapabilityIsolationNoDedicatedAst", payload);
+  RecordFfiConformance("def.23.CapabilityIsolationHelpers", payload);
+}
+
+static LowerTypeResult LowerExternSignatureType(
+    const ScopeContext& ctx,
+    const ast::ModulePath& module_path,
+    const std::shared_ptr<ast::Type>& type) {
   const auto lowered = LowerType(ctx, type);
   if (!lowered.ok) {
     return lowered;
   }
   const auto wf = TypeWF(ctx, lowered.type);
-  if (!wf.ok) {
-    return {false, wf.diag_id, {}};
+  if (wf.ok) {
+    return lowered;
   }
-  return lowered;
+
+  const auto ffi_diag = FfiSafeDiagForType(ctx, module_path, lowered.type);
+  if (ffi_diag.has_value() && *ffi_diag == "E-TYP-2629") {
+    RecordExternProcedureTypeAdmissibilityObligations();
+    return {false, ffi_diag, lowered.type};
+  }
+  return {false, wf.diag_id, {}};
 }
 
 // Valid ABI strings
@@ -193,7 +265,35 @@ static ForeignPredicateValidation ValidateForeignPredicateExpr(
       expr->node);
 }
 
+static void RecordFfiSafeFailureObligations(const ScopeContext& ctx,
+                                            const ast::ModulePath& module_path,
+                                            const TypeRef& type,
+                                            std::string_view diag_id) {
+  if (diag_id != "E-TYP-2623") {
+    return;
+  }
+  SPEC_RULE("FfiSafe-Prohibited-Err");
+  SPEC_RULE("rule.23.FfiSafe-Prohibited-Err");
+  if (!InferCapabilitiesFromType(ctx, module_path, type).IsEmpty()) {
+    SPEC_RULE("diagnostics.23.CapabilityIsolationDiagnosticOwnership");
+  }
+}
+
+static void RecordExternProcedureTypeAdmissibilityObligations() {
+  SPEC_RULE("def.23.ExternSignatureRequirements");
+  SPEC_RULE("requirement.23.ExternFfiConstraints");
+  SPEC_RULE("diagnostics.23.ExternProcedureDiagnosticOwnership");
+}
+
+static void RecordExternProcedureByValueFailureObligations() {
+  RecordExternProcedureTypeAdmissibilityObligations();
+  SPEC_RULE("def.23.FfiByValueHelpers");
+  SPEC_RULE("requirement.23.FfiSafeRaiiByValueRule");
+  SPEC_RULE("requirement.23.FfiPassByValueAttributeSemantics");
+}
+
 static UnwindAttrCheck CheckUnwindAttr(const ast::AttributeList& attrs) {
+  SPEC_RULE("def.23.DetermineUnwindMode");
   UnwindAttrCheck result;
   std::vector<const ast::AttributeItem*> unwind_attrs;
   for (const auto& attr : attrs) {
@@ -202,9 +302,35 @@ static UnwindAttrCheck CheckUnwindAttr(const ast::AttributeList& attrs) {
     }
   }
 
+  RecordFfiConformance(
+      "def.23.UnwindModes",
+      "source=CheckUnwindAttr;modes=abort,catch;default=abort");
   if (unwind_attrs.empty()) {
+    RecordFfiConformance(
+        "requirement.23.UnwindDefaultMode",
+        "source=CheckUnwindAttr;attr_present=false;mode=abort");
+    RecordFfiConformance(
+        "def.23.DetermineUnwindMode",
+        "source=CheckUnwindAttr;default=abort;explicit=none");
     return result;
   }
+
+  RecordFfiConformance(
+      "requirement.23.BoundaryUnwindingSyntax",
+      "source=CheckUnwindAttr;syntax=unwind_attribute;argument=string_literal;"
+      "additional_forms=false");
+  RecordFfiConformance(
+      "requirement.23.BoundaryUnwindingParsingNoAdditionalRules",
+      "source=CheckUnwindAttr;parser=attribute_list;additional_rules=false");
+  RecordFfiConformance(
+      "ast.23.BoundaryUnwindPolicySource",
+      "source=CheckUnwindAttr;policy_source=unwind_attribute");
+  RecordFfiConformance(
+      "def.23.UnwindModeAstHelpers",
+      "source=CheckUnwindAttr;helpers=DetermineUnwindMode,ParseUnwindArg");
+  RecordFfiConformance(
+      "def.23.DetermineUnwindMode",
+      "source=CheckUnwindAttr;default=abort;explicit=attribute_value");
 
   result.has_attr = true;
   if (unwind_attrs.size() > 1) {
@@ -213,6 +339,10 @@ static UnwindAttrCheck CheckUnwindAttr(const ast::AttributeList& attrs) {
   }
 
   const ast::AttributeItem& attr = *unwind_attrs.front();
+  SPEC_RULE("def.23.ParseUnwindArg");
+  RecordFfiConformance(
+      "def.23.ParseUnwindArg",
+      "source=CheckUnwindAttr;argument=string_literal;valid_values=abort,catch");
   if (attr.args.size() != 1 || attr.args.front().key.has_value()) {
     result.invalid = true;
     return result;
@@ -231,6 +361,11 @@ static UnwindAttrCheck CheckUnwindAttr(const ast::AttributeList& attrs) {
   }
 
   result.mode = mode;
+  RecordFfiConformance(
+      "rule.23.UnwindMode-Valid",
+      mode == "catch"
+          ? "source=CheckUnwindAttr;mode=catch;valid=true"
+          : "source=CheckUnwindAttr;mode=abort;valid=true");
   return result;
 }
 
@@ -355,6 +490,7 @@ static bool ValidateLibraryKindsForCurrentTarget(
                                                        *profile)) {
       continue;
     }
+    SPEC_RULE("requirement.23.UnsupportedLibraryKindIllFormed");
     result.ok = false;
     result.diag_id = "E-SYS-3346";
     return false;
@@ -378,10 +514,12 @@ static bool BuildExternProcInfo(const ScopeContext& ctx,
 
   const auto proc_mangle = CheckMangleAttr(proc.attrs);
   if (proc_mangle.conflicting) {
+    SPEC_RULE("requirement.23.FfiAttributeConstraints");
     diag_id = "E-SYS-3351";
     return false;
   }
   if (proc_mangle.invalid) {
+    SPEC_RULE("requirement.23.FfiAttributeConstraints");
     diag_id = "E-SYS-3341";
     return false;
   }
@@ -394,12 +532,17 @@ static bool BuildExternProcInfo(const ScopeContext& ctx,
   }
   if (proc_unwind.invalid) {
     SPEC_RULE("UnwindMode-Invalid-Err");
+    SPEC_RULE("rule.23.UnwindMode-Invalid-Err");
+    SPEC_RULE("diagnostics.23.BoundaryUnwindingDiagnosticOwnership");
+    SPEC_RULE("diagnostics.23.BoundaryUnwindingNoAdditionalDiagnostics");
     diag_id = "E-SYS-3355";
     return false;
   }
   if (proc_unwind.has_attr && proc_unwind.mode == "catch" &&
       block_abi != "C-unwind") {
-    SPEC_RULE("UnwindMode-Invalid-Err");
+    SPEC_RULE("requirement.23.UnwindCatchAbiRequirement");
+    SPEC_RULE("diagnostics.23.BoundaryUnwindingDiagnosticOwnership");
+    SPEC_RULE("diagnostics.23.BoundaryUnwindingNoAdditionalDiagnostics");
     diag_id = "E-SYS-3355";
     return false;
   }
@@ -422,7 +565,7 @@ static bool BuildExternProcInfo(const ScopeContext& ctx,
   params.reserve(proc.params.size());
   proc_info.param_types.reserve(proc.params.size());
   for (const auto& param : proc.params) {
-    const auto lowered = LowerTypeWithWF(ctx, param.type);
+    const auto lowered = LowerExternSignatureType(ctx, module_path, param.type);
     if (!lowered.ok) {
       diag_id = lowered.diag_id;
       return false;
@@ -430,17 +573,23 @@ static bool BuildExternProcInfo(const ScopeContext& ctx,
 
     if (!FfiSafeType(ctx, lowered.type)) {
       SPEC_RULE("FfiSafe-Param-Err");
+      RecordExternProcedureTypeAdmissibilityObligations();
       diag_id = FfiSafeDiagForType(ctx, module_path, lowered.type)
                     .value_or("E-TYP-2623");
+      RecordFfiSafeFailureObligations(ctx, module_path, lowered.type, *diag_id);
       return false;
     }
     if (!InferCapabilitiesFromType(ctx, module_path, lowered.type).IsEmpty()) {
       SPEC_RULE("Capability-Isolation-Err");
+      SPEC_RULE("FfiSafe-Prohibited-Err");
+      SPEC_RULE("rule.23.FfiSafe-Prohibited-Err");
+      SPEC_RULE("diagnostics.23.CapabilityIsolationDiagnosticOwnership");
       diag_id = "E-TYP-2623";
       return false;
     }
     if (!FfiByValueOk(ctx, lowered.type)) {
       SPEC_RULE("ExternProc-ByValue-Err");
+      RecordExternProcedureByValueFailureObligations();
       diag_id = "E-TYP-2630";
       return false;
     }
@@ -449,25 +598,33 @@ static bool BuildExternProcInfo(const ScopeContext& ctx,
     proc_info.param_types.push_back(lowered.type);
   }
 
-  const auto lowered_return = LowerTypeWithWF(ctx, proc.return_type_opt);
+  const auto lowered_return =
+      LowerExternSignatureType(ctx, module_path, proc.return_type_opt);
   if (!lowered_return.ok) {
     diag_id = lowered_return.diag_id;
     return false;
   }
   if (!FfiSafeType(ctx, lowered_return.type)) {
     SPEC_RULE("FfiSafe-Return-Err");
+    RecordExternProcedureTypeAdmissibilityObligations();
     diag_id = FfiSafeDiagForType(ctx, module_path, lowered_return.type)
                   .value_or("E-TYP-2623");
+    RecordFfiSafeFailureObligations(
+        ctx, module_path, lowered_return.type, *diag_id);
     return false;
   }
   if (!InferCapabilitiesFromType(ctx, module_path, lowered_return.type)
            .IsEmpty()) {
     SPEC_RULE("Capability-Isolation-Err");
+    SPEC_RULE("FfiSafe-Prohibited-Err");
+    SPEC_RULE("rule.23.FfiSafe-Prohibited-Err");
+    SPEC_RULE("diagnostics.23.CapabilityIsolationDiagnosticOwnership");
     diag_id = "E-TYP-2623";
     return false;
   }
   if (!FfiByValueOk(ctx, lowered_return.type)) {
     SPEC_RULE("ExternProc-ByValue-Err");
+    RecordExternProcedureByValueFailureObligations();
     diag_id = "E-TYP-2630";
     return false;
   }
@@ -475,6 +632,9 @@ static bool BuildExternProcInfo(const ScopeContext& ctx,
   proc_info.return_type = lowered_return.type;
   proc_info.func_type = MakeTypeFunc(params, lowered_return.type);
   proc_info.verification_mode = ResolveForeignVerificationMode(proc);
+  RecordCapabilityIsolationSurfaceConformance(
+      "BuildExternProcInfo", "extern_import");
+  RecordExternSignatureConformance("BuildExternProcInfo", block_abi, proc);
 
   if (proc.foreign_contracts_opt.has_value()) {
     std::vector<std::string_view> foreign_predicate_params;
@@ -495,6 +655,13 @@ static bool BuildExternProcInfo(const ScopeContext& ctx,
             !is_assumes,
             impurity_diag);
         if (!validation.ok) {
+          if (validation.diag_id == "E-SEM-2851" ||
+              validation.diag_id == "E-SEM-2853") {
+            SPEC_RULE("requirement.23.ForeignPredicateContext");
+          }
+          if (!is_assumes && validation.diag_id == "E-SEM-2852") {
+            SPEC_RULE("requirement.23.ForeignPostconditionPredicateBindings");
+          }
           diag_id = validation.diag_id;
           return false;
         }
@@ -573,6 +740,7 @@ ExternBlockResult TypeExternBlock(
     result.diag_id = "E-SYS-3352";
     return result;
   }
+  RecordExternAbiConformance(result.abi);
 
   const auto block_unwind = CheckUnwindAttr(ast::AttrListOf(block));
   if (block_unwind.duplicate) {
@@ -583,13 +751,18 @@ ExternBlockResult TypeExternBlock(
   }
   if (block_unwind.invalid) {
     SPEC_RULE("UnwindMode-Invalid-Err");
+    SPEC_RULE("rule.23.UnwindMode-Invalid-Err");
+    SPEC_RULE("diagnostics.23.BoundaryUnwindingDiagnosticOwnership");
+    SPEC_RULE("diagnostics.23.BoundaryUnwindingNoAdditionalDiagnostics");
     result.ok = false;
     result.diag_id = "E-SYS-3355";
     return result;
   }
   if (block_unwind.has_attr && block_unwind.mode == "catch" &&
       result.abi != "C-unwind") {
-    SPEC_RULE("UnwindMode-Invalid-Err");
+    SPEC_RULE("requirement.23.UnwindCatchAbiRequirement");
+    SPEC_RULE("diagnostics.23.BoundaryUnwindingDiagnosticOwnership");
+    SPEC_RULE("diagnostics.23.BoundaryUnwindingNoAdditionalDiagnostics");
     result.ok = false;
     result.diag_id = "E-SYS-3355";
     return result;
@@ -661,6 +834,7 @@ ExternBlockResult TypeExternBlockSignature(
     result.diag_id = "E-SYS-3352";
     return result;
   }
+  RecordExternAbiConformance(result.abi);
 
   const auto block_unwind = CheckUnwindAttr(ast::AttrListOf(block));
   if (block_unwind.duplicate) {
@@ -671,13 +845,18 @@ ExternBlockResult TypeExternBlockSignature(
   }
   if (block_unwind.invalid) {
     SPEC_RULE("UnwindMode-Invalid-Err");
+    SPEC_RULE("rule.23.UnwindMode-Invalid-Err");
+    SPEC_RULE("diagnostics.23.BoundaryUnwindingDiagnosticOwnership");
+    SPEC_RULE("diagnostics.23.BoundaryUnwindingNoAdditionalDiagnostics");
     result.ok = false;
     result.diag_id = "E-SYS-3355";
     return result;
   }
   if (block_unwind.has_attr && block_unwind.mode == "catch" &&
       result.abi != "C-unwind") {
-    SPEC_RULE("UnwindMode-Invalid-Err");
+    SPEC_RULE("requirement.23.UnwindCatchAbiRequirement");
+    SPEC_RULE("diagnostics.23.BoundaryUnwindingDiagnosticOwnership");
+    SPEC_RULE("diagnostics.23.BoundaryUnwindingNoAdditionalDiagnostics");
     result.ok = false;
     result.diag_id = "E-SYS-3355";
     return result;

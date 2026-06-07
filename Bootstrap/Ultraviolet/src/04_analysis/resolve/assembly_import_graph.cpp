@@ -26,6 +26,7 @@ using project::IsDependency;
 using project::IsExecutable;
 using project::IsLibrary;
 using project::IsLinkable;
+using project::IsStaticLibrary;
 using project::ModuleInfo;
 using project::Project;
 using project::Utf8LexLess;
@@ -306,6 +307,9 @@ std::vector<ModuleInfo> ComputeLifecycleModules(
     if (library_it == graph.assemblies.end()) {
       continue;
     }
+    if (!IsStaticLibrary(*library_it->second)) {
+      continue;
+    }
     modules.insert(modules.end(),
                    library_it->second->modules.begin(),
                    library_it->second->modules.end());
@@ -523,6 +527,16 @@ bool ValidateHostedLibraryImportGraph(const Project& project,
     return true;
   }
 
+  SPEC_RULE("def.HostedLibraryImportsLinkedLibrary");
+  core::Conformance::Record(
+      "def.HostedLibraryImportsLinkedLibrary", std::nullopt,
+      "assembly=" + project.assembly.name +
+          ";imported_library=" + imported_libraries.front());
+  SPEC_RULE("Assembly-Graph-HostedImport-Err");
+  core::Conformance::Record(
+      "Assembly-Graph-HostedImport-Err", std::nullopt,
+      "assembly=" + project.assembly.name +
+          ";imported_library=" + imported_libraries.front());
   if (auto diag = core::MakeExternalDiagnostic("E-PRJ-0210")) {
     core::SubDiagnostic note;
     note.kind = core::SubDiagnosticKind::Note;

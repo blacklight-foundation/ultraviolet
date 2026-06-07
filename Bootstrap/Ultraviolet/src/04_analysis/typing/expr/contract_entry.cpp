@@ -485,6 +485,7 @@ ExprTypeResult TypeEntryExprImpl(const ScopeContext& ctx,
   // @entry only valid in postcondition context
   if (type_ctx.contract_phase != ContractPhase::Postcondition) {
     SPEC_RULE("@entry-Context");
+    SPEC_RULE("req.15.ContractEntryConstraints");
     result.diag_id = "E-SEM-2852";  // @entry outside postcondition
     return result;
   }
@@ -495,17 +496,20 @@ ExprTypeResult TypeEntryExprImpl(const ScopeContext& ctx,
 
   // Expression must only reference bindings available at entry
   if (!ExprUsesOnlyEntryEnvBindings(expr.expr, env)) {
+    SPEC_RULE("req.15.ContractEntryConstraints");
     result.diag_id = "E-SEM-2852";
     return result;
   }
 
   if (ExprContainsCapabilityOp(ctx, type_ctx, env, expr.expr)) {
     SPEC_RULE("Entry-NoCapability-Err");
+    SPEC_RULE("req.15.ContractEntryConstraints");
     result.diag_id = "E-CON-0415";
     return result;
   }
   if (ExprContainsSideEffectOp(expr.expr)) {
     SPEC_RULE("Entry-SideEffect-Err");
+    SPEC_RULE("req.15.ContractEntryConstraints");
     result.diag_id = "E-CON-0416";
     return result;
   }
@@ -519,11 +523,15 @@ ExprTypeResult TypeEntryExprImpl(const ScopeContext& ctx,
 
   // Result type must be Bitcopy so the entry-state value can be captured.
   if (!BitcopyType(ctx, typed.type)) {
+    SPEC_RULE("rule.15.Entry-Type");
+    SPEC_RULE("req.15.ContractEntryConstraints");
     result.diag_id = "E-SEM-2805";
     return result;
   }
 
   SPEC_RULE("Entry-Type");
+  SPEC_RULE("rule.15.Entry-Type");
+  SPEC_RULE("req.15.ContractEntryConstraints");
   result.ok = true;
   result.type = typed.type;
   return result;

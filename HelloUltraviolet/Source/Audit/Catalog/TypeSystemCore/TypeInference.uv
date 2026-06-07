@@ -376,12 +376,12 @@ public procedure validatedTypeSystemCoreTypeInferenceObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Unify-Prim-Fail",
         26130usize,
-        "HelloUltraviolet::Reference::Types",
-        "runTypesInferenceReference",
-        "Source/Reference/Types/Inference.uv"
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/CallArgType/Source/Main.uv"
     ) {
         count = count + 1usize
     }

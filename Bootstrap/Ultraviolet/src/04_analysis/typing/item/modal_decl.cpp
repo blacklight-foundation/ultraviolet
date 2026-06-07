@@ -33,6 +33,7 @@
 #include "04_analysis/typing/type_lower.h"
 #include "04_analysis/typing/types.h"
 #include "04_analysis/typing/type_wf.h"
+#include "04_analysis/typing/type_predicates.h"
 #include "04_analysis/typing/subtyping.h"
 #include "04_analysis/typing/type_expr.h"
 #include "04_analysis/typing/type_equiv.h"
@@ -341,6 +342,49 @@ static bool DistinctClassPaths(const std::vector<ast::ClassPath>& impls) {
   return std::adjacent_find(keys.begin(), keys.end()) == keys.end();
 }
 
+static bool HasDirectFoundationalImpl(const std::vector<ast::ClassPath>& impls,
+                                      std::string_view name) {
+  for (const auto& impl : impls) {
+    if (impl.size() == 1 && impl[0] == name) {
+      return true;
+    }
+  }
+  return false;
+}
+
+static void RecordHashRequiresEqCheck(std::string_view source,
+                                      bool implements_eq) {
+  SPEC_RULE("req.14.HashRequiresEqAndEqualValuesHashEqual");
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload;
+  payload += "source=";
+  payload += source;
+  payload += ";implements_hash=true;implements_eq=";
+  payload += implements_eq ? "true" : "false";
+  payload += ";equal_values_hash_equal=semantic_law";
+  core::Conformance::Record(
+      "req.14.HashRequiresEqAndEqualValuesHashEqual",
+      std::nullopt,
+      payload);
+}
+
+static bool HashImplementationSatisfiesEqRequirement(
+    const ScopeContext& ctx,
+    const TypeRef& self_type,
+    const std::vector<ast::ClassPath>& impls) {
+  if (!HasDirectFoundationalImpl(impls, "Hash")) {
+    return true;
+  }
+
+  const bool implements_eq =
+      EqType(ctx, self_type) || HasDirectFoundationalImpl(impls, "Eq");
+  RecordHashRequiresEqCheck("TypeModalDecl", implements_eq);
+  return implements_eq;
+}
+
 struct RequiredStateFieldInfo {
   std::string name;
   TypeRef type;
@@ -503,8 +547,17 @@ ModalDeclResult TypeModalDecl(
   // Check class implementations are distinct
   if (!DistinctClassPaths(decl.implements)) {
     SPEC_RULE("Impl-Duplicate-Err");
+    SPEC_RULE("rule.14.Impl-Coherence-Err");
+    SPEC_RULE("req.14.DuplicateClassImplementationForbidden");
     result.ok = false;
     result.diag_id = "E-TYP-2506";
+    return result;
+  }
+
+  if (!HashImplementationSatisfiesEqRequirement(
+          ctx, result.self_type, decl.implements)) {
+    result.ok = false;
+    result.diag_id = "E-TYP-2503";
     return result;
   }
 

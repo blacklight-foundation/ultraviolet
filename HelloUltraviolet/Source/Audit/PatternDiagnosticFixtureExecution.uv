@@ -1,0 +1,469 @@
+//! Pattern-specific diagnostic fixture execution checks.
+
+internal procedure patternRejectedFixtureMatchesExpectedDiagnostics(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    expected_count: usize
+) -> bool {
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+
+    let result: DiagnosticFixtureExecutionResult =
+        diagnosticExerciseProjectFixtureDirectory(
+            authority,
+            fixture_path,
+            true
+        )
+    return result.passed &&
+        result.count == expected_count
+}
+
+internal procedure patternConformancePathContains(
+    authority: TestAuthority,
+    conformance_path: string@View,
+    obligation_id: string@View
+) -> bool {
+    return diagnosticConformancePathContainsExpectedObligation(
+        authority,
+        conformance_path,
+        obligation_id
+    )
+}
+
+internal procedure patternRejectedFixtureMatchesExpectedAndRecordsObligation(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    expected_path: string@View,
+    expected_count: usize,
+    output_suffix: string@View,
+    error_suffix: string@View,
+    out_dir_suffix: string@View,
+    obligation_id: string@View
+) -> bool {
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+
+    let output_result: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move output_result is {
+        @Value { value: output_path } {
+            if !diagnosticBuildPath(output_path, output_suffix, authority.heap) {
+                false
+            } else {
+                let error_result: Outcome<unique string@Managed, AllocationError> =
+                    string::from(authority.temporary_directory, authority.heap)
+                return if move error_result is {
+                    @Value { value: error_path } {
+                        if !diagnosticBuildPath(error_path, error_suffix, authority.heap) {
+                            false
+                        } else {
+                            let out_dir_result: Outcome<unique string@Managed, AllocationError> =
+                                string::from(authority.temporary_directory, authority.heap)
+                            return if move out_dir_result is {
+                                @Value { value: out_dir_path } {
+                                    if !diagnosticBuildPath(
+                                        out_dir_path,
+                                        out_dir_suffix,
+                                        authority.heap
+                                    ) {
+                                        false
+                                    } else {
+                                        let conformance_result: Outcome<unique string@Managed, AllocationError> =
+                                            string::from(
+                                                string::as_view(out_dir_path),
+                                                authority.heap
+                                            )
+                                        return if move conformance_result is {
+                                            @Value { value: conformance_path } {
+                                                if !diagnosticBuildPath(
+                                                    conformance_path,
+                                                    "Logs",
+                                                    authority.heap
+                                                ) ||
+                                                    !diagnosticBuildPath(
+                                                        conformance_path,
+                                                        "Conformance",
+                                                        authority.heap
+                                                    ) ||
+                                                    !diagnosticBuildPath(
+                                                        conformance_path,
+                                                        DIAGNOSTIC_CONFORMANCE_LOG_NAME,
+                                                        authority.heap
+                                                    ) {
+                                                    false
+                                                } else {
+                                                    let result: DiagnosticFixtureExecutionResult =
+                                                        diagnosticExerciseFixtureWithPaths(
+                                                            authority,
+                                                            fixture_path,
+                                                            expected_path,
+                                                            true,
+                                                            string::as_view(output_path),
+                                                            string::as_view(error_path),
+                                                            string::as_view(out_dir_path),
+                                                            string::as_view(conformance_path)
+                                                        )
+                                                    result.passed &&
+                                                        result.count == expected_count &&
+                                                        patternConformancePathContains(
+                                                            authority,
+                                                            string::as_view(conformance_path),
+                                                            obligation_id
+                                                        )
+                                                }
+                                            }
+                                            @Error {
+                                                false
+                                            }
+                                        }
+                                    }
+                                }
+                                @Error {
+                                    false
+                                }
+                            }
+                        }
+                    }
+                    @Error {
+                        false
+                    }
+                }
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+#test(name: "pattern duplicate binding emits Pat-Dup diagnostic")
+internal procedure patternDuplicatePatternBindingRejectsWithPatDupDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternRejectedFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Patterns/DuplicatePatternBinding",
+        1usize
+    )
+}
+
+#test(name: "pattern basic diagnostics emit exact obligation diagnostic")
+internal procedure patternBasicPatternsDiagnosticRejectsWithBasicPatternsDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternRejectedFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Patterns/BasicPatternsDiagnostic",
+        1usize
+    )
+}
+
+#test(name: "pattern case clauses diagnostics emit exact obligation diagnostic")
+internal procedure patternCaseClausesDiagnosticRejectsWithCaseClausesDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternRejectedFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Patterns/CaseClausesDiagnostic",
+        1usize
+    )
+}
+
+#test(name: "pattern enum modal diagnostics emit exact obligation diagnostic")
+internal procedure patternEnumModalDiagnosticRejectsWithEnumModalDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternRejectedFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Patterns/EnumModalPatternsDiagnostic",
+        1usize
+    )
+}
+
+#test(name: "pattern modal if-case non-exhaustive emits exact diagnostic")
+internal procedure patternIfCaseModalNonExhaustiveRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternRejectedFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive",
+        2usize
+    )
+}
+
+#test(name: "pattern union if-case non-exhaustive emits exact diagnostic")
+internal procedure patternIfCaseUnionNonExhaustiveRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternRejectedFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Patterns/IfCaseUnionNonExhaustive",
+        1usize
+    )
+}
+
+#test(name: "pattern enum if-case non-exhaustive emits exact diagnostic")
+internal procedure patternIfCaseEnumNonExhaustiveRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternRejectedFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Patterns/IfCaseEnumNonExhaustive",
+        1usize
+    )
+}
+
+#test(name: "pattern unreachable if-case emits exact diagnostic")
+internal procedure patternIfCaseUnreachableRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternRejectedFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Patterns/IfCaseUnreachable",
+        1usize
+    )
+}
+
+#test(name: "pattern exhaustiveness diagnostics emit exact obligation diagnostic")
+internal procedure patternExhaustivenessDiagnosticRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternRejectedFixtureMatchesExpectedAndRecordsObligation(
+            authority,
+            "Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive",
+            "Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive/Expected.uv",
+            2usize,
+            "PatternExhaustivenessModalOutput.json",
+            "PatternExhaustivenessModalError.txt",
+            "PatternExhaustivenessModalBuild",
+            "diag.17.ExhaustivenessAndReachability"
+        ) &&
+        patternRejectedFixtureMatchesExpectedAndRecordsObligation(
+            authority,
+            "Fixtures/RejectedSource/Patterns/IfCaseUnionNonExhaustive",
+            "Fixtures/RejectedSource/Patterns/IfCaseUnionNonExhaustive/Expected.uv",
+            1usize,
+            "PatternExhaustivenessUnionOutput.json",
+            "PatternExhaustivenessUnionError.txt",
+            "PatternExhaustivenessUnionBuild",
+            "diag.17.ExhaustivenessAndReachability"
+        ) &&
+        patternRejectedFixtureMatchesExpectedAndRecordsObligation(
+            authority,
+            "Fixtures/RejectedSource/Patterns/IfCaseEnumNonExhaustive",
+            "Fixtures/RejectedSource/Patterns/IfCaseEnumNonExhaustive/Expected.uv",
+            1usize,
+            "PatternExhaustivenessEnumOutput.json",
+            "PatternExhaustivenessEnumError.txt",
+            "PatternExhaustivenessEnumBuild",
+            "diag.17.ExhaustivenessAndReachability"
+        ) &&
+        patternRejectedFixtureMatchesExpectedDiagnostics(
+            authority,
+            "Fixtures/RejectedSource/Patterns/ExhaustivenessAndReachabilityDiagnostic",
+            2usize
+        )
+}
+
+#test(name: "pattern diagnostics supplement emits exact obligation diagnostic")
+internal procedure patternDiagnosticsSupplementRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternRejectedFixtureMatchesExpectedAndRecordsObligation(
+            authority,
+            "Fixtures/RejectedSource/Patterns/IfCaseUnionNonExhaustive",
+            "Fixtures/RejectedSource/Patterns/IfCaseUnionNonExhaustive/Expected.uv",
+            1usize,
+            "PatternSupplementUnionOutput.json",
+            "PatternSupplementUnionError.txt",
+            "PatternSupplementUnionBuild",
+            "diag.17.PatternDiagnosticsSupplement"
+        ) &&
+        patternRejectedFixtureMatchesExpectedDiagnostics(
+            authority,
+            "Fixtures/Patterns/PatternDiagnosticsSupplementLetRefutable",
+            1usize
+        ) &&
+        patternRejectedFixtureMatchesExpectedDiagnostics(
+            authority,
+            "Fixtures/RejectedSource/Patterns/PatternDiagnosticsSupplement",
+            1usize
+        ) &&
+        patternRejectedFixtureMatchesExpectedAndRecordsObligation(
+            authority,
+            "Fixtures/RejectedSource/Patterns/RangePatternNonConst",
+            "Fixtures/RejectedSource/Patterns/RangePatternNonConst/Expected.uv",
+            1usize,
+            "PatternSupplementRangeNonConstOutput.json",
+            "PatternSupplementRangeNonConstError.txt",
+            "PatternSupplementRangeNonConstBuild",
+            "diag.17.PatternDiagnosticsSupplement"
+        ) &&
+        patternRejectedFixtureMatchesExpectedAndRecordsObligation(
+            authority,
+            "Fixtures/RejectedSource/Patterns/RangePatternEmpty",
+            "Fixtures/RejectedSource/Patterns/RangePatternEmpty/Expected.uv",
+            1usize,
+            "PatternSupplementRangeEmptyOutput.json",
+            "PatternSupplementRangeEmptyError.txt",
+            "PatternSupplementRangeEmptyBuild",
+            "diag.17.PatternDiagnosticsSupplement"
+        ) &&
+        patternRejectedFixtureMatchesExpectedAndRecordsObligation(
+            authority,
+            "Fixtures/RejectedSource/Patterns/RecordPatternUnknownField",
+            "Fixtures/RejectedSource/Patterns/RecordPatternUnknownField/Expected.uv",
+            1usize,
+            "PatternSupplementRecordFieldOutput.json",
+            "PatternSupplementRecordFieldError.txt",
+            "PatternSupplementRecordFieldBuild",
+            "diag.17.PatternDiagnosticsSupplement"
+        ) &&
+        patternRejectedFixtureMatchesExpectedAndRecordsObligation(
+            authority,
+            "Fixtures/RejectedSource/Patterns/IfCaseEnumNonExhaustive",
+            "Fixtures/RejectedSource/Patterns/IfCaseEnumNonExhaustive/Expected.uv",
+            1usize,
+            "PatternSupplementEnumOutput.json",
+            "PatternSupplementEnumError.txt",
+            "PatternSupplementEnumBuild",
+            "diag.17.PatternDiagnosticsSupplement"
+        ) &&
+        patternRejectedFixtureMatchesExpectedAndRecordsObligation(
+            authority,
+            "Fixtures/RejectedSource/Patterns/IfCaseUnreachable",
+            "Fixtures/RejectedSource/Patterns/IfCaseUnreachable/Expected.uv",
+            1usize,
+            "PatternSupplementUnreachableOutput.json",
+            "PatternSupplementUnreachableError.txt",
+            "PatternSupplementUnreachableBuild",
+            "diag.17.PatternDiagnosticsSupplement"
+        ) &&
+        patternRejectedFixtureMatchesExpectedDiagnostics(
+            authority,
+            "Fixtures/Patterns/PatternDiagnosticsSupplementBareType",
+            1usize
+        ) &&
+        patternRejectedFixtureMatchesExpectedDiagnostics(
+            authority,
+            "Fixtures/Patterns/PatternDiagnosticsSupplementTypedIncompatible",
+            1usize
+        )
+}
+
+#test(name: "pattern parse error emits exact diagnostic")
+internal procedure patternParsePatternErrorRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternRejectedFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Patterns/ParsePatternError",
+        1usize
+    )
+}
+
+#test(name: "pattern range non-const emits exact diagnostic")
+internal procedure patternRangePatternNonConstRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternRejectedFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Patterns/RangePatternNonConst",
+        1usize
+    )
+}
+
+#test(name: "pattern range empty emits exact diagnostic")
+internal procedure patternRangePatternEmptyRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternRejectedFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Patterns/RangePatternEmpty",
+        1usize
+    )
+}
+
+#test(name: "pattern range diagnostics emit exact obligation diagnostic")
+internal procedure patternRangePatternsDiagnosticRejectsWithRangePatternsDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternRejectedFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Patterns/RangePatternsDiagnostic",
+        1usize
+    )
+}
+
+#test(name: "pattern tuple arity emits exact diagnostic")
+internal procedure patternTuplePatternArityRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternRejectedFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Patterns/TuplePatternArity",
+        1usize
+    )
+}
+
+#test(name: "pattern record unknown field emits exact diagnostic")
+internal procedure patternRecordPatternUnknownFieldRejectsWithExactDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternRejectedFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Patterns/RecordPatternUnknownField",
+        1usize
+    )
+}
+
+#test(name: "pattern tuple record diagnostics emit exact obligation diagnostic")
+internal procedure patternTupleRecordDiagnosticRejectsWithTupleRecordDiagnostic(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternRejectedFixtureMatchesExpectedDiagnostics(
+        authority,
+        "Fixtures/RejectedSource/Patterns/TupleRecordPatternsDiagnostic",
+        1usize
+    )
+}

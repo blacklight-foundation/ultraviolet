@@ -6,6 +6,67 @@
 
 namespace ultraviolet::codegen::emit_detail {
 
+namespace {
+
+struct OverflowStepValue
+{
+  llvm::Value *value = nullptr;
+  llvm::Value *overflow = nullptr;
+};
+
+OverflowStepValue EmitOverflowStepValue(LLVMEmitter &emitter,
+                                        llvm::IRBuilder<> &builder,
+                                        llvm::Value *lhs,
+                                        llvm::Value *rhs,
+                                        bool is_signed,
+                                        bool is_add)
+{
+  if (!lhs || !rhs || !lhs->getType()->isIntegerTy())
+  {
+    return {};
+  }
+  if (rhs->getType() != lhs->getType())
+  {
+    rhs = builder.CreateIntCast(rhs, lhs->getType(), false);
+  }
+
+  const llvm::Intrinsic::ID intrinsic_id =
+      is_add
+          ? (is_signed ? llvm::Intrinsic::sadd_with_overflow
+                       : llvm::Intrinsic::uadd_with_overflow)
+          : (is_signed ? llvm::Intrinsic::ssub_with_overflow
+                       : llvm::Intrinsic::usub_with_overflow);
+  llvm::Function *intrinsic =
+      llvm::Intrinsic::getDeclaration(&emitter.GetModule(),
+                                      intrinsic_id,
+                                      {lhs->getType()});
+  if (!intrinsic)
+  {
+    return {};
+  }
+
+  llvm::Value *result = builder.CreateCall(intrinsic, {lhs, rhs});
+  llvm::Value *value = builder.CreateExtractValue(result, 0);
+  llvm::Value *overflow = builder.CreateExtractValue(result, 1);
+  return {
+      .value = value ? builder.CreateFreeze(value) : nullptr,
+      .overflow = overflow ? builder.CreateFreeze(overflow) : nullptr,
+  };
+}
+
+llvm::Value *ConjoinNoOverflow(llvm::IRBuilder<> &builder,
+                               llvm::Value *range_ok,
+                               llvm::Value *overflow)
+{
+  if (!range_ok || !overflow)
+  {
+    return range_ok;
+  }
+  return builder.CreateAnd(range_ok, builder.CreateNot(overflow));
+}
+
+} // namespace
+
 llvm::Type *IRInstructionVisitor::ExpectedLLVMType(const IRValue &value) const
 {
   analysis::TypeRef type = LookupValueType(value);
@@ -506,7 +567,7 @@ std::optional<IRInstructionVisitor::BuiltinSuccessorResult> IRInstructionVisitor
     llvm::Value *value) const
 {
   if (!value || !value->getType()->isIntegerTy() ||
-      !analysis::BuiltinStepType(type))
+      !analysis::BuiltinDiscreteType(type))
   {
     return std::nullopt;
   }
@@ -520,12 +581,19 @@ std::optional<IRInstructionVisitor::BuiltinSuccessorResult> IRInstructionVisitor
         llvm::ConstantInt::get(value->getType(), 0xD800u);
     llvm::Constant *surrogate_end =
         llvm::ConstantInt::get(value->getType(), 0xE000u);
-    llvm::Value *has_next = builder.CreateICmpNE(value, max_scalar);
-    llvm::Value *plus_one = builder.CreateAdd(value, one);
+    llvm::Value *range_has_next = builder.CreateICmpNE(value, max_scalar);
+    OverflowStepValue plus_one_result =
+        EmitOverflowStepValue(emitter, builder, value, one, false, true);
+    if (!plus_one_result.value)
+    {
+      return std::nullopt;
+    }
+    llvm::Value *has_next =
+        ConjoinNoOverflow(builder, range_has_next, plus_one_result.overflow);
     llvm::Value *is_surrogate_start =
-        builder.CreateICmpEQ(plus_one, surrogate_start);
+        builder.CreateICmpEQ(plus_one_result.value, surrogate_start);
     llvm::Value *next =
-        builder.CreateSelect(is_surrogate_start, surrogate_end, plus_one);
+        builder.CreateSelect(is_surrogate_start, surrogate_end, plus_one_result.value);
     return BuiltinSuccessorResult{
         .has_next = has_next,
         .next = next,
@@ -544,12 +612,23 @@ std::optional<IRInstructionVisitor::BuiltinSuccessorResult> IRInstructionVisitor
     max_value = llvm::ConstantInt::get(
         value->getType(), llvm::APInt::getAllOnes(width));
   }
-  llvm::Value *has_next = builder.CreateICmpNE(value, max_value);
-  llvm::Value *next =
-      builder.CreateAdd(value, llvm::ConstantInt::get(value->getType(), 1u));
+  llvm::Value *range_has_next = builder.CreateICmpNE(value, max_value);
+  OverflowStepValue next_result = EmitOverflowStepValue(
+      emitter,
+      builder,
+      value,
+      llvm::ConstantInt::get(value->getType(), 1u),
+      IsSignedIntegerType(type),
+      true);
+  if (!next_result.value)
+  {
+    return std::nullopt;
+  }
+  llvm::Value *has_next =
+      ConjoinNoOverflow(builder, range_has_next, next_result.overflow);
   return BuiltinSuccessorResult{
       .has_next = has_next,
-      .next = next,
+      .next = next_result.value,
   };
 }
 
@@ -559,7 +638,7 @@ std::optional<IRInstructionVisitor::BuiltinSuccessorResult> IRInstructionVisitor
     llvm::Value *value) const
 {
   if (!value || !value->getType()->isIntegerTy() ||
-      !analysis::BuiltinStepType(type))
+      !analysis::BuiltinDiscreteType(type))
   {
     return std::nullopt;
   }
@@ -573,12 +652,19 @@ std::optional<IRInstructionVisitor::BuiltinSuccessorResult> IRInstructionVisitor
         llvm::ConstantInt::get(value->getType(), 0xDFFFu);
     llvm::Constant *scalar_before_surrogates =
         llvm::ConstantInt::get(value->getType(), 0xD7FFu);
-    llvm::Value *has_prev = builder.CreateICmpNE(value, min_scalar);
-    llvm::Value *minus_one = builder.CreateSub(value, one);
+    llvm::Value *range_has_prev = builder.CreateICmpNE(value, min_scalar);
+    OverflowStepValue minus_one_result =
+        EmitOverflowStepValue(emitter, builder, value, one, false, false);
+    if (!minus_one_result.value)
+    {
+      return std::nullopt;
+    }
+    llvm::Value *has_prev =
+        ConjoinNoOverflow(builder, range_has_prev, minus_one_result.overflow);
     llvm::Value *is_surrogate_last =
-        builder.CreateICmpEQ(minus_one, surrogate_last);
+        builder.CreateICmpEQ(minus_one_result.value, surrogate_last);
     llvm::Value *prev = builder.CreateSelect(
-        is_surrogate_last, scalar_before_surrogates, minus_one);
+        is_surrogate_last, scalar_before_surrogates, minus_one_result.value);
     return BuiltinSuccessorResult{
         .has_next = has_prev,
         .next = prev,
@@ -596,12 +682,23 @@ std::optional<IRInstructionVisitor::BuiltinSuccessorResult> IRInstructionVisitor
   {
     min_value = llvm::ConstantInt::get(value->getType(), 0u);
   }
-  llvm::Value *has_prev = builder.CreateICmpNE(value, min_value);
-  llvm::Value *prev =
-      builder.CreateSub(value, llvm::ConstantInt::get(value->getType(), 1u));
+  llvm::Value *range_has_prev = builder.CreateICmpNE(value, min_value);
+  OverflowStepValue prev_result = EmitOverflowStepValue(
+      emitter,
+      builder,
+      value,
+      llvm::ConstantInt::get(value->getType(), 1u),
+      IsSignedIntegerType(type),
+      false);
+  if (!prev_result.value)
+  {
+    return std::nullopt;
+  }
+  llvm::Value *has_prev =
+      ConjoinNoOverflow(builder, range_has_prev, prev_result.overflow);
   return BuiltinSuccessorResult{
       .has_next = has_prev,
-      .next = prev,
+      .next = prev_result.value,
   };
 }
 

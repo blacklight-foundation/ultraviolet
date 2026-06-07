@@ -11,6 +11,169 @@ public enum ExpressionConstructionEnum {
     Named { value: i32, is_ready: bool }
 }
 
+internal record ConstructionOrderTrace {
+    internal first: i32
+    internal second: i32
+    internal third: i32
+}
+
+internal procedure recordDefaultConstructionRuntimeUsesCallRecordReference() -> bool {
+    return evalSigmaCallRecordReference()
+}
+
+internal procedure tupleConstructionControlReference(should_return: bool) -> i32 {
+    let tuple_value: (i32, i32) = (
+        if should_return { return 13 } else { 1 },
+        2
+    )
+    return tuple_value.0 + tuple_value.1
+}
+
+internal procedure evalSigmaTupleConstructionFamilyReference() -> bool {
+    let tuple_value: (i32, i32) = (1, 2)
+    let order: ConstructionOrderTrace = ConstructionOrderTrace {
+        first: 1,
+        second: 2,
+        third: 0
+    }
+    return tuple_value.0 == 1 &&
+        tuple_value.1 == 2 &&
+        order.first == 1 &&
+        order.second == 2 &&
+        tupleConstructionControlReference(true) == 13
+}
+
+internal procedure arrayConstructionControlReference(should_return: bool) -> i32 {
+    let array_value: [i32; 2] = [
+        1,
+        if should_return { return 17 } else { 2 },
+    ]
+    return array_value[0usize] + array_value[1usize]
+}
+
+internal procedure evalSigmaArrayConstructionFamilyReference() -> bool {
+    let array_value: [i32; 3] = [1, 2, 3]
+    let order: ConstructionOrderTrace = ConstructionOrderTrace {
+        first: 1,
+        second: 2,
+        third: 3
+    }
+    return array_value[0usize] == 1 &&
+        array_value[1usize] == 2 &&
+        array_value[2usize] == 3 &&
+        order.first == 1 &&
+        order.second == 2 &&
+        order.third == 3 &&
+        arrayConstructionControlReference(true) == 17
+}
+
+internal procedure recordConstructionControlReference(should_return: bool) -> i32 {
+    let record_value: ExpressionConstructionRecord = ExpressionConstructionRecord {
+        count: if should_return { return 23 } else { 1 },
+        is_ready: true
+    }
+    return record_value.count
+}
+
+internal procedure evalSigmaRecordConstructionFamilyReference() -> bool {
+    let record_value: ExpressionConstructionRecord = ExpressionConstructionRecord {
+        count: 1,
+        is_ready: true
+    }
+    let order: ConstructionOrderTrace = ConstructionOrderTrace {
+        first: 1,
+        second: 2,
+        third: 0
+    }
+    return record_value.count == 1 &&
+        record_value.is_ready &&
+        order.first == 1 &&
+        order.second == 2 &&
+        recordConstructionControlReference(true) == 23
+}
+
+internal procedure enumConstructionTupleControlReference(should_return: bool) -> i32 {
+    let enum_value: ExpressionConstructionEnum = ExpressionConstructionEnum::Count(
+        if should_return { return 29 } else { 31 }
+    )
+    return if enum_value is {
+        ExpressionConstructionEnum::Empty {
+            0
+        }
+        ExpressionConstructionEnum::Count(value) {
+            value
+        }
+        ExpressionConstructionEnum::Named { value, is_ready } {
+            if is_ready { value } else { 0 }
+        }
+    }
+}
+
+internal procedure enumConstructionRecordControlReference(should_return: bool) -> i32 {
+    let enum_value: ExpressionConstructionEnum = ExpressionConstructionEnum::Named {
+        value: if should_return { return 37 } else { 41 },
+        is_ready: true
+    }
+    return if enum_value is {
+        ExpressionConstructionEnum::Empty {
+            0
+        }
+        ExpressionConstructionEnum::Count(value) {
+            value
+        }
+        ExpressionConstructionEnum::Named { value, is_ready } {
+            if is_ready { value } else { 0 }
+        }
+    }
+}
+
+internal procedure evalSigmaEnumConstructionFamilyReference() -> bool {
+    let unit_value: ExpressionConstructionEnum = ExpressionConstructionEnum::Empty
+    let tuple_value: ExpressionConstructionEnum = ExpressionConstructionEnum::Count(43)
+    let record_value: ExpressionConstructionEnum = ExpressionConstructionEnum::Named {
+        value: 47,
+        is_ready: true
+    }
+    let unit_ok: bool = if unit_value is {
+        ExpressionConstructionEnum::Empty {
+            true
+        }
+        ExpressionConstructionEnum::Count(value) {
+            value == 0
+        }
+        ExpressionConstructionEnum::Named { value, is_ready } {
+            value == 0 && is_ready
+        }
+    }
+    let tuple_ok: bool = if tuple_value is {
+        ExpressionConstructionEnum::Empty {
+            false
+        }
+        ExpressionConstructionEnum::Count(value) {
+            value == 43
+        }
+        ExpressionConstructionEnum::Named { value, is_ready } {
+            value == 0 && is_ready
+        }
+    }
+    let record_ok: bool = if record_value is {
+        ExpressionConstructionEnum::Empty {
+            false
+        }
+        ExpressionConstructionEnum::Count(value) {
+            value == 0
+        }
+        ExpressionConstructionEnum::Named { value, is_ready } {
+            value == 47 && is_ready
+        }
+    }
+    return unit_ok &&
+        tuple_ok &&
+        record_ok &&
+        enumConstructionTupleControlReference(true) == 29 &&
+        enumConstructionRecordControlReference(true) == 37
+}
+
 /// Exercises the Expressions Construction reference surface.
 public procedure runExpressionsConstructionReference() -> bool {
     let tuple_value: (i32, bool) = (5, true)
@@ -34,5 +197,12 @@ public procedure runExpressionsConstructionReference() -> bool {
             value == 3 && is_ready
         }
     }
-    return tuple_value.0 == 5 && record_value.count == 3 && enum_ok
+    return tuple_value.0 == 5 &&
+        record_value.count == 3 &&
+        enum_ok &&
+        evalSigmaTupleConstructionFamilyReference() &&
+        evalSigmaArrayConstructionFamilyReference() &&
+        evalSigmaRecordConstructionFamilyReference() &&
+        evalSigmaEnumConstructionFamilyReference() &&
+        recordDefaultConstructionRuntimeUsesCallRecordReference()
 }

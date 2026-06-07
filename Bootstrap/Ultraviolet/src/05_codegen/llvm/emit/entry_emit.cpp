@@ -4,17 +4,14 @@
 // =============================================================================
 #include "05_codegen/llvm/emit/llvm_emit_helpers.h"
 
+#include "00_core/spec_trace.h"
+#include "01_project/target_platform.h"
+
 namespace ultraviolet::codegen {
 
 using namespace emit_detail;
 
 namespace {
-
-bool TargetEntryPointReturnsExitCode(project::TargetProfile target_profile)
-{
-  return target_profile == project::TargetProfile::X86_64SysV ||
-         target_profile == project::TargetProfile::AArch64Darwin;
-}
 
 bool TargetSupportsCtorDtorArrays(project::TargetProfile target_profile)
 {
@@ -25,6 +22,64 @@ bool TargetUsesSharedLibraryDefinitionVisibility(
     project::TargetProfile target_profile)
 {
   return project::ObjectFormatOf(target_profile) != project::ObjectFormat::Coff;
+}
+
+std::string LifecycleBridgeSym(const ast::ModulePath &module_path,
+                               bool is_init)
+{
+  return std::string("__cx_lifecycle_") +
+         (is_init ? "init_" : "deinit_") +
+         core::Mangle(core::StringOfPath(module_path));
+}
+
+bool UsesLifecycleBridge(const LowerCtx &ctx,
+                         const ast::ModulePath &module_path)
+{
+  return module_path != ctx.module_path;
+}
+
+std::string EntryLifecycleCallSym(const LowerCtx &ctx,
+                                  const ast::ModulePath &module_path,
+                                  bool is_init)
+{
+  if (UsesLifecycleBridge(ctx, module_path))
+  {
+    return LifecycleBridgeSym(module_path, is_init);
+  }
+  return is_init ? InitFn(module_path) : DeinitFn(module_path);
+}
+
+void RecordSharedLibraryImageLifecycleConformance(const LowerCtx &ctx)
+{
+  if (!core::Conformance::Enabled() || !ctx.shared_library_project)
+  {
+    return;
+  }
+
+  std::string payload = "source=LLVMEmitter::EmitLibraryEntryPoint";
+  payload += ";loader_entrypoint=";
+  payload += project::ActiveLanguageProfile().library_entry_symbol;
+  payload += ";image_init=LibraryImageInitSigma";
+  payload += ";image_destroy=LibraryImageDestroySigma";
+  payload += ";panic_record=image_owned";
+  payload += ";state_scope=loaded_image";
+  payload += ";module_count=";
+  payload += std::to_string(ctx.init_order.size());
+
+  if (!ctx.shared_library_export_symbols.empty())
+  {
+    std::string raw_payload = payload;
+    raw_payload += ";boundary=raw_export";
+    raw_payload += ";call_sigma=RawLibraryCallSigma";
+    raw_payload += ";reuse_live_image=true";
+    raw_payload += ";destroy_exactly_once=true";
+    raw_payload += ";raw_export_symbol_count=";
+    raw_payload += std::to_string(ctx.shared_library_export_symbols.size());
+    core::Conformance::Record(
+        "requirement.23.RawExportLibraryImageLifecycle",
+        std::nullopt,
+        raw_payload);
+  }
 }
 
 llvm::AllocaInst *CreateRuntimeEntryAlloca(llvm::IRBuilder<> *builder,
@@ -68,6 +123,87 @@ llvm::Value *MaterializeRuntimeSystemSelfRef(llvm::IRBuilder<> *builder,
 
 }  // namespace
 
+  void LLVMEmitter::EmitLifecycleBridges()
+  {
+    if (!current_ctx_)
+    {
+      return;
+    }
+
+    auto *builder = static_cast<llvm::IRBuilder<> *>(builder_.get());
+    auto emit_bridge = [&](const std::string &target_sym,
+                           const std::string &bridge_sym) -> void
+    {
+      llvm::Function *target_fn = nullptr;
+      if (const auto fn_it = functions_.find(target_sym); fn_it != functions_.end())
+      {
+        target_fn = fn_it->second;
+      }
+      if (!target_fn)
+      {
+        target_fn = module_->getFunction(target_sym);
+      }
+      if (!target_fn)
+      {
+        current_ctx_->ReportCodegenFailure();
+        return;
+      }
+
+      llvm::FunctionType *bridge_ty = target_fn->getFunctionType();
+      if (!bridge_ty || !bridge_ty->getReturnType()->isVoidTy())
+      {
+        current_ctx_->ReportCodegenFailure();
+        return;
+      }
+
+      llvm::Function *bridge_fn = module_->getFunction(bridge_sym);
+      if (bridge_fn)
+      {
+        if (bridge_fn->getFunctionType() != bridge_ty)
+        {
+          current_ctx_->ReportCodegenFailure();
+          return;
+        }
+        if (!bridge_fn->empty())
+        {
+          return;
+        }
+        bridge_fn->setLinkage(llvm::GlobalValue::ExternalLinkage);
+      }
+      else
+      {
+        bridge_fn = llvm::Function::Create(bridge_ty,
+                                           llvm::GlobalValue::ExternalLinkage,
+                                           bridge_sym,
+                                           module_.get());
+      }
+      bridge_fn->setCallingConv(target_fn->getCallingConv());
+
+      llvm::IRBuilderBase::InsertPoint saved_ip = builder->saveIP();
+      llvm::BasicBlock *entry_bb =
+          llvm::BasicBlock::Create(context_, "entry", bridge_fn);
+      builder->SetInsertPoint(entry_bb);
+
+      std::vector<llvm::Value *> args;
+      args.reserve(bridge_fn->arg_size());
+      for (llvm::Argument &arg : bridge_fn->args())
+      {
+        args.push_back(&arg);
+      }
+
+      llvm::CallInst *call =
+          builder->CreateCall(target_fn->getFunctionType(), target_fn, args);
+      call->setCallingConv(target_fn->getCallingConv());
+      builder->CreateRetVoid();
+      builder->restoreIP(saved_ip);
+    };
+
+    emit_bridge(InitFn(current_ctx_->module_path),
+                LifecycleBridgeSym(current_ctx_->module_path, true));
+    emit_bridge(DeinitFn(current_ctx_->module_path),
+                LifecycleBridgeSym(current_ctx_->module_path, false));
+  }
+
   void LLVMEmitter::EmitEntryPoint()
   {
     if (!current_ctx_)
@@ -83,16 +219,8 @@ llvm::Value *MaterializeRuntimeSystemSelfRef(llvm::IRBuilder<> *builder,
 
     SPEC_RULE("LowerIRDecl-EntryPoint");
 
-    const bool returns_exit_code = TargetEntryPointReturnsExitCode(target_profile_);
-    // Create the generated entry stub symbol. Windows uses it as the process
-    // entrypoint directly; x86_64 SysV links a runtime-provided _start shim
-    // that calls this stub and exits with its return code.
     llvm::FunctionType *main_ty =
-        llvm::FunctionType::get(
-            returns_exit_code ? llvm::Type::getInt32Ty(context_)
-                              : llvm::Type::getVoidTy(context_),
-            {},
-            false);
+        llvm::FunctionType::get(llvm::Type::getInt32Ty(context_), {}, false);
 
     llvm::Function *main_fn = llvm::Function::Create(
         main_ty,
@@ -105,7 +233,9 @@ llvm::Value *MaterializeRuntimeSystemSelfRef(llvm::IRBuilder<> *builder,
     builder->SetInsertPoint(entry);
 
     // Configure runtime log/trace sink when --log, --log-file, or --trace is used.
-    if (current_ctx_->log_enabled)
+    const bool configure_runtime_trace_sink =
+        current_ctx_->log_to_console || current_ctx_->log_to_file || current_ctx_->trace;
+    if (configure_runtime_trace_sink)
     {
       const std::string set_sink_sym = RuntimeConformanceSetSinkSym();
       llvm::Function *set_sink_fn = module_->getFunction(set_sink_sym);
@@ -324,40 +454,8 @@ llvm::Value *MaterializeRuntimeSystemSelfRef(llvm::IRBuilder<> *builder,
     }
     if (!uv_main)
     {
-      if (returns_exit_code)
-      {
-        builder->CreateRet(
-            llvm::ConstantInt::get(llvm::Type::getInt32Ty(context_), 1));
-      }
-      else
-      {
-        llvm::Function *runtime_exit_fn = module_->getFunction(BuiltinSymSystemExit());
-        if (!runtime_exit_fn)
-        {
-          llvm::FunctionType *exit_ty =
-              llvm::FunctionType::get(llvm::Type::getVoidTy(context_),
-                                      {GetOpaquePtr(), GetOpaquePtr()},
-                                      false);
-          runtime_exit_fn = llvm::Function::Create(
-              exit_ty,
-              llvm::GlobalValue::ExternalLinkage,
-              BuiltinSymSystemExit(),
-              module_.get());
-          runtime_exit_fn->setCallingConv(llvm::CallingConv::C);
-        }
-        llvm::Value *system_self =
-            MaterializeRuntimeSystemSelfRef(builder, context_, "entry_system_self");
-        llvm::Value *exit_code_ref = MaterializeRuntimeValueRef(
-            builder,
-            llvm::ConstantInt::get(llvm::Type::getInt32Ty(context_), 1),
-            llvm::Type::getInt32Ty(context_),
-            "entry_exit_code");
-        builder->CreateCall(
-            runtime_exit_fn->getFunctionType(),
-            runtime_exit_fn,
-            {system_self, exit_code_ref});
-        builder->CreateUnreachable();
-      }
+      builder->CreateRet(
+          llvm::ConstantInt::get(llvm::Type::getInt32Ty(context_), 1));
       return;
     }
 
@@ -677,7 +775,8 @@ llvm::Value *MaterializeRuntimeSystemSelfRef(llvm::IRBuilder<> *builder,
          module_index < init_order.size();
          ++module_index)
     {
-      if (!call_lifecycle_fn(InitFn(init_order[module_index])))
+      if (!call_lifecycle_fn(
+              EntryLifecycleCallSym(*current_ctx_, init_order[module_index], true)))
       {
         return;
       }
@@ -1215,7 +1314,7 @@ llvm::Value *MaterializeRuntimeSystemSelfRef(llvm::IRBuilder<> *builder,
 
     for (auto it = init_order.rbegin(); it != init_order.rend(); ++it)
     {
-      const std::string deinit_sym = DeinitFn(*it);
+      const std::string deinit_sym = EntryLifecycleCallSym(*current_ctx_, *it, false);
       llvm::Function *deinit_fn = nullptr;
       if (const auto fn_it = functions_.find(deinit_sym); fn_it != functions_.end())
       {
@@ -1286,35 +1385,7 @@ llvm::Value *MaterializeRuntimeSystemSelfRef(llvm::IRBuilder<> *builder,
 
     builder->SetInsertPoint(ret_bb);
 
-    if (returns_exit_code)
-    {
-      builder->CreateRet(exit_code);
-    }
-    else
-    {
-      llvm::Function *runtime_exit_fn = module_->getFunction(BuiltinSymSystemExit());
-      if (!runtime_exit_fn)
-      {
-        llvm::FunctionType *exit_ty =
-            llvm::FunctionType::get(llvm::Type::getVoidTy(context_),
-                                    {GetOpaquePtr(), GetOpaquePtr()},
-                                    false);
-        runtime_exit_fn = llvm::Function::Create(
-            exit_ty,
-            llvm::GlobalValue::ExternalLinkage,
-            BuiltinSymSystemExit(),
-            module_.get());
-        runtime_exit_fn->setCallingConv(llvm::CallingConv::C);
-      }
-      llvm::Value *system_self =
-          MaterializeRuntimeSystemSelfRef(builder, context_, "entry_system_self");
-      llvm::Value *exit_code_ref =
-          MaterializeRuntimeValueRef(builder, exit_code, i32_ty, "entry_exit_code");
-      builder->CreateCall(runtime_exit_fn->getFunctionType(),
-                          runtime_exit_fn,
-                          {system_self, exit_code_ref});
-      builder->CreateUnreachable();
-    }
+    builder->CreateRet(exit_code);
   }
 
   void LLVMEmitter::EmitLibraryEntryPoint()
@@ -1490,18 +1561,30 @@ llvm::Value *MaterializeRuntimeSystemSelfRef(llvm::IRBuilder<> *builder,
       return panic_out_slot;
     };
 
-    auto ensure_proc_fn = [&](const std::string &sym) -> llvm::Function * {
-      const LowerCtx::ProcSigInfo *sig =
-          current_ctx_ ? current_ctx_->LookupProcSig(sym) : nullptr;
-      if (!sig)
+    auto lifecycle_proc_sig = [&](const ast::ModulePath &module_path,
+                                  bool is_init,
+                                  const std::string &call_sym)
+        -> const LowerCtx::ProcSigInfo *
+    {
+      if (!current_ctx_)
       {
-        if (current_ctx_)
-        {
-          current_ctx_->ReportCodegenFailure();
-        }
         return nullptr;
       }
-      ABICallResult abi = ComputeCallABI(*this, sig->params, sig->ret);
+      if (const LowerCtx::ProcSigInfo *sig =
+              current_ctx_->LookupProcSig(call_sym))
+      {
+        return sig;
+      }
+      const std::string target_sym =
+          is_init ? InitFn(module_path) : DeinitFn(module_path);
+      return current_ctx_->LookupProcSig(target_sym);
+    };
+
+    auto ensure_proc_fn = [&](const std::string &sym,
+                              const LowerCtx::ProcSigInfo &sig)
+        -> llvm::Function *
+    {
+      ABICallResult abi = ComputeCallABI(*this, sig.params, sig.ret);
       if (!abi.valid || !abi.func_type)
       {
         if (current_ctx_)
@@ -1518,18 +1601,26 @@ llvm::Value *MaterializeRuntimeSystemSelfRef(llvm::IRBuilder<> *builder,
                                     sym,
                                     module_.get());
       }
-      fn->setCallingConv(CallingConvForAbi(sig->abi));
+      fn->setCallingConv(CallingConvForAbi(sig.abi));
       return fn;
     };
 
-    auto call_proc_with_panic = [&](llvm::IRBuilder<> &irb,
-                                    const std::string &sym,
-                                    llvm::Value *panic_out_slot) {
+    auto call_lifecycle_proc_with_panic = [&](llvm::IRBuilder<> &irb,
+                                              const ast::ModulePath &module_path,
+                                              bool is_init,
+                                              llvm::Value *panic_out_slot)
+    {
+      const std::string call_sym =
+          EntryLifecycleCallSym(*current_ctx_, module_path, is_init);
       const LowerCtx::ProcSigInfo *sig =
-          current_ctx_ ? current_ctx_->LookupProcSig(sym) : nullptr;
-      llvm::Function *fn = ensure_proc_fn(sym);
+          lifecycle_proc_sig(module_path, is_init, call_sym);
+      llvm::Function *fn = sig ? ensure_proc_fn(call_sym, *sig) : nullptr;
       if (!sig || !fn)
       {
+        if (current_ctx_)
+        {
+          current_ctx_->ReportCodegenFailure();
+        }
         return;
       }
       ABICallResult abi = ComputeCallABI(*this, sig->params, sig->ret);
@@ -1599,7 +1690,11 @@ llvm::Value *MaterializeRuntimeSystemSelfRef(llvm::IRBuilder<> *builder,
          ++module_index)
     {
       const auto &module_path = current_ctx_->init_order[module_index];
-      call_proc_with_panic(*builder, InitFn(module_path), attach_panic_out_slot);
+      call_lifecycle_proc_with_panic(
+          *builder,
+          module_path,
+          true,
+          attach_panic_out_slot);
       llvm::BasicBlock *cont_bb =
           llvm::BasicBlock::Create(context_, "dll.attach.cont", entry_fn);
       llvm::BasicBlock *fail_bb =
@@ -1612,7 +1707,11 @@ llvm::Value *MaterializeRuntimeSystemSelfRef(llvm::IRBuilder<> *builder,
       for (std::size_t deinit_index = module_index; deinit_index > 0; --deinit_index)
       {
         const auto &deinit_path = current_ctx_->init_order[deinit_index - 1];
-        call_proc_with_panic(*builder, DeinitFn(deinit_path), attach_panic_out_slot);
+        call_lifecycle_proc_with_panic(
+            *builder,
+            deinit_path,
+            false,
+            attach_panic_out_slot);
         clear_panic_record(*builder, panic_record_ptr);
       }
       builder->CreateStore(llvm::ConstantInt::getFalse(context_), attached_gv);
@@ -1684,7 +1783,11 @@ llvm::Value *MaterializeRuntimeSystemSelfRef(llvm::IRBuilder<> *builder,
          ++it)
     {
       const auto &module_path = *it;
-      call_proc_with_panic(*builder, DeinitFn(module_path), detach_panic_out_slot);
+      call_lifecycle_proc_with_panic(
+          *builder,
+          module_path,
+          false,
+          detach_panic_out_slot);
       capture_detach_panic(*builder);
     }
     builder->CreateStore(llvm::ConstantInt::getFalse(context_), attached_gv);
@@ -1710,6 +1813,8 @@ llvm::Value *MaterializeRuntimeSystemSelfRef(llvm::IRBuilder<> *builder,
 
     builder->SetInsertPoint(other_bb);
     builder->CreateRet(llvm::ConstantInt::get(i32_ty, 1));
+
+    RecordSharedLibraryImageLifecycleConformance(*current_ctx_);
   }
 
   void LLVMEmitter::EmitCtorDtorLibraryLifecycleHooks()

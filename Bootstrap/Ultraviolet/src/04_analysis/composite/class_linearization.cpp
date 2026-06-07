@@ -187,6 +187,7 @@ static LinearizationResult LinearizeImpl(const ScopeContext& ctx,
   if (state.active.find(key) != state.active.end()) {
     SPEC_RULE("Lin-Fail");
     SPEC_RULE("Superclass-Cycle");
+    SPEC_RULE("rule.14.Superclass-Cycle");
     LinearizationResult cycle;
     cycle.diag_id = "E-TYP-2508";
     return cycle;
@@ -222,6 +223,7 @@ static LinearizationResult LinearizeImpl(const ScopeContext& ctx,
       }
       if (*failed.diag_id == "E-TYP-2508") {
         SPEC_RULE("Superclass-Cycle");
+        SPEC_RULE("rule.14.Superclass-Cycle");
       }
       state.active.erase(key);
       state.memo.emplace(key, failed);
@@ -235,6 +237,7 @@ static LinearizationResult LinearizeImpl(const ScopeContext& ctx,
   if (!merged.ok) {
     SPEC_RULE("Lin-Fail");
     SPEC_RULE("Superclass-Cycle");
+    SPEC_RULE("rule.14.Superclass-Cycle");
     LinearizationResult failed = merged;
     failed.diag_id = "E-TYP-2508";
     state.active.erase(key);

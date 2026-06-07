@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "01_project/project.h"
+#include "00_core/diagnostics.h"
 #include "02_source/ast/ast.h"
 #include "04_analysis/resolve/resolve_items.h"
 #include "04_analysis/typing/context.h"
@@ -45,6 +46,8 @@ struct CodegenCache {
   };
 
   codegen::LowerCtx ctx;
+  core::DiagnosticStream* diagnostics = nullptr;
+  std::mutex diagnostics_mu;
   const analysis::NameMapBuildResult* name_maps = nullptr;
   std::unordered_map<std::string, codegen::LowerCtx::HostedStateTemplate>
       hosted_state_templates;

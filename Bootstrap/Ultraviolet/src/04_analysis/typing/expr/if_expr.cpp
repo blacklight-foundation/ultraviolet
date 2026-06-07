@@ -44,6 +44,7 @@ static inline void SpecDefsIfExpr() {
   SPEC_DEF("Chk-If-No-Else", "5.2.12");
   SPEC_DEF("If-Cond-NotBool", "5.2.12");
   SPEC_DEF("If-Branch-Mismatch", "5.2.12");
+  SPEC_DEF("diag.16.ControlExpressions", "16.7.7");
 }
 
 static ast::ExprPtr MakeExprNode(const core::Span& span, ast::ExprNode node) {
@@ -590,6 +591,7 @@ ExprTypeResult TypeIfExpr(const ScopeContext& ctx,
   // Verify condition is bool
   if (!IsBoolType(cond_type.type)) {
     SPEC_RULE("If-Cond-NotBool");
+    SPEC_RULE("diag.16.ControlExpressions");
     result.diag_id = "If-Cond-NotBool";
     return result;
   }
@@ -599,6 +601,7 @@ ExprTypeResult TypeIfExpr(const ScopeContext& ctx,
     const bool else_has_barrier = ContainsGpuBarrierCall(expr.else_expr);
     if (then_has_barrier != else_has_barrier) {
       SPEC_RULE("Barrier-Divergence-Err");
+      SPEC_RULE("rule.20.Barrier-Divergence-Err");
       result.diag_id = "E-CON-0158";
       return result;
     }
@@ -743,6 +746,7 @@ CheckResult CheckIfExpr(const ScopeContext& ctx,
   // Verify condition is bool
   if (!IsBoolType(cond_type.type)) {
     SPEC_RULE("If-Cond-NotBool");
+    SPEC_RULE("diag.16.ControlExpressions");
     result.diag_id = "If-Cond-NotBool";
     return result;
   }
@@ -752,6 +756,7 @@ CheckResult CheckIfExpr(const ScopeContext& ctx,
     const bool else_has_barrier = ContainsGpuBarrierCall(expr.else_expr);
     if (then_has_barrier != else_has_barrier) {
       SPEC_RULE("Barrier-Divergence-Err");
+      SPEC_RULE("rule.20.Barrier-Divergence-Err");
       result.diag_id = "E-CON-0158";
       return result;
     }
@@ -816,6 +821,14 @@ CheckResult CheckIfExpr(const ScopeContext& ctx,
   if (!then_check.ok) {
     result.diag_id = then_check.diag_id;
     result.diag_detail = then_check.diag_detail;
+    if (result.diag_detail.empty()) {
+      result.diag_detail = "if then branch failed checking against expected " +
+                           TypeToString(expected);
+    } else {
+      result.diag_detail = "if then branch failed checking against expected " +
+                           TypeToString(expected) + ": " + result.diag_detail;
+    }
+    result.diag_span = then_check.diag_span;
     return result;
   }
 
@@ -859,6 +872,14 @@ CheckResult CheckIfExpr(const ScopeContext& ctx,
   if (!else_check.ok) {
     result.diag_id = else_check.diag_id;
     result.diag_detail = else_check.diag_detail;
+    if (result.diag_detail.empty()) {
+      result.diag_detail = "if else branch failed checking against expected " +
+                           TypeToString(expected);
+    } else {
+      result.diag_detail = "if else branch failed checking against expected " +
+                           TypeToString(expected) + ": " + result.diag_detail;
+    }
+    result.diag_span = else_check.diag_span;
     return result;
   }
 

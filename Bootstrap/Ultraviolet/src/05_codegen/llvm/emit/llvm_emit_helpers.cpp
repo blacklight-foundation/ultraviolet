@@ -8,7 +8,36 @@
 
 namespace ultraviolet::codegen::emit_detail {
 
+namespace {
 
+    llvm::Value *EmitNoPanicUAdd(LLVMEmitter &emitter,
+                                 llvm::IRBuilder<> *builder,
+                                 llvm::Value *lhs,
+                                 llvm::Value *rhs)
+    {
+      if (!builder || !lhs || !rhs || !lhs->getType()->isIntegerTy())
+      {
+        return nullptr;
+      }
+      if (rhs->getType() != lhs->getType())
+      {
+        rhs = builder->CreateIntCast(rhs, lhs->getType(), false);
+      }
+
+      llvm::Function *intrinsic = llvm::Intrinsic::getDeclaration(
+          &emitter.GetModule(),
+          llvm::Intrinsic::uadd_with_overflow,
+          {lhs->getType()});
+      if (!intrinsic)
+      {
+        return nullptr;
+      }
+      llvm::Value *result = builder->CreateCall(intrinsic, {lhs, rhs});
+      llvm::Value *value = builder->CreateExtractValue(result, 0);
+      return value ? builder->CreateFreeze(value) : nullptr;
+    }
+
+} // namespace
 
 
     std::optional<AsyncCombinatorKind> AsyncCombinatorKindFromSymbol(
@@ -497,8 +526,12 @@ namespace ultraviolet::codegen::emit_detail {
           "IRParallel",
           "IRSpawn",
           "IRWait",
+          "IRCancelCreate",
+          "IRCancelRequest",
+          "IRCancelWait",
           "IRCancelSuppress",
           "IRCancelCheck",
+          "IRGpuBarrier",
           "IRDispatch",
           "IRYield",
           "IRYieldFrom",
@@ -1543,12 +1576,13 @@ namespace {
       {
         dst_i8 = builder->CreateBitCast(dst_i8, i8_ptr_ty);
       }
-      builder->CreateMemSet(
+      EmitMemSet(
+          emitter,
           dst_i8,
           llvm::ConstantInt::get(i8_ty, 0),
           llvm::ConstantInt::get(llvm::Type::getInt64Ty(emitter.GetContext()),
                                  static_cast<std::uint64_t>(*size)),
-          llvm::MaybeAlign(std::max<std::uint64_t>(1, align.value_or(1))));
+          std::max<std::uint64_t>(1, align.value_or(1)));
     }
 
     bool StoreIRValueToStorage(LLVMEmitter &emitter,
@@ -1820,10 +1854,14 @@ namespace {
         idx->addIncoming(start, preheader);
         llvm::Value *zero = llvm::ConstantInt::get(i64_ty, 0);
         llvm::Value *elem_ptr =
-            builder->CreateInBoundsGEP(array_ll, array_ptr, {zero, idx});
+            builder->CreateGEP(array_ll, array_ptr, {zero, idx});
         store_one(elem_ptr);
-        llvm::Value *next = builder->CreateAdd(
-            idx, llvm::ConstantInt::get(i64_ty, 1));
+        llvm::Value *next = EmitNoPanicUAdd(
+            emitter, builder, idx, llvm::ConstantInt::get(i64_ty, 1));
+        if (!next)
+        {
+          return false;
+        }
         llvm::Value *finished = builder->CreateICmpEQ(next, limit);
         idx->addIncoming(next, loop_bb);
         builder->CreateCondBr(finished, done_bb, loop_bb);
@@ -1833,8 +1871,12 @@ namespace {
 
       for (std::uint64_t offset = 0; offset < count; ++offset)
       {
-        llvm::Value *elem_ptr = builder->CreateConstInBoundsGEP2_64(
-            array_ll, array_ptr, 0, first_index + offset);
+        llvm::Value *zero = llvm::ConstantInt::get(
+            llvm::Type::getInt64Ty(emitter.GetContext()), 0);
+        llvm::Value *elem_index = llvm::ConstantInt::get(
+            llvm::Type::getInt64Ty(emitter.GetContext()), first_index + offset);
+        llvm::Value *elem_ptr =
+            builder->CreateGEP(array_ll, array_ptr, {zero, elem_index});
         store_one(elem_ptr);
       }
       return true;
@@ -1956,8 +1998,12 @@ namespace {
           index += write.count;
           continue;
         }
+        llvm::Value *zero = llvm::ConstantInt::get(
+            llvm::Type::getInt64Ty(emitter.GetContext()), 0);
+        llvm::Value *elem_index = llvm::ConstantInt::get(
+            llvm::Type::getInt64Ty(emitter.GetContext()), index);
         llvm::Value *elem_ptr =
-            builder->CreateConstInBoundsGEP2_64(array_ll, array_ptr, 0, index);
+            builder->CreateGEP(array_ll, array_ptr, {zero, elem_index});
         (void)StoreIRValueToStorage(emitter,
                                     builder,
                                     elem_ptr,
@@ -3377,11 +3423,9 @@ namespace {
 
       auto store_disc = [&](std::uint64_t disc_value) -> void
       {
-        llvm::Value *disc_ptr =
-            builder->CreateStructGEP(target_struct_ty, target_slot, 0);
         builder->CreateStore(
             llvm::ConstantInt::get(source_disc->getType(), disc_value),
-            disc_ptr);
+            target_slot);
       };
 
       auto copy_raw_payload = [&]() -> void
@@ -3401,12 +3445,12 @@ namespace {
         {
           return;
         }
-        builder->CreateMemCpy(
+        EmitAggMemcpy(
+            emitter,
             target_payload,
-            llvm::Align(1),
             source_payload,
-            llvm::Align(1),
-            llvm::ConstantInt::get(i64_ty, copy_size));
+            llvm::ConstantInt::get(i64_ty, copy_size),
+            1);
       };
 
       auto store_payload = [&](const analysis::TypeRef &source_payload_type,
@@ -3548,7 +3592,7 @@ namespace {
       {
         llvm::Value *code_ptr = CoerceOrNullOpaquePtr(emitter, builder, value);
         llvm::Value *env_ptr = NullOpaquePtr(emitter);
-        llvm::Value *closure_value = llvm::UndefValue::get(target_ty);
+        llvm::Value *closure_value = llvm::Constant::getNullValue(target_ty);
         closure_value = builder->CreateInsertValue(closure_value, env_ptr, {0u});
         closure_value = builder->CreateInsertValue(closure_value, code_ptr, {1u});
         return closure_value;
@@ -3621,7 +3665,7 @@ namespace {
             llvm::cast<llvm::ArrayType>(array_value->getType())->getNumElements() ==
                 target_array_ty->getNumElements())
         {
-          llvm::Value *out = llvm::UndefValue::get(target_array_ty);
+          llvm::Value *out = llvm::Constant::getNullValue(target_array_ty);
           llvm::Type *target_elem_ty = target_array_ty->getElementType();
           for (std::uint64_t i = 0; i < target_array->length; ++i)
           {
@@ -3663,9 +3707,9 @@ namespace {
             builder->GetInsertBlock() ? builder->GetInsertBlock()->getParent() : nullptr;
         const analysis::ScopeContext scope = BuildScope(ctx);
         const auto source_layout =
-            ::ultraviolet::analysis::layout::RecordLayoutOf(scope, source_tuple->elements);
+            ::ultraviolet::analysis::layout::TupleLayoutOf(scope, source_tuple->elements);
         const auto target_layout =
-            ::ultraviolet::analysis::layout::RecordLayoutOf(scope, target_tuple->elements);
+            ::ultraviolet::analysis::layout::TupleLayoutOf(scope, target_tuple->elements);
 
         if (source_struct_ty && target_struct_ty && current_fn &&
             source_layout.has_value() && target_layout.has_value() &&

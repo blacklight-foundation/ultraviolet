@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <filesystem>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -29,6 +30,7 @@ std::string JoinComp(const std::vector<std::string>& comps);
 std::string Join(std::string_view a, std::string_view b);
 std::string Normalize(std::string_view p);
 std::optional<std::string> Canon(std::string_view p);
+std::filesystem::path HostFilesystemPath(const std::filesystem::path& path);
 
 bool PathPrefix(const std::vector<std::string>& path,
                 const std::vector<std::string>& pref);

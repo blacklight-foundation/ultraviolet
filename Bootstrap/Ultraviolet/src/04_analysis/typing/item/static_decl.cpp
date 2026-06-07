@@ -20,6 +20,7 @@
 
 #include "00_core/assert_spec.h"
 #include "02_source/attributes/attribute_registry.h"
+#include "04_analysis/caps/cap_requirements.h"
 #include "04_analysis/typing/context.h"
 #include "04_analysis/typing/type_lower.h"
 #include "04_analysis/typing/type_wf.h"
@@ -157,6 +158,13 @@ StaticDeclResult TypeStaticDecl(
   }
   result.type = lowered.type;
 
+  if (!InferCapabilitiesFromType(ctx, module_path, result.type).IsEmpty()) {
+    SPEC_RULE("NAA-1");
+    result.ok = false;
+    result.diag_id = "E-CON-0020";
+    return result;
+  }
+
   // Type the initializer expression
   if (decl.binding.init) {
     TypeEnv env;
@@ -240,7 +248,12 @@ StaticDeclResult TypeStaticDeclSignature(
   }
   result.type = lowered.type;
 
-  (void)module_path;
+  if (!InferCapabilitiesFromType(ctx, module_path, result.type).IsEmpty()) {
+    SPEC_RULE("NAA-1");
+    result.ok = false;
+    result.diag_id = "E-CON-0020";
+    return result;
+  }
 
   SPEC_RULE("WF-StaticDecl-Sig-Ok");
   return result;

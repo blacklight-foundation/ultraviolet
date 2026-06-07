@@ -270,7 +270,10 @@ std::string BuildIncrementalBuildKey(
   fields.push_back(project.source_root.generic_string());
   fields.push_back(project.outputs.root.generic_string());
   fields.push_back(project.assembly.emit_ir.value_or("none"));
-  fields.push_back(std::string("log_enabled=") + (opts.log_enabled ? "1" : "0"));
+  const bool emits_runtime_trace_ir =
+      opts.log_enabled || opts.conformance_path.has_value();
+  fields.push_back(std::string("log_enabled=") +
+                   (emits_runtime_trace_ir ? "1" : "0"));
   fields.push_back(std::string("log_to_console=") +
                    (opts.log_to_console ? "1" : "0"));
   fields.push_back(std::string("log_to_file=") +

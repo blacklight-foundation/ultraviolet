@@ -11,6 +11,7 @@
 // =============================================================================
 
 #include "05_codegen/abi/abi.h"
+#include "00_core/assert_spec.h"
 #include "00_core/symbols.h"
 #include "01_project/language_profile.h"
 #include "04_analysis/caps/cap_system.h"
@@ -24,6 +25,33 @@
 
 namespace ultraviolet::codegen {
 namespace {
+
+std::once_flag g_panic_record_and_panic_out_obligation_once;
+std::once_flag g_panic_out_codegen_params_obligation_once;
+
+void RecordPanicRecordAndPanicOutObligation() {
+  std::call_once(g_panic_record_and_panic_out_obligation_once, [] {
+    SPEC_RULE("def.24.PanicRecordAndPanicOut");
+    ultraviolet::core::Conformance::Record(
+        "def.24.PanicRecordAndPanicOut",
+        std::nullopt,
+        "fields=panic:bool,code:u32;layout=RecordLayout(PanicRecordFields);"
+        "panic_out_type=TypeRawPtr(mut,PanicRecord);panic_out_name=__panic;"
+        "needs=callee!=RecordCtor&&callee!=EntrySym&&RuntimeSig(callee)==undefined;"
+        "params=append_when_needed");
+  });
+}
+
+void RecordPanicOutCodegenParamsObligation() {
+  std::call_once(g_panic_out_codegen_params_obligation_once, [] {
+    SPEC_RULE("def.24.PanicOutCodegenParams");
+    ultraviolet::core::Conformance::Record(
+        "def.24.PanicOutCodegenParams",
+        std::nullopt,
+        "source=PanicOutParams;mode=move;name=__panic;type=PanicOutType;"
+        "codegen_params=append_panic_out_param");
+  });
+}
 
 // Known runtime symbols that do NOT need a panic out-parameter.
 // This includes the panic handler itself, context init, and other runtime-defined symbols.
@@ -97,6 +125,7 @@ bool IsRecordCtorSymbol(std::string_view sym) {
 }  // namespace
 
 std::vector<std::pair<std::string, analysis::TypeRef>> PanicRecordFields() {
+  RecordPanicRecordAndPanicOutObligation();
   return {
       {"panic", analysis::MakeTypePrim("bool")},
       {"code", analysis::MakeTypePrim("u32")},
@@ -124,10 +153,13 @@ std::optional<::ultraviolet::analysis::layout::RecordLayout> PanicRecordLayout(
 
 // PanicOutType = rawptr[mut, PanicRecord]
 analysis::TypeRef PanicOutType() {
+  RecordPanicRecordAndPanicOutObligation();
   return analysis::MakeTypeRawPtr(analysis::RawPtrQual::Mut, PanicRecordType());
 }
 
 IRParam PanicOutParam() {
+  RecordPanicRecordAndPanicOutObligation();
+  RecordPanicOutCodegenParamsObligation();
   IRParam panic_param;
   panic_param.mode = analysis::ParamMode::Move;
   panic_param.name = std::string(kPanicOutName);
@@ -178,6 +210,8 @@ std::vector<std::tuple<std::optional<analysis::ParamMode>, std::string, analysis
 PanicOutParams(
     const std::vector<std::tuple<std::optional<analysis::ParamMode>, std::string, analysis::TypeRef>>& params,
     std::string_view callee_sym) {
+  RecordPanicRecordAndPanicOutObligation();
+  RecordPanicOutCodegenParamsObligation();
   auto result = params;
   if (NeedsPanicOut(callee_sym)) {
     IRParam panic_param = PanicOutParam();

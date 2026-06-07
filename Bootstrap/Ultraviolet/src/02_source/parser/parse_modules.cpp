@@ -15,12 +15,17 @@
 
 #include "02_source/parser/parse_modules.h"
 
+#include <algorithm>
+#include <atomic>
+#include <chrono>
 #include <cstdlib>
+#include <exception>
 #include <fstream>
 #include <iostream>
 #include <iterator>
 #include <string>
 #include <string_view>
+#include <thread>
 #include <type_traits>
 
 #include "00_core/assert_spec.h"
@@ -33,6 +38,11 @@
 
 
 namespace ultraviolet::frontend {
+
+ParseModuleResult ParseModuleFromDirWithDeps(
+    std::string_view module_path,
+    const std::filesystem::path& module_dir,
+    const ParseModuleDeps& deps);
 
 // =============================================================================
 // ReadBytesDefault - Default file reading implementation
@@ -103,6 +113,12 @@ void AppendDiags(core::DiagnosticStream& out,
   for (const auto& diag : add) {
     core::Emit(out, diag);
   }
+}
+
+std::int64_t ElapsedMs(std::chrono::steady_clock::time_point start) {
+  return std::chrono::duration_cast<std::chrono::milliseconds>(
+             std::chrono::steady_clock::now() - start)
+      .count();
 }
 
 bool SameSpan(const core::Span& lhs, const core::Span& rhs) {
@@ -712,14 +728,143 @@ std::filesystem::path DirOf(std::string_view module_path,
   return dir;
 }
 
+struct ParseModuleJob {
+  ParseModuleResult parsed;
+  std::vector<ParseFileTelemetry> file_telemetry;
+  std::vector<ParseModuleTelemetry> module_telemetry;
+  std::exception_ptr exception;
+};
+
+bool CanParseModulesInParallel(const std::vector<project::ModuleInfo>& modules,
+                               const ParseModuleDeps& deps) {
+  if (!deps.parallel_modules || modules.size() < 2) {
+    return false;
+  }
+  if (core::Conformance::Enabled()) {
+    return false;
+  }
+  if (core::IsDebugEnabled("phases") || core::IsDebugEnabled("parse")) {
+    return false;
+  }
+  return true;
+}
+
+std::size_t ParseModuleWorkerCount(std::size_t job_count) {
+  const unsigned int hardware_threads = std::thread::hardware_concurrency();
+  const std::size_t available_threads =
+      hardware_threads == 0 ? 2 : static_cast<std::size_t>(hardware_threads);
+  return std::max<std::size_t>(
+      1, std::min<std::size_t>(job_count, available_threads));
+}
+
+void EmitCapturedTelemetry(const ParseModuleDeps& deps,
+                           const ParseModuleJob& job) {
+  if (deps.file_telemetry) {
+    for (const auto& record : job.file_telemetry) {
+      deps.file_telemetry(record);
+    }
+  }
+  if (deps.module_telemetry) {
+    for (const auto& record : job.module_telemetry) {
+      deps.module_telemetry(record);
+    }
+  }
+}
+
+ParseModulesResult FinishParsedModuleJobs(
+    std::vector<ParseModuleJob>& jobs,
+    const ParseModuleDeps& deps) {
+  ParseModulesResult result;
+
+  std::vector<ast::ASTModule> parsed_modules;
+  parsed_modules.reserve(jobs.size());
+  for (auto& job : jobs) {
+    if (job.exception) {
+      std::rethrow_exception(job.exception);
+    }
+
+    EmitCapturedTelemetry(deps, job);
+    AppendDiags(result.diags, job.parsed.diags);
+    for (auto& [path, spans] : job.parsed.unsafe_spans_by_file) {
+      result.unsafe_spans_by_file.insert_or_assign(std::move(path),
+                                                   std::move(spans));
+    }
+    if (!job.parsed.module.has_value()) {
+      SPEC_RULE("ParseModules-Err");
+      return result;
+    }
+    parsed_modules.push_back(std::move(*job.parsed.module));
+  }
+
+  SPEC_RULE("ParseModules-Ok");
+  SPEC_RULE("Phase1-Complete");
+  SPEC_RULE("Phase1-Declarations");
+  SPEC_RULE("Phase1-Forward-Refs");
+  result.modules = std::move(parsed_modules);
+  return result;
+}
+
+ParseModulesResult ParseModulesParallel(
+    const std::vector<project::ModuleInfo>& modules,
+    const std::filesystem::path& source_root,
+    std::string_view assembly_name,
+    const ParseModuleDeps& deps) {
+  std::vector<ParseModuleJob> jobs(modules.size());
+  std::atomic<std::size_t> next_job{0};
+  const std::size_t worker_count = ParseModuleWorkerCount(modules.size());
+  std::vector<std::thread> workers;
+  workers.reserve(worker_count);
+
+  for (std::size_t worker_index = 0; worker_index < worker_count;
+       ++worker_index) {
+    workers.emplace_back([&]() {
+      while (true) {
+        const std::size_t index =
+            next_job.fetch_add(1, std::memory_order_relaxed);
+        if (index >= modules.size()) {
+          return;
+        }
+
+        ParseModuleJob& job = jobs[index];
+        try {
+          ParseModuleDeps local_deps = deps;
+          local_deps.file_telemetry =
+              [&job](const ParseFileTelemetry& record) {
+                job.file_telemetry.push_back(record);
+              };
+          local_deps.module_telemetry =
+              [&job](const ParseModuleTelemetry& record) {
+                job.module_telemetry.push_back(record);
+              };
+
+          const auto& module = modules[index];
+          const std::filesystem::path module_dir =
+              module.dir.empty() ? DirOf(module.path, source_root, assembly_name)
+                                 : module.dir;
+          job.parsed =
+              ParseModuleFromDirWithDeps(module.path, module_dir, local_deps);
+        } catch (...) {
+          job.exception = std::current_exception();
+        }
+      }
+    });
+  }
+
+  for (auto& worker : workers) {
+    worker.join();
+  }
+
+  return FinishParsedModuleJobs(jobs, deps);
+}
+
 // =============================================================================
 // DefaultDeps - Create default ParseModuleDeps
 // =============================================================================
 
 ParseModuleDeps DefaultDeps() {
-	  ParseModuleDeps deps;
-	  deps.compilation_unit = static_cast<project::CompilationUnitResult (*)(
-	      const std::filesystem::path&)>(project::CompilationUnit);
+  ParseModuleDeps deps;
+  deps.compilation_unit = static_cast<project::CompilationUnitResult (*)(
+      const std::filesystem::path&)>(project::CompilationUnit);
   deps.read_bytes = ReadBytesDefault;
   deps.load_source = core::LoadSource;
   deps.parse_file = ast::ParseFile;
@@ -761,44 +906,101 @@ ParseModuleResult ParseModuleFromDirWithDeps(
     }
   };
 
+  const auto module_start = std::chrono::steady_clock::now();
+  ParseModuleTelemetry module_telemetry;
+  module_telemetry.module_path = std::string(module_path);
+  module_telemetry.module_dir = module_dir;
+  bool module_telemetry_emitted = false;
+  const auto emit_module_telemetry = [&](bool ok) {
+    if (!deps.module_telemetry || module_telemetry_emitted) {
+      return;
+    }
+    module_telemetry.ok = ok;
+    module_telemetry.total_ms = ElapsedMs(module_start);
+    module_telemetry.diagnostics = result.diags.size();
+    deps.module_telemetry(module_telemetry);
+    module_telemetry_emitted = true;
+  };
+
   SPEC_RULE("Mod-Start");
 
+  const auto compilation_unit_start = std::chrono::steady_clock::now();
   const project::CompilationUnitResult unit = deps.compilation_unit(module_dir);
+  module_telemetry.compilation_unit_ms = ElapsedMs(compilation_unit_start);
+  module_telemetry.file_count = unit.files.size();
   AppendDiags(result.diags, unit.diags);
   if (core::HasError(unit.diags)) {
     SPEC_RULE("Mod-Start-Err-Unit");
     SPEC_RULE("ParseModule-Err-Unit");
+    emit_module_telemetry(false);
     return result;
   }
 
   std::vector<ast::ASTItem> items;
   std::vector<lexer::DocComment> docs;
   for (const auto& file : unit.files) {
+    const auto file_start = std::chrono::steady_clock::now();
+    ParseFileTelemetry file_telemetry;
+    file_telemetry.module_path = std::string(module_path);
+    file_telemetry.file_path = file;
+    const auto emit_file_telemetry = [&](bool ok) {
+      if (!deps.file_telemetry) {
+        return;
+      }
+      file_telemetry.ok = ok;
+      file_telemetry.total_ms = ElapsedMs(file_start);
+      deps.file_telemetry(file_telemetry);
+    };
+
     log_phase("read", file);
+    const auto read_start = std::chrono::steady_clock::now();
     const ReadBytesResult bytes = deps.read_bytes(file);
+    file_telemetry.read_ms = ElapsedMs(read_start);
+    file_telemetry.diagnostics += bytes.diags.size();
     AppendDiags(result.diags, bytes.diags);
     if (!bytes.bytes.has_value()) {
       SPEC_RULE("Mod-Scan-Err-Read");
       SPEC_RULE("ParseModule-Err-Read");
+      emit_file_telemetry(false);
+      emit_module_telemetry(false);
       return result;
     }
+    file_telemetry.byte_count = bytes.bytes->size();
+    module_telemetry.byte_count += bytes.bytes->size();
+    const auto load_start = std::chrono::steady_clock::now();
     const core::SourceLoadResult load =
         deps.load_source(file.generic_string(), *bytes.bytes);
+    file_telemetry.load_ms = ElapsedMs(load_start);
+    file_telemetry.diagnostics += load.diags.size();
     AppendDiags(result.diags, load.diags);
     if (!load.source.has_value()) {
       SPEC_RULE("Mod-Scan-Err-Load");
       SPEC_RULE("ParseModule-Err-Load");
+      core::Conformance::Record(
+          "req.LoadSourceShortCircuit",
+          std::nullopt,
+          "source=ParseModuleWithDeps;file=" + file.generic_string() +
+              ";load_source_ok=false;tokenize_invoked=false;"
+              "parse_file_invoked=false;syntactic_checks_invoked=false");
+      emit_file_telemetry(false);
+      emit_module_telemetry(false);
       return result;
     }
 
     core::DiagnosticStream inspect_diags;
     if (deps.inspect_source) {
       log_phase("inspect", file);
+      const auto inspect_start = std::chrono::steady_clock::now();
       inspect_diags = deps.inspect_source(*load.source);
+      file_telemetry.inspect_ms = ElapsedMs(inspect_start);
+      file_telemetry.diagnostics += inspect_diags.size();
     }
 
     log_phase("parse", file);
-    const ast::ParseFileResult parsed = deps.parse_file(*load.source);
+    const auto parse_start = std::chrono::steady_clock::now();
+    ast::ParseFileResult parsed = deps.parse_file(*load.source);
+    file_telemetry.parse_ms = ElapsedMs(parse_start);
+    file_telemetry.diagnostics += parsed.diags.size();
     if (core::IsDebugEnabled("parse")) {
       std::cerr << "[uv] parse: file=" << file.string()
                 << " diags=" << parsed.diags.size()
@@ -809,6 +1011,8 @@ ParseModuleResult ParseModuleFromDirWithDeps(
     if (!parsed.file.has_value()) {
       SPEC_RULE("Mod-Scan-Err-Parse");
       SPEC_RULE("ParseModule-Err-Parse");
+      emit_file_telemetry(false);
+      emit_module_telemetry(false);
       return result;
     }
 
@@ -816,12 +1020,17 @@ ParseModuleResult ParseModuleFromDirWithDeps(
     ValidateReservedBinders(*parsed.file, result.diags);
 
     SPEC_RULE("Mod-Scan");
-    items.insert(items.end(), parsed.file->items.begin(),
-                 parsed.file->items.end());
-    docs.insert(docs.end(), parsed.file->module_doc.begin(),
-                parsed.file->module_doc.end());
+    items.reserve(items.size() + parsed.file->items.size());
+    items.insert(items.end(),
+                 std::make_move_iterator(parsed.file->items.begin()),
+                 std::make_move_iterator(parsed.file->items.end()));
+    docs.reserve(docs.size() + parsed.file->module_doc.size());
+    docs.insert(docs.end(),
+                std::make_move_iterator(parsed.file->module_doc.begin()),
+                std::make_move_iterator(parsed.file->module_doc.end()));
     result.unsafe_spans_by_file[load.source->path] =
         std::move(parsed.unsafe_spans);
+    emit_file_telemetry(true);
   }
 
   SPEC_RULE("Mod-Done");
@@ -831,6 +1040,7 @@ ParseModuleResult ParseModuleFromDirWithDeps(
   module.module_doc = std::move(docs);
   result.module = std::move(module);
   SPEC_RULE("ParseModule-Ok");
+  emit_module_telemetry(true);
   return result;
 }
 
@@ -854,6 +1064,10 @@ ParseModulesResult ParseModulesWithDeps(
     const std::filesystem::path& source_root,
     std::string_view assembly_name,
     const ParseModuleDeps& deps) {
+  if (CanParseModulesInParallel(modules, deps)) {
+    return ParseModulesParallel(modules, source_root, assembly_name, deps);
+  }
+
   ParseModulesResult result;
 
   std::vector<ast::ASTModule> parsed_modules;
@@ -873,7 +1087,7 @@ ParseModulesResult ParseModulesWithDeps(
       SPEC_RULE("ParseModules-Err");
       return result;
     }
-    parsed_modules.push_back(*parsed.module);
+    parsed_modules.push_back(std::move(*parsed.module));
   }
 
   SPEC_RULE("ParseModules-Ok");

@@ -17,6 +17,17 @@
 
 namespace ultraviolet::ast {
 
+namespace {
+
+bool IsAsyncStateType(const TypePath& path, const Identifier& state) {
+  if (path.size() != 1 || path.front() != "Async") {
+    return false;
+  }
+  return state == "Suspended" || state == "Completed" || state == "Failed";
+}
+
+}  // namespace
+
 // =============================================================================
 // ParseModalStateType - Parse Modal State Suffix @StateName
 // =============================================================================
@@ -37,6 +48,10 @@ ParseElemResult<std::shared_ptr<Type>> ParseModalStateType(
 
   // Parse state identifier
   ParseElemResult<Identifier> state = ParseIdent(after_at);
+  if (IsAsyncStateType(path, state.elem)) {
+    SPEC_RULE("requirement.21.AsyncTypeNoAdditionalConcreteGrammar");
+    SPEC_RULE("requirement.21.ReservedAsyncStates");
+  }
 
   TypeModalState modal;
   modal.path = std::move(path);

@@ -18,6 +18,7 @@ namespace ultraviolet::codegen {
 std::optional<ABIType> ABITyFunc(const analysis::ScopeContext& ctx,
                                  const analysis::TypeFunc& /*func*/) {
   SPEC_RULE("ABI-Func");
+  SPEC_RULE("rule.24.ABI-Func");
   return ABIType{::ultraviolet::analysis::layout::PtrSize(ctx),
                  ::ultraviolet::analysis::layout::PtrAlign(ctx)};
 }

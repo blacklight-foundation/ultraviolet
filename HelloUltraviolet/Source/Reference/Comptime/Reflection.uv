@@ -51,6 +51,103 @@ comptime internal procedure reflectedSourceSpanHasExtent(span: SourceSpan) -> bo
         )
 }
 
+/// Exercises valid reflected categories for record, enum, and modal types.
+public procedure introspectCategoryValidityReference() -> bool {
+    return comptime {
+        introspect~>category(Type::<ComptimeReflectedRecord>) == TypeCategory::Record
+    } &&
+        comptime {
+            introspect~>category(Type::<ComptimeReflectedEnum>) == TypeCategory::Enum
+        } &&
+        comptime {
+            introspect~>category(Type::<ComptimeReflectedModal>) == TypeCategory::Modal
+        }
+}
+
+/// Exercises canonical declaration order for reflected members.
+public procedure reflectionCanonicalOrderReference() -> bool {
+    var reflected_field_count: usize = 0usize
+    var reflected_field_index_total: usize = 0usize
+    var named_field_count: usize = 0usize
+    comptime loop field in introspect~>fields(Type::<ComptimeReflectedRecord>) {
+        reflected_field_count = reflected_field_count + 1usize
+        reflected_field_index_total = reflected_field_index_total + comptime { field.index }
+        named_field_count = named_field_count +
+            comptime if field.name == "first" { 1usize } else { 0usize }
+        named_field_count = named_field_count +
+            comptime if field.name == "second" { 1usize } else { 0usize }
+    }
+
+    var reflected_variant_count: usize = 0usize
+    var named_variant_count: usize = 0usize
+    comptime loop variant in introspect~>variants(Type::<ComptimeReflectedEnum>) {
+        reflected_variant_count = reflected_variant_count + 1usize
+        named_variant_count = named_variant_count +
+            comptime if variant.name == "Empty" { 1usize } else { 0usize }
+        named_variant_count = named_variant_count +
+            comptime if variant.name == "Value" { 1usize } else { 0usize }
+        named_variant_count = named_variant_count +
+            comptime if variant.name == "Named" { 1usize } else { 0usize }
+    }
+
+    var reflected_state_count: usize = 0usize
+    var named_state_count: usize = 0usize
+    comptime loop state in introspect~>states(Type::<ComptimeReflectedModal>) {
+        reflected_state_count = reflected_state_count + 1usize
+        named_state_count = named_state_count +
+            comptime if state.name == "Ready" { 1usize } else { 0usize }
+        named_state_count = named_state_count +
+            comptime if state.name == "Done" { 1usize } else { 0usize }
+    }
+
+    return reflected_field_count == 2usize &&
+        reflected_field_index_total == 1usize &&
+        named_field_count == 2usize &&
+        reflected_variant_count == 3usize &&
+        named_variant_count == 3usize &&
+        reflected_state_count == 2usize &&
+        named_state_count == 2usize
+}
+
+/// Exercises reflection implements-form semantics.
+public procedure introspectImplementsFormSemanticsReference() -> bool {
+    return comptime { introspect~>implements_form(
+        Type::<ComptimeReflectedImplementation>,
+        Type::<ComptimeReflectedClass>
+    ) }
+}
+
+/// Exercises purity and immutability by repeating reflection queries.
+public procedure reflectionPurityAndImmutabilityReference() -> bool {
+    let type_name_stable: bool = comptime {
+        introspect~>type_name(Type::<ComptimeReflectedRecord>) ==
+            introspect~>type_name(Type::<ComptimeReflectedRecord>)
+    }
+    let module_path_stable: bool = comptime {
+        introspect~>module_path(Type::<ComptimeReflectedRecord>) ==
+            introspect~>module_path(Type::<ComptimeReflectedRecord>)
+    }
+    let category_stable: bool = comptime {
+        introspect~>category(Type::<ComptimeReflectedRecord>) ==
+            introspect~>category(Type::<ComptimeReflectedRecord>)
+    }
+
+    var first_field_count: usize = 0usize
+    comptime loop field in introspect~>fields(Type::<ComptimeReflectedRecord>) {
+        first_field_count = first_field_count + 1usize
+    }
+    var second_field_count: usize = 0usize
+    comptime loop field in introspect~>fields(Type::<ComptimeReflectedRecord>) {
+        second_field_count = second_field_count + 1usize
+    }
+
+    return type_name_stable &&
+        module_path_stable &&
+        category_stable &&
+        first_field_count == 2usize &&
+        second_field_count == 2usize
+}
+
 /// Exercises the Comptime Reflection reference surface.
 public procedure runComptimeReflectionReference() -> bool {
     let record_category_ok: bool =
@@ -183,11 +280,15 @@ public procedure runComptimeReflectionReference() -> bool {
     return record_category_ok &&
         enum_category_ok &&
         modal_category_ok &&
+        introspectCategoryValidityReference() &&
         implements_ok &&
+        introspectImplementsFormSemanticsReference() &&
         type_name_ok &&
         unqualified_module_path_ok &&
         qualified_module_path_ok &&
         span_line_ok &&
+        reflectionCanonicalOrderReference() &&
+        reflectionPurityAndImmutabilityReference() &&
         reflected_field_count == 2usize &&
         named_field_count == 2usize &&
         reflected_field_index_total == 1usize &&

@@ -59,6 +59,7 @@ void SkipNewlines(Parser& parser);
 ParseElemResult<ExprPtr> ParseExpr(Parser parser);
 ParseElemResult<ExprPtr> ParseExprNoBrace(Parser parser);
 ParseElemResult<std::shared_ptr<Block>> ParseBlock(Parser parser);
+ParseElemResult<AttrOpt> ParseAttributeListOpt(Parser parser);
 
 // Forward declarations from individual expression parsers
 std::optional<ParseElemResult<ExprPtr>> TryParseLiteralExpr(Parser parser);
@@ -363,6 +364,14 @@ ParseElemResult<ExprPtr> ParseLoopExpr(Parser parser) {
 // SPEC: Lines 5158-5320
 
 ParseElemResult<ExprPtr> ParsePrimary(Parser parser, bool allow_brace) {
+  ParseElemResult<AttrOpt> attrs = ParseAttributeListOpt(parser);
+  if (attrs.elem.has_value()) {
+    ParseElemResult<ExprPtr> expr = ParsePrimary(attrs.parser, allow_brace);
+    return {expr.parser,
+            AttachExprAttrs(expr.elem, *attrs.elem,
+                            SpanBetween(parser, expr.parser))};
+  }
+
   const Token* tok = Tok(parser);
   if (!tok) {
     EmitParseSyntaxErr(parser, TokSpan(parser));
@@ -432,6 +441,10 @@ ParseElemResult<ExprPtr> ParsePrimary(Parser parser, bool allow_brace) {
     if (maybe_release && IsIdentTok(*maybe_release) &&
         maybe_release->lexeme == "release") {
       release = true;
+      SPEC_RULE("requirement.21.AsyncKeySyntaxSurface");
+      SPEC_RULE("requirement.21.AsyncKeyParsingSurface");
+      SPEC_RULE("def.21.AsyncKeyExistingAstForms");
+      SPEC_RULE("requirement.21.AsyncKeyNoAdditionalAstVariants");
       Advance(next);
     }
     if (IsKw(next, "from")) {
@@ -454,7 +467,10 @@ ParseElemResult<ExprPtr> ParsePrimary(Parser parser, bool allow_brace) {
 
   // sync expression
   if (IsKwTok(*tok, "sync")) {
+    SPEC_RULE("grammar.21.CompositionForms");
+    SPEC_RULE("parse.21.CompositionPrimaryExpressions");
     SPEC_RULE("Parse-Sync-Expr");
+    SPEC_RULE("rule.21.Parse-Sync-Expr");
     Parser next = parser;
     Advance(next);
     ParseElemResult<ExprPtr> expr = ParseExpr(next);
@@ -465,13 +481,19 @@ ParseElemResult<ExprPtr> ParsePrimary(Parser parser, bool allow_brace) {
 
   // race expression
   if (IsKwTok(*tok, "race")) {
+    SPEC_RULE("grammar.21.CompositionForms");
+    SPEC_RULE("parse.21.CompositionPrimaryExpressions");
     SPEC_RULE("Parse-Race-Expr");
+    SPEC_RULE("rule.21.Parse-Race-Expr");
     return ParseRaceExpr(parser);
   }
 
   // all expression
   if (IsKwTok(*tok, "all")) {
+    SPEC_RULE("grammar.21.CompositionForms");
+    SPEC_RULE("parse.21.CompositionPrimaryExpressions");
     SPEC_RULE("Parse-All-Expr");
+    SPEC_RULE("rule.21.Parse-All-Expr");
     return ParseAllExpr(parser);
   }
 
@@ -630,11 +652,15 @@ ParseElemResult<ExprPtr> ParsePrimary(Parser parser, bool allow_brace) {
   // unsafe block expression
   if (IsKwTok(*tok, "unsafe")) {
     SPEC_RULE("Parse-Unsafe-Block-Expr");
+    SPEC_RULE("Parse-Unsafe-Expr");
+    SPEC_RULE("rule.16.Parse-Unsafe-Expr");
+    SPEC_RULE("grammar.16.EffectfulCoreExpressions");
     Parser next = parser;
     Advance(next);
     ParseElemResult<std::shared_ptr<Block>> blk = ParseBlock(next);
     UnsafeBlockExpr unsafe_block;
     unsafe_block.block = blk.elem;
+    SPEC_RULE("def.16.EffectfulCoreExprAst");
     return {blk.parser,
             MakeExpr(SpanBetween(parser, blk.parser), unsafe_block)};
   }

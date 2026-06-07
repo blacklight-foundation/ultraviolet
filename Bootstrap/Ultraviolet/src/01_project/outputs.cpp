@@ -8,6 +8,7 @@
 #include <string_view>
 #include <vector>
 
+#include "00_core/assert_spec.h"
 #include "00_core/path.h"
 #include "00_core/process_config.h"
 #include "00_core/symbols.h"
@@ -75,6 +76,144 @@ std::filesystem::path ModuleOutputRelativeDir(const Project& project,
   return std::filesystem::path(*rel);
 }
 
+std::string RenderBool(bool value) {
+  return value ? "true" : "false";
+}
+
+std::string RenderOptString(const std::optional<std::string>& value) {
+  return value.has_value() ? *value : "<bottom>";
+}
+
+std::string RenderOptPath(
+    const std::optional<std::filesystem::path>& value) {
+  return value.has_value() ? value->generic_string() : "<bottom>";
+}
+
+std::string LinkOutputKindName(LinkOutputKind kind) {
+  switch (kind) {
+    case LinkOutputKind::Executable:
+      return "exe";
+    case LinkOutputKind::SharedLibrary:
+      return "shared";
+  }
+  return "<bottom>";
+}
+
+std::string ArtifactLibraryName(const Project& project,
+                                TargetProfile target_profile) {
+  return std::string(LibraryPrefix(target_profile)) + project.assembly.name;
+}
+
+std::string RenderPath(const std::filesystem::path& path) {
+  return path.generic_string();
+}
+
+std::string RenderFirstPath(const std::vector<std::filesystem::path>& paths) {
+  return paths.empty() ? "<bottom>" : paths.front().generic_string();
+}
+
+std::string_view OutputRootSource(
+    const std::optional<std::string>& assembly_out_dir) {
+  if (core::OutDirOverride().has_value()) {
+    return "cli_override";
+  }
+  if (assembly_out_dir.has_value()) {
+    return "assembly_out_dir";
+  }
+  return "default";
+}
+
+void RecordOutputPathLayout(std::string_view assembly_name,
+                            const OutputPaths& paths,
+                            std::string_view root_source) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  SPEC_RULE("def.OutputRoot");
+  core::Conformance::Record(
+      "def.OutputRoot",
+      std::nullopt,
+      "assembly=" + std::string(assembly_name) + ";root_source=" +
+          std::string(root_source) + ";value=" + RenderPath(paths.root));
+
+  SPEC_RULE("def.OutputPathsRoot");
+  core::Conformance::Record(
+      "def.OutputPathsRoot",
+      std::nullopt,
+      "assembly=" + std::string(assembly_name) + ";root_source=" +
+          std::string(root_source) + ";value=" + RenderPath(paths.root));
+
+  SPEC_RULE("def.OutputPathsDirectories");
+  core::Conformance::Record(
+      "def.OutputPathsDirectories",
+      std::nullopt,
+      "assembly=" + std::string(assembly_name) +
+          ";intermediate=" + RenderPath(paths.intermediate_dir) +
+          ";obj=" + RenderPath(paths.obj_dir) +
+          ";ir=" + RenderPath(paths.ir_dir) +
+          ";bin=" + RenderPath(paths.bin_dir) +
+          ";lib=" + RenderPath(paths.lib_dir) +
+          ";logs=" + RenderPath(paths.logs_dir) +
+          ";incremental=" + RenderPath(paths.incremental_dir));
+}
+
+void RecordFinalArtifactNames(const Project& project,
+                              TargetProfile target_profile) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  const std::string libname = ArtifactLibraryName(project, target_profile);
+  SPEC_RULE("def.FinalArtifactLibraryName");
+  core::Conformance::Record(
+      "def.FinalArtifactLibraryName",
+      std::nullopt,
+      "assembly=" + project.assembly.name + ";libname=" + libname);
+
+  SPEC_RULE("def.FinalArtifactNames");
+  core::Conformance::Record(
+      "def.FinalArtifactNames",
+      std::nullopt,
+      "assembly=" + project.assembly.name +
+          ";exe=" +
+          RenderPath(project.outputs.bin_dir /
+                     (project.assembly.name +
+                      std::string(ExeSuffix(target_profile)))) +
+          ";shared=" +
+          RenderPath(project.outputs.bin_dir /
+                     (libname + std::string(SharedLibSuffix(target_profile)))) +
+          ";static=" +
+          RenderPath(project.outputs.lib_dir /
+                     (libname + std::string(StaticLibSuffix(target_profile)))) +
+          ";import=" +
+          RenderPath(project.outputs.lib_dir /
+                     (libname + std::string(ImportLibSuffix(target_profile)))));
+}
+
+void RecordAssemblyAndLinkKinds(const Project& project) {
+  const bool executable = IsExecutable(project);
+  const bool library = IsLibrary(project);
+  const bool dependency = IsDependency(project);
+  const bool linkable = IsLinkable(project);
+  const bool shared_library = IsSharedLibrary(project);
+  const bool static_library = IsStaticLibrary(project);
+
+  SPEC_RULE("def.AssemblyAndLinkKinds");
+  core::Conformance::Record(
+      "def.AssemblyAndLinkKinds",
+      std::nullopt,
+      "assembly=" + project.assembly.name +
+          ";assembly_kind=" + project.assembly.kind +
+          ";link_kind=" + RenderOptString(project.assembly.link_kind) +
+          ";executable=" + RenderBool(executable) +
+          ";library=" + RenderBool(library) +
+          ";dependency=" + RenderBool(dependency) +
+          ";linkable=" + RenderBool(linkable) +
+          ";shared_library=" + RenderBool(shared_library) +
+          ";static_library=" + RenderBool(static_library));
+}
+
 }  // namespace
 
 OutputPaths OutputPathsForRoot(const std::filesystem::path& root) {
@@ -93,11 +232,14 @@ OutputPaths OutputPathsForRoot(const std::filesystem::path& root) {
 OutputPaths ComputeOutputPaths(const std::filesystem::path& project_root,
                                const ValidatedAssembly& assembly) {
   const auto cli_out_dir = core::OutDirOverride();
+  const std::string_view root_source = OutputRootSource(assembly.out_dir);
   const std::filesystem::path root =
       cli_out_dir.has_value()        ? (project_root / *cli_out_dir)
       : assembly.out_dir.has_value() ? (project_root / *assembly.out_dir)
                                      : (project_root / DEFAULT_OUTPUT_ROOT);
-  return OutputPathsForRoot(root);
+  OutputPaths paths = OutputPathsForRoot(root);
+  RecordOutputPathLayout(assembly.name, paths, root_source);
+  return paths;
 }
 
 Project AssemblyProject(const Project& base_project, const Assembly& assembly) {
@@ -107,6 +249,14 @@ Project AssemblyProject(const Project& base_project, const Assembly& assembly) {
   project.outputs = assembly.outputs;
   project.modules = assembly.modules;
   project.lifecycle_modules = assembly.modules;
+  if (core::Conformance::Enabled()) {
+    SPEC_RULE("def.ProjectOutputBinding");
+    core::Conformance::Record(
+        "def.ProjectOutputBinding",
+        std::nullopt,
+        "assembly=" + assembly.name +
+            ";outputs_bound=true;root=" + RenderPath(project.outputs.root));
+  }
   return project;
 }
 
@@ -114,8 +264,23 @@ std::filesystem::path ObjPath(const Project& project,
                               TargetProfile target_profile,
                               const ModuleInfo& module) {
   const std::string mangled = core::MangleModulePath(module.path);
-  return project.outputs.obj_dir / ModuleOutputRelativeDir(project, module) /
-         (mangled + std::string(ObjExt(target_profile)));
+  const std::filesystem::path rel_dir = ModuleOutputRelativeDir(project, module);
+  const std::filesystem::path path =
+      project.outputs.obj_dir / rel_dir /
+      (mangled + std::string(ObjExt(target_profile)));
+  if (core::Conformance::Enabled()) {
+    const std::string payload =
+        "assembly=" + project.assembly.name + ";module=" + module.path +
+        ";relative_dir=" + RenderPath(rel_dir) +
+        ";mangled=" + mangled +
+        ";target=" + std::string(TargetProfileName(target_profile)) +
+        ";value=" + RenderPath(path);
+    SPEC_RULE("def.ObjectPath");
+    core::Conformance::Record("def.ObjectPath", std::nullopt, payload);
+    SPEC_RULE("def.ObjPath");
+    core::Conformance::Record("def.ObjPath", std::nullopt, payload);
+  }
+  return path;
 }
 
 std::filesystem::path IRPath(const Project& project,
@@ -127,39 +292,104 @@ std::filesystem::path IRPath(const Project& project,
     ext = ".bc";
   }
   const std::string mangled = core::MangleModulePath(module.path);
-  return project.outputs.ir_dir / ModuleOutputRelativeDir(project, module) /
-         (mangled + ext);
+  const std::filesystem::path rel_dir = ModuleOutputRelativeDir(project, module);
+  const std::filesystem::path path =
+      project.outputs.ir_dir / rel_dir / (mangled + ext);
+  if (core::Conformance::Enabled()) {
+    SPEC_RULE("def.EmitIRExtension");
+    core::Conformance::Record(
+        "def.EmitIRExtension",
+        std::nullopt,
+        "emit_ir=" + std::string(emit_ir) + ";extension=" + ext);
+    SPEC_RULE("def.IRPath");
+    core::Conformance::Record(
+        "def.IRPath",
+        std::nullopt,
+        "assembly=" + project.assembly.name + ";module=" + module.path +
+            ";relative_dir=" + RenderPath(rel_dir) +
+            ";mangled=" + mangled + ";emit_ir=" + std::string(emit_ir) +
+            ";value=" + RenderPath(path));
+  }
+  return path;
 }
 
 std::filesystem::path ExePath(const Project& project,
                               TargetProfile target_profile) {
-  return project.outputs.bin_dir /
-         (project.assembly.name + std::string(ExeSuffix(target_profile)));
+  const std::filesystem::path path =
+      project.outputs.bin_dir /
+      (project.assembly.name + std::string(ExeSuffix(target_profile)));
+  if (core::Conformance::Enabled()) {
+    SPEC_RULE("def.ExePath");
+    core::Conformance::Record(
+        "def.ExePath",
+        std::nullopt,
+        "assembly=" + project.assembly.name + ";value=" + RenderPath(path));
+  }
+  return path;
 }
 
 std::filesystem::path SharedLibPath(const Project& project,
                                     TargetProfile target_profile) {
-  return project.outputs.bin_dir /
-         (std::string(LibraryPrefix(target_profile)) + project.assembly.name +
-          std::string(SharedLibSuffix(target_profile)));
+  const std::filesystem::path path =
+      project.outputs.bin_dir /
+      (ArtifactLibraryName(project, target_profile) +
+       std::string(SharedLibSuffix(target_profile)));
+  if (core::Conformance::Enabled()) {
+    SPEC_RULE("def.SharedLibPath");
+    core::Conformance::Record(
+        "def.SharedLibPath",
+        std::nullopt,
+        "assembly=" + project.assembly.name + ";value=" + RenderPath(path));
+  }
+  return path;
 }
 
 std::filesystem::path StaticLibPath(const Project& project,
                                     TargetProfile target_profile) {
-  return project.outputs.lib_dir /
-         (std::string(LibraryPrefix(target_profile)) + project.assembly.name +
-          std::string(StaticLibSuffix(target_profile)));
+  const std::filesystem::path path =
+      project.outputs.lib_dir /
+      (ArtifactLibraryName(project, target_profile) +
+       std::string(StaticLibSuffix(target_profile)));
+  if (core::Conformance::Enabled()) {
+    SPEC_RULE("def.StaticLibPath");
+    core::Conformance::Record(
+        "def.StaticLibPath",
+        std::nullopt,
+        "assembly=" + project.assembly.name + ";value=" + RenderPath(path));
+  }
+  return path;
 }
 
 std::optional<std::filesystem::path> ImportLibPath(
     const Project& project,
     TargetProfile target_profile) {
-  if (!IsSharedLibrary(project) || !EmitsImportLib(target_profile)) {
-    return std::nullopt;
+  std::optional<std::filesystem::path> import_lib;
+  if (IsSharedLibrary(project) && EmitsImportLib(target_profile)) {
+    import_lib =
+        project.outputs.lib_dir /
+        (ArtifactLibraryName(project, target_profile) +
+         std::string(ImportLibSuffix(target_profile)));
   }
-  return project.outputs.lib_dir /
-         (std::string(LibraryPrefix(target_profile)) + project.assembly.name +
-          std::string(ImportLibSuffix(target_profile)));
+
+  SPEC_RULE("def.ImportLibPath");
+  core::Conformance::Record(
+      "def.ImportLibPath",
+      std::nullopt,
+      "assembly=" + project.assembly.name +
+          ";shared_library=" + RenderBool(IsSharedLibrary(project)) +
+          ";emits_import_lib=" + RenderBool(EmitsImportLib(target_profile)) +
+          ";value=" + RenderOptPath(import_lib));
+
+  SPEC_RULE("def.LinkImportLibOpt");
+  core::Conformance::Record(
+      "def.LinkImportLibOpt",
+      std::nullopt,
+      "assembly=" + project.assembly.name +
+          ";shared_library=" + RenderBool(IsSharedLibrary(project)) +
+          ";emits_import_lib=" + RenderBool(EmitsImportLib(target_profile)) +
+          ";value=" + RenderOptPath(import_lib));
+
+  return import_lib;
 }
 
 std::optional<std::filesystem::path> MapPath(const Project& project,
@@ -182,43 +412,81 @@ std::optional<std::filesystem::path> MapPath(const Project& project,
 std::optional<std::filesystem::path> PrimaryArtifactPath(
     const Project& project,
     TargetProfile target_profile) {
+  std::optional<std::filesystem::path> artifact;
+  std::string branch = "<bottom>";
   if (IsExecutable(project)) {
-    return ExePath(project, target_profile);
+    artifact = ExePath(project, target_profile);
+    branch = "executable";
+  } else if (IsSharedLibrary(project)) {
+    artifact = SharedLibPath(project, target_profile);
+    branch = "shared";
+  } else if (IsStaticLibrary(project)) {
+    artifact = StaticLibPath(project, target_profile);
+    branch = "static";
   }
-  if (IsSharedLibrary(project)) {
-    return SharedLibPath(project, target_profile);
+  if (core::Conformance::Enabled()) {
+    SPEC_RULE("def.PrimaryArtifact");
+    core::Conformance::Record(
+        "def.PrimaryArtifact",
+        std::nullopt,
+        "assembly=" + project.assembly.name + ";branch=" + branch +
+            ";value=" + RenderOptPath(artifact));
   }
-  if (IsStaticLibrary(project)) {
-    return StaticLibPath(project, target_profile);
-  }
-  return std::nullopt;
+  return artifact;
 }
 
 std::vector<std::filesystem::path> LibraryArtifactInputs(
     const std::vector<std::filesystem::path>& inputs) {
+  if (core::Conformance::Enabled()) {
+    SPEC_RULE("def.LibraryArtifactInputs");
+    core::Conformance::Record(
+        "def.LibraryArtifactInputs",
+        std::nullopt,
+        "count=" + std::to_string(inputs.size()) +
+            ";first=" + RenderFirstPath(inputs));
+  }
   return inputs;
 }
 
 std::optional<LinkOutputKind> LinkMode(const Project& project) {
+  std::optional<LinkOutputKind> mode;
   if (IsExecutable(project)) {
-    return LinkOutputKind::Executable;
+    mode = LinkOutputKind::Executable;
+  } else if (IsSharedLibrary(project)) {
+    mode = LinkOutputKind::SharedLibrary;
   }
-  if (IsSharedLibrary(project)) {
-    return LinkOutputKind::SharedLibrary;
-  }
-  return std::nullopt;
+
+  SPEC_RULE("def.LinkMode");
+  core::Conformance::Record(
+      "def.LinkMode",
+      std::nullopt,
+      "assembly=" + project.assembly.name +
+          ";mode=" + (mode.has_value() ? LinkOutputKindName(*mode) : "<bottom>"));
+
+  return mode;
 }
 
 std::optional<std::filesystem::path> LinkOutputPath(
     const Project& project,
     TargetProfile target_profile) {
+  std::optional<std::filesystem::path> output_path;
+  std::string mode = "<bottom>";
   if (IsExecutable(project)) {
-    return ExePath(project, target_profile);
+    output_path = ExePath(project, target_profile);
+    mode = "exe";
+  } else if (IsSharedLibrary(project)) {
+    output_path = SharedLibPath(project, target_profile);
+    mode = "shared";
   }
-  if (IsSharedLibrary(project)) {
-    return SharedLibPath(project, target_profile);
-  }
-  return std::nullopt;
+
+  SPEC_RULE("def.LinkOutputPath");
+  core::Conformance::Record(
+      "def.LinkOutputPath",
+      std::nullopt,
+      "assembly=" + project.assembly.name + ";mode=" + mode +
+          ";value=" + RenderOptPath(output_path));
+
+  return output_path;
 }
 
 bool UsesBinDir(const Project& project, TargetProfile) {
@@ -239,6 +507,16 @@ std::vector<std::filesystem::path> ObjPaths(
   for (const auto& module : modules) {
     out.push_back(ObjPath(project, target_profile, module));
   }
+  if (core::Conformance::Enabled()) {
+    SPEC_RULE("def.ObjPaths");
+    core::Conformance::Record(
+        "def.ObjPaths",
+        std::nullopt,
+        "assembly=" + project.assembly.name +
+            ";modules=" + std::to_string(modules.size()) +
+            ";count=" + std::to_string(out.size()) +
+            ";first=" + RenderFirstPath(out));
+  }
   return out;
 }
 
@@ -254,6 +532,17 @@ std::vector<std::filesystem::path> IRPaths(
   out.reserve(modules.size());
   for (const auto& module : modules) {
     out.push_back(IRPath(project, target_profile, module, emit_ir));
+  }
+  if (core::Conformance::Enabled()) {
+    SPEC_RULE("def.IRPaths");
+    core::Conformance::Record(
+        "def.IRPaths",
+        std::nullopt,
+        "assembly=" + project.assembly.name +
+            ";emit_ir=" + std::string(emit_ir) +
+            ";modules=" + std::to_string(modules.size()) +
+            ";count=" + std::to_string(out.size()) +
+            ";first=" + RenderFirstPath(out));
   }
   return out;
 }
@@ -277,15 +566,106 @@ std::vector<std::filesystem::path> RequiredOutputs(
       import_lib.has_value()) {
     out.push_back(*import_lib);
   }
+  if (core::Conformance::Enabled()) {
+    const auto primary = PrimaryArtifactPath(project, target_profile);
+    const auto import_lib = ImportLibPath(project, target_profile);
+    RecordFinalArtifactNames(project, target_profile);
+
+    SPEC_RULE("def.ArtifactPathContext");
+    core::Conformance::Record(
+        "def.ArtifactPathContext",
+        std::nullopt,
+        "assembly=" + project.assembly.name +
+            ";root=" + RenderPath(project.outputs.root));
+
+    SPEC_RULE("def.IRSet");
+    core::Conformance::Record(
+        "def.IRSet",
+        std::nullopt,
+        "assembly=" + project.assembly.name +
+            ";emit_ir=" + std::string(emit_ir) +
+            ";count=" + std::to_string((emit_ir == "ll" || emit_ir == "bc")
+                                           ? project.modules.size()
+                                           : 0u));
+
+    SPEC_RULE("def.PrimaryArtifactSet");
+    core::Conformance::Record(
+        "def.PrimaryArtifactSet",
+        std::nullopt,
+        "assembly=" + project.assembly.name +
+            ";linkable=" + RenderBool(IsLinkable(project)) +
+            ";count=" + std::to_string(primary.has_value() ? 1u : 0u) +
+            ";value=" + RenderOptPath(primary));
+
+    SPEC_RULE("def.ImportLibSet");
+    core::Conformance::Record(
+        "def.ImportLibSet",
+        std::nullopt,
+        "assembly=" + project.assembly.name +
+            ";shared_library=" + RenderBool(IsSharedLibrary(project)) +
+            ";emits_import_lib=" + RenderBool(EmitsImportLib(target_profile)) +
+            ";count=" + std::to_string(import_lib.has_value() ? 1u : 0u) +
+            ";value=" + RenderOptPath(import_lib));
+
+    SPEC_RULE("def.ArtifactOutputDirectoryUse");
+    core::Conformance::Record(
+        "def.ArtifactOutputDirectoryUse",
+        std::nullopt,
+        "assembly=" + project.assembly.name +
+            ";uses_bin=" + RenderBool(IsExecutable(project) ||
+                                       IsSharedLibrary(project)) +
+            ";uses_lib=" + RenderBool(IsStaticLibrary(project) ||
+                                       import_lib.has_value()));
+
+    SPEC_RULE("def.RequiredOutputs");
+    core::Conformance::Record(
+        "def.RequiredOutputs",
+        std::nullopt,
+        "assembly=" + project.assembly.name +
+            ";objs=" + std::to_string(objs.size()) +
+            ";irs=" + std::to_string((emit_ir == "ll" || emit_ir == "bc")
+                                        ? project.modules.size()
+                                        : 0u) +
+            ";primary=" + std::to_string(primary.has_value() ? 1u : 0u) +
+            ";import_lib=" +
+            std::to_string(import_lib.has_value() ? 1u : 0u) +
+            ";total=" + std::to_string(out.size()) +
+            ";first=" + RenderFirstPath(out));
+  }
   return out;
 }
 
 bool OutputHygiene(const Project& project, TargetProfile target_profile) {
+  if (core::Conformance::Enabled()) {
+    RecordOutputPathLayout(project.assembly.name,
+                           project.outputs,
+                           OutputRootSource(project.assembly.out_dir));
+  }
+
   const auto required = RequiredOutputs(project, target_profile);
   for (const auto& path : required) {
     if (!UnderPath(path, project.outputs.root)) {
+      if (core::Conformance::Enabled()) {
+        SPEC_RULE("def.OutputHygiene");
+        core::Conformance::Record(
+            "def.OutputHygiene",
+            std::nullopt,
+            "assembly=" + project.assembly.name +
+                ";all_under_root=false;root=" +
+                RenderPath(project.outputs.root) +
+                ";failed=" + RenderPath(path));
+      }
       return false;
     }
+  }
+  if (core::Conformance::Enabled()) {
+    SPEC_RULE("def.OutputHygiene");
+    core::Conformance::Record(
+        "def.OutputHygiene",
+        std::nullopt,
+        "assembly=" + project.assembly.name +
+            ";all_under_root=true;root=" + RenderPath(project.outputs.root) +
+            ";count=" + std::to_string(required.size()));
   }
   return true;
 }
@@ -296,14 +676,14 @@ std::vector<std::string> DumpProject(const Project& project,
   std::vector<std::string> out;
   out.reserve(9 + project.modules.size());
 
-  auto render_opt = [](const std::optional<std::string>& value) -> std::string {
-    return value.has_value() ? *value : "<bottom>";
-  };
+  SPEC_RULE("def.DumpProjectOutput");
+  core::Conformance::Record(
+      "def.DumpProjectOutput",
+      std::nullopt,
+      dump_files ? "sections=ProjectSummary,OutputSummary,LinkOutputSummary,Files"
+                 : "sections=ProjectSummary,OutputSummary,LinkOutputSummary");
 
-  auto render_opt_path =
-      [](const std::optional<std::filesystem::path>& value) -> std::string {
-    return value.has_value() ? value->generic_string() : "<bottom>";
-  };
+  RecordAssemblyAndLinkKinds(project);
 
   std::vector<std::string> assembly_names;
   assembly_names.reserve(project.assemblies.size());
@@ -321,30 +701,67 @@ std::vector<std::string> DumpProject(const Project& project,
   out.push_back("<assemblies, " + RenderList(assembly_names) + ">");
   out.push_back("<assembly_name, " + project.assembly.name + ">");
   out.push_back("<assembly_kind, " + project.assembly.kind + ">");
-  out.push_back("<link_kind, " + render_opt(project.assembly.link_kind) + ">");
+  out.push_back("<link_kind, " +
+                RenderOptString(project.assembly.link_kind) + ">");
   out.push_back("<source_root, " + project.source_root.generic_string() + ">");
   out.push_back("<output_root, " + project.outputs.root.generic_string() + ">");
   out.push_back("<module_list, " + RenderList(module_names) + ">");
 
-  if (IsExecutable(project) || IsLibrary(project)) {
-    const auto primary = PrimaryArtifactPath(project, target_profile);
-    const auto import_lib = ImportLibPath(project, target_profile);
-    out.push_back("<artifact, " + render_opt_path(primary) +
-                  ", import_lib, " + render_opt_path(import_lib) + ">");
-  }
+  SPEC_RULE("def.ProjectSummaryOutput");
+  core::Conformance::Record(
+      "def.ProjectSummaryOutput",
+      std::nullopt,
+      "fields=project_root,assemblies,assembly_name,assembly_kind,link_kind,"
+      "source_root,output_root,module_list");
 
   const bool emit_ir_enabled =
       project.assembly.emit_ir.has_value() && *project.assembly.emit_ir != "none";
-  const std::string_view emit_ir = emit_ir_enabled ? *project.assembly.emit_ir : "";
+  const std::string emit_ir_mode =
+      emit_ir_enabled ? *project.assembly.emit_ir : std::string("none");
+  SPEC_RULE("def.OutputSummary");
+  core::Conformance::Record("def.OutputSummary",
+                            std::nullopt,
+                            "fields=module,obj,ir;rows=" +
+                                std::to_string(project.modules.size()));
   for (const auto& module : project.modules) {
     const std::string obj_path =
         ObjPath(project, target_profile, module).generic_string();
     const std::string ir_value =
         emit_ir_enabled
-            ? IRPath(project, target_profile, module, emit_ir).generic_string()
+            ? IRPath(project, target_profile, module, emit_ir_mode).generic_string()
             : "<bottom>";
+    SPEC_RULE("def.IROpt");
+    core::Conformance::Record("def.IROpt",
+                              std::nullopt,
+                              "module=" + module.path +
+                                  ";emit_ir=" + emit_ir_mode + ";value=" +
+                                  ir_value);
     out.push_back("<module, " + module.path + ", obj, " + obj_path +
                   ", ir, " + ir_value + ">");
+  }
+
+  if (IsExecutable(project) || IsLibrary(project)) {
+    const auto primary = PrimaryArtifactPath(project, target_profile);
+    const auto import_lib = ImportLibPath(project, target_profile);
+    const std::string primary_value = RenderOptPath(primary);
+    const std::string import_lib_value = RenderOptPath(import_lib);
+    SPEC_RULE("def.LinkOutputSummary");
+    core::Conformance::Record("def.LinkOutputSummary",
+                              std::nullopt,
+                              "fields=artifact,import_lib;artifact=" +
+                                  primary_value + ";import_lib=" +
+                                  import_lib_value);
+    SPEC_RULE("def.ImportLibOpt");
+    core::Conformance::Record("def.ImportLibOpt",
+                              std::nullopt,
+                              "value=" + import_lib_value);
+    out.push_back("<artifact, " + primary_value + ", import_lib, " +
+                  import_lib_value + ">");
+  } else {
+    SPEC_RULE("def.LinkOutputSummary");
+    core::Conformance::Record("def.LinkOutputSummary",
+                              std::nullopt,
+                              "fields=artifact,import_lib;rows=0");
   }
 
   if (dump_files) {

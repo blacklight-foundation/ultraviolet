@@ -1,7 +1,7 @@
 //! Rejected module-level form specimens.
 
 public procedure modulesRejectedSourceFixtureCount() -> usize {
-    return 11usize
+    return 12usize
 }
 
 public procedure validatedModulesRejectedSourceFixtureCount() -> usize {
@@ -173,6 +173,23 @@ public procedure validatedModulesRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Modules/ReservedModuleKeyword/Expected.uv",
         "E-MOD-1105",
         "WF-Module-Path-Reserved"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ReservedModuleKeyword",
+            "Fixtures/RejectedSource/Modules/ReservedModuleKeyword",
+            "Fixtures/RejectedSource/Modules/ReservedModuleKeyword/Source/if/Main.uv",
+            "Fixtures/RejectedSource/Modules/ReservedModuleKeyword/Expected.uv",
+            expectedDiagnostic("E-MOD-1105", "Disc-Invalid-Component")
+        ),
+        "ReservedModuleKeyword",
+        "Fixtures/RejectedSource/Modules/ReservedModuleKeyword",
+        "Fixtures/RejectedSource/Modules/ReservedModuleKeyword/Source/if/Main.uv",
+        "Fixtures/RejectedSource/Modules/ReservedModuleKeyword/Expected.uv",
+        "E-MOD-1105",
+        "Disc-Invalid-Component"
     ) {
         count = count + 1usize
     }

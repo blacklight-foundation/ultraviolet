@@ -9,34 +9,34 @@ public procedure validatedKeySystemConflictDetectionObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "requirement.19.ConflictDetectionNoAdditionalSyntax",
-        73659usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysConflictDetectionReference",
-        "Source/Reference/Keys/ConflictDetection.uv"
+        73661usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.19.ConflictDetectionNoAdditionalParsingRules",
-        73674usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysConflictDetectionReference",
-        "Source/Reference/Keys/ConflictDetection.uv"
+        73676usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.19.PrefixAndDisjoint",
-        73689usize,
+        73691usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysConflictDetectionReference",
+        "prefixAndDisjointReference",
         "Source/Reference/Keys/ConflictDetection.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.19.KeyPathOrdering",
-        73704usize,
+        73706usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysConflictDetectionReference",
         "Source/Reference/Keys/ConflictDetection.uv"
@@ -45,70 +45,70 @@ public procedure validatedKeySystemConflictDetectionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.19.KeyCompatibility",
-        73739usize,
+        73741usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysConflictDetectionReference",
+        "keyCompatibilityReference",
         "Source/Reference/Keys/ConflictDetection.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.19.IndexEquivalence",
-        73770usize,
+        73772usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysConflictDetectionReference",
+        "indexEquivalenceReference",
         "Source/Reference/Keys/ConflictDetection.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.19.IndexEquivalenceConservativeSubset",
-        73793usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysConflictDetectionReference",
-        "Source/Reference/Keys/ConflictDetection.uv"
+        73795usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.19.K-Disjoint-Safe",
-        73806usize,
+        73808usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysConflictDetectionReference",
+        "disjointKeyAccessReference",
         "Source/Reference/Keys/ConflictDetection.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.19.K-Prefix-Coverage",
-        73822usize,
+        73824usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysConflictDetectionReference",
+        "prefixCoverageReference",
         "Source/Reference/Keys/ConflictDetection.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.19.DynamicIndexDisjointness",
-        73840usize,
+        73842usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysConflictDetectionReference",
+        "dynamicIndexDisjointnessReference",
         "Source/Reference/Keys/ConflictDetection.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.19.DynamicIndexDisjointnessConservativeSubset",
-        73863usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysConflictDetectionReference",
-        "Source/Reference/Keys/ConflictDetection.uv"
+        73865usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.19.K-Dynamic-Index-Conflict",
-        73876usize,
+        73878usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysConflictDetectionReference",
         "Source/Reference/Keys/ConflictDetection.uv"
@@ -117,16 +117,16 @@ public procedure validatedKeySystemConflictDetectionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.19.ReadThenWrite",
-        73894usize,
+        73896usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysConflictDetectionReference",
+        "readThenWriteReference",
         "Source/Reference/Keys/ConflictDetection.uv"
     ) {
         count = count + 1usize
     }
     if rejectedSourceObligationEntryMatches(
         "requirement.19.ReadThenWriteDiagnosticSurface",
-        73911usize,
+        73913usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedKeysRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Keys/SharedReadThenWrite/Source/Main.uv"
@@ -135,16 +135,16 @@ public procedure validatedKeySystemConflictDetectionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "requirement.19.ReadThenWriteOtherWriteForms",
-        73924usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysConflictDetectionReference",
-        "Source/Reference/Keys/ConflictDetection.uv"
+        73926usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.19.K-Read-Write-Reject",
-        73937usize,
+        73939usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysConflictDetectionReference",
         "Source/Reference/Keys/ConflictDetection.uv"
@@ -153,16 +153,16 @@ public procedure validatedKeySystemConflictDetectionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.19.K-RMW-Permitted",
-        73953usize,
+        73955usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysConflictDetectionReference",
+        "readThenWriteReference",
         "Source/Reference/Keys/ConflictDetection.uv"
     ) {
         count = count + 1usize
     }
     if diagnosticSourceObligationEntryMatches(
         "rule.19.K-RMW-Explicit-Warn",
-        73969usize,
+        73971usize,
         "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedKeysDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Keys/ReadThenWriteExplicitWarning/Source/Main.uv"
@@ -171,7 +171,7 @@ public procedure validatedKeySystemConflictDetectionObligations() -> usize {
     }
     if diagnosticSourceObligationEntryMatches(
         "rule.19.K-RMW-Contention-Warn",
-        73985usize,
+        73987usize,
         "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedKeysDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Keys/ReadThenWriteContentionWarning/Source/Main.uv"
@@ -180,25 +180,25 @@ public procedure validatedKeySystemConflictDetectionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.19.OrderedComparablePaths",
-        74001usize,
+        74003usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysConflictDetectionReference",
+        "orderedComparablePathsReference",
         "Source/Reference/Keys/ConflictDetection.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.19.K-Ordered-Ok",
-        74017usize,
+        74019usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysConflictDetectionReference",
+        "orderedComparablePathsReference",
         "Source/Reference/Keys/ConflictDetection.uv"
     ) {
         count = count + 1usize
     }
     if rejectedSourceObligationEntryMatches(
         "rule.19.K-Ordered-Base-Err",
-        74033usize,
+        74035usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedKeysRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Keys/OrderedDifferentBase/Source/Main.uv"
@@ -207,7 +207,7 @@ public procedure validatedKeySystemConflictDetectionObligations() -> usize {
     }
     if diagnosticSourceObligationEntryMatches(
         "rule.19.K-Ordered-Redundant-Warn",
-        74049usize,
+        74051usize,
         "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedKeysDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Keys/OrderedRedundantWarning/Source/Main.uv"
@@ -216,43 +216,43 @@ public procedure validatedKeySystemConflictDetectionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "requirement.19.CanonicalOrderDynamicUse",
-        74067usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysConflictDetectionReference",
-        "Source/Reference/Keys/ConflictDetection.uv"
+        74069usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "requirement.19.KeyConflictRuntimeCompatibility",
-        74080usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysConflictDetectionReference",
-        "Source/Reference/Keys/ConflictDetection.uv"
+        74082usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.19.LowerConflictChecks",
-        74095usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysConflictDetectionReference",
-        "Source/Reference/Keys/ConflictDetection.uv"
+        74097usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.19.Lower-Key-ConflictChecks",
-        74111usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysConflictDetectionReference",
-        "Source/Reference/Keys/ConflictDetection.uv"
+        74113usize,
+        "HelloUltraviolet::Audit::Catalog::KeySystem",
+        "keySystemCompilerConformanceArtifactMatches",
+        "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
     ) {
         count = count + 1usize
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.19.ConflictDetection",
-        74129usize,
+        74131usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedKeysRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Keys/ConflictDetectionDiagnostic/Source/Main.uv"

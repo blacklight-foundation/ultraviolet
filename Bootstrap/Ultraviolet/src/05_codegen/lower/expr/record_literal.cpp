@@ -17,11 +17,15 @@
 #include "05_codegen/lower/expr/record_literal.h"
 
 #include "00_core/assert_spec.h"
+#include "00_core/spec_trace.h"
 #include "04_analysis/typing/type_lower.h"
 #include "04_analysis/typing/type_predicates.h"
 
+#include <optional>
+#include <string>
 #include <type_traits>
 #include <utility>
+#include <variant>
 #include <vector>
 
 namespace ultraviolet::codegen {
@@ -105,6 +109,68 @@ analysis::TypeRef LowerRecordTargetType(const ast::RecordExpr& expr,
       expr.target);
 }
 
+void AppendTransitionPayloadField(std::string& payload,
+                                  std::string_view key,
+                                  std::string_view value) {
+  if (!payload.empty()) {
+    payload += ';';
+  }
+  payload.append(key.data(), key.size());
+  payload += '=';
+  payload.append(value.data(), value.size());
+}
+
+void AppendTransitionPayloadField(std::string& payload,
+                                  std::string_view key,
+                                  std::size_t value) {
+  AppendTransitionPayloadField(payload, key, std::to_string(value));
+}
+
+std::string PathPayloadValue(const analysis::TypePath& path) {
+  std::string out;
+  for (std::size_t i = 0; i < path.size(); ++i) {
+    if (i != 0) {
+      out += "::";
+    }
+    out += path[i];
+  }
+  return out;
+}
+
+void RecordTransitionTargetRecordLowering(const ast::RecordExpr& expr,
+                                          LowerCtx& ctx) {
+  if (!core::Conformance::Enabled() ||
+      !ctx.active_transition_lowering.has_value()) {
+    return;
+  }
+
+  const auto* target = std::get_if<ast::ModalStateRef>(&expr.target);
+  if (!target) {
+    return;
+  }
+
+  const auto& active = *ctx.active_transition_lowering;
+  if (!PathEquals(target->path, active.modal_path) ||
+      target->state != active.target_state) {
+    return;
+  }
+
+  SPEC_RULE("req.TransitionLowering");
+  std::string payload;
+  AppendTransitionPayloadField(payload, "source", "LowerRecord");
+  AppendTransitionPayloadField(payload, "operation", "transition_target_record");
+  AppendTransitionPayloadField(payload, "modal", PathPayloadValue(active.modal_path));
+  AppendTransitionPayloadField(payload, "source_state", active.source_state);
+  AppendTransitionPayloadField(payload, "target_state", active.target_state);
+  AppendTransitionPayloadField(payload, "record_value", "ModalStateRef");
+  AppendTransitionPayloadField(payload, "fresh_record_value", "true");
+  AppendTransitionPayloadField(payload, "field_count", expr.fields.size());
+  core::Conformance::Record(
+      "req.TransitionLowering",
+      std::nullopt,
+      payload);
+}
+
 }  // namespace
 
 // =============================================================================
@@ -131,6 +197,7 @@ LowerResult LowerRecord(const ast::Expr& full_expr,
                         const ast::RecordExpr& expr,
                         LowerCtx& ctx) {
   SPEC_RULE("Lower-Expr-Record");
+  SPEC_RULE("rule.16.Lower-Expr-Record");
 
   // Field initializer values are consumed by the record construction, so they
   // should not be tracked as temporaries. This applies to both regular records
@@ -151,6 +218,7 @@ LowerResult LowerRecord(const ast::Expr& full_expr,
       record_type,
       "record",
       ctx);
+  RecordTransitionTargetRecordLowering(expr, ctx);
 
   return LowerResult{ir, record_value};
 }

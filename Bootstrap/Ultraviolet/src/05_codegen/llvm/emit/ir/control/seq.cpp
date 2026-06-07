@@ -4,10 +4,29 @@
 // =============================================================================
 #include "../../ir_instruction_visitor.h"
 
+#include "00_core/spec_trace.h"
+
+#include <optional>
+#include <string>
+
 namespace ultraviolet::codegen::emit_detail {
 
 void IRInstructionVisitor::operator()(const IRSeq &seq) const
 {
+  SPEC_RULE("rule.24.LowerIRInstr-Seq");
+
+  if (core::Conformance::Enabled())
+  {
+    std::string payload =
+        "obligation=rule.24.LowerIRInstr-Seq;"
+        "ir_form=SeqIR;"
+        "lower_form=SeqLL;"
+        "order=left-to-right;"
+        "child_count=";
+    payload += std::to_string(seq.items.size());
+    core::Conformance::Record("rule.24.LowerIRInstr-Seq", std::nullopt, payload);
+  }
+
   struct ForwardTargetInfo
   {
     const std::string *name = nullptr;

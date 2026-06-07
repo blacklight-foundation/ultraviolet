@@ -142,7 +142,7 @@ const std::vector<std::string_view>& UniverseProtectedNames() {
       "i8",     "i16",    "i32",    "i64",    "i128",   "u8",
       "u16",    "u32",    "u64",    "u128",   "f16",    "f32",
       "f64",    "bool",   "char",   "usize",  "isize",  "Self",
-      "Drop", "Bitcopy", "Clone", "Eq", "Hash", "Hasher", "Iterator", "Step",
+      "Drop", "Bitcopy", "Clone", "Eq", "Hash", "Hasher", "Iterator", "Discrete",
       "FfiSafe", "string", "bytes",  "Modal",  "Region", "RegionOptions",
       "CancelToken", "Context", "TestAuthority", "System", "IO",
       "HeapAllocator", "ExecutionDomain", "Reactor", "Network", "Time",
@@ -242,7 +242,7 @@ const std::vector<std::string_view>& SpecialTypeNames() {
   SpecDefsNames();
   static const std::vector<std::string_view> names = {
       "Self", "Drop", "Bitcopy", "Clone", "Eq", "Hash", "Hasher", "Iterator",
-      "Step", "FfiSafe", "string", "bytes", "Modal", "Region",
+      "Discrete", "FfiSafe", "string", "bytes", "Modal", "Region",
       "RegionOptions", "CancelToken", "Context", "TestAuthority", "System",
       "IO", "HeapAllocator", "ExecutionDomain", "CpuSet", "Priority",
       "Reactor", "Network", "Time", "MonotonicTime", "WallTime",

@@ -351,8 +351,15 @@ inline IRPtr MakeSpawn(
 }
 
 /// Create an IR node for wait expression.
-inline IRPtr MakeWait(const IRValue& handle, const IRValue& result) {
-  return MakeIR(IRWait{handle, result});
+inline IRPtr MakeWait(
+    const IRValue& handle,
+    const IRValue& result,
+    IRWaitKind kind = IRWaitKind::Unknown) {
+  IRWait wait;
+  wait.handle = handle;
+  wait.result = result;
+  wait.kind = kind;
+  return MakeIR(std::move(wait));
 }
 
 // =============================================================================

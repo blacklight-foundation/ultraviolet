@@ -79,7 +79,19 @@ jobs:
         if: always()
         with:
           name: hello-verification-macos
-          path: artifacts/hello-verification-macos.txt
+          path: |
+            artifacts/hello-verification-macos.txt
+            artifacts/runtime-logs/**
+            Build/Tests/**/*.log
+            Build/Tests/**/*.out
+            Build/Tests/**/*.err
+            Build/Tests/**/*.json
+            Build/Tests/**/*.evidence
+            HelloUltraviolet/Build/Tests/**/*.log
+            HelloUltraviolet/Build/Tests/**/*.out
+            HelloUltraviolet/Build/Tests/**/*.err
+            HelloUltraviolet/Build/Tests/**/*.json
+            HelloUltraviolet/Build/Tests/**/*.evidence
           if-no-files-found: ignore
 
       - name: Upload macOS release archive

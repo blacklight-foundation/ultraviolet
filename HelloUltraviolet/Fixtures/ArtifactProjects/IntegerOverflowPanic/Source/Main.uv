@@ -1,0 +1,13 @@
+//! Artifact fixture for runtime integer-overflow panic behavior.
+
+/// Adds a runtime parameter to the maximum i32 value so overflow is checked at runtime.
+public procedure integerOverflowPanicValue(delta: i32) -> i32 {
+    let maximum: i32 = 2147483647i32
+    return maximum + delta
+}
+
+/// Runs the overflowing addition; the parent audit observes the panic exit code.
+public procedure main(context: Context) -> i32 {
+    let _ = context
+    return integerOverflowPanicValue(1)
+}

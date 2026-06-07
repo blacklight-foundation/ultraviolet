@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+#include <sys/file.h>
 #include <sys/mman.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
@@ -733,6 +734,37 @@ static void uv_rt_macos_set_errno_error(int err)
 static size_t uv_rt_macos_utf8_cstr_len(const char *text)
 {
   return text ? strlen(text) : 0u;
+}
+
+static char **uv_rt_macos_process_argv(int *out_argc)
+{
+  const uv_rt_process_start_t *start = uv_rt_startup_current();
+  int argc = 0;
+  char **argv = NULL;
+
+  if (start)
+  {
+    argc = start->argc;
+    argv = start->argv;
+  }
+
+  if (argc <= 0 || !argv)
+  {
+    int *darwin_argc = _NSGetArgc();
+    char ***darwin_argv = _NSGetArgv();
+    argc = darwin_argc ? *darwin_argc : 0;
+    argv = darwin_argv ? *darwin_argv : NULL;
+  }
+
+  if (argc < 0)
+  {
+    argc = 0;
+  }
+  if (out_argc)
+  {
+    *out_argc = argc;
+  }
+  return argv;
 }
 
 static const char *uv_rt_macos_process_env_utf8_value(const char *name)
@@ -2253,6 +2285,31 @@ static int uv_rt_macos_open_flags_from_access(DWORD desired_access, DWORD creati
   return flags;
 }
 
+static BOOL uv_rt_macos_apply_file_share_mode(int fd,
+                                              DWORD desired_access,
+                                              DWORD share_mode)
+{
+  int wants_write = (desired_access & GENERIC_WRITE) != 0u ||
+                    (desired_access & FILE_APPEND_DATA) != 0u;
+  if (!wants_write || (share_mode & FILE_SHARE_WRITE) != 0u)
+  {
+    return TRUE;
+  }
+  if (flock(fd, LOCK_EX | LOCK_NB) == 0)
+  {
+    return TRUE;
+  }
+  if (errno == EWOULDBLOCK || errno == EAGAIN || errno == EACCES)
+  {
+    SetLastError(ERROR_SHARING_VIOLATION);
+  }
+  else
+  {
+    uv_rt_macos_set_errno_error(errno);
+  }
+  return FALSE;
+}
+
 static int uv_rt_macos_console_fd_from_name(LPCWSTR path)
 {
   if (!path)
@@ -2290,8 +2347,8 @@ HANDLE CreateFileW(LPCWSTR path,
 {
   char *utf8_path;
   int fd;
+  struct stat st;
   HANDLE handle;
-  (void)share_mode;
   (void)security_attributes;
   (void)flags_and_attributes;
   (void)template_file;
@@ -2311,6 +2368,23 @@ HANDLE CreateFileW(LPCWSTR path,
   if (fd < 0)
   {
     uv_rt_macos_set_errno_error(errno);
+    return INVALID_HANDLE_VALUE;
+  }
+  if (fstat(fd, &st) != 0)
+  {
+    uv_rt_macos_set_errno_error(errno);
+    close(fd);
+    return INVALID_HANDLE_VALUE;
+  }
+  if (S_ISDIR(st.st_mode))
+  {
+    SetLastError(ERROR_ACCESS_DENIED);
+    close(fd);
+    return INVALID_HANDLE_VALUE;
+  }
+  if (!uv_rt_macos_apply_file_share_mode(fd, desired_access, share_mode))
+  {
+    close(fd);
     return INVALID_HANDLE_VALUE;
   }
   handle = uv_rt_macos_alloc_handle(UV_RT_HANDLE_FILE);
@@ -2474,7 +2548,11 @@ static DWORD uv_rt_macos_attributes_from_stat(const struct stat *st)
   {
     return FILE_ATTRIBUTE_DIRECTORY;
   }
-  return FILE_ATTRIBUTE_NORMAL;
+  if (S_ISREG(st->st_mode))
+  {
+    return FILE_ATTRIBUTE_NORMAL;
+  }
+  return FILE_ATTRIBUTE_REPARSE_POINT;
 }
 
 DWORD GetFileAttributesW(LPCWSTR path)
@@ -2485,7 +2563,7 @@ DWORD GetFileAttributesW(LPCWSTR path)
   {
     return INVALID_FILE_ATTRIBUTES;
   }
-  if (stat(utf8_path, &st) != 0)
+  if (lstat(utf8_path, &st) != 0)
   {
     uv_rt_macos_set_errno_error(errno);
     free(utf8_path);
@@ -2566,7 +2644,7 @@ static int uv_rt_macos_fill_find_data(const char *dir_path,
     SetLastError(ERROR_NOT_ENOUGH_MEMORY);
     return 0;
   }
-  if (stat(full_path, &st) != 0)
+  if (lstat(full_path, &st) != 0)
   {
     free(full_path);
     uv_rt_macos_set_errno_error(errno);
@@ -3213,12 +3291,13 @@ uv_platform_u32_t uv_platform_backend_executable_path_utf8(
 
 uv_platform_uptr_t uv_platform_backend_argument_count(void)
 {
-  const uv_rt_process_start_t *start = uv_rt_startup_current();
-  if (!start || start->argc <= 1 || !start->argv)
+  int argc = 0;
+  char **argv = uv_rt_macos_process_argv(&argc);
+  if (argc <= 1 || !argv)
   {
     return 0u;
   }
-  return (uv_platform_uptr_t)(start->argc - 1);
+  return (uv_platform_uptr_t)(argc - 1);
 }
 
 uv_platform_u32_t uv_platform_backend_argument_utf8(
@@ -3226,14 +3305,14 @@ uv_platform_u32_t uv_platform_backend_argument_utf8(
     char *buffer,
     uv_platform_u32_t size)
 {
-  const uv_rt_process_start_t *start = uv_rt_startup_current();
-  if (!start || start->argc <= 1 || !start->argv ||
-      index >= (uv_platform_uptr_t)(start->argc - 1))
+  int argc = 0;
+  char **argv = uv_rt_macos_process_argv(&argc);
+  if (argc <= 1 || !argv || index >= (uv_platform_uptr_t)(argc - 1))
   {
     return 0u;
   }
 
-  const char *argument = start->argv[index + 1u];
+  const char *argument = argv[index + 1u];
   if (!argument)
   {
     return 0u;

@@ -15,9 +15,11 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstdint>
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -249,6 +251,312 @@ std::vector<RawToken> ToRawTokens(const std::vector<Token>& tokens) {
   return raws;
 }
 
+const char* TokenKindName(TokenKind kind) {
+  switch (kind) {
+    case TokenKind::Identifier:
+      return "Identifier";
+    case TokenKind::Keyword:
+      return "Keyword";
+    case TokenKind::IntLiteral:
+      return "IntLiteral";
+    case TokenKind::FloatLiteral:
+      return "FloatLiteral";
+    case TokenKind::StringLiteral:
+      return "StringLiteral";
+    case TokenKind::CharLiteral:
+      return "CharLiteral";
+    case TokenKind::BoolLiteral:
+      return "BoolLiteral";
+    case TokenKind::NullLiteral:
+      return "NullLiteral";
+    case TokenKind::Operator:
+      return "Operator";
+    case TokenKind::Punctuator:
+      return "Punctuator";
+    case TokenKind::Newline:
+      return "Newline";
+    case TokenKind::Eof:
+      return "Eof";
+    case TokenKind::Unknown:
+      return "Unknown";
+  }
+  return "Unknown";
+}
+
+const char* DocKindName(DocKind kind) {
+  switch (kind) {
+    case DocKind::LineDoc:
+      return "LineDoc";
+    case DocKind::ModuleDoc:
+      return "ModuleDoc";
+  }
+  return "LineDoc";
+}
+
+void HashByte(std::uint64_t& hash, std::uint8_t byte) {
+  hash ^= byte;
+  hash *= 1099511628211ull;
+}
+
+void HashSize(std::uint64_t& hash, std::size_t value) {
+  for (std::size_t shift = 0; shift < sizeof(value); ++shift) {
+    HashByte(hash, static_cast<std::uint8_t>((value >> (shift * 8)) & 0xffu));
+  }
+}
+
+void HashText(std::uint64_t& hash, std::string_view text) {
+  HashSize(hash, text.size());
+  for (char byte : text) {
+    HashByte(hash, static_cast<std::uint8_t>(byte));
+  }
+}
+
+void HashSpan(std::uint64_t& hash, const core::Span& span) {
+  HashSize(hash, span.start_offset);
+  HashSize(hash, span.end_offset);
+  HashSize(hash, span.start_line);
+  HashSize(hash, span.start_col);
+  HashSize(hash, span.end_line);
+  HashSize(hash, span.end_col);
+}
+
+std::uint64_t LexerOutputHash(const LexerOutput& output) {
+  std::uint64_t hash = 1469598103934665603ull;
+  HashSize(hash, output.tokens.size());
+  for (const Token& token : output.tokens) {
+    HashText(hash, TokenKindName(token.kind));
+    HashText(hash, token.lexeme);
+    HashSpan(hash, token.span);
+  }
+  HashSize(hash, output.docs.size());
+  for (const DocComment& doc : output.docs) {
+    HashText(hash, DocKindName(doc.kind));
+    HashText(hash, doc.text);
+    HashSpan(hash, doc.span);
+  }
+  return hash;
+}
+
+std::optional<core::Span> LexerOutputSpan(const LexerOutput& output) {
+  if (!output.tokens.empty()) {
+    return output.tokens.front().span;
+  }
+  if (!output.docs.empty()) {
+    return output.docs.front().span;
+  }
+  return std::nullopt;
+}
+
+std::size_t NewlineTokenCount(const std::vector<Token>& tokens) {
+  return static_cast<std::size_t>(
+      std::count_if(tokens.begin(), tokens.end(), [](const Token& token) {
+        return token.kind == TokenKind::Newline;
+      }));
+}
+
+std::size_t DocCommentCount(const std::vector<DocComment>& docs,
+                            DocKind kind) {
+  return static_cast<std::size_t>(
+      std::count_if(docs.begin(), docs.end(), [kind](const DocComment& doc) {
+        return doc.kind == kind;
+      }));
+}
+
+std::size_t LineCommentEnd(const std::vector<core::UnicodeScalar>& scalars,
+                           std::size_t start) {
+  std::size_t end = scalars.size();
+  for (std::size_t index = start; index < scalars.size(); ++index) {
+    if (scalars[index] == core::kLF) {
+      end = index;
+      break;
+    }
+  }
+  return end;
+}
+
+std::size_t BlockCommentEnd(const std::vector<core::UnicodeScalar>& scalars,
+                            std::size_t start) {
+  std::size_t depth = 1;
+  std::size_t index = start + 2;
+  while (index < scalars.size()) {
+    if (MatchPrefix(scalars, index, "/*")) {
+      ++depth;
+      index += 2;
+      continue;
+    }
+    if (MatchPrefix(scalars, index, "*/")) {
+      --depth;
+      index += 2;
+      if (depth == 0) {
+        return index;
+      }
+      continue;
+    }
+    ++index;
+  }
+  return scalars.size();
+}
+
+std::size_t QuotedSpanEnd(const std::vector<core::UnicodeScalar>& scalars,
+                          std::size_t start,
+                          core::UnicodeScalar quote) {
+  const TerminatorResult terminator = FindTerminator(scalars, start, quote);
+  if (terminator.closed) {
+    return terminator.index + 1;
+  }
+  return std::max(start + 1, terminator.index);
+}
+
+std::vector<ScalarRange> CommentRanges(
+    const std::vector<core::UnicodeScalar>& scalars) {
+  std::vector<ScalarRange> ranges;
+  std::size_t index = 0;
+  while (index < scalars.size()) {
+    if (scalars[index] == '"') {
+      index = QuotedSpanEnd(scalars, index, '"');
+      continue;
+    }
+    if (scalars[index] == '\'') {
+      index = QuotedSpanEnd(scalars, index, '\'');
+      continue;
+    }
+    if (MatchPrefix(scalars, index, "//")) {
+      const std::size_t end = LineCommentEnd(scalars, index);
+      ranges.push_back(ScalarRange{index, end});
+      index = end;
+      continue;
+    }
+    if (MatchPrefix(scalars, index, "/*")) {
+      const std::size_t end = BlockCommentEnd(scalars, index);
+      ranges.push_back(ScalarRange{index, end});
+      index = end;
+      continue;
+    }
+    ++index;
+  }
+  return ranges;
+}
+
+bool RangeContains(const std::vector<ScalarRange>& ranges,
+                   std::size_t index) {
+  return std::any_of(ranges.begin(), ranges.end(), [index](ScalarRange range) {
+    return range.start <= index && index < range.end;
+  });
+}
+
+bool RangeContainsToken(const std::vector<ScalarRange>& ranges,
+                        std::size_t start,
+                        std::size_t end) {
+  return std::any_of(
+      ranges.begin(), ranges.end(), [start, end](ScalarRange range) {
+        return start < range.end && range.start < end;
+      });
+}
+
+bool HasNewlineTokenAt(const core::SourceFile& source,
+                       const std::vector<Token>& tokens,
+                       std::size_t index) {
+  return std::any_of(tokens.begin(), tokens.end(),
+                     [&source, index](const Token& token) {
+                       if (token.kind != TokenKind::Newline) {
+                         return false;
+                       }
+                       const auto range = TokenRange(source, token);
+                       return range.has_value() && range->first == index &&
+                              range->second == index + 1;
+                     });
+}
+
+bool LexNewlineOk(const core::SourceFile& source,
+                  const std::vector<Token>& tokens,
+                  const std::vector<ScalarRange>& comments,
+                  std::size_t& required_newlines) {
+  for (std::size_t index = 0; index < source.scalars.size(); ++index) {
+    if (source.scalars[index] != core::kLF || RangeContains(comments, index)) {
+      continue;
+    }
+    ++required_newlines;
+    if (!HasNewlineTokenAt(source, tokens, index)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool LexNoCommentsOk(const core::SourceFile& source,
+                     const std::vector<Token>& tokens,
+                     const std::vector<ScalarRange>& comments) {
+  for (const Token& token : tokens) {
+    const auto range = TokenRange(source, token);
+    if (!range.has_value()) {
+      return false;
+    }
+    if (RangeContainsToken(comments, range->first, range->second)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void RecordLexerOutputEvidence(const core::SourceFile& source,
+                               const LexerOutput& output) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  std::string payload;
+  payload.reserve(160);
+  payload += "tokens=";
+  payload += std::to_string(output.tokens.size());
+  payload += ";docs=";
+  payload += std::to_string(output.docs.size());
+  payload += ";line_docs=";
+  payload += std::to_string(DocCommentCount(output.docs, DocKind::LineDoc));
+  payload += ";module_docs=";
+  payload += std::to_string(DocCommentCount(output.docs, DocKind::ModuleDoc));
+  payload += ";newlines=";
+  payload += std::to_string(NewlineTokenCount(output.tokens));
+  payload += ";source_bytes=";
+  payload += std::to_string(source.byte_len);
+  payload += ";stream_hash=";
+  payload += std::to_string(LexerOutputHash(output));
+  core::Conformance::Record("def.LexerOutput", LexerOutputSpan(output), payload);
+}
+
+void RecordTokenizeOutputConstraintsEvidence(const core::SourceFile& source,
+                                             const LexerOutput& output) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+  const std::vector<ScalarRange> comments = CommentRanges(source.scalars);
+  std::size_t required_newlines = 0;
+  const bool newline_ok =
+      LexNewlineOk(source, output.tokens, comments, required_newlines);
+  const bool no_comments_ok =
+      LexNoCommentsOk(source, output.tokens, comments);
+  if (!newline_ok || !no_comments_ok) {
+    return;
+  }
+
+  std::string payload;
+  payload.reserve(180);
+  payload += "lex_newline=true;lex_no_comments=true;required_newlines=";
+  payload += std::to_string(required_newlines);
+  payload += ";newline_tokens=";
+  payload += std::to_string(NewlineTokenCount(output.tokens));
+  payload += ";comment_ranges=";
+  payload += std::to_string(comments.size());
+  payload += ";tokens=";
+  payload += std::to_string(output.tokens.size());
+  payload += ";docs=";
+  payload += std::to_string(output.docs.size());
+  payload += ";stream_hash=";
+  payload += std::to_string(LexerOutputHash(output));
+  core::Conformance::Record(
+      "def.TokenizeOutputConstraints",
+      LexerOutputSpan(output),
+      payload);
+}
+
 }  // namespace
 
 LexerInput MakeLexerInput(const core::SourceFile& source) {
@@ -422,6 +730,9 @@ LexSmallStepResult LexSmallStep(const core::SourceFile& source) {
 
   result.output.tokens = std::move(tokens);
   result.output.docs = std::move(docs);
+  if (result.ok) {
+    RecordLexerOutputEvidence(source, result.output);
+  }
   result.sensitive = std::move(sensitive);
   return result;
 }
@@ -491,6 +802,7 @@ TokenizeDiagnosticResult TokenizeWithDiagnostics(const core::SourceFile& source)
   lexed.output.tokens = std::move(attached_tokens);
 
   SPEC_RULE("Tokenize-Ok");
+  RecordTokenizeOutputConstraintsEvidence(source, lexed.output);
   result.output = std::move(lexed.output);
   return result;
 }

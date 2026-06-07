@@ -34,8 +34,10 @@ namespace {
 
 static inline void SpecDefsRegionStmt() {
   SPEC_DEF("T-RegionStmt", "5.2.17");
+  SPEC_DEF("rule.18.T-RegionStmt", "18.7.4");
   SPEC_DEF("RegionBind", "5.2.17");
   SPEC_DEF("RegionOptsExpr", "5.2.17");
+  SPEC_DEF("diag.18.Region", "18.7.7");
 }
 
 // Introduce a region binding
@@ -66,6 +68,7 @@ StmtTypeResult TypeRegionStmt(const ScopeContext& ctx,
   const auto check = CheckExpr(ctx, opts_expr, RegionOptionsTypeRef(),
                                type_expr, type_place, type_ident);
   if (!check.ok) {
+    SPEC_RULE("diag.18.Region");
     return {false, check.diag_id, {}, {}};
   }
 
@@ -74,6 +77,7 @@ StmtTypeResult TypeRegionStmt(const ScopeContext& ctx,
   // Introduce region binding (named or anonymous)
   const auto intro = RegionBind(region_env, node.alias_opt);
   if (!intro.ok) {
+    SPEC_RULE("diag.18.Region");
     return {false, intro.diag_id, {}, {}};
   }
 
@@ -85,9 +89,11 @@ StmtTypeResult TypeRegionStmt(const ScopeContext& ctx,
                                         env.scopes.size(), type_expr,
                                         type_ident, type_place);
   if (!typed.ok) {
+    SPEC_RULE("diag.18.Region");
     return {false, typed.diag_id, {}, {}, typed.diag_detail, typed.diag_span};
   }
 
+  SPEC_RULE("rule.18.T-RegionStmt");
   SPEC_RULE("T-RegionStmt");
   return typed;
 }

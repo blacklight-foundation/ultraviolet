@@ -110,6 +110,11 @@ TypeEnv PopScope(const TypeEnv& env);
 TypeEnv ProjectTypeEnvToDepth(const TypeEnv& env, std::size_t depth);
 std::optional<TypeBinding> BindOf(const TypeEnv& env, std::string_view name);
 TypeRef StableBindingType(const TypeBinding& binding);
+void MarkSharedDerivedBindingsStale(TypeEnv& env);
+void EmitStaleBindingReferenceWarning(
+    const TypeBinding& binding,
+    const StmtTypeContext& type_ctx,
+    std::optional<core::Span> span = std::nullopt);
 std::optional<ast::Mutability> MutOf(const TypeEnv& env,
                                         std::string_view name);
 std::optional<ParallelContextKind> ParallelContext(const TypeEnv& env);
@@ -158,6 +163,7 @@ struct StmtTypeResult {
   FlowInfo flow;
   std::string diag_detail;
   std::optional<core::Span> diag_span;
+  std::vector<std::string_view> diagnostic_obligation_ids;
 };
 
 struct StmtSeqResult {
@@ -168,6 +174,7 @@ struct StmtSeqResult {
   std::shared_ptr<StaticProofContext> proof_ctx;
   std::string diag_detail;
   std::optional<core::Span> diag_span;
+  std::vector<std::string_view> diagnostic_obligation_ids;
 };
 
 struct BlockInfoResult {
@@ -178,6 +185,7 @@ struct BlockInfoResult {
   bool break_void = false;
   std::string diag_detail;
   std::optional<core::Span> diag_span;
+  std::vector<std::string_view> diagnostic_obligation_ids;
 };
 
 struct PatternTypeResult {
@@ -231,6 +239,7 @@ struct StmtTypeContext {
   std::vector<HeldKeyTypingInfo> held_key_paths;  // canonical held key paths for nested key checks
   std::optional<ast::KeyMode> shared_access_mode;  // RequiredMode context for shared-place access
   bool suppress_shared_access_check = false;  // true while typing a larger shared-place path
+  bool in_shared_capturing_closure = false;
   bool in_speculative = false;       // true when inside a speculative key block
   std::unordered_set<IdKey>* unique_captures = nullptr;  // track unique captures
   // UVX Extension: Contract predicates / invariants

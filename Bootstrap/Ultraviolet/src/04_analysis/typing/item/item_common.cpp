@@ -470,10 +470,12 @@ static bool ClassPathOk(const ScopeContext& ctx,
                         const core::Span& span) {
   if (ctx.sigma.classes.find(PathKeyOf(path)) == ctx.sigma.classes.end()) {
     SPEC_RULE("WF-ClassPath-Err");
+    SPEC_RULE("rule.14.WF-ClassPath-Err");
     EmitTypecheckDiag(diags, "Superclass-Undefined", span);
     return false;
   }
   SPEC_RULE("WF-ClassPath");
+  SPEC_RULE("rule.14.WF-ClassPath");
   return true;
 }
 

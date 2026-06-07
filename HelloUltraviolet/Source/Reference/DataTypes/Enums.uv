@@ -68,6 +68,18 @@ internal procedure enumUnitReference() -> bool {
     return first_ok && second_ok && equality_ok
 }
 
+internal procedure evalSigmaEnumUnitReference() -> bool {
+    let first: UnitEnumReference = UnitEnumReference::First
+    return if first is {
+        UnitEnumReference::First {
+            true
+        }
+        UnitEnumReference::Second {
+            false
+        }
+    }
+}
+
 internal procedure enumQualifiedResolutionReference() -> bool {
     let named_value: i32 = 11
     let named: EnumReference = EnumReference::Named { value: named_value }
@@ -99,13 +111,55 @@ internal procedure enumRecordControlReference(should_return: bool) -> i32 {
     return enumReferencePayloadValue(value)
 }
 
-internal procedure enumLayoutReference() -> bool {
+internal procedure evalSigmaEnumTupleReference() -> bool {
+    let value: EnumReference = EnumReference::Count(23)
+    return enumReferencePayloadValue(value) == 23
+}
+
+internal procedure evalSigmaEnumTupleCtrlReference() -> bool {
+    return enumTupleControlReference(true) == 29
+}
+
+internal procedure evalSigmaEnumRecordReference() -> bool {
+    let value: EnumReference = EnumReference::Named { value: 43 }
+    return enumReferencePayloadValue(value) == 43
+}
+
+internal procedure evalSigmaEnumRecordCtrlReference() -> bool {
+    return enumRecordControlReference(true) == 37
+}
+
+internal procedure layoutEnumTaggedReference() -> bool {
     return sizeof(EnumReference) == 8usize &&
         alignof(EnumReference) == alignof(i32) &&
         sizeof(UnitEnumReference) == sizeof(u8) &&
         alignof(UnitEnumReference) == alignof(u8) &&
         sizeof(WideDiscriminantEnumReference) == sizeof(u16) &&
         alignof(WideDiscriminantEnumReference) == alignof(u16)
+}
+
+internal procedure sizeEnumReference() -> bool {
+    return sizeof(EnumReference) == 8usize &&
+        sizeof(UnitEnumReference) == sizeof(u8) &&
+        sizeof(WideDiscriminantEnumReference) == sizeof(u16)
+}
+
+internal procedure alignEnumReference() -> bool {
+    return alignof(EnumReference) == alignof(i32) &&
+        alignof(UnitEnumReference) == alignof(u8) &&
+        alignof(WideDiscriminantEnumReference) == alignof(u16)
+}
+
+internal procedure layoutEnumReference() -> bool {
+    return sizeEnumReference() && alignEnumReference()
+}
+
+internal procedure enumLayoutHelpersReference() -> bool {
+    return layoutEnumTaggedReference() && layoutEnumReference()
+}
+
+internal procedure enumLayoutReference() -> bool {
+    return enumLayoutHelpersReference()
 }
 
 /// Exercises the DataTypes Enums reference surface.
@@ -151,11 +205,16 @@ public procedure runDataTypesEnumsReference() -> bool {
         count_ok &&
         named_ok &&
         enumUnitReference() &&
+        evalSigmaEnumUnitReference() &&
         enumQualifiedResolutionReference() &&
         enumGenericReference() &&
+        evalSigmaEnumTupleReference() &&
         enumTupleControlReference(false) == 31 &&
         enumTupleControlReference(true) == 29 &&
+        evalSigmaEnumTupleCtrlReference() &&
+        evalSigmaEnumRecordReference() &&
         enumRecordControlReference(false) == 41 &&
         enumRecordControlReference(true) == 37 &&
+        evalSigmaEnumRecordCtrlReference() &&
         enumLayoutReference()
 }

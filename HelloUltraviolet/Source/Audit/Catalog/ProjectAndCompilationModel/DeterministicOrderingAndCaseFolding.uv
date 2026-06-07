@@ -2,7 +2,7 @@
 
 
 public procedure countProjectAndCompilationModelDeterministicOrderingAndCaseFoldingObligations() -> usize {
-    return 10usize
+    return 9usize
 }
 
 public procedure validatedProjectAndCompilationModelDeterministicOrderingAndCaseFoldingObligations() -> usize {
@@ -55,45 +55,36 @@ public procedure validatedProjectAndCompilationModelDeterministicOrderingAndCase
     if acceptedObligationEntryMatches(
         "def.DirKey",
         4195usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsModuleDiscoveryReference",
-        "Source/Reference/Projects/ModuleDiscovery.uv"
+        "HelloUltraviolet::Audit",
+        "artifactProjectModuleDiscoveryOrderingExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.DirectoryOrdering",
         4211usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsModuleDiscoveryReference",
-        "Source/Reference/Projects/ModuleDiscovery.uv"
+        "HelloUltraviolet::Audit",
+        "artifactProjectModuleDiscoveryOrderingExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if artifactBehaviorObligationEntryMatches(
         "def.DirSeq",
         4225usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsModuleDiscoveryReference",
-        "Source/Reference/Projects/ModuleDiscovery.uv"
+        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
+        "validatedArtifactProjectFixtureCount",
+        "Fixtures/ArtifactProjects/ModuleDiscoveryOrdering/Source/Alpha/Extra.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "DirSeq-Read-Err",
         4239usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsModuleDiscoveryReference",
-        "Source/Reference/Projects/ModuleDiscovery.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "DirSeq-Rel-Fail",
-        4257usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsModuleDiscoveryReference",
-        "Source/Reference/Projects/ModuleDiscovery.uv"
+        "HelloUltraviolet::Audit",
+        "outputDiagnosticDirSeqReadFailureExercise",
+        "Source/Audit/OutputDiagnosticExecution.uv"
     ) {
         count = count + 1usize
     }

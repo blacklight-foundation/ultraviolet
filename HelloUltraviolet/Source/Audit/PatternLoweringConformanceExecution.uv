@@ -1,0 +1,406 @@
+//! Pattern-specific compiler conformance checks.
+
+internal let PATTERN_LOWERING_PROJECT_PATH: string@View =
+    "Fixtures/Patterns/PatternLoweringConformance"
+internal let PATTERN_LOWERING_CONFORMANCE_LOG_NAME: string@View =
+    "pattern-lowering.conformance.log"
+
+internal procedure patternLoweringProjectRuns(
+    authority: TestAuthority,
+    output_suffix: string@View,
+    error_suffix: string@View,
+    out_dir_suffix: string@View
+) -> bool {
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+    return acceptedProjectRunCase(
+        authority,
+        PATTERN_LOWERING_PROJECT_PATH,
+        "",
+        output_suffix,
+        error_suffix,
+        out_dir_suffix,
+        PATTERN_LOWERING_CONFORMANCE_LOG_NAME
+    )
+}
+
+internal procedure patternLoweringConformanceContains(
+    authority: TestAuthority,
+    out_dir_suffix: string@View,
+    required_text: string@View
+) -> bool {
+    return acceptedProjectConformanceContains(
+        authority,
+        out_dir_suffix,
+        PATTERN_LOWERING_CONFORMANCE_LOG_NAME,
+        required_text
+    )
+}
+
+internal procedure patternConformanceLineContainsRequiredPayload(
+    line: string@View,
+    required_payload: string@View
+) -> bool {
+    return string::is_empty(required_payload) ||
+        auditTextContains(line, required_payload)
+}
+
+internal procedure patternConformanceLineMatchesEntry(
+    line: string@View,
+    obligation_marker: string@View,
+    required_payload_one: string@View,
+    required_payload_two: string@View,
+    required_payload_three: string@View
+) -> bool {
+    return auditTextContains(line, obligation_marker) &&
+        patternConformanceLineContainsRequiredPayload(line, required_payload_one) &&
+        patternConformanceLineContainsRequiredPayload(line, required_payload_two) &&
+        patternConformanceLineContainsRequiredPayload(line, required_payload_three)
+}
+
+internal procedure patternConformanceTextContainsEntry(
+    text: string@View,
+    obligation_marker: string@View,
+    required_payload_one: string@View,
+    required_payload_two: string@View,
+    required_payload_three: string@View
+) -> bool {
+    let text_length: usize = string::length(text)
+    var line_start: usize = 0usize
+    var index: usize = 0usize
+    loop index <= text_length {
+        if index == text_length || auditTextByte(text, index) == 10u8 {
+            let line: string@View = string::slice(text, line_start, index)
+            if patternConformanceLineMatchesEntry(
+                line,
+                obligation_marker,
+                required_payload_one,
+                required_payload_two,
+                required_payload_three
+            ) {
+                return true
+            }
+            line_start = index + 1usize
+        }
+        index = index + 1usize
+    }
+    return false
+}
+
+internal procedure patternLoweringConformanceContainsEntry(
+    authority: TestAuthority,
+    out_dir_suffix: string@View,
+    obligation_marker: string@View,
+    required_payload_one: string@View,
+    required_payload_two: string@View,
+    required_payload_three: string@View
+) -> bool {
+    let path_result: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move path_result is {
+        @Value { value } {
+            if !diagnosticBuildPath(value, out_dir_suffix, authority.heap) ||
+                !diagnosticBuildPath(value, "Logs", authority.heap) ||
+                !diagnosticBuildPath(value, "Conformance", authority.heap) ||
+                !diagnosticBuildPath(
+                    value,
+                    PATTERN_LOWERING_CONFORMANCE_LOG_NAME,
+                    authority.heap
+                ) {
+                false
+            } else {
+                let path: string@View = string::as_view(value)
+                let read_result: Outcome<unique string@Managed, IoError> =
+                    authority.io~>read_file(path)
+                if move read_result is {
+                    @Value { value: text } {
+                        patternConformanceTextContainsEntry(
+                            string::as_view(text),
+                            obligation_marker,
+                            required_payload_one,
+                            required_payload_two,
+                            required_payload_three
+                        )
+                    }
+                    @Error {
+                        false
+                    }
+                }
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure patternLoweringProjectContainsEntry(
+    authority: TestAuthority,
+    output_suffix: string@View,
+    error_suffix: string@View,
+    out_dir_suffix: string@View,
+    obligation_marker: string@View,
+    required_payload_one: string@View,
+    required_payload_two: string@View,
+    required_payload_three: string@View
+) -> bool {
+    return patternLoweringProjectRuns(
+            authority,
+            output_suffix,
+            error_suffix,
+            out_dir_suffix
+        ) &&
+        patternLoweringConformanceContainsEntry(
+            authority,
+            out_dir_suffix,
+            obligation_marker,
+            required_payload_one,
+            required_payload_two,
+            required_payload_three
+        )
+}
+
+internal procedure patternLoweringProjectContainsMarker(
+    authority: TestAuthority,
+    output_suffix: string@View,
+    error_suffix: string@View,
+    out_dir_suffix: string@View,
+    marker: string@View
+) -> bool {
+    return patternLoweringProjectRuns(
+            authority,
+            output_suffix,
+            error_suffix,
+            out_dir_suffix
+        ) &&
+        patternLoweringConformanceContains(authority, out_dir_suffix, marker)
+}
+
+#test(name: "pattern binding environment emits exact conformance marker")
+internal procedure patternBindingEnvironmentConformanceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternLoweringProjectContainsMarker(
+        authority,
+        "PatternBindingEnvironment.out",
+        "PatternBindingEnvironment.err",
+        "PatternBindingEnvironmentBuild",
+        "\tdef.17.PatternBindingEnvironment\t"
+    )
+}
+
+#test(name: "pattern basic lowering uses shared lowering marker")
+internal procedure patternBasicPatternLoweringSharedConformanceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternLoweringProjectContainsMarker(
+        authority,
+        "PatternBasicLoweringShared.out",
+        "PatternBasicLoweringShared.err",
+        "PatternBasicLoweringSharedBuild",
+        "\treq.17.BasicPatternLoweringShared\t"
+    )
+}
+
+#test(name: "pattern lowering judgements emit exact conformance marker")
+internal procedure patternPatternLoweringJudgementsConformanceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternLoweringProjectContainsMarker(
+        authority,
+        "PatternLoweringJudgements.out",
+        "PatternLoweringJudgements.err",
+        "PatternLoweringJudgementsBuild",
+        "\tdef.17.PatternLoweringJudgements\t"
+    )
+}
+
+#test(name: "pattern Lower-Pat correctness emits exact conformance marker")
+internal procedure patternLowerPatCorrectnessConformanceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let out_dir: string@View = "PatternLowerPatCorrectnessBuild"
+    return patternLoweringProjectContainsEntry(
+        authority,
+        "PatternLowerPatCorrectness.out",
+        "PatternLowerPatCorrectness.err",
+        out_dir,
+        "\trule.17.Lower-Pat-Correctness\t",
+        "operation%3DLowerBindPattern%3Bmatch_pattern%3Dtrue",
+        "bind_order%3Dpattern_order%3Blower_bind_list%3Dtrue",
+        "bind_count%3D"
+    )
+}
+
+#test(name: "pattern Lower-IfCases correctness emits exact conformance marker")
+internal procedure patternLowerIfCasesCorrectnessConformanceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let out_dir: string@View = "PatternLowerIfCasesCorrectnessBuild"
+    return patternLoweringProjectContainsEntry(
+        authority,
+        "PatternLowerIfCasesCorrectness.out",
+        "PatternLowerIfCasesCorrectness.err",
+        out_dir,
+        "\trule.17.Lower-IfCases-Correctness\t",
+        "operation%3DLowerIfCases%3Bscrutinee_lowered%3Dtrue",
+        "emits_ifcase_ir%3Dtrue%3Bcase_count%3D",
+        "has_else%3D"
+    )
+}
+
+#test(name: "pattern Lower-BindList empty emits exact conformance marker")
+internal procedure patternLowerBindListEmptyConformanceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let out_dir: string@View = "PatternLowerBindListEmptyBuild"
+    return patternLoweringProjectContainsEntry(
+        authority,
+        "PatternLowerBindListEmpty.out",
+        "PatternLowerBindListEmpty.err",
+        out_dir,
+        "\trule.17.Lower-BindList-Empty\t",
+        "operation%3DBindList%3Bbind_count%3D0%3Bemits_ir%3Dempty",
+        "",
+        ""
+    )
+}
+
+#test(name: "pattern Lower-BindList cons emits exact conformance marker")
+internal procedure patternLowerBindListConsConformanceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let out_dir: string@View = "PatternLowerBindListConsBuild"
+    return patternLoweringProjectContainsEntry(
+        authority,
+        "PatternLowerBindListCons.out",
+        "PatternLowerBindListCons.err",
+        out_dir,
+        "\trule.17.Lower-BindList-Cons\t",
+        "operation%3DBindList%3Bsource%3DEmitOrderedPatternBindings",
+        "order%3Dpattern_order%3Bemits_bind_ir%3Dtrue",
+        "recurses_via_bindval%3Dtrue"
+    )
+}
+
+#test(name: "pattern Lower-Pat general emits exact conformance marker")
+internal procedure patternLowerPatGeneralConformanceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternLoweringProjectContainsMarker(
+        authority,
+        "PatternLowerPatGeneral.out",
+        "PatternLowerPatGeneral.err",
+        "PatternLowerPatGeneralBuild",
+        "\trule.17.Lower-Pat-General\t"
+    )
+}
+
+#test(name: "pattern Lower-IfCases emits exact conformance marker")
+internal procedure patternLowerIfCasesConformanceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternLoweringProjectContainsMarker(
+        authority,
+        "PatternLowerIfCases.out",
+        "PatternLowerIfCases.err",
+        "PatternLowerIfCasesBuild",
+        "\trule.17.Lower-IfCases\t"
+    )
+}
+
+#test(name: "pattern enum modal lowering uses shared lowering marker")
+internal procedure patternEnumModalPatternLoweringSharedConformanceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternLoweringProjectContainsMarker(
+        authority,
+        "PatternEnumModalLoweringShared.out",
+        "PatternEnumModalLoweringShared.err",
+        "PatternEnumModalLoweringSharedBuild",
+        "\treq.17.EnumModalPatternLoweringShared\t"
+    )
+}
+
+#test(name: "pattern exhaustiveness helpers emit exact conformance marker")
+internal procedure patternExhaustivenessIrrefutabilityHelpersConformanceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternLoweringProjectContainsMarker(
+        authority,
+        "PatternExhaustivenessHelpers.out",
+        "PatternExhaustivenessHelpers.err",
+        "PatternExhaustivenessHelpersBuild",
+        "\tdef.17.ExhaustivenessIrrefutabilityHelpers\t"
+    )
+}
+
+#test(name: "pattern exhaustiveness lowering emits no-additional-lowering marker")
+internal procedure patternExhaustivenessNoAdditionalLoweringConformanceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternLoweringProjectContainsMarker(
+        authority,
+        "PatternExhaustivenessNoAdditionalLowering.out",
+        "PatternExhaustivenessNoAdditionalLowering.err",
+        "PatternExhaustivenessNoAdditionalLoweringBuild",
+        "\treq.17.ExhaustivenessNoAdditionalLowering\t"
+    )
+}
+
+#test(name: "pattern range lowering uses shared lowering marker")
+internal procedure patternRangePatternLoweringSharedConformanceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternLoweringProjectContainsMarker(
+        authority,
+        "PatternRangeLoweringShared.out",
+        "PatternRangeLoweringShared.err",
+        "PatternRangeLoweringSharedBuild",
+        "\treq.17.RangePatternLoweringShared\t"
+    )
+}
+
+#test(name: "pattern tuple record lowering uses shared lowering marker")
+internal procedure patternTupleRecordPatternLoweringSharedConformanceMatches(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return patternLoweringProjectContainsMarker(
+        authority,
+        "PatternTupleRecordLoweringShared.out",
+        "PatternTupleRecordLoweringShared.err",
+        "PatternTupleRecordLoweringSharedBuild",
+        "\treq.17.TupleRecordPatternLoweringShared\t"
+    )
+}

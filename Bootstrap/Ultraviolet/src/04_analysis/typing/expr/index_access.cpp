@@ -80,6 +80,8 @@ static inline void SpecDefsIndexAccess() {
   SPEC_DEF("Index-Slice-NonUsize", "5.2.6");
   SPEC_DEF("Index-NonIndexable", "5.2.6");
   SPEC_DEF("Coerce-Array-Slice", "5.2.6");
+  SPEC_DEF("def.16.IndexClassification", "16.2.3");
+  SPEC_DEF("rule.16.ValueUse-NonBitcopyPlace", "16.2.4");
 }
 
 // Strip permission qualifiers
@@ -445,6 +447,7 @@ ExprTypeResult TypeIndexAccessExpr(const ScopeContext& ctx,
 
   // 2. Check scalar index against the contextual IndexUsizeExpr relation.
   const auto index_check = CheckIndexUsizeExpr(ctx, expr.index, type_expr);
+  SPEC_RULE("def.16.IndexClassification");
 
   // 3. If scalar index checking failed, this may still be range indexing.
   if (!index_check.ok) {
@@ -483,6 +486,8 @@ ExprTypeResult TypeIndexAccessExpr(const ScopeContext& ctx,
       if (perm.has_value()) {
         out_type = MakeTypePerm(*perm, out_type);
         if (!BitcopyType(ctx, out_type)) {
+          SPEC_RULE("ValueUse-NonBitcopyPlace");
+          SPEC_RULE("rule.16.ValueUse-NonBitcopyPlace");
           result.diag_id = "ValueUse-NonBitcopyPlace";
           return result;
         }
@@ -491,6 +496,8 @@ ExprTypeResult TypeIndexAccessExpr(const ScopeContext& ctx,
         result.type = out_type;
       } else {
         if (!BitcopyType(ctx, out_type)) {
+          SPEC_RULE("ValueUse-NonBitcopyPlace");
+          SPEC_RULE("rule.16.ValueUse-NonBitcopyPlace");
           result.diag_id = "ValueUse-NonBitcopyPlace";
           return result;
         }
@@ -506,6 +513,8 @@ ExprTypeResult TypeIndexAccessExpr(const ScopeContext& ctx,
       if (perm.has_value()) {
         out_type = MakeTypePerm(*perm, out_type);
         if (!BitcopyType(ctx, out_type)) {
+          SPEC_RULE("ValueUse-NonBitcopyPlace");
+          SPEC_RULE("rule.16.ValueUse-NonBitcopyPlace");
           result.diag_id = "ValueUse-NonBitcopyPlace";
           return result;
         }
@@ -514,6 +523,8 @@ ExprTypeResult TypeIndexAccessExpr(const ScopeContext& ctx,
         result.type = out_type;
       } else {
         if (!BitcopyType(ctx, out_type)) {
+          SPEC_RULE("ValueUse-NonBitcopyPlace");
+          SPEC_RULE("rule.16.ValueUse-NonBitcopyPlace");
           result.diag_id = "ValueUse-NonBitcopyPlace";
           return result;
         }
@@ -542,6 +553,7 @@ ExprTypeResult TypeIndexAccessExpr(const ScopeContext& ctx,
     }
     if (has_const_index && *index_const.value >= arr->length) {
       SPEC_RULE("Index-Array-OOB-Err");
+      SPEC_RULE("req.16.ArraySliceIndexDiagnosticsAndPanicBehavior");
       result.diag_id = "E-UNS-0103";
       result.diag_span = ExprSpan(expr.index);
       return result;
@@ -550,6 +562,8 @@ ExprTypeResult TypeIndexAccessExpr(const ScopeContext& ctx,
     if (perm.has_value()) {
       TypeRef out_type = MakeTypePerm(*perm, arr->element);
       if (!BitcopyType(ctx, out_type)) {
+        SPEC_RULE("ValueUse-NonBitcopyPlace");
+        SPEC_RULE("rule.16.ValueUse-NonBitcopyPlace");
         result.diag_id = "ValueUse-NonBitcopyPlace";
         return result;
       }
@@ -562,6 +576,8 @@ ExprTypeResult TypeIndexAccessExpr(const ScopeContext& ctx,
       result.type = out_type;
     } else {
       if (!BitcopyType(ctx, arr->element)) {
+        SPEC_RULE("ValueUse-NonBitcopyPlace");
+        SPEC_RULE("rule.16.ValueUse-NonBitcopyPlace");
         result.diag_id = "ValueUse-NonBitcopyPlace";
         return result;
       }
@@ -581,6 +597,8 @@ ExprTypeResult TypeIndexAccessExpr(const ScopeContext& ctx,
     if (perm.has_value()) {
       TypeRef out_type = MakeTypePerm(*perm, slice->element);
       if (!BitcopyType(ctx, out_type)) {
+        SPEC_RULE("ValueUse-NonBitcopyPlace");
+        SPEC_RULE("rule.16.ValueUse-NonBitcopyPlace");
         result.diag_id = "ValueUse-NonBitcopyPlace";
         return result;
       }
@@ -589,6 +607,8 @@ ExprTypeResult TypeIndexAccessExpr(const ScopeContext& ctx,
       result.type = out_type;
     } else {
       if (!BitcopyType(ctx, slice->element)) {
+        SPEC_RULE("ValueUse-NonBitcopyPlace");
+        SPEC_RULE("rule.16.ValueUse-NonBitcopyPlace");
         result.diag_id = "ValueUse-NonBitcopyPlace";
         return result;
       }
@@ -650,6 +670,7 @@ PlaceTypeResult TypeIndexAccessPlace(const ScopeContext& ctx,
   }
 
   const auto index_check = CheckIndexUsizeExpr(ctx, expr.index, type_expr);
+  SPEC_RULE("def.16.IndexClassification");
   if (!index_check.ok) {
     if (index_check.diag_id.has_value()) {
       result.diag_id = index_check.diag_id;
@@ -723,6 +744,7 @@ PlaceTypeResult TypeIndexAccessPlace(const ScopeContext& ctx,
     }
     if (has_const_index && *index_const.value >= arr->length) {
       SPEC_RULE("Index-Array-OOB-Err");
+      SPEC_RULE("req.16.ArraySliceIndexDiagnosticsAndPanicBehavior");
       result.diag_id = "E-UNS-0103";
       result.diag_span = ExprSpan(expr.index);
       return result;

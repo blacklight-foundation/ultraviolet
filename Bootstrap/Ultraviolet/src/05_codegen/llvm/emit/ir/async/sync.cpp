@@ -126,12 +126,12 @@ void IRInstructionVisitor::operator()(const IRSync &s) const
     const std::uint64_t copy_size = std::min(src_size, dst_size);
     if (copy_size > 0)
     {
-      builder.CreateMemCpy(
+      EmitAggMemcpy(
+          emitter,
           dst_i8,
-          llvm::Align(1),
           src_i8,
-          llvm::Align(1),
-          llvm::ConstantInt::get(i64_ty, copy_size));
+          llvm::ConstantInt::get(i64_ty, copy_size),
+          1);
     }
     return builder.CreateLoad(dst_ty, dst_slot);
   };
@@ -209,6 +209,15 @@ void IRInstructionVisitor::operator()(const IRSync &s) const
   const std::uint64_t completed_disc = async_discs.completed;
   const std::optional<std::uint64_t> failed_disc = async_discs.failed;
 
+  SPEC_RULE("requirement.21.SyncLoopIRSemantics");
+  SPEC_RULE("requirement.21.SyncRuntimeSemantics");
+  SPEC_RULE("rule.21.EvalSigma-Sync-Suspended");
+  SPEC_RULE("rule.21.EvalSigma-Sync-Completed");
+  if (failed_disc.has_value())
+  {
+    SPEC_RULE("rule.21.EvalSigma-Sync-Failed");
+  }
+
   analysis::TypeRef completed_type = s.result_type;
   analysis::TypeRef error_type = s.error_type;
   if (const auto sig = analysis::AsyncSigOf(scope, s.async_type))
@@ -227,6 +236,48 @@ void IRInstructionVisitor::operator()(const IRSync &s) const
   llvm::Type *i64_ty = llvm::Type::getInt64Ty(emitter.GetContext());
   llvm::Type *opaque_ptr_ty = emitter.GetOpaquePtr();
   auto *opaque_ptr_ptr_ty = llvm::cast<llvm::PointerType>(opaque_ptr_ty);
+
+  auto materialize_runtime_receiver_pointer =
+      [&](const IRValue &receiver_value) -> llvm::Value *
+  {
+    if (llvm::Value *storage = emitter.GetAddressableStorage(receiver_value))
+    {
+      if (llvm::Value *coerced = CoerceTo(&builder, storage, opaque_ptr_ty))
+      {
+        return coerced;
+      }
+      if (storage->getType()->isPointerTy())
+      {
+        return builder.CreateBitCast(storage, opaque_ptr_ty);
+      }
+    }
+
+    llvm::Value *receiver = EvaluateOrDefault(receiver_value);
+    if (!receiver)
+    {
+      return llvm::ConstantPointerNull::get(opaque_ptr_ptr_ty);
+    }
+    if (receiver->getType()->isPointerTy())
+    {
+      if (llvm::Value *coerced = CoerceTo(&builder, receiver, opaque_ptr_ty))
+      {
+        return coerced;
+      }
+      return builder.CreateBitCast(receiver, opaque_ptr_ty);
+    }
+
+    llvm::IRBuilder<> entry_builder(
+        &func->getEntryBlock(),
+        func->getEntryBlock().begin());
+    llvm::AllocaInst *receiver_slot =
+        entry_builder.CreateAlloca(receiver->getType(), nullptr, "reactor.receiver");
+    builder.CreateStore(receiver, receiver_slot);
+    if (llvm::Value *coerced = CoerceTo(&builder, receiver_slot, opaque_ptr_ty))
+    {
+      return coerced;
+    }
+    return builder.CreateBitCast(receiver_slot, opaque_ptr_ty);
+  };
 
   llvm::Value *panic_ptr = LoadLocalValue(emitter, &builder, std::string(kPanicOutName));
   bool has_panic_ptr = panic_ptr != nullptr;
@@ -249,6 +300,68 @@ void IRInstructionVisitor::operator()(const IRSync &s) const
   if (!panic_ptr)
   {
     panic_ptr = llvm::ConstantPointerNull::get(opaque_ptr_ptr_ty);
+  }
+
+  if (s.runtime_symbol.has_value() && s.runtime_receiver.has_value())
+  {
+    const std::string &runtime_sym = *s.runtime_symbol;
+    if (std::optional<RuntimeFuncInfo> runtime_info = GetRuntimeFuncInfo(runtime_sym))
+    {
+      llvm::Function *runtime_fn = emitter.GetModule().getFunction(runtime_sym);
+      const bool runtime_c_aggregate_boundary =
+          RuntimeUsesCAggregateABI(runtime_sym);
+      const bool runtime_foreign_boundary = RuntimeUsesForeignABI(runtime_sym);
+      const bool use_c_abi_aggregate_sret = runtime_c_aggregate_boundary;
+      if (!runtime_fn)
+      {
+        ABICallResult runtime_abi = ComputeCallABI(
+            emitter,
+            runtime_info->params,
+            runtime_info->ret,
+            use_c_abi_aggregate_sret,
+            /*foreign_boundary_mode_independent=*/runtime_foreign_boundary);
+        if (runtime_abi.func_type)
+        {
+          runtime_fn = llvm::Function::Create(
+              runtime_abi.func_type,
+              llvm::GlobalValue::ExternalLinkage,
+              runtime_sym,
+              &emitter.GetModule());
+          runtime_fn->setCallingConv(llvm::CallingConv::C);
+        }
+      }
+
+      llvm::Value *receiver =
+          materialize_runtime_receiver_pointer(*s.runtime_receiver);
+      if (runtime_fn && receiver)
+      {
+        llvm::Value *future_ptr = builder.CreateBitCast(async_slot, opaque_ptr_ty);
+        std::vector<llvm::Value *> runtime_args;
+        runtime_args.reserve(2);
+        runtime_args.push_back(receiver);
+        runtime_args.push_back(future_ptr);
+        llvm::Value *reactor_run_result = EmitABICall(
+            emitter,
+            &builder,
+            runtime_fn,
+            runtime_info->params,
+            runtime_info->ret,
+            runtime_args,
+            use_c_abi_aggregate_sret,
+            /*ffi_import_boundary=*/false,
+            /*ffi_import_catch=*/false,
+            std::nullopt,
+            nullptr,
+            nullptr,
+            nullptr,
+            runtime_foreign_boundary);
+        if (llvm::Value *resolved_async =
+                materialize_as_type(reactor_run_result, async_struct))
+        {
+          builder.CreateStore(resolved_async, async_slot);
+        }
+      }
+    }
   }
 
   llvm::BasicBlock *loop_bb =
