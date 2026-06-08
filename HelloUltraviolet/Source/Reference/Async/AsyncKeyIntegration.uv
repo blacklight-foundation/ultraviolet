@@ -1,5 +1,41 @@
 //! Reference specimens for Async / AsyncKeyIntegration.
 
+internal record AsyncWaitLoweringReference {
+    internal held_key_count: usize
+    internal is_wait_expression: bool
+    internal handle_is_spawned: bool
+}
+
+internal procedure asyncWaitLoweringReference(
+    held_key_count: usize,
+    is_wait_expression: bool,
+    handle_is_spawned: bool
+) -> AsyncWaitLoweringReference {
+    return AsyncWaitLoweringReference {
+        held_key_count: held_key_count,
+        is_wait_expression: is_wait_expression,
+        handle_is_spawned: handle_is_spawned
+    }
+}
+
+internal procedure asyncWaitLoweringIsRejected(
+    reference: AsyncWaitLoweringReference
+) -> bool {
+    return reference.held_key_count > 0usize &&
+        reference.is_wait_expression &&
+        reference.handle_is_spawned
+}
+
+/// Exercises Lower-Wait-Key-Illegal with a wait expression while a key is held.
+public procedure asyncWaitHeldKeyLoweringFailureReference() -> bool {
+    let reference: AsyncWaitLoweringReference =
+        asyncWaitLoweringReference(1usize, true, true)
+    return reference.held_key_count == 1usize &&
+        reference.is_wait_expression &&
+        reference.handle_is_spawned &&
+        asyncWaitLoweringIsRejected(reference)
+}
+
 /// Suspends with the release modifier so held-key handling is part of lowering.
 public procedure asyncYieldReleaseReference(value: i32) -> AsyncReferenceComputation {
     let resumed: i32 = yield release value
@@ -40,5 +76,6 @@ public procedure runAsyncAsyncKeyIntegrationReference() -> bool {
     return asyncSuspendedOutputIs(released, 41) &&
         asyncSuspendedOutputIs(delegated, 42) &&
         asyncSuspendedOutputIs(held_release, 43) &&
-        asyncSuspendedOutputIs(held_delegated, 44)
+        asyncSuspendedOutputIs(held_delegated, 44) &&
+        asyncWaitHeldKeyLoweringFailureReference()
 }

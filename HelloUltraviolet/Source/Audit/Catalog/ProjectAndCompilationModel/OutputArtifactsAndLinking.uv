@@ -2,7 +2,7 @@
 
 
 public procedure countProjectAndCompilationModelOutputArtifactsAndLinkingObligations() -> usize {
-    return 128usize
+    return 130usize
 }
 
 public procedure validatedProjectAndCompilationModelOutputArtifactsAndLinkingObligations() -> usize {
@@ -187,21 +187,21 @@ public procedure validatedProjectAndCompilationModelOutputArtifactsAndLinkingObl
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if artifactBehaviorObligationEntryMatches(
         "def.IRSet",
         4825usize,
-        "HelloUltraviolet::Audit",
-        "artifactProjectAssemblyAndLinkKindsExercise",
-        "Source/Audit/ArtifactProjectExecution.uv"
+        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
+        "validatedArtifactProjectFixtureCount",
+        "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if artifactBehaviorObligationEntryMatches(
         "def.PrimaryArtifactSet",
         4841usize,
-        "HelloUltraviolet::Audit",
-        "artifactProjectAssemblyAndLinkKindsExercise",
-        "Source/Audit/ArtifactProjectExecution.uv"
+        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
+        "validatedArtifactProjectFixtureCount",
+        "Fixtures/ArtifactProjects/MacOSExecutableOutput/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -1034,6 +1034,15 @@ public procedure validatedProjectAndCompilationModelOutputArtifactsAndLinkingObl
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "Out-Obj-Collision",
+        6348usize,
+        "HelloUltraviolet::Reference::Projects",
+        "outputObjectPathCollisionReference",
+        "Source/Reference/Projects/OutputArtifacts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "Out-Obj-Cons",
         6366usize,
         "HelloUltraviolet::Reference::Projects",
@@ -1075,6 +1084,15 @@ public procedure validatedProjectAndCompilationModelOutputArtifactsAndLinkingObl
         "HelloUltraviolet::Audit",
         "artifactProjectAArch64DependencyExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Out-IR-Collision",
+        6455usize,
+        "HelloUltraviolet::Reference::Projects",
+        "outputIrPathCollisionReference",
+        "Source/Reference/Projects/OutputArtifacts.uv"
     ) {
         count = count + 1usize
     }

@@ -2,7 +2,7 @@
 
 
 public procedure countAsynchronousOperationsAsyncKeyIntegrationObligations() -> usize {
-    return 18usize
+    return 19usize
 }
 
 public procedure validatedAsynchronousOperationsAsyncKeyIntegrationObligations() -> usize {
@@ -121,6 +121,15 @@ public procedure validatedAsynchronousOperationsAsyncKeyIntegrationObligations()
         "HelloUltraviolet::Audit",
         "asyncArtifactObligationsExercise",
         "Source/Audit/AsyncArtifactExecution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.Lower-Wait-Key-Illegal",
+        83459usize,
+        "HelloUltraviolet::Reference::Async",
+        "asyncWaitHeldKeyLoweringFailureReference",
+        "Source/Reference/Async/AsyncKeyIntegration.uv"
     ) {
         count = count + 1usize
     }

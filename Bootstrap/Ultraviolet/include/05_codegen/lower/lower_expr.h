@@ -285,6 +285,7 @@ struct LowerCtx {
   bool shared_library_project = false;
   bool hosted_library = false;
   std::optional<std::string> project_entry_module;
+  bool source_native_test_harness_build = false;
   std::unordered_set<std::string> dependency_assembly_names;
   std::unordered_set<std::string> shared_library_assembly_names;
   

@@ -1,0 +1,102 @@
+//! Artifact fixture for source-native test discovery order.
+
+internal procedure attributeDiscoveryOrderIoUnitSucceeded(
+    result: Outcome<(), IoError>
+) -> bool {
+    return if result is {
+        @Value {
+            true
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure attributeDiscoveryOrderTextByte(text: string@View, index: usize) -> u8 {
+    if index >= string::length(text) {
+        return 0u8
+    }
+    let view: bytes@View = bytes::view_string(text)
+    let data: const [u8] = bytes::as_slice(view)
+    return data[index]
+}
+
+internal procedure attributeDiscoveryOrderTextEquals(
+    left: string@View,
+    right: string@View
+) -> bool {
+    let left_length: usize = string::length(left)
+    let right_length: usize = string::length(right)
+    if left_length != right_length {
+        return false
+    }
+
+    var index: usize = 0usize
+    loop index < left_length {
+        if attributeDiscoveryOrderTextByte(left, index) !=
+            attributeDiscoveryOrderTextByte(right, index) {
+            return false
+        }
+        index = index + 1usize
+    }
+    return true
+}
+
+internal procedure attributeDiscoveryOrderReadTextEquals(
+    move result: Outcome<unique string@Managed, IoError>,
+    expected: string@View
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let text: string@View = string::as_view(value)
+            attributeDiscoveryOrderTextEquals(text, expected)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure attributeDiscoveryOrderWrite(
+    authority: TestAuthority,
+    text: string@View
+) -> bool {
+    let restricted: $IO = authority.io~>restrict(authority.temporary_directory)
+    let data: bytes@View = bytes::view_string(text)
+    return attributeDiscoveryOrderIoUnitSucceeded(
+        restricted~>write_file("SourceNativeOrder.txt", data)
+    )
+}
+
+#test(name: "attribute discovery order 01", covers("def.TestDiscoveryOrder@L28964"))
+internal procedure attributeDiscoveryOrderFirst(authority: TestAuthority) -> bool
+|: |= @result
+{
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    return attributeDiscoveryOrderIoUnitSucceeded(temp_ready) &&
+        attributeDiscoveryOrderWrite(authority, "1")
+}
+
+#test(name: "attribute discovery order 02", covers("def.TestDiscoveryOrder@L28964"))
+internal procedure attributeDiscoveryOrderSecond(authority: TestAuthority) -> bool
+|: |= @result
+{
+    let restricted: $IO = authority.io~>restrict(authority.temporary_directory)
+    let observed: Outcome<unique string@Managed, IoError> =
+        restricted~>read_file("SourceNativeOrder.txt")
+    return attributeDiscoveryOrderReadTextEquals(move observed, "1") &&
+        attributeDiscoveryOrderWrite(authority, "12")
+}
+
+#test(name: "attribute discovery order 03", covers("def.TestDiscoveryOrder@L28964"))
+internal procedure attributeDiscoveryOrderThird(authority: TestAuthority) -> bool
+|: |= @result
+{
+    let restricted: $IO = authority.io~>restrict(authority.temporary_directory)
+    let observed: Outcome<unique string@Managed, IoError> =
+        restricted~>read_file("SourceNativeOrder.txt")
+    return attributeDiscoveryOrderReadTextEquals(move observed, "12") &&
+        attributeDiscoveryOrderWrite(authority, "123")
+}

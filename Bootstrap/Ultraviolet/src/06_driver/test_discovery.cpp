@@ -61,6 +61,13 @@ SourceNativeTestDescriptor TestDescriptorFromProcedure(
   descriptor.source_file = procedure.span.file;
   descriptor.source_file_order = source_file_order;
   descriptor.requires_context = procedure.params.size() == 1;
+  descriptor.parameter_count = procedure.params.size();
+  descriptor.has_body = static_cast<bool>(procedure.body);
+  descriptor.is_generic = procedure.generic_params.has_value();
+  descriptor.has_explicit_visibility = procedure.visibility_explicit;
+  descriptor.has_explicit_return_type = static_cast<bool>(procedure.return_type_opt);
+  descriptor.has_postcondition =
+      procedure.contract.has_value() && procedure.contract->postcondition;
   descriptor.declaration_order = declaration_order;
 
   for (const auto& attr : procedure.attrs) {
@@ -71,6 +78,7 @@ SourceNativeTestDescriptor TestDescriptorFromProcedure(
       if (arg.key.has_value() && *arg.key == "name") {
         if (const auto* token = TokenArg(arg)) {
           descriptor.display_name = NormalizeStringLiteral(token->lexeme);
+          descriptor.has_explicit_display_name = true;
         }
         continue;
       }

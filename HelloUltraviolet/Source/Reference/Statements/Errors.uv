@@ -1,0 +1,57 @@
+//! Reference specimens for Statements / Errors.
+
+internal enum StatementLoweringOutcomeReference {
+    StatementIR
+    PanicIR
+}
+
+internal record ErrorStatementReference {
+    internal span_start: usize
+    internal span_end: usize
+}
+
+internal record LoweredErrorStatementReference {
+    internal outcome: StatementLoweringOutcomeReference
+    internal panic_span_start: usize
+    internal panic_span_end: usize
+}
+
+internal procedure errorStatementReference(
+    span_start: usize,
+    span_end: usize
+) -> ErrorStatementReference {
+    return ErrorStatementReference {
+        span_start: span_start,
+        span_end: span_end
+    }
+}
+
+internal procedure lowerErrorStatement(
+    statement: ErrorStatementReference
+) -> LoweredErrorStatementReference {
+    return LoweredErrorStatementReference {
+        outcome: StatementLoweringOutcomeReference::PanicIR,
+        panic_span_start: statement.span_start,
+        panic_span_end: statement.span_end
+    }
+}
+
+internal procedure loweredStatementIsErrorPanic(
+    lowered: LoweredErrorStatementReference,
+    statement: ErrorStatementReference
+) -> bool {
+    return if lowered.outcome is StatementLoweringOutcomeReference::PanicIR {
+        lowered.panic_span_start == statement.span_start &&
+            lowered.panic_span_end == statement.span_end
+    } else {
+        false
+    }
+}
+
+/// Exercises Lower-Stmt-Error by modeling delegation to LowerPanic(ErrorStmt(span)).
+public procedure lowerStmtErrorReference() -> bool {
+    let statement: ErrorStatementReference = errorStatementReference(3usize, 11usize)
+    let lowered: LoweredErrorStatementReference = lowerErrorStatement(statement)
+    return statement.span_start < statement.span_end &&
+        loweredStatementIsErrorPanic(lowered, statement)
+}

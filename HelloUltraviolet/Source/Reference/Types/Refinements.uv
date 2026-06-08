@@ -16,6 +16,10 @@ internal procedure positiveRefinementReference(value: PositiveI32) -> i32 {
     return value
 }
 
+internal procedure positiveAgainRefinementReference(value: PositiveI32Again) -> i32 {
+    return value
+}
+
 internal procedure boundedRefinementReference(value: BoundedI32) -> i32 {
     return value
 }
@@ -30,7 +34,88 @@ internal procedure constrainedParameterRefinementReference(
     return value
 }
 
+internal procedure baseI32RefinementReference(value: i32) -> i32 {
+    return value
+}
+
+internal procedure refinementGrammarFormsReference() -> bool {
+    let positive: PositiveI32 = 5
+    let bounded: BoundedI32 = 6
+    let constrained: i32 = constrainedParameterRefinementReference(7)
+    let plain: i32 = baseI32RefinementReference(8)
+    return positiveRefinementReference(positive) == 5 &&
+        boundedRefinementReference(bounded) == 6 &&
+        constrained == 7 &&
+        plain == 8
+}
+
+internal procedure refinementSelfBindingReference() -> bool {
+    let positive: PositiveI32 = 3
+    return positiveRefinementReference(positive) == 3
+}
+
+internal procedure refinementPredicateParsingReference() -> bool {
+    let bounded: BoundedI32 = 4
+    return boundedRefinementReference(bounded) == 4
+}
+
+internal procedure refinementAstFormReference() -> bool {
+    let positive: PositiveI32 = 5
+    let bounded: BoundedI32 = 6
+    let nested: NestedBoundedI32 = 7
+    return positiveRefinementReference(positive) == 5 &&
+        boundedRefinementReference(bounded) == 6 &&
+        nestedRefinementReference(nested) == 7
+}
+
+internal procedure refinementPredicateEquivalenceReference() -> bool {
+    let positive: PositiveI32 = 5
+    let equivalent: PositiveI32Again = positive
+    return positiveRefinementReference(positive) == 5 &&
+        positiveAgainRefinementReference(equivalent) == 5
+}
+
+internal procedure refinementNormalizationReference() -> bool {
+    let bounded: BoundedI32 = 6
+    let nested: NestedBoundedI32 = bounded
+    return boundedRefinementReference(bounded) == 6 &&
+        nestedRefinementReference(nested) == 6
+}
+
+internal procedure refinementEliminationReference() -> bool {
+    let positive: PositiveI32 = 9
+    return baseI32RefinementReference(positive) == 9
+}
+
+internal procedure refinementBaseSubtypeReference() -> bool {
+    let positive: PositiveI32 = 2
+    let base: i32 = positive
+    return base == 2
+}
+
+internal procedure refinementImplicationSubtypeReference() -> bool {
+    let bounded: BoundedI32 = 8
+    let positive: PositiveI32 = bounded
+    return positiveRefinementReference(positive) == 8
+}
+
+internal procedure refinementDecidablePredicateFragmentReference() -> bool {
+    let positive: PositiveI32 = 1
+    let bounded: BoundedI32 = 9
+    return positiveRefinementReference(positive) == 1 &&
+        boundedRefinementReference(bounded) == 9
+}
+
 /// Exercises the Types Refinements reference surface.
 public procedure runTypesRefinementsReference() -> bool {
-    return true
+    return refinementGrammarFormsReference() &&
+        refinementSelfBindingReference() &&
+        refinementPredicateParsingReference() &&
+        refinementAstFormReference() &&
+        refinementPredicateEquivalenceReference() &&
+        refinementNormalizationReference() &&
+        refinementEliminationReference() &&
+        refinementBaseSubtypeReference() &&
+        refinementImplicationSubtypeReference() &&
+        refinementDecidablePredicateFragmentReference()
 }

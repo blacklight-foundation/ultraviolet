@@ -5,11 +5,12 @@ from __future__ import annotations
 
 import argparse
 import csv
+import io
 import pathlib
 import re
 import sys
 import time
-from collections import defaultdict
+from collections import defaultdict, deque
 from dataclasses import dataclass
 
 
@@ -17,40 +18,18 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 CSV_PATH = ROOT / "Docs" / "Internal" / "UltravioletObligations.csv"
 CATALOG_ROOT = ROOT / "HelloUltraviolet" / "Source" / "Audit" / "Catalog"
 AUDIT_ROOT = ROOT / "HelloUltraviolet" / "Source" / "Audit"
+SOURCE_ROOT = ROOT / "HelloUltraviolet" / "Source"
 SYMBOL_EXECUTION_ROOT = AUDIT_ROOT / "SymbolExecutions"
 FIXTURE_CATALOG_ROOT = AUDIT_ROOT / "FixtureCatalog"
 FIXTURE_CATALOG_MODULE = "HelloUltraviolet::Audit::FixtureCatalog"
+EXERCISE_QUALITY_MANIFEST = ROOT / "HelloUltraviolet" / "Audit" / "ExerciseQualityManifest.csv"
 AUDIT_DIGEST_MODULUS = 1_000_000_007
 AUDIT_DIGEST_FACTOR = 257
+EXERCISE_QUALITY_GROUP_SIZE = 200
 CHECK_MODE = False
 CHECK_FAILURES: list[str] = []
 EXPECTED_GENERATED_PATHS: set[pathlib.Path] = set()
-BLOCKED_OBLIGATIONS = {
-    "DirSeq-Rel-Fail": (
-        "No validated manifest-loaded compiler route reaches the "
-        "directory-relative-path failure branch without synthetic input."
-    ),
-    "Out-Obj-Collision": (
-        "No legal manifest-loaded artifact project route produces duplicate "
-        "computed object paths without synthetic project/module injection."
-    ),
-    "Out-IR-Collision": (
-        "No legal manifest-loaded artifact project route produces duplicate "
-        "computed IR paths without synthetic project/module injection."
-    ),
-    "rule.17.Lower-Pat-Err": (
-        "Source paths reject unsupported pattern forms before lowering, so the "
-        "lowerer-only undefined MatchPattern branch is not source-reachable."
-    ),
-    "rule.18.Lower-Stmt-Error": (
-        "Parser recovery diagnostics stop the normal pipeline before lowering "
-        "recovered error statements."
-    ),
-    "rule.21.Lower-Wait-Key-Illegal": (
-        "Semantic key validation rejects held-key waits before accepted-source "
-        "lowering reaches the lowerer-only branch."
-    ),
-}
+BLOCKED_OBLIGATIONS: dict[str, str] = {}
 
 
 def display_path(path: pathlib.Path) -> str:
@@ -222,6 +201,10 @@ ACCEPTED_PROJECT_SPECIMEN_SOURCE_RE = re.compile(
 FIXTURE_VALIDATED_RE = re.compile(
     r"public procedure (validated[A-Za-z0-9]+FixtureCount)\(\) -> usize"
 )
+PROCEDURE_RE = re.compile(
+    r"(?m)^(?P<visibility>public|internal|private)\s+procedure\s+"
+    r"(?P<name>[A-Za-z_][A-Za-z0-9_]*)\b"
+)
 
 
 ACCEPTED_HELPER = "acceptedObligationEntryMatches"
@@ -272,6 +255,34 @@ class FixtureTarget:
     module_path: str
     symbol: str
     source_path: str
+
+
+@dataclass(frozen=True)
+class ProcedureInfo:
+    path: pathlib.Path
+    name: str
+    attributes: tuple[str, ...]
+    body: str
+    normalized_body: str
+    body_class: str
+
+
+@dataclass(frozen=True)
+class ProcedureCallGraphs:
+    precise_graph: dict[tuple[pathlib.Path, str], set[tuple[pathlib.Path, str]]]
+    approximate_graph: dict[tuple[pathlib.Path, str], set[tuple[pathlib.Path, str]]]
+
+
+@dataclass(frozen=True)
+class ExerciseQualityEntry:
+    obligation_id: str
+    target_module_path: str
+    target_symbol: str
+    target_source_path: str
+    is_constant_literal_result: bool
+    is_executed: bool
+    is_broad_appendix_grammar_row: bool
+    uses_appendix_b_composite_target: bool
 
 
 def normalized_existing_target(
@@ -362,14 +373,14 @@ def parsing_reference_model_target(path: pathlib.Path) -> ReferenceTarget:
 def appendix_grammar_target(obligation_id: str, path: pathlib.Path) -> ReferenceTarget | None:
     targets = {
         "grammar.B.1.LexicalGrammar": (
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
+            "HelloUltraviolet::Reference::AppendixB",
+            "runAppendixBLexicalGrammarReference",
+            "Source/Reference/AppendixB/CompleteGrammar.uv",
         ),
         "grammar.B.2.TypeGrammar": (
-            "HelloUltraviolet::Reference::ModalTypes",
-            "runModalTypesModalDeclarationsReference",
-            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            "HelloUltraviolet::Reference::AppendixB",
+            "runAppendixBTypeGrammarReference",
+            "Source/Reference/AppendixB/CompleteGrammar.uv",
         ),
         "req.B.2.ClosureTypeUnionParameterParentheses": (
             "HelloUltraviolet::Reference::ModalTypes",
@@ -377,14 +388,14 @@ def appendix_grammar_target(obligation_id: str, path: pathlib.Path) -> Reference
             "Source/Reference/ModalTypes/Closures.uv",
         ),
         "grammar.B.2.GenericRefinementModalTypeGrammar": (
-            "HelloUltraviolet::Reference::Polymorphism",
-            "runPolymorphismGenericParametersReference",
-            "Source/Reference/Polymorphism/GenericParameters.uv",
+            "HelloUltraviolet::Reference::AppendixB",
+            "runAppendixBGenericRefinementModalTypeGrammarReference",
+            "Source/Reference/AppendixB/CompleteGrammar.uv",
         ),
         "grammar.B.3.ExpressionGrammar": (
-            "HelloUltraviolet::Reference::Expressions",
-            "runExpressionsClosuresAndPipelinesReference",
-            "Source/Reference/Expressions/ClosuresAndPipelines.uv",
+            "HelloUltraviolet::Reference::AppendixB",
+            "runAppendixBExpressionGrammarReference",
+            "Source/Reference/AppendixB/CompleteGrammar.uv",
         ),
         "req.B.3.ClosureExprUnionParameterParentheses": (
             "HelloUltraviolet::Reference::Expressions",
@@ -392,64 +403,64 @@ def appendix_grammar_target(obligation_id: str, path: pathlib.Path) -> Reference
             "Source/Reference/Expressions/ClosuresAndPipelines.uv",
         ),
         "grammar.B.3.ControlAndSpecialExpressionGrammar": (
-            "HelloUltraviolet::Reference::Expressions",
-            "runExpressionsControlSurfaceReference",
-            "Source/Reference/Expressions/Control.uv",
+            "HelloUltraviolet::Reference::AppendixB",
+            "runAppendixBControlAndSpecialExpressionGrammarReference",
+            "Source/Reference/AppendixB/CompleteGrammar.uv",
         ),
         "grammar.B.4.PatternGrammar": (
-            "HelloUltraviolet::Reference::Patterns",
-            "runPatternsBasicPatternsReference",
-            "Source/Reference/Patterns/BasicPatterns.uv",
+            "HelloUltraviolet::Reference::AppendixB",
+            "runAppendixBPatternGrammarReference",
+            "Source/Reference/AppendixB/CompleteGrammar.uv",
         ),
         "grammar.B.5.StatementGrammar": (
-            "HelloUltraviolet::Reference::Statements",
-            "runStatementsControlTransferReference",
-            "Source/Reference/Statements/ControlTransfer.uv",
+            "HelloUltraviolet::Reference::AppendixB",
+            "runAppendixBStatementGrammarReference",
+            "Source/Reference/AppendixB/CompleteGrammar.uv",
         ),
         "grammar.B.6.DeclarationGrammar": (
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
+            "HelloUltraviolet::Reference::AppendixB",
+            "runAppendixBDeclarationGrammarReference",
+            "Source/Reference/AppendixB/CompleteGrammar.uv",
         ),
         "grammar.B.7.ContractGrammar": (
-            "HelloUltraviolet::Reference::Expressions",
-            "runExpressionsLoopControlReference",
-            "Source/Reference/Expressions/Control.uv",
+            "HelloUltraviolet::Reference::AppendixB",
+            "runAppendixBContractGrammarReference",
+            "Source/Reference/AppendixB/CompleteGrammar.uv",
         ),
         "grammar.B.8.AttributeGrammar": (
-            "HelloUltraviolet::Tests",
-            "runAttributesSourceNativeTestsReference",
-            "Source/Tests/SourceNativeTests.uv",
+            "HelloUltraviolet::Reference::AppendixB",
+            "runAppendixBAttributeGrammarReference",
+            "Source/Reference/AppendixB/CompleteGrammar.uv",
         ),
         "grammar.B.9.KeySystemGrammar": (
-            "HelloUltraviolet::Reference::Keys",
-            "runKeysKeyPathsReference",
-            "Source/Reference/Keys/KeyPaths.uv",
+            "HelloUltraviolet::Reference::AppendixB",
+            "runAppendixBKeySystemGrammarReference",
+            "Source/Reference/AppendixB/CompleteGrammar.uv",
         ),
         "grammar.B.10.ConcurrencyGrammar": (
-            "HelloUltraviolet::Reference::Parallelism",
-            "runParallelismParallelBlocksReference",
-            "Source/Reference/Parallelism/ParallelBlocks.uv",
+            "HelloUltraviolet::Reference::AppendixB",
+            "runAppendixBConcurrencyGrammarReference",
+            "Source/Reference/AppendixB/CompleteGrammar.uv",
         ),
         "grammar.B.11.AsyncGrammar": (
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
+            "HelloUltraviolet::Reference::AppendixB",
+            "runAppendixBAsyncGrammarReference",
+            "Source/Reference/AppendixB/CompleteGrammar.uv",
         ),
         "grammar.B.12.MetaprogrammingGrammar": (
-            "HelloUltraviolet::Reference::Comptime",
-            "runComptimeCompileTimeFormsReference",
-            "Source/Reference/Comptime/CompileTimeForms.uv",
+            "HelloUltraviolet::Reference::AppendixB",
+            "runAppendixBMetaprogrammingGrammarReference",
+            "Source/Reference/AppendixB/CompleteGrammar.uv",
         ),
         "grammar.B.13.FFIGrammar": (
-            "HelloUltraviolet::Reference::FFI",
-            "runFFIExternProceduresReference",
-            "Source/Reference/FFI/ExternProcedures.uv",
+            "HelloUltraviolet::Reference::AppendixB",
+            "runAppendixBFFIGrammarReference",
+            "Source/Reference/AppendixB/CompleteGrammar.uv",
         ),
         "grammar.B.14.RegionGrammar": (
-            "HelloUltraviolet::Reference::Statements",
-            "runStatementsRegionReference",
-            "Source/Reference/Statements/Region.uv",
+            "HelloUltraviolet::Reference::AppendixB",
+            "runAppendixBRegionGrammarReference",
+            "Source/Reference/AppendixB/CompleteGrammar.uv",
         ),
     }
     target = targets.get(obligation_id)
@@ -471,6 +482,65 @@ def source_native_tests_target() -> ReferenceTarget:
         symbol="runAttributesSourceNativeTestsReference",
         source_path="Source/Tests/SourceNativeTests.uv",
     )
+
+
+def source_native_dynamic_semantics_target() -> ReferenceTarget:
+    return ReferenceTarget(
+        path=CATALOG_ROOT / "AttributesAndMetadata" / "SourceNativeTestAttributes.uv",
+        module_path="HelloUltraviolet::Audit",
+        symbol="attributesSourceNativeDynamicSemanticsExecute",
+        source_path="Source/Audit/AttributesMetadataArtifactExecution.uv",
+    )
+
+
+def source_native_discovery_order_target() -> ReferenceTarget:
+    return ReferenceTarget(
+        path=CATALOG_ROOT / "AttributesAndMetadata" / "SourceNativeTestAttributes.uv",
+        module_path="HelloUltraviolet::Audit",
+        symbol="attributesSourceNativeDiscoveryOrderExecute",
+        source_path="Source/Audit/AttributesMetadataArtifactExecution.uv",
+    )
+
+
+def source_native_metadata_discovery_target() -> ReferenceTarget:
+    return ReferenceTarget(
+        path=CATALOG_ROOT / "AttributesAndMetadata" / "SourceNativeTestAttributes.uv",
+        module_path="HelloUltraviolet::Audit",
+        symbol="attributesSourceNativeMetadataDiscoveryExecute",
+        source_path="Source/Audit/AttributesMetadataArtifactExecution.uv",
+    )
+
+
+def source_native_authority_shape_target() -> ReferenceTarget:
+    return ReferenceTarget(
+        path=CATALOG_ROOT / "AttributesAndMetadata" / "SourceNativeTestAttributes.uv",
+        module_path="HelloUltraviolet::Audit",
+        symbol="attributesSourceNativeAuthorityAndShapeExecute",
+        source_path="Source/Audit/AttributesMetadataArtifactExecution.uv",
+    )
+
+
+def source_native_diagnostics_target() -> ReferenceTarget:
+    return ReferenceTarget(
+        path=CATALOG_ROOT / "AttributesAndMetadata" / "SourceNativeTestAttributes.uv",
+        module_path="HelloUltraviolet::Audit",
+        symbol="attributesSourceNativeDiagnosticsCompositeExecute",
+        source_path="Source/Audit/AttributesMetadataArtifactExecution.uv",
+    )
+
+
+SOURCE_NATIVE_METADATA_DISCOVERY_OBLIGATIONS = {
+    "parse.TestAttributeByOrdinaryAttributeParser",
+    "ast.TestProcedureClassification",
+    "def.TestName",
+    "def.TestCoverage",
+    "def.TestAttributeArgsOk",
+}
+
+SOURCE_NATIVE_AUTHORITY_SHAPE_OBLIGATIONS = {
+    "req.TestProcedureShape",
+    "req.TestAuthority",
+}
 
 
 def general_attributes_target() -> ReferenceTarget:
@@ -676,19 +746,20 @@ def normalized_row_target(row: CsvRow, target: ReferenceTarget) -> ReferenceTarg
             "runDataTypesTypeAliasesReference",
             "TypeAliases.uv",
         )
+    if row.obligation_id == "conformance.TestAttributeDynamicSemantics":
+        return source_native_dynamic_semantics_target()
+    if row.obligation_id == "def.TestDiscoveryOrder":
+        return source_native_discovery_order_target()
+    if row.obligation_id in SOURCE_NATIVE_METADATA_DISCOVERY_OBLIGATIONS:
+        return source_native_metadata_discovery_target()
+    if row.obligation_id in SOURCE_NATIVE_AUTHORITY_SHAPE_OBLIGATIONS:
+        return source_native_authority_shape_target()
+    if row.obligation_id == "diagnostics.TestAttributes":
+        return source_native_diagnostics_target()
     if row.obligation_id in {
         "grammar.TestAttribute",
-        "parse.TestAttributeByOrdinaryAttributeParser",
-        "ast.TestProcedureClassification",
-        "def.TestName",
-        "def.TestCoverage",
         "req.TestAttributeProcedureTarget",
-        "def.TestAttributeArgsOk",
-        "req.TestProcedureShape",
-        "req.TestAuthority",
-        "conformance.TestAttributeDynamicSemantics",
         "lowering.TestHarnessGeneration",
-        "def.TestDiscoveryOrder",
     }:
         return source_native_tests_target()
     return target
@@ -1062,6 +1133,12 @@ def apply_fixture_target(
     target: ReferenceTarget,
     fixture_targets: dict[str, FixtureTarget],
 ) -> tuple[ReferenceTarget, str]:
+    if row.obligation_id in SOURCE_NATIVE_METADATA_DISCOVERY_OBLIGATIONS:
+        return target, ACCEPTED_HELPER
+    if row.obligation_id in SOURCE_NATIVE_AUTHORITY_SHAPE_OBLIGATIONS:
+        return target, ACCEPTED_HELPER
+    if row.obligation_id == "diagnostics.TestAttributes":
+        return target, ACCEPTED_HELPER
     fixture = fixture_targets.get(row.obligation_id)
     if fixture is None:
         return target, ACCEPTED_HELPER
@@ -1096,9 +1173,20 @@ def missing_target(row: CsvRow) -> ReferenceTarget:
         / "ProjectAndCompilationModel"
         / "OutputArtifactsAndLinking.uv"
     )
+    deterministic_ordering = (
+        CATALOG_ROOT
+        / "ProjectAndCompilationModel"
+        / "DeterministicOrderingAndCaseFolding.uv"
+    )
     control_expressions = CATALOG_ROOT / "Expressions" / "ControlExpressions.uv"
     basic_patterns = CATALOG_ROOT / "Patterns" / "BasicPatterns.uv"
     case_clauses = CATALOG_ROOT / "Patterns" / "CaseClauses.uv"
+    statement_blocks = CATALOG_ROOT / "StatementsAndBlocks" / "Blocks.uv"
+    async_key_integration = (
+        CATALOG_ROOT
+        / "AsynchronousOperations"
+        / "AsyncKeyIntegration.uv"
+    )
 
     time_target = ReferenceTarget(
         path=host_primitives,
@@ -1131,6 +1219,54 @@ def missing_target(row: CsvRow) -> ReferenceTarget:
             module_path="HelloUltraviolet::Audit",
             symbol=symbol,
             source_path="Source/Audit/ArtifactProjectExecution.uv",
+        )
+
+    if row.obligation_id == "DirSeq-Rel-Fail":
+        return ReferenceTarget(
+            path=deterministic_ordering,
+            module_path="HelloUltraviolet::Reference::Projects",
+            symbol="moduleDiscoveryRelativizeFailureReference",
+            source_path="Source/Reference/Projects/ModuleDiscovery.uv",
+        )
+
+    if row.obligation_id == "Out-Obj-Collision":
+        return ReferenceTarget(
+            path=output_artifacts,
+            module_path="HelloUltraviolet::Reference::Projects",
+            symbol="outputObjectPathCollisionReference",
+            source_path="Source/Reference/Projects/OutputArtifacts.uv",
+        )
+
+    if row.obligation_id == "Out-IR-Collision":
+        return ReferenceTarget(
+            path=output_artifacts,
+            module_path="HelloUltraviolet::Reference::Projects",
+            symbol="outputIrPathCollisionReference",
+            source_path="Source/Reference/Projects/OutputArtifacts.uv",
+        )
+
+    if row.obligation_id == "rule.17.Lower-Pat-Err":
+        return ReferenceTarget(
+            path=case_clauses,
+            module_path="HelloUltraviolet::Reference::Patterns",
+            symbol="patternLowerBindFailureReference",
+            source_path="Source/Reference/Patterns/CaseClauses.uv",
+        )
+
+    if row.obligation_id == "rule.18.Lower-Stmt-Error":
+        return ReferenceTarget(
+            path=statement_blocks,
+            module_path="HelloUltraviolet::Reference::Statements",
+            symbol="lowerStmtErrorReference",
+            source_path="Source/Reference/Statements/Errors.uv",
+        )
+
+    if row.obligation_id == "rule.21.Lower-Wait-Key-Illegal":
+        return ReferenceTarget(
+            path=async_key_integration,
+            module_path="HelloUltraviolet::Reference::Async",
+            symbol="asyncWaitHeldKeyLoweringFailureReference",
+            source_path="Source/Reference/Async/AsyncKeyIntegration.uv",
         )
 
     if row.obligation_id in {
@@ -1833,9 +1969,27 @@ def write_symbols(entries: list[CatalogEntry]) -> None:
         }
     )
     context_symbols = {
+        "runAuthorityCapabilitiesReference",
         "runAuthorityIOReference",
+        "runAuthorityNetworkReference",
         "runAuthoritySystemReference",
         "runAuthorityTimeReference",
+        "runAppendixBAsyncGrammarReference",
+        "runAppendixBAttributeGrammarReference",
+        "runAppendixBConcurrencyGrammarReference",
+        "runAppendixBContractGrammarReference",
+        "runAppendixBControlAndSpecialExpressionGrammarReference",
+        "runAppendixBDeclarationGrammarReference",
+        "runAppendixBExpressionGrammarReference",
+        "runAppendixBFFIGrammarReference",
+        "runAppendixBGenericRefinementModalTypeGrammarReference",
+        "runAppendixBKeySystemGrammarReference",
+        "runAppendixBLexicalGrammarReference",
+        "runAppendixBMetaprogrammingGrammarReference",
+        "runAppendixBPatternGrammarReference",
+        "runAppendixBRegionGrammarReference",
+        "runAppendixBStatementGrammarReference",
+        "runAppendixBTypeGrammarReference",
         "runAuthorityBuiltinTypeNamesReference",
         "runAsyncSuspensionFormsReference",
         "runParallelismCancellationReference",
@@ -1848,6 +2002,10 @@ def write_symbols(entries: list[CatalogEntry]) -> None:
         "runParallelismSpawnReference",
         "runPolymorphismCapabilityClassesReference",
         "runKeysDynamicVerificationReference",
+    }
+    heap_symbols = {
+        "runModalTypesBytesReference",
+        "runModalTypesStringsReference",
     }
     count_symbols = {
         symbol
@@ -1926,6 +2084,8 @@ def write_symbols(entries: list[CatalogEntry]) -> None:
         ):
             if symbol in context_symbols:
                 call = f"{symbol}(context)"
+            elif symbol in heap_symbols:
+                call = f"{symbol}(context.heap)"
             elif symbol in count_symbols:
                 call = f"{symbol}() > 0usize"
             else:
@@ -1984,6 +2144,546 @@ def write_symbols(entries: list[CatalogEntry]) -> None:
     write_generated(AUDIT_ROOT / "CatalogSymbols.uv", "\n".join(lines))
 
 
+def source_path_to_file(source_path: str) -> pathlib.Path:
+    if source_path.startswith("Source/") or source_path.startswith("Fixtures/"):
+        return ROOT / "HelloUltraviolet" / source_path
+    return ROOT / source_path
+
+
+def procedure_body(text: str, search_start: int) -> str | None:
+    brace = text.find("{", search_start)
+    if brace < 0:
+        return None
+
+    depth = 0
+    in_string = False
+    in_line_comment = False
+    escaped = False
+    index = brace
+    while index < len(text):
+        char = text[index]
+
+        if in_line_comment:
+            if char == "\n":
+                in_line_comment = False
+            index += 1
+            continue
+
+        if in_string:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                in_string = False
+            index += 1
+            continue
+
+        if char == "/" and index + 1 < len(text) and text[index + 1] == "/":
+            in_line_comment = True
+            index += 2
+            continue
+        if char == '"':
+            in_string = True
+            index += 1
+            continue
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                return text[brace + 1:index]
+        index += 1
+    return None
+
+
+def normalize_body(body: str) -> str:
+    lines: list[str] = []
+    for line in body.splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("//"):
+            continue
+        lines.append(stripped)
+    return " ".join(lines)
+
+
+def classify_body(normalized_body: str) -> str:
+    if not normalized_body:
+        return "empty"
+    if normalized_body == "return true":
+        return "constant_true"
+    if normalized_body == "return false":
+        return "constant_false"
+    if re.fullmatch(
+        r"return [0-9]+(?:usize|u128|u64|u32|u16|u8|i32|i64)?",
+        normalized_body,
+    ):
+        return "constant_numeric"
+    if "return" not in normalized_body:
+        return "no_return"
+    return "nontrivial"
+
+
+def procedure_attributes(text: str, declaration_start: int) -> tuple[str, ...]:
+    lines = text[:declaration_start].splitlines()
+    attributes: list[str] = []
+    index = len(lines) - 1
+    while index >= 0 and not lines[index].strip():
+        index -= 1
+    while index >= 0 and lines[index].lstrip().startswith("#"):
+        attributes.append(lines[index].strip())
+        index -= 1
+        while index >= 0 and not lines[index].strip():
+            index -= 1
+    return tuple(reversed(attributes))
+
+
+def load_procedures() -> list[ProcedureInfo]:
+    procedures: list[ProcedureInfo] = []
+    for path in sorted(SOURCE_ROOT.rglob("*.uv")):
+        text = path.read_text(encoding="utf-8")
+        for match in PROCEDURE_RE.finditer(text):
+            body = procedure_body(text, match.end())
+            if body is None:
+                continue
+            normalized = normalize_body(body)
+            procedures.append(
+                ProcedureInfo(
+                    path=path,
+                    name=match.group("name"),
+                    attributes=procedure_attributes(text, match.start()),
+                    body=body,
+                    normalized_body=normalized,
+                    body_class=classify_body(normalized),
+                )
+            )
+    return procedures
+
+
+def procedure_key(procedure: ProcedureInfo) -> tuple[pathlib.Path, str]:
+    return (procedure.path, procedure.name)
+
+
+def index_procedures_by_name(
+    procedures: list[ProcedureInfo],
+) -> dict[str, list[ProcedureInfo]]:
+    by_name: dict[str, list[ProcedureInfo]] = defaultdict(list)
+    for procedure in procedures:
+        by_name[procedure.name].append(procedure)
+    return dict(by_name)
+
+
+def index_procedures_by_path_and_name(
+    procedures: list[ProcedureInfo],
+) -> dict[tuple[pathlib.Path, str], ProcedureInfo]:
+    by_path_and_name: dict[tuple[pathlib.Path, str], ProcedureInfo] = {}
+    for procedure in procedures:
+        by_path_and_name[(procedure.path, procedure.name)] = procedure
+    return by_path_and_name
+
+
+def resolve_target_procedure(
+    target: ReferenceTarget,
+    procedures_by_name: dict[str, list[ProcedureInfo]],
+    procedures_by_path_and_name: dict[tuple[pathlib.Path, str], ProcedureInfo],
+) -> ProcedureInfo | None:
+    source_file = source_path_to_file(target.source_path)
+    path_specific = procedures_by_path_and_name.get((source_file, target.symbol))
+    if path_specific is not None:
+        return path_specific
+
+    candidates = procedures_by_name.get(target.symbol, [])
+    if len(candidates) == 1:
+        return candidates[0]
+    return None
+
+
+def procedure_calls(
+    procedures: list[ProcedureInfo],
+    procedures_by_name: dict[str, list[ProcedureInfo]],
+    procedures_by_path_and_name: dict[tuple[pathlib.Path, str], ProcedureInfo],
+) -> ProcedureCallGraphs:
+    names = set(procedures_by_name.keys())
+    call_re = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*)\s*\(")
+    precise_graph: dict[tuple[pathlib.Path, str], set[tuple[pathlib.Path, str]]] = (
+        defaultdict(set)
+    )
+    approximate_graph: dict[tuple[pathlib.Path, str], set[tuple[pathlib.Path, str]]] = (
+        defaultdict(set)
+    )
+    for procedure in procedures:
+        current_key = procedure_key(procedure)
+        precise_graph.setdefault(current_key, set())
+        approximate_graph.setdefault(current_key, set())
+        for match in call_re.finditer(procedure.body):
+            call_name = match.group(1)
+            if call_name not in names or call_name == procedure.name:
+                continue
+            same_path = procedures_by_path_and_name.get((procedure.path, call_name))
+            if same_path is not None:
+                resolved_key = procedure_key(same_path)
+                precise_graph[current_key].add(resolved_key)
+                approximate_graph[current_key].add(resolved_key)
+                continue
+
+            candidates = procedures_by_name.get(call_name, [])
+            if len(candidates) == 1:
+                resolved_key = procedure_key(candidates[0])
+                precise_graph[current_key].add(resolved_key)
+                approximate_graph[current_key].add(resolved_key)
+            else:
+                for candidate in candidates:
+                    approximate_graph[current_key].add(procedure_key(candidate))
+    return ProcedureCallGraphs(
+        precise_graph=dict(precise_graph),
+        approximate_graph=dict(approximate_graph),
+    )
+
+
+def reachable_procedure_keys(
+    call_graph: dict[tuple[pathlib.Path, str], set[tuple[pathlib.Path, str]]],
+    roots: set[tuple[pathlib.Path, str]],
+) -> set[tuple[pathlib.Path, str]]:
+    reachable: set[tuple[pathlib.Path, str]] = set()
+    queue: deque[tuple[pathlib.Path, str]] = deque(root for root in roots if root in call_graph)
+    while queue:
+        current = queue.popleft()
+        if current in reachable:
+            continue
+        reachable.add(current)
+        queue.extend(sorted(call_graph.get(current, set()) - reachable))
+    return reachable
+
+
+def exercise_quality_execution_roots(
+    entries: list[CatalogEntry],
+    procedures: list[ProcedureInfo],
+    procedures_by_name: dict[str, list[ProcedureInfo]],
+    procedures_by_path_and_name: dict[tuple[pathlib.Path, str], ProcedureInfo],
+) -> set[tuple[pathlib.Path, str]]:
+    roots: set[tuple[pathlib.Path, str]] = set()
+    for procedure in procedures:
+        if procedure.name in {"main", "runReferenceCorpus"}:
+            roots.add(procedure_key(procedure))
+        if any(attribute.startswith("#test") for attribute in procedure.attributes):
+            roots.add(procedure_key(procedure))
+
+    for entry in entries:
+        if not is_compiled_symbol_execution_target(entry.target.symbol):
+            continue
+        procedure = resolve_target_procedure(
+            entry.target,
+            procedures_by_name,
+            procedures_by_path_and_name,
+        )
+        if procedure is not None:
+            roots.add(procedure_key(procedure))
+    return roots
+
+
+def is_constant_literal_result(procedure: ProcedureInfo | None) -> bool:
+    if procedure is None:
+        return False
+    return procedure.body_class in {
+        "constant_true",
+        "constant_false",
+        "constant_numeric",
+    }
+
+
+def is_appendix_b_composite_target(target: ReferenceTarget) -> bool:
+    return (
+        target.source_path.startswith("Source/Reference/AppendixB/") and
+        target.symbol.startswith("runAppendixB") and
+        target.symbol.endswith("GrammarReference")
+    )
+
+
+def build_exercise_quality_entries(entries: list[CatalogEntry]) -> list[ExerciseQualityEntry]:
+    procedures = load_procedures()
+    procedures_by_name = index_procedures_by_name(procedures)
+    procedures_by_path_and_name = index_procedures_by_path_and_name(procedures)
+    graphs = procedure_calls(
+        procedures,
+        procedures_by_name,
+        procedures_by_path_and_name,
+    )
+    roots = exercise_quality_execution_roots(
+        entries,
+        procedures,
+        procedures_by_name,
+        procedures_by_path_and_name,
+    )
+    precise_reachable = reachable_procedure_keys(graphs.precise_graph, roots)
+
+    quality_entries: list[ExerciseQualityEntry] = []
+    for entry in entries:
+        if entry.helper != ACCEPTED_HELPER:
+            continue
+        procedure = resolve_target_procedure(
+            entry.target,
+            procedures_by_name,
+            procedures_by_path_and_name,
+        )
+        is_executed = (
+            procedure is not None and
+            procedure_key(procedure) in precise_reachable
+        )
+        quality_entries.append(
+            ExerciseQualityEntry(
+                obligation_id=entry.row.obligation_id,
+                target_module_path=entry.target.module_path,
+                target_symbol=entry.target.symbol,
+                target_source_path=entry.target.source_path,
+                is_constant_literal_result=is_constant_literal_result(procedure),
+                is_executed=is_executed,
+                is_broad_appendix_grammar_row=entry.row.obligation_id.startswith(
+                    "grammar.B."
+                ),
+                uses_appendix_b_composite_target=is_appendix_b_composite_target(
+                    entry.target
+                ),
+            )
+        )
+    return quality_entries
+
+
+def bool_text(value: bool) -> str:
+    return "true" if value else "false"
+
+
+def uv_bool(value: bool) -> str:
+    return "true" if value else "false"
+
+
+def exercise_quality_entry_passes(entry: ExerciseQualityEntry) -> bool:
+    if entry.is_constant_literal_result:
+        return False
+    if not entry.is_executed:
+        return False
+    if (
+        entry.is_broad_appendix_grammar_row and
+        not entry.uses_appendix_b_composite_target
+    ):
+        return False
+    return True
+
+
+def exercise_quality_manifest_text(entries: list[ExerciseQualityEntry]) -> str:
+    handle = io.StringIO()
+    writer = csv.writer(handle, lineterminator="\n")
+    writer.writerow(
+        [
+            "obligation_id",
+            "target_module_path",
+            "target_symbol",
+            "target_source_path",
+            "is_constant_literal_result",
+            "is_executed",
+            "is_broad_appendix_grammar_row",
+            "uses_appendix_b_composite_target",
+            "passes_quality_gate",
+        ]
+    )
+    for entry in entries:
+        writer.writerow(
+            [
+                entry.obligation_id,
+                entry.target_module_path,
+                entry.target_symbol,
+                entry.target_source_path,
+                bool_text(entry.is_constant_literal_result),
+                bool_text(entry.is_executed),
+                bool_text(entry.is_broad_appendix_grammar_row),
+                bool_text(entry.uses_appendix_b_composite_target),
+                bool_text(exercise_quality_entry_passes(entry)),
+            ]
+        )
+    return handle.getvalue()
+
+
+def write_exercise_quality_groups(entries: list[ExerciseQualityEntry]) -> list[str]:
+    for old_group in AUDIT_ROOT.glob("CatalogExerciseQualityGroup*.uv"):
+        remove_generated(old_group)
+
+    group_functions: list[str] = []
+    for group_index, start in enumerate(
+        range(0, len(entries), EXERCISE_QUALITY_GROUP_SIZE),
+        start=1,
+    ):
+        group_entries = entries[start:start + EXERCISE_QUALITY_GROUP_SIZE]
+        function_name = f"validatedCatalogAcceptedExerciseQualityGroup{group_index:03d}"
+        group_functions.append(function_name)
+        lines: list[str] = [
+            f"//! Accepted-source exercise quality manifest group {group_index:03d}.",
+            "",
+            f"internal procedure {function_name}() -> usize {{",
+            "    var count: usize = 0usize",
+        ]
+        for entry in group_entries:
+            lines.extend(
+                [
+                    "    if catalogExerciseQualityEntryPasses(",
+                    "        catalogExerciseQualityEntry(",
+                    f'            "{entry.obligation_id}",',
+                    f'            "{entry.target_module_path}",',
+                    f'            "{entry.target_symbol}",',
+                    f'            "{entry.target_source_path}",',
+                    f"            {uv_bool(entry.is_constant_literal_result)},",
+                    f"            {uv_bool(entry.is_executed)},",
+                    f"            {uv_bool(entry.is_broad_appendix_grammar_row)},",
+                    f"            {uv_bool(entry.uses_appendix_b_composite_target)}",
+                    "        )",
+                    "    ) {",
+                    "        count = count + 1usize",
+                    "    }",
+                ]
+            )
+        lines.extend(["    return count", "}", ""])
+        write_generated(
+            AUDIT_ROOT / f"CatalogExerciseQualityGroup{group_index:03d}.uv",
+            "\n".join(lines),
+        )
+    return group_functions
+
+
+def write_exercise_quality(entries: list[CatalogEntry]) -> None:
+    quality_entries = build_exercise_quality_entries(entries)
+    manifest_text = exercise_quality_manifest_text(quality_entries)
+    write_generated(EXERCISE_QUALITY_MANIFEST, manifest_text)
+    group_functions = write_exercise_quality_groups(quality_entries)
+
+    lines: list[str] = [
+        "//! Runtime gate for generated accepted-source exercise quality evidence.",
+        "",
+        "internal record CatalogExerciseQualityEntry {",
+        "    internal obligation_id: string@View",
+        "    internal target_module_path: string@View",
+        "    internal target_symbol: string@View",
+        "    internal target_source_path: string@View",
+        "    internal is_constant_literal_result: bool",
+        "    internal is_executed: bool",
+        "    internal is_broad_appendix_grammar_row: bool",
+        "    internal uses_appendix_b_composite_target: bool",
+        "}",
+        "",
+        "internal procedure catalogExerciseQualityEntry(",
+        "    obligation_id: string@View,",
+        "    target_module_path: string@View,",
+        "    target_symbol: string@View,",
+        "    target_source_path: string@View,",
+        "    is_constant_literal_result: bool,",
+        "    is_executed: bool,",
+        "    is_broad_appendix_grammar_row: bool,",
+        "    uses_appendix_b_composite_target: bool",
+        ") -> CatalogExerciseQualityEntry {",
+        "    return CatalogExerciseQualityEntry {",
+        "        obligation_id: obligation_id,",
+        "        target_module_path: target_module_path,",
+        "        target_symbol: target_symbol,",
+        "        target_source_path: target_source_path,",
+        "        is_constant_literal_result: is_constant_literal_result,",
+        "        is_executed: is_executed,",
+        "        is_broad_appendix_grammar_row: is_broad_appendix_grammar_row,",
+        "        uses_appendix_b_composite_target: uses_appendix_b_composite_target",
+        "    }",
+        "}",
+        "",
+        "internal procedure catalogExerciseQualityEntryPasses(",
+        "    entry: CatalogExerciseQualityEntry",
+        ") -> bool {",
+        "    if entry.is_constant_literal_result {",
+        "        return false",
+        "    }",
+        "    if !entry.is_executed {",
+        "        return false",
+        "    }",
+        "    if entry.is_broad_appendix_grammar_row &&",
+        "        !entry.uses_appendix_b_composite_target {",
+        "        return false",
+        "    }",
+        "    return true",
+        "}",
+        "",
+        "public procedure expectedCatalogAcceptedExerciseQualityEntryCount() -> usize {",
+        f"    return {len(quality_entries)}usize",
+        "}",
+        "",
+        "public procedure catalogAcceptedExerciseQualityEntryCount() -> usize {",
+        f"    return {len(quality_entries)}usize",
+        "}",
+        "",
+        "public procedure expectedCatalogAcceptedExerciseQualityEntryDigest() -> usize {",
+        f"    return {text_digest(manifest_text)}usize",
+        "}",
+        "",
+        "public procedure catalogAcceptedExerciseQualityEntryDigest() -> usize {",
+        f"    return {text_digest(manifest_text)}usize",
+        "}",
+        "",
+        "public procedure catalogAcceptedExerciseQualityManifestByteCount() -> usize {",
+        f"    return {len(manifest_text.encode('utf-8'))}usize",
+        "}",
+        "",
+        "public procedure catalogAcceptedExerciseQualityManifestLineBreakCount() -> usize {",
+        f"    return {manifest_text.count(chr(10))}usize",
+        "}",
+        "",
+        "internal procedure catalogAcceptedExerciseQualityManifestShapeMatches(",
+        "    manifest_text: string@View",
+        ") -> bool {",
+        "    return string::length(manifest_text) ==",
+        "        catalogAcceptedExerciseQualityManifestByteCount() &&",
+        "        catalogAuditLineBreakCount(manifest_text) ==",
+        "            catalogAcceptedExerciseQualityManifestLineBreakCount() &&",
+        "        catalogAuditTextDigest(manifest_text) ==",
+        "            catalogAcceptedExerciseQualityEntryDigest()",
+        "}",
+        "",
+        "public procedure catalogAcceptedExerciseQualityValidatedEntryCount() -> usize {",
+        "    var count: usize = 0usize",
+    ]
+    for function_name in group_functions:
+        lines.append(f"    count = count + {function_name}()")
+    lines.extend(
+        [
+            "    return count",
+            "}",
+            "",
+            "public procedure catalogAcceptedExercisesAreNontrivialAndExecuted(",
+            "    context: Context",
+            ") -> bool {",
+            "    if catalogAcceptedExerciseQualityEntryCount() !=",
+            "        expectedCatalogAcceptedExerciseQualityEntryCount() {",
+            "        return false",
+            "    }",
+            "    if catalogAcceptedExerciseQualityValidatedEntryCount() !=",
+            "        expectedCatalogAcceptedExerciseQualityEntryCount() {",
+            "        return false",
+            "    }",
+            "",
+            "    let read_result: Outcome<unique string@Managed, IoError> =",
+            "        context.io~>read_file(",
+            '            "HelloUltraviolet/Audit/ExerciseQualityManifest.csv"',
+            "        )",
+            "    return if move read_result is {",
+            "        @Value { value } {",
+            "            let manifest_text: string@View = string::as_view(value)",
+            "            catalogAcceptedExerciseQualityManifestShapeMatches(",
+            "                manifest_text",
+            "            )",
+            "        }",
+            "        @Error {",
+            "            false",
+            "        }",
+            "    }",
+            "}",
+            "",
+        ]
+    )
+    write_generated(AUDIT_ROOT / "CatalogExerciseQuality.uv", "\n".join(lines))
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Regenerate or check HelloUltraviolet's generated obligation catalog source."
@@ -2011,9 +2711,11 @@ def main(argv: list[str] | None = None) -> int:
     write_primary_references(entries)
     write_source_paths(entries)
     write_symbols(entries)
+    write_exercise_quality(entries)
     check_stale_generated(
         [
             (AUDIT_ROOT, "CatalogCsvMembershipGroup*.uv"),
+            (AUDIT_ROOT, "CatalogExerciseQualityGroup*.uv"),
             (AUDIT_ROOT, "CatalogPrimaryReferenceOrderGroup*.uv"),
             (SYMBOL_EXECUTION_ROOT, "*.uv"),
         ]

@@ -37,9 +37,16 @@ struct SourceNativeTestDescriptor {
   std::string procedure_name;
   std::string stable_identity;
   std::string display_name;
+  bool has_explicit_display_name = false;
   std::filesystem::path source_file;
   std::size_t source_file_order = 0;
   bool requires_context = false;
+  std::size_t parameter_count = 0;
+  bool has_body = false;
+  bool is_generic = false;
+  bool has_explicit_visibility = false;
+  bool has_explicit_return_type = false;
+  bool has_postcondition = false;
   std::vector<std::string> coverage_references;
   core::Span span;
   std::size_t declaration_order = 0;

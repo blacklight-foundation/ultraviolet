@@ -1,0 +1,29 @@
+//! Artifact fixture for source-native test dynamic semantics.
+
+#dynamic
+internal procedure attributeDynamicSemanticsRuntimeValue(index: usize) -> i32 {
+    let values: [i32; 3] = [10, 20, 30]
+    return values[index]
+}
+
+#test(name: "attribute dynamic semantics pass", covers("conformance.TestAttributeDynamicSemantics@L28884"))
+internal procedure attributeDynamicSemanticsPasses() -> bool
+|: |= @result
+{
+    return true
+}
+
+#test(name: "attribute dynamic semantics fail", covers("conformance.TestAttributeDynamicSemantics@L28884"))
+internal procedure attributeDynamicSemanticsFails() -> bool
+|: |= @result
+{
+    return false
+}
+
+#test(name: "attribute dynamic semantics error", covers("conformance.TestAttributeDynamicSemantics@L28884"))
+internal procedure attributeDynamicSemanticsErrors() -> bool
+|: |= @result
+{
+    let observed: i32 = attributeDynamicSemanticsRuntimeValue(3usize)
+    return observed == 0
+}

@@ -609,6 +609,8 @@ void ConfigureCodegenContextForProjectImpl(CodegenCache& cache,
   cache.ctx.shared_library_project = project::IsSharedLibrary(project);
   cache.ctx.hosted_library = project::IsLibrary(project);
   cache.ctx.project_entry_module = SelectProjectEntryModule(project);
+  cache.ctx.source_native_test_harness_build =
+      project.test_harness_entry_module.has_value();
 
   cache.ctx.dependency_assembly_names.clear();
   cache.ctx.shared_library_assembly_names.clear();

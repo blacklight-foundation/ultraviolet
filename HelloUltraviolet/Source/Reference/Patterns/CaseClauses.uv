@@ -1,5 +1,60 @@
 //! Reference specimens for Patterns / CaseClauses.
 
+internal enum PatternLoweringOutcomeReference {
+    Lowered
+    Failed
+}
+
+internal record PatternBindingLoweringReference {
+    internal pattern_requires_i32: bool
+    internal value_is_i32: bool
+}
+
+internal procedure patternBindingLoweringReference(
+    pattern_requires_i32: bool,
+    value_is_i32: bool
+) -> PatternBindingLoweringReference {
+    return PatternBindingLoweringReference {
+        pattern_requires_i32: pattern_requires_i32,
+        value_is_i32: value_is_i32
+    }
+}
+
+internal procedure patternMatchIsDefined(
+    reference: PatternBindingLoweringReference
+) -> bool {
+    return !reference.pattern_requires_i32 || reference.value_is_i32
+}
+
+internal procedure lowerBindPatternOutcome(
+    reference: PatternBindingLoweringReference
+) -> PatternLoweringOutcomeReference {
+    if patternMatchIsDefined(reference) {
+        return PatternLoweringOutcomeReference::Lowered
+    }
+    return PatternLoweringOutcomeReference::Failed
+}
+
+internal procedure patternLoweringOutcomeIsFailure(
+    outcome: PatternLoweringOutcomeReference
+) -> bool {
+    return if outcome is PatternLoweringOutcomeReference::Failed {
+        true
+    } else {
+        false
+    }
+}
+
+/// Exercises Lower-Pat-Err when MatchPattern is undefined for the value.
+public procedure patternLowerBindFailureReference() -> bool {
+    let reference: PatternBindingLoweringReference =
+        patternBindingLoweringReference(true, false)
+    return reference.pattern_requires_i32 &&
+        !reference.value_is_i32 &&
+        !patternMatchIsDefined(reference) &&
+        patternLoweringOutcomeIsFailure(lowerBindPatternOutcome(reference))
+}
+
 /// Exercises the Patterns CaseClauses reference surface.
 public procedure runPatternsCaseClausesReference() -> bool {
     let scrutinee: i32 = 2
@@ -83,5 +138,6 @@ public procedure runPatternsCaseClausesReference() -> bool {
         narrowed_result == 1 &&
         complement_result == 12 &&
         tailless_score == 1 &&
-        tail_end_result == 5
+        tail_end_result == 5 &&
+        patternLowerBindFailureReference()
 }

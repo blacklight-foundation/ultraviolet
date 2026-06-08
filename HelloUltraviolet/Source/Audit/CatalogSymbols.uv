@@ -23,6 +23,7 @@ using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecute
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceProcedures }
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceSourceText }
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceStatements }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceAppendixB }
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceAsync }
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceAttributes }
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceAuthority }
@@ -49,19 +50,19 @@ using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecute
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteSourceTestsSourceNativeTestsUv }
 
 public procedure expectedCatalogCompiledSymbolCount() -> usize {
-    return 631usize
+    return 646usize
 }
 
 public procedure catalogCompiledSymbolCount() -> usize {
-    return 631usize
+    return 646usize
 }
 
 public procedure expectedCatalogCompiledSymbolTargetDigest() -> usize {
-    return 490981084usize
+    return 665026989usize
 }
 
 public procedure catalogCompiledSymbolTargetDigest() -> usize {
-    return 490981084usize
+    return 665026989usize
 }
 
 public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
@@ -95,6 +96,7 @@ public procedure catalogCompiledSymbolsExecute(context: Context) -> bool {
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceProcedures(context) && passed
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceSourceText(context) && passed
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceStatements(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferenceAppendixB(context) && passed
     passed = catalogCompiledSymbolsExecuteReferenceAsync(context) && passed
     passed = catalogCompiledSymbolsExecuteReferenceAttributes(context) && passed
     passed = catalogCompiledSymbolsExecuteReferenceAuthority(context) && passed

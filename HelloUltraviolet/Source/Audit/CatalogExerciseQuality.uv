@@ -1,0 +1,146 @@
+//! Runtime gate for generated accepted-source exercise quality evidence.
+
+internal record CatalogExerciseQualityEntry {
+    internal obligation_id: string@View
+    internal target_module_path: string@View
+    internal target_symbol: string@View
+    internal target_source_path: string@View
+    internal is_constant_literal_result: bool
+    internal is_executed: bool
+    internal is_broad_appendix_grammar_row: bool
+    internal uses_appendix_b_composite_target: bool
+}
+
+internal procedure catalogExerciseQualityEntry(
+    obligation_id: string@View,
+    target_module_path: string@View,
+    target_symbol: string@View,
+    target_source_path: string@View,
+    is_constant_literal_result: bool,
+    is_executed: bool,
+    is_broad_appendix_grammar_row: bool,
+    uses_appendix_b_composite_target: bool
+) -> CatalogExerciseQualityEntry {
+    return CatalogExerciseQualityEntry {
+        obligation_id: obligation_id,
+        target_module_path: target_module_path,
+        target_symbol: target_symbol,
+        target_source_path: target_source_path,
+        is_constant_literal_result: is_constant_literal_result,
+        is_executed: is_executed,
+        is_broad_appendix_grammar_row: is_broad_appendix_grammar_row,
+        uses_appendix_b_composite_target: uses_appendix_b_composite_target
+    }
+}
+
+internal procedure catalogExerciseQualityEntryPasses(
+    entry: CatalogExerciseQualityEntry
+) -> bool {
+    if entry.is_constant_literal_result {
+        return false
+    }
+    if !entry.is_executed {
+        return false
+    }
+    if entry.is_broad_appendix_grammar_row &&
+        !entry.uses_appendix_b_composite_target {
+        return false
+    }
+    return true
+}
+
+public procedure expectedCatalogAcceptedExerciseQualityEntryCount() -> usize {
+    return 5302usize
+}
+
+public procedure catalogAcceptedExerciseQualityEntryCount() -> usize {
+    return 5302usize
+}
+
+public procedure expectedCatalogAcceptedExerciseQualityEntryDigest() -> usize {
+    return 470064857usize
+}
+
+public procedure catalogAcceptedExerciseQualityEntryDigest() -> usize {
+    return 470064857usize
+}
+
+public procedure catalogAcceptedExerciseQualityManifestByteCount() -> usize {
+    return 899456usize
+}
+
+public procedure catalogAcceptedExerciseQualityManifestLineBreakCount() -> usize {
+    return 5303usize
+}
+
+internal procedure catalogAcceptedExerciseQualityManifestShapeMatches(
+    manifest_text: string@View
+) -> bool {
+    return string::length(manifest_text) ==
+        catalogAcceptedExerciseQualityManifestByteCount() &&
+        catalogAuditLineBreakCount(manifest_text) ==
+            catalogAcceptedExerciseQualityManifestLineBreakCount() &&
+        catalogAuditTextDigest(manifest_text) ==
+            catalogAcceptedExerciseQualityEntryDigest()
+}
+
+public procedure catalogAcceptedExerciseQualityValidatedEntryCount() -> usize {
+    var count: usize = 0usize
+    count = count + validatedCatalogAcceptedExerciseQualityGroup001()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup002()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup003()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup004()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup005()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup006()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup007()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup008()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup009()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup010()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup011()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup012()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup013()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup014()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup015()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup016()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup017()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup018()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup019()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup020()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup021()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup022()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup023()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup024()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup025()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup026()
+    count = count + validatedCatalogAcceptedExerciseQualityGroup027()
+    return count
+}
+
+public procedure catalogAcceptedExercisesAreNontrivialAndExecuted(
+    context: Context
+) -> bool {
+    if catalogAcceptedExerciseQualityEntryCount() !=
+        expectedCatalogAcceptedExerciseQualityEntryCount() {
+        return false
+    }
+    if catalogAcceptedExerciseQualityValidatedEntryCount() !=
+        expectedCatalogAcceptedExerciseQualityEntryCount() {
+        return false
+    }
+
+    let read_result: Outcome<unique string@Managed, IoError> =
+        context.io~>read_file(
+            "HelloUltraviolet/Audit/ExerciseQualityManifest.csv"
+        )
+    return if move read_result is {
+        @Value { value } {
+            let manifest_text: string@View = string::as_view(value)
+            catalogAcceptedExerciseQualityManifestShapeMatches(
+                manifest_text
+            )
+        }
+        @Error {
+            false
+        }
+    }
+}

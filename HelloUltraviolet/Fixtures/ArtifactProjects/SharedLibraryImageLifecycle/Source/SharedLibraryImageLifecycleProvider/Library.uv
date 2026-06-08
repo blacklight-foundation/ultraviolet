@@ -38,15 +38,26 @@ private let _LINKED_IMAGE_DESTROY_SENTINEL: LinkedImageDestroySentinel =
 
 #export("C")
 #mangle("uv_shared_lifecycle_install_raw_destroy_probe")
-public procedure sharedLifecycleInstallRawDestroyProbe(probe: *mut i32) -> i32 {
-    _RAW_DESTROY_PROBE = probe
+public procedure sharedLifecycleInstallRawDestroyProbe(probe_slot: *mut *mut i32) -> i32 {
+    if probe_slot != null {
+        unsafe {
+            _RAW_DESTROY_PROBE = *probe_slot
+        }
+    }
     return _RAW_IMAGE_STATE
 }
 
 #export("C")
 #mangle("uv_shared_lifecycle_raw_increment")
-public procedure sharedLifecycleRawIncrement(amount: i32) -> i32 {
-    _RAW_IMAGE_STATE = _RAW_IMAGE_STATE + amount
+public procedure sharedLifecycleRawIncrement(amount_slot: *mut *mut i32) -> i32 {
+    if amount_slot != null {
+        unsafe {
+            let amount: *mut i32 = *amount_slot
+            if amount != null {
+                _RAW_IMAGE_STATE = _RAW_IMAGE_STATE + *amount
+            }
+        }
+    }
     return _RAW_IMAGE_STATE
 }
 

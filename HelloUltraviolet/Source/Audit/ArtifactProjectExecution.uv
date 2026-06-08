@@ -2052,153 +2052,6 @@ internal procedure artifactProjectRawDylibExercise(
     return diagnosticFixtureExecutionResult(true, 5usize)
 }
 
-internal procedure artifactProjectCompileSharedLibraryImageLifecycleHostHarnessPath(
-    authority: TestAuthority,
-    executable_path: string@View,
-    object_path: string@View,
-    output_path: string@View,
-    error_path: string@View
-) -> i32 {
-    let created: Outcome<unique string@Managed, AllocationError> =
-        string::from("", authority.heap)
-    return if move created is {
-        @Value { value } {
-            var command_ready: bool =
-                artifactProjectAppendShellStart(value, authority)
-            command_ready =
-                diagnosticAppendText(value, "cl.exe /nologo /TC /O2 /MD ", authority.heap) &&
-                command_ready
-            command_ready =
-                diagnosticAppendText(value, "/Fo", authority.heap) &&
-                command_ready
-            command_ready =
-                diagnosticAppendQuoted(value, object_path, authority.heap) &&
-                command_ready
-            command_ready =
-                diagnosticAppendText(value, " /Fe", authority.heap) &&
-                command_ready
-            command_ready =
-                diagnosticAppendQuoted(value, executable_path, authority.heap) &&
-                command_ready
-            command_ready =
-                diagnosticAppendText(value, " ", authority.heap) &&
-                command_ready
-            command_ready =
-                diagnosticAppendQuotedProjectPath(
-                    value,
-                    authority,
-                    "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/HostHarness/SharedLibraryImageLifecycleHarness.c"
-                ) && command_ready
-            command_ready =
-                diagnosticAppendText(value, " /link kernel32.lib", authority.heap) &&
-                command_ready
-            if command_ready {
-                outputDiagnosticRunCommand(authority, value, output_path, error_path)
-            } else {
-                -1
-            }
-        }
-        @Error {
-            -1
-        }
-    }
-}
-
-internal procedure artifactProjectCompileSharedLibraryImageLifecycleHostHarness(
-    authority: TestAuthority
-) -> bool {
-    let output_created: Outcome<unique string@Managed, AllocationError> =
-        string::from(authority.temporary_directory, authority.heap)
-    return if move output_created is {
-        @Value { value: output_path } {
-            let error_created: Outcome<unique string@Managed, AllocationError> =
-                string::from(authority.temporary_directory, authority.heap)
-            if move error_created is {
-                @Value { value: error_path } {
-                    let executable_created: Outcome<unique string@Managed, AllocationError> =
-                        string::from(authority.temporary_directory, authority.heap)
-                    if move executable_created is {
-                        @Value { value: executable_path } {
-                            let object_created: Outcome<unique string@Managed, AllocationError> =
-                                string::from(authority.temporary_directory, authority.heap)
-                            if move object_created is {
-                                @Value { value: object_path } {
-                                    if !diagnosticBuildPath(
-                                        output_path,
-                                        "ArtifactProjectSharedLibraryImageLifecycleHostCompile.out",
-                                        authority.heap
-                                    ) ||
-                                        !diagnosticBuildPath(
-                                            error_path,
-                                            "ArtifactProjectSharedLibraryImageLifecycleHostCompile.err",
-                                            authority.heap
-                                        ) ||
-                                        !diagnosticBuildPath(
-                                            executable_path,
-                                            "ArtifactProjectSharedLibraryImageLifecycleBuild",
-                                            authority.heap
-                                        ) ||
-                                        !diagnosticBuildPath(
-                                            executable_path,
-                                            "Binary/SharedLibraryImageLifecycleHostHarness.exe",
-                                            authority.heap
-                                        ) ||
-                                        !diagnosticBuildPath(
-                                            object_path,
-                                            "ArtifactProjectSharedLibraryImageLifecycleBuild",
-                                            authority.heap
-                                        ) ||
-                                        !diagnosticBuildPath(
-                                            object_path,
-                                            "Binary/SharedLibraryImageLifecycleHostHarness.obj",
-                                            authority.heap
-                                        ) {
-                                        false
-                                    } else {
-                                        let _ = authority.io~>remove(string::as_view(output_path))
-                                        let _ = authority.io~>remove(string::as_view(error_path))
-                                        let _ = authority.io~>remove(string::as_view(executable_path))
-                                        let _ = authority.io~>remove(string::as_view(object_path))
-                                        let status: i32 =
-                                            artifactProjectCompileSharedLibraryImageLifecycleHostHarnessPath(
-                                                authority,
-                                                string::as_view(executable_path),
-                                                string::as_view(object_path),
-                                                string::as_view(output_path),
-                                                string::as_view(error_path)
-                                            )
-                                        if status != 0 {
-                                            diagnosticReportFixtureFailure(
-                                                authority,
-                                                "artifact project host harness compile failed: ",
-                                                "SharedLibraryImageLifecycleHarness.c"
-                                            )
-                                        } else {
-                                            true
-                                        }
-                                    }
-                                }
-                                @Error {
-                                    false
-                                }
-                            }
-                        }
-                        @Error {
-                            false
-                        }
-                    }
-                }
-                @Error {
-                    false
-                }
-            }
-        }
-        @Error {
-            false
-        }
-    }
-}
-
 internal procedure artifactProjectSharedLibraryImageLifecycleExercise(
     authority: TestAuthority
 ) -> DiagnosticFixtureExecutionResult {
@@ -2219,7 +2072,17 @@ internal procedure artifactProjectSharedLibraryImageLifecycleExercise(
     ) {
         return diagnosticFixtureExecutionResult(false, 0usize)
     }
-    if !artifactProjectCompileSharedLibraryImageLifecycleHostHarness(authority) {
+    if !artifactProjectRunAssemblyCase(
+        authority,
+        "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle",
+        "SharedLibraryImageLifecycleHostHarness",
+        "x86_64-win64",
+        "off",
+        "ArtifactProjectSharedLibraryImageLifecycleHarness.out",
+        "ArtifactProjectSharedLibraryImageLifecycleHarness.err",
+        "ArtifactProjectSharedLibraryImageLifecycleBuild",
+        "shared_library_image_lifecycle_harness.conformance.log"
+    ) {
         return diagnosticFixtureExecutionResult(false, 0usize)
     }
 

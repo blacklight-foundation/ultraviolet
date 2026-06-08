@@ -225,6 +225,28 @@ internal procedure moduleDiscoveryOutcomeIsError(
     return moduleDiscoveryOutcomeCode(outcome) >= 2usize
 }
 
+internal procedure moduleDiscoveryDiagnosticCode(
+    outcome: ModuleDiscoveryOutcomeReference
+) -> string@View {
+    return if outcome is {
+        ModuleDiscoveryOutcomeReference::Skipped {
+            ""
+        }
+        ModuleDiscoveryOutcomeReference::Added {
+            ""
+        }
+        ModuleDiscoveryOutcomeReference::Collision {
+            "DirSeq-Collision"
+        }
+        ModuleDiscoveryOutcomeReference::InvalidComponent {
+            "DirSeq-Invalid-Component"
+        }
+        ModuleDiscoveryOutcomeReference::RelativizeFailed {
+            "DirSeq-Rel-Fail"
+        }
+    }
+}
+
 internal procedure moduleOwnerIsDeepestUnique(owner: ModuleOwnerReference) -> bool {
     return owner.has_unique_owner && owner.owner_root_depth >= owner.assembly_root_depth
 }
@@ -341,6 +363,17 @@ internal procedure relativeFailureDirectoryReference() -> ModuleDiscoveryReferen
     )
 }
 
+/// Exercises DirSeq-Rel-Fail with a directory outside the source root.
+public procedure moduleDiscoveryRelativizeFailureReference() -> bool {
+    let relative_failure: ModuleDiscoveryReference = relativeFailureDirectoryReference()
+    let outcome: ModuleDiscoveryOutcomeReference =
+        moduleDiscoveryOutcome(relative_failure, false, "")
+    return !relative_failure.relative_path_is_available &&
+        auditTextEquals(relative_failure.relative_path, "../Outside") &&
+        moduleDiscoveryOutcomeIsRelativizeFailed(outcome) &&
+        auditTextEquals(moduleDiscoveryDiagnosticCode(outcome), "DirSeq-Rel-Fail")
+}
+
 /// Exercises the Projects ModuleDiscovery reference surface.
 public procedure runProjectsModuleDiscoveryReference() -> bool {
     let source_root: SourceRootReference = sourceRootReference("Source", true, true, 6usize)
@@ -410,6 +443,7 @@ public procedure runProjectsModuleDiscoveryReference() -> bool {
         moduleDiscoveryOutcomeIsRelativizeFailed(
             moduleDiscoveryOutcome(relative_failure, false, "")
         ) &&
+        moduleDiscoveryRelativizeFailureReference() &&
         moduleIsOwnedByAssembly(root_owner) &&
         moduleIsFilteredFromAssembly(nested_owner) &&
         !moduleOwnerIsDeepestUnique(ambiguous_owner)

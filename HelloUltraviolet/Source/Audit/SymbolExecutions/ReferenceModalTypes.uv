@@ -16,7 +16,7 @@ public procedure catalogCompiledSymbolsExecuteReferenceModalTypes(context: Conte
     passed = recordCatalogSymbolExecution(
         context,
         "runModalTypesBytesReference",
-        runModalTypesBytesReference()
+        runModalTypesBytesReference(context.heap)
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
@@ -51,7 +51,7 @@ public procedure catalogCompiledSymbolsExecuteReferenceModalTypes(context: Conte
     passed = recordCatalogSymbolExecution(
         context,
         "runModalTypesStringsReference",
-        runModalTypesStringsReference()
+        runModalTypesStringsReference(context.heap)
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,

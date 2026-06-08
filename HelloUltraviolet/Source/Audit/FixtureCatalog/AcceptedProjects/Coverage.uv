@@ -517,10 +517,10 @@ public procedure validatedAcceptedProjectFixtureCount() -> usize {
     if expressionSemanticsExpectationMatches(
         acceptedProjectExpectation(
             "LowerExprCallPanicOut",
-            "rule.16.Lower-Expr-Call-PanicOut"
+            "rule.16.Lower-Expr-CallFamily"
         ),
         "LowerExprCallPanicOut",
-        "rule.16.Lower-Expr-Call-PanicOut"
+        "rule.16.Lower-Expr-CallFamily"
     ) {
         count = count + 1usize
     }

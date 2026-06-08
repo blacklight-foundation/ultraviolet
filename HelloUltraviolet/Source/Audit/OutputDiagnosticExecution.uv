@@ -1891,15 +1891,9 @@ internal procedure outputDiagnosticPrepareIRWriteFailure(
 internal procedure outputDiagnosticRunIcacls(
     authority: TestAuthority,
     path: string@View,
-    principal_prefix: string@View,
-    principal_suffix: string@View
+    acl_operation: string@View
 ) -> bool {
     if !auditTextEquals(authority.target_profile, "x86_64-win64") {
-        return false
-    }
-
-    let username: string@View = authority.sys~>get_env("USERNAME")
-    if string::is_empty(username) {
         return false
     }
 
@@ -1909,9 +1903,7 @@ internal procedure outputDiagnosticRunIcacls(
         @Value { value } {
             let command_ready: bool =
                 diagnosticAppendQuoted(value, path, authority.heap) &&
-                diagnosticAppendText(value, principal_prefix, authority.heap) &&
-                diagnosticAppendText(value, username, authority.heap) &&
-                diagnosticAppendText(value, principal_suffix, authority.heap) &&
+                diagnosticAppendText(value, acl_operation, authority.heap) &&
                 diagnosticAppendText(value, " > nul 2> nul", authority.heap)
             if !command_ready {
                 false
@@ -1968,8 +1960,7 @@ internal procedure outputDiagnosticDirSeqReadFailureDenyAccess(
     return outputDiagnosticRunIcacls(
         authority,
         path,
-        " /deny \"",
-        ":(OI)(CI)(RX)\" /Q"
+        " /deny \"*S-1-5-11:(RX)\" /Q"
     )
 }
 
@@ -1984,8 +1975,7 @@ internal procedure outputDiagnosticDirSeqReadFailureRestoreAccess(
     return outputDiagnosticRunIcacls(
         authority,
         path,
-        " /remove:d \"",
-        "\" /Q"
+        " /remove:d \"*S-1-5-11\" /Q"
     )
 }
 
@@ -2039,7 +2029,7 @@ internal procedure outputDiagnosticWriteDirSeqSource(
                 outputDiagnosticWriteTextFile(
                     authority,
                     source_path,
-                    "//! Source for the DirSeq read-error output diagnostic.\n\npublic procedure main() -> i32 {\n    return 0\n}\n"
+                    "//! Source for the DirSeq read-error output diagnostic.\n\npublic procedure main(context: Context) -> i32 {\n    return 0\n}\n"
                 )
             }
         }
@@ -2667,13 +2657,41 @@ internal procedure outputDiagnosticDirSeqReadFailureWithProjectRootPath(
 internal procedure outputDiagnosticDirSeqReadFailureExercise(
     authority: TestAuthority
 ) -> DiagnosticFixtureExecutionResult {
+    let first_result: DiagnosticFixtureExecutionResult =
+        outputDiagnosticDirSeqReadFailureWithProjectSuffix(
+            authority,
+            "OutputDiagnosticDirSeqReadFailureProject_6D3B9A11"
+        )
+    if first_result.passed {
+        return first_result
+    }
+
+    let second_result: DiagnosticFixtureExecutionResult =
+        outputDiagnosticDirSeqReadFailureWithProjectSuffix(
+            authority,
+            "OutputDiagnosticDirSeqReadFailureProject_A95D227C"
+        )
+    if second_result.passed {
+        return second_result
+    }
+
+    return outputDiagnosticDirSeqReadFailureWithProjectSuffix(
+        authority,
+        "OutputDiagnosticDirSeqReadFailureProject_F13E5C08"
+    )
+}
+
+internal procedure outputDiagnosticDirSeqReadFailureWithProjectSuffix(
+    authority: TestAuthority,
+    project_suffix: string@View
+) -> DiagnosticFixtureExecutionResult {
     let project_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move project_created is {
         @Value { value } {
             if !diagnosticBuildPath(
                 value,
-                "OutputDiagnosticDirSeqReadFailureProject",
+                project_suffix,
                 authority.heap
             ) {
                 diagnosticFixtureExecutionResult(false, 0usize)

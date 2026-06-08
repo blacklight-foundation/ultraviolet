@@ -2,7 +2,7 @@
 
 
 public procedure countStatementsAndBlocksBlocksObligations() -> usize {
-    return 67usize
+    return 68usize
 }
 
 public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
@@ -553,6 +553,15 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
         "HelloUltraviolet::Audit",
         "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
         "Source/Audit/AcceptedProjectExecution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.Lower-Stmt-Error",
+        69269usize,
+        "HelloUltraviolet::Reference::Statements",
+        "lowerStmtErrorReference",
+        "Source/Reference/Statements/Errors.uv"
     ) {
         count = count + 1usize
     }

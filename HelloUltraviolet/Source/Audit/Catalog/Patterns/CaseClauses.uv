@@ -2,7 +2,7 @@
 
 
 public procedure countPatternsCaseClausesObligations() -> usize {
-    return 45usize
+    return 46usize
 }
 
 public procedure validatedPatternsCaseClausesObligations() -> usize {
@@ -391,6 +391,15 @@ public procedure validatedPatternsCaseClausesObligations() -> usize {
         "HelloUltraviolet::Audit",
         "patternLowerPatGeneralConformanceMatches",
         "Source/Audit/PatternLoweringConformanceExecution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.17.Lower-Pat-Err",
+        67811usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "patternLowerBindFailureReference",
+        "Source/Reference/Patterns/CaseClauses.uv"
     ) {
         count = count + 1usize
     }

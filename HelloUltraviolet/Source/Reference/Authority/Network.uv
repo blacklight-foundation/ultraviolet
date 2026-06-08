@@ -169,8 +169,10 @@ public procedure authorityNetworkPrimitiveCallsReference(context: Context) -> bo
 }
 
 /// Exercises the Authority Network reference surface.
-public procedure runAuthorityNetworkReference() -> bool {
+public procedure runAuthorityNetworkReference(context: Context) -> bool {
     let client: NetworkAuthorityReference = networkAuthorityReference(true, false, true)
     let server: NetworkAuthorityReference = networkAuthorityReference(false, true, true)
-    return networkAuthorityCanAffectHost(client) && networkAuthorityCanAffectHost(server)
+    return authorityNetworkPrimitiveCallsReference(context) &&
+        networkAuthorityCanAffectHost(client) &&
+        networkAuthorityCanAffectHost(server)
 }

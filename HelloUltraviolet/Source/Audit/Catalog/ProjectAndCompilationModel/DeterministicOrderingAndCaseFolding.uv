@@ -2,7 +2,7 @@
 
 
 public procedure countProjectAndCompilationModelDeterministicOrderingAndCaseFoldingObligations() -> usize {
-    return 9usize
+    return 10usize
 }
 
 public procedure validatedProjectAndCompilationModelDeterministicOrderingAndCaseFoldingObligations() -> usize {
@@ -85,6 +85,15 @@ public procedure validatedProjectAndCompilationModelDeterministicOrderingAndCase
         "HelloUltraviolet::Audit",
         "outputDiagnosticDirSeqReadFailureExercise",
         "Source/Audit/OutputDiagnosticExecution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "DirSeq-Rel-Fail",
+        4257usize,
+        "HelloUltraviolet::Reference::Projects",
+        "moduleDiscoveryRelativizeFailureReference",
+        "Source/Reference/Projects/ModuleDiscovery.uv"
     ) {
         count = count + 1usize
     }

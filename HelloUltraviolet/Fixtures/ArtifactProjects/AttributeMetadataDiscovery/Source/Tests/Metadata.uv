@@ -1,0 +1,22 @@
+//! Artifact fixture for source-native test metadata discovery.
+
+#test
+internal procedure attributeMetadataBareFallback() -> bool
+|: |= @result
+{
+    return true
+}
+
+#test(name: "attribute metadata explicit display")
+internal procedure attributeMetadataExplicitDisplay() -> bool
+|: |= @result
+{
+    return true
+}
+
+#test(covers("def.TestName@L28776"), covers("def.TestCoverage@L28791"))
+internal procedure attributeMetadataCoverageOrder() -> bool
+|: |= @result
+{
+    return true
+}

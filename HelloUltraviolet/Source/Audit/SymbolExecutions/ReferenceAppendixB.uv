@@ -1,0 +1,103 @@
+//! Compiled symbol execution checks for ReferenceAppendixB.
+
+using HelloUltraviolet::Reference::AppendixB::{ runAppendixBAsyncGrammarReference }
+using HelloUltraviolet::Reference::AppendixB::{ runAppendixBAttributeGrammarReference }
+using HelloUltraviolet::Reference::AppendixB::{ runAppendixBConcurrencyGrammarReference }
+using HelloUltraviolet::Reference::AppendixB::{ runAppendixBContractGrammarReference }
+using HelloUltraviolet::Reference::AppendixB::{ runAppendixBControlAndSpecialExpressionGrammarReference }
+using HelloUltraviolet::Reference::AppendixB::{ runAppendixBDeclarationGrammarReference }
+using HelloUltraviolet::Reference::AppendixB::{ runAppendixBExpressionGrammarReference }
+using HelloUltraviolet::Reference::AppendixB::{ runAppendixBFFIGrammarReference }
+using HelloUltraviolet::Reference::AppendixB::{ runAppendixBGenericRefinementModalTypeGrammarReference }
+using HelloUltraviolet::Reference::AppendixB::{ runAppendixBKeySystemGrammarReference }
+using HelloUltraviolet::Reference::AppendixB::{ runAppendixBLexicalGrammarReference }
+using HelloUltraviolet::Reference::AppendixB::{ runAppendixBMetaprogrammingGrammarReference }
+using HelloUltraviolet::Reference::AppendixB::{ runAppendixBPatternGrammarReference }
+using HelloUltraviolet::Reference::AppendixB::{ runAppendixBRegionGrammarReference }
+using HelloUltraviolet::Reference::AppendixB::{ runAppendixBStatementGrammarReference }
+using HelloUltraviolet::Reference::AppendixB::{ runAppendixBTypeGrammarReference }
+
+public procedure catalogCompiledSymbolsExecuteReferenceAppendixB(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAppendixBAsyncGrammarReference",
+        runAppendixBAsyncGrammarReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAppendixBAttributeGrammarReference",
+        runAppendixBAttributeGrammarReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAppendixBConcurrencyGrammarReference",
+        runAppendixBConcurrencyGrammarReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAppendixBContractGrammarReference",
+        runAppendixBContractGrammarReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAppendixBControlAndSpecialExpressionGrammarReference",
+        runAppendixBControlAndSpecialExpressionGrammarReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAppendixBDeclarationGrammarReference",
+        runAppendixBDeclarationGrammarReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAppendixBExpressionGrammarReference",
+        runAppendixBExpressionGrammarReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAppendixBFFIGrammarReference",
+        runAppendixBFFIGrammarReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAppendixBGenericRefinementModalTypeGrammarReference",
+        runAppendixBGenericRefinementModalTypeGrammarReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAppendixBKeySystemGrammarReference",
+        runAppendixBKeySystemGrammarReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAppendixBLexicalGrammarReference",
+        runAppendixBLexicalGrammarReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAppendixBMetaprogrammingGrammarReference",
+        runAppendixBMetaprogrammingGrammarReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAppendixBPatternGrammarReference",
+        runAppendixBPatternGrammarReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAppendixBRegionGrammarReference",
+        runAppendixBRegionGrammarReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAppendixBStatementGrammarReference",
+        runAppendixBStatementGrammarReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAppendixBTypeGrammarReference",
+        runAppendixBTypeGrammarReference(context)
+    ) && passed
+    return passed
+}

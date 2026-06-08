@@ -92,6 +92,7 @@ public procedure lowerStatementJudgementsReference() -> bool {
         lowerStmtDeferReference() &&
         lowerStmtRegionReference() &&
         lowerStmtFrameImplicitReference() &&
+        lowerStmtErrorReference() &&
         lowerStmtReturnUnitReference() &&
         lowerStmtUnsafeBlockReference()
 }
