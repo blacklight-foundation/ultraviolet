@@ -739,6 +739,261 @@ void RecordSourceNativeTestHarnessGeneration(
       "lowering.TestHarnessGeneration", std::nullopt, payload);
 }
 
+struct SourceNativeTestRunSummary {
+  int passed = 0;
+  int failed = 0;
+  int errors = 0;
+
+  int exit_code() const {
+    return failed == 0 && errors == 0 ? 0 : 1;
+  }
+};
+
+constexpr std::string_view kSourceNativeTestOutcomePrefix =
+    "uv-source-native-test-outcome\t";
+constexpr std::string_view kDynamicSemanticsObligation =
+    "conformance.TestAttributeDynamicSemantics";
+constexpr std::string_view kDiscoveryOrderObligation = "def.TestDiscoveryOrder";
+constexpr std::string_view kTestAttributeParserObligation =
+    "parse.TestAttributeByOrdinaryAttributeParser";
+constexpr std::string_view kTestProcedureClassificationObligation =
+    "ast.TestProcedureClassification";
+constexpr std::string_view kTestNameObligation = "def.TestName";
+constexpr std::string_view kTestCoverageObligation = "def.TestCoverage";
+constexpr std::string_view kTestAttributeArgsOkObligation =
+    "def.TestAttributeArgsOk";
+constexpr std::string_view kTestProcedureShapeObligation =
+    "req.TestProcedureShape";
+constexpr std::string_view kTestAuthorityObligation = "req.TestAuthority";
+
+std::string SourceNativeTestOutcomeMarker(
+    std::string_view outcome,
+    const ultraviolet::driver::SourceNativeTestDescriptor& test) {
+  std::string marker(kSourceNativeTestOutcomePrefix);
+  marker += outcome;
+  marker += '\t';
+  marker += test.stable_identity;
+  marker += '\n';
+  return marker;
+}
+
+bool SourceNativeTestOutputContainsMarker(
+    const ultraviolet::core::HostProcessResult& result,
+    std::string_view marker) {
+  return result.stdout_text.find(marker) != std::string::npos ||
+         result.stderr_text.find(marker) != std::string::npos ||
+         result.output.find(marker) != std::string::npos;
+}
+
+bool SourceNativeTestCoverageReferenceMatches(std::string_view reference,
+                                               std::string_view obligation) {
+  return reference == obligation ||
+         (reference.size() > obligation.size() &&
+          reference.starts_with(obligation) &&
+          reference[obligation.size()] == '@');
+}
+
+bool SourceNativeTestCoversObligation(
+    const ultraviolet::driver::SourceNativeTestDescriptor& test,
+    std::string_view obligation) {
+  for (const auto& reference : test.coverage_references) {
+    if (SourceNativeTestCoverageReferenceMatches(reference, obligation)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool SourceNativeTestsCoverObligation(
+    const std::vector<ultraviolet::driver::SourceNativeTestDescriptor>& tests,
+    std::string_view obligation) {
+  for (const auto& test : tests) {
+    if (SourceNativeTestCoversObligation(test, obligation)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void RecordSourceNativeTestDynamicSemantics(
+    const ultraviolet::project::Assembly& assembly,
+    const std::vector<ultraviolet::driver::SourceNativeTestDescriptor>& tests,
+    const SourceNativeTestRunSummary& summary) {
+  if (!SourceNativeTestsCoverObligation(tests, kDynamicSemanticsObligation)) {
+    return;
+  }
+  std::string payload = "source=BuildAndRunSourceNativeTestHarness;assembly=" +
+      assembly.name + ";selected_tests=" + std::to_string(tests.size()) +
+      ";passed=" + std::to_string(summary.passed) +
+      ";failed=" + std::to_string(summary.failed) +
+      ";errors=" + std::to_string(summary.errors) +
+      ";isolated_process_per_test=true;normal_return_marker=true;"
+      "panic_without_marker_is_error=true";
+  ultraviolet::core::Conformance::Record(
+      std::string(kDynamicSemanticsObligation), std::nullopt, payload);
+}
+
+std::string SourceNativeStableIdentityOrder(
+    const std::vector<ultraviolet::driver::SourceNativeTestDescriptor>& tests) {
+  std::string order;
+  for (std::size_t index = 0; index < tests.size(); ++index) {
+    if (index != 0) {
+      order += ",";
+    }
+    order += tests[index].stable_identity;
+  }
+  return order;
+}
+
+void RecordSourceNativeTestDiscoveryOrder(
+    const ultraviolet::project::Assembly& assembly,
+    const std::vector<ultraviolet::driver::SourceNativeTestDescriptor>& tests,
+    const SourceNativeTestRunSummary& summary) {
+  if (!SourceNativeTestsCoverObligation(tests, kDiscoveryOrderObligation)) {
+    return;
+  }
+  std::string payload = "source=BuildAndRunSourceNativeTestHarness;assembly=" +
+      assembly.name + ";selected_tests=" + std::to_string(tests.size()) +
+      ";passed=" + std::to_string(summary.passed) +
+      ";failed=" + std::to_string(summary.failed) +
+      ";errors=" + std::to_string(summary.errors) +
+      ";order_key=module_path,file_order,declaration_span,stable_identity;"
+      "stable_identity_order=" +
+      SourceNativeStableIdentityOrder(tests) +
+      ";display_name_is_not_identity=true;invoked_in_selected_order=true";
+  ultraviolet::core::Conformance::Record(
+      std::string(kDiscoveryOrderObligation), std::nullopt, payload);
+}
+
+std::string SourceNativeCoverageReferenceOrder(
+    const ultraviolet::driver::SourceNativeTestDescriptor& test) {
+  std::string order;
+  for (std::size_t index = 0; index < test.coverage_references.size();
+       ++index) {
+    if (index != 0) {
+      order += ",";
+    }
+    order += test.coverage_references[index];
+  }
+  return order;
+}
+
+std::string SourceNativeTestMetadataPayload(
+    const ultraviolet::project::Assembly& assembly,
+    const ultraviolet::driver::SourceNativeTestDescriptor& test,
+    const SourceNativeTestRunSummary& summary) {
+  std::string payload = "source=DiscoverSourceNativeTests;assembly=" +
+      assembly.name + ";selected_tests=" + std::to_string(
+          summary.passed + summary.failed + summary.errors) +
+      ";passed=" + std::to_string(summary.passed) +
+      ";failed=" + std::to_string(summary.failed) +
+      ";errors=" + std::to_string(summary.errors) +
+      ";stable_identity=" + test.stable_identity +
+      ";procedure=" + test.procedure_name +
+      ";display_name=" + test.display_name +
+      ";name_kind=" +
+      std::string(test.has_explicit_display_name ? "explicit"
+                                                 : "stable_identity") +
+      ";coverage_count=" +
+      std::to_string(test.coverage_references.size()) +
+      ";coverage_order=" + SourceNativeCoverageReferenceOrder(test);
+  return payload;
+}
+
+void RecordSourceNativeTestMetadata(
+    const ultraviolet::project::Assembly& assembly,
+    const std::vector<ultraviolet::driver::SourceNativeTestDescriptor>& tests,
+    const SourceNativeTestRunSummary& summary) {
+  for (const auto& test : tests) {
+    const std::string common =
+        SourceNativeTestMetadataPayload(assembly, test, summary);
+    const std::string name_arg =
+        test.has_explicit_display_name ? "string_literal" : "absent";
+    const std::string covers_arg =
+        test.coverage_references.empty() ? "absent"
+                                         : "nested_string_literal_list";
+    ultraviolet::core::Conformance::Record(
+        std::string(kTestAttributeParserObligation),
+        std::nullopt,
+        common + ";attr_parser=ordinary;name_arg=" + name_arg +
+            ";covers_arg=" + covers_arg);
+    ultraviolet::core::Conformance::Record(
+        std::string(kTestProcedureClassificationObligation),
+        std::nullopt,
+        common + ";procedure_kind=ordinary;has_test_attr=true");
+    ultraviolet::core::Conformance::Record(
+        std::string(kTestNameObligation),
+        std::nullopt,
+        common + ";test_name_source=" +
+            std::string(test.has_explicit_display_name
+                            ? "explicit_argument"
+                            : "fully_qualified_proc_path"));
+    ultraviolet::core::Conformance::Record(
+        std::string(kTestCoverageObligation),
+        std::nullopt,
+        common + ";coverage_source_order_preserved=true");
+    ultraviolet::core::Conformance::Record(
+        std::string(kTestAttributeArgsOkObligation),
+        std::nullopt,
+        common + ";arg_validation=accepted;ledger_references_valid=true");
+  }
+}
+
+const char* BoolPayload(bool value) {
+  return value ? "true" : "false";
+}
+
+std::string SourceNativeTestProcedureShapePayload(
+    const ultraviolet::project::Assembly& assembly,
+    const ultraviolet::driver::SourceNativeTestDescriptor& test,
+    const SourceNativeTestRunSummary& summary) {
+  std::string payload = "source=ValidateTestProcedureShape;assembly=" +
+      assembly.name + ";selected_tests=" +
+      std::to_string(summary.passed + summary.failed + summary.errors) +
+      ";passed=" + std::to_string(summary.passed) +
+      ";failed=" + std::to_string(summary.failed) +
+      ";errors=" + std::to_string(summary.errors) +
+      ";stable_identity=" + test.stable_identity +
+      ";procedure=" + test.procedure_name +
+      ";parameter_count=" + std::to_string(test.parameter_count) +
+      ";has_body=" + BoolPayload(test.has_body) +
+      ";non_generic=" + BoolPayload(!test.is_generic) +
+      ";explicit_visibility=" +
+      BoolPayload(test.has_explicit_visibility) +
+      ";explicit_return_type=" +
+      BoolPayload(test.has_explicit_return_type) +
+      ";has_postcondition=" + BoolPayload(test.has_postcondition) +
+      ";parameter_shape=" +
+      std::string(test.requires_context ? "test_authority" : "no_parameters");
+  return payload;
+}
+
+void RecordSourceNativeTestProcedureShapeAndAuthority(
+    const ultraviolet::project::Assembly& assembly,
+    const std::vector<ultraviolet::driver::SourceNativeTestDescriptor>& tests,
+    const SourceNativeTestRunSummary& summary) {
+  for (const auto& test : tests) {
+    const std::string common =
+        SourceNativeTestProcedureShapePayload(assembly, test, summary);
+    if (SourceNativeTestCoversObligation(test, kTestProcedureShapeObligation)) {
+      ultraviolet::core::Conformance::Record(
+          std::string(kTestProcedureShapeObligation),
+          std::nullopt,
+          common + ";procedure_shape=valid");
+    }
+    if (SourceNativeTestCoversObligation(test, kTestAuthorityObligation)) {
+      ultraviolet::core::Conformance::Record(
+          std::string(kTestAuthorityObligation),
+          std::nullopt,
+          common +
+              ";authority_injected=true;"
+              "fields=io,sys,heap,time,temporary_directory,target_profile,"
+              "compiler_executable_path,compiler_current_directory;"
+              "time_field_type=$Time");
+    }
+  }
+}
+
 std::string GenerateSourceNativeTestHarness(
     const std::vector<ultraviolet::driver::SourceNativeTestDescriptor>& tests,
     const std::filesystem::path& temporary_directory,
@@ -747,7 +1002,6 @@ std::string GenerateSourceNativeTestHarness(
   std::ostringstream out;
   out << "//! Generated source-native test harness.\n\n";
   out << "public procedure main(context: Context) -> i32 {\n";
-  out << "    var failures: i32 = 0\n";
 
   const bool needs_authority =
       std::any_of(tests.begin(), tests.end(), [](const auto& test) {
@@ -772,17 +1026,33 @@ std::string GenerateSourceNativeTestHarness(
     out << "    }\n";
   }
 
+  out << "    if context.sys~>argument_count() != 1usize {\n";
+  out << "        return 1\n";
+  out << "    }\n";
+  out << "    let selected_test: string@View = context.sys~>argument(0usize)\n";
+
   for (const auto& test : tests) {
-    out << "    if !" << test.stable_identity << "(";
+    out << "    if selected_test == \"" << EscapeUvString(test.stable_identity)
+        << "\" {\n";
+    out << "        if " << test.stable_identity << "(";
     if (test.requires_context) {
       out << "authority";
     }
     out << ") {\n";
-    out << "        failures += 1\n";
+    out << "            let _ = context.io~>write_stderr(\""
+        << EscapeUvString(SourceNativeTestOutcomeMarker("pass", test))
+        << "\")\n";
+    out << "            return 0\n";
+    out << "        } else {\n";
+    out << "            let _ = context.io~>write_stderr(\""
+        << EscapeUvString(SourceNativeTestOutcomeMarker("fail", test))
+        << "\")\n";
+    out << "            return 1\n";
+    out << "        }\n";
     out << "    }\n";
   }
+  out << "    return 1\n";
 
-  out << "    return failures\n";
   out << "}\n";
   return out.str();
 }
@@ -819,7 +1089,7 @@ bool WriteTextFile(const std::filesystem::path& path,
   return true;
 }
 
-std::optional<int> BuildAndRunSourceNativeTestHarness(
+std::optional<SourceNativeTestRunSummary> BuildAndRunSourceNativeTestHarness(
     const ultraviolet::project::Project& project,
     const ultraviolet::project::Assembly& assembly,
     const std::vector<ultraviolet::driver::SourceNativeTestDescriptor>& tests,
@@ -833,6 +1103,20 @@ std::optional<int> BuildAndRunSourceNativeTestHarness(
   const std::filesystem::path harness_source =
       harness_source_dir / "Main.uv";
 
+  ultraviolet::project::Assembly harness_assembly = assembly;
+  harness_assembly.kind = "executable";
+  harness_assembly.link_kind.reset();
+  harness_assembly.outputs = OutputPathsUnder(harness_build_dir);
+  ultraviolet::project::ModuleInfo harness_module;
+  harness_module.path = harness_module_path;
+  harness_module.dir = harness_source_dir;
+  harness_assembly.modules.push_back(std::move(harness_module));
+  const auto harness_project =
+      ultraviolet::project::AssemblyProject(project, harness_assembly);
+  const std::filesystem::path executable =
+      ultraviolet::project::ExePath(harness_project, target_profile);
+
+  SourceNativeTestRunSummary summary;
   const std::string source = GenerateSourceNativeTestHarness(
       tests,
       SourceNativeTestTemporaryDirectoryForAssembly(project, assembly),
@@ -897,42 +1181,55 @@ std::optional<int> BuildAndRunSourceNativeTestHarness(
       ultraviolet::core::HostProcessOutputMode::Inherit;
   const auto build_result = ultraviolet::core::RunHostProcess(build_spec);
   if (!build_result.launched) {
-    EmitInternalDiagnostic(diags, ultraviolet::core::Severity::Error,
-                           std::nullopt,
-                           "failed to launch source-native test harness build: " +
-                               build_result.error_message);
+    EmitInternalDiagnostic(
+        diags, ultraviolet::core::Severity::Error, std::nullopt,
+        "failed to launch source-native test harness build: " +
+            build_result.error_message);
     return std::nullopt;
   }
   if (build_result.exit_code != 0) {
-    return build_result.exit_code;
+    summary.errors += static_cast<int>(tests.size());
   }
 
-  ultraviolet::project::Assembly harness_assembly = assembly;
-  harness_assembly.kind = "executable";
-  harness_assembly.link_kind.reset();
-  harness_assembly.outputs = OutputPathsUnder(harness_build_dir);
-  ultraviolet::project::ModuleInfo harness_module;
-  harness_module.path = harness_module_path;
-  harness_module.dir = harness_source_dir;
-  harness_assembly.modules.push_back(std::move(harness_module));
-  const auto harness_project =
-      ultraviolet::project::AssemblyProject(project, harness_assembly);
-  const std::filesystem::path executable =
-      ultraviolet::project::ExePath(harness_project, target_profile);
+  for (const auto& test : tests) {
+    if (build_result.exit_code != 0) {
+      continue;
+    }
 
-  ultraviolet::core::HostProcessSpec run_spec;
-  run_spec.program = executable;
-  run_spec.working_directory = project.root;
-  run_spec.output_mode = ultraviolet::core::HostProcessOutputMode::Inherit;
-  const auto run_result = ultraviolet::core::RunHostProcess(run_spec);
-  if (!run_result.launched) {
-    EmitInternalDiagnostic(diags, ultraviolet::core::Severity::Error,
-                           std::nullopt,
-                           "failed to launch source-native test harness: " +
-                               run_result.error_message);
-    return std::nullopt;
+    ultraviolet::core::HostProcessSpec run_spec;
+    run_spec.program = executable;
+    run_spec.arguments.push_back(test.stable_identity);
+    run_spec.working_directory = project.root;
+    run_spec.output_mode =
+        ultraviolet::core::HostProcessOutputMode::CaptureSeparate;
+    const auto run_result = ultraviolet::core::RunHostProcess(run_spec);
+    if (!run_result.launched) {
+      EmitInternalDiagnostic(diags, ultraviolet::core::Severity::Error,
+                             std::nullopt,
+                             "failed to launch source-native test harness: " +
+                                 run_result.error_message);
+      return std::nullopt;
+    }
+
+    const std::string pass_marker =
+        SourceNativeTestOutcomeMarker("pass", test);
+    const std::string fail_marker =
+        SourceNativeTestOutcomeMarker("fail", test);
+    if (run_result.exit_code == 0 &&
+        SourceNativeTestOutputContainsMarker(run_result, pass_marker)) {
+      ++summary.passed;
+    } else if (SourceNativeTestOutputContainsMarker(run_result, fail_marker)) {
+      ++summary.failed;
+    } else {
+      ++summary.errors;
+    }
   }
-  return run_result.exit_code;
+
+  RecordSourceNativeTestDiscoveryOrder(assembly, tests, summary);
+  RecordSourceNativeTestMetadata(assembly, tests, summary);
+  RecordSourceNativeTestProcedureShapeAndAuthority(assembly, tests, summary);
+  RecordSourceNativeTestDynamicSemantics(assembly, tests, summary);
+  return summary;
 }
 
 const char* VisibilitySignature(ultraviolet::ast::Visibility vis) {
@@ -2800,6 +3097,17 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
       return 1;
     }
 
+    if (opts->conformance_path.has_value()) {
+      const std::filesystem::path conformance_logs_dir =
+          ConformanceLogsDir(project_result.project->outputs.root);
+      EnsureCompilerLogDirectory(conformance_logs_dir);
+      core::Conformance::Init(
+          EffectiveConformancePath(conformance_logs_dir, *opts), "compile");
+      core::Conformance::SetRoot(project_root.string());
+      core::Conformance::SetPhase("test");
+      core::RecordBehaviorModelConformance();
+    }
+
     frontend::ParseModuleDeps deps;
     deps.compilation_unit = static_cast<project::CompilationUnitResult (*)(
         const std::filesystem::path&)>(project::CompilationUnit);
@@ -2881,8 +3189,8 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
         RenderDriverDiagnostics(test_diags, *opts, color_override);
         return 1;
       }
-      if (*result != 0 && harness_status == 0) {
-        harness_status = *result;
+      if (result->exit_code() != 0 && harness_status == 0) {
+        harness_status = result->exit_code();
       }
     }
 

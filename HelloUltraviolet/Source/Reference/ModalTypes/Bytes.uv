@@ -110,7 +110,7 @@ public procedure bytesRuntimeLengthReference(heap: $HeapAllocator) -> bool {
 }
 
 /// Exercises the ModalTypes Bytes reference surface.
-public procedure runModalTypesBytesReference() -> bool {
+public procedure runModalTypesBytesReference(heap: $HeapAllocator) -> bool {
     let text: string@View = "bytes"
     let empty_text: string@View = ""
     let view: bytes@View = bytes::view_string(text)
@@ -127,5 +127,6 @@ public procedure runModalTypesBytesReference() -> bool {
         byteReferenceAt(text, 4usize) == 115u8 &&
         octet_data[2usize] == 8u8 &&
         bytesViewConversionsReference() &&
-        bytesReferenceLayoutMatches()
+        bytesReferenceLayoutMatches() &&
+        bytesRuntimeLengthReference(heap)
 }

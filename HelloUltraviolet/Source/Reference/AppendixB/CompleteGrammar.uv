@@ -1,0 +1,320 @@
+//! Composite reference exercises for Appendix B complete grammar obligations.
+
+using HelloUltraviolet::Reference::Async::{ runAsyncAsyncKeyIntegrationReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncAsyncTypeReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionCombinatorsReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFormsReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncStateMachineReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncSuspensionFormsReference }
+using HelloUltraviolet::Reference::Attributes::{ runAttributesDiagnosticAttributesReference }
+using HelloUltraviolet::Reference::Attributes::{ runAttributesGeneralAttributesReference }
+using HelloUltraviolet::Reference::Attributes::{ runAttributesLayoutAttributesReference }
+using HelloUltraviolet::Reference::Attributes::{ runAttributesOptimizationAttributesReference }
+using HelloUltraviolet::Reference::Attributes::{ runAttributesVendorAttributesReference }
+using HelloUltraviolet::Reference::Comptime::{ runComptimeCompileTimeCapabilitiesReference }
+using HelloUltraviolet::Reference::Comptime::{ runComptimeCompileTimeFormsReference }
+using HelloUltraviolet::Reference::Comptime::{ runComptimeDeriveTargetsReference }
+using HelloUltraviolet::Reference::Comptime::{ runComptimeQuoteSpliceEmissionReference }
+using HelloUltraviolet::Reference::Comptime::{ runComptimeReflectionReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesArraysReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesEnumsReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesPrimitivesReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesRecordsReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesSlicesReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesTuplesReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesTypeAliasesReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesUnionsReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsAccessAndPlacesReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsBlockControlReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsCallsReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsCastsAndTransmutesReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsClosuresAndPipelinesReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsConstructionReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsControlSurfaceReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsEffectfulCoreReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsIfCaseControlReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsIfControlReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsIfIsControlReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsIteratorLoopControlReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsLiteralsAndNamesReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsLoopControlReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsOperatorsReference }
+using HelloUltraviolet::Reference::FFI::{ runFFIAttributesReference }
+using HelloUltraviolet::Reference::FFI::{ runFFIBoundaryUnwindingReference }
+using HelloUltraviolet::Reference::FFI::{ runFFICapabilityIsolationReference }
+using HelloUltraviolet::Reference::FFI::{ runFFIExportedProceduresReference }
+using HelloUltraviolet::Reference::FFI::{ runFFIExternProceduresReference }
+using HelloUltraviolet::Reference::FFI::{ runFFIFfiSafeReference }
+using HelloUltraviolet::Reference::FFI::{ runFFIForeignContractsReference }
+using HelloUltraviolet::Reference::Keys::{ runKeysAcquisitionBlocksReference }
+using HelloUltraviolet::Reference::Keys::{ runKeysConflictDetectionReference }
+using HelloUltraviolet::Reference::Keys::{ runKeysDynamicVerificationReference }
+using HelloUltraviolet::Reference::Keys::{ runKeysKeyPathsReference }
+using HelloUltraviolet::Reference::Keys::{ runKeysMemoryOrderingReference }
+using HelloUltraviolet::Reference::Keys::{ runKeysNestedReleaseReference }
+using HelloUltraviolet::Reference::Keys::{ runKeysSpeculativeExecutionReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesBytesReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesClosuresReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesFunctionTypesReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesModalDeclarationsReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesPointersReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesStateFieldsReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesStateMethodsReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesStringsReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesTransitionsReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesWideningReference }
+using HelloUltraviolet::Reference::Modules::{ runModulesAggregationReference }
+using HelloUltraviolet::Reference::Modules::{ runModulesExternBlocksReference }
+using HelloUltraviolet::Reference::Modules::{ runModulesImportsReference }
+using HelloUltraviolet::Reference::Modules::{ runModulesStaticsReference }
+using HelloUltraviolet::Reference::Modules::{ runModulesUsingsReference }
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismCancellationReference }
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismCaptureSemanticsReference }
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismDeterminismReference }
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismDispatchReference }
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismExecutionDomainsReference }
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismPanicHandlingReference }
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismParallelBlocksReference }
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismSpawnReference }
+using HelloUltraviolet::Reference::Patterns::{ runPatternsBasicPatternsReference }
+using HelloUltraviolet::Reference::Patterns::{ runPatternsCaseClausesReference }
+using HelloUltraviolet::Reference::Patterns::{ runPatternsEnumModalPatternsReference }
+using HelloUltraviolet::Reference::Patterns::{ runPatternsExhaustivenessReference }
+using HelloUltraviolet::Reference::Patterns::{ runPatternsRangePatternsReference }
+using HelloUltraviolet::Reference::Patterns::{ runPatternsTupleRecordPatternsReference }
+using HelloUltraviolet::Reference::Permissions::{ runPermissionsPermissionFormsReference }
+using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismAssociatedTypesReference }
+using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismClassesReference }
+using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismGenericParametersReference }
+using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismGenericProceduresReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresContractsReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresDeclarationsReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresInvariantsReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresPostconditionsReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresPreconditionsReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresReceiversReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresVerificationReference }
+using HelloUltraviolet::Reference::SourceText::{ runSourceTextIdentifiersReference }
+using HelloUltraviolet::Reference::SourceText::{ runSourceTextLiteralsReference }
+using HelloUltraviolet::Reference::SourceText::{ runSourceTextLogicalLinesReference }
+using HelloUltraviolet::Reference::SourceText::{ runSourceTextOperatorsAndPunctuationReference }
+using HelloUltraviolet::Reference::SourceText::{ runSourceTextUnicodeNormalizationReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsAssignmentReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsBindingsReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsBlocksReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsControlTransferReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsDeferReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsExpressionStatementsReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsFrameReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsLocalUsingReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsRegionReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsUnsafeReference }
+using HelloUltraviolet::Reference::Types::{ runTypesRefinementsReference }
+using HelloUltraviolet::Tests::{ runAttributesSourceNativeTestsReference }
+
+/// Exercises Appendix B.1 lexical grammar through all source-text reference surfaces.
+public procedure runAppendixBLexicalGrammarReference(context: Context) -> bool {
+    return runSourceTextUnicodeNormalizationReference() &&
+        runSourceTextLogicalLinesReference() &&
+        runSourceTextIdentifiersReference() &&
+        runSourceTextLiteralsReference() &&
+        runSourceTextOperatorsAndPunctuationReference()
+}
+
+/// Exercises Appendix B.2 type grammar through type, permission, and modal references.
+public procedure runAppendixBTypeGrammarReference(context: Context) -> bool {
+    return runPermissionsPermissionFormsReference() &&
+        runDataTypesPrimitivesReference() &&
+        runDataTypesTuplesReference() &&
+        runDataTypesArraysReference() &&
+        runDataTypesSlicesReference() &&
+        runDataTypesUnionsReference() &&
+        runDataTypesRecordsReference() &&
+        runDataTypesEnumsReference() &&
+        runDataTypesTypeAliasesReference() &&
+        runModalTypesStringsReference(context.heap) &&
+        runModalTypesBytesReference(context.heap) &&
+        runModalTypesPointersReference() &&
+        runModalTypesFunctionTypesReference() &&
+        runModalTypesClosuresReference() &&
+        runPolymorphismGenericParametersReference() &&
+        runTypesRefinementsReference() &&
+        runModalTypesModalDeclarationsReference() &&
+        runModalTypesStateFieldsReference() &&
+        runModalTypesStateMethodsReference() &&
+        runModalTypesTransitionsReference()
+}
+
+/// Exercises Appendix B.2 generic, refinement, and modal state-specific grammar.
+public procedure runAppendixBGenericRefinementModalTypeGrammarReference(
+    context: Context
+) -> bool {
+    return runPolymorphismGenericParametersReference() &&
+        runTypesRefinementsReference() &&
+        runModalTypesModalDeclarationsReference() &&
+        runModalTypesStateFieldsReference() &&
+        runModalTypesStateMethodsReference() &&
+        runModalTypesTransitionsReference()
+}
+
+/// Exercises Appendix B.3 expression grammar through all expression references.
+public procedure runAppendixBExpressionGrammarReference(context: Context) -> bool {
+    return runExpressionsLiteralsAndNamesReference() &&
+        runExpressionsAccessAndPlacesReference() &&
+        runExpressionsCallsReference() &&
+        runExpressionsOperatorsReference() &&
+        runExpressionsCastsAndTransmutesReference() &&
+        runExpressionsConstructionReference() &&
+        runExpressionsControlSurfaceReference() &&
+        runExpressionsEffectfulCoreReference() &&
+        runExpressionsClosuresAndPipelinesReference()
+}
+
+/// Exercises Appendix B.3 control and special expression grammar.
+public procedure runAppendixBControlAndSpecialExpressionGrammarReference(
+    context: Context
+) -> bool {
+    return runExpressionsControlSurfaceReference() &&
+        runExpressionsIfControlReference() &&
+        runExpressionsIfIsControlReference() &&
+        runExpressionsIfCaseControlReference() &&
+        runExpressionsBlockControlReference() &&
+        runExpressionsLoopControlReference() &&
+        runExpressionsIteratorLoopControlReference() &&
+        runExpressionsEffectfulCoreReference() &&
+        runModalTypesWideningReference() &&
+        runModalTypesPointersReference() &&
+        runExpressionsCastsAndTransmutesReference()
+}
+
+/// Exercises Appendix B.4 pattern grammar through every pattern reference group.
+public procedure runAppendixBPatternGrammarReference(context: Context) -> bool {
+    return runPatternsBasicPatternsReference() &&
+        runPatternsTupleRecordPatternsReference() &&
+        runPatternsEnumModalPatternsReference() &&
+        runPatternsRangePatternsReference() &&
+        runPatternsCaseClausesReference() &&
+        runPatternsExhaustivenessReference()
+}
+
+/// Exercises Appendix B.5 statement grammar through all statement reference groups.
+public procedure runAppendixBStatementGrammarReference(context: Context) -> bool {
+    return runStatementsBlocksReference() &&
+        runStatementsBindingsReference() &&
+        runStatementsLocalUsingReference() &&
+        runStatementsAssignmentReference() &&
+        runStatementsExpressionStatementsReference() &&
+        runStatementsDeferReference() &&
+        runStatementsRegionReference() &&
+        runStatementsFrameReference() &&
+        runStatementsControlTransferReference() &&
+        runStatementsUnsafeReference() &&
+        runKeysAcquisitionBlocksReference() &&
+        runComptimeCompileTimeFormsReference()
+}
+
+/// Exercises Appendix B.6 declaration grammar through declaration-bearing references.
+public procedure runAppendixBDeclarationGrammarReference(context: Context) -> bool {
+    return runModulesImportsReference() &&
+        runModulesUsingsReference() &&
+        runModulesStaticsReference() &&
+        runModulesAggregationReference() &&
+        runModulesExternBlocksReference() &&
+        runProceduresDeclarationsReference() &&
+        runProceduresReceiversReference() &&
+        runPolymorphismGenericProceduresReference() &&
+        runDataTypesRecordsReference() &&
+        runDataTypesEnumsReference() &&
+        runDataTypesTypeAliasesReference() &&
+        runModalTypesModalDeclarationsReference() &&
+        runPolymorphismClassesReference() &&
+        runPolymorphismAssociatedTypesReference() &&
+        runFFIExternProceduresReference() &&
+        runComptimeCompileTimeFormsReference() &&
+        runComptimeDeriveTargetsReference()
+}
+
+/// Exercises Appendix B.7 contract grammar through contract and invariant references.
+public procedure runAppendixBContractGrammarReference(context: Context) -> bool {
+    return runProceduresContractsReference() &&
+        runProceduresPreconditionsReference() &&
+        runProceduresPostconditionsReference() &&
+        runProceduresInvariantsReference() &&
+        runProceduresVerificationReference() &&
+        runExpressionsLoopControlReference()
+}
+
+/// Exercises Appendix B.8 attribute grammar through all attribute reference surfaces.
+public procedure runAppendixBAttributeGrammarReference(context: Context) -> bool {
+    return runAttributesGeneralAttributesReference() &&
+        runAttributesSourceNativeTestsReference() &&
+        runAttributesDiagnosticAttributesReference() &&
+        runAttributesLayoutAttributesReference() &&
+        runAttributesOptimizationAttributesReference() &&
+        runAttributesVendorAttributesReference() &&
+        runFFIAttributesReference() &&
+        runFFIExportedProceduresReference() &&
+        runFFIBoundaryUnwindingReference() &&
+        runFFIFfiSafeReference() &&
+        runComptimeDeriveTargetsReference()
+}
+
+/// Exercises Appendix B.9 key-system grammar through every key reference group.
+public procedure runAppendixBKeySystemGrammarReference(context: Context) -> bool {
+    return runKeysKeyPathsReference() &&
+        runKeysAcquisitionBlocksReference() &&
+        runKeysConflictDetectionReference() &&
+        runKeysNestedReleaseReference() &&
+        runKeysSpeculativeExecutionReference() &&
+        runKeysDynamicVerificationReference(context) &&
+        runKeysMemoryOrderingReference()
+}
+
+/// Exercises Appendix B.10 structured-concurrency grammar.
+public procedure runAppendixBConcurrencyGrammarReference(context: Context) -> bool {
+    return runParallelismParallelBlocksReference(context) &&
+        runParallelismExecutionDomainsReference(context) &&
+        runParallelismCaptureSemanticsReference(context) &&
+        runParallelismSpawnReference(context) &&
+        runParallelismDispatchReference(context) &&
+        runParallelismCancellationReference(context) &&
+        runParallelismPanicHandlingReference(context) &&
+        runParallelismDeterminismReference(context) &&
+        runKeysMemoryOrderingReference()
+}
+
+/// Exercises Appendix B.11 async grammar through async type, forms, and runtime references.
+public procedure runAppendixBAsyncGrammarReference(context: Context) -> bool {
+    return runAsyncAsyncTypeReference() &&
+        runAsyncSuspensionFormsReference(context) &&
+        runAsyncCompositionFormsReference() &&
+        runAsyncCompositionCombinatorsReference() &&
+        runAsyncStateMachineReference() &&
+        runAsyncAsyncKeyIntegrationReference()
+}
+
+/// Exercises Appendix B.12 compile-time and metaprogramming grammar.
+public procedure runAppendixBMetaprogrammingGrammarReference(context: Context) -> bool {
+    return runComptimeCompileTimeFormsReference() &&
+        runComptimeCompileTimeCapabilitiesReference() &&
+        runComptimeReflectionReference() &&
+        runComptimeQuoteSpliceEmissionReference() &&
+        runComptimeDeriveTargetsReference()
+}
+
+/// Exercises Appendix B.13 FFI grammar through FFI declaration and contract references.
+public procedure runAppendixBFFIGrammarReference(context: Context) -> bool {
+    return runFFIFfiSafeReference() &&
+        runFFIExternProceduresReference() &&
+        runFFIExportedProceduresReference() &&
+        runFFIAttributesReference() &&
+        runFFICapabilityIsolationReference() &&
+        runFFIForeignContractsReference() &&
+        runFFIBoundaryUnwindingReference()
+}
+
+/// Exercises Appendix B.14 region and frame grammar.
+public procedure runAppendixBRegionGrammarReference(context: Context) -> bool {
+    return runStatementsRegionReference() &&
+        runStatementsFrameReference()
+}

@@ -1,0 +1,116 @@
+//! Artifact fixture for source-native procedure shape and authority injection.
+
+internal procedure attributeAuthorityIoUnitSucceeded(
+    result: Outcome<(), IoError>
+) -> bool {
+    return if result is {
+        @Value {
+            true
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure attributeAuthorityDurationSucceeded(
+    result: Outcome<Duration, TimeError>
+) -> bool {
+    return if result is {
+        @Value { value } {
+            value.nanoseconds >= 0u128
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure attributeAuthorityTextByte(text: string@View, index: usize) -> u8 {
+    if index >= string::length(text) {
+        return 0u8
+    }
+    let view: bytes@View = bytes::view_string(text)
+    let data: const [u8] = bytes::as_slice(view)
+    return data[index]
+}
+
+internal procedure attributeAuthorityTextEquals(
+    left: string@View,
+    right: string@View
+) -> bool {
+    let left_length: usize = string::length(left)
+    let right_length: usize = string::length(right)
+    if left_length != right_length {
+        return false
+    }
+
+    var index: usize = 0usize
+    loop index < left_length {
+        if attributeAuthorityTextByte(left, index) !=
+            attributeAuthorityTextByte(right, index) {
+            return false
+        }
+        index = index + 1usize
+    }
+    return true
+}
+
+internal procedure attributeAuthorityReadTextEquals(
+    move result: Outcome<unique string@Managed, IoError>,
+    expected: string@View
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            attributeAuthorityTextEquals(string::as_view(value), expected)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure attributeAuthorityTargetProfileKnown(profile: string@View) -> bool {
+    return attributeAuthorityTextEquals(profile, "x86_64-win64") ||
+        attributeAuthorityTextEquals(profile, "x86_64-sysv") ||
+        attributeAuthorityTextEquals(profile, "aarch64-darwin") ||
+        attributeAuthorityTextEquals(profile, "aarch64-aapcs64")
+}
+
+#test(covers("req.TestProcedureShape@L28842"))
+internal procedure attributeShapeNoParameter() -> bool
+|: |= @result
+{
+    return true
+}
+
+#test(covers("req.TestAuthority@L28864"))
+internal procedure attributeAuthorityParameter(authority: TestAuthority) -> bool
+|: |= @result
+{
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    let restricted: $IO = authority.io~>restrict(authority.temporary_directory)
+    let data: bytes@View = bytes::view_string("authority")
+    let write_result: Outcome<(), IoError> =
+        restricted~>write_file("Authority.txt", data)
+    let read_result: Outcome<unique string@Managed, IoError> =
+        restricted~>read_file("Authority.txt")
+    let remove_result: Outcome<(), IoError> = restricted~>remove("Authority.txt")
+
+    let monotonic: $MonotonicTime = authority.time~>monotonic()
+    let start: MonotonicInstant = monotonic~>now()
+    let end: MonotonicInstant = monotonic~>now()
+    let elapsed: Outcome<Duration, TimeError> = monotonic~>elapsed(start, end)
+    let resolution: Duration = monotonic~>resolution()
+
+    return attributeAuthorityIoUnitSucceeded(temp_ready) &&
+        attributeAuthorityIoUnitSucceeded(write_result) &&
+        attributeAuthorityReadTextEquals(move read_result, "authority") &&
+        attributeAuthorityIoUnitSucceeded(remove_result) &&
+        resolution.nanoseconds > 0u128 &&
+        attributeAuthorityDurationSucceeded(elapsed) &&
+        !string::is_empty(authority.compiler_executable_path) &&
+        !string::is_empty(authority.compiler_current_directory) &&
+        attributeAuthorityTargetProfileKnown(authority.target_profile)
+}

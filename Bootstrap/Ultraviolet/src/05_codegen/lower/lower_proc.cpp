@@ -1459,7 +1459,11 @@ ProcIR LowerProc(const ProcedureDecl& decl,
   const bool has_dynamic_contract_attr = HasDynamicContractAttr(decl.attrs);
   const bool has_test_attr =
       analysis::HasAttribute(decl.attrs, analysis::attrs::kTest);
-  ctx.dynamic_checks = has_dynamic_contract_attr || has_test_attr;
+  const bool test_postcondition_lowered_by_runner =
+      has_test_attr && ctx.source_native_test_harness_build;
+  ctx.dynamic_checks =
+      has_dynamic_contract_attr ||
+      (has_test_attr && !test_postcondition_lowered_by_runner);
   ctx.active_contract_postcondition = nullptr;
   ctx.contract_result_value.reset();
   ctx.contract_entry_values.clear();
@@ -1470,7 +1474,8 @@ ProcIR LowerProc(const ProcedureDecl& decl,
   const bool has_dynamic_contract =
       has_dynamic_contract_attr && decl.contract.has_value();
   const bool has_test_postcondition =
-      has_test_attr && decl.contract.has_value() &&
+      has_test_attr && !test_postcondition_lowered_by_runner &&
+      decl.contract.has_value() &&
       decl.contract->postcondition != nullptr;
   const bool has_runtime_postcondition =
       (has_dynamic_contract || has_test_postcondition) &&

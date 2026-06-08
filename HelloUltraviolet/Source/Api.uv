@@ -2,6 +2,7 @@
 
 using HelloUltraviolet::Audit::{ catalogCoverageIsComplete }
 using HelloUltraviolet::Audit::{ catalogMatchesCsvObligations }
+using HelloUltraviolet::Audit::{ catalogAcceptedExercisesAreNontrivialAndExecuted }
 using HelloUltraviolet::Audit::{ catalogCompiledSymbolsExecute }
 using HelloUltraviolet::Audit::{ catalogCompiledSymbolTargetsAreIndexed }
 using HelloUltraviolet::Audit::{ catalogPrimaryReferencesAreUnique }
@@ -767,6 +768,11 @@ internal procedure runReferenceCorpusPart01(
         context,
         "catalogCompiledSymbolsExecute",
         catalogCompiledSymbolsExecute(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "catalogAcceptedExercisesAreNontrivialAndExecuted",
+        catalogAcceptedExercisesAreNontrivialAndExecuted(context)
     ) && passed
     passed = recordReferenceResult(
         context,
@@ -3393,7 +3399,7 @@ internal procedure runReferenceCorpusPart10(
     passed = recordReferenceResult(
         context,
         "runAuthorityNetworkReference",
-        runAuthorityNetworkReference()
+        runAuthorityNetworkReference(context)
     ) && passed
     return passed
 }
@@ -3606,12 +3612,12 @@ internal procedure runReferenceCorpusPart11(
     passed = recordReferenceResult(
         context,
         "runModalTypesStringsReference",
-        runModalTypesStringsReference()
+        runModalTypesStringsReference(context.heap)
     ) && passed
     passed = recordReferenceResult(
         context,
         "runModalTypesBytesReference",
-        runModalTypesBytesReference()
+        runModalTypesBytesReference(context.heap)
     ) && passed
     passed = recordReferenceResult(
         context,

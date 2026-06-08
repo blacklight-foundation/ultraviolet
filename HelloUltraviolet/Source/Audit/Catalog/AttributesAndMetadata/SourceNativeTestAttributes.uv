@@ -19,36 +19,36 @@ public procedure validatedAttributesAndMetadataSourceNativeTestAttributesObligat
     if acceptedObligationEntryMatches(
         "parse.TestAttributeByOrdinaryAttributeParser",
         28743usize,
-        "HelloUltraviolet::Tests",
-        "runAttributesSourceNativeTestsReference",
-        "Source/Tests/SourceNativeTests.uv"
+        "HelloUltraviolet::Audit",
+        "attributesSourceNativeMetadataDiscoveryExecute",
+        "Source/Audit/AttributesMetadataArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "ast.TestProcedureClassification",
         28761usize,
-        "HelloUltraviolet::Tests",
-        "runAttributesSourceNativeTestsReference",
-        "Source/Tests/SourceNativeTests.uv"
+        "HelloUltraviolet::Audit",
+        "attributesSourceNativeMetadataDiscoveryExecute",
+        "Source/Audit/AttributesMetadataArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.TestName",
         28776usize,
-        "HelloUltraviolet::Tests",
-        "runAttributesSourceNativeTestsReference",
-        "Source/Tests/SourceNativeTests.uv"
+        "HelloUltraviolet::Audit",
+        "attributesSourceNativeMetadataDiscoveryExecute",
+        "Source/Audit/AttributesMetadataArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "def.TestCoverage",
         28791usize,
-        "HelloUltraviolet::Tests",
-        "runAttributesSourceNativeTestsReference",
-        "Source/Tests/SourceNativeTests.uv"
+        "HelloUltraviolet::Audit",
+        "attributesSourceNativeMetadataDiscoveryExecute",
+        "Source/Audit/AttributesMetadataArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -61,39 +61,39 @@ public procedure validatedAttributesAndMetadataSourceNativeTestAttributesObligat
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
+    if acceptedObligationEntryMatches(
         "def.TestAttributeArgsOk",
         28822usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedAttributesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Attributes/TestDuplicateName/Source/Main.uv"
+        "HelloUltraviolet::Audit",
+        "attributesSourceNativeMetadataDiscoveryExecute",
+        "Source/Audit/AttributesMetadataArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
+    if acceptedObligationEntryMatches(
         "req.TestProcedureShape",
         28842usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedAttributesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Attributes/TestInvalidProcedureShape/Source/Main.uv"
+        "HelloUltraviolet::Audit",
+        "attributesSourceNativeAuthorityAndShapeExecute",
+        "Source/Audit/AttributesMetadataArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
+    if acceptedObligationEntryMatches(
         "req.TestAuthority",
         28864usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedAttributesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Attributes/TestInvalidAuthorityParameter/Source/Main.uv"
+        "HelloUltraviolet::Audit",
+        "attributesSourceNativeAuthorityAndShapeExecute",
+        "Source/Audit/AttributesMetadataArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "conformance.TestAttributeDynamicSemantics",
         28884usize,
-        "HelloUltraviolet::Tests",
-        "runAttributesSourceNativeTestsReference",
-        "Source/Tests/SourceNativeTests.uv"
+        "HelloUltraviolet::Audit",
+        "attributesSourceNativeDynamicSemanticsExecute",
+        "Source/Audit/AttributesMetadataArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -109,18 +109,18 @@ public procedure validatedAttributesAndMetadataSourceNativeTestAttributesObligat
     if acceptedObligationEntryMatches(
         "def.TestDiscoveryOrder",
         28964usize,
-        "HelloUltraviolet::Tests",
-        "runAttributesSourceNativeTestsReference",
-        "Source/Tests/SourceNativeTests.uv"
+        "HelloUltraviolet::Audit",
+        "attributesSourceNativeDiscoveryOrderExecute",
+        "Source/Audit/AttributesMetadataArtifactExecution.uv"
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
+    if acceptedObligationEntryMatches(
         "diagnostics.TestAttributes",
         28982usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedAttributesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Attributes/TestAttributeWrongTarget/Source/Main.uv"
+        "HelloUltraviolet::Audit",
+        "attributesSourceNativeDiagnosticsCompositeExecute",
+        "Source/Audit/AttributesMetadataArtifactExecution.uv"
     ) {
         count = count + 1usize
     }

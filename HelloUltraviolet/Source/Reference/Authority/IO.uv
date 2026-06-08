@@ -1806,7 +1806,10 @@ public procedure runAuthorityIOReference(context: Context) -> bool {
     let remove_snapshot_root: Outcome<(), IoError> = io~>remove(snapshot_root)
     let remove_ordering_root: Outcome<(), IoError> = io~>remove(ordering_root)
 
-    return ioAuthorityCanObserveHost(read_only) &&
+    return authorityIOPrimitiveSemanticModelReference(context) &&
+        authorityIOHostPrimitiveSetsReference(context) &&
+        authorityIOPathErrorPredicatesReference() &&
+        ioAuthorityCanObserveHost(read_only) &&
         ioAuthorityCanObserveHost(write_only) &&
         ioUnitSucceeded(create_root) &&
         ioUnitSucceeded(create_dir_root) &&

@@ -60,7 +60,7 @@ public procedure validatedArtifactProjectFixtureCount() -> usize {
             "Fixtures/ArtifactProjects/StaticLibraryArchive/Source/Library.uv",
             "Fixtures/ArtifactProjects/StaticLibraryArchive/Build/Library/StaticLibraryArchive.lib",
             "Fixtures/ArtifactProjects/StaticLibraryArchive/Build/Intermediate/Obj/Source/StaticLibraryArchive.obj",
-            artifactExpectation("StaticLibraryPrimaryArtifact", "PrimaryArtifactSet")
+            artifactExpectation("StaticLibraryPrimaryArtifact", "def.PrimaryArtifactSet")
         ),
         "StaticLibraryArchive",
         "Fixtures/ArtifactProjects/StaticLibraryArchive",
@@ -69,7 +69,7 @@ public procedure validatedArtifactProjectFixtureCount() -> usize {
         "Fixtures/ArtifactProjects/StaticLibraryArchive/Build/Library/StaticLibraryArchive.lib",
         "Fixtures/ArtifactProjects/StaticLibraryArchive/Build/Intermediate/Obj/Source/StaticLibraryArchive.obj",
         "StaticLibraryPrimaryArtifact",
-        "PrimaryArtifactSet"
+        "def.PrimaryArtifactSet"
     ) {
         count = count + 1usize
     }
@@ -78,7 +78,7 @@ public procedure validatedArtifactProjectFixtureCount() -> usize {
             "SharedLibraryImageLifecycle",
             "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle",
             "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Ultraviolet.toml",
-            "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/HostHarness/SharedLibraryImageLifecycleHarness.c",
+            "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Source/SharedLibraryImageLifecycleHostHarness/Main.uv",
             "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Build/Binary/SharedLibraryImageLifecycleProvider.dll",
             "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Build/Binary/SharedLibraryImageLifecycleHostHarness.exe",
             artifactExpectation(
@@ -89,7 +89,7 @@ public procedure validatedArtifactProjectFixtureCount() -> usize {
         "SharedLibraryImageLifecycle",
         "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle",
         "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Ultraviolet.toml",
-        "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/HostHarness/SharedLibraryImageLifecycleHarness.c",
+        "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Source/SharedLibraryImageLifecycleHostHarness/Main.uv",
         "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Build/Binary/SharedLibraryImageLifecycleProvider.dll",
         "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Build/Binary/SharedLibraryImageLifecycleHostHarness.exe",
         "SharedLibraryImageLifecycle",
@@ -102,7 +102,7 @@ public procedure validatedArtifactProjectFixtureCount() -> usize {
             "SharedLibraryImageLifecycle",
             "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle",
             "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Ultraviolet.toml",
-            "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/HostHarness/SharedLibraryImageLifecycleHarness.c",
+            "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Source/SharedLibraryImageLifecycleHostHarness/Main.uv",
             "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Build/Binary/SharedLibraryImageLifecycleConsumer.dll",
             "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Build/Binary/SharedLibraryImageLifecycleHostHarness.exe",
             artifactExpectation(
@@ -113,7 +113,7 @@ public procedure validatedArtifactProjectFixtureCount() -> usize {
         "SharedLibraryImageLifecycle",
         "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle",
         "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Ultraviolet.toml",
-        "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/HostHarness/SharedLibraryImageLifecycleHarness.c",
+        "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Source/SharedLibraryImageLifecycleHostHarness/Main.uv",
         "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Build/Binary/SharedLibraryImageLifecycleConsumer.dll",
         "Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Build/Binary/SharedLibraryImageLifecycleHostHarness.exe",
         "SharedLibraryLinkedCallLifecycle",
@@ -129,7 +129,7 @@ public procedure validatedArtifactProjectFixtureCount() -> usize {
             "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
             "Fixtures/ArtifactProjects/EmitLlLibrary/Build/Intermediate/IR/Source/EmitLlLibrary.ll",
             "Fixtures/ArtifactProjects/EmitLlLibrary/Build/Intermediate/Obj/Source/EmitLlLibrary.obj",
-            artifactExpectation("LlvmIrArtifact", "IRSet")
+            artifactExpectation("LlvmIrArtifact", "def.IRSet")
         ),
         "EmitLlLibrary",
         "Fixtures/ArtifactProjects/EmitLlLibrary",
@@ -138,7 +138,7 @@ public procedure validatedArtifactProjectFixtureCount() -> usize {
         "Fixtures/ArtifactProjects/EmitLlLibrary/Build/Intermediate/IR/Source/EmitLlLibrary.ll",
         "Fixtures/ArtifactProjects/EmitLlLibrary/Build/Intermediate/Obj/Source/EmitLlLibrary.obj",
         "LlvmIrArtifact",
-        "IRSet"
+        "def.IRSet"
     ) {
         count = count + 1usize
     }
@@ -234,7 +234,7 @@ public procedure validatedArtifactProjectFixtureCount() -> usize {
             "Fixtures/ArtifactProjects/ExecutableOutput/Source/Main.uv",
             "Fixtures/ArtifactProjects/ExecutableOutput/Build/Binary/ExecutableOutput.exe",
             "Fixtures/ArtifactProjects/ExecutableOutput/Build/Binary/ExecutableOutput.map",
-            artifactExpectation("ExecutablePrimaryArtifact", "PrimaryArtifactSet")
+            artifactExpectation("ExecutablePrimaryArtifact", "def.PrimaryArtifactSet")
         ),
         "ExecutableOutput",
         "Fixtures/ArtifactProjects/ExecutableOutput",
@@ -243,7 +243,7 @@ public procedure validatedArtifactProjectFixtureCount() -> usize {
         "Fixtures/ArtifactProjects/ExecutableOutput/Build/Binary/ExecutableOutput.exe",
         "Fixtures/ArtifactProjects/ExecutableOutput/Build/Binary/ExecutableOutput.map",
         "ExecutablePrimaryArtifact",
-        "PrimaryArtifactSet"
+        "def.PrimaryArtifactSet"
     ) {
         count = count + 1usize
     }
@@ -543,7 +543,7 @@ public procedure validatedArtifactProjectFixtureCount() -> usize {
             "Fixtures/ArtifactProjects/MacOSExecutableOutput/Source/Main.uv",
             "Fixtures/ArtifactProjects/MacOSExecutableOutput/Build/Binary/MacOSExecutableOutput",
             "Fixtures/ArtifactProjects/MacOSExecutableOutput/Build/Intermediate/Obj/Source/MacOSExecutableOutput.o",
-            artifactExpectation("MacOSExecutableMachO", "PrimaryArtifactSet")
+            artifactExpectation("MacOSExecutableMachO", "def.PrimaryArtifactSet")
         ),
         "MacOSExecutableOutput",
         "Fixtures/ArtifactProjects/MacOSExecutableOutput",
@@ -552,7 +552,7 @@ public procedure validatedArtifactProjectFixtureCount() -> usize {
         "Fixtures/ArtifactProjects/MacOSExecutableOutput/Build/Binary/MacOSExecutableOutput",
         "Fixtures/ArtifactProjects/MacOSExecutableOutput/Build/Intermediate/Obj/Source/MacOSExecutableOutput.o",
         "MacOSExecutableMachO",
-        "PrimaryArtifactSet"
+        "def.PrimaryArtifactSet"
     ) {
         count = count + 1usize
     }

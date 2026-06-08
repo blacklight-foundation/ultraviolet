@@ -5,6 +5,11 @@ using HelloUltraviolet::Audit::{ artifactProjectFixturesBuildAndExerciseOutputOb
 using HelloUltraviolet::Audit::{ artifactProjectEmitLlExercise }
 using HelloUltraviolet::Audit::{ artifactProjectGpuRuntimeEvidenceExercise }
 using HelloUltraviolet::Audit::{ artifactProjectStructuredParallelLoweringEvidenceExercise }
+using HelloUltraviolet::Audit::{ attributesSourceNativeDiscoveryOrderExecute }
+using HelloUltraviolet::Audit::{ attributesSourceNativeDynamicSemanticsExecute }
+using HelloUltraviolet::Audit::{ attributesSourceNativeAuthorityAndShapeExecute }
+using HelloUltraviolet::Audit::{ attributesSourceNativeDiagnosticsCompositeExecute }
+using HelloUltraviolet::Audit::{ attributesSourceNativeMetadataDiscoveryExecute }
 using HelloUltraviolet::Audit::{ diagnosticSourceFixturesEmitExpectedDiagnostics }
 using HelloUltraviolet::Audit::{ outputDiagnosticFixturesExecuteAndEmitExpectedDiagnostics }
 using HelloUltraviolet::Audit::{ rejectedSourceFixturesCompileAndEmitExpectedDiagnostics }
@@ -68,4 +73,49 @@ internal procedure auditEmitLlBackendEvidenceExecute(authority: TestAuthority) -
 {
     let result = artifactProjectEmitLlExercise(authority)
     return result.passed && result.count == 429usize
+}
+
+#test(name: "audit source-native dynamic semantics execute", covers("conformance.TestAttributeDynamicSemantics@L28884"))
+internal procedure auditSourceNativeDynamicSemanticsExecute(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return attributesSourceNativeDynamicSemanticsExecute(authority)
+}
+
+#test(name: "audit source-native discovery order execute", covers("def.TestDiscoveryOrder@L28964"))
+internal procedure auditSourceNativeDiscoveryOrderExecute(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return attributesSourceNativeDiscoveryOrderExecute(authority)
+}
+
+#test(name: "audit source-native metadata discovery execute", covers("parse.TestAttributeByOrdinaryAttributeParser@L28743"), covers("ast.TestProcedureClassification@L28761"), covers("def.TestName@L28776"), covers("def.TestCoverage@L28791"), covers("def.TestAttributeArgsOk@L28822"))
+internal procedure auditSourceNativeMetadataDiscoveryExecute(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return attributesSourceNativeMetadataDiscoveryExecute(authority)
+}
+
+#test(name: "audit source-native authority and shape execute", covers("req.TestProcedureShape@L28842"), covers("req.TestAuthority@L28864"))
+internal procedure auditSourceNativeAuthorityAndShapeExecute(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return attributesSourceNativeAuthorityAndShapeExecute(authority)
+}
+
+#test(name: "audit source-native diagnostics composite execute", covers("diagnostics.TestAttributes@L28982"))
+internal procedure auditSourceNativeDiagnosticsCompositeExecute(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    return attributesSourceNativeDiagnosticsCompositeExecute(authority)
 }

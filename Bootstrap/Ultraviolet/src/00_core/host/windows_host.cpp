@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include <array>
+#include <cwctype>
 #include <string>
 #include <thread>
 #include <vector>
@@ -109,6 +110,90 @@ std::wstring BuildCommandLine(const std::filesystem::path& program,
   return cmd;
 }
 
+bool ExtensionEqualsInsensitive(const std::filesystem::path& path,
+                                std::wstring_view expected) {
+  const std::wstring actual = path.extension().wstring();
+  if (actual.size() != expected.size()) {
+    return false;
+  }
+  for (std::size_t i = 0; i < actual.size(); ++i) {
+    if (std::towlower(actual[i]) != std::towlower(expected[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool IsCommandScript(const std::filesystem::path& program) {
+  return ExtensionEqualsInsensitive(program, L".cmd") ||
+         ExtensionEqualsInsensitive(program, L".bat");
+}
+
+std::filesystem::path CommandProcessorPath() {
+  std::wstring comspec(MAX_PATH, L'\0');
+  DWORD written =
+      GetEnvironmentVariableW(L"ComSpec", comspec.data(),
+                              static_cast<DWORD>(comspec.size()));
+  if (written > 0 && written < comspec.size()) {
+    comspec.resize(static_cast<std::size_t>(written));
+    return std::filesystem::path(comspec);
+  }
+
+  std::wstring system_dir(MAX_PATH, L'\0');
+  const UINT system_dir_length =
+      GetSystemDirectoryW(system_dir.data(), static_cast<UINT>(system_dir.size()));
+  if (system_dir_length > 0 && system_dir_length < system_dir.size()) {
+    system_dir.resize(static_cast<std::size_t>(system_dir_length));
+    return std::filesystem::path(system_dir) / L"cmd.exe";
+  }
+
+  return std::filesystem::path(L"cmd.exe");
+}
+
+std::wstring CommandLineForProcess(const HostProcessSpec& spec,
+                                   std::filesystem::path* launch_program) {
+  if (!IsCommandScript(spec.program)) {
+    *launch_program = spec.program;
+    return BuildCommandLine(spec.program, spec.arguments);
+  }
+
+  *launch_program = CommandProcessorPath();
+  std::vector<std::string> arguments;
+  arguments.emplace_back("/D");
+  arguments.emplace_back("/C");
+  arguments.emplace_back(WideToUtf8Lossy(
+      BuildCommandLine(spec.program, spec.arguments)));
+  return BuildCommandLine(*launch_program, arguments);
+}
+
+bool EndsWithAsciiCaseInsensitive(std::string_view text,
+                                  std::string_view suffix) {
+  if (text.size() < suffix.size()) {
+    return false;
+  }
+  const std::size_t offset = text.size() - suffix.size();
+  for (std::size_t i = 0; i < suffix.size(); ++i) {
+    char actual = text[offset + i];
+    char expected = suffix[i];
+    if (actual >= 'A' && actual <= 'Z') {
+      actual = static_cast<char>(actual - 'A' + 'a');
+    }
+    if (expected >= 'A' && expected <= 'Z') {
+      expected = static_cast<char>(expected - 'A' + 'a');
+    }
+    if (actual != expected) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool HasWindowsToolExtension(std::string_view tool) {
+  return EndsWithAsciiCaseInsensitive(tool, ".exe") ||
+         EndsWithAsciiCaseInsensitive(tool, ".cmd") ||
+         EndsWithAsciiCaseInsensitive(tool, ".bat");
+}
+
 class ScopedThreadErrorMode {
  public:
   explicit ScopedThreadErrorMode(DWORD additional_flags) {
@@ -160,7 +245,8 @@ HostProcessResult RunProcessImpl(const HostProcessSpec& spec) {
     return result;
   }
 
-  const std::wstring cmd = BuildCommandLine(spec.program, spec.arguments);
+  std::filesystem::path launch_program;
+  const std::wstring cmd = CommandLineForProcess(spec, &launch_program);
   std::vector<wchar_t> cmd_buf(cmd.begin(), cmd.end());
   cmd_buf.push_back(L'\0');
 
@@ -211,7 +297,7 @@ HostProcessResult RunProcessImpl(const HostProcessSpec& spec) {
   const ScopedThreadErrorMode launch_error_mode(SEM_FAILCRITICALERRORS |
                                                 SEM_NOOPENFILEERRORBOX);
   const BOOL ok = CreateProcessW(
-      spec.program.wstring().c_str(), cmd_buf.data(), nullptr, nullptr,
+      launch_program.wstring().c_str(), cmd_buf.data(), nullptr, nullptr,
       capture_merged || capture_separate, creation_flags,
       nullptr, cwd.empty() ? nullptr : cwd.c_str(), &si, &pi);
 
@@ -361,10 +447,11 @@ HostServices BuildWindowsHostServices() {
   services.tool_name_candidates = [](std::string_view tool) {
     std::vector<std::string> out;
     out.emplace_back(tool);
-    if (tool.size() < 4 ||
-        !(tool.ends_with(".exe") || tool.ends_with(".EXE") ||
-          tool.ends_with(".Exe") || tool.ends_with(".eXe"))) {
-      out.push_back(std::string(tool) + ".exe");
+    if (!HasWindowsToolExtension(tool)) {
+      const std::string base(tool);
+      out.push_back(base + ".exe");
+      out.push_back(base + ".cmd");
+      out.push_back(base + ".bat");
     }
     return out;
   };

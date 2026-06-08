@@ -81,7 +81,7 @@ public procedure stringRuntimeLengthReference(heap: $HeapAllocator) -> bool {
 }
 
 /// Exercises the ModalTypes Strings reference surface.
-public procedure runModalTypesStringsReference() -> bool {
+public procedure runModalTypesStringsReference(heap: $HeapAllocator) -> bool {
     let text: string@View = "ultraviolet"
     let general_text: string = text
     let empty_text: string@View = ""
@@ -90,5 +90,6 @@ public procedure runModalTypesStringsReference() -> bool {
         string::length(slice) == 5usize &&
         string::is_empty(empty_text) &&
         !string::is_empty(text) &&
-        stringReferenceLayoutMatches()
+        stringReferenceLayoutMatches() &&
+        stringRuntimeLengthReference(heap)
 }

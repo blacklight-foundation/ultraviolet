@@ -150,17 +150,11 @@ public procedure authoritySystemPrimitiveCallsReference(context: Context) -> boo
 
 public procedure authoritySystemEnvironmentPrimitiveReference(context: Context) -> bool {
     let sys: System = context.sys
-    let system_root: string@View = sys~>get_env("SystemRoot")
-    let command_processor: string@View = sys~>get_env("ComSpec")
     let search_path: string@View = sys~>get_env("PATH")
     let missing_value: string@View =
         sys~>get_env("HUV_REFERENCE_ENVIRONMENT_KEY_SHOULD_NOT_EXIST")
 
-    return (
-        string::length(system_root) > 0usize ||
-        string::length(command_processor) > 0usize ||
-        string::length(search_path) > 0usize
-    ) &&
+    return string::length(search_path) > 0usize &&
         auditTextEquals(missing_value, "")
 }
 
@@ -177,7 +171,13 @@ public procedure runAuthoritySystemReference(context: Context) -> bool {
         systemAuthorityReference(true, false, true)
     let process: SystemAuthorityReference =
         systemAuthorityReference(false, true, true)
-    return systemAuthorityCanObserveHost(environment) &&
+    return authoritySystemStateReference() &&
+        authoritySystemPrimitiveJudgmentsReference(context) &&
+        authoritySystemStateElidedEquivalencesReference(context) &&
+        authoritySystemPrimitiveCallsReference(context) &&
+        authoritySystemEnvironmentPrimitiveReference(context) &&
+        authoritySystemRunPrimitiveReference(context) &&
+        systemAuthorityCanObserveHost(environment) &&
         systemAuthorityCanObserveHost(process) &&
         systemExecutablePathIsAvailable(context.sys) &&
         systemMissingEnvironmentIsEmpty(context.sys) &&

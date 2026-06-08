@@ -157,12 +157,22 @@ internal procedure attributesMetadataArtifactObligationsExecute(
         acceptedProjectTempFileExists(
             authority,
             "AttributeSemanticsBuild",
-            "Intermediate/Obj/Source/AttributeSemantics.obj"
+            acceptedProjectTargetPath(
+                authority,
+                "Intermediate/Obj/Source/AttributeSemantics.obj",
+                "Intermediate/Obj/Source/AttributeSemantics.o",
+                "Intermediate/Obj/Source/AttributeSemantics.o"
+            )
         ) &&
         acceptedProjectTempFileExists(
             authority,
             "AttributeSemanticsBuild",
-            "Library/AttributeSemantics.lib"
+            acceptedProjectTargetPath(
+                authority,
+                "Library/AttributeSemantics.lib",
+                "Library/libAttributeSemantics.a",
+                "Library/libAttributeSemantics.a"
+            )
         ) &&
         attributesMetadataLayoutEvidenceMatches(authority) &&
         attributesMetadataOptimizationEvidenceMatches(authority)
@@ -201,6 +211,131 @@ internal procedure attributesMetadataRunTestCommand(
                 command_ready
             command_ready =
                 diagnosticAppendQuoted(value, test_name, authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(
+                    value,
+                    " --build-progress off --out-dir ",
+                    authority.heap
+                ) && command_ready
+            command_ready =
+                diagnosticAppendQuoted(value, out_dir_path, authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, " --conformance ", authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, conformance_log_name, authority.heap) &&
+                command_ready
+            if command_ready {
+                outputDiagnosticRunCommand(
+                    authority,
+                    value,
+                    output_path,
+                    error_path
+                )
+            } else {
+                -1
+            }
+        }
+        @Error {
+            -1
+        }
+    }
+}
+
+internal procedure attributesMetadataRunCoverageCommand(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    target_profile: string@View,
+    coverage_reference: string@View,
+    output_path: string@View,
+    error_path: string@View,
+    out_dir_path: string@View,
+    conformance_log_name: string@View
+) -> i32 {
+    let created: Outcome<unique string@Managed, AllocationError> =
+        string::from("", authority.heap)
+    return if move created is {
+        @Value { value } {
+            var command_ready: bool =
+                outputDiagnosticAppendCommandStart(value, authority)
+            command_ready =
+                diagnosticAppendText(value, " test ", authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendQuotedProjectPath(value, authority, fixture_path) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, " --target-profile ", authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, target_profile, authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, " --coverage ", authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendQuoted(value, coverage_reference, authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(
+                    value,
+                    " --build-progress off --out-dir ",
+                    authority.heap
+                ) && command_ready
+            command_ready =
+                diagnosticAppendQuoted(value, out_dir_path, authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, " --conformance ", authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, conformance_log_name, authority.heap) &&
+                command_ready
+            if command_ready {
+                outputDiagnosticRunCommand(
+                    authority,
+                    value,
+                    output_path,
+                    error_path
+                )
+            } else {
+                -1
+            }
+        }
+        @Error {
+            -1
+        }
+    }
+}
+
+internal procedure attributesMetadataRunAllTestsCommand(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    target_profile: string@View,
+    output_path: string@View,
+    error_path: string@View,
+    out_dir_path: string@View,
+    conformance_log_name: string@View
+) -> i32 {
+    let created: Outcome<unique string@Managed, AllocationError> =
+        string::from("", authority.heap)
+    return if move created is {
+        @Value { value } {
+            var command_ready: bool =
+                outputDiagnosticAppendCommandStart(value, authority)
+            command_ready =
+                diagnosticAppendText(value, " test ", authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendQuotedProjectPath(value, authority, fixture_path) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, " --target-profile ", authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, target_profile, authority.heap) &&
                 command_ready
             command_ready =
                 diagnosticAppendText(
@@ -317,6 +452,690 @@ internal procedure attributesMetadataRunTestCase(authority: TestAuthority) -> bo
     }
 }
 
+internal procedure attributesMetadataRunDynamicSemanticsCaseWithPaths(
+    authority: TestAuthority,
+    output_path: string@View,
+    error_path: string@View,
+    out_dir_path: string@View
+) -> bool {
+    let _ = authority.io~>remove(output_path)
+    let _ = authority.io~>remove(error_path)
+    let _ = authority.io~>ensure_dir(out_dir_path)
+    let status: i32 = attributesMetadataRunAllTestsCommand(
+        authority,
+        "Fixtures/ArtifactProjects/AttributeDynamicSemantics",
+        authority.target_profile,
+        output_path,
+        error_path,
+        out_dir_path,
+        "attributes_dynamic_semantics.conformance.log"
+    )
+    if status != 1 {
+        return diagnosticReportFixtureFailure(
+            authority,
+            "attribute dynamic semantics run returned unexpected status: ",
+            "Fixtures/ArtifactProjects/AttributeDynamicSemantics"
+        )
+    }
+    return true
+}
+
+internal procedure attributesMetadataRunDynamicSemanticsCase(
+    authority: TestAuthority
+) -> bool {
+    let output_created: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move output_created is {
+        @Value { value: output_path } {
+            let error_created: Outcome<unique string@Managed, AllocationError> =
+                string::from(authority.temporary_directory, authority.heap)
+            if move error_created is {
+                @Value { value: error_path } {
+                    let out_dir_created: Outcome<unique string@Managed, AllocationError> =
+                        string::from(authority.temporary_directory, authority.heap)
+                    if move out_dir_created is {
+                        @Value { value: out_dir_path } {
+                            if !diagnosticBuildPath(
+                                output_path,
+                                "AttributeDynamicSemantics.out",
+                                authority.heap
+                            ) ||
+                                !diagnosticBuildPath(
+                                    error_path,
+                                    "AttributeDynamicSemantics.err",
+                                    authority.heap
+                                ) ||
+                                !diagnosticBuildPath(
+                                    out_dir_path,
+                                    "AttributeDynamicSemanticsRun",
+                                    authority.heap
+                                ) {
+                                false
+                            } else {
+                                attributesMetadataRunDynamicSemanticsCaseWithPaths(
+                                    authority,
+                                    string::as_view(output_path),
+                                    string::as_view(error_path),
+                                    string::as_view(out_dir_path)
+                                )
+                            }
+                        }
+                        @Error {
+                            false
+                        }
+                    }
+                }
+                @Error {
+                    false
+                }
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure attributesMetadataRunDiscoveryOrderCaseWithPaths(
+    authority: TestAuthority,
+    output_path: string@View,
+    error_path: string@View,
+    out_dir_path: string@View
+) -> bool {
+    let _ = authority.io~>remove(output_path)
+    let _ = authority.io~>remove(error_path)
+    let _ = authority.io~>ensure_dir(out_dir_path)
+    let status: i32 = attributesMetadataRunAllTestsCommand(
+        authority,
+        "Fixtures/ArtifactProjects/AttributeDiscoveryOrder",
+        authority.target_profile,
+        output_path,
+        error_path,
+        out_dir_path,
+        "attributes_discovery_order.conformance.log"
+    )
+    if status != 0 {
+        return diagnosticReportFixtureFailure(
+            authority,
+            "attribute discovery order run failed: ",
+            "Fixtures/ArtifactProjects/AttributeDiscoveryOrder"
+        )
+    }
+    return true
+}
+
+internal procedure attributesMetadataRunDiscoveryOrderCase(
+    authority: TestAuthority
+) -> bool {
+    let output_created: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move output_created is {
+        @Value { value: output_path } {
+            let error_created: Outcome<unique string@Managed, AllocationError> =
+                string::from(authority.temporary_directory, authority.heap)
+            if move error_created is {
+                @Value { value: error_path } {
+                    let out_dir_created: Outcome<unique string@Managed, AllocationError> =
+                        string::from(authority.temporary_directory, authority.heap)
+                    if move out_dir_created is {
+                        @Value { value: out_dir_path } {
+                            if !diagnosticBuildPath(
+                                output_path,
+                                "AttributeDiscoveryOrder.out",
+                                authority.heap
+                            ) ||
+                                !diagnosticBuildPath(
+                                    error_path,
+                                    "AttributeDiscoveryOrder.err",
+                                    authority.heap
+                                ) ||
+                                !diagnosticBuildPath(
+                                    out_dir_path,
+                                    "AttributeDiscoveryOrderRun",
+                                    authority.heap
+                                ) {
+                                false
+                            } else {
+                                attributesMetadataRunDiscoveryOrderCaseWithPaths(
+                                    authority,
+                                    string::as_view(output_path),
+                                    string::as_view(error_path),
+                                    string::as_view(out_dir_path)
+                                )
+                            }
+                        }
+                        @Error {
+                            false
+                        }
+                    }
+                }
+                @Error {
+                    false
+                }
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure attributesMetadataRunMetadataDiscoveryCaseWithPaths(
+    authority: TestAuthority,
+    output_path: string@View,
+    error_path: string@View,
+    out_dir_path: string@View
+) -> bool {
+    let fixture_path: string@View =
+        "Fixtures/ArtifactProjects/AttributeMetadataDiscovery"
+    let _ = authority.io~>remove(output_path)
+    let _ = authority.io~>remove(error_path)
+    let _ = authority.io~>ensure_dir(out_dir_path)
+
+    let all_status: i32 = attributesMetadataRunAllTestsCommand(
+        authority,
+        fixture_path,
+        authority.target_profile,
+        output_path,
+        error_path,
+        out_dir_path,
+        "attributes_metadata_discovery_all.conformance.log"
+    )
+    if all_status != 0 {
+        return diagnosticReportFixtureFailure(
+            authority,
+            "attribute metadata discovery all-test run failed: ",
+            fixture_path
+        )
+    }
+
+    let explicit_status: i32 = attributesMetadataRunTestCommand(
+        authority,
+        fixture_path,
+        authority.target_profile,
+        "attribute metadata explicit display",
+        output_path,
+        error_path,
+        out_dir_path,
+        "attributes_metadata_discovery_explicit.conformance.log"
+    )
+    if explicit_status != 0 {
+        return diagnosticReportFixtureFailure(
+            authority,
+            "attribute metadata discovery explicit-name run failed: ",
+            fixture_path
+        )
+    }
+
+    let fallback_status: i32 = attributesMetadataRunTestCommand(
+        authority,
+        fixture_path,
+        authority.target_profile,
+        "AttributeMetadataDiscovery::Tests::attributeMetadataBareFallback",
+        output_path,
+        error_path,
+        out_dir_path,
+        "attributes_metadata_discovery_fallback.conformance.log"
+    )
+    if fallback_status != 0 {
+        return diagnosticReportFixtureFailure(
+            authority,
+            "attribute metadata discovery fallback-name run failed: ",
+            fixture_path
+        )
+    }
+
+    let name_coverage_status: i32 = attributesMetadataRunCoverageCommand(
+        authority,
+        fixture_path,
+        authority.target_profile,
+        "def.TestName@L28776",
+        output_path,
+        error_path,
+        out_dir_path,
+        "attributes_metadata_discovery_coverage_name.conformance.log"
+    )
+    if name_coverage_status != 0 {
+        return diagnosticReportFixtureFailure(
+            authority,
+            "attribute metadata discovery name-coverage run failed: ",
+            fixture_path
+        )
+    }
+
+    let coverage_coverage_status: i32 = attributesMetadataRunCoverageCommand(
+        authority,
+        fixture_path,
+        authority.target_profile,
+        "def.TestCoverage@L28791",
+        output_path,
+        error_path,
+        out_dir_path,
+        "attributes_metadata_discovery_coverage_coverage.conformance.log"
+    )
+    if coverage_coverage_status != 0 {
+        return diagnosticReportFixtureFailure(
+            authority,
+            "attribute metadata discovery coverage-filter run failed: ",
+            fixture_path
+        )
+    }
+
+    return true
+}
+
+internal procedure attributesMetadataRunMetadataDiscoveryCase(
+    authority: TestAuthority
+) -> bool {
+    let output_created: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move output_created is {
+        @Value { value: output_path } {
+            let error_created: Outcome<unique string@Managed, AllocationError> =
+                string::from(authority.temporary_directory, authority.heap)
+            if move error_created is {
+                @Value { value: error_path } {
+                    let out_dir_created: Outcome<unique string@Managed, AllocationError> =
+                        string::from(authority.temporary_directory, authority.heap)
+                    if move out_dir_created is {
+                        @Value { value: out_dir_path } {
+                            if !diagnosticBuildPath(
+                                output_path,
+                                "AttributeMetadataDiscovery.out",
+                                authority.heap
+                            ) ||
+                                !diagnosticBuildPath(
+                                    error_path,
+                                    "AttributeMetadataDiscovery.err",
+                                    authority.heap
+                                ) ||
+                                !diagnosticBuildPath(
+                                    out_dir_path,
+                                    "AttributeMetadataDiscoveryRun",
+                                    authority.heap
+                                ) {
+                                false
+                            } else {
+                                attributesMetadataRunMetadataDiscoveryCaseWithPaths(
+                                    authority,
+                                    string::as_view(output_path),
+                                    string::as_view(error_path),
+                                    string::as_view(out_dir_path)
+                                )
+                            }
+                        }
+                        @Error {
+                            false
+                        }
+                    }
+                }
+                @Error {
+                    false
+                }
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure attributesMetadataRejectedArgumentFixturePasses(
+    authority: TestAuthority,
+    fixture_path: string@View
+) -> bool {
+    let result: DiagnosticFixtureExecutionResult =
+        diagnosticExerciseProjectFixtureDirectory(authority, fixture_path, true)
+    if !result.passed {
+        return diagnosticReportFixtureFailure(
+            authority,
+            "attribute metadata argument rejected fixture failed: ",
+            fixture_path
+        )
+    }
+    return result.count == 2usize
+}
+
+internal procedure attributesMetadataRejectedArgumentFixturesPass(
+    authority: TestAuthority
+) -> bool {
+    return attributesMetadataRejectedArgumentFixturePasses(
+        authority,
+        "Fixtures/RejectedSource/Attributes/TestMalformedArgument"
+    ) &&
+        attributesMetadataRejectedArgumentFixturePasses(
+            authority,
+            "Fixtures/RejectedSource/Attributes/TestDuplicateName"
+        ) &&
+        attributesMetadataRejectedArgumentFixturePasses(
+            authority,
+            "Fixtures/RejectedSource/Attributes/TestMalformedCoverage"
+        ) &&
+        attributesMetadataRejectedArgumentFixturePasses(
+            authority,
+            "Fixtures/RejectedSource/Attributes/TestUnknownCoverageReference"
+        )
+}
+
+internal procedure attributesSourceNativeDiagnosticsExpectedFileContains(
+    authority: TestAuthority,
+    expected_path: string@View,
+    required_text: string@View
+) -> bool {
+    let path_result: Outcome<unique string@Managed, AllocationError> =
+        string::from("", authority.heap)
+    return if move path_result is {
+        @Value { value } {
+            if !diagnosticAppendProjectPath(value, authority, expected_path) {
+                false
+            } else {
+                outputDiagnosticFileContains(
+                    authority,
+                    string::as_view(value),
+                    required_text
+                )
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure attributesSourceNativeDiagnosticsRejectedFixturePasses(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    expected_path: string@View,
+    expected_code: string@View
+) -> bool {
+    let result: DiagnosticFixtureExecutionResult =
+        diagnosticExerciseProjectFixtureDirectory(authority, fixture_path, true)
+    if !result.passed {
+        return diagnosticReportFixtureFailure(
+            authority,
+            "source-native diagnostics rejected fixture failed: ",
+            fixture_path
+        )
+    }
+
+    let expected_line_created: Outcome<unique string@Managed, AllocationError> =
+        string::from("expectedDiagnostic(\"", authority.heap)
+    return if move expected_line_created is {
+        @Value { value } {
+            if !diagnosticAppendText(value, expected_code, authority.heap) ||
+                !diagnosticAppendText(
+                    value,
+                    "\", \"diagnostics.TestAttributes\")",
+                    authority.heap
+                ) {
+                false
+            } else {
+                attributesSourceNativeDiagnosticsExpectedFileContains(
+                    authority,
+                    expected_path,
+                    string::as_view(value)
+                )
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure attributesSourceNativeDiagnosticsRejectedFixturesPass(
+    authority: TestAuthority
+) -> bool {
+    return attributesSourceNativeDiagnosticsRejectedFixturePasses(
+        authority,
+        "Fixtures/RejectedSource/Attributes/TestAttributeWrongTarget",
+        "Fixtures/RejectedSource/Attributes/TestAttributeWrongTarget/Expected.uv",
+        "E-MOD-2452"
+    ) &&
+        attributesSourceNativeDiagnosticsRejectedFixturePasses(
+            authority,
+            "Fixtures/RejectedSource/Attributes/TestMalformedArgument",
+            "Fixtures/RejectedSource/Attributes/TestMalformedArgument/Expected.uv",
+            "E-TST-0101"
+        ) &&
+        attributesSourceNativeDiagnosticsRejectedFixturePasses(
+            authority,
+            "Fixtures/RejectedSource/Attributes/TestDuplicateName",
+            "Fixtures/RejectedSource/Attributes/TestDuplicateName/Expected.uv",
+            "E-TST-0102"
+        ) &&
+        attributesSourceNativeDiagnosticsRejectedFixturePasses(
+            authority,
+            "Fixtures/RejectedSource/Attributes/TestMalformedCoverage",
+            "Fixtures/RejectedSource/Attributes/TestMalformedCoverage/Expected.uv",
+            "E-TST-0103"
+        ) &&
+        attributesSourceNativeDiagnosticsRejectedFixturePasses(
+            authority,
+            "Fixtures/RejectedSource/Attributes/TestInvalidProcedureShape",
+            "Fixtures/RejectedSource/Attributes/TestInvalidProcedureShape/Expected.uv",
+            "E-TST-0104"
+        ) &&
+        attributesSourceNativeDiagnosticsRejectedFixturePasses(
+            authority,
+            "Fixtures/RejectedSource/Attributes/TestInvalidAuthorityParameter",
+            "Fixtures/RejectedSource/Attributes/TestInvalidAuthorityParameter/Expected.uv",
+            "E-TST-0105"
+        ) &&
+        attributesSourceNativeDiagnosticsRejectedFixturePasses(
+            authority,
+            "Fixtures/RejectedSource/Attributes/TestMissingPostcondition",
+            "Fixtures/RejectedSource/Attributes/TestMissingPostcondition/Expected.uv",
+            "E-TST-0106"
+        ) &&
+        attributesSourceNativeDiagnosticsRejectedFixturePasses(
+            authority,
+            "Fixtures/RejectedSource/Attributes/TestUnknownCoverageReference",
+            "Fixtures/RejectedSource/Attributes/TestUnknownCoverageReference/Expected.uv",
+            "E-TST-0107"
+        )
+}
+
+internal procedure attributesSourceNativeDiagnosticsRunUnknownTargetCommand(
+    authority: TestAuthority,
+    output_path: string@View,
+    error_path: string@View
+) -> i32 {
+    let created: Outcome<unique string@Managed, AllocationError> =
+        string::from("", authority.heap)
+    return if move created is {
+        @Value { value } {
+            var command_ready: bool =
+                outputDiagnosticAppendCommandStart(value, authority)
+            command_ready =
+                diagnosticAppendText(
+                    value,
+                    " test DefinitelyMissing --target-profile ",
+                    authority.heap
+                ) && command_ready
+            command_ready =
+                diagnosticAppendText(value, authority.target_profile, authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, " --build-progress off", authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, " --diag-json", authority.heap) &&
+                command_ready
+            if command_ready {
+                outputDiagnosticRunCommand(
+                    authority,
+                    value,
+                    output_path,
+                    error_path
+                )
+            } else {
+                -1
+            }
+        }
+        @Error {
+            -1
+        }
+    }
+}
+
+internal procedure attributesSourceNativeDiagnosticsUnknownTargetWithPaths(
+    authority: TestAuthority,
+    output_path: string@View,
+    error_path: string@View
+) -> bool {
+    let _ = authority.io~>remove(output_path)
+    let _ = authority.io~>remove(error_path)
+    let status: i32 = attributesSourceNativeDiagnosticsRunUnknownTargetCommand(
+        authority,
+        output_path,
+        error_path
+    )
+    if status == 0 {
+        return diagnosticReportFixtureFailure(
+            authority,
+            "source-native diagnostics unknown target command succeeded: ",
+            "Fixtures/OutputDiagnostics/CommandLine/UnknownTestTarget"
+        )
+    }
+
+    return outputDiagnosticActualMatchesExpected(
+        authority,
+        "Fixtures/OutputDiagnostics/CommandLine/UnknownTestTarget/Expected.uv",
+        output_path
+    ) == 1usize &&
+        attributesSourceNativeDiagnosticsExpectedFileContains(
+            authority,
+            "Fixtures/OutputDiagnostics/CommandLine/UnknownTestTarget/Expected.uv",
+            "expectedDiagnostic(\"E-TST-0108\", \"diagnostics.TestAttributes\")"
+        )
+}
+
+internal procedure attributesSourceNativeDiagnosticsUnknownTargetPasses(
+    authority: TestAuthority
+) -> bool {
+    let output_created: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move output_created is {
+        @Value { value: output_path } {
+            let error_created: Outcome<unique string@Managed, AllocationError> =
+                string::from(authority.temporary_directory, authority.heap)
+            if move error_created is {
+                @Value { value: error_path } {
+                    if !diagnosticBuildPath(
+                        output_path,
+                        "AttributeUnknownTestTarget.out",
+                        authority.heap
+                    ) ||
+                        !diagnosticBuildPath(
+                            error_path,
+                            "AttributeUnknownTestTarget.err",
+                            authority.heap
+                        ) {
+                        false
+                    } else {
+                        attributesSourceNativeDiagnosticsUnknownTargetWithPaths(
+                            authority,
+                            string::as_view(output_path),
+                            string::as_view(error_path)
+                        )
+                    }
+                }
+                @Error {
+                    false
+                }
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure attributesMetadataRunAuthorityShapeCaseWithPaths(
+    authority: TestAuthority,
+    output_path: string@View,
+    error_path: string@View,
+    out_dir_path: string@View
+) -> bool {
+    let _ = authority.io~>remove(output_path)
+    let _ = authority.io~>remove(error_path)
+    let _ = authority.io~>ensure_dir(out_dir_path)
+    let status: i32 = attributesMetadataRunAllTestsCommand(
+        authority,
+        "Fixtures/ArtifactProjects/AttributeTestAuthorityAndShape",
+        authority.target_profile,
+        output_path,
+        error_path,
+        out_dir_path,
+        "attributes_authority_shape.conformance.log"
+    )
+    if status != 0 {
+        return diagnosticReportFixtureFailure(
+            authority,
+            "attribute authority and shape run failed: ",
+            "Fixtures/ArtifactProjects/AttributeTestAuthorityAndShape"
+        )
+    }
+    return true
+}
+
+internal procedure attributesMetadataRunAuthorityShapeCase(
+    authority: TestAuthority
+) -> bool {
+    let output_created: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move output_created is {
+        @Value { value: output_path } {
+            let error_created: Outcome<unique string@Managed, AllocationError> =
+                string::from(authority.temporary_directory, authority.heap)
+            if move error_created is {
+                @Value { value: error_path } {
+                    let out_dir_created: Outcome<unique string@Managed, AllocationError> =
+                        string::from(authority.temporary_directory, authority.heap)
+                    if move out_dir_created is {
+                        @Value { value: out_dir_path } {
+                            if !diagnosticBuildPath(
+                                output_path,
+                                "AttributeTestAuthorityAndShape.out",
+                                authority.heap
+                            ) ||
+                                !diagnosticBuildPath(
+                                    error_path,
+                                    "AttributeTestAuthorityAndShape.err",
+                                    authority.heap
+                                ) ||
+                                !diagnosticBuildPath(
+                                    out_dir_path,
+                                    "AttributeTestAuthorityAndShapeRun",
+                                    authority.heap
+                                ) {
+                                false
+                            } else {
+                                attributesMetadataRunAuthorityShapeCaseWithPaths(
+                                    authority,
+                                    string::as_view(output_path),
+                                    string::as_view(error_path),
+                                    string::as_view(out_dir_path)
+                                )
+                            }
+                        }
+                        @Error {
+                            false
+                        }
+                    }
+                }
+                @Error {
+                    false
+                }
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
 internal procedure attributesSourceNativeHarnessConformanceLineContains(
     authority: TestAuthority,
     required_payload: string@View
@@ -326,6 +1145,61 @@ internal procedure attributesSourceNativeHarnessConformanceLineContains(
         "AttributeTestHarnessRun",
         "attributes_test_harness.conformance.log",
         "\tlowering.TestHarnessGeneration\t",
+        required_payload
+    )
+}
+
+internal procedure attributesSourceNativeDynamicSemanticsConformanceLineContains(
+    authority: TestAuthority,
+    required_payload: string@View
+) -> bool {
+    return acceptedProjectConformanceLineContains(
+        authority,
+        "AttributeDynamicSemanticsRun",
+        "attributes_dynamic_semantics.conformance.log",
+        "\tconformance.TestAttributeDynamicSemantics\t",
+        required_payload
+    )
+}
+
+internal procedure attributesSourceNativeDiscoveryOrderConformanceLineContains(
+    authority: TestAuthority,
+    required_payload: string@View
+) -> bool {
+    return acceptedProjectConformanceLineContains(
+        authority,
+        "AttributeDiscoveryOrderRun",
+        "attributes_discovery_order.conformance.log",
+        "\tdef.TestDiscoveryOrder\t",
+        required_payload
+    )
+}
+
+internal procedure attributesSourceNativeMetadataConformanceLineContains(
+    authority: TestAuthority,
+    log_name: string@View,
+    required_marker: string@View,
+    required_payload: string@View
+) -> bool {
+    return acceptedProjectConformanceLineContains(
+        authority,
+        "AttributeMetadataDiscoveryRun",
+        log_name,
+        required_marker,
+        required_payload
+    )
+}
+
+internal procedure attributesSourceNativeAuthorityShapeConformanceLineContains(
+    authority: TestAuthority,
+    required_marker: string@View,
+    required_payload: string@View
+) -> bool {
+    return acceptedProjectConformanceLineContains(
+        authority,
+        "AttributeTestAuthorityAndShapeRun",
+        "attributes_authority_shape.conformance.log",
+        required_marker,
         required_payload
     )
 }
@@ -387,4 +1261,319 @@ internal procedure attributesSourceNativeHarnessGenerationExecute(
             authority,
             "ephemeral%3Dtrue%3Bcompiled_with_harness_entrypoint%3Dtrue"
         )
+}
+
+#test(name: "attributes source-native dynamic semantics classifies pass fail error")
+internal procedure attributesSourceNativeDynamicSemanticsExecute(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+
+    if !attributesMetadataRunDynamicSemanticsCase(authority) {
+        return false
+    }
+
+    return attributesSourceNativeDynamicSemanticsConformanceLineContains(
+        authority,
+        "source%3DBuildAndRunSourceNativeTestHarness%3Bassembly%3DAttributeDynamicSemantics"
+    ) &&
+        attributesSourceNativeDynamicSemanticsConformanceLineContains(
+            authority,
+            "selected_tests%3D3%3Bpassed%3D1%3Bfailed%3D1%3Berrors%3D1"
+        ) &&
+        attributesSourceNativeDynamicSemanticsConformanceLineContains(
+            authority,
+            "isolated_process_per_test%3Dtrue%3Bnormal_return_marker%3Dtrue"
+        ) &&
+        attributesSourceNativeDynamicSemanticsConformanceLineContains(
+            authority,
+            "panic_without_marker_is_error%3Dtrue"
+        )
+}
+
+#test(name: "attributes source-native discovery order uses stable deterministic order")
+internal procedure attributesSourceNativeDiscoveryOrderExecute(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+
+    if !attributesMetadataRunDiscoveryOrderCase(authority) {
+        return false
+    }
+
+    return attributesSourceNativeDiscoveryOrderConformanceLineContains(
+        authority,
+        "source%3DBuildAndRunSourceNativeTestHarness%3Bassembly%3DAttributeDiscoveryOrder"
+    ) &&
+        attributesSourceNativeDiscoveryOrderConformanceLineContains(
+            authority,
+            "selected_tests%3D3%3Bpassed%3D3%3Bfailed%3D0%3Berrors%3D0"
+        ) &&
+        attributesSourceNativeDiscoveryOrderConformanceLineContains(
+            authority,
+            "order_key%3Dmodule_path,file_order,declaration_span,stable_identity"
+        ) &&
+        attributesSourceNativeDiscoveryOrderConformanceLineContains(
+            authority,
+            "stable_identity_order%3DAttributeDiscoveryOrder::Tests::attributeDiscoveryOrderFirst"
+        ) &&
+        attributesSourceNativeDiscoveryOrderConformanceLineContains(
+            authority,
+            "AttributeDiscoveryOrder::Tests::attributeDiscoveryOrderSecond"
+        ) &&
+        attributesSourceNativeDiscoveryOrderConformanceLineContains(
+            authority,
+            "AttributeDiscoveryOrder::Tests::attributeDiscoveryOrderThird"
+        ) &&
+        attributesSourceNativeDiscoveryOrderConformanceLineContains(
+            authority,
+            "display_name_is_not_identity%3Dtrue%3Binvoked_in_selected_order%3Dtrue"
+        )
+}
+
+#test(name: "attributes source-native metadata discovery observes parser name coverage and args")
+internal procedure attributesSourceNativeMetadataDiscoveryExecute(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+
+    if !attributesMetadataRunMetadataDiscoveryCase(authority) {
+        return false
+    }
+
+    if !attributesMetadataRejectedArgumentFixturesPass(authority) {
+        return false
+    }
+
+    return attributesSourceNativeMetadataConformanceLineContains(
+        authority,
+        "attributes_metadata_discovery_all.conformance.log",
+        "\tparse.TestAttributeByOrdinaryAttributeParser\t",
+        "source%3DDiscoverSourceNativeTests%3Bassembly%3DAttributeMetadataDiscovery"
+    ) &&
+        attributesSourceNativeMetadataConformanceLineContains(
+            authority,
+            "attributes_metadata_discovery_all.conformance.log",
+            "\tparse.TestAttributeByOrdinaryAttributeParser\t",
+            "stable_identity%3DAttributeMetadataDiscovery::Tests::attributeMetadataBareFallback"
+        ) &&
+        attributesSourceNativeMetadataConformanceLineContains(
+            authority,
+            "attributes_metadata_discovery_all.conformance.log",
+            "\tparse.TestAttributeByOrdinaryAttributeParser\t",
+            "name_arg%3Dabsent%3Bcovers_arg%3Dabsent"
+        ) &&
+        attributesSourceNativeMetadataConformanceLineContains(
+            authority,
+            "attributes_metadata_discovery_all.conformance.log",
+            "\tparse.TestAttributeByOrdinaryAttributeParser\t",
+            "name_arg%3Dstring_literal%3Bcovers_arg%3Dabsent"
+        ) &&
+        attributesSourceNativeMetadataConformanceLineContains(
+            authority,
+            "attributes_metadata_discovery_all.conformance.log",
+            "\tparse.TestAttributeByOrdinaryAttributeParser\t",
+            "covers_arg%3Dnested_string_literal_list"
+        ) &&
+        attributesSourceNativeMetadataConformanceLineContains(
+            authority,
+            "attributes_metadata_discovery_all.conformance.log",
+            "\tast.TestProcedureClassification\t",
+            "procedure_kind%3Dordinary%3Bhas_test_attr%3Dtrue"
+        ) &&
+        attributesSourceNativeMetadataConformanceLineContains(
+            authority,
+            "attributes_metadata_discovery_all.conformance.log",
+            "\tdef.TestName\t",
+            "display_name%3DAttributeMetadataDiscovery::Tests::attributeMetadataBareFallback%3Bname_kind%3Dstable_identity"
+        ) &&
+        attributesSourceNativeMetadataConformanceLineContains(
+            authority,
+            "attributes_metadata_discovery_all.conformance.log",
+            "\tdef.TestName\t",
+            "display_name%3Dattribute metadata explicit display%3Bname_kind%3Dexplicit"
+        ) &&
+        attributesSourceNativeMetadataConformanceLineContains(
+            authority,
+            "attributes_metadata_discovery_all.conformance.log",
+            "\tdef.TestCoverage\t",
+            "coverage_count%3D2%3Bcoverage_order%3Ddef.TestName@L28776,def.TestCoverage@L28791%3Bcoverage_source_order_preserved%3Dtrue"
+        ) &&
+        attributesSourceNativeMetadataConformanceLineContains(
+            authority,
+            "attributes_metadata_discovery_all.conformance.log",
+            "\tdef.TestAttributeArgsOk\t",
+            "arg_validation%3Daccepted%3Bledger_references_valid%3Dtrue"
+        ) &&
+        attributesSourceNativeMetadataConformanceLineContains(
+            authority,
+            "attributes_metadata_discovery_explicit.conformance.log",
+            "\tdef.TestName\t",
+            "selected_tests%3D1%3Bpassed%3D1%3Bfailed%3D0%3Berrors%3D0"
+        ) &&
+        attributesSourceNativeMetadataConformanceLineContains(
+            authority,
+            "attributes_metadata_discovery_explicit.conformance.log",
+            "\tdef.TestName\t",
+            "stable_identity%3DAttributeMetadataDiscovery::Tests::attributeMetadataExplicitDisplay"
+        ) &&
+        attributesSourceNativeMetadataConformanceLineContains(
+            authority,
+            "attributes_metadata_discovery_fallback.conformance.log",
+            "\tdef.TestName\t",
+            "selected_tests%3D1%3Bpassed%3D1%3Bfailed%3D0%3Berrors%3D0"
+        ) &&
+        attributesSourceNativeMetadataConformanceLineContains(
+            authority,
+            "attributes_metadata_discovery_fallback.conformance.log",
+            "\tdef.TestName\t",
+            "stable_identity%3DAttributeMetadataDiscovery::Tests::attributeMetadataBareFallback"
+        ) &&
+        attributesSourceNativeMetadataConformanceLineContains(
+            authority,
+            "attributes_metadata_discovery_coverage_name.conformance.log",
+            "\tdef.TestCoverage\t",
+            "selected_tests%3D1%3Bpassed%3D1%3Bfailed%3D0%3Berrors%3D0"
+        ) &&
+        attributesSourceNativeMetadataConformanceLineContains(
+            authority,
+            "attributes_metadata_discovery_coverage_name.conformance.log",
+            "\tdef.TestCoverage\t",
+            "stable_identity%3DAttributeMetadataDiscovery::Tests::attributeMetadataCoverageOrder"
+        ) &&
+        attributesSourceNativeMetadataConformanceLineContains(
+            authority,
+            "attributes_metadata_discovery_coverage_coverage.conformance.log",
+            "\tdef.TestCoverage\t",
+            "selected_tests%3D1%3Bpassed%3D1%3Bfailed%3D0%3Berrors%3D0"
+        ) &&
+        attributesSourceNativeMetadataConformanceLineContains(
+            authority,
+            "attributes_metadata_discovery_coverage_coverage.conformance.log",
+            "\tdef.TestCoverage\t",
+            "stable_identity%3DAttributeMetadataDiscovery::Tests::attributeMetadataCoverageOrder"
+        )
+}
+
+#test(name: "attributes source-native authority and procedure shape execute")
+internal procedure attributesSourceNativeAuthorityAndShapeExecute(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+
+    if !attributesMetadataRunAuthorityShapeCase(authority) {
+        return false
+    }
+
+    return attributesSourceNativeAuthorityShapeConformanceLineContains(
+        authority,
+        "\treq.TestProcedureShape\t",
+        "source%3DValidateTestProcedureShape%3Bassembly%3DAttributeTestAuthorityAndShape"
+    ) &&
+        attributesSourceNativeAuthorityShapeConformanceLineContains(
+            authority,
+            "\treq.TestProcedureShape\t",
+            "stable_identity%3DAttributeTestAuthorityAndShape::Tests::attributeShapeNoParameter"
+        ) &&
+        attributesSourceNativeAuthorityShapeConformanceLineContains(
+            authority,
+            "\treq.TestProcedureShape\t",
+            "parameter_count%3D0%3Bhas_body%3Dtrue%3Bnon_generic%3Dtrue%3Bexplicit_visibility%3Dtrue%3Bexplicit_return_type%3Dtrue%3Bhas_postcondition%3Dtrue%3Bparameter_shape%3Dno_parameters%3Bprocedure_shape%3Dvalid"
+        ) &&
+        attributesSourceNativeAuthorityShapeConformanceLineContains(
+            authority,
+            "\treq.TestAuthority\t",
+            "stable_identity%3DAttributeTestAuthorityAndShape::Tests::attributeAuthorityParameter"
+        ) &&
+        attributesSourceNativeAuthorityShapeConformanceLineContains(
+            authority,
+            "\treq.TestAuthority\t",
+            "parameter_count%3D1"
+        ) &&
+        attributesSourceNativeAuthorityShapeConformanceLineContains(
+            authority,
+            "\treq.TestAuthority\t",
+            "parameter_shape%3Dtest_authority%3Bauthority_injected%3Dtrue"
+        ) &&
+        attributesSourceNativeAuthorityShapeConformanceLineContains(
+            authority,
+            "\treq.TestAuthority\t",
+            "fields%3Dio,sys,heap,time,temporary_directory,target_profile,compiler_executable_path,compiler_current_directory%3Btime_field_type%3D$Time"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AttributeTestAuthorityAndShapeRun",
+            "Tests/AttributeTestAuthorityAndShape/Source/Main.uv",
+            "let authority: TestAuthority = TestAuthority"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AttributeTestAuthorityAndShapeRun",
+            "Tests/AttributeTestAuthorityAndShape/Source/Main.uv",
+            "temporary_directory:"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AttributeTestAuthorityAndShapeRun",
+            "Tests/AttributeTestAuthorityAndShape/Source/Main.uv",
+            "target_profile:"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AttributeTestAuthorityAndShapeRun",
+            "Tests/AttributeTestAuthorityAndShape/Source/Main.uv",
+            "compiler_executable_path:"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AttributeTestAuthorityAndShapeRun",
+            "Tests/AttributeTestAuthorityAndShape/Source/Main.uv",
+            "compiler_current_directory:"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AttributeTestAuthorityAndShapeRun",
+            "Tests/AttributeTestAuthorityAndShape/Source/Main.uv",
+            "AttributeTestAuthorityAndShape::Tests::attributeAuthorityParameter(authority)"
+        )
+}
+
+#test(name: "attributes source-native diagnostics composite executes full table")
+internal procedure attributesSourceNativeDiagnosticsCompositeExecute(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+
+    return attributesSourceNativeDiagnosticsRejectedFixturesPass(authority) &&
+        attributesSourceNativeDiagnosticsUnknownTargetPasses(authority)
 }

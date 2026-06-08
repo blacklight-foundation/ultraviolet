@@ -4,7 +4,14 @@ public import SharedLibraryImageLifecycleProvider
 
 #export("C")
 #mangle("uv_shared_lifecycle_run_linked_calls")
-public procedure sharedLifecycleRunLinkedCalls(destroy_probe: *mut i32) -> i32 {
+public procedure sharedLifecycleRunLinkedCalls(destroy_probe_slot: *mut *mut i32) -> i32 {
+    var destroy_probe: *mut i32 = null
+    if destroy_probe_slot != null {
+        unsafe {
+            destroy_probe = *destroy_probe_slot
+        }
+    }
+
     let installed: i32 =
         SharedLibraryImageLifecycleProvider::linkedLifecycleInstallDestroyProbe(destroy_probe)
     let first: i32 = SharedLibraryImageLifecycleProvider::linkedLifecycleIncrement(5)

@@ -1,0 +1,294 @@
+//! Project-built host harness for shared-library image lifecycle validation.
+
+internal let LOAD_WITH_ALTERED_SEARCH_PATH: u32 = 8u32
+internal let SHARED_LIFECYCLE_CSTRING_ALLOC_FAILED: i32 = 31
+internal let SHARED_LIFECYCLE_CSTRING_TERMINATOR_FAILED: i32 = 32
+
+internal type SharedLifecycleInstallProbeFunction = (move *mut i32) -> i32
+internal type SharedLifecycleIncrementFunction = (move *mut i32) -> i32
+internal type SharedLifecycleStateFunction = () -> i32
+internal type SharedLifecycleRunLinkedFunction = (move *mut i32) -> i32
+
+internal record SharedLifecycleBytesLayout {
+    internal pointer: *mut u8
+    internal length: usize
+    internal capacity: usize
+}
+
+internal record SharedLifecycleCString {
+    internal bytes: unique bytes@Managed
+    internal pointer: *mut u8
+}
+
+#library(name: "Kernel32", kind: "raw-dylib")
+extern "C" {
+    #mangle("LoadLibraryExA")
+    public procedure sharedLifecycleLoadLibraryExA(
+        file_name: *mut u8,
+        file: *mut u8,
+        flags: u32
+    ) -> *mut u8
+
+    #mangle("GetProcAddress")
+    public procedure sharedLifecycleGetProcAddress(
+        module: *mut u8,
+        procedure_name: *mut u8
+    ) -> *mut u8
+
+    #mangle("FreeLibrary")
+    public procedure sharedLifecycleFreeLibrary(module: *mut u8) -> i32
+}
+
+internal procedure sharedLifecycleAllocationSucceeded(
+    result: Outcome<(), AllocationError>
+) -> bool {
+    return if result is {
+        @Value {
+            true
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure sharedLifecycleManagedBytesPointer(
+    bytes: const bytes@Managed
+) -> *mut u8 {
+    let bytes_pointer: Ptr<const bytes@Managed> = &bytes
+    let layout_pointer: *mut SharedLifecycleBytesLayout = unsafe {
+        transmute<Ptr<const bytes@Managed>, *mut SharedLifecycleBytesLayout>(bytes_pointer)
+    }
+    let layout: SharedLifecycleBytesLayout = unsafe { *layout_pointer }
+    return layout.pointer
+}
+
+internal procedure sharedLifecycleMutablePointer(pointer: Ptr<i32>) -> *mut i32 {
+    return unsafe { transmute<Ptr<i32>, *mut i32>(pointer) }
+}
+
+internal procedure sharedLifecycleCString(
+    text: string@View,
+    heap: $HeapAllocator
+) -> SharedLifecycleCString | i32 {
+    let bytes_view: bytes@View = bytes::view_string(text)
+    let managed_result: Outcome<unique bytes@Managed, AllocationError> =
+        bytes::to_managed(bytes_view, heap)
+    return if move managed_result is {
+        @Value { value } {
+            let terminator_bytes: [u8; 1] = [0u8]
+            let terminator_slice: const [u8] = terminator_bytes[..]
+            let terminator_view: bytes@View = bytes::view(terminator_slice)
+            let appended: Outcome<(), AllocationError> =
+                bytes::append(value, terminator_view, heap)
+            if !sharedLifecycleAllocationSucceeded(appended) {
+                return SHARED_LIFECYCLE_CSTRING_TERMINATOR_FAILED
+            }
+            let pointer: *mut u8 = sharedLifecycleManagedBytesPointer(value)
+            SharedLifecycleCString {
+                bytes: move value,
+                pointer: pointer
+            }
+        }
+        @Error {
+            SHARED_LIFECYCLE_CSTRING_ALLOC_FAILED
+        }
+    }
+}
+
+internal procedure sharedLifecycleResolveSymbol(
+    module: *mut u8,
+    name: string@View,
+    heap: $HeapAllocator
+) -> *mut u8 {
+    let name_result: SharedLifecycleCString | i32 =
+        sharedLifecycleCString(name, heap)
+    return if move name_result is {
+        symbol_name: SharedLifecycleCString {
+            unsafe { sharedLifecycleGetProcAddress(module, symbol_name.pointer) }
+        }
+        failure: i32 {
+            let _ = failure
+            null
+        }
+    }
+}
+
+internal procedure sharedLifecycleLoadImage(
+    path: SharedLifecycleCString
+) -> *mut u8 {
+    return unsafe {
+        sharedLifecycleLoadLibraryExA(
+            path.pointer,
+            null,
+            LOAD_WITH_ALTERED_SEARCH_PATH
+        )
+    }
+}
+
+internal procedure sharedLifecycleExerciseRawImage(
+    provider_path: SharedLifecycleCString,
+    heap: $HeapAllocator
+) -> i32 {
+    var destroy_count: i32 = 0
+
+    let first_image: *mut u8 = sharedLifecycleLoadImage(provider_path)
+    if first_image == null {
+        return 40
+    }
+
+    let install_symbol: *mut u8 = sharedLifecycleResolveSymbol(
+        first_image,
+        "uv_shared_lifecycle_install_raw_destroy_probe",
+        heap
+    )
+    let increment_symbol: *mut u8 = sharedLifecycleResolveSymbol(
+        first_image,
+        "uv_shared_lifecycle_raw_increment",
+        heap
+    )
+    let state_symbol: *mut u8 = sharedLifecycleResolveSymbol(
+        first_image,
+        "uv_shared_lifecycle_raw_state",
+        heap
+    )
+    if install_symbol == null || increment_symbol == null || state_symbol == null {
+        let _ = unsafe { sharedLifecycleFreeLibrary(first_image) }
+        return 41
+    }
+
+    let install: SharedLifecycleInstallProbeFunction = unsafe {
+        transmute<*mut u8, SharedLifecycleInstallProbeFunction>(install_symbol)
+    }
+    let increment: SharedLifecycleIncrementFunction = unsafe {
+        transmute<*mut u8, SharedLifecycleIncrementFunction>(increment_symbol)
+    }
+    let state: SharedLifecycleStateFunction = unsafe {
+        transmute<*mut u8, SharedLifecycleStateFunction>(state_symbol)
+    }
+    let destroy_probe: *mut i32 = sharedLifecycleMutablePointer(&destroy_count)
+    let first_amount: i32 = 7
+    let second_amount: i32 = 3
+
+    let installed: i32 = install(copy destroy_probe)
+    let first_increment: i32 =
+        increment(sharedLifecycleMutablePointer(&first_amount))
+    let second_increment: i32 =
+        increment(sharedLifecycleMutablePointer(&second_amount))
+    let live_state: i32 = state()
+    let first_free: i32 = unsafe { sharedLifecycleFreeLibrary(first_image) }
+    if installed != 101 {
+        return 50
+    }
+    if first_increment != 108 {
+        return 51
+    }
+    if second_increment != 111 {
+        return 52
+    }
+    if live_state != 111 {
+        return 53
+    }
+    if first_free == 0 {
+        return 54
+    }
+    if destroy_count != 1 {
+        return 55
+    }
+
+    destroy_count = 0
+    let second_image: *mut u8 = sharedLifecycleLoadImage(provider_path)
+    if second_image == null {
+        return 43
+    }
+    let reinstall_symbol: *mut u8 = sharedLifecycleResolveSymbol(
+        second_image,
+        "uv_shared_lifecycle_install_raw_destroy_probe",
+        heap
+    )
+    if reinstall_symbol == null {
+        let _ = unsafe { sharedLifecycleFreeLibrary(second_image) }
+        return 44
+    }
+
+    let reinstall: SharedLifecycleInstallProbeFunction = unsafe {
+        transmute<*mut u8, SharedLifecycleInstallProbeFunction>(reinstall_symbol)
+    }
+    let reinstalled: i32 = reinstall(copy destroy_probe)
+    let second_free: i32 = unsafe { sharedLifecycleFreeLibrary(second_image) }
+    if reinstalled == 101 && second_free != 0 && destroy_count == 1 {
+        return 0
+    }
+    return 45
+}
+
+internal procedure sharedLifecycleExerciseLinkedImageOnce(
+    consumer_path: SharedLifecycleCString,
+    heap: $HeapAllocator
+) -> bool {
+    var destroy_count: i32 = 0
+    let consumer_image: *mut u8 = sharedLifecycleLoadImage(consumer_path)
+    if consumer_image == null {
+        return false
+    }
+
+    let run_symbol: *mut u8 = sharedLifecycleResolveSymbol(
+        consumer_image,
+        "uv_shared_lifecycle_run_linked_calls",
+        heap
+    )
+    if run_symbol == null {
+        let _ = unsafe { sharedLifecycleFreeLibrary(consumer_image) }
+        return false
+    }
+
+    let run: SharedLifecycleRunLinkedFunction = unsafe {
+        transmute<*mut u8, SharedLifecycleRunLinkedFunction>(run_symbol)
+    }
+    let destroy_probe: *mut i32 = sharedLifecycleMutablePointer(&destroy_count)
+    let run_status: i32 = run(copy destroy_probe)
+    let free_status: i32 = unsafe { sharedLifecycleFreeLibrary(consumer_image) }
+    return run_status == 0 && free_status != 0 && destroy_count == 1
+}
+
+internal procedure sharedLifecycleExerciseLinkedImage(
+    consumer_path: SharedLifecycleCString,
+    heap: $HeapAllocator
+) -> bool {
+    return sharedLifecycleExerciseLinkedImageOnce(consumer_path, heap) &&
+        sharedLifecycleExerciseLinkedImageOnce(consumer_path, heap)
+}
+
+public procedure main(context: Context) -> i32 {
+    if context.sys~>argument_count() < 2usize {
+        return 2
+    }
+
+    let provider_result: SharedLifecycleCString | i32 =
+        sharedLifecycleCString(context.sys~>argument(0usize), context.heap)
+    return if move provider_result is {
+        provider_path: SharedLifecycleCString {
+            let consumer_result: SharedLifecycleCString | i32 =
+                sharedLifecycleCString(context.sys~>argument(1usize), context.heap)
+            return if move consumer_result is {
+                consumer_path: SharedLifecycleCString {
+                    let raw_status: i32 =
+                        sharedLifecycleExerciseRawImage(provider_path, context.heap)
+                    if raw_status != 0 {
+                        return raw_status
+                    }
+                    if !sharedLifecycleExerciseLinkedImage(consumer_path, context.heap) {
+                        return 20
+                    }
+                    0
+                }
+                failure: i32 {
+                    failure
+                }
+            }
+        }
+        failure: i32 {
+            failure
+        }
+    }
+}

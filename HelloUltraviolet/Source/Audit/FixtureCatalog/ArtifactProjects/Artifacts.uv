@@ -4,13 +4,60 @@ using HelloUltraviolet::Audit::{ auditTargetProfile }
 using HelloUltraviolet::Audit::{ auditTargetProfileIsWindows }
 using HelloUltraviolet::Audit::{ auditTextContains }
 
+internal procedure artifactProjectWritePathMessage(
+    context: Context,
+    message: string@View,
+    path: string@View
+) -> bool {
+    let message_output: Outcome<(), IoError> = context.io~>write_stderr(message)
+    let path_output: Outcome<(), IoError> = context.io~>write_stderr(path)
+    let newline_output: Outcome<(), IoError> = context.io~>write_stderr("\n")
+    return if message_output is {
+        @Value {
+            if path_output is {
+                @Value {
+                    if newline_output is {
+                        @Value {
+                            true
+                        }
+                        @Error {
+                            false
+                        }
+                    }
+                }
+                @Error {
+                    false
+                }
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
 internal procedure artifactProjectSourceArtifactsExist(
     context: Context,
     manifest_path: string@View,
     source_path: string@View
 ) -> bool {
-    return context.io~>exists(manifest_path) &&
-        context.io~>exists(source_path)
+    let manifest_exists: bool = context.io~>exists(manifest_path)
+    let source_exists: bool = context.io~>exists(source_path)
+    if !manifest_exists {
+        let _ = artifactProjectWritePathMessage(
+            context,
+            "artifact project manifest missing: ",
+            manifest_path
+        )
+    }
+    if !source_exists {
+        let _ = artifactProjectWritePathMessage(
+            context,
+            "artifact project source missing: ",
+            source_path
+        )
+    }
+    return manifest_exists && source_exists
 }
 
 public procedure artifactProjectFixtureSourceArtifactsExist(context: Context) -> bool {
@@ -27,7 +74,7 @@ public procedure artifactProjectFixtureSourceArtifactsExist(context: Context) ->
         artifactProjectSourceArtifactsExist(
             context,
             "HelloUltraviolet/Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Ultraviolet.toml",
-            "HelloUltraviolet/Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/HostHarness/SharedLibraryImageLifecycleHarness.c"
+            "HelloUltraviolet/Fixtures/ArtifactProjects/SharedLibraryImageLifecycle/Source/SharedLibraryImageLifecycleHostHarness/Main.uv"
         ) &&
         artifactProjectSourceArtifactsExist(
             context,

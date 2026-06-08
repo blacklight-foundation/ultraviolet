@@ -10,6 +10,11 @@ kind = "library"
 link_kind = "shared"
 root = "Source/SharedLibraryImageLifecycleConsumer"
 
+[[assembly]]
+name = "SharedLibraryImageLifecycleHostHarness"
+kind = "executable"
+root = "Source/SharedLibraryImageLifecycleHostHarness"
+
 [toolchain]
 target_profile = "x86_64-win64"
 

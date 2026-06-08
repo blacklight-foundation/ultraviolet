@@ -449,7 +449,32 @@ internal procedure capabilityObservableSequenceReference(context: Context) -> bo
 
 /// Exercises the Authority Capabilities reference surface.
 public procedure runAuthorityCapabilitiesReference(context: Context) -> bool {
-    return capabilityFromContext(context) &&
+    return capabilityTokenUniverseReference() &&
+        capInTypeSignatureReference() &&
+        capInTypeRootMappingsReference() &&
+        capInTypePermissionReference() &&
+        capInTypeStructuralCollectionsReference() &&
+        capInTypeStructuralNominalReference(context) &&
+        capInTypeLeastFixedPointAllowedReference(context) &&
+        capInTypeCyclesTerminateReference(context) &&
+        capabilityRequirementSetReference(context) &&
+        attenuationOperationsReference(context) &&
+        attenuationMonotoneAuthorityReference(context) &&
+        attenuationChildLivenessReference(context) &&
+        attenuationChildDropDoesNotDiminishParentReference(context) &&
+        attenuationDelegationSubsetRoutingReference(context) &&
+        observableEffectVariantsReference() &&
+        observableEventDefinitionReference() &&
+        observableBehaviorDefinitionReference() &&
+        sequencePointDefinitionReference() &&
+        canonicalSequencePointsReference() &&
+        sequencePointLTRPreservationReference(context) &&
+        asIfObservablePreservationReference(context) &&
+        asIfForbiddenObservableChangesReference(context) &&
+        diagnosticHostPrimitivesReference() &&
+        hostPrimitiveUniverseReference() &&
+        hostPrimitiveMappingAndFailureReference() &&
+        capabilityFromContext(context) &&
         capabilityStructuralTypeRequirements(context) &&
         capabilityDirectCallRequirementsSatisfied(context) &&
         capabilityObservableSequenceReference(context)

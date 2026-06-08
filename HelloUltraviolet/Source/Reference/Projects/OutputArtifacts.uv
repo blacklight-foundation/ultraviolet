@@ -68,6 +68,11 @@ internal record OutputArtifactPathsReference {
     internal symbol_name: string@View
 }
 
+internal record OutputPipelineOutcomeReference {
+    internal is_error: bool
+    internal diagnostic_code: string@View
+}
+
 internal record OutputTargetConstantsReference {
     internal object_extension: string@View
     internal exe_suffix: string@View
@@ -341,6 +346,97 @@ internal procedure artifactPathsReference(
     }
 }
 
+internal procedure outputPipelineOutcomeReference(
+    is_error: bool,
+    diagnostic_code: string@View
+) -> OutputPipelineOutcomeReference {
+    return OutputPipelineOutcomeReference {
+        is_error: is_error,
+        diagnostic_code: diagnostic_code
+    }
+}
+
+internal procedure outputPathPairIsDistinct(
+    left_path: string@View,
+    right_path: string@View
+) -> bool {
+    return !auditTextEquals(left_path, right_path)
+}
+
+internal procedure collisionObjectPathForModule(
+    module: OutputModuleReference,
+    target: OutputTargetReference
+) -> string@View {
+    if auditTextEquals(module.folded_path, "artifactroot::collision") {
+        return if target is {
+            OutputTargetReference::X86_64Win64 {
+                "Project/Build/Intermediate/Obj/Source/ArtifactRoot_x3A_x3ACollision.obj"
+            }
+            OutputTargetReference::AArch64Aapcs64 {
+                "Project/Build/Intermediate/Obj/Source/ArtifactRoot_x3A_x3ACollision.o"
+            }
+            OutputTargetReference::AArch64Darwin {
+                "Project/Build/Intermediate/Obj/Source/ArtifactRoot_x3A_x3ACollision.o"
+            }
+        }
+    }
+    return ""
+}
+
+internal procedure collisionIrPathForModule(
+    module: OutputModuleReference,
+    ir_kind: OutputIrKindReference
+) -> string@View {
+    if auditTextEquals(module.folded_path, "artifactroot::collision") {
+        return if ir_kind is {
+            OutputIrKindReference::None {
+                ""
+            }
+            OutputIrKindReference::Ll {
+                "Project/Build/Intermediate/IR/Source/ArtifactRoot_x3A_x3ACollision.ll"
+            }
+            OutputIrKindReference::Bc {
+                "Project/Build/Intermediate/IR/Source/ArtifactRoot_x3A_x3ACollision.bc"
+            }
+        }
+    }
+    return ""
+}
+
+internal procedure outputObjectCollisionOutcome(
+    left_path: string@View,
+    right_path: string@View
+) -> OutputPipelineOutcomeReference {
+    let distinct: bool = outputPathPairIsDistinct(left_path, right_path)
+    return outputPipelineOutcomeReference(
+        !distinct,
+        if distinct { "" } else { "Out-Obj-Collision" }
+    )
+}
+
+internal procedure outputIrCollisionOutcome(
+    left_path: string@View,
+    right_path: string@View,
+    ir_kind: OutputIrKindReference
+) -> OutputPipelineOutcomeReference {
+    let distinct: bool = outputPathPairIsDistinct(left_path, right_path)
+    let emits_ir: bool = if ir_kind is {
+        OutputIrKindReference::None {
+            false
+        }
+        OutputIrKindReference::Ll {
+            true
+        }
+        OutputIrKindReference::Bc {
+            true
+        }
+    }
+    return outputPipelineOutcomeReference(
+        emits_ir && !distinct,
+        if emits_ir && !distinct { "Out-IR-Collision" } else { "" }
+    )
+}
+
 internal procedure artifactPathsMatch(
     paths: OutputArtifactPathsReference,
     object_path: string@View,
@@ -354,6 +450,64 @@ internal procedure artifactPathsMatch(
         auditTextEquals(paths.primary_path, primary_path) &&
         auditTextEquals(paths.import_lib_path, import_lib_path) &&
         auditTextEquals(paths.symbol_name, symbol_name)
+}
+
+internal procedure outputObjectPathCollisionForTarget(
+    target: OutputTargetReference,
+    expected_path: string@View
+) -> bool {
+    let first: OutputModuleReference =
+        outputModuleReference("ArtifactRoot::Collision", "artifactroot::collision", 1usize)
+    let second: OutputModuleReference =
+        outputModuleReference("ArtifactRoot::collision", "artifactroot::collision", 2usize)
+    let first_path: string@View = collisionObjectPathForModule(first, target)
+    let second_path: string@View = collisionObjectPathForModule(second, target)
+    let outcome: OutputPipelineOutcomeReference =
+        outputObjectCollisionOutcome(first_path, second_path)
+    return first.path != second.path &&
+        auditTextEquals(first.folded_path, second.folded_path) &&
+        moduleEmissionPrecedes(first, second) &&
+        auditTextEquals(first_path, expected_path) &&
+        auditTextEquals(first_path, second_path) &&
+        !outputPathPairIsDistinct(first_path, second_path) &&
+        outcome.is_error &&
+        auditTextEquals(outcome.diagnostic_code, "Out-Obj-Collision")
+}
+
+/// Exercises Out-Obj-Collision with colliding computed object paths.
+public procedure outputObjectPathCollisionReference() -> bool {
+    return outputObjectPathCollisionForTarget(
+        OutputTargetReference::X86_64Win64,
+        "Project/Build/Intermediate/Obj/Source/ArtifactRoot_x3A_x3ACollision.obj"
+    ) &&
+        outputObjectPathCollisionForTarget(
+            OutputTargetReference::AArch64Aapcs64,
+            "Project/Build/Intermediate/Obj/Source/ArtifactRoot_x3A_x3ACollision.o"
+        ) &&
+        outputObjectPathCollisionForTarget(
+            OutputTargetReference::AArch64Darwin,
+            "Project/Build/Intermediate/Obj/Source/ArtifactRoot_x3A_x3ACollision.o"
+        )
+}
+
+/// Exercises Out-IR-Collision with colliding computed `ll` IR paths.
+public procedure outputIrPathCollisionReference() -> bool {
+    let project: OutputProjectReference = executableProjectReference()
+    let first: OutputModuleReference =
+        outputModuleReference("ArtifactRoot::Collision", "artifactroot::collision", 1usize)
+    let second: OutputModuleReference =
+        outputModuleReference("ArtifactRoot::collision", "artifactroot::collision", 2usize)
+    let first_path: string@View = collisionIrPathForModule(first, project.emit_ir)
+    let second_path: string@View = collisionIrPathForModule(second, project.emit_ir)
+    let outcome: OutputPipelineOutcomeReference =
+        outputIrCollisionOutcome(first_path, second_path, project.emit_ir)
+    return first.path != second.path &&
+        auditTextEquals(first.folded_path, second.folded_path) &&
+        moduleEmissionPrecedes(first, second) &&
+        auditTextEquals(first_path, second_path) &&
+        !outputPathPairIsDistinct(first_path, second_path) &&
+        outcome.is_error &&
+        auditTextEquals(outcome.diagnostic_code, "Out-IR-Collision")
 }
 
 internal procedure targetConstantsMatch(
@@ -596,5 +750,7 @@ public procedure runProjectsOutputArtifactsReference() -> bool {
             false,
             "arm64-apple-macosx14.0.0"
         ) &&
+        outputObjectPathCollisionReference() &&
+        outputIrPathCollisionReference() &&
         outputPathMangleReference()
 }

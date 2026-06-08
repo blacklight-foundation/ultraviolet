@@ -1,0 +1,2806 @@
+//! Accepted-source exercise quality manifest group 024.
+
+internal procedure validatedCatalogAcceptedExerciseQualityGroup024() -> usize {
+    var count: usize = 0usize
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "ast.23.CapabilityIsolationNoDedicatedAst",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.CapabilityIsolationSemantics",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.CapabilityIsolationHelpers",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.CapabilityIsolationDynamicSemantics",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.CapabilityIsolationLowering",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "grammar.23.ForeignContracts",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.ForeignContractStart",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.Parse-ForeignContractClauseListOpt-None",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.Parse-ForeignContractClauseListOpt-Yes",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.Parse-ForeignContractClauseList-Cons",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.Parse-ForeignContractClauseListTail-End",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.Parse-ForeignContractClauseListTail-Cons",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.Parse-ForeignContractClause-Assumes",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.Parse-ForeignContractClause-Ensures",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.ForeignEnsuresKindAndExpr",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.Parse-EnsuresPredicate-Error",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.Parse-EnsuresPredicate-NullResult",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.Parse-EnsuresPredicate-Plain",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "ast.23.ForeignContractsForm",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "ast.23.EnsuresPredicateForms",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.ForeignPreconditions",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.ForeignPreconditionVerificationModes",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.ForeignPreconditionVerificationLowering",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.ForeignPostconditions",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.ForeignPostconditionClassification",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.NullableFfiResult",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.ForeignPostconditionVerificationModes",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.ForeignPostconditionStaticVerification",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.ForeignContractVerificationSummary",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.ForeignPreconditionDynamicFailure",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.ForeignPostconditionDynamicChecks",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.ForeignContractsLowering",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.BoundaryUnwindingSyntax",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.BoundaryUnwindingParsingNoAdditionalRules",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "ast.23.BoundaryUnwindPolicySource",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.UnwindModeAstHelpers",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.DetermineUnwindMode",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.ParseUnwindArg",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.UnwindMode-Valid",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.BoundaryUnwindDynamicEffects",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.GeneralDestructionAndUnwindCleanupReference",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.BoundaryUnwindCodeGenerationEffects",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.CodeGen-UnwindAbort-Import",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.CodeGen-UnwindCatch-Import",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.CodeGen-UnwindAbort-Export",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.CodeGen-UnwindCatch-Export",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "diagnostics.23.BoundaryUnwindingNoAdditionalDiagnostics",
+            "HelloUltraviolet::Audit",
+            "rejectedSourceFixturesCompileAndEmitExpectedDiagnostics",
+            "Source/Audit/DiagnosticFixtureExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.24.SharedLoweringScope",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.CodegenModelAndTargets",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.CodegenJudgements",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.IRDefined",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.CodegenCorrectnessPredicates",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.CodegenCorrectAndUndefined",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.IRFormsAndEmissionJudgements",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.PanicOutCodegenParams",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.MethodAndTransitionParams",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.SeqIR",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.EvalOrderJudgements",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.ChildExpressionListHelpers",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.ChildrenLTRExpressions",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.LowerExprJudgementsAndRetType",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Lower-Expr-Correctness",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.LowerExprTotal",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.ExecIRJudgements",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-ReadVar",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-ReadPath",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-StoreVar",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-StoreVarNoDrop",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-BindVar",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-ReadPtr",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-WritePtr",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.AllocTarget",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Alloc",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.MoveState-Root",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.MoveState-Field",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-MoveState",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.ExecIRControlResults",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Defer",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.ExecIRBlockHelpers",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-If-True",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-If-False",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Block",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-IfCase",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Infinite-Step",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Infinite-Continue",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Infinite-Break",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Infinite-Ctrl",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Cond-False",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Cond-True-Step",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Cond-Continue",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Cond-Break",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Cond-Ctrl",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Cond-Body-Ctrl",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.LoopIterIRJudgement",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Iter",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Iter-Ctrl",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.LoopIterIR-Done",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.LoopIterIR-Step-Val",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.LoopIterIR-Step-Continue",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.LoopIterIR-Step-Break",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.LoopIterIR-Step-Ctrl",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Region",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Frame-Implicit",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Frame-Explicit",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.LowerList-Empty",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.LowerList-Cons",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.LowerFieldInits-Empty",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.LowerFieldInits-Cons",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.LowerOpt-None",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.LowerOpt-Some",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.RefSyms",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.ExpandIR",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.UniqueEmits",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.ModuleItems",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.CG-Project",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.24.NoAdditionalFeatureLocalCodegenItemRules",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.CG-Module",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.CG-Expr",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.CG-Stmt",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.CG-Block",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.CG-Place",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.LowerIR-Module",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.EmitLLVM-Ok",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.EmitObj-Ok",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.LLVMEmitObj21",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.PointerPrimitiveSizeAndAlignment",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.LayoutJudgements",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Size-Prim",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Align-Prim",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Layout-Prim",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.ConstantEncodingHelpers",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Encode-Bool",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Encode-Char",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Encode-Int",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Encode-Float",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Encode-Unit",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Encode-Never",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Encode-RawPtr-Null",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.ValidValueJudgement",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Valid-Bool",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Valid-Char",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Valid-Scalar",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Valid-Unit",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Valid-Never",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.ValidValueFallback",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Layout-Perm",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Size-Perm",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Align-Perm",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.ValueBitsPerm",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Size-Ptr",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Align-Ptr",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Layout-Ptr",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Size-RawPtr",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Align-RawPtr",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Layout-RawPtr",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Size-Func",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Align-Func",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Layout-Func",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.DefaultCallingConventionAndTargetArtifacts",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.ExternAbiSetAndConventionMapping",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.ConventionLayout",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.AssignParamRegs",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.StackFrameForm",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.StackFrame-Layout",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Conv-Compatible",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Conv-FFI-Required",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.ABITypeAndABITyJudgement",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-Prim",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-Perm",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-Ptr",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-RawPtr",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-Func",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-Alias",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-Record",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-Tuple",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-Array",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-Slice",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-Range",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-RangeInclusive",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-RangeFrom",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-RangeTo",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-RangeToInclusive",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-RangeFull",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-Enum",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-Union",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-Modal",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-Dynamic",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-StringBytes",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.ABIParameterReturnPassingHelpers",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.24.ForeignVisibleABIUsesForeignJudgements",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-Param-ByRef-Alias",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-Param-ByRef-Move",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-Ret-ByValue",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-Ret-ByRef",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-Call",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-ForeignParam-ByValue",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-ForeignParam-ByRef",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ABI-ForeignCall",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.PanicRecordAndPanicOut",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.MangleJudgementAndConstructors",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    return count
+}
