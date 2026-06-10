@@ -4,6 +4,48 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup023() -> usize {
     var count: usize = 0usize
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
+            "rule.22.T-CtIf",
+            "HelloUltraviolet::Reference::Comptime",
+            "runComptimeCompileTimeFormsReference",
+            "Source/Reference/Comptime/CompileTimeForms.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.22.T-CtLoopIter",
+            "HelloUltraviolet::Reference::Comptime",
+            "runComptimeCompileTimeFormsReference",
+            "Source/Reference/Comptime/CompileTimeForms.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.22.T-CtProc",
+            "HelloUltraviolet::Reference::Comptime",
+            "runComptimeCompileTimeFormsReference",
+            "Source/Reference/Comptime/CompileTimeForms.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
             "requirement.22.ComptimeIfSelectedBranchOnly",
             "HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming",
             "comptimeAcceptedProjectFormsConformanceMatches",
@@ -2749,48 +2791,6 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup023() -> usize {
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
             "requirement.23.FfiAttributesDynamicSemantics",
-            "HelloUltraviolet::Audit",
-            "artifactProjectEmitLlExercise",
-            "Source/Audit/ArtifactProjectExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.23.FfiAttributesLowering",
-            "HelloUltraviolet::Audit",
-            "artifactProjectEmitLlExercise",
-            "Source/Audit/ArtifactProjectExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.23.CapabilityIsolationSyntaxNoAdditionalForm",
-            "HelloUltraviolet::Audit",
-            "artifactProjectEmitLlExercise",
-            "Source/Audit/ArtifactProjectExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.23.CapabilityIsolationParsingNoAdditionalRules",
             "HelloUltraviolet::Audit",
             "artifactProjectEmitLlExercise",
             "Source/Audit/ArtifactProjectExecution.uv",

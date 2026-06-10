@@ -41,10 +41,11 @@ bool ReservedLanguageRoot(std::string_view name) {
 
 bool IsCapabilityClassReservedKey(const IdKey& key) {
   return key == IdKeyOf("IO") || key == IdKeyOf("Network") ||
-         key == IdKeyOf("HeapAllocator") ||
-         key == IdKeyOf("ExecutionDomain") || key == IdKeyOf("Reactor") ||
-         key == IdKeyOf("Time") || key == IdKeyOf("MonotonicTime") ||
-         key == IdKeyOf("WallTime");
+          key == IdKeyOf("HeapAllocator") ||
+          key == IdKeyOf("ExecutionDomain") || key == IdKeyOf("System") ||
+          key == IdKeyOf("Reactor") ||
+          key == IdKeyOf("Time") || key == IdKeyOf("MonotonicTime") ||
+          key == IdKeyOf("WallTime");
 }
 
 bool IsFoundationalClassReservedKey(const IdKey& key) {

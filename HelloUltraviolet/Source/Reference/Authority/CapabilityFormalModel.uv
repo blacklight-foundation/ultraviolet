@@ -1,6 +1,6 @@
 //! Reference models for authority capability and observable-behavior obligations.
 
-internal record CapabilityTokenSetReference {
+internal record CapabilityClassSetReference {
     internal has_io: bool
     internal has_network: bool
     internal has_heap_allocator: bool
@@ -8,6 +8,8 @@ internal record CapabilityTokenSetReference {
     internal has_execution_domain: bool
     internal has_system: bool
     internal has_time: bool
+    internal has_monotonic_time: bool
+    internal has_wall_time: bool
 }
 
 internal record SequencePointReference {
@@ -88,48 +90,54 @@ internal procedure observableOutcomeIsAbort(
     return if value is ObservableOutcomeReferenceKind::Abort { true } else { false }
 }
 
-internal procedure capabilityTokenSetReference(
+internal procedure capabilityClassSetReference(
     has_io: bool,
     has_network: bool,
     has_heap_allocator: bool,
     has_reactor: bool,
     has_execution_domain: bool,
     has_system: bool,
-    has_time: bool
-) -> CapabilityTokenSetReference {
-    return CapabilityTokenSetReference {
+    has_time: bool,
+    has_monotonic_time: bool,
+    has_wall_time: bool
+) -> CapabilityClassSetReference {
+    return CapabilityClassSetReference {
         has_io: has_io,
         has_network: has_network,
         has_heap_allocator: has_heap_allocator,
         has_reactor: has_reactor,
         has_execution_domain: has_execution_domain,
         has_system: has_system,
-        has_time: has_time
+        has_time: has_time,
+        has_monotonic_time: has_monotonic_time,
+        has_wall_time: has_wall_time
     }
 }
 
-internal procedure capabilityTokenSetEmptyReference() -> CapabilityTokenSetReference {
-    return capabilityTokenSetReference(false, false, false, false, false, false, false)
+internal procedure capabilityClassSetEmptyReference() -> CapabilityClassSetReference {
+    return capabilityClassSetReference(false, false, false, false, false, false, false, false, false)
 }
 
-internal procedure capabilityTokenSetUnionReference(
-    left: CapabilityTokenSetReference,
-    right: CapabilityTokenSetReference
-) -> CapabilityTokenSetReference {
-    return capabilityTokenSetReference(
+internal procedure capabilityClassSetUnionReference(
+    left: CapabilityClassSetReference,
+    right: CapabilityClassSetReference
+) -> CapabilityClassSetReference {
+    return capabilityClassSetReference(
         left.has_io || right.has_io,
         left.has_network || right.has_network,
         left.has_heap_allocator || right.has_heap_allocator,
         left.has_reactor || right.has_reactor,
         left.has_execution_domain || right.has_execution_domain,
         left.has_system || right.has_system,
-        left.has_time || right.has_time
+        left.has_time || right.has_time,
+        left.has_monotonic_time || right.has_monotonic_time,
+        left.has_wall_time || right.has_wall_time
     )
 }
 
-internal procedure capabilityTokenSetEqualsReference(
-    left: CapabilityTokenSetReference,
-    right: CapabilityTokenSetReference
+internal procedure capabilityClassSetEqualsReference(
+    left: CapabilityClassSetReference,
+    right: CapabilityClassSetReference
 ) -> bool {
     return left.has_io == right.has_io &&
         left.has_network == right.has_network &&
@@ -137,12 +145,14 @@ internal procedure capabilityTokenSetEqualsReference(
         left.has_reactor == right.has_reactor &&
         left.has_execution_domain == right.has_execution_domain &&
         left.has_system == right.has_system &&
-        left.has_time == right.has_time
+        left.has_time == right.has_time &&
+        left.has_monotonic_time == right.has_monotonic_time &&
+        left.has_wall_time == right.has_wall_time
 }
 
-internal procedure capabilityTokenSetSubsetReference(
-    left: CapabilityTokenSetReference,
-    right: CapabilityTokenSetReference
+internal procedure capabilityClassSetSubsetReference(
+    left: CapabilityClassSetReference,
+    right: CapabilityClassSetReference
 ) -> bool {
     return (!left.has_io || right.has_io) &&
         (!left.has_network || right.has_network) &&
@@ -150,11 +160,13 @@ internal procedure capabilityTokenSetSubsetReference(
         (!left.has_reactor || right.has_reactor) &&
         (!left.has_execution_domain || right.has_execution_domain) &&
         (!left.has_system || right.has_system) &&
-        (!left.has_time || right.has_time)
+        (!left.has_time || right.has_time) &&
+        (!left.has_monotonic_time || right.has_monotonic_time || right.has_time) &&
+        (!left.has_wall_time || right.has_wall_time || right.has_time)
 }
 
-internal procedure capabilityTokenSetCountReference(
-    value: CapabilityTokenSetReference
+internal procedure capabilityClassSetCountReference(
+    value: CapabilityClassSetReference
 ) -> usize {
     var count: usize = 0usize
     if value.has_io {
@@ -178,128 +190,156 @@ internal procedure capabilityTokenSetCountReference(
     if value.has_time {
         count = count + 1usize
     }
+    if value.has_monotonic_time {
+        count = count + 1usize
+    }
+    if value.has_wall_time {
+        count = count + 1usize
+    }
     return count
 }
 
-internal procedure capabilityRootContextReference() -> CapabilityTokenSetReference {
-    return capabilityTokenSetReference(true, true, true, true, true, true, true)
+internal procedure capabilityClassUniverseSetReference() -> CapabilityClassSetReference {
+    return capabilityClassSetReference(true, true, true, true, true, true, true, true, true)
 }
 
-internal procedure capabilityRootIOReference() -> CapabilityTokenSetReference {
-    return capabilityTokenSetReference(true, false, false, false, false, false, false)
+internal procedure capabilityRootContextReference() -> CapabilityClassSetReference {
+    return capabilityClassSetReference(true, true, true, true, true, true, true, false, false)
 }
 
-internal procedure capabilityRootNetworkReference() -> CapabilityTokenSetReference {
-    return capabilityTokenSetReference(false, true, false, false, false, false, false)
+internal procedure capabilityRootIOReference() -> CapabilityClassSetReference {
+    return capabilityClassSetReference(true, false, false, false, false, false, false, false, false)
 }
 
-internal procedure capabilityRootHeapReference() -> CapabilityTokenSetReference {
-    return capabilityTokenSetReference(false, false, true, false, false, false, false)
+internal procedure capabilityRootNetworkReference() -> CapabilityClassSetReference {
+    return capabilityClassSetReference(false, true, false, false, false, false, false, false, false)
 }
 
-internal procedure capabilityRootReactorReference() -> CapabilityTokenSetReference {
-    return capabilityTokenSetReference(false, false, false, true, false, false, false)
+internal procedure capabilityRootHeapReference() -> CapabilityClassSetReference {
+    return capabilityClassSetReference(false, false, true, false, false, false, false, false, false)
 }
 
-internal procedure capabilityRootExecutionDomainReference() -> CapabilityTokenSetReference {
-    return capabilityTokenSetReference(false, false, false, false, true, false, false)
+internal procedure capabilityRootReactorReference() -> CapabilityClassSetReference {
+    return capabilityClassSetReference(false, false, false, true, false, false, false, false, false)
 }
 
-internal procedure capabilityRootSystemReference() -> CapabilityTokenSetReference {
-    return capabilityTokenSetReference(false, false, false, false, false, true, false)
+internal procedure capabilityRootExecutionDomainReference() -> CapabilityClassSetReference {
+    return capabilityClassSetReference(false, false, false, false, true, false, false, false, false)
 }
 
-internal procedure capabilityRootTimeReference() -> CapabilityTokenSetReference {
-    return capabilityTokenSetReference(false, false, false, false, false, false, true)
+internal procedure capabilityRootSystemReference() -> CapabilityClassSetReference {
+    return capabilityClassSetReference(false, false, false, false, false, true, false, false, false)
 }
 
-public procedure capabilityTokenUniverseReference() -> bool {
-    let tokens: CapabilityTokenSetReference = capabilityRootContextReference()
-    return capabilityTokenSetCountReference(tokens) == 7usize &&
-        tokens.has_io &&
-        tokens.has_network &&
-        tokens.has_heap_allocator &&
-        tokens.has_reactor &&
-        tokens.has_execution_domain &&
-        tokens.has_system &&
-        tokens.has_time
+internal procedure capabilityRootTimeReference() -> CapabilityClassSetReference {
+    return capabilityClassSetReference(false, false, false, false, false, false, true, false, false)
+}
+
+internal procedure capabilityRootMonotonicTimeReference() -> CapabilityClassSetReference {
+    return capabilityClassSetReference(false, false, false, false, false, false, false, true, false)
+}
+
+internal procedure capabilityRootWallTimeReference() -> CapabilityClassSetReference {
+    return capabilityClassSetReference(false, false, false, false, false, false, false, false, true)
+}
+
+public procedure capabilityClassUniverseReference() -> bool {
+    let classes: CapabilityClassSetReference = capabilityClassUniverseSetReference()
+    return capabilityClassSetCountReference(classes) == 9usize &&
+        classes.has_io &&
+        classes.has_network &&
+        classes.has_heap_allocator &&
+        classes.has_reactor &&
+        classes.has_execution_domain &&
+        classes.has_system &&
+        classes.has_time &&
+        classes.has_monotonic_time &&
+        classes.has_wall_time
 }
 
 public procedure capInTypeSignatureReference() -> bool {
-    let empty: CapabilityTokenSetReference = capabilityTokenSetEmptyReference()
-    let io_only: CapabilityTokenSetReference = capabilityRootIOReference()
-    return capabilityTokenSetCountReference(empty) == 0usize &&
-        capabilityTokenSetCountReference(io_only) == 1usize &&
+    let empty: CapabilityClassSetReference = capabilityClassSetEmptyReference()
+    let io_only: CapabilityClassSetReference = capabilityRootIOReference()
+    return capabilityClassSetCountReference(empty) == 0usize &&
+        capabilityClassSetCountReference(io_only) == 1usize &&
         io_only.has_io
 }
 
 public procedure capInTypeRootMappingsReference() -> bool {
-    return capabilityTokenSetEqualsReference(
+    return capabilityClassSetEqualsReference(
         capabilityRootContextReference(),
-        capabilityTokenSetReference(true, true, true, true, true, true, true)
+        capabilityClassSetReference(true, true, true, true, true, true, true, false, false)
     ) &&
-        capabilityTokenSetEqualsReference(
+        capabilityClassSetEqualsReference(
             capabilityRootSystemReference(),
-            capabilityTokenSetReference(false, false, false, false, false, true, false)
+            capabilityClassSetReference(false, false, false, false, false, true, false, false, false)
         ) &&
-        capabilityTokenSetEqualsReference(
+        capabilityClassSetEqualsReference(
             capabilityRootIOReference(),
-            capabilityTokenSetReference(true, false, false, false, false, false, false)
+            capabilityClassSetReference(true, false, false, false, false, false, false, false, false)
         ) &&
-        capabilityTokenSetEqualsReference(
+        capabilityClassSetEqualsReference(
             capabilityRootNetworkReference(),
-            capabilityTokenSetReference(false, true, false, false, false, false, false)
+            capabilityClassSetReference(false, true, false, false, false, false, false, false, false)
         ) &&
-        capabilityTokenSetEqualsReference(
+        capabilityClassSetEqualsReference(
             capabilityRootHeapReference(),
-            capabilityTokenSetReference(false, false, true, false, false, false, false)
+            capabilityClassSetReference(false, false, true, false, false, false, false, false, false)
         ) &&
-        capabilityTokenSetEqualsReference(
+        capabilityClassSetEqualsReference(
             capabilityRootReactorReference(),
-            capabilityTokenSetReference(false, false, false, true, false, false, false)
+            capabilityClassSetReference(false, false, false, true, false, false, false, false, false)
         ) &&
-        capabilityTokenSetEqualsReference(
+        capabilityClassSetEqualsReference(
             capabilityRootExecutionDomainReference(),
-            capabilityTokenSetReference(false, false, false, false, true, false, false)
+            capabilityClassSetReference(false, false, false, false, true, false, false, false, false)
         ) &&
-        capabilityTokenSetEqualsReference(
+        capabilityClassSetEqualsReference(
             capabilityRootTimeReference(),
-            capabilityTokenSetReference(false, false, false, false, false, false, true)
+            capabilityClassSetReference(false, false, false, false, false, false, true, false, false)
+        ) &&
+        capabilityClassSetEqualsReference(
+            capabilityRootMonotonicTimeReference(),
+            capabilityClassSetReference(false, false, false, false, false, false, false, true, false)
+        ) &&
+        capabilityClassSetEqualsReference(
+            capabilityRootWallTimeReference(),
+            capabilityClassSetReference(false, false, false, false, false, false, false, false, true)
         )
 }
 
 public procedure capInTypePermissionReference() -> bool {
-    return capabilityTokenSetEqualsReference(
+    return capabilityClassSetEqualsReference(
         capabilityRootIOReference(),
         capabilityRootIOReference()
     ) &&
-        capabilityTokenSetEqualsReference(
+        capabilityClassSetEqualsReference(
             capabilityRootContextReference(),
             capabilityRootContextReference()
         )
 }
 
 public procedure capInTypeStructuralCollectionsReference() -> bool {
-    let tuple_tokens: CapabilityTokenSetReference = capabilityTokenSetUnionReference(
+    let tuple_classes: CapabilityClassSetReference = capabilityClassSetUnionReference(
         capabilityRootIOReference(),
         capabilityRootSystemReference()
     )
-    let array_tokens: CapabilityTokenSetReference = capabilityRootNetworkReference()
-    let slice_tokens: CapabilityTokenSetReference = capabilityRootHeapReference()
-    return capabilityTokenSetEqualsReference(
-        tuple_tokens,
-        capabilityTokenSetReference(true, false, false, false, false, true, false)
+    let array_classes: CapabilityClassSetReference = capabilityRootNetworkReference()
+    let slice_classes: CapabilityClassSetReference = capabilityRootHeapReference()
+    return capabilityClassSetEqualsReference(
+        tuple_classes,
+        capabilityClassSetReference(true, false, false, false, false, true, false, false, false)
     ) &&
-        capabilityTokenSetEqualsReference(array_tokens, capabilityRootNetworkReference()) &&
-        capabilityTokenSetEqualsReference(slice_tokens, capabilityRootHeapReference())
+        capabilityClassSetEqualsReference(array_classes, capabilityRootNetworkReference()) &&
+        capabilityClassSetEqualsReference(slice_classes, capabilityRootHeapReference())
 }
 
 public procedure capInTypeStructuralNominalReference(context: Context) -> bool {
-    let composite_tokens: CapabilityTokenSetReference = capabilityRootContextReference()
+    let composite_classes: CapabilityClassSetReference = capabilityRootContextReference()
     return capabilityStructuralTypeRequirements(context) &&
-        capabilityTokenSetEqualsReference(
-            composite_tokens,
-            capabilityTokenSetReference(true, true, true, true, true, true, true)
+        capabilityClassSetEqualsReference(
+            composite_classes,
+            capabilityClassSetReference(true, true, true, true, true, true, true, false, false)
         )
 }
 
@@ -309,9 +349,9 @@ public procedure capInTypeLeastFixedPointAllowedReference(context: Context) -> b
         next: null
     }
     return capabilityFromRecursiveNominal(carrier) &&
-        capabilityTokenSetEqualsReference(
+        capabilityClassSetEqualsReference(
             capabilityRootIOReference(),
-            capabilityTokenSetReference(true, false, false, false, false, false, false)
+            capabilityClassSetReference(true, false, false, false, false, false, false, false, false)
         )
 }
 
@@ -324,11 +364,23 @@ public procedure capInTypeCyclesTerminateReference(context: Context) -> bool {
 }
 
 public procedure capabilityRequirementSetReference(context: Context) -> bool {
-    let source_requirement: CapabilityTokenSetReference = capabilityRootContextReference()
-    let io_requirement: CapabilityTokenSetReference = capabilityRootIOReference()
-    let composite_requirement: CapabilityTokenSetReference = capabilityRootContextReference()
-    return capabilityTokenSetSubsetReference(io_requirement, source_requirement) &&
-        capabilityTokenSetSubsetReference(composite_requirement, source_requirement) &&
+    let source_requirement: CapabilityClassSetReference = capabilityRootContextReference()
+    let io_requirement: CapabilityClassSetReference = capabilityRootIOReference()
+    let composite_requirement: CapabilityClassSetReference = capabilityRootContextReference()
+    return capabilityClassSetSubsetReference(io_requirement, source_requirement) &&
+        capabilityClassSetSubsetReference(composite_requirement, source_requirement) &&
+        capabilityClassSetSubsetReference(
+            capabilityRootMonotonicTimeReference(),
+            capabilityRootTimeReference()
+        ) &&
+        capabilityClassSetSubsetReference(
+            capabilityRootWallTimeReference(),
+            capabilityRootTimeReference()
+        ) &&
+        !capabilityClassSetSubsetReference(
+            capabilityRootTimeReference(),
+            capabilityRootMonotonicTimeReference()
+        ) &&
         capabilityDirectCallRequirementsSatisfied(context)
 }
 

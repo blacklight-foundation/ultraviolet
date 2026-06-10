@@ -75,6 +75,7 @@
 #include <type_traits>
 
 #include "00_core/assert_spec.h"
+#include "03_comptime/comptime_internal.h"
 #include "00_core/int128.h"
 #include "00_core/numeric_literals.h"
 #include "00_core/symbols.h"
@@ -459,6 +460,34 @@ ConstLenResult ConstLen(const ScopeContext& ctx, const ast::ExprPtr& expr) {
           SPEC_RULE("ConstLen-Path");
           return nested;
         } else {
+          // Spec §8.1 ConstLen-Comptime: non-literal, non-path length
+          // expressions admit pure, capability-free, emission-free
+          // compile-time evaluation (arithmetic, comptime procedure calls).
+          namespace ci = ::ultraviolet::frontend::comptime_internal;
+          const auto* current = FindModule(ctx, ctx.current_module);
+          if (current) {
+            ci::CtEnv env = ci::CtEmptyEnv(*current);
+            core::DiagnosticStream scratch;
+            env.diags = &scratch;
+            for (const auto& mod : ctx.sigma.mods) {
+              env.available_modules.push_back(&mod);
+              env.available_module_names.insert(core::StringOfPath(mod.path));
+            }
+            for (const auto& proc : current->comptime_procedures) {
+              env = ci::BindCtProc(std::move(env), proc);
+            }
+            const auto eval = ci::EvalExpr(expr, env);
+            if (eval.ok) {
+              if (const auto* prim = std::get_if<ci::CtPrim>(&eval.value)) {
+                if (prim->kind == ci::CtPrimKind::Int) {
+                  if (const auto* pi = std::get_if<ci::CtPrimInt>(&prim->value)) {
+                    SPEC_RULE("ConstLen-Comptime");
+                    return {true, std::nullopt, pi->value};
+                  }
+                }
+              }
+            }
+          }
           SPEC_RULE("ConstLen-Err");
           return {false, "ConstLen-Err", std::nullopt};
         }

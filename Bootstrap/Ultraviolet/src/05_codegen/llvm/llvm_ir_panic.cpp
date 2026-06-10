@@ -400,6 +400,7 @@ std::uint16_t PanicCodeFromString(const std::string& reason) {
   if (reason == "NullDeref") return PanicCode(PanicReason::NullDeref);
   if (reason == "ExpiredDeref") return PanicCode(PanicReason::ExpiredDeref);
   if (reason == "InitPanic") return PanicCode(PanicReason::InitPanic);
+  if (reason == "MatchFail") return PanicCode(PanicReason::MatchFail);
   if (reason == "ContractPre") return PanicCode(PanicReason::ContractPre);
   if (reason == "ContractPost") return PanicCode(PanicReason::ContractPost);
   if (reason == "AsyncFailed") return PanicCode(PanicReason::AsyncFailed);

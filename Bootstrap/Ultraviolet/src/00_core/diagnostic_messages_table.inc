@@ -412,7 +412,7 @@ static const DiagMessageEntry kDiagMessages[] = {
   {"W-MOD-1201", Severity::Warning, "Wildcard `using` in a module exposing public API"},
   {"W-MOD-2451", Severity::Warning, "`align(N)` where N < natural alignment"},
   {"W-MOD-2452", Severity::Warning, "`inline(always)` but inlining failed"},
-  {"W-SAFE-0100", Severity::Warning, "Target type may have invalid bit patterns after `transmute`"},
+  {"W-SAF-0100", Severity::Warning, "Target type may have invalid bit patterns after `transmute`"},
   {"W-SRC-0101", Severity::Warning, "UTF-8 BOM present at the start of the file"},
   {"W-SRC-0301", Severity::Warning, "Leading zeros in decimal literal"},
   {"W-SRC-0308", Severity::Warning, "Lexically sensitive Unicode character within `unsafe` block"},

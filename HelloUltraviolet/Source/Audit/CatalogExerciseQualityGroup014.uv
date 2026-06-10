@@ -4,6 +4,48 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup014() -> usize {
     var count: usize = 0usize
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
+            "diag.ClosureTypes",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesClosuresReference",
+            "Source/Reference/ModalTypes/Closures.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "grammar.GenericParamsAndArgsSyntax",
+            "HelloUltraviolet::Reference::Polymorphism",
+            "runPolymorphismGenericParametersReference",
+            "Source/Reference/Polymorphism/GenericParameters.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "req.GenericArgsTrailingComma",
+            "HelloUltraviolet::Reference::Polymorphism",
+            "runPolymorphismGenericParametersReference",
+            "Source/Reference/Polymorphism/GenericParameters.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
             "req.GenericParamInlineBoundsClassOnly",
             "HelloUltraviolet::Reference::Polymorphism",
             "runPolymorphismGenericParametersReference",
@@ -2749,48 +2791,6 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup014() -> usize {
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
             "def.14.TypeOpaqueForm",
-            "HelloUltraviolet::Reference::Polymorphism",
-            "runPolymorphismOpaqueTypesReference",
-            "Source/Reference/Polymorphism/OpaqueTypes.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.14.WF-Opaque",
-            "HelloUltraviolet::Reference::Polymorphism",
-            "runPolymorphismOpaqueTypesReference",
-            "Source/Reference/Polymorphism/OpaqueTypes.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.14.T-Equiv-Opaque",
-            "HelloUltraviolet::Reference::Polymorphism",
-            "runPolymorphismOpaqueTypesReference",
-            "Source/Reference/Polymorphism/OpaqueTypes.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.14.T-Opaque-Return",
             "HelloUltraviolet::Reference::Polymorphism",
             "runPolymorphismOpaqueTypesReference",
             "Source/Reference/Polymorphism/OpaqueTypes.uv",

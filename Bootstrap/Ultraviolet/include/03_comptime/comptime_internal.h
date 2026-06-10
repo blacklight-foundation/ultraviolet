@@ -192,6 +192,11 @@ struct CtEnv {
   CtSite site;
   std::optional<CtQuoteCtx> quote_ctx;
   std::vector<const ast::ASTModule*> available_modules;
+  // Spec §22.1.4 (CtExpand-CrossModule-Emit-Err): cross-module Phase 2
+  // visibility is restricted to Phase-1 (source-present) declarations.
+  // `phase2_expanded_modules` carries the post-emission views of already
+  // processed modules solely to detect and reject E-CTE-0090 dependencies.
+  std::vector<const ast::ASTModule*> phase2_expanded_modules;
   source::ModuleNames available_module_names;
   const std::vector<ASTItem>* current_module_items = nullptr;
   std::vector<ASTItem>* pending_emits = nullptr;

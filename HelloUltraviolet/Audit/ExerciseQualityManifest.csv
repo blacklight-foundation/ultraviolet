@@ -585,7 +585,7 @@ Tokenize-Secure-Err,HelloUltraviolet::Reference::SourceText,runSourceTextLiteral
 Tokenize-Err,HelloUltraviolet::Reference::SourceText,runSourceTextLiteralsReference,Source/Reference/SourceText/Literals.uv,false,true,false,false,true
 Parse-KeyBoundaryOpt-Yes,HelloUltraviolet::Reference::Keys,runKeysKeyPathsReference,Source/Reference/Keys/KeyPaths.uv,false,true,false,false,true
 Parse-KeyBoundaryOpt-No,HelloUltraviolet::Reference::Keys,runKeysKeyPathsReference,Source/Reference/Keys/KeyPaths.uv,false,true,false,false,true
-def.CapToken,HelloUltraviolet::Reference::Authority,capabilityTokenUniverseReference,Source/Reference/Authority/CapabilityFormalModel.uv,false,true,false,false,true
+def.CapabilityClass,HelloUltraviolet::Reference::Authority,capabilityClassUniverseReference,Source/Reference/Authority/CapabilityFormalModel.uv,false,true,false,false,true
 def.CapInTypeSignature,HelloUltraviolet::Reference::Authority,capInTypeSignatureReference,Source/Reference/Authority/CapabilityFormalModel.uv,false,true,false,false,true
 def.CapInTypeRootMappings,HelloUltraviolet::Reference::Authority,capInTypeRootMappingsReference,Source/Reference/Authority/CapabilityFormalModel.uv,false,true,false,false,true
 def.CapInTypePermission,HelloUltraviolet::Reference::Authority,capInTypePermissionReference,Source/Reference/Authority/CapabilityFormalModel.uv,false,true,false,false,true
@@ -1372,6 +1372,9 @@ def.VarianceOfSignature,HelloUltraviolet::Reference::Types,runTypesSubtypingRefe
 def.VarianceOf,HelloUltraviolet::Reference::Types,runTypesSubtypingReference,Source/Reference/Types/Subtyping.uv,false,true,false,false,true
 def.VarianceSatisfied,HelloUltraviolet::Reference::Types,runTypesSubtypingReference,Source/Reference/Types/Subtyping.uv,false,true,false,false,true
 Sub-Generic,HelloUltraviolet::Reference::Types,runTypesSubtypingReference,Source/Reference/Types/Subtyping.uv,false,true,false,false,true
+Sub-Generic-Invariant-Err,HelloUltraviolet::Audit::FixtureCatalog::RejectedSource,validatedDataTypesRejectedSourceFixtureCount,Fixtures/RejectedSource/DataTypes/GenericInvariantSubtyping/Source/Main.uv,false,true,false,false,true
+Sub-Generic-Covariant-Err,HelloUltraviolet::Audit::FixtureCatalog::RejectedSource,validatedDataTypesRejectedSourceFixtureCount,Fixtures/RejectedSource/DataTypes/GenericCovariantSubtyping/Source/Main.uv,false,true,false,false,true
+Sub-Generic-Contravariant-Err,HelloUltraviolet::Audit::FixtureCatalog::RejectedSource,validatedDataTypesRejectedSourceFixtureCount,Fixtures/RejectedSource/DataTypes/GenericContravariantSubtyping/Source/Main.uv,false,true,false,false,true
 Sub-Refl,HelloUltraviolet::Reference::Types,runTypesSubtypingReference,Source/Reference/Types/Subtyping.uv,false,true,false,false,true
 Sub-Trans,HelloUltraviolet::Reference::Types,runTypesSubtypingReference,Source/Reference/Types/Subtyping.uv,false,true,false,false,true
 def.TypeInferenceJudgementSet,HelloUltraviolet::Reference::Types,runTypesInferenceReference,Source/Reference/Types/Inference.uv,false,true,false,false,true

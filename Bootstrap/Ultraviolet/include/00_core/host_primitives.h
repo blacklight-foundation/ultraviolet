@@ -12,6 +12,7 @@ enum class HostPrim {
   AssembleIR,
   InvokeLinker,
   InvokeArchiver,
+  ArchiveMembers,
 
   IOOpenRead,
   IOOpenWrite,
@@ -44,6 +45,9 @@ enum class HostPrim {
   SystemExit,
   SystemRun,
 
+  // NetworkPrim: network operations (section 1.7)
+  NetRestrictHost,
+
   // HeapPrim: heap allocation operations (section 1.7)
   HeapWithQuota,
   HeapAllocRaw,
@@ -52,6 +56,17 @@ enum class HostPrim {
   // ReactorPrim: reactor operations (section 1.7)
   ReactorRun,
   ReactorRegister,
+
+  // TimePrim: time operations (section 1.7)
+  TimeMonotonic,
+  TimeWall,
+  MonotonicTimeNow,
+  MonotonicTimeResolution,
+  MonotonicTimeElapsed,
+  MonotonicTimeCoarsen,
+  WallTimeNowUtc,
+  WallTimeResolution,
+  WallTimeCoarsen,
 
   // CancelPrim: cancellation token operations (section 1.7)
   CancelNew,
@@ -65,8 +80,10 @@ bool IsIOPrim(HostPrim prim);
 bool IsFilePrim(HostPrim prim);
 bool IsDirPrim(HostPrim prim);
 bool IsSystemPrim(HostPrim prim);
+bool IsNetworkPrim(HostPrim prim);
 bool IsHeapPrim(HostPrim prim);
 bool IsReactorPrim(HostPrim prim);
+bool IsTimePrim(HostPrim prim);
 bool IsCancelPrim(HostPrim prim);
 
 bool IsHostPrimDiag(HostPrim prim);

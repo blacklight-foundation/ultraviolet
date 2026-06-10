@@ -2426,6 +2426,48 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup007() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
+            "Sub-Generic-Invariant-Err",
+            "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+            "validatedDataTypesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/DataTypes/GenericInvariantSubtyping/Source/Main.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Sub-Generic-Covariant-Err",
+            "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+            "validatedDataTypesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/DataTypes/GenericCovariantSubtyping/Source/Main.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Sub-Generic-Contravariant-Err",
+            "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+            "validatedDataTypesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/DataTypes/GenericContravariantSubtyping/Source/Main.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
             "Sub-Refl",
             "HelloUltraviolet::Reference::Types",
             "runTypesSubtypingReference",
@@ -2749,48 +2791,6 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup007() -> usize {
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
             "Unify-Slice",
-            "HelloUltraviolet::Reference::Types",
-            "runTypesInferenceReference",
-            "Source/Reference/Types/Inference.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Unify-Perm",
-            "HelloUltraviolet::Reference::Types",
-            "runTypesInferenceReference",
-            "Source/Reference/Types/Inference.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Unify-Perm-Fail",
-            "HelloUltraviolet::Reference::Types",
-            "runTypesInferenceReference",
-            "Source/Reference/Types/Inference.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Unify-Func",
             "HelloUltraviolet::Reference::Types",
             "runTypesInferenceReference",
             "Source/Reference/Types/Inference.uv",

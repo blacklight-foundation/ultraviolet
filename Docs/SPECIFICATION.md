@@ -43,9 +43,9 @@
 - `22. Compile-Time Execution and Metaprogramming`
 - `23. Foreign Function Interface`
 - `24. Common Lowering, Program Lifecycle, and Backend`
-- `Appendix A. Diagnostic Index Reference`
+- `Appendix A. Diagnostic Index`
 - `Appendix B. Complete Grammar Reference`
-- `Appendix C. AST Form Index Reference`
+- `Appendix C. AST Form Index`
 - `Appendix D. Layout, ABI, and Runtime Reference`
 
 ### 0.3 Required Feature Section Template
@@ -121,7 +121,7 @@ Phase3Checks(P, Ms_ct, Ms_res) = [Γ_ct ⊢ ResolveModules(P_ct) ⇓ Ms_res, Γ_
   Γ_ct = Γ[project ↦ P_ct]
   P_res = ProjectView(P, Ms_res)
   Γ_res = Γ[project ↦ P_res]
-Phase3Order(P) ⇔ ∃ Ms, Ms_ct, Ms_res. Γ ⊢ ParseModules(P) ⇓ Ms ∧ Γ ⊢ ExecuteComptime(P, Ms) ⇓ Ms_ct ∧ FirstFail(Phase3Checks(P, Ms_ct, Ms_res)) = ⊥
+Γ ⊢ Phase3Order(P) ⇓ ok ⇔ ∃ Ms, Ms_ct, Ms_res. Γ ⊢ ParseModules(P) ⇓ Ms ∧ Γ ⊢ ExecuteComptime(P, Ms) ⇓ Ms_ct ∧ FirstFail(Phase3Checks(P, Ms_ct, Ms_res)) = ⊥
 
 **Phase4Order.**
 Γ ⊢ Phase4Order(P) ⇓ ok ⇔ ∃ Ms, Ms_ct, Ms_res, Objs, IRs, Artifact. Γ ⊢ ParseModules(P) ⇓ Ms ∧ Γ ⊢ ExecuteComptime(P, Ms) ⇓ Ms_ct ∧ FirstFail(Phase3Checks(P, Ms_ct, Ms_res)) = ⊥ ∧ P_res = ProjectView(P, Ms_res) ∧ Γ_res = Γ[project ↦ P_res] ∧ Γ_res ⊢ OutputPipeline(P_res) ⇓ (Objs, IRs, Artifact)
@@ -226,7 +226,7 @@ StmtKind(_) = ⊥
 
 ExprStmtConstructs(P) = { ExprKind(e) | m ∈ P.modules ∧ e ∈ ExprNodes(P, m) ∧ ExprKind(e) ≠ ⊥ } ∪ { StmtKind(s) | m ∈ P.modules ∧ s ∈ StmtNodes(P, m) ∧ StmtKind(s) ≠ ⊥ }
 
-CapConstructs(P) = { c | c ∈ {`Context`, `IO`, `Network`, `HeapAllocator`, `ExecutionDomain`, `Reactor`} ∧ ∃ m, t. m ∈ P.modules ∧ t ∈ TypeNodes(P, m) ∧ t = TypePath([c]) }
+CapConstructs(P) = { c | (c = `Context` ∨ CapClass(c)) ∧ ∃ m, t. m ∈ P.modules ∧ t ∈ TypeNodes(P, m) ∧ ((c = `Context` ∧ t = TypePath([`Context`])) ∨ (c ≠ `Context` ∧ t = TypeDynamic([c]))) }    (CapClass per §6.1.1)
 
 Constructs(P) = TopDeclConstructs(P) ∪ TypeConstructs(P) ∪ PermConstructs(P) ∪ ExprStmtConstructs(P) ∪ CapConstructs(P)
 
@@ -241,7 +241,8 @@ TranslationPhases = [Phase1, Phase2, Phase3, Phase4]
 ### 1.2 Behavior Types
 
 **IllFormed.**
-StaticJudgSet = WFModulePathJudg ∪ LinkJudg ∪ ParseJudgment ∪ ResolvePathJudg ∪ ResolveExprListJudg ∪ ResolveEnumPayloadJudg ∪ ResolveCalleeJudg ∪ ResolveIfCaseJudg ∪ ResolveStmtSeqJudg ∪ TypeEqJudg ∪ ConstLenJudg ∪ SubtypingJudg ∪ PermAdmitsJudg ∪ ArgsOkTJudg ∪ TypeInfJudg ∪ StmtJudg ∪ PatJudg ∪ ExprJudg ∪ CaseJudg ∪ DeclJudg ∪ BJudgment ∪ ArgPassJudg ∪ ProvPlaceJudg ∪ ProvExprJudg ∪ ProvStmtJudg ∪ BlockProvJudg ∪ ArgsOkJudg ∪ TypeWFJudg ∪ StringBytesJudg ∪ BitcopyDropJudg ∪ BitcopyJudg ∪ CloneJudg ∪ DropJudg ∪ FfiSafeJudg ∪ TypeRefsJudg ∪ ValueRefsJudg ∪ CodegenJudg ∪ LayoutJudg ∪ EncodeConstJudg ∪ ValidValueJudg ∪ RecordLayoutJudg ∪ UnionLayoutJudg ∪ TupleLayoutJudg ∪ RangeLayoutJudg ∪ EnumLayoutJudg ∪ ModalLayoutJudg ∪ DynLayoutJudg ∪ ABITyJudg ∪ ABIParamJudg ∪ ABIRetJudg ∪ ABICallJudg ∪ LowerCallJudg ∪ MangleJudg ∪ LinkageJudg ∪ EvalOrderJudg ∪ LowerExprJudg ∪ LowerStmtJudg ∪ PatternLowerJudg ∪ LowerBindJudg ∪ GlobalsJudg ∪ ConstInitJudg ∪ CleanupJudg ∪ RuntimeIfcJudg ∪ DynDispatchJudg ∪ ChecksJudg ∪ LLVMAttrJudg ∪ RuntimeDeclJudg ∪ LLVMTyJudg ∪ LLVMEmitJudg ∪ LowerIRJudg ∪ BindStorageJudg ∪ LLVMCallJudg ∪ VTableJudg ∪ LiteralEmitJudg ∪ BuiltinSymJudg ∪ DropHookJudg ∪ EntryJudg ∪ PoisonJudg
+StaticJudgSet = WFModulePathJudg ∪ LinkJudg ∪ ParseJudgment ∪ ResolvePathJudg ∪ ResolveExprListJudg ∪ ResolveEnumPayloadJudg ∪ ResolveCalleeJudg ∪ ResolveIfCaseJudg ∪ ResolveStmtSeqJudg ∪ TypeEqJudg ∪ ConstLenJudg ∪ SubtypingJudg ∪ PermAdmitsJudg ∪ ArgsOkTJudg ∪ TypeInfJudg ∪ StmtJudg ∪ PatJudg ∪ ExprJudg ∪ CaseJudg ∪ DeclJudg ∪ BJudgment ∪ ArgPassJudg ∪ ProvPlaceJudg ∪ ProvExprJudg ∪ ProvStmtJudg ∪ BlockProvJudg ∪ ArgsOkJudg ∪ TypeWFJudg ∪ StringBytesJudg ∪ BitcopyDropJudg ∪ BitcopyJudg ∪ CloneJudg ∪ DropJudg ∪ FfiSafeJudg ∪ TypeRefsJudg ∪ ValueRefsJudg ∪ CodegenJudg ∪ LayoutJudg ∪ EncodeConstJudg ∪ ValidValueJudg ∪ RecordLayoutJudg ∪ UnionLayoutJudg ∪ TupleLayoutJudg ∪ RangeLayoutJudg ∪ EnumLayoutJudg ∪ ModalLayoutJudg ∪ DynLayoutJudg ∪ ABITyJudg ∪ ABIParamJudg ∪ ABIRetJudg ∪ ABICallJudg ∪ LowerCallJudg ∪ MangleJudg ∪ LinkageJudg ∪ EvalOrderJudg ∪ LowerExprJudg ∪ LowerStmtJudg ∪ PatternLowerJudg ∪ LowerBindJudg ∪ GlobalsJudg ∪ ConstInitJudg ∪ CleanupJudg ∪ RuntimeIfcJudg ∪ DynDispatchJudg ∪ ChecksJudg ∪ LLVMAttrJudg ∪ RuntimeDeclJudg ∪ LLVMTyJudg ∪ LLVMEmitJudg ∪ LowerIRJudg ∪ BindStorageJudg ∪ LLVMCallJudg ∪ VTableJudg ∪ LiteralEmitJudg ∪ BuiltinSymJudg ∪ DropHookJudg ∪ EntryJudg ∪ PoisonJudg ∪ KeyRMWJudg
+KeyRMWJudg = {RMWOk}
 StaticRuleSet = { r | Conclusion(r) ∈ StaticJudgSet }
 Conclusion(r) = J    (r is written (π_1 … π_k) / J)
 Premises(r) = [π_1, …, π_k]    (r is written (π_1 … π_k) / _)
@@ -275,14 +276,18 @@ StaticUndefined(J)    Code(DiagIdOf(J)) = ⊥
 If OutsideConformance holds, this specification imposes no requirements on observable behavior, diagnostics, or termination. Implementations MAY exhibit any behavior.
 
 **Static vs. Runtime Checks.**
-CheckKind = {PatternExhaustiveness, TypeCompatibility, PermissionViolations, ProvenanceEscape, ArrayBounds, SafePointerValidity, IntegerOverflow, SliceBounds, IntDivisionByZero}
+CheckKind = {PatternExhaustiveness, TypeCompatibility, PermissionViolations, ProvenanceEscape, ArrayBounds, SafePointerValidity, IntegerOverflow, SliceBounds, IntDivisionByZero, ShiftRange, CastRange}
 
 StaticCheck = {PatternExhaustiveness, TypeCompatibility, PermissionViolations, ProvenanceEscape, ArrayBounds, SafePointerValidity}
-RuntimeCheck = {IntegerOverflow, SliceBounds, IntDivisionByZero}
+RuntimeCheck = {IntegerOverflow, SliceBounds, IntDivisionByZero, ShiftRange, CastRange}
 
 RuntimeBehavior(IntegerOverflow) = Panic
 RuntimeBehavior(SliceBounds) = Panic
 RuntimeBehavior(IntDivisionByZero) = Panic
+RuntimeBehavior(ShiftRange) = Panic
+RuntimeBehavior(CastRange) = Panic
+
+The complete runtime panic taxonomy, including panic reasons, codes, and lowering sites, is defined by §24.5.2.
 
 ResourceExhaustion ⇒ OutsideConformance
 
@@ -345,7 +350,7 @@ Phase4 = LowerAndEmit
 Γ ⊢ ExecuteComptime(P, Ms) ⇓ Ms_ct ⇔ Γ ⊢ ComptimePass(P, Ms) ⇓ Ms_ct
 
 1. Phase 1 MUST parse and aggregate all modules before Phase 2 begins.
-2. Phase 2 MUST execute all compile-time forms over the Phase 1 module set in deterministic dependency order.
+2. Phase 2 MUST execute all compile-time forms over the Phase 1 module set in the deterministic module order defined by §22.1.5.
 3. Any declaration emitted during Phase 2 MUST be incorporated into the module set before Phase 3 begins.
 4. Phase 3 MUST resolve names and discharge static semantics against the Phase 2-expanded module set.
 5. Phase 4 MUST lower and emit only the program accepted by Phase 3.
@@ -376,7 +381,7 @@ Target(`x86_64-win64`) = "x86_64-pc-windows-msvc"
 Target(`aarch64-aapcs64`) = "aarch64-unknown-linux-gnu"
 Target(`aarch64-darwin`) = "arm64-apple-macosx14.0.0"
 
-Layout and ABI requirements are defined only by their canonical owner sections in this document, especially Chapters 12, 13, 14.6, and 23.2. The source-draft bundle name `LayoutSpec` is not a separate normative relation in this reorganization.
+Layout and ABI requirements are defined only by their canonical owner sections in this document, especially Chapters 12, 13, 14.6, and 23.2. `LayoutSpec` is not a normative relation of this specification.
 
 ## 2. Diagnostic Infrastructure
 
@@ -476,7 +481,7 @@ CompileStatus(Δ) =
 ### 2.4 Diagnostic Code Selection
 
 SpecCode : DiagId ⇀ DiagCode
-SpecCode(id) = c ⇔ the owning construct section of this specification assigns diagnostic code `c` to identifier `id`.
+SpecCode(id) = c ⇔ the owning construct section of this specification assigns diagnostic code `c` to identifier `id`. A construct section assigns `c` to `id` by listing the backtick-quoted rule label `id` parenthetically in the Condition column of the normative table row for `c`.
 SpecCode(id) = ⊥ ⇔ no owning construct section of this specification assigns a diagnostic code to `id`.
 
 **(Code)**
@@ -1014,7 +1019,7 @@ Checks(T) = BaseChecks(T) ++ AsmChecks(T)
 
 FirstFail([]) = ⊥
 FirstFail(J::Js) = c ⇔ Γ ⊢ J ⇑ c
-FirstFail(J::Js) = FirstFail(Js) ⇔ Γ ⊢ J ⇓ ok
+FirstFail(J::Js) = FirstFail(Js) ⇔ ∃ r. Γ ⊢ J ⇓ r
 
 **(ValidateManifest-Ok)**
 FirstFail(Checks(T)) = ⊥
@@ -1720,28 +1725,28 @@ This section owns the manifest, assembly-selection, source-root, deterministic-o
 
 | Code         | Severity | Detection    | Condition                                                                                    |
 | ------------ | -------- | ------------ | -------------------------------------------------------------------------------------------- |
-| `E-PRJ-0101` | Error    | Compile-time | `Ultraviolet.toml` not found at project root                                                 |
-| `E-PRJ-0102` | Error    | Compile-time | `Ultraviolet.toml` is not valid TOML                                                         |
-| `E-PRJ-0103` | Error    | Compile-time | Missing required `assembly` table, empty assembly list, required keys, or required key type  |
-| `E-PRJ-0104` | Error    | Compile-time | Unknown key in `assembly` table or unknown top-level key                                     |
-| `E-PRJ-0110` | Error    | Compile-time | Invalid `[toolchain]` section in manifest                                                    |
-| `E-PRJ-0111` | Error    | Compile-time | Invalid `[build]` section in manifest                                                        |
+| `E-PRJ-0101` | Error    | Compile-time | `Ultraviolet.toml` not found at project root (`Parse-Manifest-Missing`) |
+| `E-PRJ-0102` | Error    | Compile-time | `Ultraviolet.toml` is not valid TOML (`Parse-Manifest-Err`) |
+| `E-PRJ-0103` | Error    | Compile-time | Missing required `assembly` table, empty assembly list, required keys, or required key type (`WF-Assembly-Count-Err`, `WF-Assembly-Keys-Err`, `WF-Assembly-Required-Types-Err`, `WF-Assembly-Table-Err`) |
+| `E-PRJ-0104` | Error    | Compile-time | Unknown key in `assembly` table or unknown top-level key (`WF-TopKeys-Err`) |
+| `E-PRJ-0110` | Error    | Compile-time | Invalid `[toolchain]` section in manifest (`WF-Toolchain-Err`) |
+| `E-PRJ-0111` | Error    | Compile-time | Invalid `[build]` section in manifest (`WF-Build-Err`) |
 | `E-PRJ-0112` | Error    | Compile-time | No target profile was selected by CLI override or `[toolchain].target_profile`               |
-| `E-PRJ-0201` | Error    | Compile-time | `assembly.kind` is not in `{ "executable", "library", "dependency" }`                        |
-| `E-PRJ-0202` | Error    | Compile-time | Duplicate `assembly.name` values                                                             |
-| `E-PRJ-0203` | Error    | Compile-time | `assembly.name` is not a valid identifier                                                    |
-| `E-PRJ-0204` | Error    | Compile-time | `emit_ir` has invalid value or type                                                          |
-| `E-PRJ-0205` | Error    | Compile-time | Assembly selection failed (missing target or target not found)                               |
-| `E-PRJ-0206` | Error    | Compile-time | Ambiguous assembly root ownership for overlapping source roots                               |
-| `E-PRJ-0207` | Error    | Compile-time | `link_kind` has invalid value or type                                                        |
-| `E-PRJ-0208` | Error    | Compile-time | `link_kind` is only valid when `assembly.kind = "library"`                                   |
-| `E-PRJ-0209` | Error    | Compile-time | Assembly dependency graph imports an executable or contains a cycle through linked libraries |
-| `E-PRJ-0210` | Error    | Compile-time | Hosted library imports another linked library assembly                                       |
-| `E-PRJ-0301` | Error    | Compile-time | `assembly.root` or `out_dir` has invalid type, is absolute, or resolves outside root         |
-| `E-PRJ-0302` | Error    | Compile-time | `assembly.root` does not exist or is not a directory                                         |
-| `E-PRJ-0303` | Error    | Compile-time | Relative path derivation failed during deterministic ordering (file or directory)            |
-| `E-PRJ-0304` | Error    | Compile-time | Path canonicalization or module path derivation failed due to filesystem error               |
-| `E-PRJ-0305` | Error    | Compile-time | Directory enumeration failed during module discovery                                         |
+| `E-PRJ-0201` | Error    | Compile-time | `assembly.kind` is not in `{ "executable", "library", "dependency" }` (`WF-Assembly-Kind-Err`) |
+| `E-PRJ-0202` | Error    | Compile-time | Duplicate `assembly.name` values (`WF-Assembly-Name-Dup`) |
+| `E-PRJ-0203` | Error    | Compile-time | `assembly.name` is not a valid identifier (`WF-Assembly-Name-Err`) |
+| `E-PRJ-0204` | Error    | Compile-time | `emit_ir` has invalid value or type (`WF-Assembly-EmitIR-Err`, `WF-Assembly-EmitIRType-Err`) |
+| `E-PRJ-0205` | Error    | Compile-time | Assembly selection failed (missing target or target not found) (`Assembly-Select-Err`) |
+| `E-PRJ-0206` | Error    | Compile-time | Ambiguous assembly root ownership for overlapping source roots (`WF-Assembly-Root-Owner-Ambiguous`) |
+| `E-PRJ-0207` | Error    | Compile-time | `link_kind` has invalid value or type (`WF-Assembly-LinkKind-Err`, `WF-Assembly-LinkKindType-Err`) |
+| `E-PRJ-0208` | Error    | Compile-time | `link_kind` is only valid when `assembly.kind = "library"` (`WF-Assembly-LinkKind-Use-Err`) |
+| `E-PRJ-0209` | Error    | Compile-time | Assembly dependency graph imports an executable or contains a cycle through linked libraries (`Assembly-Graph-Err`) |
+| `E-PRJ-0210` | Error    | Compile-time | Hosted library imports another linked library assembly (`Assembly-Graph-HostedImport-Err`) |
+| `E-PRJ-0301` | Error    | Compile-time | `assembly.root` or `out_dir` has invalid type, is absolute, or resolves outside root (`WF-Assembly-OutDir-Path-Err`, `WF-Assembly-OutDirType-Err`, `WF-Assembly-Root-Path-Err`) |
+| `E-PRJ-0302` | Error    | Compile-time | `assembly.root` does not exist or is not a directory (`WF-Source-Root-Err`) |
+| `E-PRJ-0303` | Error    | Compile-time | Relative path derivation failed during deterministic ordering (file or directory) (`DirSeq-Rel-Fail`, `Disc-Rel-Fail`, `FileOrder-Rel-Fail`, `WF-RelPath-Err`) |
+| `E-PRJ-0304` | Error    | Compile-time | Path canonicalization or module path derivation failed due to filesystem error (`Resolve-Canonical-Err`) |
+| `E-PRJ-0305` | Error    | Compile-time | Directory enumeration failed during module discovery (`DirSeq-Read-Err`) |
 
 ## 4. Source Text and Lexical Structure
 
@@ -2667,20 +2672,20 @@ This section owns source-loading and lexical diagnostics not reintroduced by lat
 
 | Code         | Severity | Detection    | Condition                                                    |
 | ------------ | -------- | ------------ | ------------------------------------------------------------ |
-| `E-SRC-0101` | Error    | Compile-time | Invalid UTF-8 byte sequence                                  |
-| `E-SRC-0102` | Error    | Compile-time | Failed to read source file                                   |
-| `E-SRC-0103` | Error    | Compile-time | Embedded BOM found after the first position                  |
-| `E-SRC-0104` | Error    | Compile-time | Forbidden control character or null byte                     |
-| `E-SRC-0301` | Error    | Compile-time | Unterminated string literal                                  |
-| `E-SRC-0302` | Error    | Compile-time | Invalid escape sequence                                      |
-| `E-SRC-0303` | Error    | Compile-time | Invalid character literal                                    |
-| `E-SRC-0304` | Error    | Compile-time | Malformed numeric literal                                    |
-| `E-SRC-0306` | Error    | Compile-time | Unterminated block comment                                   |
-| `E-SRC-0307` | Error    | Compile-time | Invalid Unicode in identifier                                |
-| `E-SRC-0308` | Error    | Compile-time | Lexically sensitive Unicode character outside `unsafe` block |
-| `E-SRC-0309` | Error    | Compile-time | Tokenization failed to classify a character sequence         |
-| `E-SRC-0310` | Error    | Compile-time | Confusable identifier pair                                   |
-| `E-SRC-0311` | Error    | Compile-time | Mixed-script identifier                                      |
+| `E-SRC-0101` | Error    | Compile-time | Invalid UTF-8 byte sequence (`Step-Decode-Err`) |
+| `E-SRC-0102` | Error    | Compile-time | Failed to read source file (`ReadBytes-Err`) |
+| `E-SRC-0103` | Error    | Compile-time | Embedded BOM found after the first position (`Step-EmbeddedBOM-Err`) |
+| `E-SRC-0104` | Error    | Compile-time | Forbidden control character or null byte (`Step-Prohibited-Err`) |
+| `E-SRC-0301` | Error    | Compile-time | Unterminated string literal (`Lex-String-Unterminated`) |
+| `E-SRC-0302` | Error    | Compile-time | Invalid escape sequence (`Lex-Char-BadEscape`, `Lex-String-BadEscape`) |
+| `E-SRC-0303` | Error    | Compile-time | Invalid character literal (`Lex-Char-Invalid`, `Lex-Char-Unterminated`) |
+| `E-SRC-0304` | Error    | Compile-time | Malformed numeric literal (`Lex-Numeric-Err`) |
+| `E-SRC-0306` | Error    | Compile-time | Unterminated block comment (`Block-Comment-Unterminated`) |
+| `E-SRC-0307` | Error    | Compile-time | Invalid Unicode in identifier (`Lex-Ident-InvalidUnicode`) |
+| `E-SRC-0308` | Error    | Compile-time | Lexically sensitive Unicode character outside `unsafe` block (`LexSecure-Err`) |
+| `E-SRC-0309` | Error    | Compile-time | Tokenization failed to classify a character sequence (`Max-Munch-Err`) |
+| `E-SRC-0310` | Error    | Compile-time | Confusable identifier pair (`Confusable-Err`) |
+| `E-SRC-0311` | Error    | Compile-time | Mixed-script identifier (`MixedScript-Err`) |
 | `W-SRC-0101` | Warning  | Compile-time | UTF-8 BOM present at the start of the file                   |
 | `W-SRC-0301` | Warning  | Compile-time | Leading zeros in decimal literal                             |
 | `W-SRC-0308` | Warning  | Compile-time | Lexically sensitive Unicode character within `unsafe` block  |
@@ -2927,6 +2932,10 @@ IsOp(Tok(P), "#")
 ────────────────────────────────────────────
 Γ ⊢ ParseKeyBoundaryOpt(P) ⇓ (P, false)
 
+IsCtxIdent(t, s) ⇔ t.kind = Identifier ∧ t.lexeme = s
+
+`IsCtxIdent` recognizes contextual keywords; the recognized lexeme remains an ordinary identifier in every other position.
+
 ### 5.5 Token Consumption and List Parsing
 
 ConsumeState = {Consume(P, k), ConsumeDone(P)}
@@ -2980,6 +2989,44 @@ TrailingCommaAllowed(P_0, P, EndSet) ⇔ TrailingComma(P, EndSet) ∧ TokLine(To
 TrailingComma(P, EndSet)    ¬ TrailingCommaAllowed(P_0, P, EndSet)    c = Code(Trailing-Comma-Err)
 ─────────────────────────────────────────────────────────────
 Γ ⊢ Emit(c, Tok(P).span)
+
+**Bracketed Option Lists (Shared Schema).**
+The bracketed option lists of §§19.2, 20.1, 20.4, and 20.5 share one parameterized rule family. `El` ranges over option-element parsers; each owning section instantiates the family by substituting its element parser and rule-name prefix.
+
+**(Parse-OptListOpt-None)**
+¬ IsPunc(Tok(P), "[")
+──────────────────────────────────────────
+Γ ⊢ ParseOptListOpt(El, P) ⇓ (P, [])
+
+**(Parse-OptListOpt-Yes)**
+IsPunc(Tok(P), "[")    Γ ⊢ ParseOptList(El, Advance(P)) ⇓ (P_1, os)    IsPunc(Tok(P_1), "]")
+────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseOptListOpt(El, P) ⇓ (Advance(P_1), os)
+
+**(Parse-OptList-Empty)**
+IsPunc(Tok(P), "]")
+──────────────────────────────────────
+Γ ⊢ ParseOptList(El, P) ⇓ (P, [])
+
+**(Parse-OptList-Cons)**
+¬ IsPunc(Tok(P), "]")    Γ ⊢ El(P) ⇓ (P_1, o)    Γ ⊢ ParseOptListTail(El, P_1) ⇓ (P_2, os)
+──────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseOptList(El, P) ⇓ (P_2, [o] ++ os)
+
+**(Parse-OptListTail-Comma)**
+IsPunc(Tok(P), ",")    ¬ IsPunc(Tok(Advance(P)), "]")    Γ ⊢ El(Advance(P)) ⇓ (P_1, o)    Γ ⊢ ParseOptListTail(El, P_1) ⇓ (P_2, os)
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseOptListTail(El, P) ⇓ (P_2, [o] ++ os)
+
+**(Parse-OptListTail-TrailingComma)**
+IsPunc(Tok(P), ",")    IsPunc(Tok(Advance(P)), "]")
+──────────────────────────────────────────────────────
+Γ ⊢ ParseOptListTail(El, P) ⇓ (Advance(P), [])
+
+**(Parse-OptListTail-End)**
+¬ IsPunc(Tok(P), ",")
+────────────────────────────────────────
+Γ ⊢ ParseOptListTail(El, P) ⇓ (P, [])
 
 ### 5.6 ParseFile, Item Sequencing, and Terminators
 
@@ -3133,9 +3180,9 @@ This section owns parser-level diagnostics that are shared across feature chapte
 | Code         | Severity | Detection    | Condition                               |
 | ------------ | -------- | ------------ | --------------------------------------- |
 | `E-CNF-0401` | Error    | Compile-time | Reserved keyword used as identifier     |
-| `E-SRC-0510` | Error    | Compile-time | Missing statement terminator            |
-| `E-SRC-0520` | Error    | Compile-time | Generic syntax error (unexpected token) |
-| `E-SRC-0521` | Error    | Compile-time | Trailing comma in single-line list      |
+| `E-SRC-0510` | Error    | Compile-time | Missing statement terminator (`Missing-Terminator-Err`) |
+| `E-SRC-0520` | Error    | Compile-time | Generic syntax error (unexpected token) (`Parse-KeyMode-Err`, `Parse-Syntax-Err`) |
+| `E-SRC-0521` | Error    | Compile-time | Trailing comma in single-line list (`Trailing-Comma-Err`) |
 
 ## 6. Abstract Machine, Objects, Responsibility, and Authority
 
@@ -3145,29 +3192,40 @@ The language adopts a no ambient authority discipline: observable external effec
 
 #### 6.1.1 Capability Universe
 
-CapToken = {IO, Network, HeapAllocator, Reactor, ExecutionDomain, System, Time}
+BuiltinCapabilityClass = {IO, Network, HeapAllocator, Reactor, ExecutionDomain, System, Time, MonotonicTime, WallTime}
 
-CapInType : Type → 𝒫(CapToken)
+CapClass(p) ⇔ p ∈ BuiltinCapabilityClass ∨ (ClassDecl(p) = C ∧ ∃ B ∈ SuperclassPaths(C). CapClass(B))
+
+CapabilityClass = { p | CapClass(p) }
+
+Capability classes are ordinary classes. A user class that declares a capability superclass via `<:` is a capability class; the built-in classes above are the root capability classes.
+
+CapInType : Type → 𝒫(CapabilityClass)
+EffectiveCaps : Type → 𝒫(CapabilityClass)
 
 CapInType(TypePath([`Context`])) = {IO, Network, HeapAllocator, Reactor, ExecutionDomain, System, Time}
-CapInType(TypePath([`System`])) = {System}
-CapInType(TypeDynamic([`IO`])) = {IO}
-CapInType(TypeDynamic([`Network`])) = {Network}
-CapInType(TypeDynamic([`HeapAllocator`])) = {HeapAllocator}
-CapInType(TypeDynamic([`Reactor`])) = {Reactor}
-CapInType(TypeDynamic([`ExecutionDomain`])) = {ExecutionDomain}
-CapInType(TypeDynamic([`Time`])) = {Time}
-CapInType(TypeDynamic([`MonotonicTime`])) = {Time}
-CapInType(TypeDynamic([`WallTime`])) = {Time}
+CapInType(TypeDynamic([p])) = {p}    if CapClass(p)
+CapInType(TypeDynamic([p])) = ∅      if ¬ CapClass(p)
 CapInType(TypePerm(_, T)) = CapInType(T)
 CapInType(TypeTuple(Ts)) = ⋃{CapInType(T) | T ∈ Ts}
 CapInType(TypeArray(T, _)) = CapInType(T)
 CapInType(TypeSlice(T)) = CapInType(T)
 
-<!-- Source: "CapInType(TypeStruct(_), TypeRecord(_), TypeUnion(_), TypeEnum(_), TypeModalState(_), TypeApply(_), …) distributes structurally over the immediate component types of the type constructor (after alias expansion)." -->
 CapInType(T) distributes structurally over compound nominal, modal, union, and applied types after alias expansion.
 
 Implementations MAY compute `CapInType` by least fixed-point over nominal and alias expansion. Cycles MUST terminate by memoization or an equivalent visited-node strategy.
+
+CapUp(c) = {c} ∪ ⋃{ CapUp(B) | ClassDecl(c) = C ∧ B ∈ SuperclassPaths(C) ∧ CapClass(B) }
+
+CapDerive(c) = {c} ∪ DeriveSet(c)
+DeriveSet(Time) = {MonotonicTime, WallTime}
+DeriveSet(c) = ∅    for every other built-in capability class
+DeriveSet(c) = ⋃{ CapDerive(c') | c' ∈ CapResultClasses(c) }    for user capability classes
+CapResultClasses(c) = { p | CapClass(p) ∧ TypeDynamic([p]) occurs in a method result type of ClassDecl(c) }
+
+EffectiveCaps(T) = ⋃{ CapUp(c) ∪ CapDerive(c) | c ∈ CapInType(T) }
+
+`CapUp` makes a derived capability satisfy requirements stated against its capability ancestors. `CapDerive` grants what a class's own interface can mint; it generalizes the built-in `Time` derivation of `MonotonicTime` and `WallTime`. Both close under the same least-fixed-point strategy as `CapInType`.
 
 #### 6.1.2 No Ambient Authority Requirements
 
@@ -3180,8 +3238,11 @@ Implementations MAY compute `CapInType` by least fixed-point over nominal and al
 - a built-in procedure or method whose receiver is a capability value.
 
 CapReq(d) = ⋃{CapInType(T_i) | T_i is the type of a parameter or receiver of declaration d}
+EffectiveCapReq(d) = ⋃{EffectiveCaps(T_i) | T_i is the type of a parameter or receiver of declaration d}
 
-For every direct call from `d_src` to `d_tgt`, a conforming implementation MUST reject the program unless `CapReq(d_tgt) ⊆ CapReq(d_src)`.
+For every direct call from `d_src` to `d_tgt`, a conforming implementation MUST reject the program unless `CapReq(d_tgt) ⊆ EffectiveCapReq(d_src)`.
+
+**(NAA-4) User capabilities confer no new root authority.** Constructing a value of a user-defined capability class requires no ambient grant. A user-defined capability class confers authority only through the built-in capability values it encapsulates; every externally observable effect remains gated by NAA-3. Values of user-defined capability classes are subject to the attenuation requirements of §6.1.3 with respect to the capability values they encapsulate.
 
 #### 6.1.3 Attenuation Requirements
 
@@ -3267,7 +3328,7 @@ The no-ambient-authority requirements constrain the safe execution model. `unsaf
 IOPrim = {IOOpenRead, IOOpenWrite, IOOpenAppend, IOCreateWrite, IOReadFile, IOReadBytes, IOWriteFile, IOWriteStdout, IOWriteStderr, IOExists, IORemove, IOOpenDir, IOCreateDir, IOEnsureDir, IOKind, IORestrict}
 FilePrim = {FileReadAll, FileReadAllBytes, FileWrite, FileFlush, FileClose}
 DirPrim = {DirNext, DirClose}
-SystemPrim = {SystemGetEnv, SystemExit, SystemRun}
+SystemPrim = {SystemGetEnv, SystemExecutablePath, SystemArgumentCount, SystemArgument, SystemCurrentDirectory, SystemExit, SystemRun}
 NetworkPrim = {NetRestrictHost}
 HeapPrim = {HeapWithQuota, HeapAllocRaw, HeapDeallocRaw}
 ReactorPrim = {ReactorRun, ReactorRegister}
@@ -3889,17 +3950,17 @@ Update_B(𝔅, x, ⟨Valid, mv, `var`, resp⟩)
 **(Trans-Moved-NoAccess)**
 Lookup_B(𝔅, x) = ⟨Moved, _, _, _⟩    Read(x) ∨ Move(x) occurs
 ────────────────────────────────────────────────────────────────
-⇑ Code(E-MEM-3001)
+⇑ Code(Trans-Moved-NoAccess)
 
 **(Trans-Partial-NoAccess)**
 Lookup_B(𝔅, x) = ⟨PartiallyMoved(F), _, _, _⟩    Read(x.f) ∨ Move(x.f) occurs    f ∈ F
 ──────────────────────────────────────────────────────────────────────────────────────────
-⇑ Code(E-MEM-3001)
+⇑ Code(Trans-Partial-NoAccess)
 
 **(Trans-Let-NoReassign)**
 Lookup_B(𝔅, x) = ⟨s, mv, `let`, resp⟩    Reassign(x, v) occurs    s ∈ {Moved, PartiallyMoved(_)}
 ────────────────────────────────────────────────────────────────────────────────────────────────────
-⇑ Code(E-MEM-3006)
+⇑ Code(Trans-Let-NoReassign)
 
 JoinBindInfo(⟨s_1, mv_1, mut_1, resp_1⟩, ⟨s_2, mv_2, mut_2, resp_2⟩) =
   { ⟨JoinState(s_1, s_2), mv_1, mut_1, resp_1⟩   if mv_1 = mv_2 ∧ mut_1 = mut_2 ∧ resp_1 = resp_2
@@ -4313,7 +4374,7 @@ ClosureCaptureProv(C, Ω) = [π_1, …, π_n]    JoinAllProv([π_1, …, π_n]) 
 
 **(P-Closure-Escape-Err)**
 C = ClosureExpr(params, ret_type_opt, body)    CaptureSet(C) ≠ ∅    ¬ClosureEscapeCheck(C, Ω)
-∃ x ∈ CaptureSet(C). x ∈ ClosureLocalSharedCaptures(C, Γ) ∨ (Lookup_π(Σ_π, x) = π_x ∧ π_x < ClosureTargetProv(C, Ω))    c = Code(E-CON-0086)
+∃ x ∈ CaptureSet(C). x ∈ ClosureLocalSharedCaptures(C, Γ) ∨ (Lookup_π(Σ_π, x) = π_x ∧ π_x < ClosureTargetProv(C, Ω))    c = Code(P-Closure-Escape-Err)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; Ω ⊢ C ⇑ c
 
@@ -4676,17 +4737,17 @@ This section owns binding-state, region/frame, provenance, and unsafe-runtime di
 | Code         | Severity | Detection    | Condition                                                            |
 | ------------ | -------- | ------------ | -------------------------------------------------------------------- |
 | `E-MEM-1206` | Error    | Compile-time | Named region not found for allocation                                |
-| `E-MEM-1207` | Error    | Compile-time | `frame` used with no active region in scope                          |
-| `E-MEM-1208` | Error    | Compile-time | `r.frame` target is not in `Region@Active` state                     |
-| `E-MEM-3001` | Error    | Compile-time | Read or move of a binding in Moved or PartiallyMoved state           |
+| `E-MEM-1207` | Error    | Compile-time | `frame` used with no active region in scope (`Frame-NoActiveRegion-Err`) |
+| `E-MEM-1208` | Error    | Compile-time | `r.frame` target is not in `Region@Active` state (`Frame-Target-NotActive-Err`) |
+| `E-MEM-3001` | Error    | Compile-time | Read or move of a binding in Moved or PartiallyMoved state (`Trans-Moved-NoAccess`, `Trans-Partial-NoAccess`, `B-Closure-RefCapture-Moved-Err`) |
 | `E-MEM-3003` | Error    | Compile-time | Reassignment of immutable binding                                    |
 | `E-MEM-3004` | Error    | Compile-time | Partial move from binding without `unique` permission                |
 | `E-MEM-3005` | Error    | Compile-time | Explicit call to `drop` method with destructor signature             |
-| `E-MEM-3006` | Error    | Compile-time | Attempt to move from immovable binding (`:=`)                        |
-| `E-MEM-3007` | Error    | Compile-time | `unique` binding from place expression requires explicit `move`      |
+| `E-MEM-3006` | Error    | Compile-time | Attempt to move from immovable binding (`:=`) (`Trans-Let-NoReassign`, `B-Closure-MoveCapture-Immovable-Err`) |
+| `E-MEM-3007` | Error    | Compile-time | `unique` binding from place expression requires explicit `move` (`B-LetVar-UniqueNonMove-Err`) |
 | `E-MEM-3020` | Error    | Compile-time | Value with shorter-lived provenance escapes to longer-lived location |
 | `E-MEM-3021` | Error    | Compile-time | Region allocation `^` outside region scope                           |
-| `E-MEM-3030` | Error    | Compile-time | Unsafe operation outside block                                       |
+| `E-MEM-3030` | Error    | Compile-time | Unsafe operation outside block (`AllocRaw-Unsafe-Err`, `DeallocRaw-Unsafe-Err`, `Region-Unchecked-Unsafe-Err`, `Transmute-Unsafe-Err`) |
 
 ## 7. Name Resolution and Visibility
 
@@ -4731,7 +4792,6 @@ ReservedUltraviolet(x) ⇔ IdEq(x, `ultraviolet`)
 ReservedId(x) ⇔ ReservedGen(x) ∨ ReservedUltraviolet(x)
 ReservedModulePath(path) ⇔ (|path| ≥ 1 ∧ IdEq(path[0], `ultraviolet`)) ∨ (∃ i. ReservedGen(path[i]))
 
-<!-- Source: "The `ultraviolet::...` namespace prefix is reserved for specification-defined features. User programs and vendor extensions MUST NOT use this namespace." -->
 
 PrimTypeNames = {`i8`, `i16`, `i32`, `i64`, `i128`, `u8`, `u16`, `u32`, `u64`, `u128`, `f16`, `f32`, `f64`, `bool`, `char`, `usize`, `isize`}
 SpecialTypeNames = {`Self`, `Drop`, `Bitcopy`, `Clone`, `Eq`, `Hash`, `Hasher`, `Iterator`, `Discrete`, `FfiSafe`, `string`, `bytes`, `Modal`, `Region`, `RegionOptions`, `CancelToken`, `Context`, `TestAuthority`, `System`, `IO`, `HeapAllocator`, `Network`, `ExecutionDomain`, `CpuSet`, `Priority`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`, `Duration`, `MonotonicInstant`, `UtcInstant`, `TimeError`}
@@ -4996,10 +5056,10 @@ UsingSpecNames([s_1, …, s_n]) = [UsingSpecName(s_1), …, UsingSpecName(s_n)]
 **(DeclNames-Using)**
 Γ ⊢ DeclNames(rest, p) ⇓ D
 ────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ DeclNames(⟨UsingDecl, _, _, _, _⟩ :: rest, p) ⇓ D
+Γ ⊢ DeclNames(UsingDecl(_, _, _, _, _) :: rest, p) ⇓ D
 
 **(DeclNames-Item)**
-it ≠ ⟨UsingDecl, _, _, _, _⟩    Γ ⊢ ItemBindings(it, p) ⇓ B    Γ ⊢ DeclNames(rest, p) ⇓ D
+it ≠ UsingDecl(_, _, _, _, _)    Γ ⊢ ItemBindings(it, p) ⇓ B    Γ ⊢ DeclNames(rest, p) ⇓ D
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ DeclNames(it :: rest, p) ⇓ Names(B) ∪ D
 
@@ -5009,33 +5069,37 @@ DeclNames(m) = DeclNames(m.items, m.path)
 
 **(Bind-Procedure)**
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ItemBindings(⟨ProcedureDecl, _, name, _, _, _, _, _⟩, p) ⇓ [(name, ⟨Value, p, ⊥, Decl⟩)]
+Γ ⊢ ItemBindings(ProcedureDecl(_, _, name, _, _, _, _, _, _, _, _), p) ⇓ [(name, ⟨Value, p, ⊥, Decl⟩)]
 
 **(Bind-ExternBlock)**
 B = [(name_i, ⟨Value, p, ⊥, Decl⟩) | ExternProcDecl(_, _, name_i, _, _, _, _, _, _, _, _) ∈ items]
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ItemBindings(⟨ExternBlock, _, _, _, items, _, _⟩, p) ⇓ B
+Γ ⊢ ItemBindings(ExternBlock(_, _, _, items, _, _), p) ⇓ B
 
 **(Bind-Record)**
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ItemBindings(⟨RecordDecl, _, name, _, _, _, _⟩, p) ⇓ [(name, ⟨Type, p, ⊥, Decl⟩)]
+Γ ⊢ ItemBindings(RecordDecl(_, _, name, _, _, _, _, _, _, _), p) ⇓ [(name, ⟨Type, p, ⊥, Decl⟩)]
 
 **(Bind-Enum)**
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ItemBindings(⟨EnumDecl, _, name, _, _, _, _⟩, p) ⇓ [(name, ⟨Type, p, ⊥, Decl⟩)]
+Γ ⊢ ItemBindings(EnumDecl(_, _, name, _, _, _, _, _, _, _), p) ⇓ [(name, ⟨Type, p, ⊥, Decl⟩)]
+
+**(Bind-Modal)**
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ItemBindings(ModalDecl(_, _, name, _, _, _, _, _, _, _), p) ⇓ [(name, ⟨Type, p, ⊥, Decl⟩)]
 
 **(Bind-Class)**
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ItemBindings(⟨ClassDecl, _, name, _, _, _, _⟩, p) ⇓ [(name, ⟨Class, p, ⊥, Decl⟩)]
+Γ ⊢ ItemBindings(ClassDecl(_, _, name, _, _, _, _, _, _, _), p) ⇓ [(name, ⟨Class, p, ⊥, Decl⟩)]
 
 **(Bind-TypeAlias)**
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ItemBindings(⟨TypeAliasDecl, _, name, _, _, _⟩, p) ⇓ [(name, ⟨Type, p, ⊥, Decl⟩)]
+Γ ⊢ ItemBindings(TypeAliasDecl(_, _, name, _, _, _, _, _), p) ⇓ [(name, ⟨Type, p, ⊥, Decl⟩)]
 
 **(Bind-Static)**
 Γ ⊢ PatNames(pat) ⇓ N
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ItemBindings(⟨StaticDecl, _, _, ⟨pat, _, _, _, _⟩, _, _⟩, p) ⇓ [(n, ⟨Value, p, ⊥, Decl⟩) | n ∈ N]
+Γ ⊢ ItemBindings(StaticDecl(_, _, _, ⟨pat, _, _, _, _⟩, _, _), p) ⇓ [(n, ⟨Value, p, ⊥, Decl⟩) | n ∈ N]
 
 **(Bind-Import)**
 Γ ⊢ ImportNames(u) ⇓ B
@@ -5864,11 +5928,11 @@ This section owns name-resolution, visibility, and reserved-name diagnostics.
 
 | Code         | Severity | Detection    | Condition                                                                                                                                                                                                                                                                                 |
 | ------------ | -------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `E-CNF-0406` | Error    | Compile-time | User declaration uses `gen_` prefix                                                                                                                                                                                                                                                       |
-| `E-MOD-1203` | Error    | Compile-time | Name introduced by `using` or `import as` conflicts with existing                                                                                                                                                                                                                         |
-| `E-MOD-1207` | Error    | Compile-time | Cannot access a non-public item from this scope                                                                                                                                                                                                                                           |
-| `E-MOD-1301` | Error    | Compile-time | Unresolved name: identifier not found in any accessible scope                                                                                                                                                                                                                             |
-| `E-MOD-1302` | Error    | Compile-time | Duplicate declaration in module scope                                                                                                                                                                                                                                                     |
+| `E-CNF-0406` | Error    | Compile-time | User declaration uses `gen_` prefix (`Intro-Reserved-Gen-Err`) |
+| `E-MOD-1203` | Error    | Compile-time | Name introduced by `using` or `import as` conflicts with existing (`Import-Using-Name-Conflict`) |
+| `E-MOD-1207` | Error    | Compile-time | Cannot access a non-public item from this scope (`Access-Err`) |
+| `E-MOD-1301` | Error    | Compile-time | Unresolved name: identifier not found in any accessible scope (`ResolveExpr-Ident-Err`) |
+| `E-MOD-1302` | Error    | Compile-time | Duplicate declaration in module scope (`Collect-Dup`, `Intro-Dup`, `Names-Step-Dup`) |
 | `E-MOD-1304` | Error    | Compile-time | Name reuse: identifier already bound in an enclosing scope; choose a different name or use `using source as alias` for a compile-time alias (`Intro-Outer-Err`). When the outer binding is a universe name (primitive, special, or async type), the message SHOULD identify the category. |
 | `E-MOD-1307` | Error    | Compile-time | Ambiguous name or method resolution; disambiguation required                                                                                                                                                                                                                              |
 | `E-MOD-1308` | Error    | Compile-time | `using source as alias`: `source` does not resolve in any accessible scope (`Using-Alias-Unresolved`)                                                                                                                                                                                     |
@@ -5892,12 +5956,26 @@ e = Path(path, name)    ValuePathType(path, name) = T    StaticDecl(_, _, _, ⟨
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ConstLen(e) ⇓ n
 
+CtPureEnv(Γ) = the compile-time environment of §22.1.5 with no capability bindings and no emission rights
+Φ_pure = ⟨files: ∅, root: ⊥, [], [], 0⟩
+
+**(ConstLen-Comptime)**
+e does not match the Literal form of ConstLen-Lit    e does not match the Path form of ConstLen-Path
+Γ ⊢ CtEval(CtPureEnv(Γ), Φ_pure, e) ⇓ (CtPrim(n), _, Φ_1)    CtPendingEmits(Φ_1) = []    n ∈ ℕ    InRange(n, "usize")
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ConstLen(e) ⇓ n
+
+Array-length expressions admit any pure, capability-free, emission-free compile-time-evaluable expression. `ConstLen-Comptime` evaluation occurs during Phase 3 over the Phase-2-expanded module set; any `CtBuiltinCall` that requires capabilities or emission leaves `CtEval` undefined, so `ConstLen-Err` applies.
+
 **(ConstLen-Err)**
 ¬ ∃ n. Γ ⊢ ConstLen(e) ⇓ n    c = Code(ConstLen-Err)
 ────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ConstLen(e) ⇑ c
 
 MembersEq([T_1, …, T_n], [U_1, …, U_n]) ⇔ ∃ U'. Permutation(U', [U_1, …, U_n]) ∧ ∀ i. 0 ≤ i < n ⇒ Γ ⊢ T_i ≡ U'[i]
+
+TypeKeyString(T) = TypeRender(AliasExpand(T))
+UnionSort([T_1, …, T_n]) = the stable sort of [T_1, …, T_n] by byte-wise lexicographic order of TypeKeyString
 
 **(T-Equiv-Prim)**
 T = TypePrim(n)    U = TypePrim(n)
@@ -6019,7 +6097,11 @@ T = TypeRefine(T_0, P_1)    U = TypeRefine(U_0, P_2)    Γ ⊢ T_0 ≡ U_0    Pr
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ T ≡ U
 
-PredicateEquiv(P_1, P_2) ⇔ ∀ σ. (Eval(P_1, σ) = true ⇔ Eval(P_2, σ) = true)
+PredSubject(P) = the binder identifier the refinement form introduces for the refined value in P
+PredNorm(P) = P with every free occurrence of PredSubject(P) replaced by the reserved subject symbol ⌀, and no other rewriting
+PredicateEquiv(P_1, P_2) ⇔ PredNorm(P_1) = PredNorm(P_2)    (structural AST equality)
+
+Predicates that are semantically equivalent but structurally distinct after subject renaming are NOT equivalent for type equivalence. Implementations MUST NOT accept broader equivalences; this keeps `≡` decidable and aligned with `Unify-Refine`.
 
 **(T-Equiv-Refine-Norm)**
 T = TypeRefine(TypeRefine(T_0, P_1), P_2)    U = TypeRefine(T_0, P_1 ∧ P_2)
@@ -6158,20 +6240,7 @@ T = TypeApply(path, [T_1, …, T_n])    U = TypeApply(path, [U_1, …, U_n])    
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ T <: U
 
-**(Sub-Generic-Invariant-Err)**
-T = TypeApply(path, [T_1, …, T_n])    U = TypeApply(path, [U_1, …, U_n])    ∃ i, VarianceOf(path, i) = `=` ∧ ¬(Γ ⊢ T_i ≡ U_i)    c = Code(E-TYP-1520)
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ T <: U ⇑ c
-
-**(Sub-Generic-Covariant-Err)**
-T = TypeApply(path, [T_1, …, T_n])    U = TypeApply(path, [U_1, …, U_n])    ∃ i, VarianceOf(path, i) = `+` ∧ ¬(Γ ⊢ T_i <: U_i)    c = Code(E-TYP-1521)
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ T <: U ⇑ c
-
-**(Sub-Generic-Contravariant-Err)**
-T = TypeApply(path, [T_1, …, T_n])    U = TypeApply(path, [U_1, …, U_n])    ∃ i, VarianceOf(path, i) = `-` ∧ ¬(Γ ⊢ U_i <: T_i)    c = Code(E-TYP-1521)
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ T <: U ⇑ c
+Failure of `VarianceSatisfied` makes `Sub-Generic` inapplicable; diagnostics for variance violations are emitted only at use sites that require the subtype relationship (§14.2.4).
 
 **(Sub-Refl)**
 T ∈ 𝒯
@@ -6351,12 +6420,12 @@ T = TypeRangeToInclusive(T_0)    U = TypeRangeToInclusive(U_0)
 ⟨UnifyStep({(T, U)} ∪ C, θ)⟩ → ⟨UnifyStep({(T_0, U_0)} ∪ C, θ)⟩
 
 **(Unify-Refine)**
-T = TypeRefine(T_0, pred)    U = TypeRefine(U_0, pred)
+T = TypeRefine(T_0, pred_T)    U = TypeRefine(U_0, pred_U)    PredNorm(pred_T) = PredNorm(pred_U)
 ────────────────────────────────────────────────────────────────────────────
 ⟨UnifyStep({(T, U)} ∪ C, θ)⟩ → ⟨UnifyStep({(T_0, U_0)} ∪ C, θ)⟩
 
 **(Unify-Refine-Pred-Fail)**
-T = TypeRefine(T_0, pred_T)    U = TypeRefine(U_0, pred_U)    pred_T ≠ pred_U
+T = TypeRefine(T_0, pred_T)    U = TypeRefine(U_0, pred_U)    PredNorm(pred_T) ≠ PredNorm(pred_U)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ⟨UnifyStep({(T, U)} ∪ C, θ)⟩ → ⟨UnifyFail⟩
 
@@ -6365,9 +6434,20 @@ T = TypePrim(p_T)    U = TypePrim(p_U)    p_T ≠ p_U
 ────────────────────────────────────────────────────────────────────────────
 ⟨UnifyStep({(T, U)} ∪ C, θ)⟩ → ⟨UnifyFail⟩
 
+**(Unify-Union-Eq)**
+T = TypeUnion(Ts)    U = TypeUnion(Us)    TVars(T) = ∅    TVars(U) = ∅    UnionSort(Ts) = UnionSort(Us)
+──────────────────────────────────────────────────────────────────────────────────────────────────────────
+⟨UnifyStep({(T, U)} ∪ C, θ)⟩ → ⟨UnifyStep(C, θ)⟩
+
+**(Unify-Union-Fail)**
+T = TypeUnion(Ts)    U = TypeUnion(Us)    (TVars(T) ≠ ∅ ∨ TVars(U) ≠ ∅ ∨ UnionSort(Ts) ≠ UnionSort(Us))
+──────────────────────────────────────────────────────────────────────────────────────────────────────────
+⟨UnifyStep({(T, U)} ∪ C, θ)⟩ → ⟨UnifyFail⟩
+
+Unification over unions is order-insensitive but member-syntactic; unions containing unsolved type variables do not unify. `T-Equiv-Union` remains permutation-closed over `≡` and strictly contains the solver's relation; the solver is the decidable approximation.
+
 **(Unify-Rigid-Fail)**
-((T = TypeUnion(_) ∧ U = TypeUnion(_)) ∨
- (T = TypePath(_) ∧ U = TypePath(_)) ∨
+((T = TypePath(_) ∧ U = TypePath(_)) ∨
  (T = TypeString(_) ∧ U = TypeString(_)) ∨
  (T = TypeBytes(_) ∧ U = TypeBytes(_)) ∨
  (T = TypeDynamic(_) ∧ U = TypeDynamic(_)) ∨
@@ -6377,10 +6457,39 @@ T = TypePrim(p_T)    U = TypePrim(p_U)    p_T ≠ p_U
 ────────────────────────────────────────────────────────────────────────────────────────────────
 ⟨UnifyStep({(T, U)} ∪ C, θ)⟩ → ⟨UnifyFail⟩
 
+HeadCtor(TypePrim(n)) = n
+HeadCtor(TypeTuple(_)) = `tuple`
+HeadCtor(TypeArray(_, _)) = `array`
+HeadCtor(TypeSlice(_)) = `slice`
+HeadCtor(TypeUnion(_)) = `union`
+HeadCtor(TypeFunc(_, _)) = `function`
+HeadCtor(TypeClosure(_, _, _)) = `closure`
+HeadCtor(TypePtr(_, _)) = `ptr`
+HeadCtor(TypeRawPtr(_, _)) = `rawptr`
+HeadCtor(TypePerm(_, _)) = `perm`
+HeadCtor(TypeString(_)) = `string`
+HeadCtor(TypeBytes(_)) = `bytes`
+HeadCtor(TypeDynamic(p)) = ⟨`dyn_class`, p⟩
+HeadCtor(TypeOpaque(p)) = ⟨`opaque`, p⟩
+HeadCtor(TypeRefine(_, _)) = `refinement`
+HeadCtor(TypeModalState(_, _)) = `modal_state`
+HeadCtor(TypeRange(_)) = `range`
+HeadCtor(TypeRangeInclusive(_)) = `range_inclusive`
+HeadCtor(TypeRangeFrom(_)) = `range_from`
+HeadCtor(TypeRangeTo(_)) = `range_to`
+HeadCtor(TypeRangeToInclusive(_)) = `range_to_inclusive`
+HeadCtor(TypeRangeFull) = `range_full`
+HeadCtor(TypeApply(p, _)) = ⟨`apply`, p⟩
+HeadCtor(TypePath(p)) = ⟨`path`, p⟩
+
+`HeadCtor` is the head-constructor discriminator for unification; it is distinct from the deep constructor census `TypeCtor` of §1.1.
+
 **(Unify-Ctor-Mismatch)**
-TypeCtor(T) ≠ TypeCtor(U)    T ∉ TVar    U ∉ TVar
+HeadCtor(T) ≠ HeadCtor(U)    T ∉ TVar    U ∉ TVar
 ────────────────────────────────────────────────────────────────────────────
 ⟨UnifyStep({(T, U)} ∪ C, θ)⟩ → ⟨UnifyFail⟩
+
+A decomposition rule and a failure rule never apply to the same constraint pair: failure rules apply only when no decomposition rule and no variable rule applies to that pair.
 
 **(Unify-Ok)**
 ⟨UnifyStart(C)⟩ →* ⟨UnifyDone(θ)⟩
@@ -6462,16 +6571,58 @@ Feature-local synthesis and checking rules are owned by the corresponding featur
 
 ### 8.4 Metatheoretic Properties
 
-This subsection states the key metatheoretic properties that the Ultraviolet type system is designed to satisfy. Formal proofs are deferred to supplementary materials.
+This subsection defines the step relation over which the metatheoretic properties are stated, then states the key properties that the Ultraviolet type system is designed to satisfy. Formal proofs are deferred to supplementary materials.
+
+**The Step Relation.**
+
+```text
+Frame = ⟨ctor, vs, es⟩
+  where ctor is an expression constructor of arity |vs| + 1 + |es|,
+        vs are already-evaluated operand values (left of the hole),
+        es are pending operand expressions (right of the hole),
+        and operand order is Children_LTR (§24.7.7)
+ScopeFrame = the block, key, region, and frame configurations of ExecState (§18.1.5, §18.7.5, §18.8.5, §19.2.5)
+
+K = [Frame | ScopeFrame]    (continuation stack, innermost first)
+Config = ⟨Focus, K, σ⟩    Focus ∈ Expr ∪ {Done(out)}    out ∈ {Val(v), Ctrl(κ)}
+```
+
+**(Step-Focus-Down)**
+e = ctor(e_1, …, e_n)    n ≥ 1    ¬ Redex(e)    e_1 not a value
+──────────────────────────────────────────────────────────────────────────
+⟨e, K, σ⟩ → ⟨e_1, ⟨ctor, [], [e_2, …, e_n]⟩ :: K, σ⟩
+
+**(Step-Focus-Next)**
+──────────────────────────────────────────────────────────────────────────────────────────
+⟨Done(Val(v)), ⟨ctor, vs, [e] ++ es⟩ :: K, σ⟩ → ⟨e, ⟨ctor, vs ++ [v], es⟩ :: K, σ⟩
+
+**(Step-Redex)**
+Γ ⊢ EvalSigmaBase(ctor(v_1, …, v_n), σ) ⇓ (out, σ')
+──────────────────────────────────────────────────────────────────────────
+⟨Done(Val(v_n)), ⟨ctor, [v_1, …, v_{n-1}], []⟩ :: K, σ⟩ → ⟨Done(out), K, σ'⟩
+
+**(Step-Ctrl-Unwind)**
+F is a Frame (not a ScopeFrame)
+──────────────────────────────────────────────────────────────
+⟨Done(Ctrl(κ)), F :: K, σ⟩ → ⟨Done(Ctrl(κ)), K, σ⟩
+
+`Redex(e)` holds when every operand position of `e` is a value or `e` is a leaf form (literals, names). `EvalSigmaBase` denotes exactly the base-case `EvalSigma` and `ExecSigma` rules — those whose premises contain no recursive `EvalSigma` on subexpressions. Composite forms with scoped or short-circuit evaluation (blocks, `if`, loops, calls, key, region, and frame statements, `defer`, and pattern dispatch) do not use `Step-Focus-Down`; they push their existing scope configurations: calls push the callee body block via `BlockEnter`, and the `Step-Exec-*` rules of Chapters 18 and 19 are imported unchanged as steps over `ScopeFrame`s. `Ctrl(κ)` propagates through value frames by `Step-Ctrl-Unwind` and is intercepted by the innermost `ScopeFrame` whose existing rules handle it: loop frames absorb `Break` and `Continue`; cleanup runs per the `Step-Exec-*-Exit-Ctrl` rules.
+
+```text
+⟨e, σ⟩ →* (out, σ') ⇔ ⟨e, [], σ⟩ →* ⟨Done(out), [], σ'⟩
+```
+
+**(Coherence)** (required metatheorem)
+Γ ⊢ EvalSigma(e, σ) ⇓ (out, σ') ⇔ ⟨e, σ⟩ →* (out, σ')
+
+**Config Typing.**
+Γ; R; L ⊢ ⟨e, K, σ⟩ : T holds when Γ; R; L ⊢ e : T_e and `K` is a well-typed continuation from `T_e` to `T`: each `Frame`'s hole type matches the corresponding operand type of its constructor, and `ScopeFrame`s type per their owning chapters.
 
 **(Progress)**
-If Γ ⊢ e : T and `e` is not a value, then either:
-1. `e` can take a step.
-2. `e` is blocked on an external operation.
-3. `e` panics.
+If Γ; R; L ⊢ C : T and C is not ⟨Done(out), [], σ⟩, then C → C' for some C', or C is blocked on a host primitive (§6.2) or a key acquisition (§19.2.5).
 
 **(Preservation)**
-If Γ ⊢ e : T and `e → e'`, then Γ ⊢ e' : T.
+If Γ; R; L ⊢ C : T and C → C', then Γ; R; L ⊢ C' : T.
 
 **(No-Use-After-Free)**
 A binding in state `Moved` or `PartiallyMoved(F)` where `f ∈ F` cannot be read or moved from.
@@ -6512,10 +6663,8 @@ This section owns core type-inference and alias-cycle diagnostics that are not s
 
 | Code         | Severity | Detection    | Condition                                                  |
 | ------------ | -------- | ------------ | ---------------------------------------------------------- |
-| `E-TYP-1506` | Error    | Compile-time | Type alias cycle detected                                  |
-| `E-TYP-1520` | Error    | Compile-time | Invariant type parameter requires exact type match         |
-| `E-TYP-1521` | Error    | Compile-time | Covariant or contravariant generic variance requirement not satisfied |
-| `E-TYP-1530` | Error    | Compile-time | Type inference failed; unable to determine type            |
+| `E-TYP-1506` | Error    | Compile-time | Type alias cycle detected (`TypeAlias-Recursive-Err`) |
+| `E-TYP-1530` | Error    | Compile-time | Type inference failed; unable to determine type (`PtrNull-Infer-Err`, `T-LetStmt-Infer-Err`, `Unify-Fail`) |
 | `E-TYP-1531` | Error    | Compile-time | Float literal explicit suffix does not match expected type |
 
 ## 9. Attributes and Metadata
@@ -6750,8 +6899,8 @@ This section introduces no direct lowering. Lowering consequences of specific at
 | Code         | Severity | Detection    | Condition                                      |
 | ------------ | -------- | ------------ | ---------------------------------------------- |
 | `E-MOD-2450` | Error    | Compile-time | Malformed attribute syntax                     |
-| `E-MOD-2451` | Error    | Compile-time | Unknown attribute name                         |
-| `E-MOD-2452` | Error    | Compile-time | Attribute not valid on target declaration kind |
+| `E-MOD-2451` | Error    | Compile-time | Unknown attribute name (`Attr-Unknown`) |
+| `E-MOD-2452` | Error    | Compile-time | Attribute not valid on target declaration kind (`Attr-Target-Err`) |
 
 ### 9.2 Vendor Attributes
 
@@ -6809,7 +6958,7 @@ This section introduces no additional lowering rules.
 
 | Code         | Severity | Detection    | Condition                                               |
 | ------------ | -------- | ------------ | ------------------------------------------------------- |
-| `E-CNF-0402` | Error    | Compile-time | Reserved namespace `ultraviolet::...` used by user code |
+| `E-CNF-0402` | Error    | Compile-time | Reserved namespace `ultraviolet::...` used by user code (`Intro-Reserved-Ultraviolet-Err`) |
 
 Unknown attribute-name rejection is owned by §9.1.7.
 
@@ -6818,7 +6967,7 @@ Unknown attribute-name rejection is owned by §9.1.7.
 #### 9.3.1 Syntax
 
 ```ebnf
-layout_attribute ::= attr_open "layout" "(" layout_args ")" attr_close
+layout_attribute ::= "#" "layout" "(" layout_args ")"
 layout_args      ::= layout_kind ("," layout_kind)*
 layout_kind      ::= "C" | "packed" | "align" "(" integer_literal ")" | int_type
 int_type         ::= "i8" | "i16" | "i32" | "i64" | "u8" | "u16" | "u32" | "u64"
@@ -6907,7 +7056,7 @@ Layout attributes constrain the layout and ABI calculations used by Chapter 24. 
 | `E-MOD-2453` | Error    | Compile-time | `align(N)` where N is not a power of two   |
 | `E-MOD-2454` | Error    | Compile-time | `packed` applied to non-record             |
 | `E-MOD-2455` | Error    | Compile-time | Conflicting layout arguments               |
-| `E-TYP-2105` | Error    | Compile-time | Reference to packed field outside `unsafe` |
+| `E-TYP-2105` | Error    | Compile-time | Reference to packed field outside `unsafe` (`Packed-Field-Unsafe-Err`) |
 | `W-MOD-2451` | Warning  | Compile-time | `align(N)` where N < natural alignment     |
 
 ### 9.4 Optimization Attributes
@@ -6915,10 +7064,10 @@ Layout attributes constrain the layout and ABI calculations used by Chapter 24. 
 #### 9.4.1 Syntax
 
 ```ebnf
-inline_attribute ::= attr_open "inline" ("(" inline_mode ")")? attr_close
+inline_attribute ::= "#" "inline" ("(" inline_mode ")")?
 inline_mode      ::= "always" | "never" | "default"
 
-cold_attribute   ::= attr_open "cold" attr_close
+cold_attribute   ::= "#" "cold"
 ```
 
 #### 9.4.2 Parsing
@@ -6933,7 +7082,7 @@ Optimization attributes are ordinary `AttributeSpec` entries attached to `Proced
 
 **`#inline`.** The implementation SHOULD inline the procedure at call sites when feasible.
 
-**`#inline(always)`.** The implementation SHOULD inline the procedure at all call sites. If inlining is not possible, such as for reultraviolet procedures or procedures whose address is taken, the implementation SHOULD emit a warning.
+**`#inline(always)`.** The implementation SHOULD inline the procedure at all call sites. If inlining is not possible, such as for recursive procedures or procedures whose address is taken, the implementation SHOULD emit a warning.
 
 **`#inline(default)`.** Equivalent to omitting the attribute.
 
@@ -7079,7 +7228,7 @@ For `#dynamic`, runtime synchronization or runtime verification MUST be inserted
 #### 9.6.1 Syntax
 
 ```ebnf
-test_attribute      ::= attr_open "test" ("(" test_attribute_args ")")? attr_close
+test_attribute      ::= "#" "test" ("(" test_attribute_args ")")?
 test_attribute_args ::= test_attribute_arg ("," test_attribute_arg)*
 test_attribute_arg  ::= "name" ":" string_literal
                       | "covers" "(" string_literal ")"
@@ -7196,7 +7345,7 @@ stable test identity. `name: "..."` is a display label.
 
 | Code         | Severity | Detection    | Condition                                        |
 | ------------ | -------- | ------------ | ------------------------------------------------ |
-| `E-MOD-2452` | Error    | Compile-time | `#test` applied outside an ordinary procedure |
+| `E-TST-0109` | Error    | Compile-time | `#test` applied outside an ordinary procedure |
 | `E-TST-0101` | Error    | Compile-time | Malformed `#test` argument                    |
 | `E-TST-0102` | Error    | Compile-time | Duplicate `#test` name argument               |
 | `E-TST-0103` | Error    | Compile-time | Malformed `covers(...)` argument                 |
@@ -7204,7 +7353,7 @@ stable test identity. `name: "..."` is a display label.
 | `E-TST-0105` | Error    | Compile-time | Invalid `TestAuthority` parameter                  |
 | `E-TST-0106` | Error    | Compile-time | `#test` procedure missing postcondition       |
 | `E-TST-0107` | Error    | Compile-time | Unknown audit coverage reference                 |
-| `E-TST-0108` | Error    | Compile-time | Unknown `uv test` target                         |
+| `E-TST-0108` | Error    | Compile-time | Unknown `uv test` target (`Test-Target-Err`) |
 
 ## 10. Permissions and Binding State
 
@@ -7275,16 +7424,7 @@ Permissions do not change the represented value of the underlying object.
 
 #### 10.1.6 Lowering
 
-Permission qualifiers do not alter value layout:
-
-**(Layout-Perm)**
-Γ ⊢ layout(TypePerm(p, T)) ⇓ L
-
-**(SizeOf-Perm)**
-Γ ⊢ sizeof(TypePerm(p, T)) = n
-
-**(AlignOf-Perm)**
-Γ ⊢ alignof(TypePerm(p, T)) = a
+Permission qualifiers do not alter value layout. `layout`, `sizeof`, and `alignof` for `TypePerm(p, T)` are defined by `Layout-Perm`, `Size-Perm`, and `Align-Perm` in §24.2.2.
 
 ABI and LLVM lowering for permission-qualified types are defined by the shared lowering and ABI framework in Chapter 24.
 
@@ -7451,9 +7591,9 @@ Admissibility is a static gate only. It does not introduce distinct runtime repr
 | ------------ | -------- | ------------ | --------------------------------------------------------------------- |
 | `E-TYP-1601` | Error    | Compile-time | Mutation through `const` path                                         |
 | `E-TYP-1602` | Error    | Compile-time | `unique` exclusion violation (aliasing or inactive use)               |
-| `E-TYP-1603` | Error    | Compile-time | Non-`move` argument with source provenance must be a place expression |
+| `E-TYP-1603` | Error    | Compile-time | Non-`move` argument with source provenance must be a place expression (`Call-Arg-NotPlace`) |
 | `E-TYP-1604` | Error    | Compile-time | Shared-place mutation cannot form a valid key-mediated write context  |
-| `E-TYP-1605` | Error    | Compile-time | Receiver permission incompatible with caller                          |
+| `E-TYP-1605` | Error    | Compile-time | Receiver permission incompatible with caller (`MethodCall-RecvPerm-Err`) |
 
 ## 11. Module-Level Forms
 
@@ -7496,15 +7636,7 @@ u = ⟨ImportDecl, _, path, _, _, _⟩    Γ ⊢ ResolveImportPath(path) ⇑ c
 ────────────────────────────────────────────────────────────────
 Γ ⊢ ImportNames(u) ⇑ c
 
-**(Bind-Import)**
-Γ ⊢ ImportNames(u) ⇓ B
-──────────────────────────────────────────────
-Γ ⊢ ItemBindings(u, p) ⇓ B
-
-**(Bind-Import-Err)**
-Γ ⊢ ImportNames(u) ⇑ c
-──────────────────────────────────────────────
-Γ ⊢ ItemBindings(u, p) ⇑ c
+Rules **(Bind-Import)** and **(Bind-Import-Err)** are defined once by §7.5.
 
 **(ResolveItem-Import)**
 ──────────────────────────────────────────────────────────────────────────────
@@ -7522,7 +7654,7 @@ u = ⟨ImportDecl, _, path, _, _, _⟩    Γ ⊢ ResolveImportPath(path) ⇑ c
 
 | Code         | Severity | Detection    | Condition                                 |
 | ------------ | -------- | ------------ | ----------------------------------------- |
-| `E-MOD-1202` | Error    | Compile-time | Import of non-existent assembly or module |
+| `E-MOD-1202` | Error    | Compile-time | Import of non-existent assembly or module (`Resolve-Import-Err`) |
 
 Import-coverage violations are owned by §11.5.7. Accessibility violations are owned by Chapter 7.
 
@@ -7647,15 +7779,7 @@ u = ⟨UsingDecl, `public`, ⟨UsingList, mp_raw, specs⟩, _, _⟩    Γ ⊢ Re
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ UsingNames(u) ⇑ c
 
-**(Bind-Using)**
-Γ ⊢ UsingNames(u) ⇓ B
-──────────────────────────────────────────────
-Γ ⊢ ItemBindings(u, p) ⇓ B
-
-**(Bind-Using-Err)**
-Γ ⊢ UsingNames(u) ⇑ c
-──────────────────────────────────────────────
-Γ ⊢ ItemBindings(u, p) ⇑ c
+Rules **(Bind-Using)** and **(Bind-Using-Err)** are defined once by §7.5.
 
 **(ResolveItem-Using)**
 ──────────────────────────────────────────────────────────────────────────────
@@ -7673,9 +7797,9 @@ u = ⟨UsingDecl, `public`, ⟨UsingList, mp_raw, specs⟩, _, _⟩    Γ ⊢ Re
 
 | Code         | Severity | Detection    | Condition                                        |
 | ------------ | -------- | ------------ | ------------------------------------------------ |
-| `E-MOD-1204` | Error    | Compile-time | Using path does not resolve to an item           |
-| `E-MOD-1205` | Error    | Compile-time | Attempt to `public using` a non-public item      |
-| `E-MOD-1206` | Error    | Compile-time | Duplicate item in a `using` list                 |
+| `E-MOD-1204` | Error    | Compile-time | Using path does not resolve to an item (`Resolve-Using-None`) |
+| `E-MOD-1205` | Error    | Compile-time | Attempt to `public using` a non-public item (`Using-List-Public-Err`, `Using-Path-Item-Public-Err`) |
+| `E-MOD-1206` | Error    | Compile-time | Duplicate item in a `using` list (`Using-List-Dup`) |
 | `W-MOD-1201` | Warning  | Compile-time | Wildcard `using` in a module exposing public API |
 
 Missing required cross-assembly imports are owned by §11.5.7.
@@ -7712,10 +7836,7 @@ Top-level `let` and `var` declarations are module-scope bindings. Their names ar
 
 StaticVisOk(vis, mut) ⇔ ¬ (vis = `public` ∧ mut = `var`)
 
-**(Bind-Static)**
-Γ ⊢ PatNames(pat) ⇓ N
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ItemBindings(⟨StaticDecl, _, _, ⟨pat, _, _, _, _⟩, _, _⟩, p) ⇓ [(n, ⟨Value, p, ⊥, Decl⟩) | n ∈ N]
+Rule **(Bind-Static)** is defined once by §7.5.
 
 **(WF-StaticDecl)**
 binding = ⟨pat, ty_opt, op, init, _⟩    StaticVisOk(vis, mut)    ty_opt = T_a    Γ; ⊥; ⊥ ⊢ init ⇐ T_a ⊣ ∅    Γ ⊢ pat ⇐ T_a ⊣ B    Distinct(PatNames(pat))
@@ -7766,34 +7887,15 @@ StaticSym(StaticDecl(_, _, _, binding, _, _), x) =
  Mangle(StaticDecl(_, _, _, binding, _, _))    if StaticName(binding) = x
  Mangle(StaticBinding(StaticDecl(_, _, _, binding, _, _), x))    otherwise
 
-**(Emit-Static-Const)**
-item = StaticDecl(attrs_opt, vis, mut, binding, span, doc)    mut = `let`    StaticName(binding) = name    binding = ⟨pat, ty_opt, op, init, _⟩    Γ ⊢ ConstInit(init) ⇓ bytes    Γ ⊢ Mangle(item) ⇓ sym
-───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EmitGlobal(item) ⇓ [GlobalConst(sym, bytes)]
-
-**(Emit-Static-Init)**
-item = StaticDecl(attrs_opt, vis, mut, binding, span, doc)    StaticName(binding) = name    binding = ⟨pat, ty_opt, op, init, _⟩    ((mut = `var`) ∨ (Γ ⊢ ConstInit(init) ⇑))    T = ExprType(init)    Γ ⊢ Mangle(item) ⇓ sym
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EmitGlobal(item) ⇓ [GlobalZero(sym, sizeof(T))]
-
-**(Emit-Static-Multi)**
-item = StaticDecl(attrs_opt, vis, mut, binding, span, doc)    StaticName(binding) = ⊥    StaticBindTypes(binding) = B    StaticBindList(binding) = [x_1, …, x_k]    ∀ i, Γ ⊢ Mangle(StaticBinding(item, x_i)) ⇓ sym_i
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EmitGlobal(item) ⇓ [GlobalZero(sym_1, sizeof(B[x_1])), …, GlobalZero(sym_k, sizeof(B[x_k]))]
+Rules **(Emit-Static-Const)**, **(Emit-Static-Init)**, **(Emit-Static-Multi)** are defined once by §24.4.1.
 
 InitSym(m) = PathSig(["ultraviolet", "runtime", "init"] ++ PathOfModule(m))
 
-**(InitFn)**
-InitSym(m) = sym
-──────────────────────────────
-Γ ⊢ InitFn(m) ⇓ sym
+Rule **(InitFn)** is defined once by §24.4.1.
 
 DeinitSym(m) = PathSig(["ultraviolet", "runtime", "deinit"] ++ PathOfModule(m))
 
-**(DeinitFn)**
-DeinitSym(m) = sym
-──────────────────────────────
-Γ ⊢ DeinitFn(m) ⇓ sym
+Rule **(DeinitFn)** is defined once by §24.4.1.
 
 StaticItems(P, m) = [ item | item ∈ ASTModule(P, m).items ∧ item = StaticDecl(_, _, _, _, _, _) ]
 
@@ -7817,73 +7919,20 @@ SeqIRList([IR] ++ IRs) = SeqIR(IR, SeqIRList(IRs))
 StaticStoreIR(item, []) = ε
 StaticStoreIR(item, [⟨x, v⟩] ++ bs) = SeqIR(StoreGlobal(StaticSym(item, x), v), StaticStoreIR(item, bs))
 
-**(Lower-StaticInit-Item)**
-item = StaticDecl(attrs_opt, vis, mut, binding, span, doc)    binding = ⟨pat, ty_opt, op, init, _⟩    Γ ⊢ LowerExpr(init) ⇓ ⟨IR_e, v⟩    Γ ⊢ MatchPattern(pat, v) ⇓ B    BindOrder(pat, B) = binds    Γ ⊢ InitPanicHandle(m) ⇓ IR_p
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ Lower-StaticInitItem(m, item) ⇓ SeqIR(IR_e, StaticStoreIR(item, binds), IR_p)
-
-**(Lower-StaticInitItems-Empty)**
-──────────────────────────────────────────────────────────
-Γ ⊢ Lower-StaticInitItems(m, []) ⇓ ε
-
-**(Lower-StaticInitItems-Cons)**
-Γ ⊢ Lower-StaticInitItem(m, item) ⇓ IR_i    Γ ⊢ Lower-StaticInitItems(m, items) ⇓ IR_r
-────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ Lower-StaticInitItems(m, [item] ++ items) ⇓ SeqIR(IR_i, IR_r)
-
-**(Lower-StaticInit)**
-StaticItems(Project(Γ), m) = items    Γ ⊢ Lower-StaticInitItems(m, items) ⇓ IR
-──────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ Lower-StaticInit(m) ⇓ IR
-
-**(InitCallIR)**
-Γ ⊢ InitFn(m) ⇓ sym
-────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ InitCallIR(m) ⇓ SeqIR(CallIR(sym, [PanicOutName]), PanicCheck)
+Rules **(Lower-StaticInit-Item)**, **(Lower-StaticInitItems-Empty)**, **(Lower-StaticInitItems-Cons)**, **(Lower-StaticInit)**, **(InitCallIR)** are defined once by §24.4.1.
 
 Rev([]) = []
 Rev([x] ++ xs) = Rev(xs) ++ [x]
 
-**(Lower-StaticDeinitNames-Empty)**
-────────────────────────────────────────────────────────────────
-Γ ⊢ Lower-StaticDeinitNames(path, item, []) ⇓ ε
-
-**(Lower-StaticDeinitNames-Cons-Resp)**
-StaticBindInfo(path, x).resp = resp    sym = StaticSym(item, x)    Γ ⊢ StateRef(sym) ⇓ slot    Γ ⊢ EmitDrop(StaticType(path, x), Load(slot, StaticType(path, x))) ⇓ IR_d    Γ ⊢ Lower-StaticDeinitNames(path, item, xs) ⇓ IR_r
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ Lower-StaticDeinitNames(path, item, [x] ++ xs) ⇓ SeqIR(IR_d, IR_r)
-
-**(Lower-StaticDeinitNames-Cons-NoResp)**
-StaticBindInfo(path, x).resp ≠ resp    Γ ⊢ Lower-StaticDeinitNames(path, item, xs) ⇓ IR_r
-──────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ Lower-StaticDeinitNames(path, item, [x] ++ xs) ⇓ IR_r
-
-**(Lower-StaticDeinit-Item)**
-item = StaticDecl(attrs_opt, vis, mut, binding, span, doc)    binding = ⟨pat, _, _, _, _⟩    xs = Rev(StaticBindList(binding))    Γ ⊢ Lower-StaticDeinitNames(PathOfModule(m), item, xs) ⇓ IR
-─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ Lower-StaticDeinitItem(m, item) ⇓ IR
-
-**(Lower-StaticDeinitItems-Empty)**
-────────────────────────────────────────────────────────────
-Γ ⊢ Lower-StaticDeinitItems(m, []) ⇓ ε
-
-**(Lower-StaticDeinitItems-Cons)**
-Γ ⊢ Lower-StaticDeinitItem(m, item) ⇓ IR_i    Γ ⊢ Lower-StaticDeinitItems(m, items) ⇓ IR_r
-────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ Lower-StaticDeinitItems(m, [item] ++ items) ⇓ SeqIR(IR_i, IR_r)
-
-**(Lower-StaticDeinit)**
-StaticItems(Project(Γ), m) = items    Γ ⊢ Lower-StaticDeinitItems(m, Rev(items)) ⇓ IR
-────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ Lower-StaticDeinit(m) ⇓ IR
+Rules **(Lower-StaticDeinitNames-Empty)**, **(Lower-StaticDeinitNames-Cons-Resp)**, **(Lower-StaticDeinitNames-Cons-NoResp)**, **(Lower-StaticDeinit-Item)**, **(Lower-StaticDeinitItems-Empty)**, **(Lower-StaticDeinitItems-Cons)**, **(Lower-StaticDeinit)** are defined once by §24.4.1.
 
 #### 11.3.7 Diagnostics
 
 | Code         | Severity | Detection    | Condition                                               |
 | ------------ | -------- | ------------ | ------------------------------------------------------- |
-| `E-TYP-1505` | Error    | Compile-time | Missing required type annotation at module scope        |
-| `E-MOD-2402` | Error    | Compile-time | Type annotation incompatible with inferred type         |
-| `E-MOD-2433` | Error    | Compile-time | Module-scope `var` declaration with `public` visibility |
+| `E-TYP-1505` | Error    | Compile-time | Missing required type annotation at module scope (`WF-StaticDecl-MissingType`) |
+| `E-MOD-2402` | Error    | Compile-time | Type annotation incompatible with inferred type (`WF-StaticDecl-Ann-Mismatch`) |
+| `E-MOD-2433` | Error    | Compile-time | Module-scope `var` declaration with `public` visibility (`StaticVisOk-Err`) |
 
 Initialization-order failures are owned by §11.5.7.
 
@@ -7944,10 +7993,7 @@ ExternAbi ∈ {StringAbi, IdentAbi}
 
 Block-level ABI validation and namespace binding are owned by this section. Signature admissibility and FFI boundary rules are defined by Chapter 23. `ExternAbiOk` is defined by §23.2.4.
 
-**(Bind-ExternBlock)**
-B = [(name_i, ⟨Value, p, ⊥, Decl⟩) | ExternProcDecl(_, _, name_i, _, _, _, _, _, _, _, _) ∈ items]
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ItemBindings(⟨ExternBlock, _, _, _, items, _, _⟩, p) ⇓ B
+Rule **(Bind-ExternBlock)** is defined once by §7.5.
 
 **(WF-ExternBlock)**
 item = ExternBlock(_, _, abi_opt, _, _, _)    ExternAbiOk(abi_opt)
@@ -8803,13 +8849,13 @@ Static initialization ordering, deinitialization ordering, and project lifecycle
 
 | Code         | Severity | Detection    | Condition                                                      |
 | ------------ | -------- | ------------ | -------------------------------------------------------------- |
-| `E-MOD-1104` | Error    | Compile-time | Module path collision after NFC + case folding                 |
-| `E-MOD-1105` | Error    | Compile-time | Module path component is a reserved keyword                    |
-| `E-MOD-1106` | Error    | Compile-time | Module path component is not a valid identifier                |
-| `E-MOD-1201` | Error    | Compile-time | External `using` path without required `import`                |
-| `E-MOD-1107` | Error    | Compile-time | Unresolved module: path prefix did not resolve to a module     |
+| `E-MOD-1104` | Error    | Compile-time | Module path collision after NFC + case folding (`Disc-Collision`, `WF-Module-Path-Collision`) |
+| `E-MOD-1105` | Error    | Compile-time | Module path component is a reserved keyword (`Validate-Module-Keyword-Err`, `Validate-ModulePath-Reserved-Err`, `WF-Module-Path-Reserved`) |
+| `E-MOD-1106` | Error    | Compile-time | Module path component is not a valid identifier (`WF-Module-Path-Ident-Err`) |
+| `E-MOD-1201` | Error    | Compile-time | External `using` path without required `import` (`Import-Using-Missing`) |
+| `E-MOD-1107` | Error    | Compile-time | Unresolved module: path prefix did not resolve to a module (`ResolveModulePath-Err`) |
 | `W-MOD-1101` | Warning  | Compile-time | Potential module path collision on case-insensitive filesystem |
-| `E-MOD-1401` | Error    | Compile-time | Cyclic module dependency detected in eager initializers        |
+| `E-MOD-1401` | Error    | Compile-time | Cyclic module dependency detected in eager initializers (`Topo-Cycle`) |
 
 ## 12. Concrete Data Types
 
@@ -8999,10 +9045,7 @@ TupleScan(P, D) ⇓ b
 
 TupleParen(P) ⇔ IsPunc(Tok(P), "(") ∧ (IsPunc(Tok(Advance(P)), ")") ∨ TupleScan(Advance(P), 1) ⇓ true)
 
-**(Parse-Tuple-Literal)**
-IsPunc(Tok(P), "(")    TupleParen(P)    Γ ⊢ ParseTupleExprElems(Advance(P)) ⇓ (P_1, elems)    IsPunc(Tok(P_1), ")")
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ParsePrimary(P) ⇓ (Advance(P_1), TupleExpr(elems))
+Rule **(Parse-Tuple-Literal)** is defined once by §16.6.2.
 
 **(Parse-TupleExprElems-Empty)**
 IsPunc(Tok(P), ")")
@@ -9019,10 +9062,7 @@ IsPunc(Tok(P), ")")
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ParseTupleExprElems(P) ⇓ (P_3, [e_1] ++ es)
 
-**(Postfix-TupleIndex)**
-IsPunc(Tok(P), ".")    t = Tok(Advance(P))    t.kind = IntLiteral    idx = IntValue(t)
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ PostfixStep(P, e) ⇓ (Advance(Advance(P)), TupleAccess(e, idx))
+Rule **(Postfix-TupleIndex)** is defined once by §16.2.2.
 
 #### 12.2.3 AST Representation / Form
 
@@ -9049,25 +9089,7 @@ n ≥ 1    ∀ i, Γ ⊢ e_i : T_i
 ────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ TupleExpr([e_1, …, e_n]) : TypeTuple([T_1, …, T_n])
 
-**(T-Tuple-Index)**
-Γ ⊢ e : TypeTuple([T_0, …, T_{n-1}])    0 ≤ i < n    BitcopyType(T_i)
-────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ TupleAccess(e, i) : T_i
-
-**(T-Tuple-Index-Perm)**
-Γ ⊢ e : TypePerm(p, TypeTuple([T_0, …, T_{n-1}]))    0 ≤ i < n    BitcopyType(TypePerm(p, T_i))
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ TupleAccess(e, i) : TypePerm(p, T_i)
-
-**(P-Tuple-Index)**
-Γ ⊢ e :place TypeTuple([T_0, …, T_{n-1}])    0 ≤ i < n
-────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ TupleAccess(e, i) :place T_i
-
-**(P-Tuple-Index-Perm)**
-Γ ⊢ e :place TypePerm(p, TypeTuple([T_0, …, T_{n-1}]))    0 ≤ i < n
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ TupleAccess(e, i) :place TypePerm(p, T_i)
+Rules **(T-Tuple-Index)**, **(T-Tuple-Index-Perm)**, **(P-Tuple-Index)**, **(P-Tuple-Index-Perm)** are defined once by §16.2.4.
 
 ConstTupleIndex(i) ⇔ ∃ n ∈ ℤ. i = n
 
@@ -9105,10 +9127,7 @@ ValueType((v_1, …, v_n)) = TypeTuple([T_1, …, T_n]) ⇔ ∀ i. ValueType(v_i
 ───────────────────────────────────────────────────────────────
 Γ ⊢ EvalSigma(TupleExpr(es), σ) ⇓ (Ctrl(κ), σ_1)
 
-**(EvalSigma-TupleAccess)**
-Γ ⊢ EvalSigma(base, σ) ⇓ (Val(v_b), σ_1)    TupleValue(v_b, i) = v_i
-────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalSigma(TupleAccess(base, i), σ) ⇓ (Val(v_i), σ_1)
+Rule **(EvalSigma-TupleAccess)** is defined once by §16.2.5.
 
 **(EvalSigma-TupleAccess-Ctrl)**
 Γ ⊢ EvalSigma(base, σ) ⇓ (Ctrl(κ), σ_1)
@@ -9145,19 +9164,16 @@ TupleLayout([T_1, …, T_n]) ⇓ ⟨size, align, _⟩
 
 ValueBits(TypeTuple([T_1, …, T_n]), (v_1, …, v_n)) = bits ⇔ TupleLayout([T_1, …, T_n]) ⇓ ⟨size, _, offsets⟩ ∧ StructBits([T_1, …, T_n], [v_1, …, v_n], offsets, size) = bits
 
-**(Lower-Expr-Tuple)**
-Γ ⊢ LowerList(es) ⇓ ⟨IR, vec_v⟩
-──────────────────────────────────────────────────────────────
-Γ ⊢ LowerExpr(TupleExpr(es)) ⇓ ⟨IR, (v_1, …, v_n)⟩
+Rule **(Lower-Expr-Tuple)** is defined once by §16.6.6.
 
 #### 12.2.7 Diagnostics
 
 | Code         | Severity | Detection    | Condition                                                  |
 | ------------ | -------- | ------------ | ---------------------------------------------------------- |
-| `E-TYP-1801` | Error    | Compile-time | Tuple index out of bounds                                  |
-| `E-TYP-1802` | Error    | Compile-time | Tuple index is not a compile-time constant integer literal |
-| `E-TYP-1803` | Error    | Compile-time | Tuple arity mismatch in assignment or pattern              |
-| `E-SEM-2524` | Error    | Compile-time | Tuple access on non-tuple                                  |
+| `E-TYP-1801` | Error    | Compile-time | Tuple index out of bounds (`TupleIndex-OOB`) |
+| `E-TYP-1802` | Error    | Compile-time | Tuple index is not a compile-time constant integer literal (`TupleIndex-NonConst`) |
+| `E-TYP-1803` | Error    | Compile-time | Tuple arity mismatch in assignment or pattern (`Pat-Tuple-Arity-Err`) |
+| `E-SEM-2524` | Error    | Compile-time | Tuple access on non-tuple (`TupleAccess-NotTuple`) |
 
 ### 12.3 Arrays
 
@@ -9178,39 +9194,7 @@ IsPunc(Tok(P), "[")    Γ ⊢ ParseType(Advance(P)) ⇓ (P_1, t)    IsPunc(Tok(P
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ParseNonPermType(P) ⇓ (Advance(P_2), TypeArray(t, e))
 
-**(Parse-Array-Segment-Elem)**
-Γ ⊢ ParseExpr(P) ⇓ (P_1, value)    ¬ IsPunc(Tok(P_1), ";")
-────────────────────────────────────────────────────────────
-Γ ⊢ ParseArraySegment(P) ⇓ (P_1, ArrayElemSegment(value))
-
-**(Parse-Array-Segment-Repeat)**
-Γ ⊢ ParseExpr(P) ⇓ (P_1, value)    IsPunc(Tok(P_1), ";")    Γ ⊢ ParseExpr(Advance(P_1)) ⇓ (P_2, count)
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ParseArraySegment(P) ⇓ (P_2, ArrayRepeatSegment(value, count))
-
-**(Parse-Array-Segment-List-Empty)**
-───────────────────────────────────────────────
-Γ ⊢ ParseArraySegmentList(P) ⇓ (P, [])
-
-**(Parse-Array-Segment-List-Single)**
-Γ ⊢ ParseArraySegment(P) ⇓ (P_1, seg)    ¬ IsPunc(Tok(P_1), ",")
-────────────────────────────────────────────────────────────────
-Γ ⊢ ParseArraySegmentList(P) ⇓ (P_1, [seg])
-
-**(Parse-Array-Segment-List-Comma)**
-Γ ⊢ ParseArraySegment(P) ⇓ (P_1, seg)    IsPunc(Tok(P_1), ",")    Γ ⊢ ParseArraySegmentList(Advance(P_1)) ⇓ (P_2, segs)
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ParseArraySegmentList(P) ⇓ (P_2, [seg] ++ segs)
-
-**(Parse-Array-Literal)**
-IsPunc(Tok(P), "[")    Γ ⊢ ParseArraySegmentList(Advance(P)) ⇓ (P_1, segs)    IsPunc(Tok(P_1), "]")
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ParsePrimary(P) ⇓ (Advance(P_1), ArrayExpr(segs))
-
-**(Postfix-Index)**
-IsPunc(Tok(P), "[")    Γ ⊢ ParseExpr(Advance(P)) ⇓ (P_1, idx)    IsPunc(Tok(P_1), "]")
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ PostfixStep(P, e) ⇓ (Advance(P_1), IndexAccess(e, idx))
+Rules **(Parse-Array-Segment-Elem)**, **(Parse-Array-Segment-Repeat)**, **(Parse-Array-Segment-List-Empty)**, **(Parse-Array-Segment-List-Single)**, **(Parse-Array-Segment-List-Comma)**, **(Parse-Array-Literal)**, **(Postfix-Index)** are defined once by §16.2.2, §16.6.2.
 
 #### 12.3.3 AST Representation / Form
 
@@ -9236,38 +9220,7 @@ T = TypeArray(T_0, e)    Γ ⊢ ConstLen(e) ⇓ n    Γ ⊢ T_0 wf
 SegLen(ArrayElemSegment(_)) = 1
 SegLen(ArrayRepeatSegment(_, count)) = n where Γ ⊢ ConstLen(count) ⇓ n
 
-**(T-Array-Literal-Segments)**
-∀ i,
-  (s_i = ArrayElemSegment(value_i) ⇒ Γ ⊢ value_i : T) ∧
-  (s_i = ArrayRepeatSegment(value_i, count_i) ⇒
-      Γ ⊢ value_i : T ∧
-      BitcopyType(T) ∧
-      Γ ⊢ count_i : U_i ∧
-      (IntType(U_i) ∨ U_i = TypePrim("usize")) ∧
-      Γ ⊢ ConstLen(count_i) ⇓ n_i)
-N = Σ_i SegLen(s_i)
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ArrayExpr([s_1, …, s_k]) : TypeArray(T, Literal(IntLiteral(N)))
-
-**(T-Index-Array)**
-Γ ⊢ e_1 : TypeArray(T, len)    IndexUsizeExpr(e_2)    ConstIndex(e_2)    Γ ⊢ ConstLen(e_2) ⇓ i    Γ ⊢ ConstLen(len) ⇓ n    i < n    BitcopyType(T)
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ IndexAccess(e_1, e_2) : T
-
-**(T-Index-Array-Dynamic)**
-Γ ⊢ e_1 : TypeArray(T, len)    IndexUsizeExpr(e_2)    ¬ ConstIndex(e_2)    InDynamicContext    BitcopyType(T)
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ IndexAccess(e_1, e_2) : T
-
-**(T-Index-Array-Perm)**
-Γ ⊢ e_1 : TypePerm(p, TypeArray(T, len))    IndexUsizeExpr(e_2)    ConstIndex(e_2)    Γ ⊢ ConstLen(e_2) ⇓ i    Γ ⊢ ConstLen(len) ⇓ n    i < n    BitcopyType(TypePerm(p, T))
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ IndexAccess(e_1, e_2) : TypePerm(p, T)
-
-**(T-Index-Array-Perm-Dynamic)**
-Γ ⊢ e_1 : TypePerm(p, TypeArray(T, len))    IndexUsizeExpr(e_2)    ¬ ConstIndex(e_2)    InDynamicContext    BitcopyType(TypePerm(p, T))
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ IndexAccess(e_1, e_2) : TypePerm(p, T)
+Rules **(T-Array-Literal-Segments)**, **(T-Index-Array)**, **(T-Index-Array-Dynamic)**, **(T-Index-Array-Perm)**, **(T-Index-Array-Perm-Dynamic)** are defined once by §16.2.4, §16.6.4.
 
 **(P-Index-Array)**
 Γ ⊢ e_1 :place TypeArray(T, len)    IndexUsizeExpr(e_2)    ConstIndex(e_2)    Γ ⊢ ConstLen(e_2) ⇓ i    Γ ⊢ ConstLen(len) ⇓ n    i < n
@@ -9323,10 +9276,7 @@ IndexValue(v, v_i) = v_e ⇔ IndexNum(v_i) = i ∧ IndexValue(v, i) = v_e
 ───────────────────────────────────────────────────────────────
 Γ ⊢ EvalSigma(ArrayExpr(es), σ) ⇓ (Ctrl(κ), σ_1)
 
-**(EvalSigma-Index)**
-Γ ⊢ EvalSigma(base, σ) ⇓ (Val(v_b), σ_1)    Γ ⊢ EvalSigma(idx, σ_1) ⇓ (Val(v_i), σ_2)    IndexValue(v_b, v_i) = v_e
-─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalSigma(IndexAccess(base, idx), σ) ⇓ (Val(v_e), σ_2)
+Rule **(EvalSigma-Index)** is defined once by §16.2.5.
 
 **(EvalSigma-Index-OOB)**
 Γ ⊢ EvalSigma(base, σ) ⇓ (Val(v_b), σ_1)    Γ ⊢ EvalSigma(idx, σ_1) ⇓ (Val(v_i), σ_2)    IndexNum(v_i) = i    ¬ (0 ≤ i < Len(v_b))
@@ -9354,10 +9304,7 @@ ArrayLen(e) = n ⇔ Γ ⊢ ConstLen(e) ⇓ n
 
 ValueBits(TypeArray(T, e), [v_0, …, v_{n-1}]) = bits ⇔ ArrayLen(e) = n ∧ s = sizeof(T) ∧ |bits| = n × s ∧ ∀ i. 0 ≤ i < n ⇒ (ValueBits(T, v_i) = b_i ∧ bits[i × s .. i × s + |b_i|) = b_i)
 
-**(Lower-Expr-Array)**
-Γ ⊢ LowerArraySegments(segs) ⇓ ⟨IR, vec_v⟩
-──────────────────────────────────────────────────────────────
-Γ ⊢ LowerExpr(ArrayExpr(segs)) ⇓ ⟨IR, [v_1, …, v_n]⟩
+Rule **(Lower-Expr-Array)** is defined once by §16.6.6.
 
 #### 12.3.7 Diagnostics
 
@@ -9403,35 +9350,7 @@ T = TypeSlice(T_0)    Γ ⊢ T_0 wf
 ────────────────────────────────────────
 Γ ⊢ T wf
 
-**(T-Index-Slice)**
-Γ ⊢ e_1 : TypeSlice(T)    IndexUsizeExpr(e_2)    BitcopyType(T)
-──────────────────────────────────────────────────────────────────────────────
-Γ ⊢ IndexAccess(e_1, e_2) : T
-
-**(T-Index-Slice-Perm)**
-Γ ⊢ e_1 : TypePerm(p, TypeSlice(T))    IndexUsizeExpr(e_2)    BitcopyType(TypePerm(p, T))
-──────────────────────────────────────────────────────────────────────────────
-Γ ⊢ IndexAccess(e_1, e_2) : TypePerm(p, T)
-
-**(T-Slice-From-Array)**
-Γ ⊢ e_1 : TypeArray(T, n)    RangeIndexExpr(e_2)    BitcopyType(TypeSlice(T))
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ IndexAccess(e_1, e_2) : TypeSlice(T)
-
-**(T-Slice-From-Array-Perm)**
-Γ ⊢ e_1 : TypePerm(p, TypeArray(T, n))    RangeIndexExpr(e_2)    BitcopyType(TypePerm(p, TypeSlice(T)))
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ IndexAccess(e_1, e_2) : TypePerm(p, TypeSlice(T))
-
-**(T-Slice-From-Slice)**
-Γ ⊢ e_1 : TypeSlice(T)    RangeIndexExpr(e_2)    BitcopyType(TypeSlice(T))
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ IndexAccess(e_1, e_2) : TypeSlice(T)
-
-**(T-Slice-From-Slice-Perm)**
-Γ ⊢ e_1 : TypePerm(p, TypeSlice(T))    RangeIndexExpr(e_2)    BitcopyType(TypePerm(p, TypeSlice(T)))
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ IndexAccess(e_1, e_2) : TypePerm(p, TypeSlice(T))
+Rules **(T-Index-Slice)**, **(T-Index-Slice-Perm)**, **(T-Slice-From-Array)**, **(T-Slice-From-Array-Perm)**, **(T-Slice-From-Slice)**, **(T-Slice-From-Slice-Perm)** are defined once by §16.2.4.
 
 **(P-Index-Slice)**
 Γ ⊢ e_1 :place TypeSlice(T)    IndexUsizeExpr(e_2)
@@ -9463,10 +9382,7 @@ T = TypeSlice(T_0)    Γ ⊢ T_0 wf
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) :place TypePerm(p, TypeSlice(T))
 
-**(Coerce-Array-Slice)**
-Γ ⊢ e : TypePerm(p, TypeArray(T, n))
-──────────────────────────────────────────────────────────────
-Γ ⊢ e : TypePerm(p, TypeSlice(T))
+Rule **(Coerce-Array-Slice)** is defined once by §16.2.4.
 
 **(Index-NonIndexable)**
 Γ ⊢ e_1 : T    StripPerm(T) ∉ {TypeArray(_, _), TypeSlice(_)}    c = Code(Index-NonIndexable)
@@ -9480,10 +9396,7 @@ ValueType(SliceValue(v, r)) = TypeSlice(T) ⇔ ValueType(v) = TypeArray(T, _) �
 Len(SliceValue(v, r)) = end - start    (SliceBounds(r, Len(v)) = (start, end))
 IndexValue(SliceValue(v, r), i) = IndexValue(v, start + i)    (SliceBounds(r, Len(v)) = (start, end) ∧ 0 ≤ i < end - start)
 
-**(EvalSigma-Index-Range)**
-Γ ⊢ EvalSigma(base, σ) ⇓ (Val(v_b), σ_1)    Γ ⊢ EvalSigma(idx, σ_1) ⇓ (Val(v_r), σ_2)    SliceValue(v_b, v_r) = v_s
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalSigma(IndexAccess(base, idx), σ) ⇓ (Val(v_s), σ_2)
+Rule **(EvalSigma-Index-Range)** is defined once by §16.2.5.
 
 **(EvalSigma-Index-Range-OOB)**
 Γ ⊢ EvalSigma(base, σ) ⇓ (Val(v_b), σ_1)    Γ ⊢ EvalSigma(idx, σ_1) ⇓ (Val(v_r), σ_2)    SliceBounds(v_r, Len(v_b)) = ⊥
@@ -9601,10 +9514,7 @@ IsRangeType(T) ⇔ T = TypeRange(_) ∨ T = TypeRangeInclusive(_) ∨ T = TypeRa
 Γ; R; L ⊢ Range(`Exclusive`, e_1, e_2) : Range ⇒ ExprType(Range(`Exclusive`, e_1, e_2)) = TypeRange(ExprType(e_1))
 Γ; R; L ⊢ Range(`Inclusive`, e_1, e_2) : Range ⇒ ExprType(Range(`Inclusive`, e_1, e_2)) = TypeRangeInclusive(ExprType(e_1))
 
-**(T-Range-Lift)**
-Γ; R; L ⊢ r : Range    ExprType(r) = T
-────────────────────────────────────────────────
-Γ; R; L ⊢ r : T
+Rule **(T-Range-Lift)** is defined once by §16.4.4.
 
 **(Range-Full)**
 ────────────────────────────────────────────────────────────────
@@ -9646,10 +9556,7 @@ ValueType(RangeVal(`To`, ⊥, hi)) = TypeRangeTo(T) ⇔ ValueType(hi) = T
 ValueType(RangeVal(`ToInclusive`, ⊥, hi)) = TypeRangeToInclusive(T) ⇔ ValueType(hi) = T
 ValueType(RangeVal(`Full`, ⊥, ⊥)) = TypeRangeFull
 
-**(EvalSigma-Range)**
-Γ ⊢ EvalOptSigma(lo_opt, σ_0) ⇓ (Val(v_lo), σ_1)    Γ ⊢ EvalOptSigma(hi_opt, σ_1) ⇓ (Val(v_hi), σ_2)    r = RangeVal(kind, v_lo, v_hi)
-───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalSigma(Range(kind, lo_opt, hi_opt), σ_0) ⇓ (Val(r), σ_2)
+Rule **(EvalSigma-Range)** is defined once by §16.4.5.
 
 **(EvalSigma-Range-Ctrl)**
 Γ ⊢ EvalOptSigma(lo_opt, σ_0) ⇓ (Ctrl(κ), σ_1)
@@ -9807,9 +9714,10 @@ Diagnostics are defined for non-constant and empty range patterns in §17.4. Sli
 #### 12.6.1 Syntax
 
 ```ebnf
-record_decl     ::= attribute_list? visibility? "record" identifier generic_params? implements_clause? predicate_clause? record_body invariant_clause?
+record_decl     ::= attribute_list? visibility? "record" identifier generic_params? implements_clause? predicate_clause? record_body type_invariant?
 record_body     ::= "{" record_member* "}"
 record_field    ::= attribute_list? visibility? key_boundary? identifier ":" type record_field_init_opt
+key_boundary    ::= "#"
 record_literal  ::= identifier "{" field_init_list "}"
 default_record  ::= identifier "(" ")"
 ```
@@ -9841,10 +9749,7 @@ IsPunc(Tok(P), "}")
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ParseRecordMember(P) ⇓ (P_2, m)
 
-**(Parse-RecordMember-AssociatedType)**
-Γ ⊢ ParseAttrListOpt(P) ⇓ (P_0, attrs_opt)    Γ ⊢ ParseVis(P_0) ⇓ (P_1, vis)    IsKw(Tok(P_1), `type`)    Γ ⊢ ParseIdent(Advance(P_1)) ⇓ (P_2, name)    Γ ⊢ ParseAssocTypeDefaultOpt(P_2) ⇓ (P_3, default_type_opt)
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ParseRecordMember(P) ⇓ (P_3, ⟨AssociatedTypeDecl, attrs_opt, vis, name, default_type_opt, SpanBetween(P, P_3), []⟩)
+Rule **(Parse-RecordMember-AssociatedType)** is defined once by §14.5.2.
 
 **(Parse-RecordMember-Field)**
 Γ ⊢ ParseAttrListOpt(P) ⇓ (P_0, attrs_opt)    Γ ⊢ ParseVis(P_0) ⇓ (P_1, vis)    ¬ IsKw(Tok(P_1), `procedure`) ∧ ¬ IsKw(Tok(P_1), `type`)    Γ ⊢ ParseRecordFieldDeclAfterVis(P_1, vis, attrs_opt) ⇓ (P_2, f)
@@ -9866,10 +9771,7 @@ IsOp(Tok(P), "=")    Γ ⊢ ParseExpr(Advance(P)) ⇓ (P_1, e)
 ────────────────────────────────────────────────────────────
 Γ ⊢ ParseRecordFieldInitOpt(P) ⇓ (P_1, e)
 
-**(Parse-Record-Literal)**
-Γ ⊢ ParseTypePath(P) ⇓ (P_1, path)    |path| = 1    IsPunc(Tok(P_1), "{")    Γ ⊢ ParseFieldInitList(Advance(P_1)) ⇓ (P_2, fields)    fields ≠ []    IsPunc(Tok(P_2), "}")
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ParsePrimary(P) ⇓ (Advance(P_2), RecordExpr(TypePath(path), fields))
+Rule **(Parse-Record-Literal)** is defined once by §16.6.2.
 
 #### 12.6.3 AST Representation / Form
 
@@ -9893,19 +9795,9 @@ RecordPath(R) = FullPath(ModuleOf(R), R.name)    otherwise
 
 #### 12.6.4 Static Semantics
 
-**(Bind-Record)**
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ItemBindings(RecordDecl(_, _, name, _, _, _, _, _, _, _), p) ⇓ [(name, ⟨Type, p, ⊥, Decl⟩)]
+Rule **(Bind-Record)** is defined once by §7.5.
 
-**(Resolve-RecordPath)**
-Γ ⊢ ResolveTypePath(path ++ [name]) ⇓ p    RecordDecl(p) = R
-────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ResolveRecordPath(path, name) ⇓ p
-
-**(ResolveQual-Name-Record)**
-Γ ⊢ ResolveRecordPath(path, name) ⇓ p    SplitLast(p) = (mp, name')
-────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ResolveQualifiedForm(QualifiedName(path, name)) ⇓ Path(mp, name')
+Rules **(Resolve-RecordPath)**, **(ResolveQual-Name-Record)** are defined once by §7.6.
 
 **(ResolveQual-Apply-RecordLit)**
 Γ ⊢ ResolveFieldInits(fields) ⇓ fields'    Γ ⊢ ResolveRecordPath(path, name) ⇓ p
@@ -9944,10 +9836,7 @@ R = RecordDecl(_, _, _, _, _, _, _, _, _, _)    ¬ FieldVisOk(R)    c = Code(Fie
 DefaultConstructible(R) ⇔ ∀ f ∈ Fields(R). f.init_opt ≠ ⊥
 RecordCallee(callee) = R ⇔ (callee = Identifier(name) ∨ callee = Path(path, name)) ∧ Γ ⊢ ResolveTypeName(name) ⇓ ent ∧ ent.origin_opt = mp ∧ name' = (ent.target_opt if present, else name) ∧ RecordDecl(FullPath(PathOfModule(mp), name')) = R
 
-**(T-Record-Default)**
-RecordCallee(callee) = R    Γ ⊢ R record wf    DefaultConstructible(R)
-────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ Call(callee, []) : TypePath(RecordPath(R))
+Rule **(T-Record-Default)** is defined once by §16.6.4.
 
 FieldNames(R) = [ f.name | f ∈ Fields(R) ]
 FieldInitNames(fields) = [ f | ⟨f, _⟩ ∈ fields ]
@@ -9958,10 +9847,7 @@ FieldType(R, f) = T_f ⇔ ∃ attrs_opt, vis, boundary, init_opt, span, doc_opt.
 FieldVis(R, f) = vis ⇔ ∃ attrs_opt, boundary, T_f, init_opt, span, doc_opt. FieldDecl(attrs_opt, vis, boundary, f, T_f, init_opt, span, doc_opt) ∈ Fields(R)
 FieldVisible(m, R, f) ⇔ FieldVis(R, f) ∈ {`public`, `internal`} ∨ (FieldVis(R, f) = `private` ∧ ModuleOfPath(RecordPath(R)) = m)
 
-**(T-Record-Literal)**
-RecordDecl(p) = R    Distinct(FieldInitNames(fields))    FieldInitSet(fields) = FieldNameSet(R)    ∀ ⟨f, e⟩ ∈ fields, FieldType(R, f) = T_f ∧ FieldVisible(m, R, f) ∧ Γ; R; L ⊢ e ⇐ T_f ⊣ ∅
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ; R; L ⊢ RecordExpr(TypePath(p), fields) : TypePath(p)
+Rule **(T-Record-Literal)** is defined once by §16.6.4.
 
 **(T-Record-Literal-ExpectedApply)**
 Expected = TypeApply(p, args)    RecordDecl(p) = R    params_gen = TypeParamsOpt(R.gen_params_opt)    DefaultArgs(params_gen, args) = args'    θ = [args'_i / params_gen[i].name]    Distinct(FieldInitNames(fields))    FieldInitSet(fields) = FieldNameSet(R)    ∀ ⟨f, e⟩ ∈ fields, FieldType(R, f)[θ] = T_f ∧ FieldVisible(m, R, f) ∧ Γ; R; L ⊢ e ⇐ T_f ⊣ ∅
@@ -10035,44 +9921,27 @@ StructBits([T_1, …, T_n], [v_1, …, v_n], [o_1, …, o_n], size) = bits ⇔ |
 PadBytes(b, size) = bits ⇔ |bits| = size ∧ bits[0..|b|) = b ∧ ∀ i. |b| ≤ i < size ⇒ bits[i] = 0x00
 ValueBits(TypePath(p), v) = bits ⇔ RecordDecl(p) = R ∧ v = RecordValue(TypePath(p), io) ∧ Fields(R) = fields ∧ RecordLayout(fields) ⇓ ⟨size, _, offsets⟩ ∧ fields = [⟨f_1, T_1⟩, …, ⟨f_n, T_n⟩] ∧ (∀ i. FieldValue(RecordValue(TypePath(p), io), f_i) = v_i) ∧ StructBits([T_1, …, T_n], [v_1, …, v_n], offsets, size) = bits
 
-**(LowerFieldInits-Empty)**
-────────────────────────────────────────────────────
-Γ ⊢ LowerFieldInits([]) ⇓ ⟨ε, []⟩
-
-**(LowerFieldInits-Cons)**
-Γ ⊢ LowerExpr(e) ⇓ ⟨IR_e, v⟩    Γ ⊢ LowerFieldInits(io) ⇓ ⟨IR_s, vec_f⟩
-──────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerFieldInits([⟨f, e⟩] ++ io) ⇓ ⟨SeqIR(IR_e, IR_s), [⟨f, v⟩] ++ vec_f⟩
-
-**(Lower-Expr-Record)**
-Γ ⊢ LowerFieldInits(fields) ⇓ ⟨IR, vec_f⟩
-─────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerExpr(RecordExpr(tr, fields)) ⇓ ⟨IR, RecordValue(tr, vec_f)⟩
-
-**(Lower-CallIR-RecordCtor)**
-CallTarget(callee) = RecordCtor(p)    args = []    RecordDefaultInits(p) = fields    Γ ⊢ LowerFieldInits(fields) ⇓ ⟨IR_f, vec_f⟩
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(CallIR(callee, args)) ⇓ ⟨IR_f, RecordValue(TypePath(p), vec_f)⟩
+Rules **(LowerFieldInits-Empty)**, **(LowerFieldInits-Cons)**, **(Lower-Expr-Record)**, **(Lower-CallIR-RecordCtor)** are defined once by §16.6.6, §24.1.3.
 
 #### 12.6.7 Diagnostics
 
 | Code         | Severity | Detection    | Condition                                                                |
 | ------------ | -------- | ------------ | ------------------------------------------------------------------------ |
-| `E-TYP-1901` | Error    | Compile-time | Duplicate field name in record declaration                               |
-| `E-TYP-1902` | Error    | Compile-time | Missing field initializer in record literal                              |
-| `E-TYP-1903` | Error    | Compile-time | Duplicate field initializer in record literal                            |
+| `E-TYP-1901` | Error    | Compile-time | Duplicate field name in record declaration (`WF-Record-DupField`) |
+| `E-TYP-1902` | Error    | Compile-time | Missing field initializer in record literal (`Record-FieldInit-Missing`) |
+| `E-TYP-1903` | Error    | Compile-time | Duplicate field initializer in record literal (`Record-FieldInit-Dup`) |
 | `E-TYP-1904` | Error    | Compile-time | Access to nonexistent field                                              |
 | `E-TYP-1905` | Error    | Compile-time | Access to field not visible in current scope                             |
-| `E-TYP-1906` | Error    | Compile-time | Field visibility exceeds record visibility                               |
-| `E-TYP-1907` | Error    | Compile-time | Non-`Bitcopy` field requires move source expression                      |
-| `E-TYP-1911` | Error    | Compile-time | Default record construction requires default initializer for every field |
+| `E-TYP-1906` | Error    | Compile-time | Field visibility exceeds record visibility (`FieldVisOk-Err`) |
+| `E-TYP-1907` | Error    | Compile-time | Non-`Bitcopy` field requires move source expression (`Record-Field-NonBitcopy-Move`) |
+| `E-TYP-1911` | Error    | Compile-time | Default record construction requires default initializer for every field (`Record-Default-Init-Err`) |
 
 ### 12.7 Enums
 
 #### 12.7.1 Syntax
 
 ```ebnf
-enum_decl        ::= attribute_list? visibility? "enum" identifier generic_params? implements_clause? predicate_clause? enum_body invariant_clause?
+enum_decl        ::= attribute_list? visibility? "enum" identifier generic_params? implements_clause? predicate_clause? enum_body type_invariant?
 enum_body        ::= "{" variant_members? "}"
 variant_members  ::= variant (terminator variant)* terminator?
 variant          ::= identifier variant_payload_opt variant_discriminant_opt
@@ -10167,9 +10036,7 @@ VariantIndex(E, name) = i ⇔ Variants(E) = [v_0, …, v_k] ∧ v_i.name = name
 
 #### 12.7.4 Static Semantics
 
-**(Bind-Enum)**
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ItemBindings(EnumDecl(_, _, name, _, _, _, _, _, _, _), p) ⇓ [(name, ⟨Type, p, ⊥, Decl⟩)]
+Rule **(Bind-Enum)** is defined once by §7.5.
 
 PayloadOptWF(⊥)
 PayloadOptWF(TuplePayload([T_1, …, T_n])) ⇔ ∀ i. Γ ⊢ T_i wf
@@ -10177,29 +10044,13 @@ PayloadOptWF(RecordPayload([⟨f_1, T_1⟩, …, ⟨f_k, T_k⟩])) ⇔ Distinct(
 
 Γ ⊢ payload_opt wf ⇔ PayloadOptWF(payload_opt)
 
-**(Resolve-EnumUnit)**
-Γ ⊢ ResolveTypePath(path) ⇓ p    EnumDecl(p) = E    VariantPayload(E, name) = ⊥
-────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ResolveEnumUnit(path, name) ⇓ p
-
-**(Resolve-EnumTuple)**
-Γ ⊢ ResolveTypePath(path) ⇓ p    EnumDecl(p) = E    VariantPayload(E, name) = TuplePayload(_)
-────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ResolveEnumTuple(path, name) ⇓ p
-
-**(Resolve-EnumRecord)**
-Γ ⊢ ResolveTypePath(path) ⇓ p    EnumDecl(p) = E    VariantPayload(E, name) = RecordPayload(_)
-────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ResolveEnumRecord(path, name) ⇓ p
+Rules **(Resolve-EnumUnit)**, **(Resolve-EnumTuple)**, **(Resolve-EnumRecord)** are defined once by §7.6.
 
 When an enum record payload literal is checked against an expected `TypeApply(p, args)`,
 the payload field types are checked under `DefaultArgs(TypeParamsOf(p), args)` and the
 result expression type is the expected `TypeApply(p, args)`.
 
-**(ResolveQual-Name-Enum)**
-Γ ⊢ ResolveQualified(path, name, ValueKind) ↑    Γ ⊢ ResolveRecordPath(path, name) ↑    Γ ⊢ ResolveEnumUnit(path, name) ⇓ p
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ResolveQualifiedForm(QualifiedName(path, name)) ⇓ EnumLiteral(FullPath(p, name), ⊥)
+Rule **(ResolveQual-Name-Enum)** is defined once by §7.6.
 
 **(ResolveQual-Apply-Enum-Tuple)**
 Γ ⊢ ResolveArgs(args) ⇓ args'    Γ ⊢ ResolveQualified(path, name, ValueKind) ↑    Γ ⊢ ResolveRecordPath(path, name) ↑    Γ ⊢ ResolveEnumTuple(path, name) ⇓ p
@@ -10399,22 +10250,22 @@ ValueBits(TypePath(p), v) = bits ⇔ EnumDecl(p) = E ∧ v = EnumValue(path, pay
 
 | Code         | Severity | Detection    | Condition                                        |
 | ------------ | -------- | ------------ | ------------------------------------------------ |
-| `E-TYP-1920` | Error    | Compile-time | Enum discriminant is not an integer literal      |
-| `E-TYP-1921` | Error    | Compile-time | Enum discriminant literal is invalid             |
-| `E-TYP-1922` | Error    | Compile-time | Enum discriminant must be non-negative           |
-| `E-TYP-1923` | Error    | Compile-time | Duplicate enum discriminant value                |
-| `E-TYP-2001` | Error    | Compile-time | Enum declaration contains no variants            |
-| `E-TYP-2002` | Error    | Compile-time | Duplicate variant name in enum declaration       |
-| `E-TYP-2007` | Error    | Compile-time | Unknown variant name in enum construction        |
-| `E-TYP-2008` | Error    | Compile-time | Variant payload arity mismatch                   |
-| `E-TYP-2009` | Error    | Compile-time | Missing field initializer in record-like variant |
+| `E-TYP-1920` | Error    | Compile-time | Enum discriminant is not an integer literal (`Enum-Disc-NotInt`) |
+| `E-TYP-1921` | Error    | Compile-time | Enum discriminant literal is invalid (`Enum-Disc-Invalid`) |
+| `E-TYP-1922` | Error    | Compile-time | Enum discriminant must be non-negative (`Enum-Disc-Negative`) |
+| `E-TYP-1923` | Error    | Compile-time | Duplicate enum discriminant value (`Enum-Disc-Dup`) |
+| `E-TYP-2001` | Error    | Compile-time | Enum declaration contains no variants (`Enum-Empty-Err`) |
+| `E-TYP-2002` | Error    | Compile-time | Duplicate variant name in enum declaration (`Enum-Variant-Dup`) |
+| `E-TYP-2007` | Error    | Compile-time | Unknown variant name in enum construction (`Enum-Lit-Unknown`) |
+| `E-TYP-2008` | Error    | Compile-time | Variant payload arity mismatch (`Enum-Lit-Tuple-Arity-Err`) |
+| `E-TYP-2009` | Error    | Compile-time | Missing field initializer in record-like variant (`Enum-Lit-Record-MissingField`) |
 
 ### 12.8 Union Types
 
 #### 12.8.1 Syntax
 
 ```ebnf
-union_type ::= non_perm_type ("|" non_perm_type)+
+union_type ::= non_union_type ("|" non_union_type)+
 ```
 
 Union introduction is semantic: any expression whose type is a member of a union may be typed as that union.
@@ -10456,25 +10307,14 @@ valid unions and sourceable union diagnostics.
 
 Member(T, U) ⇔ U = TypeUnion([U_1, …, U_n]) ∧ ∃ i. Γ ⊢ T ≡ U_i
 
-**(Sub-Member-Union)**
-Member(T, U)
-──────────────────────────────────────────────
-Γ ⊢ T <: U
-
-**(Sub-Union-Width)**
-U_1 = TypeUnion([T_1, …, T_n])    U_2 = TypeUnion([U_1', …, U_m'])    ∀ i, Member(T_i, U_2)
-────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ U_1 <: U_2
+Rules **(Sub-Member-Union)**, **(Sub-Union-Width)** are defined once by §8.2.
 
 **(T-Union-Intro)**
 Γ ⊢ e : T    Member(T, U)
 ──────────────────────────────────────────────
 Γ ⊢ e : U
 
-**(Union-DirectAccess-Err)**
-Γ; R; L ⊢ e : U    StripPerm(U) = TypeUnion(_)    c = Code(Union-DirectAccess-Err)
-────────────────────────────────────────────────────────────────────────────────────────────────
-Γ; R; L ⊢ FieldAccess(e, f) ⇑ c
+Rule **(Union-DirectAccess-Err)** is defined once by §16.2.4.
 
 Union matching and propagation are defined by §§16.8 and 17.5.
 
@@ -10631,9 +10471,7 @@ AliasPredicateClause(p) = predicate_clause_opt ⇔ Σ.Types[p] = TypeAliasDecl(_
 
 #### 12.9.4 Static Semantics
 
-**(Bind-TypeAlias)**
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ItemBindings(TypeAliasDecl(_, _, name, _, _, _, _, _), p) ⇓ [(name, ⟨Type, p, ⊥, Decl⟩)]
+Rule **(Bind-TypeAlias)** is defined once by §7.5.
 
 **(ResolveItem-TypeAlias)**
 S_gen = TypeParamBindings(gen_params_opt)    Γ_g = [S_gen, S_module, S_universe]    Γ_g ⊢ ResolveGenericParamsOpt(gen_params_opt) ⇓ gen_params_opt'    Γ_g ⊢ ResolvePredicateClauseOpt(predicate_clause_opt) ⇓ predicate_clause_opt'    Γ_g ⊢ ResolveType(ty) ⇓ ty'
@@ -10730,7 +10568,7 @@ ValueBits(TypePath(p), v) = bits ⇔ AliasBody(p) = ty ∧ ValueBits(ty, v) = bi
 
 #### 12.9.7 Diagnostics
 
-Diagnostics are defined for reultraviolet type aliases. Generic-argument count and bound failures for alias applications are defined by the shared type-application rules in Chapter 14.
+Diagnostics are defined for recursive type aliases. Generic-argument count and bound failures for alias applications are defined by the shared type-application rules in Chapter 14.
 
 ### 12.10 Data Type Diagnostics Supplement
 
@@ -10738,11 +10576,11 @@ This section owns diagnostics for array, slice, and union data-type rules that a
 
 | Code         | Severity | Detection    | Condition                                             |
 | ------------ | -------- | ------------ | ----------------------------------------------------- |
-| `E-TYP-1810` | Error    | Compile-time | Array length is not a compile-time constant           |
-| `E-TYP-1812` | Error    | Compile-time | Array index expression has non-`usize` type           |
-| `E-TYP-1820` | Error    | Compile-time | Slice index expression has non-`usize` type           |
-| `E-TYP-2201` | Error    | Compile-time | Union type has fewer than two member types            |
-| `E-TYP-2202` | Error    | Compile-time | Direct access on union value without pattern matching |
+| `E-TYP-1810` | Error    | Compile-time | Array length is not a compile-time constant (`ConstLen-Err`) |
+| `E-TYP-1812` | Error    | Compile-time | Array index expression has non-`usize` type (`Index-Array-NonUsize`) |
+| `E-TYP-1820` | Error    | Compile-time | Slice index expression has non-`usize` type (`Index-Slice-NonUsize`) |
+| `E-TYP-2201` | Error    | Compile-time | Union type has fewer than two member types (`WF-Union-TooFew`) |
+| `E-TYP-2202` | Error    | Compile-time | Direct access on union value without pattern matching (`Union-DirectAccess-Err`) |
 
 ## 13. Modal and Special Types
 
@@ -10751,7 +10589,7 @@ This section owns diagnostics for array, slice, and union data-type rules that a
 #### 13.1.1 Syntax
 
 ```ebnf
-modal_decl        ::= attribute_list? visibility? "modal" identifier generic_params? implements_clause? predicate_clause? modal_body invariant_clause?
+modal_decl        ::= attribute_list? visibility? "modal" identifier generic_params? implements_clause? predicate_clause? modal_body type_invariant?
 modal_body        ::= "{" state_block* "}"
 state_block       ::= "@" identifier "{" state_member* "}"
 state_member      ::= state_field_decl | state_method_def | transition_def
@@ -10786,10 +10624,7 @@ ParseModalTypeRef(P) ⇓ (P_2, tr) ⇔ Γ ⊢ ParseTypePath(P) ⇓ (P_1, path) �
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ParseNonPermType(P) ⇓ (P_2, TypeModalState(modal_ref, state))
 
-**(Parse-Record-Literal-ModalState)**
-Γ ⊢ ParseModalTypeRef(P) ⇓ (P_1, modal_ref)    IsOp(Tok(P_1), "@")    Γ ⊢ ParseIdent(Advance(P_1)) ⇓ (P_2, state)    IsPunc(Tok(P_2), "{")    Γ ⊢ ParseFieldInitList(Advance(P_2)) ⇓ (P_3, fields)    IsPunc(Tok(P_3), "}")
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ParsePrimary(P) ⇓ (Advance(P_3), RecordExpr(ModalStateRef(modal_ref, state), fields))
+Rule **(Parse-Record-Literal-ModalState)** is defined once by §16.6.2.
 
 `ParseStateMember` dispatches to the owning feature parsers in §§13.2.2, 13.3.2, and 13.4.2.
 
@@ -10868,7 +10703,7 @@ T = TypeModalState(modal_ref, S)    ModalDeclOf(modal_ref) = M    S ∈ States(M
 Γ ⊢ T wf
 
 **(WF-ModalState-ArgCount-Err)**
-T = TypeModalState(modal_ref, S)    ModalDeclOf(modal_ref) = M    params_gen = TypeParamsOpt(M.gen_params_opt)    DefaultArgs(params_gen, ModalRefArgs(modal_ref)) = ⊥    c = Code(E-TYP-2303)
+T = TypeModalState(modal_ref, S)    ModalDeclOf(modal_ref) = M    params_gen = TypeParamsOpt(M.gen_params_opt)    DefaultArgs(params_gen, ModalRefArgs(modal_ref)) = ⊥    c = Code(WF-ModalState-ArgCount-Err)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ T wf ⇑ c
 
@@ -11248,9 +11083,10 @@ Diagnostics are defined for missing state fields, field access on a general moda
 #### 13.3.1 Syntax
 
 ```ebnf
-state_method_def       ::= attribute_list? visibility? "procedure" identifier generic_params? state_method_signature contract_clause? block_expr
-state_method_signature ::= "(" receiver method_param_list? ")" return_opt
+state_method_def ::= attribute_list? visibility? "procedure" identifier generic_params? state_method_signature contract_clause? block_expr
 ```
+
+`state_method_signature` is defined once by §15.2.1.
 
 #### 13.3.2 Parsing
 
@@ -11318,10 +11154,7 @@ params_gen = TypeParamsOpt(md.gen_params_opt)    params_gen = [P_1, …, P_n]   
 
 MethodTarget(RecordValue(ModalStateRef(modal_ref, S), io), name) = md ⇔ ModalDeclOf(modal_ref) = M ∧ LookupStateMethod(M, S, name) = md
 
-**(ApplyMethodSigma)**
-m = MethodTarget(v_self, name)    ¬ IsTransition(m)    BindParams(RecvParams(base, name), [v_arg] ++ vec_v) = binds    BlockEnter(σ, binds) ⇓ (σ_1, scope)    Γ ⊢ EvalBlockBodySigma(m.body, σ_1) ⇓ (out, σ_2)    BlockExit(σ_2, scope, out) ⇓ (out', σ_3)
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ApplyMethodSigma(base, name, v_self, v_arg, vec_v, σ) ⇓ (ReturnOut(out'), σ_3)
+Rule **(ApplyMethodSigma)** is defined once by §15.2.5; it applies to state methods through `MethodTarget` above.
 
 Built-in state methods on `CancelToken`, `File`, `DirIter`, `string`, and `bytes` are defined by their respective primitive relations in this chapter and later capability chapters; they do not introduce a distinct calling convention.
 
@@ -11488,10 +11321,7 @@ WIDEN_LARGE_PAYLOAD_THRESHOLD_BYTES = 256
 
 NicheCompatible(modal_ref, S) ⇔ ModalDeclOf(modal_ref) = M ∧ NicheApplies(modal_ref) ∧ PayloadState(modal_ref) = S ∧ sizeof(TypeModalState(modal_ref, S)) = sizeof(ModalRefType(modal_ref)) ∧ alignof(TypeModalState(modal_ref, S)) = alignof(ModalRefType(modal_ref))
 
-**(Chk-Subsumption-Modal-NonNiche)**
-Γ; R; L ⊢ e ⇒ S ⊣ C    StripPerm(S) = TypeModalState(modal_ref, S_s)    StripPerm(T) = ModalRefType(modal_ref)    ModalDeclOf(modal_ref) = M    ¬ NicheCompatible(modal_ref, S_s)    c = Code(Chk-Subsumption-Modal-NonNiche)
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ; R; L ⊢ e ⇐ T ⇑ c
+Rule **(Chk-Subsumption-Modal-NonNiche)** is defined once by §8.3.
 
 WidenWarnCond(modal_ref, S) ⇔ ModalDeclOf(modal_ref) = M ∧ sizeof(TypeModalState(modal_ref, S)) > WIDEN_LARGE_PAYLOAD_THRESHOLD_BYTES ∧ ¬ NicheCompatible(modal_ref, S)
 
@@ -11618,7 +11448,6 @@ StringBytesJudg_string = {
 
 **String Literal Storage.**
 For any string literal `lit`, evaluation MUST allocate `StringBytes(lit)` in static, read-only storage. The resulting `string@View` value MUST reference that storage and MUST have length `|StringBytes(lit)|`. The backing storage MUST have static duration and MUST NOT be deallocated.
-<!-- Source: "Literal content is allocated in static, read-only memory at compilation ... A string@View value is constructed with pointer to static memory and byte length ... String literals have static storage duration; backing memory is never deallocated." -->
 
 **(StringFrom-Ok)**
 r = v    SB' = ⟨StrBuf[v ↦ ByteSeqOf(SB, source)], BytesBuf, BytesCap⟩
@@ -12037,10 +11866,7 @@ BitcopyType(TypePtr(T, s))
 CloneType(TypePtr(T, s))
 ¬ DropType(TypePtr(T, s))
 
-**(Sub-Ptr-State)**
-s ∈ {`Valid`, `Null`}
-──────────────────────────────────────────────────────────────
-Γ ⊢ TypePtr(T, s) <: TypePtr(T, ⊥)
+Rule **(Sub-Ptr-State)** is defined once by §8.2.
 
 #### 13.8.5 Dynamic Semantics
 
@@ -12091,20 +11917,7 @@ PtrState(σ, v_ptr) = `Expired`
 
 #### 13.8.6 Lowering
 
-**(Size-Ptr)**
-T = TypePtr(T_0, s)
-────────────────────────────────
-Γ ⊢ sizeof(T) = PtrSize
-
-**(Align-Ptr)**
-T = TypePtr(T_0, s)
-────────────────────────────────
-Γ ⊢ alignof(T) = PtrAlign
-
-**(Layout-Ptr)**
-T = TypePtr(T_0, s)
-────────────────────────────────────────────
-Γ ⊢ layout(T) ⇓ ⟨PtrSize, PtrAlign⟩
+Rules **(Size-Ptr)**, **(Align-Ptr)**, **(Layout-Ptr)** are defined once by §24.2.2.
 
 sizeof(`Ptr<T>`) = sizeof(`usize`)    alignof(`Ptr<T>`) = alignof(`usize`)
 PtrDiagRefs = {"8.10"}
@@ -12152,10 +11965,7 @@ T = TypeRawPtr(q, T_0)    Γ ⊢ T_0 wf
 ────────────────────────────────────────
 Γ ⊢ T wf
 
-**(T-Deref-Raw)**
-UnsafeSpan(span(Deref(e)))    Γ; R; L ⊢ e : TypeRawPtr(q, T)    BitcopyType(T)
-────────────────────────────────────────────────────────────────────────────────────────────────
-Γ; R; L ⊢ Deref(e) : T
+Rule **(T-Deref-Raw)** is defined once by §16.8.4.
 
 **(P-Deref-Raw-Imm)**
 UnsafeSpan(span(Deref(e)))    Γ; R; L ⊢ e : TypeRawPtr(`imm`, T)
@@ -12203,20 +12013,7 @@ v_ptr = RawPtr(`mut`, addr)    ¬ ∃ σ'. WriteAddr(σ, addr, v) ⇓ σ'
 
 #### 13.9.6 Lowering
 
-**(Size-RawPtr)**
-T = TypeRawPtr(q, T_0)
-────────────────────────────────
-Γ ⊢ sizeof(T) = PtrSize
-
-**(Align-RawPtr)**
-T = TypeRawPtr(q, T_0)
-────────────────────────────────
-Γ ⊢ alignof(T) = PtrAlign
-
-**(Layout-RawPtr)**
-T = TypeRawPtr(q, T_0)
-────────────────────────────────────────────
-Γ ⊢ layout(T) ⇓ ⟨PtrSize, PtrAlign⟩
+Rules **(Size-RawPtr)**, **(Align-RawPtr)**, **(Layout-RawPtr)** are defined once by §24.2.2.
 
 ValidValue(TypeRawPtr(q, T), bits) ⇔ |bits| = PtrSize
 ValueBits(TypeRawPtr(q, T), v) = bits ⇔ v = RawPtr(q, addr) ∧ bits = LEBytes(addr, PtrSize)
@@ -12292,15 +12089,7 @@ T = TypeFunc([⟨m_1, T_1⟩, …, ⟨m_n, T_n⟩], R)    Γ ⊢ R wf    ∀ i, 
 ────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ T wf
 
-**(T-Equiv-Func)**
-T = TypeFunc([⟨m_1, T_1⟩, …, ⟨m_n, T_n⟩], R)    U = TypeFunc([⟨m_1, U_1⟩, …, ⟨m_n, U_n⟩], S)    ∀ i, Γ ⊢ T_i ≡ U_i    Γ ⊢ R ≡ S
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ T ≡ U
-
-**(Sub-Func)**
-T = TypeFunc([⟨m_1, T_1⟩, …, ⟨m_n, T_n⟩], R)    U = TypeFunc([⟨m_1, U_1⟩, …, ⟨m_n, U_n⟩], S)    ∀ i, Γ ⊢ U_i <: T_i    Γ ⊢ R <: S
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ T <: U
+Rules **(T-Equiv-Func)**, **(Sub-Func)** are defined once by §8.1, §8.2.
 
 **(T-Proc-As-Value)**
 procedure f(m_1 x_1 : T_1, …, m_n x_n : T_n) -> R declared
@@ -12313,29 +12102,13 @@ Call arity, argument typing, and callee-kind diagnostics for `TypeFunc` are owne
 
 FuncVal(sym) defined ⇔ sym ∈ Symbol
 
-**(EvalSigma-Call-Proc)**
-Γ ⊢ EvalSigma(callee, σ) ⇓ (Val(v_c), σ_1)    proc = CallTarget(v_c)    Γ ⊢ EvalArgsSigma(proc.params, args, σ_1) ⇓ (Val(vec_v), σ_2)    Γ ⊢ ApplyProcSigma(proc, vec_v, σ_2) ⇓ (out, σ_3)
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalSigma(Call(callee, args), σ) ⇓ (out, σ_3)
+Rule **(EvalSigma-Call-Proc)** is defined once by §16.3.5.
 
 Named procedures therefore denote first-class callable values of function type.
 
 #### 13.10.6 Lowering
 
-**(Size-Func)**
-T = TypeFunc(params, R)
-────────────────────────────────
-Γ ⊢ sizeof(T) = PtrSize
-
-**(Align-Func)**
-T = TypeFunc(params, R)
-────────────────────────────────
-Γ ⊢ alignof(T) = PtrAlign
-
-**(Layout-Func)**
-T = TypeFunc(params, R)
-────────────────────────────────────────────
-Γ ⊢ layout(T) ⇓ ⟨PtrSize, PtrAlign⟩
+Rules **(Size-Func)**, **(Align-Func)**, **(Layout-Func)** are defined once by §24.2.2.
 
 Function-type calls are lowered through the ordinary call-lowering and ABI rules of Chapters 16 and 23.
 
@@ -12368,15 +12141,7 @@ IsOp(Tok(P), "|")    IsOp(Tok(Advance(P)), "|")    IsOp(Tok(Advance(Advance(P)))
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ParseNonPermType(P) ⇓ (P_2, TypeClosure([], ret, deps_opt))
 
-**(Parse-ClosureParamType-Grouped)**
-IsPunc(Tok(P), "(")    Γ ⊢ ParseType(Advance(P)) ⇓ (P_1, ty)    IsPunc(Tok(P_1), ")")
-────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ParseClosureParamType(P) ⇓ (Advance(P_1), ty)
-
-**(Parse-ClosureParamType-Plain)**
-¬ IsPunc(Tok(P), "(")    Γ ⊢ ParseTypeNoUnion(P) ⇓ (P_1, ty)
-─────────────────────────────────────────────────────────────
-Γ ⊢ ParseClosureParamType(P) ⇓ (P_1, ty)
+Rules **(Parse-ClosureParamType-Grouped)**, **(Parse-ClosureParamType-Plain)** are defined once by §16.9.2.
 
 **(Parse-ClosureParamTypeList-Empty)**
 IsOp(Tok(P), "|")
@@ -12448,15 +12213,7 @@ T = TypeClosure(params, R, deps_opt)    ∀ ⟨m, T_i⟩ ∈ params, Γ ⊢ T_i 
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ T wf
 
-**(T-Equiv-Closure)**
-T = TypeClosure([⟨m_1, T_1⟩, …, ⟨m_n, T_n⟩], R, D)    U = TypeClosure([⟨m_1, U_1⟩, …, ⟨m_n, U_n⟩], S, D)    ∀ i, Γ ⊢ T_i ≡ U_i    Γ ⊢ R ≡ S
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ T ≡ U
-
-**(Sub-Closure)**
-T = TypeClosure([⟨m_1, T_1⟩, …, ⟨m_n, T_n⟩], R, D)    U = TypeClosure([⟨m_1, U_1⟩, …, ⟨m_n, U_n⟩], S, D)    ∀ i, Γ ⊢ U_i <: T_i    Γ ⊢ R <: S
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ T <: U
+Rules **(T-Equiv-Closure)**, **(Sub-Closure)** are defined once by §8.1, §8.2.
 
 Closure-expression typing and dependency-set construction are defined in §16.9.4.
 
@@ -12497,30 +12254,30 @@ This section owns diagnostics for modal-state usage, modal widening, and pointer
 
 | Code         | Severity | Detection    | Condition                                                                                                                |
 | ------------ | -------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| `E-TYP-2050` | Error    | Compile-time | Modal type declares zero states                                                                                          |
-| `E-TYP-2051` | Error    | Compile-time | Duplicate state name within modal type                                                                                   |
-| `E-TYP-2052` | Error    | Compile-time | Field access for field not present in current state's payload                                                            |
-| `E-TYP-2053` | Error    | Compile-time | Method invocation for method not available in current state                                                              |
-| `E-TYP-2054` | Error    | Compile-time | State name collides with modal type name                                                                                 |
-| `E-TYP-2055` | Error    | Compile-time | Transition body returns value not matching declared target state                                                         |
-| `E-TYP-2056` | Error    | Compile-time | Transition invoked on value not of declared source state                                                                 |
-| `E-TYP-2057` | Error    | Compile-time | Direct field access on general modal type without pattern matching                                                       |
-| `E-TYP-2058` | Error    | Compile-time | Duplicate field name in modal state payload                                                                              |
-| `E-TYP-2059` | Error    | Compile-time | Transition target state not declared in modal type                                                                       |
-| `E-TYP-2060` | Error    | Compile-time | Non-exhaustive `if ... is { ... }` on general modal type                                                                 |
-| `E-TYP-2061` | Error    | Compile-time | Duplicate method name in modal state                                                                                     |
-| `E-TYP-2062` | Error    | Compile-time | Duplicate transition name in modal state                                                                                 |
-| `E-TYP-2063` | Error    | Compile-time | State member visibility exceeds modal visibility                                                                         |
-| `E-TYP-2064` | Error    | Compile-time | State member not visible in current scope                                                                                |
-| `E-TYP-2065` | Error    | Compile-time | State method name conflicts with transition name in the same modal state                                                 |
-| `E-TYP-2070` | Error    | Compile-time | Implicit widening on non-niche-layout-compatible type                                                                    |
-| `E-TYP-2071` | Error    | Compile-time | `widen` applied to non-modal type                                                                                        |
-| `E-TYP-2072` | Error    | Compile-time | `widen` applied to already-general modal type                                                                            |
-| `E-TYP-2073` | Error    | Compile-time | Record literal whose type is `File@S`, `DirIter@S`, or `CancelToken@S` for any state `S` in the corresponding modal type |
+| `E-TYP-2050` | Error    | Compile-time | Modal type declares zero states (`Modal-NoStates-Err`) |
+| `E-TYP-2051` | Error    | Compile-time | Duplicate state name within modal type (`Modal-DupState-Err`) |
+| `E-TYP-2052` | Error    | Compile-time | Field access for field not present in current state's payload (`Modal-Field-Missing`) |
+| `E-TYP-2053` | Error    | Compile-time | Method invocation for method not available in current state (`Modal-Method-NotFound`) |
+| `E-TYP-2054` | Error    | Compile-time | State name collides with modal type name (`Modal-StateName-Err`) |
+| `E-TYP-2055` | Error    | Compile-time | Transition body returns value not matching declared target state (`Transition-Body-Err`) |
+| `E-TYP-2056` | Error    | Compile-time | Transition invoked on value not of declared source state (`Transition-Source-Err`) |
+| `E-TYP-2057` | Error    | Compile-time | Direct field access on general modal type without pattern matching (`Modal-Field-General-Err`) |
+| `E-TYP-2058` | Error    | Compile-time | Duplicate field name in modal state payload (`Modal-Payload-DupField`) |
+| `E-TYP-2059` | Error    | Compile-time | Transition target state not declared in modal type (`Transition-Target-Err`) |
+| `E-TYP-2060` | Error    | Compile-time | Non-exhaustive `if ... is { ... }` on general modal type (`IfCase-Modal-NonExhaustive`) |
+| `E-TYP-2061` | Error    | Compile-time | Duplicate method name in modal state (`StateMethod-Dup`) |
+| `E-TYP-2062` | Error    | Compile-time | Duplicate transition name in modal state (`Transition-Dup`) |
+| `E-TYP-2063` | Error    | Compile-time | State member visibility exceeds modal visibility (`StateMemberVisOk-Err`) |
+| `E-TYP-2064` | Error    | Compile-time | State member not visible in current scope (`Modal-Field-NotVisible`, `Modal-Method-NotVisible`, `Transition-NotVisible`) |
+| `E-TYP-2065` | Error    | Compile-time | State method name conflicts with transition name in the same modal state (`StateMember-Name-Conflict`) |
+| `E-TYP-2070` | Error    | Compile-time | Implicit widening on non-niche-layout-compatible type (`Chk-Subsumption-Modal-NonNiche`) |
+| `E-TYP-2071` | Error    | Compile-time | `widen` applied to non-modal type (`Widen-NonModal`) |
+| `E-TYP-2072` | Error    | Compile-time | `widen` applied to already-general modal type (`Widen-AlreadyGeneral`) |
+| `E-TYP-2073` | Error    | Compile-time | Record literal whose type is `File@S`, `DirIter@S`, or `CancelToken@S` for any state `S` in the corresponding modal type (`Record-FileDir-Err`) |
 | `W-SYS-4010` | Warning  | Compile-time | Modal widening involves large payload copy (>256 bytes)                                                                  |
 | `E-TYP-2101` | Error    | Compile-time | Dereference of pointer in `@Null` state                                                                                  |
 | `E-TYP-2102` | Error    | Compile-time | Dereference of pointer in `@Expired` state                                                                               |
-| `E-TYP-2103` | Error    | Compile-time | Dereference of raw pointer outside `unsafe`                                                                              |
+| `E-TYP-2103` | Error    | Compile-time | Dereference of raw pointer outside `unsafe` (`Deref-Raw-Unsafe`) |
 | `E-TYP-2104` | Error    | Compile-time | Address-of applied to non-place expression                                                                               |
 
 ## 14. Abstraction and Polymorphism
@@ -12766,10 +12523,7 @@ Generic declaration parsing is delegated to the owning declaration forms, each o
 
 CallTypeArgsStart(P) ⇔ TypeArgsStartTok(Tok(P)) ∧ (Γ ⊢ ParseGenericArgs(P) ⇓ (P_1, args)) ∧ IsPunc(Tok(P_1), "(")
 
-**(Postfix-Call-TypeArgs)**
-CallTypeArgsStart(P)    Γ ⊢ ParseGenericArgs(P) ⇓ (P_1, targs)    IsPunc(Tok(P_1), "(")    Γ ⊢ ParseArgList(Advance(P_1)) ⇓ (P_2, args)    IsPunc(Tok(P_2), ")")
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ PostfixStep(P, e) ⇓ (Advance(P_2), CallTypeArgs(e, targs, args))
+Rule **(Postfix-Call-TypeArgs)** is defined once by §16.3.2.
 
 #### 14.2.3 AST Representation / Form
 
@@ -12860,6 +12614,16 @@ T = TypeApply(p, args)    p ∈ dom(Σ.Types)    params_gen = TypeParamsOf(p)   
 T = TypeApply(p, args)    p ∈ dom(Σ.Types)    params_gen = TypeParamsOf(p)    DefaultArgs(params_gen, args) = ⊥
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ T wf ⇑
+
+**(Chk-Generic-Invariant-Err)**
+Γ; R; L ⊢ e ⇒ S ⊣ C    StripPerm(S) = TypeApply(path, [S_1, …, S_n])    StripPerm(T) = TypeApply(path, [T_1, …, T_n])    ∃ i, VarianceOf(path, i) = `=` ∧ ¬(Γ ⊢ S_i ≡ T_i)    c = Code(Chk-Generic-Invariant-Err)
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ; R; L ⊢ e ⇐ T ⇑ c
+
+**(Chk-Generic-Variance-Err)**
+Γ; R; L ⊢ e ⇒ S ⊣ C    StripPerm(S) = TypeApply(path, [S_1, …, S_n])    StripPerm(T) = TypeApply(path, [T_1, …, T_n])    ∃ i, VarianceOf(path, i) ∈ {`+`, `-`} ∧ ¬ VarianceSatisfied(VarianceOf(path, i), S_i, T_i)    c = Code(Chk-Generic-Variance-Err)
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ; R; L ⊢ e ⇐ T ⇑ c
 
 Type arguments MAY be omitted at generic procedure call sites only when `GenericCallInference` succeeds. A well-typed omitted-type-argument call is elaborated to `CallTypeArgs(callee, inferred_args, args)` before the §14.2.5 monomorphic-call elaboration. Class methods with generic parameter lists are not vtable-eligible and therefore MUST NOT be invoked through dynamic class objects.
 
@@ -13495,10 +13259,7 @@ T = TypeDynamic(p)    p ∉ dom(Σ.Classes)
 ──────────────────────────────────────────────
 Γ ⊢ T wf ⇑
 
-**(T-Equiv-Dynamic)**
-T = TypeDynamic(p)    U = TypeDynamic(p)
-──────────────────────────────────────────────
-Γ ⊢ T ≡ U
+Rule **(T-Equiv-Dynamic)** is defined once by §8.1.
 
 **(T-Dynamic-Form)**
 Γ; R; L ⊢ e :place T    IsPlace(e)    AddrOfOk(e)    Γ ⊢ Cl : ClassPath    Γ ⊢ StripPerm(T) <: Cl    dispatchable(Cl)
@@ -13562,10 +13323,7 @@ T = TypeDynamic(Cl)
 ────────────────────────────────────
 Γ ⊢ alignof(T) = PtrAlign
 
-**(ABI-Dynamic)**
-Γ ⊢ DynLayout(Cl) ⇓ ⟨size, align, _⟩
-──────────────────────────────────────────────────────────────
-Γ ⊢ ABITy(TypeDynamic(Cl)) ⇓ ⟨size, align⟩
+Rule **(ABI-Dynamic)** is defined once by §24.2.4.
 
 ValueBits(TypeDynamic(Cl), v) = bits ⇔ v = Dyn(Cl, RawPtr(`imm`, addr), T) ∧ sym = ScopedSym(VTableDecl(T, Cl)) ∧ addr_vt = AddrOfSym(sym) ∧ RecordLayout(DynFields(Cl)) ⇓ ⟨size, _, offsets⟩ ∧ StructBits([TypeRawPtr(`imm`, TypePrim("()")), TypeRawPtr(`imm`, TypePath(["VTable"]))], [RawPtr(`imm`, addr), RawPtr(`imm`, addr_vt)], offsets, size) = bits
 
@@ -13650,10 +13408,7 @@ T = TypeOpaque(path)    path ∉ dom(Σ.Classes)
 ────────────────────────────────────────────────────────────────────
 Γ ⊢ T wf ⇑
 
-**(T-Equiv-Opaque)**
-T = TypeOpaque(path)    U = TypeOpaque(path)
-──────────────────────────────────────────────────────────────────────────────
-Γ ⊢ T ≡ U
+Rule **(T-Equiv-Opaque)** is defined once by §8.1.
 
 **(T-Opaque-Return)**
 Γ ⊢ body : T    Γ ⊢ T <: Cl    return_type(f) = opaque Cl
@@ -13684,12 +13439,12 @@ Diagnostics are defined for opaque types naming undefined classes, member access
 #### 14.8.1 Syntax
 
 ```ebnf
-refinement_type       ::= type "|:" "{" predicate_expr "}"
-type_alias_decl       ::= visibility? "type" identifier "=" type "|:" "{" predicate_expr "}"
-param_with_constraint ::= identifier ":" type "|:" "{" predicate_expr "}"
+type_alias_decl ::= visibility? "type" identifier "=" type "|:" "{" predicate_expr "}"
 ```
 
 Within a standalone refinement type, `self` denotes the constrained value.
+
+There is no separate parameter-constraint production: a `refinement_clause` on a parameter's type is an inline parameter constraint. Its predicate references the parameter by name and MUST NOT use `self` (`E-TYP-1956`).
 
 #### 14.8.2 Parsing
 
@@ -13714,15 +13469,7 @@ PredicateEquiv(P_1, P_2) ⇔ ∀ σ. (Eval(P_1, σ) = true ⇔ Eval(P_2, σ) = t
 
 #### 14.8.4 Static Semantics
 
-**(T-Equiv-Refine)**
-T = TypeRefine(T_0, P_1)    U = TypeRefine(U_0, P_2)    Γ ⊢ T_0 ≡ U_0    PredicateEquiv(P_1, P_2)
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ T ≡ U
-
-**(T-Equiv-Refine-Norm)**
-T = TypeRefine(TypeRefine(T_0, P_1), P_2)    U = TypeRefine(T_0, P_1 ∧ P_2)
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ T ≡ U
+Rules **(T-Equiv-Refine)**, **(T-Equiv-Refine-Norm)** are defined once by §8.1.
 
 **(WF-Refine-Type)**
 Γ ⊢ T wf    Γ, `self` : T ⊢ P : `bool`    Pure(P)
@@ -13757,10 +13504,7 @@ Refinement types do not alter the underlying value representation. Failed dynami
 
 #### 14.8.6 Lowering
 
-**(LLVMTy-Refine)**
-Γ ⊢ LLVMTy(T) ⇓ τ
-───────────────────────────────────────────────
-Γ ⊢ LLVMTy(TypeRefine(T, P)) ⇓ τ
+Rule **(LLVMTy-Refine)** is defined once by §24.7.7.
 
 Feature-local lowering consists only of optional runtime predicate checks when static verification is not discharged inside `#dynamic` scopes.
 
@@ -13780,7 +13524,7 @@ Capability classes have no feature-specific parser beyond ordinary class parsing
 
 #### 14.9.3 AST Representation / Form
 
-CapClass = {`IO`, `Network`, `HeapAllocator`, `ExecutionDomain`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`}
+The capability-class universe is open and defined by `CapClass` in §6.1.1: the built-in root capability classes are `IO`, `Network`, `HeapAllocator`, `ExecutionDomain`, `System`, `Reactor`, `Time`, `MonotonicTime`, and `WallTime`, and user classes that declare a capability superclass via `<:` are capability classes.
 CapType(Cl) = TypeDynamic(Cl)
 
 IOInterface =
@@ -13896,7 +13640,7 @@ ContextFields = [
   ⟨⊥, `public`, false, `io`, TypeDynamic(`IO`), ⊥, ⊥, ⊥⟩,
   ⟨⊥, `public`, false, `net`, TypeDynamic(`Network`), ⊥, ⊥, ⊥⟩,
   ⟨⊥, `public`, false, `heap`, TypeDynamic(`HeapAllocator`), ⊥, ⊥, ⊥⟩,
-  ⟨⊥, `public`, false, `sys`, TypePath(["System"]), ⊥, ⊥, ⊥⟩,
+  ⟨⊥, `public`, false, `sys`, TypeDynamic(`System`), ⊥, ⊥, ⊥⟩,
   ⟨⊥, `public`, false, `reactor`, TypeDynamic(`Reactor`), ⊥, ⊥, ⊥⟩,
   ⟨⊥, `public`, false, `time`, TypeDynamic(`Time`), ⊥, ⊥, ⊥⟩
 ]
@@ -13910,24 +13654,24 @@ ContextDecl = RecordDecl(⊥, `public`, `Context`, ⊥, ⊥, [], ContextMembers,
 
 SystemInterface =
 {
- ⟨"exit", [⟨⊥, `code`, TypePrim("i32")⟩], TypePrim("!")⟩,
- ⟨"get_env", [⟨⊥, `key`, TypeString(`@View`)⟩], TypeString(`@View`)⟩,
- ⟨"executable_path", [], TypeString(`@View`)⟩,
- ⟨"argument_count", [], TypePrim("usize")⟩,
- ⟨"argument", [⟨⊥, `index`, TypePrim("usize")⟩], TypeString(`@View`)⟩,
- ⟨"current_directory", [], TypeString(`@View`)⟩,
- ⟨"run", [⟨⊥, `command`, TypeString(`@View`)⟩], TypePrim("i32")⟩
+ ⟨"exit", `const`, [⟨⊥, `code`, TypePrim("i32")⟩], TypePrim("!")⟩,
+ ⟨"get_env", `const`, [⟨⊥, `key`, TypeString(`@View`)⟩], TypeString(`@View`)⟩,
+ ⟨"executable_path", `const`, [], TypeString(`@View`)⟩,
+ ⟨"argument_count", `const`, [], TypePrim("usize")⟩,
+ ⟨"argument", `const`, [⟨⊥, `index`, TypePrim("usize")⟩], TypeString(`@View`)⟩,
+ ⟨"current_directory", `const`, [], TypeString(`@View`)⟩,
+ ⟨"run", `const`, [⟨⊥, `command`, TypeString(`@View`)⟩], TypePrim("i32")⟩
 }
 SystemMembers = [
-  MethodDecl(⊥, `public`, false, "exit", ⊥, ReceiverShorthand(`const`), [⟨⊥, `code`, TypePrim("i32")⟩], TypePrim("!"), ⊥, ⊥, ⊥, ⊥),
-  MethodDecl(⊥, `public`, false, "get_env", ⊥, ReceiverShorthand(`const`), [⟨⊥, `key`, TypeString(`@View`)⟩], TypeString(`@View`), ⊥, ⊥, ⊥, ⊥),
-  MethodDecl(⊥, `public`, false, "executable_path", ⊥, ReceiverShorthand(`const`), [], TypeString(`@View`), ⊥, ⊥, ⊥, ⊥),
-  MethodDecl(⊥, `public`, false, "argument_count", ⊥, ReceiverShorthand(`const`), [], TypePrim("usize"), ⊥, ⊥, ⊥, ⊥),
-  MethodDecl(⊥, `public`, false, "argument", ⊥, ReceiverShorthand(`const`), [⟨⊥, `index`, TypePrim("usize")⟩], TypeString(`@View`), ⊥, ⊥, ⊥, ⊥),
-  MethodDecl(⊥, `public`, false, "current_directory", ⊥, ReceiverShorthand(`const`), [], TypeString(`@View`), ⊥, ⊥, ⊥, ⊥),
-  MethodDecl(⊥, `public`, false, "run", ⊥, ReceiverShorthand(`const`), [⟨⊥, `command`, TypeString(`@View`)⟩], TypePrim("i32"), ⊥, ⊥, ⊥, ⊥)
+  ClassMethodDecl(⊥, `public`, "exit", ⊥, ReceiverShorthand(`const`), [⟨⊥, `code`, TypePrim("i32")⟩], TypePrim("!"), ⊥, ⊥, ⊥, ⊥),
+  ClassMethodDecl(⊥, `public`, "get_env", ⊥, ReceiverShorthand(`const`), [⟨⊥, `key`, TypeString(`@View`)⟩], TypeString(`@View`), ⊥, ⊥, ⊥, ⊥),
+  ClassMethodDecl(⊥, `public`, "executable_path", ⊥, ReceiverShorthand(`const`), [], TypeString(`@View`), ⊥, ⊥, ⊥, ⊥),
+  ClassMethodDecl(⊥, `public`, "argument_count", ⊥, ReceiverShorthand(`const`), [], TypePrim("usize"), ⊥, ⊥, ⊥, ⊥),
+  ClassMethodDecl(⊥, `public`, "argument", ⊥, ReceiverShorthand(`const`), [⟨⊥, `index`, TypePrim("usize")⟩], TypeString(`@View`), ⊥, ⊥, ⊥, ⊥),
+  ClassMethodDecl(⊥, `public`, "current_directory", ⊥, ReceiverShorthand(`const`), [], TypeString(`@View`), ⊥, ⊥, ⊥, ⊥),
+  ClassMethodDecl(⊥, `public`, "run", ⊥, ReceiverShorthand(`const`), [⟨⊥, `command`, TypeString(`@View`)⟩], TypePrim("i32"), ⊥, ⊥, ⊥, ⊥)
 ]
-SystemDecl = RecordDecl(⊥, `public`, `System`, ⊥, ⊥, [], SystemMembers, ⊥, ⊥, ⊥)
+SystemDecl = ClassDecl(⊥, `public`, false, `System`, ⊥, ⊥, [], SystemMembers, ⊥, ⊥)
 
 CpuSetDecl = TypeAliasDecl(⊥, `public`, `CpuSet`, ⊥, ⊥, TypePrim("u64"), ⊥, ⊥)
 PriorityVariants = [
@@ -13949,15 +13693,16 @@ ReactorDecl = ClassDecl(⊥, `public`, false, `Reactor`, ⊥, ⊥, [], ReactorMe
 CapMethodSig(`IO`, name) = ⟨params, ret⟩ ⇔ ⟨name, recv, params, ret⟩ ∈ IOInterface
 CapMethodSig(`Network`, name) = ⟨params, ret⟩ ⇔ ⟨name, recv, params, ret⟩ ∈ NetworkInterface
 CapMethodSig(`HeapAllocator`, name) = ⟨params, ret⟩ ⇔ ⟨name, recv, params, ret⟩ ∈ HeapAllocatorInterface
+CapMethodSig(`System`, name) = ⟨params, ret⟩ ⇔ ⟨name, recv, params, ret⟩ ∈ SystemInterface
 CapMethodSig(`Reactor`, name) = ⟨params, ret⟩ ⇔ LookupClassMethod(`Reactor`, name) = m ∧ Sig_T(SelfVar, m) = ⟨_, params, ret⟩
 CapMethodSig(`Time`, name) = ⟨params, ret⟩ ⇔ ⟨name, recv, params, ret⟩ ∈ TimeInterface
 CapMethodSig(`MonotonicTime`, name) = ⟨params, ret⟩ ⇔ ⟨name, recv, params, ret⟩ ∈ MonotonicTimeInterface
 CapMethodSig(`WallTime`, name) = ⟨params, ret⟩ ⇔ ⟨name, recv, params, ret⟩ ∈ WallTimeInterface
-SystemMethodSig(name) = ⟨params, ret⟩ ⇔ ⟨name, params, ret⟩ ∈ SystemInterface
 
 CapRecv(`IO`, name) = recv ⇔ ⟨name, recv, params, ret⟩ ∈ IOInterface
 CapRecv(`Network`, name) = recv ⇔ ⟨name, recv, params, ret⟩ ∈ NetworkInterface
 CapRecv(`HeapAllocator`, name) = recv ⇔ ⟨name, recv, params, ret⟩ ∈ HeapAllocatorInterface
+CapRecv(`System`, name) = recv ⇔ ⟨name, recv, params, ret⟩ ∈ SystemInterface
 CapRecv(`Reactor`, name) = recv ⇔ LookupClassMethod(`Reactor`, name) = m ∧ RecvPerm(SelfVar, m.receiver) = recv
 CapRecv(`Time`, name) = recv ⇔ ⟨name, recv, params, ret⟩ ∈ TimeInterface
 CapRecv(`MonotonicTime`, name) = recv ⇔ ⟨name, recv, params, ret⟩ ∈ MonotonicTimeInterface
@@ -13965,15 +13710,15 @@ CapRecv(`WallTime`, name) = recv ⇔ ⟨name, recv, params, ret⟩ ∈ WallTimeI
 
 LowerCallJudg = {MethodSymbol, BuiltinMethodSym, LowerMethodCall, LowerArgs, LowerRecvArg}
 ModalStateOf(T) = TypeModalState(modal_ref, S) ⇔ StripPerm(T) = TypeModalState(modal_ref, S)
-BuiltinCapClass = {`IO`, `Network`, `HeapAllocator`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`}
+BuiltinCapClass = {`IO`, `Network`, `HeapAllocator`, `ExecutionDomain`, `System`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`}
 
 #### 14.9.4 Static Semantics
 
-Capability classes are ordinary classes in the type system. A parameter of type `$Class` accepts any concrete type implementing `Class`.
+Capability classes are ordinary classes in the type system. A parameter of type `$Class` accepts any concrete type implementing `Class`. A class is a capability class iff `CapClass` (§6.1.1) holds; capability classhood is determined by the superclass relation alone and MUST NOT depend on attributes or naming.
 
 Capability classes MAY be used as generic bounds exactly like any other class bound.
 
-The built-in capability class names `IO`, `Network`, `HeapAllocator`, `ExecutionDomain`, `Reactor`, `Time`, `MonotonicTime`, and `WallTime` are reserved. Type-system use of those names is via `CapType(Cl) = TypeDynamic(Cl)`.
+The built-in capability class names `IO`, `Network`, `HeapAllocator`, `ExecutionDomain`, `System`, `Reactor`, `Time`, `MonotonicTime`, and `WallTime` are reserved. Type-system use of those names is via `CapType(Cl) = TypeDynamic(Cl)`.
 
 Calls to `HeapAllocator.alloc_raw` and `HeapAllocator.dealloc_raw` require `unsafe` context.
 
@@ -13995,7 +13740,6 @@ RecordDecl(["Duration"]) = DurationDecl
 RecordDecl(["MonotonicInstant"]) = MonotonicInstantDecl
 RecordDecl(["UtcInstant"]) = UtcInstantDecl
 RecordDecl(["Context"]) = ContextDecl
-RecordDecl(["System"]) = SystemDecl
 EnumDecl(["FileKind"]) = FileKindDecl
 EnumDecl(["IoError"]) = IoErrorDecl
 EnumDecl(["AllocationError"]) = AllocationErrorDecl
@@ -14011,16 +13755,16 @@ EnumDecl(["Priority"]) = PriorityDecl
 Σ.Types["AllocationError"] = AllocationErrorDecl
 Σ.Types["TimeError"] = TimeErrorDecl
 Σ.Types["Context"] = ContextDecl
-Σ.Types["System"] = SystemDecl
 Σ.Types["CpuSet"] = CpuSetDecl
 Σ.Types["Priority"] = PriorityDecl
+Σ.Classes["System"] = SystemDecl
 
 BuiltInContext(T) ⇔ T = TypePath(["Context"]) ∧ RecordDecl(["Context"]) = ContextDecl
 
 ContextBundleFieldType(`io`) = TypeDynamic(`IO`)
 ContextBundleFieldType(`net`) = TypeDynamic(`Network`)
 ContextBundleFieldType(`heap`) = TypeDynamic(`HeapAllocator`)
-ContextBundleFieldType(`sys`) = TypePath(["System"])
+ContextBundleFieldType(`sys`) = TypeDynamic(`System`)
 ContextBundleFieldType(`reactor`) = TypeDynamic(`Reactor`)
 ContextBundleFieldType(`time`) = TypeDynamic(`Time`)
 ContextBundleFieldType(`cpu`) = TypeDynamic(`ExecutionDomain`)
@@ -14055,7 +13799,7 @@ Capability classes introduce no separate dispatch model. Built-in capability ope
 
 #### 14.9.6 Lowering
 
-Calls on dynamic receivers of builtin capability classes `IO`, `Network`, `HeapAllocator`, `Reactor`, `Time`, `MonotonicTime`, and `WallTime` lower to builtin method symbols rather than emitted vtable-call sequences. Other capability classes lower through the ordinary dynamic-dispatch path of §14.6.
+Calls on dynamic receivers of builtin capability classes `IO`, `Network`, `HeapAllocator`, `ExecutionDomain`, `System`, `Reactor`, `Time`, `MonotonicTime`, and `WallTime` lower to builtin method symbols rather than emitted vtable-call sequences. Other capability classes lower through the ordinary dynamic-dispatch path of §14.6.
 
 #### 14.9.7 Diagnostics
 
@@ -14138,8 +13882,7 @@ BuiltinBitcopyType(T) ⇔
  T = TypeBytes(`@View`) ∨
  T = TypePath(["FileKind"]) ∨
  T = TypePath(["IoError"]) ∨
- T = TypePath(["Context"]) ∨
- T = TypePath(["System"])
+ T = TypePath(["Context"])
 
 BuiltinDropType(T) ⇔ T = TypeString(`@Managed`) ∨ T = TypeBytes(`@Managed`)
 BuiltinCloneType(T) ⇔ BuiltinBitcopyType(T)
@@ -14196,9 +13939,11 @@ This section owns diagnostics for refinement types, generic instantiation, class
 | `E-TYP-1956` | Error    | Compile-time | `self` used in inline parameter constraint                                          |
 | `E-TYP-1957` | Error    | Compile-time | Circular type dependency in refinement predicate                                    |
 | `P-TYP-1953` | Panic    | Runtime      | Refinement predicate failed at runtime                                              |
+| `E-TYP-1520` | Error    | Compile-time | Invariant type parameter requires exact type match (`Chk-Generic-Invariant-Err`)    |
+| `E-TYP-1521` | Error    | Compile-time | Covariant or contravariant generic variance requirement not satisfied (`Chk-Generic-Variance-Err`) |
 | `E-TYP-2301` | Error    | Compile-time | Type arguments cannot be inferred; explicit instantiation required                  |
 | `E-TYP-2302` | Error    | Compile-time | Type argument does not satisfy required class bound or predicate                    |
-| `E-TYP-2303` | Error    | Compile-time | Wrong number of type arguments                                                      |
+| `E-TYP-2303` | Error    | Compile-time | Wrong number of type arguments (`WF-ModalState-ArgCount-Err`) |
 | `E-TYP-2304` | Error    | Compile-time | Duplicate type parameter name in generic declaration                                |
 | `E-TYP-2305` | Error    | Compile-time | Class bound references a non-class type                                             |
 | `E-TYP-2307` | Error    | Compile-time | Infinite monomorphization recursion                                                 |
@@ -14217,10 +13962,10 @@ This section owns diagnostics for refinement types, generic instantiation, class
 | `E-TYP-2502` | Error    | Compile-time | Missing `override` on concrete procedure replacement                                |
 | `E-TYP-2503` | Error    | Compile-time | Type does not implement required procedure from class or has incompatible signature |
 | `E-TYP-2504` | Error    | Compile-time | Duplicate associated type name in class                                             |
-| `E-TYP-2505` | Error    | Compile-time | Name conflict among class members                                                   |
+| `E-TYP-2505` | Error    | Compile-time | Name conflict among class members (`EffFields-Conflict`, `EffMethods-Conflict`) |
 | `E-TYP-2506` | Error    | Compile-time | Coherence violation: duplicate class implementation                                 |
 | `E-TYP-2507` | Error    | Compile-time | Orphan rule violation: neither type nor class is local                              |
-| `E-TYP-2508` | Error    | Compile-time | Cyclic superclass dependency detected                                               |
+| `E-TYP-2508` | Error    | Compile-time | Cyclic superclass dependency detected (`Superclass-Cycle`) |
 | `E-TYP-2509` | Error    | Compile-time | Superclass bound refers to undefined class                                          |
 | `E-TYP-2510` | Error    | Compile-time | Accessing member not defined on opaque type's class                                 |
 | `E-TYP-2511` | Error    | Compile-time | Opaque return type does not implement required class                                |
@@ -14531,10 +14276,7 @@ BindParams(proc.params, vec_v) = binds    BlockEnter(σ, binds) ⇓ (σ_1, scope
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ApplyProcSigma(proc, vec_v, σ) ⇓ (ReturnOut(out'), σ_3)
 
-**(EvalSigma-Call-Proc)**
-Γ ⊢ EvalSigma(callee, σ) ⇓ (Val(v_c), σ_1)    proc = CallTarget(v_c)    Γ ⊢ EvalArgsSigma(proc.params, args, σ_1) ⇓ (Val(vec_v), σ_2)    Γ ⊢ ApplyProcSigma(proc, vec_v, σ_2) ⇓ (out, σ_3)
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalSigma(Call(callee, args), σ) ⇓ (out, σ_3)
+Rule **(EvalSigma-Call-Proc)** is defined once by §16.3.5.
 
 #### 15.1.6 Lowering
 
@@ -14771,7 +14513,7 @@ m = MethodTarget(v_self, name)    MethodOwner(m) = owner    MethodName(m) = name
 Γ ⊢ ApplyMethodSigma(base, name, v_self, v_arg, vec_v, σ) ⇓ (out, σ)
 
 **(ApplyMethodSigma)**
-m = MethodTarget(v_self, name)    ¬IsTransition(m)    BindParams(RecvParams(base, name), [v_arg] ++ vec_v) = binds    BlockEnter(σ, binds) ⇓ (σ_1, scope)    Γ ⊢ EvalBlockBodySigma(m.body, σ_1) ⇓ (out, σ_2)    BlockExit(σ_2, scope, out) ⇓ (out', σ_3)
+m = MethodTarget(v_self, name)    ¬ IsTransition(m)    BindParams(RecvParams(base, name), [v_arg] ++ vec_v) = binds    BlockEnter(σ, binds) ⇓ (σ_1, scope)    Γ ⊢ EvalBlockBodySigma(m.body, σ_1) ⇓ (out, σ_2)    BlockExit(σ_2, scope, out) ⇓ (out', σ_3)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ApplyMethodSigma(base, name, v_self, v_arg, vec_v, σ) ⇓ (ReturnOut(out'), σ_3)
 
@@ -14779,20 +14521,7 @@ m = MethodTarget(v_self, name)    ¬IsTransition(m)    BindParams(RecvParams(bas
 
 Methods lower as procedures whose first lowered parameter is the receiver.
 
-**(Mangle-Record-Method)**
-item = MethodDecl(attrs_opt, vis, override, name, gen_params_opt, receiver, params, ret_opt, contract_opt, body, span, doc_opt)
-──────────────────────────────────────────────────────────────────────────────
-Γ ⊢ Mangle(item) ⇓ ScopedSym(item)
-
-**(Mangle-Class-Method)**
-item = ClassMethodDecl(attrs_opt, vis, name, gen_params_opt, receiver, params, ret_opt, contract_opt, body_opt, span, doc_opt)
-──────────────────────────────────────────────────────────────────────────────
-Γ ⊢ Mangle(item) ⇓ ScopedSym(item)
-
-**(Mangle-State-Method)**
-item = StateMethodDecl(attrs_opt, vis, name, gen_params_opt, recv, params, ret_opt, contract_opt, body, span, doc_opt)
-──────────────────────────────────────────────────────────────────────────────
-Γ ⊢ Mangle(item) ⇓ ScopedSym(item)
+Rules **(Mangle-Record-Method)**, **(Mangle-Class-Method)**, **(Mangle-State-Method)** are defined once by §24.3.1.
 
 #### 15.2.7 Diagnostics
 
@@ -15120,6 +14849,10 @@ Diagnostics for unsatisfied preconditions are attached to the call site.
 ```ebnf
 postcondition_expr ::= predicate_expr
 contract_intrinsic ::= "@result" | "@entry" "(" expression ")"
+
+(* Contract intrinsics parse in any primary-expression position; `@result`
+   outside a postcondition and `@entry` outside a contract predicate are
+   rejected statically (E-SEM-2806, E-CON-0415, E-CON-0416). *)
 ```
 
 #### 15.6.2 Parsing
@@ -15636,10 +15369,10 @@ This section owns diagnostics for procedure declarations, receiver constraints, 
 | `E-TYP-1508` | Error    | Compile-time | Procedure declaration requires explicit return type annotation                     |
 | `E-TYP-1912` | Error    | Compile-time | Explicit receiver type must be `Self` for record methods                           |
 | `E-MOD-2411` | Error    | Compile-time | Missing move expression at call site for transferring provenance-bearing parameter |
-| `E-MOD-2430` | Error    | Compile-time | Multiple `main` procedures defined                                                 |
-| `E-MOD-2431` | Error    | Compile-time | Invalid `main` signature                                                           |
-| `E-MOD-2432` | Error    | Compile-time | `main` is generic (has type parameters)                                            |
-| `E-MOD-2434` | Error    | Compile-time | Missing `main` procedure                                                           |
+| `E-MOD-2430` | Error    | Compile-time | Multiple `main` procedures defined (`Main-Multiple`) |
+| `E-MOD-2431` | Error    | Compile-time | Invalid `main` signature (`Main-Signature-Err`) |
+| `E-MOD-2432` | Error    | Compile-time | `main` is generic (has type parameters) (`Main-Generic-Err`) |
+| `E-MOD-2434` | Error    | Compile-time | Missing `main` procedure (`Main-Missing`) |
 | `E-CON-0415` | Error    | Compile-time | Capability-requiring operation in `@entry` expression                              |
 | `E-CON-0416` | Error    | Compile-time | Side-effecting operation in `@entry` expression                                    |
 | `P-SEM-2850` | Panic    | Runtime      | Contract predicate failed at runtime                                               |
@@ -15810,20 +15543,7 @@ lit.kind = NullLiteral    T = TypeRawPtr(q, U)
 
 PtrNullExpected(T) ⇔ T = TypePtr(U, s) ∧ s ∈ {`Null`, ⊥}
 
-**(Chk-Null-Ptr)**
-T = TypePtr(U, s)    s ∈ {`Null`, ⊥}
-────────────────────────────────────────────────────────────────
-Γ; R; L ⊢ PtrNullExpr ⇐ T ⊣ ∅
-
-**(Syn-PtrNull-Err)**
-c = Code(PtrNull-Infer-Err)
-────────────────────────────────────────────────────────────────
-Γ; R; L ⊢ PtrNullExpr ⇒ T ⊣ C ⇑ c
-
-**(Chk-PtrNull-Err)**
-¬ PtrNullExpected(T)    c = Code(PtrNull-Infer-Err)
-────────────────────────────────────────────────────────────────
-Γ; R; L ⊢ PtrNullExpr ⇐ T ⊣ C ⇑ c
+Rules **(Chk-Null-Ptr)**, **(Syn-PtrNull-Err)**, **(Chk-PtrNull-Err)** are defined once by §8.3.
 
 **(T-Ident)**
 (x : T) ∈ Γ    BitcopyType(T)
@@ -15881,7 +15601,29 @@ LookupValPath(σ, path, name) = v
 ────────────────────────────────────────────────────────────────
 Γ ⊢ EvalSigma(ErrorExpr(_), σ) ⇓ (Ctrl(Panic), σ)
 
-Name and path evaluation MAY panic if the referenced module is poisoned. The poisoned-module cases are defined by `EvalSigma-Ident-Poison`, `EvalSigma-Ident-Poison-RecordCtor`, `EvalSigma-Path-Poison`, and `EvalSigma-Path-Poison-RecordCtor`.
+Name and path evaluation panics if the referenced module is poisoned:
+
+**(EvalSigma-Ident-Poison)**
+LookupBind(σ, x) undefined    Γ ⊢ ResolveValueName(x) ⇓ ent    ent.origin_opt = mp    PoisonedModule(σ, PathOfModule(mp))
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ EvalSigma(Identifier(x), σ) ⇓ (Ctrl(Panic), σ)
+
+**(EvalSigma-Ident-Poison-RecordCtor)**
+LookupBind(σ, x) undefined    Γ ⊢ ResolveValueName(x) ⇑    Γ ⊢ ResolveRecordPath([], x) ⇓ p    SplitLast(p) = (mp, _)    PoisonedModule(σ, mp)
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ EvalSigma(Identifier(x), σ) ⇓ (Ctrl(Panic), σ)
+
+**(EvalSigma-Path-Poison)**
+Γ ⊢ ResolveQualified(path, name, ValueKind) ⇓ ent    ent.origin_opt = mp    PoisonedModule(σ, PathOfModule(mp))
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ EvalSigma(Path(path, name), σ) ⇓ (Ctrl(Panic), σ)
+
+**(EvalSigma-Path-Poison-RecordCtor)**
+Γ ⊢ ResolveQualified(path, name, ValueKind) ⇑    Γ ⊢ ResolveRecordPath(path, name) ⇓ p    SplitLast(p) = (mp, _)    PoisonedModule(σ, mp)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ EvalSigma(Path(path, name), σ) ⇓ (Ctrl(Panic), σ)
+
+The panic record carries reason `InitPanic(mp)` per §24.5.2; lowering of the poison check is defined by `CheckPoison` (§24.7.13).
 
 #### 16.1.6 Lowering
 
@@ -16107,7 +15849,22 @@ ValueCopyContext(e)    IsPlace(e)    ¬ BitcopyType(ExprType(e))    c = Code(Val
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ EvalSigma(IndexAccess(base, idx), σ) ⇓ (Val(v_s), σ_2)
 
-Bounds failures in scalar and range indexing evaluate to `Ctrl(Panic)` as defined by `EvalSigma-Index-OOB` and `EvalSigma-Index-Range-OOB`. Base and index control-flow propagation are defined by `EvalSigma-FieldAccess-Ctrl`, `EvalSigma-TupleAccess-Ctrl`, `EvalSigma-Index-Ctrl-Base`, and `EvalSigma-Index-Ctrl-Idx`.
+**(EvalSigma-FieldAccess-Ctrl)**
+Γ ⊢ EvalSigma(base, σ) ⇓ (Ctrl(κ), σ_1)
+──────────────────────────────────────────────────────────────
+Γ ⊢ EvalSigma(FieldAccess(base, f), σ) ⇓ (Ctrl(κ), σ_1)
+
+**(EvalSigma-Index-Ctrl-Base)**
+Γ ⊢ EvalSigma(base, σ) ⇓ (Ctrl(κ), σ_1)
+──────────────────────────────────────────────────────────────
+Γ ⊢ EvalSigma(IndexAccess(base, idx), σ) ⇓ (Ctrl(κ), σ_1)
+
+**(EvalSigma-Index-Ctrl-Idx)**
+Γ ⊢ EvalSigma(base, σ) ⇓ (Val(v_b), σ_1)    Γ ⊢ EvalSigma(idx, σ_1) ⇓ (Ctrl(κ), σ_2)
+────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ EvalSigma(IndexAccess(base, idx), σ) ⇓ (Ctrl(κ), σ_2)
+
+Bounds failures in scalar and range indexing evaluate to `Ctrl(Panic)` as defined by `EvalSigma-Index-OOB` and `EvalSigma-Index-Range-OOB`. Base and index control-flow propagation are defined by `EvalSigma-FieldAccess-Ctrl`, `EvalSigma-TupleAccess-Ctrl` (§12.2.5), `EvalSigma-Index-Ctrl-Base`, and `EvalSigma-Index-Ctrl-Idx`.
 
 #### 16.2.6 Lowering
 
@@ -16521,7 +16278,9 @@ For `UnitEnumType(T)`, equality compares the enum discriminant values. Enum decl
 BitAt(u, i) = b ⇔ b ∈ {0, 1} ∧ ∃ q, r. u = q · 2^{i + 1} + b · 2^i + r ∧ 0 ≤ r < 2^i
 BitNot(v) = v' ⇔ ∃ t, x, w, u, u'. v = IntVal(t, x) ∧ w = IntWidth(t) ∧ u = ToUnsigned(w, x) ∧ u' = (2^w - 1) - u ∧ ((t ∈ SignedIntTypes ∧ v' = IntVal(t, ToSigned(w, u'))) ∨ (t ∈ UnsignedIntTypes ∧ v' = IntVal(t, u')))
 BitOp(op, t, v_1, v_2) = v ⇔ v_1 = IntVal(t, x_1) ∧ v_2 = IntVal(t, x_2) ∧ w = IntWidth(t) ∧ u_1 = ToUnsigned(w, x_1) ∧ u_2 = ToUnsigned(w, x_2) ∧ u = ∑_{i=0}^{w-1} b_i 2^i ∧ ∀ i. 0 ≤ i < w ⇒ ((op = "&" ∧ b_i = BitAt(u_1, i) · BitAt(u_2, i)) ∨ (op = "|" ∧ b_i = max(BitAt(u_1, i), BitAt(u_2, i))) ∨ (op = "^" ∧ b_i = (BitAt(u_1, i) + BitAt(u_2, i)) mod 2)) ∧ ((t ∈ SignedIntTypes ∧ v = IntVal(t, ToSigned(w, u))) ∨ (t ∈ UnsignedIntTypes ∧ v = IntVal(t, u)))
-ShiftOp(op, t, v_1, v_2) = v ⇔ v_1 = IntVal(t, x_1) ∧ v_2 = IntVal("u32", n) ∧ w = IntWidth(t) ∧ 0 ≤ n < w ∧ u_1 = ToUnsigned(w, x_1) ∧ ((op = "<<" ∧ u = (u_1 · 2^n) mod 2^w) ∨ (op = ">>" ∧ u = ⌊u_1 / 2^n⌋)) ∧ ((t ∈ SignedIntTypes ∧ v = IntVal(t, ToSigned(w, u))) ∨ (t ∈ UnsignedIntTypes ∧ v = IntVal(t, u)))
+ShiftOp(op, t, v_1, v_2) = v ⇔ v_1 = IntVal(t, x_1) ∧ v_2 = IntVal("u32", n) ∧ w = IntWidth(t) ∧ 0 ≤ n < w ∧ ((op = "<<" ∧ u_1 = ToUnsigned(w, x_1) ∧ u = (u_1 · 2^n) mod 2^w ∧ ((t ∈ SignedIntTypes ∧ v = IntVal(t, ToSigned(w, u))) ∨ (t ∈ UnsignedIntTypes ∧ v = IntVal(t, u)))) ∨ (op = ">>" ∧ v = IntVal(t, ⌊x_1 / 2^n⌋)))
+
+`⌊·⌋` rounds toward negative infinity. `>>` is therefore an arithmetic (sign-extending) shift on signed operands and a logical shift on unsigned operands. The right operand of `<<` and `>>` MUST have type `u32`. A shift amount `n ≥ IntWidth(t)` leaves `ShiftOp` undefined; evaluation panics with reason `Shift`.
 PowInt(x, n) = y ⇔ n ∈ ℕ ∧ ((n = 0 ∧ y = 1) ∨ (n > 0 ∧ y = x · PowInt(x, n - 1)))
 PowFloat(t, x_1, x_2) = x ⇔ t ∈ FloatTypes ∧ x_1 ∈ FloatValueSet(t) ∧ x_2 ∈ FloatValueSet(t) ∧ x is the IEEE 754-2019 pow result of x_1, x_2 in format FloatFormat(t)
 IEEEArith(op, t, v_1, v_2) = v ⇔ v_1 = FloatVal(t, x_1) ∧ v_2 = FloatVal(t, x_2) ∧ op ∈ ArithOps ∧ ((op ∈ {"+", "-", "*", "/"} ∧ x is the IEEE 754-2019 result of applying op to x_1, x_2 in format FloatFormat(t)) ∨ (op = "%" ∧ x is the IEEE 754-2019 remainder of x_1, x_2 in format FloatFormat(t)) ∨ (op = "**" ∧ PowFloat(t, x_1, x_2) = x)) ∧ v = FloatVal(t, x)
@@ -16579,7 +16338,7 @@ op ∉ {"&&", "||"}    Γ ⊢ EvalSigma(e_1, σ) ⇓ (Val(v_1), σ_1)    Γ ⊢ 
 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ EvalSigma(Binary(op, e_1, e_2), σ) ⇓ (Val(v), σ_2)
 
-If `UnOp` or `BinOp` is undefined, evaluation produces `Ctrl(Panic)`. The old draft defines NaN-sensitive comparison behavior through `Cmp`; ordered float comparisons with NaN yield `false`, `==` yields `false`, and `!=` yields `true`.
+If `UnOp` or `BinOp` is undefined, evaluation produces `Ctrl(Panic)`. Ordered float comparisons with a NaN operand yield `false`; `==` with a NaN operand yields `false`; `!=` with a NaN operand yields `true`.
 
 #### 16.4.6 Lowering
 
@@ -16623,7 +16382,25 @@ NeedsUnOpPanicCheck(op, T) ⇔ op = "-" ∧ StripPerm(T) = TypePrim(t) ∧ t ∈
 
 For unary `-`, overflow checks MUST be emitted only when `NeedsUnOpPanicCheck` holds. Unary `-` on floating operands MUST NOT lower an overflow check.
 
-`Lower-BinOp-Ok`, `Lower-BinOp-Panic`, and `Lower-Range-Full` through `Lower-Range-Exclusive` define the remaining panic-triggering and range-value construction behavior.
+BinOpPanicReasons(op, T) =
+ [Overflow]            if op ∈ {"+", "-", "*", "**"} ∧ StripPerm(T) = TypePrim(t) ∧ t ∈ IntTypes
+ [DivZero, Overflow]   if op ∈ {"/", "%"} ∧ StripPerm(T) = TypePrim(t) ∧ t ∈ IntTypes
+ [Shift]               if op ∈ {"<<", ">>"}
+ []                    otherwise
+
+NeedsBinOpPanicCheck(op, T) ⇔ BinOpPanicReasons(op, T) ≠ []
+
+**(Lower-BinOp-Ok)**
+Γ ⊢ LowerExpr(e_1) ⇓ ⟨IR_1, v_1⟩    Γ ⊢ LowerExpr(e_2) ⇓ ⟨IR_2, v_2⟩    T = ExprType(e_1)    ¬ NeedsBinOpPanicCheck(op, T)    v_r = FreshTemp("binop")
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ LowerBinOp(op, e_1, e_2) ⇓ ⟨SeqIR(IR_1, IR_2, BinOpIR(op, v_1, v_2, v_r)), v_r⟩
+
+**(Lower-BinOp-Panic)**
+Γ ⊢ LowerExpr(e_1) ⇓ ⟨IR_1, v_1⟩    Γ ⊢ LowerExpr(e_2) ⇓ ⟨IR_2, v_2⟩    T = ExprType(e_1)    rs = BinOpPanicReasons(op, T)    rs ≠ []    v_r = FreshTemp("binop")
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ LowerBinOp(op, e_1, e_2) ⇓ ⟨SeqIR(IR_1, IR_2, CheckBinOpIR(op, v_1, v_2, rs), PanicCheckIR, BinOpIR(op, v_1, v_2, v_r)), v_r⟩
+
+`CheckBinOpIR` evaluates each reason in `rs` exactly as the corresponding `PanicSite` of §24.5.2 (`DivZeroCheck`, `OverflowCheck`, `ShiftCheck`). `Lower-Range-Full` through `Lower-Range-Exclusive` (§12.5.6) define range-value construction.
 
 #### 16.4.7 Diagnostics
 
@@ -16679,7 +16456,7 @@ CastValid(S, T) ⇔ (S' = TypePrim(s) ∧ T' = TypePrim(t) ∧ s, t ∈ NumericT
 Γ; R; L ⊢ Cast(e, T) : T
 
 **(T-Cast-Invalid)**
-Γ; R; L ⊢ e : S    ¬ CastValid(S, T)    c = Code(E-SEM-2528)
+Γ; R; L ⊢ e : S    ¬ CastValid(S, T)    c = Code(T-Cast-Invalid)
 ────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ Cast(e, T) ⇑ c
 
@@ -16831,7 +16608,31 @@ TransmuteVal(S, T, v) ⇓ v' ⇔ ValueBits(S, v) = bits ∧ ValueBits(T, v') = b
 ────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ LowerExpr(TransmuteExpr(T_1, T_2, e)) ⇓ ⟨IR, v⟩
 
-`Lower-Cast`, `Lower-Cast-Panic`, `Lower-Transmute`, and `Lower-Transmute-Err` define the runtime bit reinterpretation and panic behavior. `widen` lowering is defined in §13.5.6.
+CastNeedsCheck(S, T) ⇔ (S = TypePrim(s) ∧ s ∈ FloatTypes ∧ T = TypePrim(t) ∧ t ∈ IntTypes) ∨ (S = TypePrim("u32") ∧ T = TypePrim("char"))
+
+**(Lower-Cast)**
+Γ ⊢ LowerExpr(e) ⇓ ⟨IR_e, v⟩    S = ExprType(e)    ¬ CastNeedsCheck(S, T)    v_r = FreshTemp("cast")
+──────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ LowerCast(e, T) ⇓ ⟨SeqIR(IR_e, CastIR(S, T, v, v_r)), v_r⟩
+
+**(Lower-Cast-Panic)**
+Γ ⊢ LowerExpr(e) ⇓ ⟨IR_e, v⟩    S = ExprType(e)    CastNeedsCheck(S, T)    v_r = FreshTemp("cast")
+────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ LowerCast(e, T) ⇓ ⟨SeqIR(IR_e, CheckCastIR(S, T, v), PanicCheckIR, CastIR(S, T, v, v_r)), v_r⟩
+
+InvalidPatterns(T) ⇔ ∃ bits. |bits| = sizeof(T) ∧ ¬ ValidValue(T, bits)
+
+**(Lower-Transmute)**
+Γ ⊢ LowerExpr(e) ⇓ ⟨IR_e, v⟩    ¬ InvalidPatterns(T_2)    v_r = FreshTemp("transmute")
+────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ LowerTransmute(T_1, T_2, e) ⇓ ⟨SeqIR(IR_e, TransmuteIR(T_1, T_2, v, v_r)), v_r⟩
+
+**(Lower-Transmute-Err)**
+Γ ⊢ LowerExpr(e) ⇓ ⟨IR_e, v⟩    InvalidPatterns(T_2)    v_r = FreshTemp("transmute")
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ LowerTransmute(T_1, T_2, e) ⇓ ⟨SeqIR(IR_e, CheckTransmuteIR(T_2, v), PanicCheckIR, TransmuteIR(T_1, T_2, v, v_r)), v_r⟩
+
+`CheckCastIR` panics with reason `Cast` exactly when `CastVal(S, T, v)` is undefined. `CheckTransmuteIR` panics with reason `Cast` exactly when the source bits are not `ValidValue` for `T_2`; this is the runtime counterpart of `W-SAF-0100`. `widen` lowering is defined in §13.5.6.
 
 #### 16.5.7 Diagnostics
 
@@ -17507,7 +17308,7 @@ AsyncSig(R) = ⟨Out, In, Result, E⟩    E ≠ TypePrim("!")    Γ; R; L ⊢ e 
 Γ; R; L ⊢ Propagate(e) : T_s
 
 **(Async-Try-Infallible-Err)**
-AsyncSig(R) = ⟨Out, In, Result, E⟩    E = TypePrim("!")    Γ; R; L ⊢ e : U    c = Code(E-CON-0230)
+AsyncSig(R) = ⟨Out, In, Result, E⟩    E = TypePrim("!")    Γ; R; L ⊢ e : U    c = Code(Async-Try-Infallible-Err)
 ──────────────────────────────────────────────────────────────
 Γ; R; L ⊢ Propagate(e) ⇑ c
 
@@ -17894,7 +17695,7 @@ x ∈ SharedCaptures(C)
 CaptureMode(C, x) = ByRef
 
 **(Capture-Unique-Err)**
-x ∈ UniqueCaptures(C)    c = Code(E-CON-0120)
+x ∈ UniqueCaptures(C)    c = Code(Capture-Unique-Err)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ C ⇑ c
 
@@ -17909,7 +17710,7 @@ x ∈ UniqueCaptures(C)    c = Code(E-CON-0120)
 Γ; R; L ⊢ InferClosureParams(C) ⇓ ok
 
 **(Infer-Closure-Params-Err)**
-∃ i. Annot(Params(C)_i) = ⊥    ExpectedType(C) = ⊥    c = Code(E-SEM-2591)
+∃ i. Annot(Params(C)_i) = ⊥    ExpectedType(C) = ⊥    c = Code(Infer-Closure-Params-Err)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ InferClosureParams(C) ⇑ c
 
@@ -17948,19 +17749,19 @@ MoveCaps = ClosureMoveCaptures(C)    RefCaps = ClosureRefCaptures(C)
 
 **(B-Closure-MoveCapture-Moved-Err)**
 C = ClosureExpr(params, ret_type_opt, body)    MoveCaps = ClosureMoveCaptures(C)
-∃ x ∈ MoveCaps. Lookup_B(𝔅, x) = ⟨s, mov, _, _⟩ ∧ s ≠ Valid ∧ mov = mov    c = Code(E-CON-0121)
+∃ x ∈ MoveCaps. Lookup_B(𝔅, x) = ⟨s, mov, _, _⟩ ∧ s ≠ Valid ∧ mov = mov    c = Code(B-Closure-MoveCapture-Moved-Err)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; 𝔅; Π ⊢ C ⇑ c
 
 **(B-Closure-MoveCapture-Immovable-Err)**
 C = ClosureExpr(params, ret_type_opt, body)    MoveCaps = ClosureMoveCaptures(C)
-∃ x ∈ MoveCaps. Lookup_B(𝔅, x) = ⟨_, mv, _, _⟩ ∧ mv = immov    c = Code(E-MEM-3006)
+∃ x ∈ MoveCaps. Lookup_B(𝔅, x) = ⟨_, mv, _, _⟩ ∧ mv = immov    c = Code(B-Closure-MoveCapture-Immovable-Err)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; 𝔅; Π ⊢ C ⇑ c
 
 **(B-Closure-RefCapture-Moved-Err)**
 C = ClosureExpr(params, ret_type_opt, body)    RefCaps = ClosureRefCaptures(C)
-∃ x ∈ RefCaps. Lookup_B(𝔅, x) = ⟨s, _, _, _⟩ ∧ s ≠ Valid    c = Code(E-MEM-3001)
+∃ x ∈ RefCaps. Lookup_B(𝔅, x) = ⟨s, _, _, _⟩ ∧ s ≠ Valid    c = Code(B-Closure-RefCapture-Moved-Err)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; 𝔅; Π ⊢ C ⇑ c
 
@@ -17973,20 +17774,20 @@ C = ClosureExpr(params, ret_type_opt, body)    RefCaps = ClosureRefCaptures(C)
 
 **(T-Pipeline-NotCallable-Err)**
 Γ; R; L ⊢ e_1 : T_1    Γ; R; L ⊢ e_2 : T_f
-T_f ≠ TypeFunc(_, _)    T_f ≠ TypeClosure(_, _, _)    c = Code(E-SEM-2538)
+T_f ≠ TypeFunc(_, _)    T_f ≠ TypeClosure(_, _, _)    c = Code(T-Pipeline-NotCallable-Err)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ PipelineExpr(e_1, e_2) ⇑ c
 
 **(T-Pipeline-TypeMismatch-Err)**
 Γ; R; L ⊢ e_1 : T_1    Γ; R; L ⊢ e_2 : T_f
 (T_f = TypeFunc([(m, T_p)], _) ∨ T_f = TypeClosure([(m, T_p)], _, _))
-¬(Γ ⊢ T_1 <: T_p)    c = Code(E-SEM-2539)
+¬(Γ ⊢ T_1 <: T_p)    c = Code(T-Pipeline-TypeMismatch-Err)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ PipelineExpr(e_1, e_2) ⇑ c
 
 **(T-Pipeline-ArgCount-Err)**
 Γ; R; L ⊢ e_1 : T_1    Γ; R; L ⊢ e_2 : T_f
-(T_f = TypeFunc(params, _) ∨ T_f = TypeClosure(params, _, _))    |params| ≠ 1    c = Code(E-SEM-2539)
+(T_f = TypeFunc(params, _) ∨ T_f = TypeClosure(params, _, _))    |params| ≠ 1    c = Code(T-Pipeline-ArgCount-Err)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ PipelineExpr(e_1, e_2) ⇑ c
 
@@ -18195,23 +17996,23 @@ This section owns diagnostics for general expression typing, calls, indexing res
 | ------------- | -------- | ------------ | ----------------------------------------------------------------------------------- |
 | `E-SEM-2525`  | Error    | Compile-time | Operator operands are not compatible with the operator's type requirements          |
 | `E-SEM-2526`  | Error    | Compile-time | Expression type incompatible with expected type                                     |
-| `E-SEM-2527`  | Error    | Compile-time | Indexing applied to non-indexable type                                              |
-| `E-SEM-2528`  | Error    | Compile-time | Invalid cast                                                                        |
-| `E-SEM-2531`  | Error    | Compile-time | Callee expression is not of FUNCTION type                                           |
-| `E-SEM-2532`  | Error    | Compile-time | Argument count mismatch                                                             |
-| `E-SEM-2533`  | Error    | Compile-time | Argument type incompatible with parameter type                                      |
-| `E-SEM-2534`  | Error    | Compile-time | Consuming parameter requires ownership transfer with `move` or an explicit duplicate with `copy` |
-| `E-SEM-2535`  | Error    | Compile-time | `move` argument provided for non-consuming parameter                                |
+| `E-SEM-2527`  | Error    | Compile-time | Indexing applied to non-indexable type (`Index-NonIndexable`) |
+| `E-SEM-2528`  | Error    | Compile-time | Invalid cast (`T-Cast-Invalid`) |
+| `E-SEM-2531`  | Error    | Compile-time | Callee expression is not of FUNCTION type (`Call-Callee-NotFunc`) |
+| `E-SEM-2532`  | Error    | Compile-time | Argument count mismatch (`Call-ArgCount-Err`) |
+| `E-SEM-2533`  | Error    | Compile-time | Argument type incompatible with parameter type (`Call-ArgType-Err`) |
+| `E-SEM-2534`  | Error    | Compile-time | Consuming parameter requires ownership transfer with `move` or an explicit duplicate with `copy` (`Call-Move-Missing`) |
+| `E-SEM-2535`  | Error    | Compile-time | `move` argument provided for non-consuming parameter (`Call-Move-Unexpected`) |
 | `E-SEM-2536`  | Error    | Compile-time | Method not found for receiver type                                                  |
-| `E-SEM-2538`  | Error    | Compile-time | Pipeline RHS is not callable                                                        |
-| `E-SEM-2539`  | Error    | Compile-time | Pipeline argument type mismatch                                                     |
-| `E-SEM-2591`  | Error    | Compile-time | Closure parameter type cannot be inferred                                           |
+| `E-SEM-2538`  | Error    | Compile-time | Pipeline RHS is not callable (`T-Pipeline-NotCallable-Err`) |
+| `E-SEM-2539`  | Error    | Compile-time | Pipeline argument type mismatch (`T-Pipeline-TypeMismatch-Err`, `T-Pipeline-ArgCount-Err`) |
+| `E-SEM-2591`  | Error    | Compile-time | Closure parameter type cannot be inferred (`Infer-Closure-Params-Err`) |
 | `E-MEM-3031`  | Error    | Compile-time | `transmute` source and target sizes differ                                          |
-| `E-UNS-0102`  | Error    | Compile-time | Fixed-size array index must be a compile-time constant outside `#dynamic` scope  |
-| `E-UNS-0103`  | Error    | Compile-time | Array index out of bounds                                                           |
+| `E-UNS-0102`  | Error    | Compile-time | Fixed-size array index must be a compile-time constant outside `#dynamic` scope (`Index-Array-NonConst-Err`) |
+| `E-UNS-0103`  | Error    | Compile-time | Array index out of bounds (`Index-Array-OOB-Err`) |
 | `E-UNS-0104`  | Error    | Compile-time | `transmute` source and target alignments differ                                     |
-| `E-UNS-0107`  | Error    | Compile-time | Explicit `copy` requires a `Bitcopy` value                                          |
-| `W-SAFE-0100` | Warning  | Compile-time | `transmute` target type is known to admit invalid bit patterns                      |
+| `E-UNS-0107`  | Error    | Compile-time | Explicit `copy` requires a `Bitcopy` value (`ValueUse-NonBitcopyPlace`) |
+| `W-SAF-0100` | Warning  | Compile-time | `transmute` target type is known to admit invalid bit patterns                      |
 
 ## 17. Patterns
 
@@ -18944,12 +18745,14 @@ else_opt = b    Γ ⊢ EvalBlockSigma(b, σ) ⇓ (out, σ')
 **(EvalIfCases-None)**
 else_opt = ⊥
 ──────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalIfCaseListSigma([], else_opt, v, σ) ⇓ (Val(()), σ)
+Γ ⊢ EvalIfCaseListSigma([], else_opt, v, σ) ⇓ (Ctrl(Panic), σ)
 
 #### 17.5.6 Lowering
 
 LowerBindJudg = {LowerBindList, LowerBindPattern, LowerIfCases}
 PatternLowerJudg = {LowerBindPattern, LowerBindList, LowerIfCases, TagOf}
+
+When `else_opt = ⊥`, `LowerIfCases` MUST emit a trailing arm that lowers to `LowerPanic(MatchFail)`; the arm is reached only when no case clause matches.
 
 **(Lower-Pat-Correctness)**
 ∀ v, Γ ⊢ MatchPattern(pat, v) ⇓ B ⇒ ExecIRSigma(IR, σ) ⇓ (ok, σ')
@@ -19020,6 +18823,18 @@ Exhaustiveness and reachability are not parser-owned.
 AllEq_Γ([T_1, …, T_n]) ⇔ ∀ i. Γ ⊢ T_i ≡ T_1
 Irrefutable(pat, T) ⇔ pat = WildcardPattern ∨ pat = IdentifierPattern(_) ∨ (pat = TypedPattern(_, T_a) ∧ T_a = StripPerm(T)) ∨ (pat = TuplePattern([p_1, …, p_n]) ∧ StripPerm(T) = TypeTuple([T_1, …, T_n]) ∧ ∀ i. Irrefutable(p_i, T_i)) ∨ (pat = RecordPattern(p, io) ∧ StripPerm(T) = TypePath(p) ∧ RecordDecl(p) = R ∧ ∀ fp ∈ io. Irrefutable(PatOf(fp), FieldType(R, FieldName(fp))))
 HasIrrefutableCase(cases, T) ⇔ ∃ case ∈ cases. ∃ p, b. case = ⟨p, b⟩ ∧ Irrefutable(p, T)
+
+CoversVariant(EnumPattern(_, v, ⊥), E, v) ⇔ VariantPayload(E, v) = ⊥
+CoversVariant(EnumPattern(_, v, TuplePayloadPattern([p_1, …, p_n])), E, v) ⇔ VariantPayload(E, v) = TuplePayload([T_1, …, T_n]) ∧ ∀ i. Irrefutable(p_i, T_i)
+CoversVariant(EnumPattern(_, v, RecordPayloadPattern(io)), E, v) ⇔ VariantPayload(E, v) = RecordPayload(_) ∧ ∀ fp ∈ io. Irrefutable(PatOf(fp), EnumFieldType(E, v, FieldName(fp)))
+CoversVariant(p, E, v) does not hold for any other pattern form.
+
+CoversState(ModalPattern(S, io), modal_ref, S) ⇔ ∀ fp ∈ io. Irrefutable(PatOf(fp), ModalPayloadMap(modal_ref, S)(FieldName(fp)))
+CoversState(p, modal_ref, S) does not hold for any other pattern form.
+
+CoversMember(p, T) ⇔ Irrefutable(p, T)
+
+A case pattern whose payload subpatterns are refutable matches only part of its variant, state, or member and MUST NOT count toward exhaustiveness.
 CaseLabel(EnumPattern(path, v, _)) = ⟨`enum`, path, v⟩
 CaseLabel(ModalPattern(s, _)) = ⟨`modal`, s⟩
 CaseLabel(TypedPattern(_, T)) = ⟨`union`, T⟩
@@ -19029,33 +18844,32 @@ CaseUnreachable(T, cases, i) ⇔
   (CaseLabel(cases[i].pat) ≠ ⊥ ∧ ∃ j. 1 ≤ j < i ∧ CaseLabel(cases[j].pat) = CaseLabel(cases[i].pat))
 
 VariantNames(E) = [ v.name | v ∈ E.variants ]
-CaseVariants(cases) = { v | ∃ p, b. ⟨p, b⟩ ∈ cases ∧ p = EnumPattern(_, v, _) }
+CoveredVariants(cases, E) = { v | ∃ p, b. ⟨p, b⟩ ∈ cases ∧ CoversVariant(p, E, v) }
 
-CaseStates(cases) = { s | ∃ p, b. ⟨p, b⟩ ∈ cases ∧ p = ModalPattern(_, s) }
+CoveredStates(cases, modal_ref) = { S | ∃ p, b. ⟨p, b⟩ ∈ cases ∧ CoversState(p, modal_ref, S) }
 
 UnionTypes(U) = [T_1, …, T_n] ⇔ U = TypeUnion([T_1, …, T_n])
 CaseUnionTypes(cases) = { T | ∃ p, b. ⟨p, b⟩ ∈ cases ∧ p = TypedPattern(_, T) }
-PatternMayMatchType(Γ, p, T) ⇔ ∃ B. Γ ⊢ p ◁ T ⊣ B
-UnionTypesExhaustive(cases, types) ⇔ ∀ T ∈ types. ∃ case ∈ cases. ∃ p, b. case = ⟨p, b⟩ ∧ PatternMayMatchType(Γ, p, T)
+UnionTypesExhaustive(cases, types) ⇔ ∀ T ∈ types. ∃ case ∈ cases. ∃ p, b. case = ⟨p, b⟩ ∧ CoversMember(p, T)
 
 #### 17.6.4 Static Semantics
 
 **Enum Case Analysis**
 
 **(T-IfCase-Enum)**
-Γ; R; L ⊢ e : TypePath(p)    EnumDecl(p) = E    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, TypePath(p)) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i : T_r    (else_opt = ⊥ ∨ (CasesElseScope(Γ, e, cases, TypePath(p)) ⇓ Γ_e ∧ Γ_e; R; L ⊢ else_opt : T_r))    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, TypePath(p)) ∨ CaseVariants(cases) = VariantNames(E))
+Γ; R; L ⊢ e : TypePath(p)    EnumDecl(p) = E    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, TypePath(p)) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i : T_r    (else_opt = ⊥ ∨ (CasesElseScope(Γ, e, cases, TypePath(p)) ⇓ Γ_e ∧ Γ_e; R; L ⊢ else_opt : T_r))    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, TypePath(p)) ∨ CoveredVariants(cases, E) = VariantNames(E))
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) : T_r
 
 **Modal Case Analysis**
 
 **(T-IfCase-Modal)**
-Γ; R; L ⊢ e : ModalRefType(modal_ref)    ModalDeclOf(modal_ref) = M    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, ModalRefType(modal_ref)) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i : T_r    (else_opt = ⊥ ∨ (CasesElseScope(Γ, e, cases, ModalRefType(modal_ref)) ⇓ Γ_e ∧ Γ_e; R; L ⊢ else_opt : T_r))    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, ModalRefType(modal_ref)) ∨ CaseStates(cases) = States(M))
+Γ; R; L ⊢ e : ModalRefType(modal_ref)    ModalDeclOf(modal_ref) = M    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, ModalRefType(modal_ref)) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i : T_r    (else_opt = ⊥ ∨ (CasesElseScope(Γ, e, cases, ModalRefType(modal_ref)) ⇓ Γ_e ∧ Γ_e; R; L ⊢ else_opt : T_r))    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, ModalRefType(modal_ref)) ∨ CoveredStates(cases, modal_ref) = States(M))
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) : T_r
 
 **(IfCase-Modal-NonExhaustive)**
-Γ; R; L ⊢ e : ModalRefType(modal_ref)    ModalDeclOf(modal_ref) = M    else_opt = ⊥    ¬(HasIrrefutableCase(cases, ModalRefType(modal_ref)) ∨ CaseStates(cases) = States(M))    c = Code(IfCase-Modal-NonExhaustive)
+Γ; R; L ⊢ e : ModalRefType(modal_ref)    ModalDeclOf(modal_ref) = M    else_opt = ⊥    ¬(HasIrrefutableCase(cases, ModalRefType(modal_ref)) ∨ CoveredStates(cases, modal_ref) = States(M))    c = Code(IfCase-Modal-NonExhaustive)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) ⇑ c
 
@@ -19084,17 +18898,17 @@ UnionTypesExhaustive(cases, types) ⇔ ∀ T ∈ types. ∃ case ∈ cases. ∃ 
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) : T_r
 
 **(Chk-IfCase-Enum)**
-Γ; R; L ⊢ e : TypePath(p)    EnumDecl(p) = E    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, TypePath(p)) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i ⇐ T    (else_opt = ⊥ ∨ (CasesElseScope(Γ, e, cases, TypePath(p)) ⇓ Γ_e ∧ Γ_e; R; L ⊢ else_opt ⇐ T ⊣ ∅))    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, TypePath(p)) ∨ CaseVariants(cases) = VariantNames(E))
+Γ; R; L ⊢ e : TypePath(p)    EnumDecl(p) = E    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, TypePath(p)) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i ⇐ T    (else_opt = ⊥ ∨ (CasesElseScope(Γ, e, cases, TypePath(p)) ⇓ Γ_e ∧ Γ_e; R; L ⊢ else_opt ⇐ T ⊣ ∅))    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, TypePath(p)) ∨ CoveredVariants(cases, E) = VariantNames(E))
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) ⇐ T ⊣ ∅
 
 **(IfCase-Enum-NonExhaustive)**
-Γ; R; L ⊢ e : TypePath(p)    EnumDecl(p) = E    else_opt = ⊥    ¬(HasIrrefutableCase(cases, TypePath(p)) ∨ CaseVariants(cases) = VariantNames(E))    c = Code(IfCase-Enum-NonExhaustive)
+Γ; R; L ⊢ e : TypePath(p)    EnumDecl(p) = E    else_opt = ⊥    ¬(HasIrrefutableCase(cases, TypePath(p)) ∨ CoveredVariants(cases, E) = VariantNames(E))    c = Code(IfCase-Enum-NonExhaustive)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) ⇑ c
 
 **(Chk-IfCase-Modal)**
-Γ; R; L ⊢ e : ModalRefType(modal_ref)    ModalDeclOf(modal_ref) = M    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, ModalRefType(modal_ref)) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i ⇐ T    (else_opt = ⊥ ∨ (CasesElseScope(Γ, e, cases, ModalRefType(modal_ref)) ⇓ Γ_e ∧ Γ_e; R; L ⊢ else_opt ⇐ T ⊣ ∅))    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, ModalRefType(modal_ref)) ∨ CaseStates(cases) = States(M))
+Γ; R; L ⊢ e : ModalRefType(modal_ref)    ModalDeclOf(modal_ref) = M    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, ModalRefType(modal_ref)) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i ⇐ T    (else_opt = ⊥ ∨ (CasesElseScope(Γ, e, cases, ModalRefType(modal_ref)) ⇓ Γ_e ∧ Γ_e; R; L ⊢ else_opt ⇐ T ⊣ ∅))    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, ModalRefType(modal_ref)) ∨ CoveredStates(cases, modal_ref) = States(M))
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) ⇐ T ⊣ ∅
 
@@ -19128,7 +18942,7 @@ No additional lowering is introduced beyond the shared `LowerIfCases` and `Lower
 
 #### 17.6.7 Diagnostics
 
-Diagnostics are defined for non-exhaustive `if ... is { ... }` case analysis on general modal types, union types, and enum types, and for unreachable case clauses.
+Diagnostics are defined for non-exhaustive `if ... is { ... }` case analysis on general modal types, union types, and enum types, and for unreachable case clauses. A case contributes to exhaustiveness only when `CoversVariant`, `CoversState`, or `CoversMember` holds; refutable payload subpatterns never contribute coverage.
 
 ### 17.7 Pattern Diagnostics Supplement
 
@@ -19146,16 +18960,16 @@ This section owns diagnostics for pattern exhaustiveness, irrefutability, and pa
 
 | Code         | Severity | Detection    | Condition                                                          |
 | ------------ | -------- | ------------ | ------------------------------------------------------------------ |
-| `E-SEM-2705` | Error    | Compile-time | `if ... is { ... }` case analysis is not exhaustive for union type |
-| `E-SEM-2711` | Error    | Compile-time | Refutable pattern in irrefutable context (`let`)                   |
-| `E-SEM-2713` | Error    | Compile-time | Duplicate binding identifier within single pattern                 |
-| `E-SEM-2721` | Error    | Compile-time | Range pattern bounds are not compile-time constants                |
-| `E-SEM-2722` | Error    | Compile-time | Range pattern start exceeds end (empty range)                      |
-| `E-SEM-2731` | Error    | Compile-time | Record pattern references non-existent field                       |
-| `E-SEM-2741` | Error    | Compile-time | `if ... is { ... }` case analysis is not exhaustive                |
-| `E-SEM-2751` | Error    | Compile-time | Case clause is unreachable                                         |
-| `E-SEM-2761` | Error    | Compile-time | Bare type name in `if ... is` pattern; use `: T` or `_: T`         |
-| `E-SEM-2762` | Error    | Compile-time | Typed `if ... is` pattern is incompatible with the scrutinee type  |
+| `E-SEM-2705` | Error    | Compile-time | `if ... is { ... }` case analysis is not exhaustive for union type (`IfCase-Union-NonExhaustive`) |
+| `E-SEM-2711` | Error    | Compile-time | Refutable pattern in irrefutable context (`let`) (`Let-Refutable-Pattern-Err`) |
+| `E-SEM-2713` | Error    | Compile-time | Duplicate binding identifier within single pattern (`Pat-Dup-Err`) |
+| `E-SEM-2721` | Error    | Compile-time | Range pattern bounds are not compile-time constants (`RangePattern-NonConst`) |
+| `E-SEM-2722` | Error    | Compile-time | Range pattern start exceeds end (empty range) (`RangePattern-Empty`) |
+| `E-SEM-2731` | Error    | Compile-time | Record pattern references non-existent field (`RecordPattern-UnknownField`) |
+| `E-SEM-2741` | Error    | Compile-time | `if ... is { ... }` case analysis is not exhaustive (`IfCase-Enum-NonExhaustive`) |
+| `E-SEM-2751` | Error    | Compile-time | Case clause is unreachable (`IfCase-Unreachable`) |
+| `E-SEM-2761` | Error    | Compile-time | Bare type name in `if ... is` pattern; use `: T` or `_: T` (`IfIs-BareTypePattern-Err`) |
+| `E-SEM-2762` | Error    | Compile-time | Typed `if ... is` pattern is incompatible with the scrutinee type (`IfIs-TypedPattern-Incompatible`) |
 
 ## 18. Statements and Blocks
 
@@ -19210,25 +19024,7 @@ IsPunc(Tok(P), "{")    Γ ⊢ ParseStmtSeq(Advance(P)) ⇓ (P_1, stmts, tail)   
 
 ReqTerm(s) ⇔ s ∈ {LetStmt(_), VarStmt(_), UsingLocalStmt(_, _, _), AssignStmt(_, _), CompoundAssignStmt(_, _, _), ExprStmt(_)}
 
-**(ConsumeTerminatorOpt-Req-Yes)**
-ReqTerm(s)    IsTerm(Tok(P))
-──────────────────────────────────────────────
-Γ ⊢ ConsumeTerminatorOpt(P, s) ⇓ Advance(P)
-
-**(ConsumeTerminatorOpt-Req-No)**
-ReqTerm(s)    ¬ IsTerm(Tok(P))    Emit(Code(Missing-Terminator-Err), Span = Tok(P).span)    Γ ⊢ SyncStmt(P) ⇓ P_1
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ConsumeTerminatorOpt(P, s) ⇓ P_1
-
-**(ConsumeTerminatorOpt-Opt-Yes)**
-¬ ReqTerm(s)    IsTerm(Tok(P))
-──────────────────────────────────────────────
-Γ ⊢ ConsumeTerminatorOpt(P, s) ⇓ Advance(P)
-
-**(ConsumeTerminatorOpt-Opt-No)**
-¬ ReqTerm(s)    ¬ IsTerm(Tok(P))
-──────────────────────────────────────────────
-Γ ⊢ ConsumeTerminatorOpt(P, s) ⇓ P
+Rules **(ConsumeTerminatorOpt-Req-Yes)**, **(ConsumeTerminatorOpt-Req-No)**, **(ConsumeTerminatorOpt-Opt-Yes)**, **(ConsumeTerminatorOpt-Opt-No)** are defined once by §5.6.
 
 SkipNL(P) = P    if Tok(P) ≠ Newline
 SkipNL(P) = SkipNL(Advance(P))    if Tok(P) = Newline
@@ -19313,7 +19109,27 @@ source rules that construct conflicting block-result paths.
 ──────────────────────────────────────────────
 Γ; R; L ⊢ b : T
 
-**(Chk-Block-Tail)**, **(Chk-Block-Return)**, and **(Chk-Block-Unit)** define checking-mode validation for block expressions.
+IsReturnTail(e) holds exactly for the return-shaped tails recognized by `BlockInfo-ReturnTail`.
+
+**(Chk-Block-Tail)**
+Γ_0 = PushScope(Γ)    Γ_0; R; L ⊢ stmts ⇒ Γ_1 ▷ ⟨Res, Brk, BrkVoid⟩    Γ ⊢ WarnResultUnreachable(stmts) ⇓ ok
+ResType(Res) = ⊥    tail_opt = e    ¬ IsReturnTail(e)    Γ_1; R; L ⊢ e ⇐ T ⊣ C
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ; R; L ⊢ BlockExpr(stmts, tail_opt) ⇐ T ⊣ C
+
+**(Chk-Block-Return)**
+Γ_0 = PushScope(Γ)    Γ_0; R; L ⊢ stmts ⇒ Γ_1 ▷ ⟨Res, Brk, BrkVoid⟩    Γ ⊢ WarnResultUnreachable(stmts) ⇓ ok
+(ResType(Res) ≠ ⊥ ∨ (tail_opt = e ∧ IsReturnTail(e) ∧ Γ_1; R; L ⊢ e : TypePrim("!")))
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ; R; L ⊢ BlockExpr(stmts, tail_opt) ⇐ T ⊣ ∅
+
+**(Chk-Block-Unit)**
+Γ_0 = PushScope(Γ)    Γ_0; R; L ⊢ stmts ⇒ Γ_1 ▷ ⟨Res, Brk, BrkVoid⟩    Γ ⊢ WarnResultUnreachable(stmts) ⇓ ok
+ResType(Res) = ⊥    tail_opt = ⊥    Γ ⊢ TypePrim("()") <: T
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ; R; L ⊢ BlockExpr(stmts, tail_opt) ⇐ T ⊣ ∅
+
+The three rules partition exactly as `BlockInfo-Tail`, `BlockInfo-Res`/`BlockInfo-ReturnTail`, and `BlockInfo-Unit`.
 
 `BlockExpr` is also an expression form in §16.7. The rules above remain the block-local typing rules used there.
 
@@ -20262,12 +20078,12 @@ R_b = BodyReturnType(R)    R_b = TypePrim("()")
 Γ; R; L ⊢ ReturnStmt(⊥) ⇒ Γ ▷ ⟨[], [], false⟩
 
 **(Return-Async-Type-Err)**
-AsyncSig(R) = ⟨Out, In, Result, E⟩    Γ; R; L ⊢ ReturnDestExpr(e) : T    ¬(Γ ⊢ T <: Result)    c = Code(E-CON-0203)
+AsyncSig(R) = ⟨Out, In, Result, E⟩    Γ; R; L ⊢ ReturnDestExpr(e) : T    ¬(Γ ⊢ T <: Result)    c = Code(Return-Async-Type-Err)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ ReturnStmt(e) ⇑ c
 
 **(Return-Async-Unit-Err)**
-AsyncSig(R) = ⟨Out, In, Result, E⟩    Result ≠ TypePrim("()")    c = Code(E-CON-0203)
+AsyncSig(R) = ⟨Out, In, Result, E⟩    Result ≠ TypePrim("()")    c = Code(Return-Async-Unit-Err)
 ────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ ReturnStmt(⊥) ⇑ c
 
@@ -20433,16 +20249,16 @@ This section owns diagnostics for statement typing, method placement, assignment
 
 | Code         | Severity | Detection    | Condition                                   |
 | ------------ | -------- | ------------ | ------------------------------------------- |
-| `E-MOD-2401` | Error    | Compile-time | Reassignment of immutable `let` binding     |
+| `E-MOD-2401` | Error    | Compile-time | Reassignment of immutable `let` binding (`Assign-Immutable-Err`) |
 | `E-SEM-3011` | Error    | Compile-time | Method defined outside of type context      |
 | `E-SEM-3012` | Error    | Compile-time | Duplicate method name in type               |
-| `E-SEM-3131` | Error    | Compile-time | Assignment target is not a place expression |
-| `E-SEM-3133` | Error    | Compile-time | Assignment type mismatch                    |
-| `E-SEM-3151` | Error    | Compile-time | Defer block has non-unit type               |
-| `E-SEM-3152` | Error    | Compile-time | Non-local control flow in defer block       |
-| `E-SEM-3161` | Error    | Compile-time | `return` type mismatch with procedure       |
-| `E-SEM-3162` | Error    | Compile-time | `break` outside `loop`                      |
-| `E-SEM-3163` | Error    | Compile-time | `continue` outside `loop`                   |
+| `E-SEM-3131` | Error    | Compile-time | Assignment target is not a place expression (`Assign-NotPlace`) |
+| `E-SEM-3133` | Error    | Compile-time | Assignment type mismatch (`Assign-Type-Err`, `T-LetStmt-Ann-Mismatch`) |
+| `E-SEM-3151` | Error    | Compile-time | Defer block has non-unit type (`Defer-NonUnit-Err`) |
+| `E-SEM-3152` | Error    | Compile-time | Non-local control flow in defer block (`Defer-NonLocal-Err`) |
+| `E-SEM-3161` | Error    | Compile-time | `return` type mismatch with procedure (`BlockInfo-Res-Err`, `Return-Type-Err`) |
+| `E-SEM-3162` | Error    | Compile-time | `break` outside `loop` (`Break-Outside-Loop`) |
+| `E-SEM-3163` | Error    | Compile-time | `continue` outside `loop` (`Continue-Outside-Loop`) |
 | `E-SEM-3165` | Error    | Compile-time | `return` at module scope                    |
 
 Const permission assignment diagnostics are owned by §10.4.7 Permission Admissibility.
@@ -20464,18 +20280,47 @@ key_marker    ::= "#"
 
 #### 19.1.2 Parsing
 
-Key-path parsing is defined by the following source rules:
+**(Parse-KeyMarkerOpt-Yes)**
+IsOp(Tok(P), "#")
+────────────────────────────────────────
+Γ ⊢ ParseKeyMarkerOpt(P) ⇓ (Advance(P), true)
 
-- `Parse-KeyMarkerOpt-Yes`
-- `Parse-KeyMarkerOpt-No`
-- `Parse-KeyField`
-- `Parse-KeyIndex`
-- `Parse-KeySegs-End`
-- `Parse-KeySegs-Field`
-- `Parse-KeySegs-Index`
-- `Parse-KeyPathExpr`
+**(Parse-KeyMarkerOpt-No)**
+¬ IsOp(Tok(P), "#")
+────────────────────────────────────────
+Γ ⊢ ParseKeyMarkerOpt(P) ⇓ (P, false)
 
-`Parse-KeyPathExpr` parses an identifier root followed by zero or more field or index segments. `#` markers are parsed by `Parse-KeyMarkerOpt-*` and validated during key-path well-formedness.
+**(Parse-KeyField)**
+Γ ⊢ ParseKeyMarkerOpt(P) ⇓ (P_1, m)    Γ ⊢ ParseIdent(P_1) ⇓ (P_2, name)
+────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseKeyField(P) ⇓ (P_2, Field(m, name))
+
+**(Parse-KeyIndex)**
+IsPunc(Tok(P), "[")    Γ ⊢ ParseKeyMarkerOpt(Advance(P)) ⇓ (P_1, m)    Γ ⊢ ParseExpr(P_1) ⇓ (P_2, e)    IsPunc(Tok(P_2), "]")
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseKeyIndex(P) ⇓ (Advance(P_2), Index(m, e))
+
+**(Parse-KeySegs-Field)**
+IsPunc(Tok(P), ".")    Γ ⊢ ParseKeyField(Advance(P)) ⇓ (P_1, seg)    Γ ⊢ ParseKeySegs(P_1) ⇓ (P_2, segs)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseKeySegs(P) ⇓ (P_2, [seg] ++ segs)
+
+**(Parse-KeySegs-Index)**
+IsPunc(Tok(P), "[")    Γ ⊢ ParseKeyIndex(P) ⇓ (P_1, seg)    Γ ⊢ ParseKeySegs(P_1) ⇓ (P_2, segs)
+────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseKeySegs(P) ⇓ (P_2, [seg] ++ segs)
+
+**(Parse-KeySegs-End)**
+¬ IsPunc(Tok(P), ".")    ¬ IsPunc(Tok(P), "[")
+────────────────────────────────────────────────
+Γ ⊢ ParseKeySegs(P) ⇓ (P, [])
+
+**(Parse-KeyPathExpr)**
+Γ ⊢ ParseIdent(P) ⇓ (P_1, root)    Γ ⊢ ParseKeySegs(P_1) ⇓ (P_2, segs)
+────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseKeyPathExpr(P) ⇓ (P_2, ⟨root, segs⟩)
+
+`Parse-KeyPathExpr` parses an identifier root followed by zero or more field or index segments. `#` markers are parsed by `ParseKeyMarkerOpt` inside field and index segments and validated during key-path well-formedness (§19.1.4).
 
 #### 19.1.3 AST Representation / Form
 
@@ -20607,24 +20452,78 @@ The `ordered` option requests the same-base indexed-path checking defined in §1
 
 #### 19.2.2 Parsing
 
-Key-block parsing is defined by the following source rules:
+**(Parse-KeyMode-Read)**
+IsCtxIdent(Tok(P), "read")
+────────────────────────────────────────
+Γ ⊢ ParseKeyMode(P) ⇓ (Advance(P), Read)
 
-- `Parse-KeyBlockHead-Read`
-- `Parse-KeyBlockHead-Write`
-- `Parse-KeyBlockHead-Release`
-- `Parse-KeyBlockHead-SpeculativeWrite`
-- `Parse-KeyPathList-Cons`
-- `Parse-KeyPathListTail-End`
-- `Parse-KeyPathListTail-Comma`
-- `Parse-KeyOptionsOpt-None`
-- `Parse-KeyOptionsOpt-Some`
-- `Parse-KeyOption-Ordered`
-- `Parse-KeyMode-Read`
-- `Parse-KeyMode-Write`
-- `Parse-KeyMode-Err`
-- `Parse-KeyBlock-Stmt`
+**(Parse-KeyMode-Write)**
+IsCtxIdent(Tok(P), "write")
+────────────────────────────────────────
+Γ ⊢ ParseKeyMode(P) ⇓ (Advance(P), Write)
 
-`Parse-KeyOption-Ordered` consumes `ordered` only inside the bracketed option list following the complete path list. `Parse-KeyBlockHead-Release` consumes `%release` followed by the required target mode. `Parse-KeyBlockHead-SpeculativeWrite` consumes `%speculative write`; any other token after `%speculative` is a syntax error.
+**(Parse-KeyMode-Err)**
+¬ IsCtxIdent(Tok(P), "read")    ¬ IsCtxIdent(Tok(P), "write")    c = Code(Parse-KeyMode-Err)
+──────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseKeyMode(P) ⇑ c
+
+**(Parse-KeyBlockHead-Read)**
+IsOp(Tok(P), "%")    IsCtxIdent(Tok(Advance(P)), "read")
+────────────────────────────────────────────────────────────
+Γ ⊢ ParseKeyBlockHead(P) ⇓ (Advance(Advance(P)), ⟨Read, ⊥⟩)
+
+**(Parse-KeyBlockHead-Write)**
+IsOp(Tok(P), "%")    IsCtxIdent(Tok(Advance(P)), "write")
+────────────────────────────────────────────────────────────
+Γ ⊢ ParseKeyBlockHead(P) ⇓ (Advance(Advance(P)), ⟨Write, ⊥⟩)
+
+**(Parse-KeyBlockHead-Release)**
+IsOp(Tok(P), "%")    IsCtxIdent(Tok(Advance(P)), "release")    Γ ⊢ ParseKeyMode(Advance(Advance(P))) ⇓ (P_1, mode)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseKeyBlockHead(P) ⇓ (P_1, ⟨Release, mode⟩)
+
+**(Parse-KeyBlockHead-SpeculativeWrite)**
+IsOp(Tok(P), "%")    IsCtxIdent(Tok(Advance(P)), "speculative")    IsCtxIdent(Tok(Advance(Advance(P))), "write")
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseKeyBlockHead(P) ⇓ (Advance(Advance(Advance(P))), ⟨SpeculativeWrite, ⊥⟩)
+
+**(Parse-KeyPathList-Cons)**
+Γ ⊢ ParseKeyPathExpr(P) ⇓ (P_1, kp)    Γ ⊢ ParseKeyPathListTail(P_1) ⇓ (P_2, kps)
+────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseKeyPathList(P) ⇓ (P_2, [kp] ++ kps)
+
+**(Parse-KeyPathListTail-Comma)**
+IsPunc(Tok(P), ",")    Γ ⊢ ParseKeyPathExpr(Advance(P)) ⇓ (P_1, kp)    Γ ⊢ ParseKeyPathListTail(P_1) ⇓ (P_2, kps)
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseKeyPathListTail(P) ⇓ (P_2, [kp] ++ kps)
+
+**(Parse-KeyPathListTail-End)**
+¬ IsPunc(Tok(P), ",")
+────────────────────────────────────────
+Γ ⊢ ParseKeyPathListTail(P) ⇓ (P, [])
+
+**(Parse-KeyOption-Ordered)**
+IsCtxIdent(Tok(P), "ordered")
+────────────────────────────────────────
+Γ ⊢ ParseKeyOption(P) ⇓ (Advance(P), Ordered)
+
+**(Parse-KeyOptionsOpt-None)**
+¬ IsPunc(Tok(P), "[")
+──────────────────────────────────────────────────────
+Γ ⊢ ParseKeyOptionsOpt(P) ⇓ (P, ⟨ordered: false⟩)
+
+**(Parse-KeyOptionsOpt-Some)**
+IsPunc(Tok(P), "[")    Γ ⊢ ParseOptList(ParseKeyOption, Advance(P)) ⇓ (P_1, os)    IsPunc(Tok(P_1), "]")
+──────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseKeyOptionsOpt(P) ⇓ (Advance(P_1), ⟨ordered: Ordered ∈ os⟩)
+
+**(Parse-KeyBlock-Stmt)**
+Γ ⊢ ParseKeyBlockHead(P) ⇓ (P_1, ⟨kind, mode⟩)    Γ ⊢ ParseKeyPathList(P_1) ⇓ (P_2, paths)
+Γ ⊢ ParseKeyOptionsOpt(P_2) ⇓ (P_3, options)    Γ ⊢ ParseBlockExpr(P_3) ⇓ (P_4, body)    sp = SpanOfTokens(P, P_4)
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseStmt(P) ⇓ (P_4, KeyBlockStmt(⊥, kind, paths, mode, options, body, sp))
+
+`SpanOfTokens(P, P')` is the span from the start of `Tok(P)` to the end of the last token consumed before `P'`. `ParseStmt` dispatches to `Parse-KeyBlock-Stmt` when `IsOp(Tok(P), "%")`. `attrs_opt` is populated by the shared attributed-statement mechanism of Chapter 9; `Parse-KeyBlock-Stmt` itself produces `⊥`. The option-list rules instantiate the shared schema of §5.5 with `El = ParseKeyOption`. `Parse-KeyOption-Ordered` consumes `ordered` only inside the bracketed option list following the complete path list. `Parse-KeyBlockHead-Release` consumes `%release` followed by the required target mode. `Parse-KeyBlockHead-SpeculativeWrite` consumes `%speculative write`; any other token after `%speculative` is a syntax error.
 
 #### 19.2.3 AST Representation / Form
 
@@ -20882,7 +20781,7 @@ Where a more specific Chapter 19 escape diagnostic applies, it takes precedence 
 | `E-CON-0032` | Error    | Compile-time | Key block path is not `shared`                              |
 | `E-CON-0070` | Error    | Compile-time | Write operation in `%read` key block       |
 | `E-CON-0085` | Error    | Compile-time | Escaping closure with `shared` capture lacks dependency set |
-| `E-CON-0086` | Error    | Compile-time | Escaping closure outlives captured local `shared` binding   |
+| `E-CON-0086` | Error    | Compile-time | Escaping closure outlives captured local `shared` binding (`P-Closure-Escape-Err`) |
 | `W-CON-0001` | Warning  | Compile-time | Fine-grained keys in tight loop (performance hint)          |
 | `W-CON-0002` | Warning  | Compile-time | Redundant key acquisition (already covered)                 |
 | `W-CON-0003` | Warning  | Compile-time | `#` redundant (matches type boundary)                       |
@@ -20955,7 +20854,7 @@ Two index expressions `e_1` and `e_2` are provably equivalent iff one of the fol
 1. Both are the same integer literal.
 2. Both are references to the same `const` binding.
 3. Both are references to the same generic const parameter.
-4. Both are references to the same variable binding in scope.
+4. Both are references to the same variable binding in scope, and the binding is immutable (`let`) or has no intervening mutation between the two references.
 5. Both normalize to the same canonical form under constant folding.
 
 These clauses are sufficient proof cases.
@@ -20989,9 +20888,11 @@ These clauses are sufficient proof cases.
 An implementation MAY conservatively recognize any sound subset of them. Failure to prove disjointness is treated as possible overlap.
 
 **(K-Dynamic-Index-Conflict)**
-P_1 = a[e_1]    P_2 = a[e_2]    SameStatement(P_1, P_2)    (Dynamic(e_1) ∨ Dynamic(e_2))    ¬ ProvablyDisjoint(e_1, e_2)
+P_1 = a[e_1]    P_2 = a[e_2]    S = StatementOf(P_1)    S = StatementOf(P_2)    (Dynamic(e_1) ∨ Dynamic(e_2))    ¬ ProvablyDisjoint(e_1, e_2)    c = Code(K-Dynamic-Index-Conflict)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Reject
+Γ ⊢ S ⇑ c
+
+`StatementOf(P)` is the statement containing the access path occurrence `P`.
 
 **Read-Then-Write Prohibition**
 
@@ -21006,23 +20907,23 @@ In this chapter, `ReadThenWrite(P, S)` is required to be diagnosed for assignmen
 Other write forms continue to be governed by `RequiredMode`, `Covered`, and the ordinary key compatibility rules.
 
 **(K-Read-Write-Reject)**
-Γ ⊢ P : `shared` T    ReadThenWrite(P, S)    ¬ ∃ (Q, Write, S') ∈ Γ_keys : Prefix(Q, P)
+Γ ⊢ P : `shared` T    ReadThenWrite(P, S)    ¬ ∃ (Q, Write, S') ∈ Γ_keys : Prefix(Q, P)    c = Code(K-Read-Write-Reject)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Reject
+Γ ⊢ S ⇑ c
 
 **(K-RMW-Permitted)**
 Γ ⊢ P : `shared` T    ReadThenWrite(P, S)    ∃ (Q, Write, S') ∈ Γ_keys : Prefix(Q, P)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Permitted
+Γ ⊢ RMWOk(P, S)
 
 **(K-RMW-Explicit-Warn)**
 Γ ⊢ P : `shared` T    ReadThenWrite(P, S)    ∃ (Q, Write, S') ∈ Γ_keys : Prefix(Q, P)    CompoundRewriteCandidate(P, S)    w = Code(K-RMW-Explicit-Warn)
-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+──────────────────────────────────────────────────────────────────────
 Γ ⊢ WarnRMW(S) ⇓ w
 
 **(K-RMW-Contention-Warn)**
 Γ ⊢ P : `shared` T    ReadThenWrite(P, S)    ∃ (Q, Write, S') ∈ Γ_keys : Prefix(Q, P)    ¬ CompoundRewriteCandidate(P, S)    w = Code(K-RMW-Contention-Warn)
-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+──────────────────────────────────────────────────────────────────────
 Γ ⊢ WarnRMW(S) ⇓ w
 
 NonIndexShape(P) = [seg | seg ∈ PathSegments(P) ∧ ¬ IsIndex(seg)]
@@ -21068,12 +20969,12 @@ LowerConflictChecks(paths, mode) ⇓ IR ⇔
 | Code         | Severity | Detection    | Condition                                                         |
 | ------------ | -------- | ------------ | ----------------------------------------------------------------- |
 | `E-CON-0005` | Error    | Compile-time | Write access required but only Read available                     |
-| `E-CON-0010` | Error    | Compile-time | Potential conflict on dynamic indices (same statement)            |
-| `E-CON-0014` | Error    | Compile-time | `ordered` key option on paths with different array bases            |
-| `E-CON-0060` | Error    | Compile-time | Read-then-write on same `shared` path without covering Write key  |
-| `W-CON-0004` | Warning  | Compile-time | Read-then-write may cause contention if parallelized              |
-| `W-CON-0006` | Warning  | Compile-time | Explicit read-then-write form used; compound assignment available |
-| `W-CON-0013` | Warning  | Compile-time | `ordered` key option used with statically-comparable indices        |
+| `E-CON-0010` | Error    | Compile-time | Potential conflict on dynamic indices (same statement) (`K-Dynamic-Index-Conflict`) |
+| `E-CON-0014` | Error    | Compile-time | `ordered` key option on paths with different array bases (`K-Ordered-Base-Err`) |
+| `E-CON-0060` | Error    | Compile-time | Read-then-write on same `shared` path without covering Write key (`K-Read-Write-Reject`) |
+| `W-CON-0004` | Warning  | Compile-time | Read-then-write may cause contention if parallelized (`K-RMW-Contention-Warn`) |
+| `W-CON-0006` | Warning  | Compile-time | Explicit read-then-write form used; compound assignment available (`K-RMW-Explicit-Warn`) |
+| `W-CON-0013` | Warning  | Compile-time | `ordered` key option used with statically-comparable indices (`K-Ordered-Redundant-Warn`) |
 
 ### 19.4 Nested Release
 
@@ -21110,7 +21011,7 @@ CalleeAccesses(Q) at call site `call(f, a_1, …, a_n)` iff ∃ ⟨i, rel, M⟩ 
 CalleeCovered(Q) at call site iff the instantiated access for Q has required mode M_Q and Covered(Q, M_Q, G_keys).
 
 Held(P, M, G_keys)    Prefix(P, Q)    CalleeAccesses(Q)
-----------------------------------------------------------
+──────────────────────────────────────────────────────────────────────
 CalleeCovered(Q)
 
 If CalleeAccessSummary(f) cannot be computed because the callee is unresolved, bodyless, dynamically dispatched, or recursively unknown, the compiler MUST emit the unknown-callee-access warning defined in §19.4.7 once per call site whose `shared` actual argument path lies under a currently held prefix. For static analysis, that call site is treated as potentially accessing every subpath of the actual argument path in `Write` mode.
@@ -21118,7 +21019,7 @@ If CalleeAccessSummary(f) cannot be computed because the callee is unresolved, b
 Passing a `shared` value as a procedure argument does not itself acquire a key:
 
 Γ ⊢ f : (`shared` T) → R    Γ ⊢ v : `shared` T
---------------------------------------------------------------
+──────────────────────────────────────────────────────────────────────
 call(f, v) ⇒ no key acquisition at call site
 
 `#stale_ok` suppresses the stale-after-release warning on a binding derived from `shared` data across a `release` boundary. Attribute syntax and attachment are defined in §9.5.
@@ -21185,7 +21086,7 @@ IR_reacquire_outer = SeqIRList([AcquireKey(PathOf(k), KeyModeOf(k), KeyScopeOf(k
 | Code         | Severity | Detection    | Condition                                           |
 | ------------ | -------- | ------------ | --------------------------------------------------- |
 | `E-CON-0012` | Error    | Compile-time | Nested mode change without `%release` key-block head       |
-| `E-CON-0018` | Error    | Compile-time | `%release` with target mode matching outer mode      |
+| `E-CON-0018` | Error    | Compile-time | `%release` with target mode matching outer mode (`K-Release-SameMode-Err`) |
 | `W-CON-0005` | Warning  | Compile-time | Callee access pattern unknown; assuming full access |
 | `W-CON-0010` | Warning  | Compile-time | `%release` block permits interleaving                |
 | `W-CON-0011` | Warning  | Compile-time | Access to potentially stale binding after release   |
@@ -21386,12 +21287,12 @@ IR = SpecLoopIR(SpecSnapshotIR(sorted), IR_b, SpecValidateIR(sorted), SpecCommit
 | ------------ | -------- | ------------ | ---------------------------------------------------------------------- |
 | `E-CON-0090` | Error    | Compile-time | Nested key block inside speculative block                              |
 | `E-CON-0091` | Error    | Compile-time | Write to path outside keyed set in speculative block                   |
-| `E-CON-0092` | Error    | Compile-time | `wait` expression inside speculative block                             |
-| `E-CON-0093` | Error    | Compile-time | `defer` statement inside speculative block                             |
+| `E-CON-0092` | Error    | Compile-time | `wait` expression inside speculative block (`K-Spec-No-Wait`) |
+| `E-CON-0093` | Error    | Compile-time | `defer` statement inside speculative block (`K-Spec-No-Defer`) |
 | `E-CON-0094` | Error    | Compile-time | Attempt to combine `%speculative` and `%release` key-block heads                                  |
 | `E-CON-0095` | Error    | Compile-time | `%speculative` not followed by `write`                                 |
 | `E-CON-0096` | Error    | Compile-time | Memory ordering annotation or fence operation inside speculative block |
-| `E-CON-0097` | Error    | Compile-time | Impure procedure call inside speculative block                         |
+| `E-CON-0097` | Error    | Compile-time | Impure procedure call inside speculative block (`K-Spec-No-Impure-Call`) |
 | `W-CON-0020` | Warning  | Compile-time | Speculative block on large struct (may be inefficient)                 |
 | `W-CON-0021` | Warning  | Compile-time | Speculative block body may be expensive to re-execute                  |
 
@@ -21489,7 +21390,7 @@ When `InDynamicContext` and `StaticallySafe(P)` both hold, runtime synchronizati
 #### 19.7.1 Syntax
 
 ```ebnf
-memory_order_attribute ::= attr_open memory_order attr_close
+memory_order_attribute ::= "#" memory_order
 memory_order           ::= "relaxed" | "acquire" | "release" | "acqrel" | "seqcst"
 fence_expr             ::= "fence" "(" fence_order ")"
 fence_order            ::= "acquire" | "release" | "seqcst"
@@ -21519,7 +21420,7 @@ Memory accesses default to sequentially consistent ordering.
 
 Key acquisition uses acquire semantics. Key release uses release semantics.
 
-Ordering levels:
+Ordering levels (informative summary; the normative model is the happens-before axiomatization of §19.7.5):
 
 | Ordering  | Guarantee                                 |
 | --------- | ----------------------------------------- |
@@ -21557,13 +21458,56 @@ Evaluation of `fence(O)`:
 2. Emit ordering event `Fence(O)`.
 3. Produce value `()`.
 
-Required ordering constraints:
-
-1. `fence(acquire)`: operations sequenced after the fence MUST NOT be reordered before it.
-2. `fence(release)`: operations sequenced before the fence MUST NOT be reordered after it.
-3. `fence(seqcst)`: acquire and release constraints both hold, and all `Fence(seqcst)` events and `#seqcst` accesses participate in one global total order consistent with each task's sequenced-before order.
-
 Fence evaluation MUST NOT read or write program-visible storage.
+
+**Memory Actions.**
+
+```text
+TaskId = task identities introduced by Chapters 20 and 21; the entry task is t_main
+Loc = storage locations of the runtime state σ (§6.5)
+
+MemAction =
+  Access(t, l, kind, ord)      kind ∈ {Read, Write}, ord ∈ {plain, relaxed, acquire, release, acqrel, seqcst}
+| KeyAcquire(t, ks)            ks = key set acquired by a key block (§19.2.5)
+| KeyRelease(t, ks)
+| FenceAct(t, O)               O ∈ {acquire, release, seqcst}
+| TaskStart(t) | TaskEnd(t)
+| SpawnAct(t_parent, t_child) | JoinAct(t_child, t_parent)
+```
+
+Keyed and `shared` accesses carry the `EffectiveOrdering` of §19.7.3; all other accesses are `plain`. `KeyAcquire`, `KeyRelease`, and ordered-commit events are the `KeyEffect` observables of §6.1.4.
+
+**Sequenced-Before.**
+`sb` is the per-task total order over that task's actions induced by the sequence points of §6.1.5 and, between adjacent sequence points, by `Children_LTR` (§24.7.7).
+
+**Synchronizes-With.**
+`sw` is the least relation containing:
+
+1. **Key transfer.** `KeyRelease(t_1, ks_1) sw KeyAcquire(t_2, ks_2)` whenever some key in `ks_1` overlaps some key in `ks_2` (`KeysOverlap`, §19.3.5) and the release immediately precedes the acquire in that key's serialization order.
+2. **Task creation.** `SpawnAct(t_p, t_c) sw TaskStart(t_c)`; the action of a `parallel` or `dispatch` block that logically creates a work item synchronizes with the first action of that item.
+3. **Task completion.** `TaskEnd(t_c) sw JoinAct(t_c, t_p)`; every work item's `TaskEnd` synchronizes with the enclosing block's exit (§20.1.5), and `TaskEnd` of a `Spawned` task synchronizes with completion of the `wait` or `sync` that consumes it (§21.2.5).
+4. **Release/acquire accesses.** `Access(t_1, l, Write, o_w)` with `o_w ∈ {release, acqrel, seqcst}` synchronizes with `Access(t_2, l, Read, o_r)` with `o_r ∈ {acquire, acqrel, seqcst}` when the read reads-from that write.
+5. **Fences.** `FenceAct(t_1, release)` synchronizes with `FenceAct(t_2, acquire)` when some atomic write on `l` sequenced after the release fence is read-from by some atomic read on `l` sequenced before the acquire fence. `FenceAct(_, seqcst)` participates in clauses 4 and 5 as both an acquire and a release fence.
+6. **Ordered commit.** The commit action of an `ordered` key block synchronizes with the acquisition of the next block in canonical order (§19.2.5).
+
+**Happens-Before.**
+
+```text
+hb = (sb ∪ sw)⁺
+```
+
+`hb` MUST be irreflexive in every execution.
+
+**Coherence and Visibility.**
+For each location `l` there is a total modification order `mo_l` over `Write` actions on `l`, consistent with `hb`. A `plain` or key-covered read of `l` MUST read-from the `hb`-latest write to `l` (unique by race-freedom below). A `relaxed`, `acquire`, or `seqcst` read of `l` MUST read-from a write `W` such that the read does not happen-before `W` and there is no write `W'` with `W →mo_l W'` and `W' hb` the read. All `seqcst` actions and `seqcst` fences belong to one total order `S` consistent with `hb` and with every `mo_l`; a `seqcst` read reads-from the latest `S`-prior write permitted by coherence.
+
+Values MUST NOT be produced out of thin air: in every execution, `(rf ∪ sb)⁺` MUST be irreflexive, where `rf` relates each write to the reads that read-from it.
+
+**Data Races.**
+Two actions conflict iff they access the same location, at least one is a `Write`, and they are from different tasks. An execution has a data race iff some pair of conflicting actions, at least one of which is `plain`, is unordered by `hb`. Programs whose safe fragment is accepted by Chapters 10 and 19 have no data races (`Data-Race-Freedom`, §8.4): every `shared` access is key-covered and key transfer establishes `hb`. A data race introduced through `unsafe`, raw pointers, or FFI implies `OutsideConformance`.
+
+**Key-Transfer Visibility.**
+If `A` is any access sequenced before `KeyRelease(t_1, ks)` in `t_1`, and `KeyAcquire(t_2, ks')` with overlapping keys synchronizes with that release, then `A hb B` for every `B` sequenced after the acquire in `t_2` — regardless of memory-order attributes on `A` or `B`. Memory-order attributes weaken only same-location atomic visibility outside key transfer and the implementation's reordering latitude inside a held-key body; they MUST NOT weaken clause 1 synchronizes-with edges. This restates the attribute restriction of §19.7.4 in model terms.
 
 #### 19.7.6 Lowering
 
@@ -21600,22 +21544,33 @@ ct_usize_expr        ::= expression
 
 #### 20.1.2 Parsing
 
-Parallel-block parsing is defined by the following source rules:
+**(Parse-ParallelOpt-Cancel)**
+IsCtxIdent(Tok(P), "cancel")    IsPunc(Tok(Advance(P)), ":")    Γ ⊢ ParseExpr(Advance(Advance(P))) ⇓ (P_1, e)
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseParallelOpt(P) ⇓ (P_1, Cancel(e))
 
-- `Parse-Parallel-Expr`
-- `Parse-ParallelOptsOpt-None`
-- `Parse-ParallelOptsOpt-Yes`
-- `Parse-ParallelOptList-Empty`
-- `Parse-ParallelOptList-Cons`
-- `Parse-ParallelOptListTail-End`
-- `Parse-ParallelOptListTail-TrailingComma`
-- `Parse-ParallelOptListTail-Comma`
-- `Parse-ParallelOpt-Cancel`
-- `Parse-ParallelOpt-Name`
-- `Parse-ParallelOpt-Workgroup`
-- `Parse-ParallelOpt-Workgroups`
+**(Parse-ParallelOpt-Name)**
+IsCtxIdent(Tok(P), "name")    IsPunc(Tok(Advance(P)), ":")    Tok(Advance(Advance(P))).kind = StringLiteral    s = StringValue(Tok(Advance(Advance(P))))
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseParallelOpt(P) ⇓ (Advance(Advance(Advance(P))), Name(s))
 
-`Parse-Parallel-Expr` parses the domain expression with `ParseExpr_NoBrace`, then parses the optional option list, then parses the block body.
+**(Parse-ParallelOpt-Workgroup)**
+IsCtxIdent(Tok(P), "workgroup")    IsPunc(Tok(Advance(P)), ":")    Γ ⊢ ParseExpr(Advance(Advance(P))) ⇓ (P_1, e)
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseParallelOpt(P) ⇓ (P_1, Workgroup(e))
+
+**(Parse-ParallelOpt-Workgroups)**
+IsCtxIdent(Tok(P), "workgroups")    IsPunc(Tok(Advance(P)), ":")    Γ ⊢ ParseExpr(Advance(Advance(P))) ⇓ (P_1, e)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseParallelOpt(P) ⇓ (P_1, Workgroups(e))
+
+**(Parse-Parallel-Expr)**
+IsKw(Tok(P), "parallel")    Γ ⊢ ParseExpr_NoBrace(Advance(P)) ⇓ (P_1, domain)
+Γ ⊢ ParseOptListOpt(ParseParallelOpt, P_1) ⇓ (P_2, opts)    Γ ⊢ ParseBlockExpr(P_2) ⇓ (P_3, body)
+────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParsePrimaryExpr(P) ⇓ (P_3, ParallelExpr(domain, opts, body))
+
+The option-list rules instantiate the shared schema of §5.5 with `El = ParseParallelOpt`. The `dim3_const` shape of `workgroup`/`workgroups` operands is validated by §20.1.4, not by the parser.
 
 #### 20.1.3 AST Representation / Form
 
@@ -21754,8 +21709,8 @@ ParallelLowerJudg = {LowerParallelBody}
 | Code         | Severity | Detection    | Condition                                        |
 | ------------ | -------- | ------------ | ------------------------------------------------ |
 | `E-CON-0101` | Error    | Compile-time | `spawn` outside parallel                         |
-| `E-CON-0102` | Error    | Compile-time | Domain expression not `ExecutionDomain`          |
-| `E-CON-0103` | Error    | Compile-time | Invalid parallel domain or option parameter type |
+| `E-CON-0102` | Error    | Compile-time | Domain expression not `ExecutionDomain` (`Parallel-Domain-Param-Err`) |
+| `E-CON-0103` | Error    | Compile-time | Invalid parallel domain or option parameter type (`Dim3Const-Err`) |
 
 ### 20.2 Execution Domains
 
@@ -21884,7 +21839,6 @@ GpuSafePrimTypes = {`i8`, `i16`, `i32`, `i64`, `u8`, `u16`, `u32`, `u64`, `isize
 ProhibitedGpuType(T) ⇔
   T = TypeDynamic(_) ∨
   T = TypePath(["Context"]) ∨
-  T = TypePath(["System"]) ∨
   IsCapabilityType(T) ∨
   T = TypeString(`@Managed`) ∨
   T = TypeBytes(`@Managed`) ∨
@@ -21944,17 +21898,17 @@ T = TypeBytes(`@View`)
 Γ ⊢ GpuSafeType(T) ⇓ ok
 
 **(GpuSafeType-Err)**
-ProhibitedGpuType(T)    c = Code(E-TYP-2640)
+ProhibitedGpuType(T)    c = Code(GpuSafeType-Err)
 ────────────────────────────────────────────────────
 Γ ⊢ GpuSafeType(T) ⇑ c
 
 **(GpuSafe-Record-Field-Err)**
-T = TypePath(p)    RecordDecl(p) = R    ∃ f : T_f ∈ Fields(R). Γ ⊢ GpuSafeType(T_f) ⇑    c = Code(E-TYP-2640)
+T = TypePath(p)    RecordDecl(p) = R    ∃ f : T_f ∈ Fields(R). Γ ⊢ GpuSafeType(T_f) ⇑    c = Code(GpuSafe-Record-Field-Err)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ GpuSafeType(T) ⇑ c
 
 **(GpuSafe-Generic-Unbounded-Err)**
-T = TypePath(p)    (RecordDecl(p) = R ∨ EnumDecl(p) = E)    params_gen = TypeParamsOpt(_.gen_params_opt)    params_gen ≠ []    ¬ GpuSafePredicateClauseOk(params_gen, _.predicate_clause_opt)    c = Code(E-TYP-2642)
+T = TypePath(p)    (RecordDecl(p) = R ∨ EnumDecl(p) = E)    params_gen = TypeParamsOpt(_.gen_params_opt)    params_gen ≠ []    ¬ GpuSafePredicateClauseOk(params_gen, _.predicate_clause_opt)    c = Code(GpuSafe-Generic-Unbounded-Err)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ GpuSafeType(T) ⇑ c
 
@@ -21969,7 +21923,7 @@ GpuContext(Γ)    ⟨name, [], ret⟩ ∈ GpuIntrinsicTable
 Γ ⊢ Call(PathExpr([name]), []) ⇑ c
 
 **(GpuIntrinsic-Outside-Err)**
-¬GpuContext(Γ)    name ∈ GpuIntrinsicNames \ {`gpu_barrier`, `gpu_memory_barrier`, `gpu_workgroup_barrier`}    c = Code(E-CON-0154)
+¬GpuContext(Γ)    name ∈ GpuIntrinsicNames \ {`gpu_barrier`, `gpu_memory_barrier`, `gpu_workgroup_barrier`}    c = Code(GpuIntrinsic-Outside-Err)
 ──────────────────────────────────────────────────────────────────────
 Γ ⊢ Call(PathExpr([name]), []) ⇑ c
 
@@ -22004,7 +21958,7 @@ G[gpu_workitem] = wi    G[gpu_workgroup] = wg    GpuMemVisible(addr, S, wg, wi)
 G ⊢ Deref(GpuPtr(addr, S)) ⇓ ok
 
 **(GpuPtr-Deref-Err)**
-G[gpu_workitem] = wi    G[gpu_workgroup] = wg    ¬GpuMemVisible(addr, S, wg, wi)    c = Code(E-CON-0150)
+G[gpu_workitem] = wi    G[gpu_workgroup] = wg    ¬GpuMemVisible(addr, S, wg, wi)    c = Code(GpuPtr-Deref-Err)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 G ⊢ Deref(GpuPtr(addr, S)) ⇑ c
 
@@ -22088,16 +22042,16 @@ topology = ComputeTopology(bounds, opts)    ¬TopologyValid(topology)    c = Cod
 
 | Code         | Severity | Detection    | Condition                                          |
 | ------------ | -------- | ------------ | -------------------------------------------------- |
-| `E-CON-0150` | Error    | Compile-time | Host/heap memory access in GPU code                |
-| `E-CON-0154` | Error    | Compile-time | GPU intrinsic outside GPU context                  |
+| `E-CON-0150` | Error    | Compile-time | Host/heap memory access in GPU code (`GpuPtr-Deref-Err`) |
+| `E-CON-0154` | Error    | Compile-time | GPU intrinsic outside GPU context (`GpuIntrinsic-Outside-Err`) |
 | `E-CON-0155` | Error    | Compile-time | Key block in GPU context                           |
-| `E-CON-0156` | Error    | Compile-time | Barrier outside workgroup context                  |
-| `E-CON-0157` | Error    | Compile-time | Workgroup size exceeds device limit                |
+| `E-CON-0156` | Error    | Compile-time | Barrier outside workgroup context (`Barrier-Outside-Err`) |
+| `E-CON-0157` | Error    | Compile-time | Workgroup size exceeds device limit (`WorkgroupSize-Err`) |
 | `E-CON-0158` | Error    | Compile-time | Non-uniform control flow at barrier                |
 | `E-CON-0159` | Error    | Compile-time | Invalid `dim3_const` in GPU topology option        |
-| `E-TYP-2640` | Error    | Compile-time | Type not `GpuSafeType`                             |
-| `E-TYP-2641` | Error    | Compile-time | `GpuPtr` address space mismatch                    |
-| `E-TYP-2642` | Error    | Compile-time | Generic `GpuSafeType` with unconstrained parameter |
+| `E-TYP-2640` | Error    | Compile-time | Type not `GpuSafeType` (`GpuSafeType-Err`, `GpuSafe-Record-Field-Err`) |
+| `E-TYP-2641` | Error    | Compile-time | `GpuPtr` address space mismatch (`GpuPtr-AddrSpace-Err`) |
+| `E-TYP-2642` | Error    | Compile-time | Generic `GpuSafeType` with unconstrained parameter (`GpuSafe-Generic-Unbounded-Err`) |
 
 ### 20.3 Capture Semantics
 
@@ -22212,9 +22166,9 @@ No parallel-specific lowering rule was found. Generic closure-environment loweri
 
 | Code         | Severity | Detection    | Condition                                 |
 | ------------ | -------- | ------------ | ----------------------------------------- |
-| `E-CON-0120` | Error    | Compile-time | Implicit capture of `unique` binding      |
-| `E-CON-0121` | Error    | Compile-time | Move of already-moved binding             |
-| `E-CON-0122` | Error    | Compile-time | Move of binding from outer parallel scope |
+| `E-CON-0120` | Error    | Compile-time | Implicit capture of `unique` binding (`Capture-Unique-Err`) |
+| `E-CON-0121` | Error    | Compile-time | Move of already-moved binding (`B-Closure-MoveCapture-Moved-Err`) |
+| `E-CON-0122` | Error    | Compile-time | Move of binding from outer parallel scope (`Parallel-Closure-Capture-OuterMove-Err`) |
 | `E-CON-0131` | Error    | Compile-time | `spawn` in escaping closure               |
 | `E-CON-0151` | Error    | Compile-time | `shared` capture in GPU context           |
 | `E-CON-0153` | Error    | Compile-time | Non-GpuSafe type in GPU capture           |
@@ -22233,19 +22187,27 @@ spawn_option       ::= "name" ":" string_literal
 
 #### 20.4.2 Parsing
 
-Spawn parsing is defined by the following source rules:
+**(Parse-SpawnOpt-Name)**
+IsCtxIdent(Tok(P), "name")    IsPunc(Tok(Advance(P)), ":")    Tok(Advance(Advance(P))).kind = StringLiteral    s = StringValue(Tok(Advance(Advance(P))))
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseSpawnOpt(P) ⇓ (Advance(Advance(Advance(P))), Name(s))
 
-- `Parse-Spawn-Expr`
-- `Parse-SpawnOptsOpt-None`
-- `Parse-SpawnOptsOpt-Yes`
-- `Parse-SpawnOptList-Empty`
-- `Parse-SpawnOptList-Cons`
-- `Parse-SpawnOptListTail-End`
-- `Parse-SpawnOptListTail-TrailingComma`
-- `Parse-SpawnOptListTail-Comma`
-- `Parse-SpawnOpt-Name`
-- `Parse-SpawnOpt-Affinity`
-- `Parse-SpawnOpt-Priority`
+**(Parse-SpawnOpt-Affinity)**
+IsCtxIdent(Tok(P), "affinity")    IsPunc(Tok(Advance(P)), ":")    Γ ⊢ ParseExpr(Advance(Advance(P))) ⇓ (P_1, e)
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseSpawnOpt(P) ⇓ (P_1, Affinity(e))
+
+**(Parse-SpawnOpt-Priority)**
+IsCtxIdent(Tok(P), "priority")    IsPunc(Tok(Advance(P)), ":")    Γ ⊢ ParseExpr(Advance(Advance(P))) ⇓ (P_1, e)
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseSpawnOpt(P) ⇓ (P_1, Priority(e))
+
+**(Parse-Spawn-Expr)**
+IsKw(Tok(P), "spawn")    Γ ⊢ ParseOptListOpt(ParseSpawnOpt, Advance(P)) ⇓ (P_1, opts)    Γ ⊢ ParseBlockExpr(P_1) ⇓ (P_2, body)
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParsePrimaryExpr(P) ⇓ (P_2, SpawnExpr(opts, body))
+
+The option-list rules instantiate the shared schema of §5.5 with `El = ParseSpawnOpt`.
 
 #### 20.4.3 AST Representation / Form
 
@@ -22341,26 +22303,54 @@ reduce_op             ::= "+" | "*" | "min" | "max" | "and" | "or" | identifier
 
 #### 20.5.2 Parsing
 
-Dispatch parsing is defined by the following source rules:
+**(Parse-ReduceOp-Op)**
+Tok(P).kind = Operator(o)    o ∈ {"+", "*"}
+────────────────────────────────────────────────────────
+Γ ⊢ ParseReduceOp(P) ⇓ (Advance(P), o)
 
-- `Parse-Dispatch-Expr`
-- `Parse-KeyClauseOpt-None`
-- `Parse-KeyClauseOpt-Yes`
-- `Parse-DispatchOptsOpt-None`
-- `Parse-DispatchOptsOpt-Yes`
-- `Parse-DispatchOptList-Empty`
-- `Parse-DispatchOptList-Cons`
-- `Parse-DispatchOptListTail-End`
-- `Parse-DispatchOptListTail-TrailingComma`
-- `Parse-DispatchOptListTail-Comma`
-- `Parse-ReduceOp-Op`
-- `Parse-ReduceOp-Ident`
-- `Parse-DispatchOpt-Reduce`
-- `Parse-DispatchOpt-Ordered`
-- `Parse-DispatchOpt-Chunk`
-- `Parse-DispatchOpt-Workgroup`
+**(Parse-ReduceOp-Ident)**
+Tok(P).kind = Identifier    s = Tok(P).lexeme
+────────────────────────────────────────────────────────
+Γ ⊢ ParseReduceOp(P) ⇓ (Advance(P), s)
 
-The fixed identifiers `min`, `max`, `and`, and `or` are tokenized as identifiers by Chapter 4 and are accepted in dispatch position by `Parse-ReduceOp-Ident`.
+**(Parse-DispatchOpt-Reduce)**
+IsCtxIdent(Tok(P), "reduce")    IsPunc(Tok(Advance(P)), ":")    Γ ⊢ ParseReduceOp(Advance(Advance(P))) ⇓ (P_1, op)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseDispatchOpt(P) ⇓ (P_1, Reduce(op))
+
+**(Parse-DispatchOpt-Ordered)**
+IsCtxIdent(Tok(P), "ordered")
+──────────────────────────────────────────────
+Γ ⊢ ParseDispatchOpt(P) ⇓ (Advance(P), Ordered)
+
+**(Parse-DispatchOpt-Chunk)**
+IsCtxIdent(Tok(P), "chunk")    IsPunc(Tok(Advance(P)), ":")    Γ ⊢ ParseExpr(Advance(Advance(P))) ⇓ (P_1, e)
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseDispatchOpt(P) ⇓ (P_1, Chunk(e))
+
+**(Parse-DispatchOpt-Workgroup)**
+IsCtxIdent(Tok(P), "workgroup")    IsPunc(Tok(Advance(P)), ":")    Γ ⊢ ParseExpr(Advance(Advance(P))) ⇓ (P_1, e)
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseDispatchOpt(P) ⇓ (P_1, Workgroup(e))
+
+**(Parse-KeyClauseOpt-Yes)**
+IsCtxIdent(Tok(P), "key")    Γ ⊢ ParseKeyPathExpr(Advance(P)) ⇓ (P_1, path)    Γ ⊢ ParseKeyMode(P_1) ⇓ (P_2, mode)
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseKeyClauseOpt(P) ⇓ (P_2, ⟨path, mode⟩)
+
+**(Parse-KeyClauseOpt-None)**
+¬ IsCtxIdent(Tok(P), "key")
+────────────────────────────────────────
+Γ ⊢ ParseKeyClauseOpt(P) ⇓ (P, ⊥)
+
+**(Parse-Dispatch-Expr)**
+IsKw(Tok(P), "dispatch")    Γ ⊢ ParsePattern(Advance(P)) ⇓ (P_1, pat)    IsCtxIdent(Tok(P_1), "in")
+Γ ⊢ ParseExpr_NoBrace(Advance(P_1)) ⇓ (P_2, range)    Γ ⊢ ParseKeyClauseOpt(P_2) ⇓ (P_3, kc)
+Γ ⊢ ParseOptListOpt(ParseDispatchOpt, P_3) ⇓ (P_4, opts)    Γ ⊢ ParseBlockExpr(P_4) ⇓ (P_5, body)
+────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParsePrimaryExpr(P) ⇓ (P_5, DispatchExpr(pat, range, kc, opts, body))
+
+The option-list rules instantiate the shared schema of §5.5 with `El = ParseDispatchOpt`. The `range` operand parses as a general non-brace expression; the range-type requirement is enforced by §20.5.4. The fixed identifiers `min`, `max`, `and`, and `or` are tokenized as identifiers by Chapter 4 and are accepted in dispatch position by `Parse-ReduceOp-Ident`.
 
 #### 20.5.3 AST Representation / Form
 
@@ -22598,11 +22588,11 @@ DispatchRun(pat, B, groups, op, σ) ⇓ (Ctrl(Panic), σ) ⇔ op ≠ ⊥ ∧ Tot
 
 | Code         | Severity | Detection    | Condition                                     |
 | ------------ | -------- | ------------ | --------------------------------------------- |
-| `E-CON-0140` | Error    | Compile-time | Dispatch outside parallel block               |
+| `E-CON-0140` | Error    | Compile-time | Dispatch outside parallel block (`Dispatch-Outside-Err`) |
 | `E-CON-0141` | Error    | Compile-time | Key inference failed; explicit key required   |
-| `E-CON-0142` | Error    | Compile-time | Cross-iteration dependency detected           |
-| `E-CON-0143` | Error    | Compile-time | Non-associative reduction without `[ordered]` |
-| `W-CON-0140` | Warning  | Compile-time | Dynamic key pattern; runtime serialization    |
+| `E-CON-0142` | Error    | Compile-time | Cross-iteration dependency detected (`Dispatch-Dependency-Err`) |
+| `E-CON-0143` | Error    | Compile-time | Non-associative reduction without `[ordered]` (`Dispatch-Reduce-Assoc-Err`) |
+| `W-CON-0140` | Warning  | Compile-time | Dynamic key pattern; runtime serialization (`Dispatch-DynamicKey-Warn`) |
 
 ### 20.6 Cancellation
 
@@ -22977,15 +22967,7 @@ supplied by the expected type and the ordinary permission rules allow introducin
 fresh value at that permission. Manual `resume` consumes a `unique` suspended async
 receiver and returns a `unique` async state value.
 
-`Async` subtyping is:
-
-**(Sub-Async)**
-```text
-AsyncSig(T) = ⟨Out_1, In_1, Result_1, E_1⟩    AsyncSig(U) = ⟨Out_2, In_2, Result_2, E_2⟩
-Γ ⊢ Out_1 <: Out_2    Γ ⊢ In_2 <: In_1    Γ ⊢ Result_1 <: Result_2    Γ ⊢ E_1 <: E_2
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ T <: U
-```
+`Async` subtyping is defined once by rule **(Sub-Async)** in §8.2.
 
 `Async` well-formedness is:
 
@@ -24032,15 +24014,6 @@ RaceMode(arms) = `return`    Γ ⊢ InitRace(arms, σ) ⇓ (race_state, σ_1)
 RaceStepStream : RaceState × [RaceArm] × State → EvalOut × State
 ```
 
-**(RaceStepStream-Yield)**
-```text
-∃ i. ModalState(race_state.active[i]) = @Suspended    a_i = race_state.active[i]    a_i.output = v
-arm_i = arms[i]    Γ ⊢ BindPattern(arm_i.pat, v) ⇓ Γ_1    Γ_1 ⊢ EvalSigma(arm_i.handler.expr, σ) ⇓ (Val(u), σ_1)
-stream_state = { race_state: race_state, pending_yield: (i, u) }
-─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ RaceStepStream(race_state, arms, σ) ⇓ (Suspend(AsyncSuspended(u, stream_state)), σ_1)
-```
-
 **(RaceStepStream-AllComplete)**
 ```text
 ∀ i. ModalState(race_state.active[i]) = @Completed
@@ -24738,8 +24711,8 @@ This section owns async diagnostics not covered by the syntax-local tables in §
 
 | Code         | Severity | Detection    | Condition                                       |
 | ------------ | -------- | ------------ | ----------------------------------------------- |
-| `E-CON-0203` | Error    | Compile-time | `result` type mismatch with `Result` parameter  |
-| `E-CON-0230` | Error    | Compile-time | Error propagation in infallible async procedure |
+| `E-CON-0203` | Error    | Compile-time | `result` type mismatch with `Result` parameter (`Return-Async-Type-Err`, `Return-Async-Unit-Err`) |
+| `E-CON-0230` | Error    | Compile-time | Error propagation in infallible async procedure (`Async-Try-Infallible-Err`) |
 
 ## 22. Compile-Time Execution and Metaprogramming
 
@@ -24848,6 +24821,15 @@ CtMetaFree(n) ⇔ n contains no node owned by §§22.2 through 22.5
 #### 22.1.4 Static Semantics
 
 In the rules below, `Γ_ct` denotes the typing environment obtained by extending `Γ` with the local bindings of the current compile-time body, the compile-time procedure bindings introduced earlier in the same Phase 2 source order, and the capability bindings admitted by §22.2 for the current site.
+
+EmittedInPhase2(d) ⇔ d was appended by a `CtPendingEmits` transfer during `CtExecModuleSeq` (§22.1.5)
+
+**(CtExpand-CrossModule-Emit-Err)**
+comptime form f occurs in module M    name resolution within the expansion of f targets declaration d in module M'    M' ≠ M    EmittedInPhase2(d)    c = Code(CtExpand-CrossModule-Emit-Err)
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ CtExpandItem(Ξ, Φ, f) ⇑ c
+
+Phase 2 execution MUST NOT depend on declarations emitted by Phase 2 execution of a different module. Phase-1 (source-present) declarations of other modules MAY be referenced. Cross-module comptime emission dependencies are unsupported and rejected.
 
 CtAvail(TypePrim(_))
 CtAvail(TypeString(`@View`))
@@ -25441,6 +25423,10 @@ quote_pattern  ::= "quote" "pattern" "{" pattern "}"
 quoted_content ::= expression | statement | top_level_item
 splice_expr    ::= "$(" expression ")"
 splice_ident   ::= "$" identifier
+
+(* Splice forms parse in any primary-expression position; use outside quoted
+   content is rejected statically (E-CTE-0233). Within quoted content,
+   `splice_ident` is additionally admitted wherever `identifier` is admitted. *)
 ```
 
 #### 22.4.2 Parsing
@@ -25573,7 +25559,7 @@ Diagnostics for quote, splice, and emission are defined by §22.6.
 #### 22.5.1 Syntax
 
 ```ebnf
-derive_attribute    ::= attr_open "derive" "(" derive_target_list ")" attr_close
+derive_attribute    ::= "#" "derive" "(" derive_target_list ")"
 derive_target_list  ::= identifier ("," identifier)*
 derive_target_decl  ::= "derive" "target" identifier "(" "target" ":" "Type" ")" derive_contract_opt block_expr
 derive_contract_opt ::= "|:" derive_clause ("," derive_clause)*
@@ -25777,6 +25763,7 @@ This section owns compile-time execution, reflection, quoting, emission, file-ac
 | `E-CTE-0440` | Error    | Compile-time | Reflection `variants` query on non-enum type                   |
 | `E-CTE-0450` | Error    | Compile-time | Reflection `states` query on non-modal type                    |
 | `E-CTE-0470` | Error    | Compile-time | Reflection type-predicate query on incomplete declaration      |
+| `E-CTE-0090` | Error    | Compile-time | Compile-time form depends on a declaration emitted by Phase 2 execution of another module (`CtExpand-CrossModule-Emit-Err`) |
 
 `diagnostics.error(msg)` MUST append `⟨`E-CTE-0070`, Error, msg, sp⟩`, where `sp` is the current compile-time site span.
 `diagnostics.warning(msg)` MUST append `⟨`W-CTE-0071`, Warning, msg, sp⟩`, where `sp` is the current compile-time site span.
@@ -26050,13 +26037,13 @@ This section introduces no additional runtime mechanism. Dynamic boundary behavi
 
 | Code         | Severity | Detection    | Condition                                                      |
 | ------------ | -------- | ------------ | -------------------------------------------------------------- |
-| `E-TYP-2623` | Error    | Compile-time | Prohibited type category in `FfiSafeType`                      |
-| `E-TYP-2624` | Error    | Compile-time | `FfiSafeType` record without `#layout(C)`                   |
-| `E-TYP-2625` | Error    | Compile-time | `FfiSafeType` enum without `#layout(C)`                     |
-| `E-TYP-2626` | Error    | Compile-time | `FfiSafeType` record has non-`FfiSafeType` field               |
-| `E-TYP-2627` | Error    | Compile-time | `FfiSafeType` enum has non-`FfiSafeType` payload field         |
-| `E-TYP-2628` | Error    | Compile-time | `FfiSafeType` requires complete layout                         |
-| `E-TYP-2629` | Error    | Compile-time | Generic `FfiSafeType` with unconstrained parameter             |
+| `E-TYP-2623` | Error    | Compile-time | Prohibited type category in `FfiSafeType` (`FfiSafe-Prohibited-Err`) |
+| `E-TYP-2624` | Error    | Compile-time | `FfiSafeType` record without `#layout(C)` (`FfiSafe-Record-LayoutC-Err`) |
+| `E-TYP-2625` | Error    | Compile-time | `FfiSafeType` enum without `#layout(C)` (`FfiSafe-Enum-LayoutC-Err`) |
+| `E-TYP-2626` | Error    | Compile-time | `FfiSafeType` record has non-`FfiSafeType` field (`FfiSafe-Record-Field-Err`) |
+| `E-TYP-2627` | Error    | Compile-time | `FfiSafeType` enum has non-`FfiSafeType` payload field (`FfiSafe-Enum-Field-Err`) |
+| `E-TYP-2628` | Error    | Compile-time | `FfiSafeType` requires complete layout (`FfiSafe-Incomplete-Err`) |
+| `E-TYP-2629` | Error    | Compile-time | Generic `FfiSafeType` with unconstrained parameter (`FfiSafe-Generic-Unbounded-Err`) |
 | `E-TYP-2630` | Error    | Compile-time | By-value FFI use of `DropType` without `#ffi_pass_by_value` |
 
 ### 23.2 Extern Procedures
@@ -26401,10 +26388,10 @@ These hosted-export thunks are backend-generated boundary declarations. They are
 | Code         | Severity | Detection    | Condition                                                                            |
 | ------------ | -------- | ------------ | ------------------------------------------------------------------------------------ |
 | `E-TYP-2632` | Error    | Compile-time | `#host_export` requires a leading `Context` bundle parameter                      |
-| `E-TYP-2633` | Error    | Compile-time | `#host_export` leading `Context` bundle parameter MUST NOT use `move`             |
-| `E-TYP-2634` | Error    | Compile-time | Generic `#host_export` procedure                                                  |
+| `E-TYP-2633` | Error    | Compile-time | `#host_export` leading `Context` bundle parameter MUST NOT use `move` (`HostExport-Context-Move-Err`) |
+| `E-TYP-2634` | Error    | Compile-time | Generic `#host_export` procedure (`HostExport-Generic-Err`) |
 | `E-TYP-2635` | Error    | Compile-time | `#host_export` catch requires zeroable return type                                |
-| `E-TYP-2636` | Error    | Compile-time | `#host_export` MUST use an explicit projected `Context` bundle, not raw `Context` |
+| `E-TYP-2636` | Error    | Compile-time | `#host_export` MUST use an explicit projected `Context` bundle, not raw `Context` (`HostExport-Context-Err`, `HostExport-Context-Raw-Err`) |
 
 Type-admissibility failures in `FfiSafeType` and by-value FFI use for hosted-export visible parameters and returns are owned by §23.1.7.
 
@@ -26574,10 +26561,10 @@ FFI attributes do not directly evaluate to runtime values. `#unwind` selects the
 | `E-SYS-3347` | Error    | Link-time                 | Library not found                                        |
 | `E-SYS-3350` | Error    | Compile-time              | `#mangle(none)` on non-exportable procedure           |
 | `E-SYS-3351` | Error    | Compile-time              | Conflicting explicit mangling directives                 |
-| `E-SYS-3355` | Error    | Compile-time              | Unknown unwind mode                                      |
+| `E-SYS-3355` | Error    | Compile-time              | Unknown unwind mode (`UnwindMode-Invalid-Err`) |
 | `E-SYS-3356` | Error    | Compile-time              | `#unwind` on non-FFI procedure                        |
-| `E-SYS-3357` | Error    | Compile-time              | `#host_export` requires `assembly.kind = "library"`   |
-| `E-SYS-3358` | Error    | Compile-time              | `#host_export` and `#export` mixed in one assembly |
+| `E-SYS-3357` | Error    | Compile-time              | `#host_export` requires `assembly.kind = "library"` (`HostExport-Library-Err`) |
+| `E-SYS-3358` | Error    | Compile-time              | `#host_export` and `#export` mixed in one assembly (`HostExport-MixedMode-Err`) |
 | `E-FFI-0350` | Error    | Compile-time              | Multiple `#unwind` attributes                         |
 | `W-SYS-3350` | Warning  | Compile-time              | `#mangle(none)` with `#export("C")` (redundant)    |
 | `W-SYS-3355` | Warning  | Compile-time              | `#unwind("abort")` (redundant)                        |
@@ -26923,7 +26910,7 @@ UnwindMode(proc) = m
 
 **(UnwindMode-Invalid-Err)**
 ```
-UnwindAttr(proc) = m    m ∉ { "abort", "catch" }    c = Code(E-SYS-3355)
+UnwindAttr(proc) = m    m ∉ { "abort", "catch" }    c = Code(UnwindMode-Invalid-Err)
 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 UnwindMode(proc) ⇑ c
 ```
@@ -26991,7 +26978,7 @@ This section owns FFI diagnostics not already attached to the surface-attribute 
 
 | Code         | Severity | Detection    | Condition                     |
 | ------------ | -------- | ------------ | ----------------------------- |
-| `E-SYS-3352` | Error    | Compile-time | Unsupported extern ABI string |
+| `E-SYS-3352` | Error    | Compile-time | Unsupported extern ABI string (`ExternAbi-Unknown-Err`) |
 
 ## 24. Common Lowering, Program Lifecycle, and Backend
 
@@ -28691,7 +28678,7 @@ SessionValid(P, h, σ) ⇔ SessionHandle(h) ∧ HostedSessionOwner(h) = P ∧ Se
 SessionReady(P, h, σ) ⇔ SessionValid(P, h, σ) ∧ ¬ SessionBusy(h, σ)
 HostedSessionOwner : Session → Project
 SessionContext : Session → Value
-HostedGrantedCaps : Project × Session → 𝒫(CapToken)
+HostedGrantedCaps : Project × Session → 𝒫(CapabilityClass)
 HostedGrantVisible(P, h, T) ⇔ CapInType(StripPerm(T)) ⊆ HostedGrantedCaps(P, h)
 SessionLive : Session × Store → Bool
 SessionBusy : Session × Store → Bool
@@ -28777,7 +28764,7 @@ During lowering of one module-init procedure, the cleanup performed by `InitPani
 ──────────────────────────────────────────────────────────
 Γ ⊢ PanicSym ⇓ PathSig(["ultraviolet", "runtime", "panic"])
 
-PanicReason = {ErrorExpr(span), ErrorStmt(span), DivZero, Overflow, Shift, Bounds, Cast, NullDeref, ExpiredDeref, InitPanic(m), Other}.
+PanicReason = {ErrorExpr(span), ErrorStmt(span), DivZero, Overflow, Shift, Bounds, Cast, NullDeref, ExpiredDeref, InitPanic(m), ContractPre, ContractPost, AsyncFailed, ForeignPre, ForeignPost, TypeInv, LoopInv, MatchFail, Other}.
 
 PanicCode(ErrorExpr(_)) = 0x0001
 PanicCode(ErrorStmt(_)) = 0x0002
@@ -28789,9 +28776,17 @@ PanicCode(Cast) = 0x0007
 PanicCode(NullDeref) = 0x0008
 PanicCode(ExpiredDeref) = 0x0009
 PanicCode(InitPanic(_)) = 0x000A
+PanicCode(ContractPre) = 0x000B
+PanicCode(ContractPost) = 0x000C
+PanicCode(AsyncFailed) = 0x000D
+PanicCode(ForeignPre) = 0x000E
+PanicCode(ForeignPost) = 0x000F
+PanicCode(TypeInv) = 0x0010
+PanicCode(LoopInv) = 0x0011
+PanicCode(MatchFail) = 0x0012
 PanicCode(Other) = 0x00FF.
 
-PanicSite = {DivZeroCheck, OverflowCheck, ShiftCheck, BoundsCheck, CastCheck, NullDerefCheck, ExpiredDerefCheck, ErrorExprSite(span), ErrorStmtSite(span), InitPanicSite(m), OtherSite}.
+PanicSite = {DivZeroCheck, OverflowCheck, ShiftCheck, BoundsCheck, CastCheck, NullDerefCheck, ExpiredDerefCheck, ErrorExprSite(span), ErrorStmtSite(span), InitPanicSite(m), ContractSite(kind), AsyncFailedSite, MatchFailSite, OtherSite}.    kind ∈ {Pre, Post, TypeInv, LoopInv, ForeignPre, ForeignPost}
 PanicReasonOf(DivZeroCheck) = DivZero
 PanicReasonOf(OverflowCheck) = Overflow
 PanicReasonOf(ShiftCheck) = Shift
@@ -28802,6 +28797,14 @@ PanicReasonOf(ExpiredDerefCheck) = ExpiredDeref
 PanicReasonOf(ErrorExprSite(span)) = ErrorExpr(span)
 PanicReasonOf(ErrorStmtSite(span)) = ErrorStmt(span)
 PanicReasonOf(InitPanicSite(m)) = InitPanic(m)
+PanicReasonOf(ContractSite(Pre)) = ContractPre
+PanicReasonOf(ContractSite(Post)) = ContractPost
+PanicReasonOf(ContractSite(TypeInv)) = TypeInv
+PanicReasonOf(ContractSite(LoopInv)) = LoopInv
+PanicReasonOf(ContractSite(ForeignPre)) = ForeignPre
+PanicReasonOf(ContractSite(ForeignPost)) = ForeignPost
+PanicReasonOf(AsyncFailedSite) = AsyncFailed
+PanicReasonOf(MatchFailSite) = MatchFail
 PanicReasonOf(OtherSite) = Other
 
 Γ ⊢ ClearPanic ⇓ IR ⇔ ∀ σ, ExecIRSigma(IR, σ) ⇓ (out, σ') ∧ WritePanicRecord(σ, false, 0) ⇓ σ'
@@ -29259,7 +29262,7 @@ RuntimeDeclJudg = {RuntimeSig(sym) ⇓ ⟨params, ret⟩, BuiltinSig(method) ⇓
 IOBuiltinMethods = {`IO::open_read`, `IO::open_write`, `IO::open_append`, `IO::create_write`, `IO::read_file`, `IO::read_bytes`, `IO::write_file`, `IO::write_stdout`, `IO::write_stderr`, `IO::exists`, `IO::remove`, `IO::open_dir`, `IO::create_dir`, `IO::ensure_dir`, `IO::kind`, `IO::restrict`}
 NetworkBuiltinMethods = {`Network::restrict_to_host`}
 HeapAllocatorBuiltinMethods = {`HeapAllocator::with_quota`, `HeapAllocator::alloc_raw`, `HeapAllocator::dealloc_raw`}
-SystemBuiltinMethods = {`System::name` | ⟨name, params, ret⟩ ∈ SystemInterface}
+SystemBuiltinMethods = {`System::name` | ⟨name, recv, params, ret⟩ ∈ SystemInterface}
 ReactorBuiltinMethods = {`Reactor::run`, `Reactor::register`}
 TimeBuiltinMethods = {`Time::monotonic`, `Time::wall`, `MonotonicTime::now`, `MonotonicTime::resolution`, `MonotonicTime::elapsed`, `MonotonicTime::coarsen`, `WallTime::now_utc`, `WallTime::resolution`, `WallTime::coarsen`}
 BuiltinMethods = StringBuiltins ∪ BytesBuiltins ∪ IOBuiltinMethods ∪ NetworkBuiltinMethods ∪ HeapAllocatorBuiltinMethods ∪ SystemBuiltinMethods ∪ ReactorBuiltinMethods ∪ TimeBuiltinMethods
@@ -29268,7 +29271,7 @@ RuntimeSyms = {PanicSym, StringDropSym, BytesDropSym, ContextInitSym} ∪ {Built
 BuiltinSig(`IO`::name) = ⟨[⟨⊥, `self`, TypePerm(CapRecv(`IO`, name), TypeDynamic(`IO`))⟩] ++ params, ret⟩ ⇔ CapMethodSig(`IO`, name) = ⟨params, ret⟩
 BuiltinSig(`Network`::name) = ⟨[⟨⊥, `self`, TypePerm(CapRecv(`Network`, name), TypeDynamic(`Network`))⟩] ++ params, ret⟩ ⇔ CapMethodSig(`Network`, name) = ⟨params, ret⟩
 BuiltinSig(`HeapAllocator`::name) = ⟨[⟨⊥, `self`, TypePerm(CapRecv(`HeapAllocator`, name), TypeDynamic(`HeapAllocator`))⟩] ++ params, ret⟩ ⇔ CapMethodSig(`HeapAllocator`, name) = ⟨params, ret⟩
-BuiltinSig(`System`::name) = ⟨[⟨⊥, `self`, TypePerm(`const`, TypePath(["System"]))⟩] ++ params, ret⟩ ⇔ SystemMethodSig(name) = ⟨params, ret⟩
+BuiltinSig(`System`::name) = ⟨[⟨⊥, `self`, TypePerm(CapRecv(`System`, name), TypeDynamic(`System`))⟩] ++ params, ret⟩ ⇔ CapMethodSig(`System`, name) = ⟨params, ret⟩
 BuiltinSig(`Reactor`::name) = ⟨[⟨⊥, `self`, TypePerm(CapRecv(`Reactor`, name), TypeDynamic(`Reactor`))⟩] ++ params, ret⟩ ⇔ CapMethodSig(`Reactor`, name) = ⟨params, ret⟩
 BuiltinSig(`Time`::name) = ⟨[⟨⊥, `self`, TypePerm(CapRecv(`Time`, name), TypeDynamic(`Time`))⟩] ++ params, ret⟩ ⇔ CapMethodSig(`Time`, name) = ⟨params, ret⟩
 BuiltinSig(`MonotonicTime`::name) = ⟨[⟨⊥, `self`, TypePerm(CapRecv(`MonotonicTime`, name), TypeDynamic(`MonotonicTime`))⟩] ++ params, ret⟩ ⇔ CapMethodSig(`MonotonicTime`, name) = ⟨params, ret⟩
@@ -30436,14 +30439,14 @@ This section owns output-pipeline and backend-emission diagnostics defined by Ch
 
 | Code         | Severity | Detection    | Condition                                                                |
 | ------------ | -------- | ------------ | ------------------------------------------------------------------------ |
-| `E-OUT-0401` | Error    | Compile-time | Failed to create output directory                                        |
-| `E-OUT-0402` | Error    | Compile-time | Failed to emit object file (codegen or write)                            |
-| `E-OUT-0403` | Error    | Compile-time | Failed to emit IR/bitcode (codegen, assemble, tool resolution, or write) |
-| `E-OUT-0404` | Error    | Compile-time | Final artifact tool invocation failed                                    |
-| `E-OUT-0405` | Error    | Compile-time | Required linker or archiver tool not found                               |
-| `E-OUT-0406` | Error    | Compile-time | Output path collision detected                                           |
-| `E-OUT-0407` | Error    | Compile-time | Runtime library missing or unreadable                                    |
-| `E-OUT-0408` | Error    | Compile-time | Runtime library missing required symbol(s)                               |
+| `E-OUT-0401` | Error    | Compile-time | Failed to create output directory (`Out-Dirs-Err`) |
+| `E-OUT-0402` | Error    | Compile-time | Failed to emit object file (codegen or write) (`Out-Obj-Err`) |
+| `E-OUT-0403` | Error    | Compile-time | Failed to emit IR/bitcode (codegen, assemble, tool resolution, or write) (`Out-IR-Err`) |
+| `E-OUT-0404` | Error    | Compile-time | Final artifact tool invocation failed (`Out-Link-Fail`) |
+| `E-OUT-0405` | Error    | Compile-time | Required linker or archiver tool not found (`Out-Link-NotFound`) |
+| `E-OUT-0406` | Error    | Compile-time | Output path collision detected (`Out-IR-Collision`, `Out-Obj-Collision`) |
+| `E-OUT-0407` | Error    | Compile-time | Runtime library missing or unreadable (`Out-Link-Runtime-Missing`) |
+| `E-OUT-0408` | Error    | Compile-time | Runtime library missing required symbol(s) (`Out-Link-Runtime-Incompatible`) |
 | `E-OUT-0409` | Error    | Compile-time | Selected target profile does not support requested final artifact        |
 | `E-OUT-0410` | Error    | Compile-time | LLVM type mapping failed                                                 |
 | `E-OUT-0411` | Error    | Compile-time | LLVM IR lowering failed                                                  |
@@ -30463,43 +30466,44 @@ Only sections that define named diagnostics are listed below.
 
 - `§3.1 Core Project Records`: `E-CLI-0001`, `E-CLI-0002`, `E-CLI-0003`
 - `§3.8 Project Diagnostics`: `E-PRJ-0101`, `E-PRJ-0102`, `E-PRJ-0103`, `E-PRJ-0104`, `E-PRJ-0110`, `E-PRJ-0111`, `E-PRJ-0112`, `E-PRJ-0201`, `E-PRJ-0202`, `E-PRJ-0203`, `E-PRJ-0204`, `E-PRJ-0205`, `E-PRJ-0206`, `E-PRJ-0207`, `E-PRJ-0208`, `E-PRJ-0209`, `E-PRJ-0210`, `E-PRJ-0301`, `E-PRJ-0302`, `E-PRJ-0303`, `E-PRJ-0304`, `E-PRJ-0305`
-- `§4.3 Source Loading and Lexical Diagnostics`: `E-SRC-0101`, `E-SRC-0102`, `E-SRC-0103`, `E-SRC-0104`, `E-SRC-0301`, `E-SRC-0302`, `E-SRC-0303`, `E-SRC-0304`, `E-SRC-0306`, `E-SRC-0307`, `E-SRC-0308`, `E-SRC-0309`, `E-SRC-0310`, `E-SRC-0311`, `W-SRC-0101`, `W-SRC-0301`, `W-SRC-0308`
+- `§4.3 Source Loading and Lexical Diagnostics`: `E-SRC-0101`, `W-SRC-0101`, `E-SRC-0102`, `E-SRC-0103`, `E-SRC-0104`, `E-SRC-0301`, `W-SRC-0301`, `E-SRC-0302`, `E-SRC-0303`, `E-SRC-0304`, `E-SRC-0306`, `E-SRC-0307`, `E-SRC-0308`, `W-SRC-0308`, `E-SRC-0309`, `E-SRC-0310`, `E-SRC-0311`
 - `§5.10 Parsing Diagnostics Supplement`: `E-CNF-0401`, `E-SRC-0510`, `E-SRC-0520`, `E-SRC-0521`
 - `§6.6 Runtime State and Memory Diagnostics`: `E-MEM-1206`, `E-MEM-1207`, `E-MEM-1208`, `E-MEM-3001`, `E-MEM-3003`, `E-MEM-3004`, `E-MEM-3005`, `E-MEM-3006`, `E-MEM-3007`, `E-MEM-3020`, `E-MEM-3021`, `E-MEM-3030`
-- `§7.8 Name Resolution and Reserved Name Diagnostics`: `E-CNF-0403`, `E-CNF-0404`, `E-CNF-0405`, `E-CNF-0406`, `E-MOD-1203`, `E-MOD-1207`, `E-MOD-1301`, `E-MOD-1302`, `E-MOD-1303`, `E-MOD-1306`, `E-MOD-1307`
-- `§8.5 Core Type Diagnostics`: `E-TYP-1506`, `E-TYP-1520`, `E-TYP-1521`, `E-TYP-1530`, `E-TYP-1531`
+- `§7.8 Name Resolution and Reserved Name Diagnostics`: `E-CNF-0406`, `E-MOD-1203`, `E-MOD-1207`, `E-MOD-1301`, `E-MOD-1302`, `E-MOD-1304`, `E-MOD-1307`, `E-MOD-1308`, `E-MOD-1309`, `E-MOD-1310`
+- `§8.5 Core Type Diagnostics`: `E-TYP-1506`, `E-TYP-1530`, `E-TYP-1531`
 - `§9.1.7 Attribute Syntax and Placement`: `E-MOD-2450`, `E-MOD-2451`, `E-MOD-2452`
 - `§9.2.7 Vendor Attributes`: `E-CNF-0402`
-- `§9.3.7 Layout Attributes`: `E-MOD-2453`, `E-MOD-2454`, `E-MOD-2455`, `E-TYP-2105`, `W-MOD-2451`
+- `§9.3.7 Layout Attributes`: `W-MOD-2451`, `E-MOD-2453`, `E-MOD-2454`, `E-MOD-2455`, `E-TYP-2105`
 - `§9.4.7 Optimization Attributes`: `W-MOD-2452`
-- `§9.5.7 Diagnostics and Metadata Attributes`: `W-CNF-0601`, `E-CON-0410`, `E-CON-0411`, `E-CON-0412`, `W-CON-0401`
-- `§9.6.7 Source-Native Test Attributes`: `E-MOD-2452`, `E-TST-0101`, `E-TST-0102`, `E-TST-0103`, `E-TST-0104`, `E-TST-0105`, `E-TST-0106`, `E-TST-0107`, `E-TST-0108`
+- `§9.5.7 Diagnostics and Metadata Attributes`: `W-CNF-0601`, `W-CON-0401`, `E-CON-0410`, `E-CON-0411`, `E-CON-0412`
+- `§9.6.7 Source-Native Test Attributes`: `E-TST-0101`, `E-TST-0102`, `E-TST-0103`, `E-TST-0104`, `E-TST-0105`, `E-TST-0106`, `E-TST-0107`, `E-TST-0108`, `E-TST-0109`
 - `§10.4.7 Permission Admissibility`: `E-TYP-1601`, `E-TYP-1602`, `E-TYP-1603`, `E-TYP-1604`, `E-TYP-1605`
 - `§11.1.7 Import Declarations`: `E-MOD-1202`
-- `§11.2.7 Using Declarations`: `E-MOD-1204`, `E-MOD-1205`, `E-MOD-1206`, `W-MOD-1201`
-- `§11.3.7 Static Declarations`: `E-TYP-1505`, `E-MOD-2402`, `E-MOD-2433`
-- `§11.5.7 Module and File Aggregation`: `E-MOD-1104`, `E-MOD-1105`, `E-MOD-1106`, `E-MOD-1107`, `W-MOD-1101`, `E-MOD-1201`, `E-MOD-1401`
-- `§12.2.7 Tuples`: `E-TYP-1801`, `E-TYP-1802`, `E-TYP-1803`, `E-SEM-2524`
+- `§11.2.7 Using Declarations`: `W-MOD-1201`, `E-MOD-1204`, `E-MOD-1205`, `E-MOD-1206`
+- `§11.3.7 Static Declarations`: `E-MOD-2402`, `E-MOD-2433`, `E-TYP-1505`
+- `§11.5.7 Module and File Aggregation`: `W-MOD-1101`, `E-MOD-1104`, `E-MOD-1105`, `E-MOD-1106`, `E-MOD-1107`, `E-MOD-1201`, `E-MOD-1401`
+- `§12.2.7 Tuples`: `E-SEM-2524`, `E-TYP-1801`, `E-TYP-1802`, `E-TYP-1803`
 - `§12.6.7 Records`: `E-TYP-1901`, `E-TYP-1902`, `E-TYP-1903`, `E-TYP-1904`, `E-TYP-1905`, `E-TYP-1906`, `E-TYP-1907`, `E-TYP-1911`
-- `§12.7.7 Enums`: `E-TYP-1920`, `E-TYP-1921`, `E-TYP-1922`, `E-TYP-1923`
-- `§12.10 Data Type Diagnostics Supplement`: `E-TYP-1810`, `E-TYP-1812`, `E-TYP-1820`, `E-TYP-1821`, `E-TYP-2201`, `E-TYP-2202`
-- `§13.12 Modal and Pointer Diagnostics Supplement`: `E-TYP-2050`, `E-TYP-2051`, `E-TYP-2052`, `E-TYP-2053`, `E-TYP-2054`, `E-TYP-2055`, `E-TYP-2056`, `E-TYP-2057`, `E-TYP-2058`, `E-TYP-2059`, `E-TYP-2060`, `E-TYP-2061`, `E-TYP-2062`, `E-TYP-2063`, `E-TYP-2064`, `E-TYP-2065`, `E-TYP-2070`, `E-TYP-2071`, `E-TYP-2072`, `E-TYP-2073`, `W-SYS-4010`, `E-TYP-2101`, `E-TYP-2102`, `E-TYP-2103`, `E-TYP-2104`
-- `§14.11 Refinement and Polymorphism Diagnostics Supplement`: `E-TYP-1953`, `E-TYP-1954`, `E-TYP-1955`, `E-TYP-1956`, `E-TYP-1957`, `P-TYP-1953`, `E-TYP-2301`, `E-TYP-2302`, `E-TYP-2303`, `E-TYP-2304`, `E-TYP-2305`, `E-TYP-2307`, `E-TYP-2308`, `E-TYP-2401`, `E-TYP-2402`, `E-TYP-2403`, `E-TYP-2404`, `E-TYP-2405`, `E-TYP-2406`, `E-TYP-2407`, `E-TYP-2408`, `E-TYP-2409`, `E-TYP-2500`, `E-TYP-2501`, `E-TYP-2502`, `E-TYP-2503`, `E-TYP-2504`, `E-TYP-2505`, `E-TYP-2506`, `E-TYP-2507`, `E-TYP-2508`, `E-TYP-2509`, `E-TYP-2510`, `E-TYP-2511`, `E-TYP-2512`, `E-TYP-2530`, `E-TYP-2531`, `E-TYP-2540`, `E-TYP-2541`, `E-TYP-2542`, `E-TYP-2621`, `E-TYP-2622`, `E-UNS-0105`, `E-UNS-0106`
-- `§15.10 Procedure, Contract, and Entry Diagnostics Supplement`: `E-TYP-1507`, `E-TYP-1508`, `E-TYP-1912`, `E-MOD-2411`, `E-MOD-2430`, `E-MOD-2431`, `E-MOD-2432`, `E-MOD-2434`, `E-CON-0415`, `E-CON-0416`, `P-SEM-2850`, `E-SEM-2801`, `E-SEM-2802`, `E-SEM-2803`, `E-SEM-2804`, `E-SEM-2805`, `E-SEM-2806`, `E-SEM-2807`, `E-SEM-2808`, `E-SEM-2820`, `E-SEM-2821`, `E-SEM-2822`, `E-SEM-2823`, `E-SEM-2824`, `E-SEM-2830`, `E-SEM-2831`, `E-SEM-3004`
-- `§16.10 Expression Diagnostics Supplement`: `E-SEM-2527`, `E-SEM-2528`, `E-SEM-2531`, `E-SEM-2532`, `E-SEM-2533`, `E-SEM-2534`, `E-SEM-2535`, `E-SEM-2536`, `E-SEM-2538`, `E-SEM-2539`, `E-SEM-2591`, `E-MEM-3031`, `E-UNS-0102`, `E-UNS-0103`, `E-UNS-0104`, `E-UNS-0107`, `W-SAFE-0100`
+- `§12.7.7 Enums`: `E-TYP-1920`, `E-TYP-1921`, `E-TYP-1922`, `E-TYP-1923`, `E-TYP-2001`, `E-TYP-2002`, `E-TYP-2007`, `E-TYP-2008`, `E-TYP-2009`
+- `§12.10 Data Type Diagnostics Supplement`: `E-TYP-1810`, `E-TYP-1812`, `E-TYP-1820`, `E-TYP-2201`, `E-TYP-2202`
+- `§13.12 Modal and Pointer Diagnostics Supplement`: `W-SYS-4010`, `E-TYP-2050`, `E-TYP-2051`, `E-TYP-2052`, `E-TYP-2053`, `E-TYP-2054`, `E-TYP-2055`, `E-TYP-2056`, `E-TYP-2057`, `E-TYP-2058`, `E-TYP-2059`, `E-TYP-2060`, `E-TYP-2061`, `E-TYP-2062`, `E-TYP-2063`, `E-TYP-2064`, `E-TYP-2065`, `E-TYP-2070`, `E-TYP-2071`, `E-TYP-2072`, `E-TYP-2073`, `E-TYP-2101`, `E-TYP-2102`, `E-TYP-2103`, `E-TYP-2104`
+- `§14.11 Refinement and Polymorphism Diagnostics Supplement`: `E-TYP-1520`, `E-TYP-1521`, `E-TYP-1953`, `P-TYP-1953`, `E-TYP-1954`, `E-TYP-1955`, `E-TYP-1956`, `E-TYP-1957`, `E-TYP-2301`, `E-TYP-2302`, `E-TYP-2303`, `E-TYP-2304`, `E-TYP-2305`, `E-TYP-2307`, `E-TYP-2308`, `E-TYP-2401`, `E-TYP-2402`, `E-TYP-2403`, `E-TYP-2404`, `E-TYP-2405`, `E-TYP-2406`, `E-TYP-2407`, `E-TYP-2408`, `E-TYP-2409`, `E-TYP-2500`, `E-TYP-2501`, `E-TYP-2502`, `E-TYP-2503`, `E-TYP-2504`, `E-TYP-2505`, `E-TYP-2506`, `E-TYP-2507`, `E-TYP-2508`, `E-TYP-2509`, `E-TYP-2510`, `E-TYP-2511`, `E-TYP-2512`, `E-TYP-2530`, `E-TYP-2531`, `E-TYP-2540`, `E-TYP-2541`, `E-TYP-2542`, `E-TYP-2621`, `E-TYP-2622`, `E-UNS-0105`, `E-UNS-0106`
+- `§15.3.7 Overloading`: `E-SEM-3030`, `E-SEM-3031`, `E-SEM-3032`
+- `§15.10 Procedure, Contract, and Entry Diagnostics Supplement`: `E-CON-0415`, `E-CON-0416`, `E-MOD-2411`, `E-MOD-2430`, `E-MOD-2431`, `E-MOD-2432`, `E-MOD-2434`, `E-SEM-2801`, `E-SEM-2802`, `E-SEM-2803`, `E-SEM-2804`, `E-SEM-2805`, `E-SEM-2806`, `E-SEM-2807`, `E-SEM-2808`, `E-SEM-2820`, `E-SEM-2821`, `E-SEM-2822`, `E-SEM-2823`, `E-SEM-2824`, `E-SEM-2830`, `E-SEM-2831`, `P-SEM-2850`, `E-SEM-3004`, `E-TYP-1507`, `E-TYP-1508`, `E-TYP-1912`
+- `§16.10 Expression Diagnostics Supplement`: `E-MEM-3031`, `W-SAF-0100`, `E-SEM-2525`, `E-SEM-2526`, `E-SEM-2527`, `E-SEM-2528`, `E-SEM-2531`, `E-SEM-2532`, `E-SEM-2533`, `E-SEM-2534`, `E-SEM-2535`, `E-SEM-2536`, `E-SEM-2538`, `E-SEM-2539`, `E-SEM-2591`, `E-UNS-0102`, `E-UNS-0103`, `E-UNS-0104`, `E-UNS-0107`
 - `§17.7 Pattern Diagnostics Supplement`: `E-SEM-2705`, `E-SEM-2711`, `E-SEM-2713`, `E-SEM-2721`, `E-SEM-2722`, `E-SEM-2731`, `E-SEM-2741`, `E-SEM-2751`, `E-SEM-2761`, `E-SEM-2762`
 - `§18.11 Statement Diagnostics Supplement`: `E-MOD-2401`, `E-SEM-3011`, `E-SEM-3012`, `E-SEM-3131`, `E-SEM-3133`, `E-SEM-3151`, `E-SEM-3152`, `E-SEM-3161`, `E-SEM-3162`, `E-SEM-3163`, `E-SEM-3165`
 - `§19.1.7 Key Paths`: `E-CON-0002`, `E-CON-0003`, `E-CON-0030`, `E-CON-0033`, `E-CON-0034`, `E-CON-0083`
-- `§19.2.7 Key Acquisition Blocks`: `E-CON-0001`, `E-CON-0004`, `E-CON-0006`, `E-CON-0031`, `E-CON-0032`, `E-CON-0070`, `E-CON-0085`, `E-CON-0086`, `W-CON-0001`, `W-CON-0002`, `W-CON-0003`, `W-CON-0009`
-- `§19.3.7 Conflict Detection`: `E-CON-0005`, `E-CON-0010`, `E-CON-0014`, `E-CON-0060`, `W-CON-0004`, `W-CON-0006`, `W-CON-0013`
-- `§19.4.7 Nested Release`: `E-CON-0012`, `E-CON-0018`, `W-CON-0005`, `W-CON-0010`, `W-CON-0011`
-- `§19.5.7 Speculative Execution`: `E-CON-0090`, `E-CON-0091`, `E-CON-0092`, `E-CON-0093`, `E-CON-0094`, `E-CON-0095`, `E-CON-0096`, `E-CON-0097`, `W-CON-0020`, `W-CON-0021`
-- `§19.6.7 Dynamic Key Verification`: `E-CON-0020`, `I-CON-0011`, `I-CON-0013`
+- `§19.2.7 Key Acquisition Blocks`: `E-CON-0001`, `W-CON-0001`, `W-CON-0002`, `W-CON-0003`, `E-CON-0004`, `E-CON-0006`, `W-CON-0009`, `E-CON-0031`, `E-CON-0032`, `E-CON-0070`, `E-CON-0085`, `E-CON-0086`
+- `§19.3.7 Conflict Detection`: `W-CON-0004`, `E-CON-0005`, `W-CON-0006`, `E-CON-0010`, `W-CON-0013`, `E-CON-0014`, `E-CON-0060`
+- `§19.4.7 Nested Release`: `W-CON-0005`, `W-CON-0010`, `W-CON-0011`, `E-CON-0012`, `E-CON-0018`
+- `§19.5.7 Speculative Execution`: `W-CON-0020`, `W-CON-0021`, `E-CON-0090`, `E-CON-0091`, `E-CON-0092`, `E-CON-0093`, `E-CON-0094`, `E-CON-0095`, `E-CON-0096`, `E-CON-0097`
+- `§19.6.7 Dynamic Key Verification`: `I-CON-0011`, `I-CON-0013`, `E-CON-0020`
 - `§20.1.7 Parallel Blocks`: `E-CON-0101`, `E-CON-0102`, `E-CON-0103`
 - `§20.2.7 Execution Domains`: `E-CON-0150`, `E-CON-0154`, `E-CON-0155`, `E-CON-0156`, `E-CON-0157`, `E-CON-0158`, `E-CON-0159`, `E-TYP-2640`, `E-TYP-2641`, `E-TYP-2642`
 - `§20.3.7 Capture Semantics`: `E-CON-0120`, `E-CON-0121`, `E-CON-0122`, `E-CON-0131`, `E-CON-0151`, `E-CON-0153`
 - `§20.4.7 Spawn`: `E-CON-0130`
-- `§20.5.7 Dispatch`: `E-CON-0140`, `E-CON-0141`, `E-CON-0142`, `E-CON-0143`, `W-CON-0140`
+- `§20.5.7 Dispatch`: `E-CON-0140`, `W-CON-0140`, `E-CON-0141`, `E-CON-0142`, `E-CON-0143`
 - `§20.8.7 Determinism and Nesting`: `E-CON-0152`
 - `§20.9 Structured Parallelism Diagnostics Supplement`: `P-SEM-2862`
 - `§21.1.7 Async Type`: `E-CON-0201`
@@ -30508,12 +30512,13 @@ Only sections that define named diagnostics are listed below.
 - `§21.4.7 Async State Machine`: `W-CON-0201`, `E-CON-0280`, `E-CON-0281`
 - `§21.5.7 Async-Key Integration`: `E-CON-0133`, `E-CON-0213`, `E-CON-0224`
 - `§21.6 Async Diagnostics Supplement`: `E-CON-0203`, `E-CON-0230`
-- `§22.6 Compile-Time Diagnostics Supplement`: `E-CTE-0010`, `E-CTE-0011`, `E-CTE-0012`, `E-CTE-0020`, `E-CTE-0021`, `E-CTE-0022`, `E-CTE-0023`, `E-CTE-0030`, `E-CTE-0031`, `E-CTE-0032`, `E-CTE-0033`, `E-CTE-0034`, `E-CTE-0040`, `E-CTE-0041`, `E-CTE-0042`, `E-CTE-0050`, `E-CTE-0051`, `E-CTE-0052`, `E-CTE-0053`, `E-CTE-0060`, `E-CTE-0061`, `E-CTE-0062`, `E-CTE-0063`, `E-CTE-0064`, `E-CTE-0070`, `W-CTE-0071`, `E-CTE-0080`, `E-CTE-0081`, `E-CTE-0082`, `E-CTE-0083`, `E-CTE-0210`, `E-CTE-0220`, `E-CTE-0221`, `E-CTE-0230`, `E-CTE-0231`, `E-CTE-0232`, `E-CTE-0233`, `E-CTE-0240`, `E-CTE-0241`, `E-CTE-0250`, `E-CTE-0251`, `E-CTE-0252`, `E-CTE-0253`, `E-CTE-0310`, `E-CTE-0311`, `E-CTE-0312`, `E-CTE-0320`, `E-CTE-0321`, `E-CTE-0322`, `E-CTE-0330`, `E-CTE-0331`, `E-CTE-0340`, `E-CTE-0341`, `E-CTE-0410`, `E-CTE-0411`, `E-CTE-0420`, `E-CTE-0430`, `E-CTE-0440`, `E-CTE-0450`, `E-CTE-0470`
+- `§22.6 Compile-Time Diagnostics Supplement`: `E-CTE-0010`, `E-CTE-0011`, `E-CTE-0012`, `E-CTE-0020`, `E-CTE-0021`, `E-CTE-0022`, `E-CTE-0023`, `E-CTE-0030`, `E-CTE-0031`, `E-CTE-0032`, `E-CTE-0033`, `E-CTE-0034`, `E-CTE-0040`, `E-CTE-0041`, `E-CTE-0042`, `E-CTE-0050`, `E-CTE-0051`, `E-CTE-0052`, `E-CTE-0053`, `E-CTE-0060`, `E-CTE-0061`, `E-CTE-0062`, `E-CTE-0063`, `E-CTE-0064`, `E-CTE-0070`, `W-CTE-0071`, `E-CTE-0080`, `E-CTE-0081`, `E-CTE-0082`, `E-CTE-0083`, `E-CTE-0090`, `E-CTE-0210`, `E-CTE-0220`, `E-CTE-0221`, `E-CTE-0230`, `E-CTE-0231`, `E-CTE-0232`, `E-CTE-0233`, `E-CTE-0240`, `E-CTE-0241`, `E-CTE-0250`, `E-CTE-0251`, `E-CTE-0252`, `E-CTE-0253`, `E-CTE-0310`, `E-CTE-0311`, `E-CTE-0312`, `E-CTE-0320`, `E-CTE-0321`, `E-CTE-0322`, `E-CTE-0330`, `E-CTE-0331`, `E-CTE-0340`, `E-CTE-0341`, `E-CTE-0410`, `E-CTE-0411`, `E-CTE-0420`, `E-CTE-0430`, `E-CTE-0440`, `E-CTE-0450`, `E-CTE-0470`
 - `§23.1.7 FfiSafe`: `E-TYP-2623`, `E-TYP-2624`, `E-TYP-2625`, `E-TYP-2626`, `E-TYP-2627`, `E-TYP-2628`, `E-TYP-2629`, `E-TYP-2630`
-- `§23.2.7 Extern Procedures`: `E-TYP-2306`, `E-TYP-2106`
-- `§23.3.7 Raw Exported Procedures`: `E-SYS-3353`, `E-TYP-2631`
-- `§23.3.14 Hosted Exports`: `E-TYP-2632`, `E-TYP-2633`, `E-TYP-2634`, `E-TYP-2635`, `E-TYP-2636`
-- `§23.4.7 FFI Attributes`: `E-SYS-3340`, `E-SYS-3341`, `E-SYS-3342`, `E-SYS-3345`, `E-SYS-3346`, `E-SYS-3347`, `E-SYS-3350`, `E-SYS-3351`, `E-SYS-3355`, `E-SYS-3356`, `E-SYS-3357`, `E-SYS-3358`, `E-FFI-0350`, `W-SYS-3350`, `W-SYS-3355`
+- `§23.2.7 Extern Procedures`: `E-TYP-2106`, `E-TYP-2306`
+- `§23.3.7 Exported Procedures and Hosted Exports`: `E-SYS-3353`, `E-TYP-2631`
+- `§23.3.14 Exported Procedures and Hosted Exports`: `E-TYP-2632`, `E-TYP-2633`, `E-TYP-2634`, `E-TYP-2635`, `E-TYP-2636`
+- `§23.4.7 FFI Attributes`: `E-FFI-0350`, `E-SYS-3340`, `E-SYS-3341`, `E-SYS-3342`, `E-SYS-3345`, `E-SYS-3346`, `E-SYS-3347`, `E-SYS-3350`, `W-SYS-3350`, `E-SYS-3351`, `E-SYS-3355`, `W-SYS-3355`, `E-SYS-3356`, `E-SYS-3357`, `E-SYS-3358`
+- `§23.5.7 Capability Isolation`: `E-SYS-3360`
 - `§23.6.7 Foreign Contracts`: `E-SEM-2850`, `E-SEM-2851`, `E-SEM-2852`, `E-SEM-2853`, `E-SEM-2854`, `E-SEM-2855`, `E-SEM-2856`, `P-SEM-2860`, `P-SEM-2861`
 - `§23.8 FFI Diagnostics Supplement`: `E-SYS-3352`
 - `§24.8 Output and Backend Diagnostics`: `E-OUT-0401`, `E-OUT-0402`, `E-OUT-0403`, `E-OUT-0404`, `E-OUT-0405`, `E-OUT-0406`, `E-OUT-0407`, `E-OUT-0408`, `E-OUT-0409`, `E-OUT-0410`, `E-OUT-0411`, `E-OUT-0412`, `E-OUT-0413`, `E-OUT-0414`, `E-OUT-0415`, `E-OUT-0416`, `E-OUT-0417`, `E-OUT-0418`
@@ -30566,6 +30571,7 @@ unit_literal ::= "(" ")"
 ```ebnf
 type                ::= permission? non_permission_type refinement_clause?
 non_permission_type ::= union_type | non_union_type
+non_union_type      ::= primitive_type | tuple_type | array_type | slice_type | function_type | closure_type | safe_pointer_type | raw_pointer_type | string_type | bytes_type | dynamic_type | opaque_type | state_specific_type | nominal_type
 permission          ::= "const" | "unique" | "shared"
 
 primitive_type ::= integer_type | float_type | bool_type | char_type | unit_type | never_type | string_type | bytes_type
@@ -30580,8 +30586,7 @@ unit_type      ::= "(" ")"
 never_type     ::= "!"
 
 tuple_type       ::= "(" ")" | "(" type ";)" | "(" type ("," type)+ ")"
-tuple_elements   ::= type ";" | type ("," type)+
-array_type       ::= "[" type ";" expr "]"
+array_type       ::= "[" type ";" expression "]"
 slice_type       ::= "[" type "]"
 union_type       ::= non_union_type ("|" non_union_type)+
 
@@ -30596,7 +30601,6 @@ bytes_type   ::= "bytes" ("@" bytes_state)?
 string_state ::= "Managed" | "View"
 bytes_state  ::= "Managed" | "View"
 
-pointer_type      ::= safe_pointer_type | raw_pointer_type
 safe_pointer_type ::= "Ptr" "<" type ">" ("@" pointer_state)?
 pointer_state     ::= "Valid" | "Null" | "Expired"
 raw_pointer_type  ::= "*" raw_pointer_qual type
@@ -30624,8 +30628,6 @@ generic_args       ::= "<" type_arg_list ">"
 type_arg_list      ::= type ("," type)* ","?
 
 refinement_clause     ::= "|:" "{" predicate_expr "}"
-refinement_type       ::= type refinement_clause
-param_with_constraint ::= identifier ":" type "|:" "{" predicate_expr "}"
 
 modal_type_name     ::= type_path generic_args?
 state_specific_type ::= modal_type_name "@" state_name
@@ -30668,9 +30670,9 @@ unary_operator ::= "!" | "-" | "&" | "*" | "^" | "move" | "widen"
 pipeline_expr  ::= postfix_expr ("=>" postfix_expr)*
 
 postfix_expr   ::= primary_expr postfix_suffix*
-postfix_suffix ::= "." identifier | "." decimal_literal | "[" expression "]" | "~>" identifier "(" argument_list? ")" | "(" argument_list? ")" | "?"
+postfix_suffix ::= "." identifier | "." decimal_integer | "[" expression "]" | "~>" identifier "(" argument_list? ")" | "(" argument_list? ")" | "?"
 
-primary_expr ::= literal | identifier_expr | path_expr | tuple_literal | array_literal | record_literal | closure_expr | if_expr | loop_expr | block_expr | comptime_expr | quote_expr | quote_type | quote_pattern | type_literal
+primary_expr ::= literal | identifier_expr | path_expr | tuple_literal | array_literal | record_literal | enum_literal | closure_expr | if_expr | loop_expr | block_expr | move_expr | copy_expr | widen_expr | address_of_expr | null_ptr_expr | transmute_expr | alloc_expr | sync_expr | race_expr | all_expr | wait_expr | yield_expr | yield_from_expr | spawn_expr | parallel_block | dispatch_expr | fence_expr | comptime_expr | comptime_if | comptime_loop | quote_expr | quote_type | quote_pattern | type_literal | splice_expr | splice_ident | contract_intrinsic
 
 literal ::= integer_literal | float_literal | string_literal | char_literal | bool_literal | null_literal | unit_literal
 
@@ -30689,11 +30691,8 @@ field_init          ::= identifier ":" expression | identifier
 enum_literal        ::= type_path "::" identifier variant_args?
 variant_args        ::= "(" expression_list ")" | "{" field_init_list "}"
 
-call_expr     ::= postfix_expr "(" argument_list? ")"
 argument_list ::= argument ("," argument)* ","?
 argument      ::= ("move" | "copy")? expression
-method_call   ::= postfix_expr "~>" identifier "(" argument_list? ")"
-static_call   ::= type_path "::" identifier "(" argument_list? ")"
 
 closure_expr       ::= "|" closure_param_list? "|" ("->" type)? closure_body
 closure_param_list ::= closure_param ("," closure_param)* ","?
@@ -30718,7 +30717,6 @@ block_expr ::= "{" statement* expression? "}"
 move_expr        ::= "move" place_expr
 copy_expr        ::= "copy" unary_expr
 widen_expr       ::= "widen" unary_expr
-try_expr         ::= postfix_expr "?"
 address_of_expr  ::= "&" place_expr
 null_ptr_expr    ::= "Ptr" "::" "null" "()"
 transmute_expr   ::= "transmute" "<" type "," type ">" "(" expression ")"
@@ -30784,7 +30782,8 @@ using_list      ::= "{" using_specifier ("," using_specifier)* ","? "}"
 using_specifier ::= identifier ("as" identifier)?
 module_path     ::= identifier ("::" identifier)*
 
-static_decl ::= attribute_list? visibility? ("let" | "var") binding_decl
+static_decl  ::= attribute_list? visibility? ("let" | "var") binding_decl
+binding_decl ::= pattern (":" type)? binding_op expression
 
 visibility ::= "public" | "internal" | "private"
 
@@ -30801,7 +30800,7 @@ receiver           ::= receiver_shorthand | explicit_receiver
 receiver_shorthand ::= "~" | "~!" | "~%"
 explicit_receiver  ::= param_mode? "self" ":" type
 
-record_decl       ::= attribute_list? visibility? "record" identifier generic_params? implements_clause? predicate_clause? "{" record_body "}" invariant_clause?
+record_decl       ::= attribute_list? visibility? "record" identifier generic_params? implements_clause? predicate_clause? "{" record_body "}" type_invariant?
 record_body       ::= record_member*
 record_member     ::= record_field_decl | method_def
 record_field_decl ::= attribute_list? visibility? identifier ":" type record_field_init?
@@ -30810,18 +30809,21 @@ field_decl        ::= visibility? identifier ":" type
 implements_clause ::= "<:" class_list
 class_list        ::= type_path ("," type_path)*
 
-enum_decl       ::= attribute_list? visibility? "enum" identifier generic_params? implements_clause? predicate_clause? "{" variant_members? "}" invariant_clause?
+enum_decl       ::= attribute_list? visibility? "enum" identifier generic_params? implements_clause? predicate_clause? "{" variant_members? "}" type_invariant?
 variant_members ::= variant (terminator variant)* terminator?
 variant         ::= identifier variant_payload? ("=" integer_literal)?
 variant_payload ::= "(" type_list ")" | "{" field_decl_list "}"
 type_list       ::= type ("," type)* ","?
 field_decl_list ::= field_decl ("," field_decl)* ","?
 
-modal_decl        ::= attribute_list? visibility? "modal" identifier generic_params? implements_clause? predicate_clause? "{" state_block+ "}" invariant_clause?
+modal_decl        ::= attribute_list? visibility? "modal" identifier generic_params? implements_clause? predicate_clause? "{" state_block+ "}" type_invariant?
 state_block       ::= "@" state_name "{" state_member* "}"
 state_member      ::= state_field_decl | state_method_def | transition_def
 state_field_decl  ::= attribute_list? visibility? identifier ":" type
-state_method_def  ::= attribute_list? visibility? "procedure" identifier generic_params? state_method_signature contract_clause? block_expr
+state_method_def       ::= attribute_list? visibility? "procedure" identifier generic_params? state_method_signature contract_clause? block_expr
+state_method_signature ::= "(" receiver ("," param_list)? ")" ("->" type)?
+predicate_clause       ::= "|:" predicate_req (terminator predicate_req)* terminator?
+predicate_req          ::= ("Bitcopy" | "Clone" | "Drop" | "FfiSafe") "(" type ")"
 transition_def    ::= attribute_list? visibility? "transition" identifier "(" param_list ")" "->" "@" target_state block_expr
 target_state      ::= identifier
 
@@ -30830,6 +30832,7 @@ superclass_bounds   ::= class_bound ("+" class_bound)*
 class_item          ::= abstract_procedure | concrete_procedure | abstract_field | abstract_state | associated_type
 abstract_procedure  ::= "procedure" identifier signature contract_clause?
 concrete_procedure  ::= "procedure" identifier signature contract_clause? block_expr
+key_boundary        ::= "#"
 abstract_field      ::= attribute_list? visibility? key_boundary? identifier ":" type
 abstract_state      ::= "@" identifier "{" field_list? "}"
 field_list          ::= abstract_field ("," abstract_field)* ","?
@@ -30855,8 +30858,12 @@ postcondition_expr ::= predicate_expr
 predicate_expr     ::= logical_or_expr
 contract_intrinsic ::= "@result" | "@entry" "(" expression ")"
 
-type_invariant ::= "where" "{" predicate_expr "}"
-loop_invariant ::= "where" "{" predicate_expr "}"
+(* Contract intrinsics parse in any primary-expression position; `@result`
+   outside a postcondition and `@entry` outside a contract predicate are
+   rejected statically (E-SEM-2806, E-CON-0415, E-CON-0416). *)
+
+type_invariant ::= "|:" "{" predicate_expr "}"
+loop_invariant ::= "|:" "{" predicate_expr "}"
 ```
 
 ### B.8 Attribute Grammar
@@ -30881,7 +30888,7 @@ attribute_arg  ::= literal
 
 layout_attribute              ::= "#" "layout" "(" layout_args ")"
 layout_args                   ::= layout_kind ("," layout_kind)*
-layout_kind                   ::= "C" | "packed" | "align" "(" integer_literal ")" | int_type
+layout_kind                   ::= "C" | "packed" | "align" "(" integer_literal ")" | integer_type
 inline_attribute              ::= "#" "inline" ("(" inline_mode ")")?
 inline_mode                   ::= "always" | "never" | "default"
 cold_attribute                ::= "#" "cold"
@@ -30904,42 +30911,54 @@ derive_attribute              ::= "#" "derive" "(" derive_target_list ")"
 derive_target_list            ::= identifier ("," identifier)*
 ```
 
+The `*_attribute` productions above are informative shape restatements: attributes parse through the generic `attribute` grammar, and each owning section validates its argument shape. The same applies to `ffi_verification_attr` and `ffi_verification_mode` in B.13.
+
 ### B.9 Key System Grammar
 
 ```ebnf
-key_path_expr   ::= root_segment ("." path_segment)*
-root_segment    ::= key_marker? identifier index_suffix?
-path_segment    ::= key_marker? identifier index_suffix?
-key_marker      ::= "#"
-index_suffix    ::= "[" expression "]"
+key_path_expr ::= key_root key_seg*
+key_root      ::= identifier
+key_seg       ::= "." key_field | "[" key_index "]"
+key_field     ::= key_marker? identifier
+key_index     ::= key_marker? expression
+key_marker    ::= "#"
 
-key_block        ::= key_block_head path_list key_options? block_expr
-key_block_head   ::= "%read" | "%write" | "%release" key_mode | "%speculative" "write"
-path_list        ::= key_path_expr ("," key_path_expr)*
-key_options      ::= "[" key_option ("," key_option)* ","? "]"
-key_option       ::= "ordered"
+key_block_stmt ::= key_block_head key_path_list key_options? block_expr
+key_block_head ::= "%read" | "%write" | "%release" key_mode | "%speculative" "write"
+key_path_list  ::= key_path_expr ("," key_path_expr)*
+key_options    ::= "[" key_option ("," key_option)* ","? "]"
+key_option     ::= "ordered"
 
-speculative_block ::= "%speculative" "write" path_list block_expr
-coarsened_path    ::= path_segment* "#" path_segment+
+fence_expr  ::= "fence" "(" fence_order ")"
+fence_order ::= "acquire" | "release" | "seqcst"
 ```
 
 ### B.10 Concurrency Grammar
 
 ```ebnf
-parallel_block ::= "parallel" domain_expr block_options? block_expr
-domain_expr    ::= expression
-block_options  ::= "[" block_option ("," block_option)* "]"
-block_option   ::= "cancel" ":" expression
+parallel_block       ::= "parallel" domain_expr parallel_option_list? block_expr
+domain_expr          ::= expression
+parallel_option_list ::= "[" parallel_option ("," parallel_option)* "]"
+parallel_option      ::= "cancel" ":" expression
+                       | "name" ":" string_literal
+                       | "workgroup" ":" dim3_const
+                       | "workgroups" ":" dim3_const
+dim3_const           ::= "(" expression "," expression "," expression ")"
 
 spawn_expr        ::= "spawn" spawn_option_list? block_expr
 spawn_option_list ::= "[" spawn_option ("," spawn_option)* "]"
 spawn_option      ::= "name" ":" string_literal
+                    | "affinity" ":" expression
+                    | "priority" ":" expression
 
 dispatch_expr        ::= "dispatch" pattern "in" range_expression key_clause? dispatch_option_list? block_expr
 key_clause           ::= "key" key_path_expr key_mode
 key_mode             ::= "read" | "write"
 dispatch_option_list ::= "[" dispatch_option ("," dispatch_option)* "]"
 dispatch_option      ::= "reduce" ":" reduce_op
+                       | "ordered"
+                       | "chunk" ":" expression
+                       | "workgroup" ":" dim3_const
 reduce_op            ::= "+" | "*" | "min" | "max" | "and" | "or" | identifier
 
 memory_order_attribute ::= "#" memory_order
@@ -30949,10 +30968,14 @@ memory_order           ::= "relaxed" | "acquire" | "release" | "acqrel" | "seqcs
 ### B.11 Async Grammar
 
 ```ebnf
+(* The following productions are informative shape restatements of the
+   built-in Async class declaration and of async procedure and loop usage;
+   the normative surface forms are ordinary class, procedure, and loop syntax. *)
 async_class  ::= "class" "Async" "<" type_param (";" type_param)* ">"
 type_param   ::= identifier ("=" type)?
 async_procedure ::= procedure_decl
 
+wait_expr       ::= "wait" expression
 yield_expr      ::= "yield" "release"? expression
 yield_from_expr ::= "yield" "release"? "from" expression
 
@@ -30980,6 +31003,10 @@ quote_pattern  ::= "quote" "pattern" "{" pattern "}"
 quoted_content ::= expression | statement | top_level_item
 splice_expr    ::= "$(" expression ")"
 splice_ident   ::= "$" identifier
+
+(* Splice forms parse in any primary-expression position; use outside quoted
+   content is rejected statically (E-CTE-0233). Within quoted content,
+   `splice_ident` is additionally admitted wherever `identifier` is admitted. *)
 
 derive_target_decl  ::= "derive" "target" identifier "(" "target" ":" "Type" ")" derive_contract_opt block_expr
 derive_contract_opt ::= "|:" derive_clause ("," derive_clause)*

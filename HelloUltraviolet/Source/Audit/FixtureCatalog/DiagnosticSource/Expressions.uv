@@ -12,13 +12,13 @@ public procedure validatedExpressionsDiagnosticSourceFixtureCount() -> usize {
             "Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget",
             "Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget/Source/Main.uv",
             "Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget/Expected.uv",
-            expectedDiagnostic("W-SAFE-0100", "def.16.ValidTransmuteTarget")
+            expectedDiagnostic("W-SAF-0100", "def.16.ValidTransmuteTarget")
         ),
         "ValidTransmuteTarget",
         "Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget",
         "Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget/Source/Main.uv",
         "Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget/Expected.uv",
-        "W-SAFE-0100",
+        "W-SAF-0100",
         "def.16.ValidTransmuteTarget"
     ) {
         count = count + 1usize

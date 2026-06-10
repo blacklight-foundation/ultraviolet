@@ -39,9 +39,10 @@ enum class CapabilityKind {
   HeapAllocator,   // $HeapAllocator - heap memory allocation
   ExecutionDomain, // $ExecutionDomain - parallel execution
   Reactor,         // $Reactor - async reactor
-  System,          // System record - system operations
-  Time,            // $Time/$MonotonicTime/$WallTime - clock access
-  Context,         // Context record - all capabilities
+  System,          // $System - system operations
+  Time,            // $Time - root clock access
+  MonotonicTime,   // $MonotonicTime - monotonic clock access
+  WallTime,        // $WallTime - wall-clock access
 };
 
 /// Convert capability kind to string for diagnostics
@@ -66,7 +67,8 @@ struct CapabilitySet {
   bool has_reactor = false;
   bool has_system = false;
   bool has_time = false;
-  bool has_context = false;  // Context implies all capabilities
+  bool has_monotonic_time = false;
+  bool has_wall_time = false;
 
   /// Create an empty capability set
   static CapabilitySet Empty();

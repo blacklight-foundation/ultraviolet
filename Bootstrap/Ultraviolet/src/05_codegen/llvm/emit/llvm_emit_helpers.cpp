@@ -754,13 +754,17 @@ namespace {
         {
           return 2u;
         }
-        if (field == "reactor")
+        if (field == "sys")
         {
           return 3u;
         }
-        if (field == "time")
+        if (field == "reactor")
         {
           return 4u;
+        }
+        if (field == "time")
+        {
+          return 5u;
         }
         return std::nullopt;
       };

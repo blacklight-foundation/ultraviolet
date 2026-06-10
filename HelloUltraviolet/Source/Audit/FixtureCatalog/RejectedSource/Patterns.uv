@@ -1,7 +1,7 @@
 //! Rejected pattern specimens.
 
 public procedure patternsRejectedSourceFixtureCount() -> usize {
-    return 19usize
+    return 20usize
 }
 
 public procedure validatedPatternsRejectedSourceFixtureCount() -> usize {
@@ -103,6 +103,23 @@ public procedure validatedPatternsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Patterns/IfCaseEnumNonExhaustive",
         "Fixtures/RejectedSource/Patterns/IfCaseEnumNonExhaustive/Source/Main.uv",
         "Fixtures/RejectedSource/Patterns/IfCaseEnumNonExhaustive/Expected.uv",
+        "E-SEM-2741",
+        "rule.17.IfCase-Enum-NonExhaustive"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "IfCaseEnumRefutablePayloadCoverage",
+            "Fixtures/RejectedSource/Patterns/IfCaseEnumRefutablePayloadCoverage",
+            "Fixtures/RejectedSource/Patterns/IfCaseEnumRefutablePayloadCoverage/Source/Main.uv",
+            "Fixtures/RejectedSource/Patterns/IfCaseEnumRefutablePayloadCoverage/Expected.uv",
+            expectedDiagnostic("E-SEM-2741", "rule.17.IfCase-Enum-NonExhaustive")
+        ),
+        "IfCaseEnumRefutablePayloadCoverage",
+        "Fixtures/RejectedSource/Patterns/IfCaseEnumRefutablePayloadCoverage",
+        "Fixtures/RejectedSource/Patterns/IfCaseEnumRefutablePayloadCoverage/Source/Main.uv",
+        "Fixtures/RejectedSource/Patterns/IfCaseEnumRefutablePayloadCoverage/Expected.uv",
         "E-SEM-2741",
         "rule.17.IfCase-Enum-NonExhaustive"
     ) {

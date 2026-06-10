@@ -13,15 +13,20 @@
 //     - DirPrim: directory iterator operations
 //       {DirNext, DirClose}
 //     - SystemPrim: {SystemGetEnv, SystemExit, SystemRun}
+//     - NetworkPrim: {NetRestrictHost}
 //     - HeapPrim: {HeapWithQuota, HeapAllocRaw, HeapDeallocRaw}
 //     - ReactorPrim: {ReactorRun, ReactorRegister}
+//     - TimePrim: {TimeMonotonic, TimeWall, MonotonicTimeNow,
+//        MonotonicTimeResolution, MonotonicTimeElapsed, MonotonicTimeCoarsen,
+//        WallTimeNowUtc, WallTimeResolution, WallTimeCoarsen}
 //     - CancelPrim: {CancelNew, CancelChild, CancelDoCancel, CancelIsCancelled, CancelWaitCancelled}
 //     - HostPrim: union of all primitive sets
 //     - HostPrimDiag: compiler diagnostic primitives
 //       {ParseTOML, ReadBytes, WriteFile, ResolveTool, ResolveRuntimeLib,
-//        Invoke, AssembleIR, InvokeLinker, InvokeArchiver}
-//     - HostPrimRuntime: IOPrim ∪ FilePrim ∪ DirPrim ∪ SystemPrim ∪ HeapPrim ∪ ReactorPrim ∪ CancelPrim
-//     - MapsToDiagOrRuntime(p): true if p in HostPrimDiag ∪ HostPrimRuntime
+//        Invoke, AssembleIR, InvokeLinker, InvokeArchiver, ArchiveMembers}
+//     - HostPrimRuntime includes IOPrim, FilePrim, DirPrim, SystemPrim,
+//       NetworkPrim, HeapPrim, ReactorPrim, TimePrim, and CancelPrim
+//     - MapsToDiagOrRuntime(p): true if p is in HostPrimDiag or HostPrimRuntime
 //     - HostPrimFail(p): failure outside mapped primitives is ill-formed
 //
 // SOURCE FILE: ultraviolet-bootstrap/src/00_core/host_primitives.cpp
@@ -37,8 +42,7 @@
 //   - IsHostPrimDiag(prim) -> bool (lines 73-88)
 //     Checks if primitive is a compiler diagnostic operation
 //   - IsHostPrimRuntime(prim) -> bool
-//     Returns IsIOPrim || IsFilePrim || IsDirPrim || IsSystemPrim || IsHeapPrim || IsReactorPrim || IsCancelPrim
-//     Per spec section 1.7: HostPrimRuntime = IOPrim ∪ FilePrim ∪ DirPrim ∪ SystemPrim ∪ HeapPrim ∪ ReactorPrim ∪ CancelPrim
+//     Returns true for every HostPrimRuntime primitive set in spec section 1.7.
 //   - MapsToDiagOrRuntime(prim) -> bool (lines 95-98)
 //     Returns IsHostPrimDiag || IsHostPrimRuntime
 //   - HostPrimFail(prim, failed) -> bool (lines 100-106)
@@ -55,7 +59,8 @@
 //
 // REFACTORING NOTES:
 //   1. IsHostPrimRuntime now checks all primitive sets per spec section 1.7:
-//      IOPrim, FilePrim, DirPrim, SystemPrim, HeapPrim, ReactorPrim, CancelPrim
+//      IOPrim, FilePrim, DirPrim, SystemPrim, NetworkPrim, HeapPrim,
+//      ReactorPrim, TimePrim, CancelPrim
 //   2. All SPEC_DEF traces point to "1.7"
 //   3. HostPrimFail calls std::abort() for unmapped failures
 //   4. Switch statements use explicit case enumeration - maintain for clarity
@@ -82,8 +87,10 @@ static inline void SpecDefsHostPrimitives() {
   SPEC_DEF("FilePrim", "1.7");
   SPEC_DEF("DirPrim", "1.7");
   SPEC_DEF("SystemPrim", "1.7");
+  SPEC_DEF("NetworkPrim", "1.7");
   SPEC_DEF("HeapPrim", "1.7");
   SPEC_DEF("ReactorPrim", "1.7");
+  SPEC_DEF("TimePrim", "1.7");
   SPEC_DEF("CancelPrim", "1.7");
 }
 
@@ -153,6 +160,16 @@ bool IsSystemPrim(HostPrim prim) {
   }
 }
 
+bool IsNetworkPrim(HostPrim prim) {
+  SpecDefsHostPrimitives();
+  switch (prim) {
+    case HostPrim::NetRestrictHost:
+      return true;
+    default:
+      return false;
+  }
+}
+
 bool IsHeapPrim(HostPrim prim) {
   SpecDefsHostPrimitives();
   // HeapPrim: {HeapWithQuota, HeapAllocRaw, HeapDeallocRaw} per section 1.7
@@ -172,6 +189,24 @@ bool IsReactorPrim(HostPrim prim) {
   switch (prim) {
     case HostPrim::ReactorRun:
     case HostPrim::ReactorRegister:
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool IsTimePrim(HostPrim prim) {
+  SpecDefsHostPrimitives();
+  switch (prim) {
+    case HostPrim::TimeMonotonic:
+    case HostPrim::TimeWall:
+    case HostPrim::MonotonicTimeNow:
+    case HostPrim::MonotonicTimeResolution:
+    case HostPrim::MonotonicTimeElapsed:
+    case HostPrim::MonotonicTimeCoarsen:
+    case HostPrim::WallTimeNowUtc:
+    case HostPrim::WallTimeResolution:
+    case HostPrim::WallTimeCoarsen:
       return true;
     default:
       return false;
@@ -205,6 +240,7 @@ bool IsHostPrimDiag(HostPrim prim) {
     case HostPrim::AssembleIR:
     case HostPrim::InvokeLinker:
     case HostPrim::InvokeArchiver:
+    case HostPrim::ArchiveMembers:
       return true;
     default:
       return false;
@@ -213,10 +249,10 @@ bool IsHostPrimDiag(HostPrim prim) {
 
 bool IsHostPrimRuntime(HostPrim prim) {
   SpecDefsHostPrimitives();
-  // HostPrimRuntime = IOPrim ∪ FilePrim ∪ DirPrim ∪ SystemPrim ∪ HeapPrim ∪ ReactorPrim ∪ CancelPrim
+  // HostPrimRuntime is the union of all runtime primitive sets in section 1.7.
   return IsIOPrim(prim) || IsFilePrim(prim) || IsDirPrim(prim) ||
-         IsSystemPrim(prim) || IsHeapPrim(prim) || IsReactorPrim(prim) ||
-         IsCancelPrim(prim);
+         IsSystemPrim(prim) || IsNetworkPrim(prim) || IsHeapPrim(prim) ||
+         IsReactorPrim(prim) || IsTimePrim(prim) || IsCancelPrim(prim);
 }
 
 bool MapsToDiagOrRuntime(HostPrim prim) {

@@ -259,7 +259,7 @@ public procedure validatedTypeSystemCoreSubtypingObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
+    if acceptedObligationEntryMatches(
         "Sub-Generic-Invariant-Err",
         25337usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
@@ -268,7 +268,7 @@ public procedure validatedTypeSystemCoreSubtypingObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
+    if acceptedObligationEntryMatches(
         "Sub-Generic-Covariant-Err",
         25355usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
@@ -277,7 +277,7 @@ public procedure validatedTypeSystemCoreSubtypingObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
+    if acceptedObligationEntryMatches(
         "Sub-Generic-Contravariant-Err",
         25373usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",

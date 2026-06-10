@@ -135,6 +135,17 @@ def main() -> int:
 
     map_by_diag_id = {code: code for code in rows_by_code}
 
+    # Spec §2.4: a construct section assigns code `c` to identifier `id` by
+    # listing the backtick-quoted rule label parenthetically in the Condition
+    # column of the normative table row for `c`. These bindings are canonical
+    # and take precedence over carried-forward and explicit entries.
+    binding_pattern = re.compile(r"`([A-Za-z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)+)`")
+    for code, row in rows_by_code.items():
+        for diag_id in binding_pattern.findall(row["condition"]):
+            if DIAG_CODE_PATTERN.match(diag_id):
+                continue
+            map_by_diag_id.setdefault(diag_id, code)
+
     existing_map = read_existing_diag_map([output_registry_path, output_typecheck_map_path])
     for diag_id, code in existing_map.items():
         if code in rows_by_code and diag_id not in map_by_diag_id:

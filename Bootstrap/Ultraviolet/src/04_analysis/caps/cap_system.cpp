@@ -15,7 +15,7 @@
 // - LookupSystemMethodSig (lines 99-116): System method signature lookup
 // - LookupContextMethodSig (lines 119-146): Context method signature lookup
 // - BuildContextRecordDecl (lines 148-163): Build Context record declaration
-// - BuildSystemRecordDecl (lines 165-175): Build System record declaration
+// - BuildSystemClassDecl (lines 165-175): Build System capability class declaration
 //
 // Supporting helpers:
 // - MakeTypeNode (lines 20-25): Create Type node wrapper
@@ -148,6 +148,23 @@ static ast::FieldDecl MakeFieldWithInit(std::string_view name,
   return field;
 }
 
+static ast::ClassMethodDecl MakeClassMethod(
+    std::string_view name,
+    std::vector<ast::Param> params,
+    std::shared_ptr<ast::Type> ret) {
+  ast::ClassMethodDecl method{};
+  method.vis = ast::Visibility::Public;
+  method.name = ast::Identifier{std::string(name)};
+  method.generic_params = std::nullopt;
+  method.receiver = ast::ReceiverShorthand{ast::ReceiverPerm::Const};
+  method.params = std::move(params);
+  method.return_type_opt = std::move(ret);
+  method.body_opt = nullptr;
+  method.span = core::Span{};
+  method.doc_opt = std::nullopt;
+  return method;
+}
+
 static TypeRef TypeNever() {
   return MakeTypePrim("!");
 }
@@ -209,12 +226,12 @@ std::optional<ContextMethodSig> LookupContextMethodSig(
   if (IdEq(name, "cpu")) {
     if (!arg_count.has_value() || *arg_count == 0) {
       sig.params = {};
-      sig.ret = MakeTypeDynamic(TypePath{"CpuDomain"});
+      sig.ret = MakeTypeDynamic(TypePath{"ExecutionDomain"});
       return sig;
     }
     if (*arg_count == 1) {
       sig.params = {MakeParam("mask", MakeTypePathAst({"CpuSet"}))};
-      sig.ret = MakeTypeDynamic(TypePath{"CpuDomain"});
+      sig.ret = MakeTypeDynamic(TypePath{"ExecutionDomain"});
       return sig;
     }
     if (*arg_count == 2) {
@@ -222,7 +239,7 @@ std::optional<ContextMethodSig> LookupContextMethodSig(
           MakeParam("mask", MakeTypePathAst({"CpuSet"})),
           MakeParam("prio", MakeTypePathAst({"Priority"})),
       };
-      sig.ret = MakeTypeDynamic(TypePath{"CpuDomain"});
+      sig.ret = MakeTypeDynamic(TypePath{"ExecutionDomain"});
       return sig;
     }
     return std::nullopt;
@@ -232,7 +249,7 @@ std::optional<ContextMethodSig> LookupContextMethodSig(
       return std::nullopt;
     }
     sig.params = {};
-    sig.ret = MakeTypeDynamic(TypePath{"GpuDomain"});
+    sig.ret = MakeTypeDynamic(TypePath{"ExecutionDomain"});
     return sig;
   }
   if (IdEq(name, "inline")) {
@@ -240,7 +257,7 @@ std::optional<ContextMethodSig> LookupContextMethodSig(
       return std::nullopt;
     }
     sig.params = {};
-    sig.ret = MakeTypeDynamic(TypePath{"InlineDomain"});
+    sig.ret = MakeTypeDynamic(TypePath{"ExecutionDomain"});
     return sig;
   }
 
@@ -261,7 +278,7 @@ ast::RecordDecl BuildContextRecordDecl() {
       MakeField("io", MakeTypeDynamicAst({"IO"})),
       MakeField("net", MakeTypeDynamicAst({"Network"})),
       MakeField("heap", MakeTypeDynamicAst({"HeapAllocator"})),
-      MakeField("sys", MakeTypePathAst({"System"})),
+      MakeField("sys", MakeTypeDynamicAst({"System"})),
       MakeField("reactor", MakeTypeDynamicAst({"Reactor"})),
       MakeField("time", MakeTypeDynamicAst({"Time"})),
   };
@@ -282,7 +299,7 @@ ast::RecordDecl BuildTestAuthorityRecordDecl() {
   record.invariant_opt = std::nullopt;
   record.members = {
       MakeField("io", MakeTypeDynamicAst({"IO"})),
-      MakeField("sys", MakeTypePathAst({"System"})),
+      MakeField("sys", MakeTypeDynamicAst({"System"})),
       MakeField("heap", MakeTypeDynamicAst({"HeapAllocator"})),
       MakeField("time", MakeTypeDynamicAst({"Time"})),
       MakeField("temporary_directory", MakeTypeStringAst(StringState::View)),
@@ -337,20 +354,36 @@ ast::RecordDecl BuildRegionOptionsRecordDecl() {
   return record;
 }
 
-ast::RecordDecl BuildSystemRecordDecl() {
+ast::ClassDecl BuildSystemClassDecl() {
   SpecDefsCapSystem();
-  ast::RecordDecl record;
-  record.attrs = {};
-  record.vis = ast::Visibility::Public;
-  record.name = ast::Identifier{"System"};
-  record.generic_params = std::nullopt;
-  record.implements = {ast::ClassPath{"Bitcopy"}};
-  record.predicate_clause_opt = std::nullopt;
-  record.invariant_opt = std::nullopt;
-  record.members = {};
-  record.span = core::Span{};
-  record.doc = {};
-  return record;
+  ast::ClassDecl decl{};
+  decl.vis = ast::Visibility::Public;
+  decl.name = ast::Identifier{"System"};
+  decl.modal = false;
+  decl.generic_params = std::nullopt;
+  decl.supers = {};
+  decl.predicate_clause_opt = std::nullopt;
+  decl.items = {
+      MakeClassMethod("exit", {MakeParam("code", MakeTypePrimAst("i32"))},
+                      MakeTypePrimAst("!")),
+      MakeClassMethod("get_env",
+                      {MakeParam("key", MakeTypeStringAst(StringState::View))},
+                      MakeTypeStringAst(StringState::View)),
+      MakeClassMethod("executable_path", {},
+                      MakeTypeStringAst(StringState::View)),
+      MakeClassMethod("argument_count", {}, MakeTypePrimAst("usize")),
+      MakeClassMethod("argument",
+                      {MakeParam("index", MakeTypePrimAst("usize"))},
+                      MakeTypeStringAst(StringState::View)),
+      MakeClassMethod("current_directory", {},
+                      MakeTypeStringAst(StringState::View)),
+      MakeClassMethod("run",
+                      {MakeParam("command", MakeTypeStringAst(StringState::View))},
+                      MakeTypePrimAst("i32")),
+  };
+  decl.span = core::Span{};
+  decl.doc = {};
+  return decl;
 }
 
 }  // namespace ultraviolet::analysis

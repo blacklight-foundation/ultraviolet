@@ -1,7 +1,7 @@
 //! Target-profile helpers for HUV runtime audit references.
 
 /// Returns the target profile selected for this HUV verification run.
-public procedure auditTargetProfile(sys: System) -> string@View {
+public procedure auditTargetProfile(sys: $System) -> string@View {
     return sys~>get_env("HUV_TARGET_PROFILE")
 }
 

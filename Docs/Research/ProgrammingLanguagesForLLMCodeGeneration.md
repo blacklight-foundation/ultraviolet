@@ -993,7 +993,7 @@ invalid Unicode, confusable identifier, and mixed-script diagnostics. Strength:
 rejects or flags many text-level hazards that LLMs can emit. Limit: does not
 prevent all human-confusing names or poor naming choices.
 
-F3 hidden authority. Ultraviolet mechanism: No Ambient Authority, `CapToken`,
+F3 hidden authority. Ultraviolet mechanism: No Ambient Authority, capability classes,
 `CapReq`, explicit `Context`, effect gating, and attenuation monotonicity. Spec
 evidence: `section 6.1.2 No Ambient Authority Requirements`. Strength: makes
 effects depend on explicit capability values and call requirements. Limit:

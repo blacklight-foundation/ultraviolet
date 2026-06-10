@@ -1112,16 +1112,21 @@ static std::unordered_set<IdKey> VariantNames(const ast::EnumDecl& decl) {
 }
 
 static std::unordered_set<IdKey> ArmVariants(
+    const ScopeContext& ctx,
     const std::vector<ast::IfCaseClause>& arms,
-    const TypePath& expected_path) {
+    const TypePath& expected_path,
+    const TypeRef& expected) {
   SpecDefsIfCase();
+  // Spec §17.6.4 CoveredVariants: a case counts toward exhaustiveness only
+  // when CoversVariant holds (irrefutable payload subpatterns).
   std::unordered_set<IdKey> out;
   for (const auto& arm : arms) {
     if (!arm.pattern) {
       continue;
     }
     if (const auto* enum_pat = std::get_if<ast::EnumPattern>(&arm.pattern->node)) {
-      if (enum_pat->path == expected_path) {
+      if (enum_pat->path == expected_path &&
+          EnumPatternCoversVariant(ctx, arm.pattern, expected)) {
         out.insert(IdKeyOf(enum_pat->name));
       }
     }
@@ -1131,7 +1136,8 @@ static std::unordered_set<IdKey> ArmVariants(
 
 static std::unordered_set<IdKey> ArmStates(
     const ScopeContext& ctx,
-    const std::vector<ast::IfCaseClause>& arms) {
+    const std::vector<ast::IfCaseClause>& arms,
+    const TypeRef& expected) {
   SpecDefsIfCase();
   std::unordered_set<IdKey> out;
   for (const auto& arm : arms) {
@@ -1139,7 +1145,10 @@ static std::unordered_set<IdKey> ArmStates(
       continue;
     }
     if (const auto* modal_pat = std::get_if<ast::ModalPattern>(&arm.pattern->node)) {
-      out.insert(IdKeyOf(modal_pat->state));
+      // Spec §17.6.4 CoveredStates: payload subpatterns must be irrefutable.
+      if (ModalPatternCoversState(ctx, arm.pattern, expected)) {
+        out.insert(IdKeyOf(modal_pat->state));
+      }
       continue;
     }
     if (const auto* typed = std::get_if<ast::TypedPattern>(&arm.pattern->node)) {
@@ -1448,21 +1457,18 @@ static ExhaustiveResult UnionTypesExhaustive(
     const std::vector<TypeRef>& members) {
   SpecDefsIfCase();
   SPEC_RULE("def.17.ExhaustivenessIrrefutabilityHelpers");
+  // Spec §17.6.4 CoversMember: a case covers a union member only when its
+  // pattern is irrefutable against that member; may-match does not cover.
   for (const auto& member : members) {
     bool found = false;
     for (const auto& arm : arms) {
       if (!arm.pattern) {
         continue;
       }
-      const auto pattern = TypePatternAgainstType(ctx, arm.pattern, member);
-      if (!pattern.ok) {
-        if (pattern.diag_id.has_value()) {
-          return {false, pattern.diag_id, false};
-        }
-        continue;
+      if (IrrefutablePattern(ctx, arm.pattern, member)) {
+        found = true;
+        break;
       }
-      found = true;
-      break;
     }
     if (!found) {
       return {true, std::nullopt, false};
@@ -1927,7 +1933,7 @@ ExprTypeResult TypeIfCaseExpr(const ScopeContext& ctx,
   }
 
   if (enum_decl) {
-    const auto arm_variants = ArmVariants(expr.cases, *path_type);
+    const auto arm_variants = ArmVariants(ctx, expr.cases, *path_type, scrutinee_match_type);
     const auto decl_variants = VariantNames(*enum_decl);
     if (requires_exhaustive &&
         !HasIrrefutableArm(ctx, expr.cases, scrutinee_match_type) &&
@@ -1943,7 +1949,7 @@ ExprTypeResult TypeIfCaseExpr(const ScopeContext& ctx,
     }
     SPEC_RULE("T-IfCase-Enum");
   } else if (modal_decl) {
-    const auto arm_states = ArmStates(ctx, expr.cases);
+    const auto arm_states = ArmStates(ctx, expr.cases, scrutinee_match_type);
     const auto decl_states = ModalExhaustiveStatesForScrutinee(
         ctx, scrutinee_match_type, *modal_decl);
     if (requires_exhaustive &&
@@ -2141,7 +2147,7 @@ CheckResult CheckIfCaseExpr(const ScopeContext& ctx,
   }
 
   if (enum_decl) {
-    const auto arm_variants = ArmVariants(expr.cases, *path_type);
+    const auto arm_variants = ArmVariants(ctx, expr.cases, *path_type, scrutinee_match_type);
     const auto decl_variants = VariantNames(*enum_decl);
     if (requires_exhaustive &&
         !HasIrrefutableArm(ctx, expr.cases, scrutinee_match_type) &&
@@ -2156,7 +2162,7 @@ CheckResult CheckIfCaseExpr(const ScopeContext& ctx,
     }
     SPEC_RULE("Chk-IfCase-Enum");
   } else if (modal_decl) {
-    const auto arm_states = ArmStates(ctx, expr.cases);
+    const auto arm_states = ArmStates(ctx, expr.cases, scrutinee_match_type);
     const auto decl_states = ModalExhaustiveStatesForScrutinee(
         ctx, scrutinee_match_type, *modal_decl);
     if (requires_exhaustive &&

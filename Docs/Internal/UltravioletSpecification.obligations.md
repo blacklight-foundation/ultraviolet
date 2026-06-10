@@ -12132,16 +12132,16 @@ The language adopts a no ambient authority discipline: observable external effec
 #### 6.1.1 Capability Universe
 
 <!-- ULTRAVIOLET-SPEC-UNIT
-id: def.CapToken
+id: def.CapabilityClass
 kind: formal-definition
 phase: static-semantics
 strength: required
 owner: authority.capabilities
 applies-to: type-checker, runtime, oracle.reference-model, oracle.coverage
-summary: Defines the capability token universe.
+summary: Defines the intrinsic capability class universe.
 -->
 
-CapToken = {IO, Network, HeapAllocator, Reactor, ExecutionDomain, System, Time}
+CapabilityClass = {IO, Network, HeapAllocator, Reactor, ExecutionDomain, System, Time, MonotonicTime, WallTime}
 
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
@@ -12152,10 +12152,10 @@ phase: static-semantics
 strength: required
 owner: authority.capabilities
 applies-to: type-checker, runtime, oracle.reference-model, oracle.coverage
-summary: Defines CapInType as capability-token extraction from types.
+summary: Defines CapInType as capability-class extraction from types.
 -->
 
-CapInType : Type → 𝒫(CapToken)
+CapInType : Type → 𝒫(CapabilityClass)
 
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
@@ -12170,15 +12170,15 @@ summary: Defines CapInType mappings for built-in capability root types.
 -->
 
 CapInType(TypePath([`Context`])) = {IO, Network, HeapAllocator, Reactor, ExecutionDomain, System, Time}
-CapInType(TypePath([`System`])) = {System}
 CapInType(TypeDynamic([`IO`])) = {IO}
 CapInType(TypeDynamic([`Network`])) = {Network}
 CapInType(TypeDynamic([`HeapAllocator`])) = {HeapAllocator}
 CapInType(TypeDynamic([`Reactor`])) = {Reactor}
 CapInType(TypeDynamic([`ExecutionDomain`])) = {ExecutionDomain}
+CapInType(TypeDynamic([`System`])) = {System}
 CapInType(TypeDynamic([`Time`])) = {Time}
-CapInType(TypeDynamic([`MonotonicTime`])) = {Time}
-CapInType(TypeDynamic([`WallTime`])) = {Time}
+CapInType(TypeDynamic([`MonotonicTime`])) = {MonotonicTime}
+CapInType(TypeDynamic([`WallTime`])) = {WallTime}
 
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
@@ -51752,7 +51752,7 @@ applies-to: compiler.typecheck, compiler.builtins, oracle.reference-model, oracl
 summary: Defines the set of built-in capability classes.
 labels: CapClassSet
 -->
-CapClass = {`IO`, `Network`, `HeapAllocator`, `ExecutionDomain`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`}
+CapClass = {`IO`, `Network`, `HeapAllocator`, `ExecutionDomain`, `System`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`}
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
 <!-- ULTRAVIOLET-SPEC-UNIT
@@ -52045,7 +52045,7 @@ ContextFields = [
   ⟨⊥, `public`, false, `io`, TypeDynamic(`IO`), ⊥, ⊥, ⊥⟩,
   ⟨⊥, `public`, false, `net`, TypeDynamic(`Network`), ⊥, ⊥, ⊥⟩,
   ⟨⊥, `public`, false, `heap`, TypeDynamic(`HeapAllocator`), ⊥, ⊥, ⊥⟩,
-  ⟨⊥, `public`, false, `sys`, TypePath(["System"]), ⊥, ⊥, ⊥⟩,
+  ⟨⊥, `public`, false, `sys`, TypeDynamic(`System`), ⊥, ⊥, ⊥⟩,
   ⟨⊥, `public`, false, `reactor`, TypeDynamic(`Reactor`), ⊥, ⊥, ⊥⟩,
   ⟨⊥, `public`, false, `time`, TypeDynamic(`Time`), ⊥, ⊥, ⊥⟩
 ]
@@ -52065,29 +52065,29 @@ phase: semantic-analysis
 strength: required
 owner: spec.abstraction-polymorphism
 applies-to: compiler.builtins, compiler.typecheck, oracle.reference-model, oracle.coverage
-summary: Defines the built-in System interface and record declaration.
+summary: Defines the built-in System interface and capability class declaration.
 labels: SystemDecl
 -->
 SystemInterface =
 {
- ⟨"exit", [⟨⊥, `code`, TypePrim("i32")⟩], TypePrim("!")⟩,
- ⟨"get_env", [⟨⊥, `key`, TypeString(`@View`)⟩], TypeString(`@View`)⟩,
- ⟨"executable_path", [], TypeString(`@View`)⟩,
- ⟨"argument_count", [], TypePrim("usize")⟩,
- ⟨"argument", [⟨⊥, `index`, TypePrim("usize")⟩], TypeString(`@View`)⟩,
- ⟨"current_directory", [], TypeString(`@View`)⟩,
- ⟨"run", [⟨⊥, `command`, TypeString(`@View`)⟩], TypePrim("i32")⟩
+ ⟨"exit", `const`, [⟨⊥, `code`, TypePrim("i32")⟩], TypePrim("!")⟩,
+ ⟨"get_env", `const`, [⟨⊥, `key`, TypeString(`@View`)⟩], TypeString(`@View`)⟩,
+ ⟨"executable_path", `const`, [], TypeString(`@View`)⟩,
+ ⟨"argument_count", `const`, [], TypePrim("usize")⟩,
+ ⟨"argument", `const`, [⟨⊥, `index`, TypePrim("usize")⟩], TypeString(`@View`)⟩,
+ ⟨"current_directory", `const`, [], TypeString(`@View`)⟩,
+ ⟨"run", `const`, [⟨⊥, `command`, TypeString(`@View`)⟩], TypePrim("i32")⟩
 }
 SystemMembers = [
-  MethodDecl(⊥, `public`, false, "exit", ⊥, ReceiverShorthand(`const`), [⟨⊥, `code`, TypePrim("i32")⟩], TypePrim("!"), ⊥, ⊥, ⊥, ⊥),
-  MethodDecl(⊥, `public`, false, "get_env", ⊥, ReceiverShorthand(`const`), [⟨⊥, `key`, TypeString(`@View`)⟩], TypeString(`@View`), ⊥, ⊥, ⊥, ⊥),
-  MethodDecl(⊥, `public`, false, "executable_path", ⊥, ReceiverShorthand(`const`), [], TypeString(`@View`), ⊥, ⊥, ⊥, ⊥),
-  MethodDecl(⊥, `public`, false, "argument_count", ⊥, ReceiverShorthand(`const`), [], TypePrim("usize"), ⊥, ⊥, ⊥, ⊥),
-  MethodDecl(⊥, `public`, false, "argument", ⊥, ReceiverShorthand(`const`), [⟨⊥, `index`, TypePrim("usize")⟩], TypeString(`@View`), ⊥, ⊥, ⊥, ⊥),
-  MethodDecl(⊥, `public`, false, "current_directory", ⊥, ReceiverShorthand(`const`), [], TypeString(`@View`), ⊥, ⊥, ⊥, ⊥),
-  MethodDecl(⊥, `public`, false, "run", ⊥, ReceiverShorthand(`const`), [⟨⊥, `command`, TypeString(`@View`)⟩], TypePrim("i32"), ⊥, ⊥, ⊥, ⊥)
+  ClassMethodDecl(⊥, `public`, "exit", ⊥, ReceiverShorthand(`const`), [⟨⊥, `code`, TypePrim("i32")⟩], TypePrim("!"), ⊥, ⊥, ⊥, ⊥),
+  ClassMethodDecl(⊥, `public`, "get_env", ⊥, ReceiverShorthand(`const`), [⟨⊥, `key`, TypeString(`@View`)⟩], TypeString(`@View`), ⊥, ⊥, ⊥, ⊥),
+  ClassMethodDecl(⊥, `public`, "executable_path", ⊥, ReceiverShorthand(`const`), [], TypeString(`@View`), ⊥, ⊥, ⊥, ⊥),
+  ClassMethodDecl(⊥, `public`, "argument_count", ⊥, ReceiverShorthand(`const`), [], TypePrim("usize"), ⊥, ⊥, ⊥, ⊥),
+  ClassMethodDecl(⊥, `public`, "argument", ⊥, ReceiverShorthand(`const`), [⟨⊥, `index`, TypePrim("usize")⟩], TypeString(`@View`), ⊥, ⊥, ⊥, ⊥),
+  ClassMethodDecl(⊥, `public`, "current_directory", ⊥, ReceiverShorthand(`const`), [], TypeString(`@View`), ⊥, ⊥, ⊥, ⊥),
+  ClassMethodDecl(⊥, `public`, "run", ⊥, ReceiverShorthand(`const`), [⟨⊥, `command`, TypeString(`@View`)⟩], TypePrim("i32"), ⊥, ⊥, ⊥, ⊥)
 ]
-SystemDecl = RecordDecl(⊥, `public`, `System`, ⊥, ⊥, [], SystemMembers, ⊥, ⊥, ⊥)
+SystemDecl = ClassDecl(⊥, `public`, false, `System`, ⊥, ⊥, [], SystemMembers, ⊥, ⊥)
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
 <!-- ULTRAVIOLET-SPEC-UNIT
@@ -52136,17 +52136,17 @@ phase: semantic-analysis
 strength: required
 owner: spec.abstraction-polymorphism
 applies-to: compiler.builtins, compiler.typecheck, oracle.reference-model, oracle.coverage
-summary: Defines capability and system method signature lookup.
+summary: Defines capability method signature lookup.
 labels: CapMethodSig
 -->
 CapMethodSig(`IO`, name) = ⟨params, ret⟩ ⇔ ⟨name, recv, params, ret⟩ ∈ IOInterface
 CapMethodSig(`Network`, name) = ⟨params, ret⟩ ⇔ ⟨name, recv, params, ret⟩ ∈ NetworkInterface
 CapMethodSig(`HeapAllocator`, name) = ⟨params, ret⟩ ⇔ ⟨name, recv, params, ret⟩ ∈ HeapAllocatorInterface
+CapMethodSig(`System`, name) = ⟨params, ret⟩ ⇔ ⟨name, recv, params, ret⟩ ∈ SystemInterface
 CapMethodSig(`Reactor`, name) = ⟨params, ret⟩ ⇔ LookupClassMethod(`Reactor`, name) = m ∧ Sig_T(SelfVar, m) = ⟨_, params, ret⟩
 CapMethodSig(`Time`, name) = ⟨params, ret⟩ ⇔ ⟨name, recv, params, ret⟩ ∈ TimeInterface
 CapMethodSig(`MonotonicTime`, name) = ⟨params, ret⟩ ⇔ ⟨name, recv, params, ret⟩ ∈ MonotonicTimeInterface
 CapMethodSig(`WallTime`, name) = ⟨params, ret⟩ ⇔ ⟨name, recv, params, ret⟩ ∈ WallTimeInterface
-SystemMethodSig(name) = ⟨params, ret⟩ ⇔ ⟨name, params, ret⟩ ∈ SystemInterface
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
 <!-- ULTRAVIOLET-SPEC-UNIT
@@ -52162,6 +52162,7 @@ labels: CapRecv
 CapRecv(`IO`, name) = recv ⇔ ⟨name, recv, params, ret⟩ ∈ IOInterface
 CapRecv(`Network`, name) = recv ⇔ ⟨name, recv, params, ret⟩ ∈ NetworkInterface
 CapRecv(`HeapAllocator`, name) = recv ⇔ ⟨name, recv, params, ret⟩ ∈ HeapAllocatorInterface
+CapRecv(`System`, name) = recv ⇔ ⟨name, recv, params, ret⟩ ∈ SystemInterface
 CapRecv(`Reactor`, name) = recv ⇔ LookupClassMethod(`Reactor`, name) = m ∧ RecvPerm(SelfVar, m.receiver) = recv
 CapRecv(`Time`, name) = recv ⇔ ⟨name, recv, params, ret⟩ ∈ TimeInterface
 CapRecv(`MonotonicTime`, name) = recv ⇔ ⟨name, recv, params, ret⟩ ∈ MonotonicTimeInterface
@@ -52180,7 +52181,7 @@ labels: CapabilityLoweringSupport
 -->
 LowerCallJudg = {MethodSymbol, BuiltinMethodSym, LowerMethodCall, LowerArgs, LowerRecvArg}
 ModalStateOf(T) = TypeModalState(modal_ref, S) ⇔ StripPerm(T) = TypeModalState(modal_ref, S)
-BuiltinCapClass = {`IO`, `Network`, `HeapAllocator`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`}
+BuiltinCapClass = {`IO`, `Network`, `HeapAllocator`, `ExecutionDomain`, `System`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`}
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
 #### 14.9.4 Static Semantics
@@ -52221,7 +52222,7 @@ applies-to: compiler.name-resolution, compiler.typecheck, compiler.diagnostics, 
 summary: Reserves built-in capability class names and routes type-system use through CapType.
 labels: CapabilityClassNamesReserved
 -->
-The built-in capability class names `IO`, `Network`, `HeapAllocator`, `ExecutionDomain`, `Reactor`, `Time`, `MonotonicTime`, and `WallTime` are reserved. Type-system use of those names is via `CapType(Cl) = TypeDynamic(Cl)`.
+The built-in capability class names `IO`, `Network`, `HeapAllocator`, `ExecutionDomain`, `System`, `Reactor`, `Time`, `MonotonicTime`, and `WallTime` are reserved. Type-system use of those names is via `CapType(Cl) = TypeDynamic(Cl)`.
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
 <!-- ULTRAVIOLET-SPEC-UNIT
@@ -52298,7 +52299,6 @@ RecordDecl(["Duration"]) = DurationDecl
 RecordDecl(["MonotonicInstant"]) = MonotonicInstantDecl
 RecordDecl(["UtcInstant"]) = UtcInstantDecl
 RecordDecl(["Context"]) = ContextDecl
-RecordDecl(["System"]) = SystemDecl
 EnumDecl(["FileKind"]) = FileKindDecl
 EnumDecl(["IoError"]) = IoErrorDecl
 EnumDecl(["AllocationError"]) = AllocationErrorDecl
@@ -52325,7 +52325,7 @@ labels: BuiltinTypeEnvironment
 Σ.Types["AllocationError"] = AllocationErrorDecl
 Σ.Types["TimeError"] = TimeErrorDecl
 Σ.Types["Context"] = ContextDecl
-Σ.Types["System"] = SystemDecl
+Σ.Classes["System"] = SystemDecl
 Σ.Types["CpuSet"] = CpuSetDecl
 Σ.Types["Priority"] = PriorityDecl
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
@@ -52356,7 +52356,7 @@ labels: ContextBundleFieldType
 ContextBundleFieldType(`io`) = TypeDynamic(`IO`)
 ContextBundleFieldType(`net`) = TypeDynamic(`Network`)
 ContextBundleFieldType(`heap`) = TypeDynamic(`HeapAllocator`)
-ContextBundleFieldType(`sys`) = TypePath(["System"])
+ContextBundleFieldType(`sys`) = TypeDynamic(`System`)
 ContextBundleFieldType(`reactor`) = TypeDynamic(`Reactor`)
 ContextBundleFieldType(`time`) = TypeDynamic(`Time`)
 ContextBundleFieldType(`cpu`) = TypeDynamic(`ExecutionDomain`)
@@ -52468,7 +52468,7 @@ applies-to: compiler.lowering, oracle.lowering-checks, oracle.coverage
 summary: Requires built-in capability class calls to lower to built-in method symbols and other capability classes to lower through ordinary dynamic dispatch.
 labels: CapabilityBuiltinMethodLowering
 -->
-Calls on dynamic receivers of builtin capability classes `IO`, `Network`, `HeapAllocator`, `Reactor`, `Time`, `MonotonicTime`, and `WallTime` lower to builtin method symbols rather than emitted vtable-call sequences. Other capability classes lower through the ordinary dynamic-dispatch path of §14.6.
+Calls on dynamic receivers of builtin capability classes `IO`, `Network`, `HeapAllocator`, `ExecutionDomain`, `System`, `Reactor`, `Time`, `MonotonicTime`, and `WallTime` lower to builtin method symbols rather than emitted vtable-call sequences. Other capability classes lower through the ordinary dynamic-dispatch path of §14.6.
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
 #### 14.9.7 Diagnostics
@@ -52705,8 +52705,7 @@ BuiltinBitcopyType(T) ⇔
  T = TypeBytes(`@View`) ∨
  T = TypePath(["FileKind"]) ∨
  T = TypePath(["IoError"]) ∨
- T = TypePath(["Context"]) ∨
- T = TypePath(["System"])
+ T = TypePath(["Context"])
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
 <!-- ULTRAVIOLET-SPEC-UNIT
@@ -76303,7 +76302,6 @@ GpuSafePrimTypes = {`i8`, `i16`, `i32`, `i64`, `u8`, `u16`, `u32`, `u64`, `isize
 ProhibitedGpuType(T) ⇔
   T = TypeDynamic(_) ∨
   T = TypePath(["Context"]) ∨
-  T = TypePath(["System"]) ∨
   IsCapabilityType(T) ∨
   T = TypeString(`@Managed`) ∨
   T = TypeBytes(`@Managed`) ∨
@@ -95054,7 +95052,7 @@ SessionValid(P, h, σ) ⇔ SessionHandle(h) ∧ HostedSessionOwner(h) = P ∧ Se
 SessionReady(P, h, σ) ⇔ SessionValid(P, h, σ) ∧ ¬ SessionBusy(h, σ)
 HostedSessionOwner : Session → Project
 SessionContext : Session → Value
-HostedGrantedCaps : Project × Session → 𝒫(CapToken)
+HostedGrantedCaps : Project × Session → 𝒫(CapabilityClass)
 HostedGrantVisible(P, h, T) ⇔ CapInType(StripPerm(T)) ⊆ HostedGrantedCaps(P, h)
 SessionLive : Session × Store → Bool
 SessionBusy : Session × Store → Bool
@@ -97044,12 +97042,12 @@ strength: required
 owner: spec.runtime-interface
 applies-to: compiler.lowering, compiler.backend, compiler.runtime, oracle.reference-model, oracle.coverage
 summary: Defines built-in signatures for IO, Network, HeapAllocator, System, Reactor, Time, MonotonicTime, WallTime, and managed string/bytes built-ins.
-labels: BuiltinSig, CapRecv, TypeDynamic, CapMethodSig, SystemMethodSig, StringBytesBuiltinSig
+labels: BuiltinSig, CapRecv, TypeDynamic, CapMethodSig, StringBytesBuiltinSig
 -->
 BuiltinSig(`IO`::name) = ⟨[⟨⊥, `self`, TypePerm(CapRecv(`IO`, name), TypeDynamic(`IO`))⟩] ++ params, ret⟩ ⇔ CapMethodSig(`IO`, name) = ⟨params, ret⟩
 BuiltinSig(`Network`::name) = ⟨[⟨⊥, `self`, TypePerm(CapRecv(`Network`, name), TypeDynamic(`Network`))⟩] ++ params, ret⟩ ⇔ CapMethodSig(`Network`, name) = ⟨params, ret⟩
 BuiltinSig(`HeapAllocator`::name) = ⟨[⟨⊥, `self`, TypePerm(CapRecv(`HeapAllocator`, name), TypeDynamic(`HeapAllocator`))⟩] ++ params, ret⟩ ⇔ CapMethodSig(`HeapAllocator`, name) = ⟨params, ret⟩
-BuiltinSig(`System`::name) = ⟨[⟨⊥, `self`, TypePerm(`const`, TypePath(["System"]))⟩] ++ params, ret⟩ ⇔ SystemMethodSig(name) = ⟨params, ret⟩
+BuiltinSig(`System`::name) = ⟨[⟨⊥, `self`, TypePerm(CapRecv(`System`, name), TypeDynamic(`System`))⟩] ++ params, ret⟩ ⇔ CapMethodSig(`System`, name) = ⟨params, ret⟩
 BuiltinSig(`Reactor`::name) = ⟨[⟨⊥, `self`, TypePerm(CapRecv(`Reactor`, name), TypeDynamic(`Reactor`))⟩] ++ params, ret⟩ ⇔ CapMethodSig(`Reactor`, name) = ⟨params, ret⟩
 BuiltinSig(`Time`::name) = ⟨[⟨⊥, `self`, TypePerm(CapRecv(`Time`, name), TypeDynamic(`Time`))⟩] ++ params, ret⟩ ⇔ CapMethodSig(`Time`, name) = ⟨params, ret⟩
 BuiltinSig(`MonotonicTime`::name) = ⟨[⟨⊥, `self`, TypePerm(CapRecv(`MonotonicTime`, name), TypeDynamic(`MonotonicTime`))⟩] ++ params, ret⟩ ⇔ CapMethodSig(`MonotonicTime`, name) = ⟨params, ret⟩

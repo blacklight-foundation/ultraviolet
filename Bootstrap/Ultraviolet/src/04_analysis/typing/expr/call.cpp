@@ -3414,17 +3414,6 @@ static std::optional<std::string_view> BuildGenericCallSubstChecked(
   return std::nullopt;
 }
 
-static bool IsSystemCtorResultType(const TypeRef& type) {
-  if (!type) {
-    return false;
-  }
-  const auto* path = std::get_if<TypePathType>(&type->node);
-  if (!path) {
-    return false;
-  }
-  return IsSystemTypePath(path->path);
-}
-
 ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
                                 const StmtTypeContext& type_ctx,
                                 const ast::CallExpr& node,
@@ -3618,12 +3607,6 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
   const auto record =
       TypeRecordDefaultCall(ctx, node.callee, node.args, type_expr);
   if (record.ok) {
-    if (IsSystemCtorResultType(record.type) &&
-        !IsInUnsafeSpan(ctx, node.callee ? node.callee->span : core::Span{})) {
-      ExprTypeResult r;
-      r.diag_id = "E-CON-0020";
-      return r;
-    }
     return record;
   }
   if (record.diag_id.has_value()) {

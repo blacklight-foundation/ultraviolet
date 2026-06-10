@@ -2076,6 +2076,14 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
         }
       }
     }
+    if (IsSystemTypePath(dyn->path)) {
+      const auto sig = LookupSystemMethodSig(expr.name);
+      if (sig.has_value()) {
+        if (handle_cap_method(sig->recv_perm, sig->params, sig->ret)) {
+          return result;
+        }
+      }
+    }
     if (IsReactorClassPath(dyn->path)) {
       const auto* method = LookupClassMethod(ctx, dyn->path, expr.name);
       if (method) {
@@ -2373,14 +2381,6 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
     }
     if (IsContextTypePath(path_type->path)) {
       const auto sig = LookupContextMethodSig(expr.name, expr.args.size());
-      if (sig.has_value()) {
-        if (handle_cap_method(sig->recv_perm, sig->params, sig->ret)) {
-          return result;
-        }
-      }
-    }
-    if (IsSystemTypePath(path_type->path)) {
-      const auto sig = LookupSystemMethodSig(expr.name);
       if (sig.has_value()) {
         if (handle_cap_method(sig->recv_perm, sig->params, sig->ret)) {
           return result;

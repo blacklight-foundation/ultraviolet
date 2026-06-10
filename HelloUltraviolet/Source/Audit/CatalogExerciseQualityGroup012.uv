@@ -4,6 +4,48 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup012() -> usize {
     var count: usize = 0usize
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
+            "def.UnionBits",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.UnionValueBits",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.UnionValueType",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
             "req.UnionDiagnosticOwnership",
             "HelloUltraviolet::Reference::DataTypes",
             "runDataTypesUnionsReference",
@@ -2752,48 +2794,6 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup012() -> usize {
             "HelloUltraviolet::Reference::ModalTypes",
             "runModalTypesWideningReference",
             "Source/Reference/ModalTypes/Widening.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "grammar.StringTypes.Syntax",
-            "HelloUltraviolet::Reference::ModalTypes",
-            "runModalTypesStringsReference",
-            "Source/Reference/ModalTypes/Strings.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.13.Parse-String-Type",
-            "HelloUltraviolet::Reference::ModalTypes",
-            "runModalTypesStringsReference",
-            "Source/Reference/ModalTypes/Strings.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.13.Parse-StringState-None",
-            "HelloUltraviolet::Reference::ModalTypes",
-            "runModalTypesStringsReference",
-            "Source/Reference/ModalTypes/Strings.uv",
             false,
             true,
             false,

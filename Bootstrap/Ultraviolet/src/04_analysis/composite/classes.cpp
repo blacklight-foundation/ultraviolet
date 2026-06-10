@@ -563,9 +563,34 @@ static ast::ClassPath AsAstClassPath(const TypePath& path) {
   return out;
 }
 
-static bool DynamicCapabilityTypeImplementsClass(const TypeDynamic& type,
+static bool DynamicClassPathReaches(const ScopeContext& ctx,
+                                    const ast::ClassPath& from,
+                                    const ast::ClassPath& target,
+                                    std::size_t depth) {
+  if (depth > 64) {
+    return false;  // defensive bound; superclass cycles are rejected elsewhere
+  }
+  if (PathEq(from, target)) {
+    return true;
+  }
+  const auto* decl = LookupClassDecl(ctx, from);
+  if (decl == nullptr) {
+    return false;
+  }
+  for (const auto& super : decl->supers) {
+    if (DynamicClassPathReaches(ctx, super, target, depth + 1)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+static bool DynamicCapabilityTypeImplementsClass(const ScopeContext& ctx,
+                                                 const TypeDynamic& type,
                                                  const ast::ClassPath& path) {
-  if (!IsCapabilityClassPath(path)) {
+  // Spec §6.1.1 CapClass (open universe) and CapUp: a `$Derived` capability
+  // value satisfies a requirement stated against any capability ancestor.
+  if (!IsCapabilityClass(ctx, path)) {
     return false;
   }
   if (IsExecutionDomainClassPath(path)) {
@@ -575,7 +600,7 @@ static bool DynamicCapabilityTypeImplementsClass(const TypeDynamic& type,
       return true;
     }
   }
-  if (PathEq(AsAstClassPath(type.path), path)) {
+  if (DynamicClassPathReaches(ctx, AsAstClassPath(type.path), path, 0)) {
     SPEC_RULE("req.14.CapabilityClassesGenericBounds");
     return true;
   }
@@ -1041,7 +1066,7 @@ bool TypeImplementsClass(const ScopeContext& ctx,
   }
 
   if (const auto* dynamic_type = std::get_if<TypeDynamic>(&stripped->node)) {
-    return DynamicCapabilityTypeImplementsClass(*dynamic_type, path);
+    return DynamicCapabilityTypeImplementsClass(ctx, *dynamic_type, path);
   }
 
   const auto* path_type = std::get_if<TypePathType>(&stripped->node);

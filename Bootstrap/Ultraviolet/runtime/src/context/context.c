@@ -11,6 +11,8 @@ void ultraviolet_x3a_x3aruntime_x3a_x3acontext_x5finit(UVContext* out) {
   out->net.vtable = NULL;
   out->heap.data = NULL;
   out->heap.vtable = NULL;
+  out->sys.data = NULL;
+  out->sys.vtable = NULL;
   out->reactor.data = NULL;
   out->reactor.vtable = NULL;
   out->time.data = NULL;
@@ -46,8 +48,18 @@ void ultraviolet_x3a_x3aruntime_x3a_x3acontext_x5finit(UVContext* out) {
   heap->quota = 0;
   heap->used = 0;
 
+  UVSystemState* sys = (UVSystemState*)uv_heap_alloc_raw(sizeof(UVSystemState));
+  if (!sys) {
+    uv_heap_free_raw(heap);
+    uv_heap_free_raw(net);
+    uv_heap_free_raw(io);
+    return;
+  }
+  sys->valid = 1;
+
   UVTimeState* time = (UVTimeState*)uv_heap_alloc_raw(sizeof(UVTimeState));
   if (!time) {
+    uv_heap_free_raw(sys);
     uv_heap_free_raw(heap);
     uv_heap_free_raw(net);
     uv_heap_free_raw(io);
@@ -65,6 +77,8 @@ void ultraviolet_x3a_x3aruntime_x3a_x3acontext_x5finit(UVContext* out) {
   out->net.vtable = NULL;
   out->heap.data = heap;
   out->heap.vtable = NULL;
+  out->sys.data = sys;
+  out->sys.vtable = NULL;
   out->time.data = time;
   out->time.vtable = NULL;
 }

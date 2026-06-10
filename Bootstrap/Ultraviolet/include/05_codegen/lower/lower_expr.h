@@ -251,6 +251,7 @@ struct LowerValueState {
   std::vector<std::string>* value_type_insert_sink = nullptr;
   std::unordered_map<std::string, analysis::TypeRef> static_types;
   std::unordered_map<std::string, analysis::TypeRef> drop_glue_types;
+  std::unordered_map<std::string, std::string> execution_domain_origins;
   std::shared_ptr<std::unordered_map<std::string, bool>> drop_need_cache =
       std::make_shared<std::unordered_map<std::string, bool>>();
   std::unordered_map<std::string, DerivedValueInfo> derived_values;
@@ -498,6 +499,9 @@ struct LowerCtx {
       analysis::TypeRef type,
       std::source_location loc = std::source_location::current());
   analysis::TypeRef LookupValueType(const IRValue& value) const;
+  void RegisterExecutionDomainOrigin(const IRValue& value, std::string origin);
+  std::optional<std::string_view> LookupExecutionDomainOrigin(
+      const IRValue& value) const;
   void RegisterStaticType(const std::string& sym, analysis::TypeRef type);
   analysis::TypeRef LookupStaticType(const std::string& sym) const;
   void RegisterStaticModule(const std::string& sym, const ast::ModulePath& module_path);

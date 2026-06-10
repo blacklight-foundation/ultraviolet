@@ -4,6 +4,48 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup015() -> usize {
     var count: usize = 0usize
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
+            "rule.14.WF-Opaque",
+            "HelloUltraviolet::Reference::Polymorphism",
+            "runPolymorphismOpaqueTypesReference",
+            "Source/Reference/Polymorphism/OpaqueTypes.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.14.T-Equiv-Opaque",
+            "HelloUltraviolet::Reference::Polymorphism",
+            "runPolymorphismOpaqueTypesReference",
+            "Source/Reference/Polymorphism/OpaqueTypes.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.14.T-Opaque-Return",
+            "HelloUltraviolet::Reference::Polymorphism",
+            "runPolymorphismOpaqueTypesReference",
+            "Source/Reference/Polymorphism/OpaqueTypes.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
             "rule.14.T-Opaque-Project",
             "HelloUltraviolet::Reference::Polymorphism",
             "runPolymorphismOpaqueTypesReference",
@@ -2749,48 +2791,6 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup015() -> usize {
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
             "rule.15.Pure-Field",
-            "HelloUltraviolet::Reference::Procedures",
-            "runProceduresContractsReference",
-            "Source/Reference/Procedures/Contracts.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.15.Pure-Tuple-Access",
-            "HelloUltraviolet::Reference::Procedures",
-            "runProceduresContractsReference",
-            "Source/Reference/Procedures/Contracts.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.15.Pure-Index",
-            "HelloUltraviolet::Reference::Procedures",
-            "runProceduresContractsReference",
-            "Source/Reference/Procedures/Contracts.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.15.Pure-Unary",
             "HelloUltraviolet::Reference::Procedures",
             "runProceduresContractsReference",
             "Source/Reference/Procedures/Contracts.uv",

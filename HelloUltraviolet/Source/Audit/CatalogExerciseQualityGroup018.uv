@@ -4,6 +4,48 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup018() -> usize {
     var count: usize = 0usize
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
+            "rule.16.EvalSigma-Propagate-Success-Async",
+            "HelloUltraviolet::Reference::Expressions",
+            "evalSigmaPropagateSuccessAsyncReference",
+            "Source/Reference/Expressions/EffectfulCore.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.16.EvalSigma-Propagate-Error",
+            "HelloUltraviolet::Reference::Expressions",
+            "evalSigmaPropagateErrorReference",
+            "Source/Reference/Expressions/EffectfulCore.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.16.EvalSigma-Propagate-Error-Async",
+            "HelloUltraviolet::Reference::Expressions",
+            "evalSigmaPropagateErrorAsyncReference",
+            "Source/Reference/Expressions/EffectfulCore.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
             "rule.16.EvalSigma-Propagate-Ctrl",
             "HelloUltraviolet::Reference::Expressions",
             "evalSigmaPropagateCtrlReference",
@@ -2749,48 +2791,6 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup018() -> usize {
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
             "rule.17.PatternNarrow-ModalRef",
-            "HelloUltraviolet::Reference::Patterns",
-            "runPatternsCaseClausesReference",
-            "Source/Reference/Patterns/CaseClauses.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.17.PatternNarrow-ModalState",
-            "HelloUltraviolet::Reference::Patterns",
-            "runPatternsCaseClausesReference",
-            "Source/Reference/Patterns/CaseClauses.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.17.PatternNarrow-Union",
-            "HelloUltraviolet::Reference::Patterns",
-            "runPatternsCaseClausesReference",
-            "Source/Reference/Patterns/CaseClauses.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.17.PatternNarrow-Typed",
             "HelloUltraviolet::Reference::Patterns",
             "runPatternsCaseClausesReference",
             "Source/Reference/Patterns/CaseClauses.uv",

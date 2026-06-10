@@ -59,6 +59,11 @@ bool IsGpuDomainType(const analysis::TypeRef& type) {
   return false;
 }
 
+bool IsGpuDomainValue(const IRValue& value, const LowerCtx& ctx) {
+  const auto origin = ctx.LookupExecutionDomainOrigin(value);
+  return origin.has_value() && *origin == "gpu";
+}
+
 void RecordGpuParallelLoweringConformance(
     const ast::ParallelExpr& node,
     const IRValue& domain_value,
@@ -69,7 +74,7 @@ void RecordGpuParallelLoweringConformance(
   }
 
   analysis::TypeRef domain_type = ctx.expr_type(*node.domain);
-  if (!IsGpuDomainType(domain_type)) {
+  if (!IsGpuDomainType(domain_type) && !IsGpuDomainValue(domain_value, ctx)) {
     return;
   }
   if (!core::Conformance::Enabled()) {

@@ -4,6 +4,48 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup020() -> usize {
     var count: usize = 0usize
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
+            "rule.18.Parse-Region-Alias-Some",
+            "HelloUltraviolet::Reference::Statements",
+            "runStatementsRegionReference",
+            "Source/Reference/Statements/Region.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.18.Parse-Region-Stmt",
+            "HelloUltraviolet::Reference::Statements",
+            "runStatementsRegionReference",
+            "Source/Reference/Statements/Region.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.18.RegionStmtAst",
+            "HelloUltraviolet::Reference::Statements",
+            "runStatementsRegionReference",
+            "Source/Reference/Statements/Region.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
             "def.18.RegionTypeAndFreshNameHelpers",
             "HelloUltraviolet::Reference::Statements",
             "runStatementsRegionReference",
@@ -2752,48 +2794,6 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup020() -> usize {
             "HelloUltraviolet::Audit::Catalog::KeySystem",
             "keySystemCompilerConformanceArtifactMatches",
             "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.19.StaticallySafeConditions",
-            "HelloUltraviolet::Reference::Keys",
-            "runKeysDynamicVerificationReference",
-            "Source/Reference/Keys/DynamicVerification.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.19.StaticallySafeSoundProofRequired",
-            "HelloUltraviolet::Audit::Catalog::KeySystem",
-            "keySystemCompilerConformanceArtifactMatches",
-            "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.19.K-Static-Safe",
-            "HelloUltraviolet::Reference::Keys",
-            "runKeysDynamicVerificationReference",
-            "Source/Reference/Keys/DynamicVerification.uv",
             false,
             true,
             false,

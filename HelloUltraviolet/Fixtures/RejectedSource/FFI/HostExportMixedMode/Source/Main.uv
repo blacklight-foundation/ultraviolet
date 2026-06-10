@@ -1,7 +1,7 @@
 //! Rejected FFI specimen for mixing hosted and raw exports in one assembly.
 
 public record HostedMixedContext {
-    public sys: System
+    public sys: $System
 }
 
 #host_export("C")
@@ -13,4 +13,3 @@ public procedure hostedValue(context: HostedMixedContext) -> i32 {
 public procedure rawValue() -> i32 {
     return 0
 }
-

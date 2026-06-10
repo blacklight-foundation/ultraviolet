@@ -246,8 +246,7 @@ bool IsExecutionDomainClassPath(const ast::ClassPath& path) {
 
 bool IsExecutionDomainTypePath(const ast::TypePath& path) {
   SpecDefsConcurrency();
-  return IsExecutionDomainClassPath(path) || IsCpuDomainTypePath(path) ||
-         IsGpuDomainTypePath(path) || IsInlineDomainTypePath(path);
+  return IsExecutionDomainClassPath(path);
 }
 
 bool IsCpuDomainTypePath(const ast::TypePath& path) {
@@ -315,32 +314,6 @@ std::optional<ExecutionDomainMethodSig> LookupExecutionDomainMethodSig(
   }
 
   return std::nullopt;
-}
-
-static ast::ClassDecl BuildDomainClassDecl(std::string_view name) {
-  ast::ClassDecl decl;
-  decl.vis = ast::Visibility::Public;
-  decl.name = std::string(name);
-  decl.supers = {{"ExecutionDomain"}};
-  decl.items = {};
-  decl.span = core::Span{};
-  decl.doc = {};
-  return decl;
-}
-
-ast::ClassDecl BuildCpuDomainClassDecl() {
-  SpecDefsConcurrency();
-  return BuildDomainClassDecl("CpuDomain");
-}
-
-ast::ClassDecl BuildGpuDomainClassDecl() {
-  SpecDefsConcurrency();
-  return BuildDomainClassDecl("GpuDomain");
-}
-
-ast::ClassDecl BuildInlineDomainClassDecl() {
-  SpecDefsConcurrency();
-  return BuildDomainClassDecl("InlineDomain");
 }
 
 // -----------------------------------------------------------------------------

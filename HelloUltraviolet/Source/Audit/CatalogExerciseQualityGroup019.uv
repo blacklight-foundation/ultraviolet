@@ -4,6 +4,48 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup019() -> usize {
     var count: usize = 0usize
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
+            "rule.17.PatternNarrow-ModalState",
+            "HelloUltraviolet::Reference::Patterns",
+            "runPatternsCaseClausesReference",
+            "Source/Reference/Patterns/CaseClauses.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.17.PatternNarrow-Union",
+            "HelloUltraviolet::Reference::Patterns",
+            "runPatternsCaseClausesReference",
+            "Source/Reference/Patterns/CaseClauses.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.17.PatternNarrow-Typed",
+            "HelloUltraviolet::Reference::Patterns",
+            "runPatternsCaseClausesReference",
+            "Source/Reference/Patterns/CaseClauses.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
             "rule.17.PatternRejectNarrow-Union",
             "HelloUltraviolet::Reference::Patterns",
             "runPatternsCaseClausesReference",
@@ -2749,48 +2791,6 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup019() -> usize {
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
             "rule.18.Parse-Region-Alias-None",
-            "HelloUltraviolet::Reference::Statements",
-            "runStatementsRegionReference",
-            "Source/Reference/Statements/Region.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.18.Parse-Region-Alias-Some",
-            "HelloUltraviolet::Reference::Statements",
-            "runStatementsRegionReference",
-            "Source/Reference/Statements/Region.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.18.Parse-Region-Stmt",
-            "HelloUltraviolet::Reference::Statements",
-            "runStatementsRegionReference",
-            "Source/Reference/Statements/Region.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.18.RegionStmtAst",
             "HelloUltraviolet::Reference::Statements",
             "runStatementsRegionReference",
             "Source/Reference/Statements/Region.uv",

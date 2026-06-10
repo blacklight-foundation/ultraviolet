@@ -4,6 +4,48 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup024() -> usize {
     var count: usize = 0usize
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
+            "requirement.23.FfiAttributesLowering",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.CapabilityIsolationSyntaxNoAdditionalForm",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.CapabilityIsolationParsingNoAdditionalRules",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
             "ast.23.CapabilityIsolationNoDedicatedAst",
             "HelloUltraviolet::Audit",
             "artifactProjectEmitLlExercise",
@@ -2752,48 +2794,6 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup024() -> usize {
             "HelloUltraviolet::Audit",
             "artifactProjectEmitLlExercise",
             "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.24.ABI-ForeignCall",
-            "HelloUltraviolet::Audit",
-            "artifactProjectEmitLlExercise",
-            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.24.PanicRecordAndPanicOut",
-            "HelloUltraviolet::Audit",
-            "artifactProjectEmitLlExercise",
-            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.24.MangleJudgementAndConstructors",
-            "HelloUltraviolet::Audit",
-            "artifactProjectEmitLlExercise",
-            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,

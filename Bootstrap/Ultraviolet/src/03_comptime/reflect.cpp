@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "00_core/assert_spec.h"
+#include "00_core/diagnostic_messages.h"
 #include "00_core/symbols.h"
 #include "00_core/unicode.h"
 #include "02_source/ast/ast_dump.h"
@@ -280,11 +281,33 @@ std::vector<NamedDeclRef> FindNamedDeclsInModule(
     std::string_view name) {
   std::vector<NamedDeclRef> out;
   const std::vector<ASTItem>* items = FindVisibleModuleItems(env, module_path);
-  if (items == nullptr) {
-    return out;
+  if (items != nullptr) {
+    for (const ASTItem& item : *items) {
+      MaybeAddNamedDecl(out, item, module_path, accessor_module, name);
+    }
   }
-  for (const ASTItem& item : *items) {
-    MaybeAddNamedDecl(out, item, module_path, accessor_module, name);
+  if (out.empty() && !PathEq(module_path, env.current_module)) {
+    // Spec §22.1.4 CtExpand-CrossModule-Emit-Err: the name is unresolved in
+    // the Phase-1 view; if it resolves against another module's Phase-2
+    // expansion, the program depends on a cross-module emission and is
+    // rejected with E-CTE-0090.
+    SPEC_RULE("CtExpand-CrossModule-Emit-Err");
+    for (const ast::ASTModule* expanded : env.phase2_expanded_modules) {
+      if (expanded == nullptr || !PathEq(expanded->path, module_path)) {
+        continue;
+      }
+      std::vector<NamedDeclRef> emitted;
+      for (const ASTItem& item : expanded->items) {
+        MaybeAddNamedDecl(emitted, item, module_path, accessor_module, name);
+      }
+      if (!emitted.empty() && env.diags != nullptr) {
+        if (auto diag = core::MakeDiagnosticById("E-CTE-0090",
+                                                 env.current_span)) {
+          core::Emit(*env.diags, *diag);
+        }
+      }
+      break;
+    }
   }
   return out;
 }

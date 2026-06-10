@@ -1,0 +1,19 @@
+//! Rejected pattern specimen: refutable payload subpatterns contribute no
+//! exhaustiveness coverage (spec CoversVariant).
+
+public enum RefutablePayloadCoverage {
+    Value(i32)
+    Empty
+}
+
+public procedure refutablePayloadCoverageReference() -> i32 {
+    let value: RefutablePayloadCoverage = RefutablePayloadCoverage::Empty
+    return if value is {
+        RefutablePayloadCoverage::Value(1) {
+            1
+        }
+        RefutablePayloadCoverage::Empty {
+            0
+        }
+    }
+}

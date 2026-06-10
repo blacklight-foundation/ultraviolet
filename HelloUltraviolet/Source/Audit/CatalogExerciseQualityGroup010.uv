@@ -4,6 +4,48 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     var count: usize = 0usize
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
+            "Import-Ok-Covered",
+            "HelloUltraviolet::Reference::Modules",
+            "runModulesAggregationReference",
+            "Source/Reference/Modules/Aggregation.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Import-Ok-Err",
+            "HelloUltraviolet::Reference::Modules",
+            "runModulesAggregationReference",
+            "Source/Reference/Modules/Aggregation.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Resolve-Import-Direct",
+            "HelloUltraviolet::Audit",
+            "moduleSourceProjectExternAbiFormsExecute",
+            "Source/Audit/ModuleSourceProjectInfrastructureExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
             "Resolve-Import-Current",
             "HelloUltraviolet::Reference::Modules",
             "runModulesAggregationReference",
@@ -2749,48 +2791,6 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
             "req.ArrayToSliceCoercionSemantic",
-            "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesSlicesReference",
-            "Source/Reference/DataTypes/Slices.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Parse-Slice-Type",
-            "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesSlicesReference",
-            "Source/Reference/DataTypes/Slices.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.IndexAccessSliceOwnership",
-            "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesSlicesReference",
-            "Source/Reference/DataTypes/Slices.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.TypeSliceAst",
             "HelloUltraviolet::Reference::DataTypes",
             "runDataTypesSlicesReference",
             "Source/Reference/DataTypes/Slices.uv",

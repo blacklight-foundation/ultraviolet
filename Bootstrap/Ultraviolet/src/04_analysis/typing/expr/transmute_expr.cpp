@@ -114,13 +114,13 @@ static void EmitInvalidTargetWarning(const ScopeContext& ctx,
     return;
   }
   for (const auto& diag : *diags) {
-    if (diag.code == "W-SAFE-0100" && diag.span.has_value() &&
+    if (diag.code == "W-SAF-0100" && diag.span.has_value() &&
         SameSpan(*diag.span, span)) {
       return;
     }
   }
   auto diag = core::MakeDiagnosticById(
-      "W-SAFE-0100", std::optional<core::Span>(span));
+      "W-SAF-0100", std::optional<core::Span>(span));
   if (diag) {
     core::Emit(*diags, *diag);
   }

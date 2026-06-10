@@ -4,6 +4,48 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup027() -> usize {
     var count: usize = 0usize
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
+            "rule.24.LowerIRInstr-LowerPanic",
+            "HelloUltraviolet::Reference::Lowering",
+            "runLoweringBackendRequirementsReference",
+            "Source/Reference/Lowering/BackendRequirements.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.IfLoweringHelpers",
+            "HelloUltraviolet::Reference::Lowering",
+            "runLoweringBackendRequirementsReference",
+            "Source/Reference/Lowering/BackendRequirements.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Lower-IfIR",
+            "HelloUltraviolet::Reference::Lowering",
+            "runLoweringBackendRequirementsReference",
+            "Source/Reference/Lowering/BackendRequirements.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
             "def.24.BlockCleanupLoweringHelpers",
             "HelloUltraviolet::Reference::Lowering",
             "runLoweringBackendRequirementsReference",

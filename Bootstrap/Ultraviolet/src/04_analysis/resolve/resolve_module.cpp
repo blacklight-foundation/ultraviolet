@@ -33,6 +33,7 @@
 #include "04_analysis/caps/cap_comptime.h"
 #include "04_analysis/caps/cap_system.h"
 #include "04_analysis/caps/cap_io.h"
+#include "04_analysis/caps/cap_network.h"
 #include "04_analysis/caps/cap_heap.h"
 #include "04_analysis/caps/cap_time.h"
 #include "04_analysis/caps/cap_concurrency.h"
@@ -97,6 +98,20 @@ std::string ResolvePathPayload(const ast::Path& path) {
     result += segment;
   }
   return result;
+}
+
+ast::ClassDecl BuildBuiltinCapabilityClassDecl(std::string_view name) {
+  ast::ClassDecl decl{};
+  decl.vis = ast::Visibility::Public;
+  decl.name = std::string(name);
+  decl.modal = false;
+  decl.generic_params = std::nullopt;
+  decl.supers = {};
+  decl.predicate_clause_opt = std::nullopt;
+  decl.items = {};
+  decl.span = core::Span{};
+  decl.doc = {};
+  return decl;
 }
 
 bool SigmaEntryIsModal(const Sigma& sigma, const ast::Path& path) {
@@ -608,7 +623,7 @@ void PopulateSigma(ScopeContext& ctx) {
     ctx.sigma.classes[PathKeyOf(path)] = decl;
   }
 
-  // Built-in types: Region modal, RegionOptions, Context/System records,
+  // Built-in types: Region modal, RegionOptions, Context record,
   // CpuSet alias, and Priority enum.
   {
     ast::Path path;
@@ -634,11 +649,6 @@ void PopulateSigma(ScopeContext& ctx) {
     ast::Path path;
     path.emplace_back("PanicRecord");
     ctx.sigma.types[PathKeyOf(path)] = BuildPanicRecordDecl();
-  }
-  {
-    ast::Path path;
-    path.emplace_back("System");
-    ctx.sigma.types[PathKeyOf(path)] = BuildSystemRecordDecl();
   }
   {
     ast::Path path;
@@ -669,13 +679,52 @@ void PopulateSigma(ScopeContext& ctx) {
   // Built-in capability classes
   {
     ast::Path path;
+    path.emplace_back("IO");
+    ctx.sigma.classes[PathKeyOf(path)] = BuildBuiltinCapabilityClassDecl("IO");
+  }
+  {
+    ast::Path path;
+    path.emplace_back("Network");
+    ctx.sigma.classes[PathKeyOf(path)] =
+        BuildBuiltinCapabilityClassDecl("Network");
+  }
+  {
+    ast::Path path;
+    path.emplace_back("HeapAllocator");
+    ctx.sigma.classes[PathKeyOf(path)] =
+        BuildBuiltinCapabilityClassDecl("HeapAllocator");
+  }
+  {
+    ast::Path path;
     path.emplace_back("ExecutionDomain");
     ctx.sigma.classes[PathKeyOf(path)] = BuildExecutionDomainClassDecl();
   }
   {
     ast::Path path;
+    path.emplace_back("System");
+    ctx.sigma.classes[PathKeyOf(path)] = BuildSystemClassDecl();
+  }
+  {
+    ast::Path path;
     path.emplace_back("Reactor");
     ctx.sigma.classes[PathKeyOf(path)] = BuildReactorClassDecl();
+  }
+  {
+    ast::Path path;
+    path.emplace_back("Time");
+    ctx.sigma.classes[PathKeyOf(path)] = BuildBuiltinCapabilityClassDecl("Time");
+  }
+  {
+    ast::Path path;
+    path.emplace_back("MonotonicTime");
+    ctx.sigma.classes[PathKeyOf(path)] =
+        BuildBuiltinCapabilityClassDecl("MonotonicTime");
+  }
+  {
+    ast::Path path;
+    path.emplace_back("WallTime");
+    ctx.sigma.classes[PathKeyOf(path)] =
+        BuildBuiltinCapabilityClassDecl("WallTime");
   }
   {
     ast::Path path;

@@ -4,6 +4,48 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup016() -> usize {
     var count: usize = 0usize
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
+            "rule.15.Pure-Tuple-Access",
+            "HelloUltraviolet::Reference::Procedures",
+            "runProceduresContractsReference",
+            "Source/Reference/Procedures/Contracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.15.Pure-Index",
+            "HelloUltraviolet::Reference::Procedures",
+            "runProceduresContractsReference",
+            "Source/Reference/Procedures/Contracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.15.Pure-Unary",
+            "HelloUltraviolet::Reference::Procedures",
+            "runProceduresContractsReference",
+            "Source/Reference/Procedures/Contracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
             "rule.15.Pure-Binary",
             "HelloUltraviolet::Reference::Procedures",
             "runProceduresContractsReference",
@@ -2749,48 +2791,6 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup016() -> usize {
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
             "def.16.CallExprAst",
-            "HelloUltraviolet::Reference::Expressions",
-            "runExpressionsCallsReference",
-            "Source/Reference/Expressions/Calls.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.16.ArgAccessors",
-            "HelloUltraviolet::Reference::Expressions",
-            "runExpressionsCallsReference",
-            "Source/Reference/Expressions/Calls.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.16.ArgumentPassExpressions",
-            "HelloUltraviolet::Reference::Expressions",
-            "runExpressionsCallsReference",
-            "Source/Reference/Expressions/Calls.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.16.QualifiedParenthesizedApplicationResolution",
             "HelloUltraviolet::Reference::Expressions",
             "runExpressionsCallsReference",
             "Source/Reference/Expressions/Calls.uv",

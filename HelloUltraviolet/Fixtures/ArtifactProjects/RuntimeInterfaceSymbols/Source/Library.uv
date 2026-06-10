@@ -4,7 +4,7 @@ public record RuntimeInterfaceContext {
     public io: $IO
     public net: $Network
     public heap: $HeapAllocator
-    public sys: System
+    public sys: $System
     public reactor: $Reactor
     public time: $Time
 }
