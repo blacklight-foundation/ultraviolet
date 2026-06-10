@@ -427,6 +427,8 @@ std::uint16_t PanicCode(PanicReason reason) {
       return 0x0010;
     case PanicReason::LoopInv:
       return 0x0011;
+    case PanicReason::MatchFail:
+      return 0x0012;
     case PanicReason::Other:
     default:
       return 0x00FF;
@@ -469,6 +471,8 @@ std::string PanicReasonString(PanicReason reason) {
       return "TypeInv";
     case PanicReason::LoopInv:
       return "LoopInv";
+    case PanicReason::MatchFail:
+      return "MatchFail";
     case PanicReason::Other:
     default:
       return "Other";

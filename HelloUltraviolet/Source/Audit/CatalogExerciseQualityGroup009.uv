@@ -4,6 +4,48 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup009() -> usize {
     var count: usize = 0usize
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
+            "req.BindingActivityNoAliasCreation",
+            "HelloUltraviolet::Reference::Permissions",
+            "runPermissionsActivityStatesReference",
+            "Source/Reference/Permissions/ActivityStates.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "req.BindingActivityDeterministicReactivation",
+            "HelloUltraviolet::Reference::Permissions",
+            "runPermissionsActivityStatesReference",
+            "Source/Reference/Permissions/ActivityStates.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "conformance.BindingActivityLowering",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
             "req.BindingActivityDiagnosticOwnership",
             "HelloUltraviolet::Reference::Permissions",
             "runPermissionsActivityStatesReference",
@@ -2752,48 +2794,6 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup009() -> usize {
             "HelloUltraviolet::Reference::Modules",
             "runModulesAggregationReference",
             "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Import-Ok-Covered",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Import-Ok-Err",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Resolve-Import-Direct",
-            "HelloUltraviolet::Audit",
-            "moduleSourceProjectExternAbiFormsExecute",
-            "Source/Audit/ModuleSourceProjectInfrastructureExecution.uv",
             false,
             true,
             false,

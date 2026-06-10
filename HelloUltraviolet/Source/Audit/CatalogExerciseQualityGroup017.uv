@@ -4,6 +4,48 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup017() -> usize {
     var count: usize = 0usize
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
+            "def.16.ArgAccessors",
+            "HelloUltraviolet::Reference::Expressions",
+            "runExpressionsCallsReference",
+            "Source/Reference/Expressions/Calls.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.16.ArgumentPassExpressions",
+            "HelloUltraviolet::Reference::Expressions",
+            "runExpressionsCallsReference",
+            "Source/Reference/Expressions/Calls.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "req.16.QualifiedParenthesizedApplicationResolution",
+            "HelloUltraviolet::Reference::Expressions",
+            "runExpressionsCallsReference",
+            "Source/Reference/Expressions/Calls.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
             "rule.16.ArgsT-Empty",
             "HelloUltraviolet::Reference::Expressions",
             "runExpressionsCallsReference",
@@ -2751,48 +2793,6 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup017() -> usize {
             "rule.16.EvalSigma-Propagate-Success",
             "HelloUltraviolet::Reference::Expressions",
             "evalSigmaPropagateSuccessReference",
-            "Source/Reference/Expressions/EffectfulCore.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.16.EvalSigma-Propagate-Success-Async",
-            "HelloUltraviolet::Reference::Expressions",
-            "evalSigmaPropagateSuccessAsyncReference",
-            "Source/Reference/Expressions/EffectfulCore.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.16.EvalSigma-Propagate-Error",
-            "HelloUltraviolet::Reference::Expressions",
-            "evalSigmaPropagateErrorReference",
-            "Source/Reference/Expressions/EffectfulCore.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.16.EvalSigma-Propagate-Error-Async",
-            "HelloUltraviolet::Reference::Expressions",
-            "evalSigmaPropagateErrorAsyncReference",
             "Source/Reference/Expressions/EffectfulCore.uv",
             false,
             true,

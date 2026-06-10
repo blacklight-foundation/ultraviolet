@@ -38,6 +38,7 @@ enum class PanicReason {
   ForeignPost,   // 0x000F - foreign postcondition violation
   TypeInv,       // 0x0010 - type invariant violation
   LoopInv,       // 0x0011 - loop invariant violation
+  MatchFail,     // 0x0012 - if-case fall-through with no matching arm (§17.5.6)
   Other,         // 0x00FF
 };
 

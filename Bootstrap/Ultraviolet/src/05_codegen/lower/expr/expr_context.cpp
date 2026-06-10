@@ -59,6 +59,22 @@ void AppendPayloadField(std::string& payload,
   AppendPayloadField(payload, key, std::string_view(text));
 }
 
+std::string LowerValueKey(const IRValue& value) {
+  if (value.kind == IRValue::Kind::Local) {
+    return "local:" + value.name;
+  }
+  if (value.kind == IRValue::Kind::Symbol) {
+    return "sym:" + value.name;
+  }
+  if (value.kind == IRValue::Kind::Opaque) {
+    return value.name;
+  }
+  if (value.kind == IRValue::Kind::Immediate && value.literal_id != 0) {
+    return "imm:" + std::to_string(value.literal_id);
+  }
+  return {};
+}
+
 void AppendPayloadField(std::string& payload,
                         std::string_view key,
                         const char* value) {
@@ -1392,6 +1408,31 @@ analysis::TypeRef LowerCtx::LookupValueType(const IRValue& value) const {
     }
   }
   return nullptr;
+}
+
+void LowerCtx::RegisterExecutionDomainOrigin(const IRValue& value,
+                                             std::string origin) {
+  std::string key = LowerValueKey(value);
+  if (key.empty() || origin.empty()) {
+    return;
+  }
+  values.execution_domain_origins[std::move(key)] = std::move(origin);
+}
+
+std::optional<std::string_view> LowerCtx::LookupExecutionDomainOrigin(
+    const IRValue& value) const {
+  const std::string key = LowerValueKey(value);
+  if (key.empty()) {
+    return std::nullopt;
+  }
+  auto it = values.execution_domain_origins.find(key);
+  if (it != values.execution_domain_origins.end()) {
+    return std::string_view(it->second);
+  }
+  if (values.parent != nullptr) {
+    return values.parent->LookupExecutionDomainOrigin(value);
+  }
+  return std::nullopt;
 }
 
 void LowerCtx::FreezeLookupTables() {

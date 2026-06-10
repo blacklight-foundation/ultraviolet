@@ -2037,6 +2037,7 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
             if (result_type) {
                 ctx.RegisterValueType(result_value, result_type);
             }
+            ctx.RegisterExecutionDomainOrigin(result_value, expr.name);
             RecordContextDomainLoweringConformance(
                 expr.name,
                 callee_sym,
@@ -2049,46 +2050,6 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
 
             return LowerResult{SeqIR({recv_result.ir, args_ir, MakeIR(std::move(call))}),
                                result_value};
-        }
-
-        if (analysis::IsSystemTypePath(path->path)) {
-            const auto sig = analysis::LookupSystemMethodSig(expr.name);
-            if (sig.has_value()) {
-                SPEC_RULE("Lower-MethodCall-SystemBuiltin");
-                analysis::TypeRef result_type = sig->ret;
-                const std::string qualified = "System::" + expr.name;
-                std::string callee_sym = BuiltinSym(qualified);
-                param_modes = ParamModesFromParams(sig->params);
-                param_types = ParamTypesFromParams(scope, sig->params);
-                if (const auto runtime_info = GetRuntimeFuncInfo(callee_sym)) {
-                    if (runtime_info->ret) {
-                        result_type = runtime_info->ret;
-                    }
-                }
-                auto recv_result = LowerRecvArgExpr(expr.receiver, ctx, recv_type);
-                auto [args_ir, arg_values] =
-                    LowerArgs(param_modes,
-                              expr.args,
-                              ctx,
-                              param_types.empty() ? nullptr : &param_types);
-
-                std::vector<IRValue> all_args;
-                all_args.push_back(recv_result.value);
-                all_args.insert(all_args.end(), arg_values.begin(), arg_values.end());
-
-                IRValue result_value = ctx.FreshTempValue("method_call");
-                if (result_type) {
-                    ctx.RegisterValueType(result_value, result_type);
-                }
-
-                IRCall call;
-                call.callee = IRValue{IRValue::Kind::Symbol, callee_sym, {}};
-                call.args = std::move(all_args);
-                call.result = result_value;
-
-                return LowerResult{SeqIR({recv_result.ir, args_ir, MakeIR(std::move(call))}),
-                                   result_value};
-            }
         }
     }
 

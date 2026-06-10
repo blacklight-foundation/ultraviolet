@@ -209,7 +209,7 @@ internal procedure artifactProjectRuntimeInterfaceSignaturesMatch(
         "declare void @ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3adealloc_x5fraw(ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(8), ptr noundef nonnull align 8 dereferenceable(8))",
         "declare void @ultraviolet_x3a_x3aruntime_x3a_x3areactor_x3a_x3arun(ptr noalias noundef nonnull sret(",
         "declare ptr @ultraviolet_x3a_x3aruntime_x3a_x3areactor_x3a_x3aregister(ptr, ptr)",
-        "declare void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexit(ptr noundef nonnull align 1, ptr noundef nonnull align 4 dereferenceable(4))",
+        "declare void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexit(ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 4 dereferenceable(4))",
         artifactProjectTargetProfileText(
             authority,
             "declare void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aget_x5fenv(ptr noalias noundef nonnull sret(",
@@ -222,7 +222,7 @@ internal procedure artifactProjectRuntimeInterfaceSignaturesMatch(
             "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexecutable_x5fpath(",
             "declare [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexecutable_x5fpath("
         ),
-        "declare i64 @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument_x5fcount(ptr noundef nonnull align 1)",
+        "declare i64 @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument_x5fcount(ptr noundef nonnull align 8 dereferenceable(16))",
         artifactProjectTargetProfileText(
             authority,
             "declare void @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument(ptr noalias noundef nonnull sret(",
@@ -235,7 +235,7 @@ internal procedure artifactProjectRuntimeInterfaceSignaturesMatch(
             "declare { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3acurrent_x5fdirectory(",
             "declare [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3acurrent_x5fdirectory("
         ),
-        "declare i32 @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3arun(ptr noundef nonnull align 1, ptr noundef nonnull align 8 dereferenceable(16))",
+        "declare i32 @ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3arun(ptr noundef nonnull align 8 dereferenceable(16), ptr noundef nonnull align 8 dereferenceable(16))",
         artifactProjectTargetProfileText(
             authority,
             "declare void @ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic(ptr noalias noundef nonnull sret(",
@@ -664,7 +664,7 @@ internal procedure artifactProjectRuntimeInterfaceRuntimeHostCallsMatch(
 internal procedure artifactProjectRuntimeInterfaceCapabilityLoweringPayloadsMatch(
     authority: TestAuthority
 ) -> bool {
-    let required_payloads: [string@View; 31] = [
+    let required_payloads: [string@View; 38] = [
         "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DIO%3Bmethod%3Dopen_read",
         "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DIO%3Bmethod%3Dopen_write",
         "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DIO%3Bmethod%3Dopen_append",
@@ -687,6 +687,13 @@ internal procedure artifactProjectRuntimeInterfaceCapabilityLoweringPayloadsMatc
         "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DHeapAllocator%3Bmethod%3Ddealloc_raw",
         "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DReactor%3Bmethod%3Drun",
         "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DReactor%3Bmethod%3Dregister",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DSystem%3Bmethod%3Dexit",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DSystem%3Bmethod%3Dget_env",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DSystem%3Bmethod%3Dexecutable_path",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DSystem%3Bmethod%3Dargument_count",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DSystem%3Bmethod%3Dargument",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DSystem%3Bmethod%3Dcurrent_directory",
+        "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DSystem%3Bmethod%3Drun",
         "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DTime%3Bmethod%3Dmonotonic",
         "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DTime%3Bmethod%3Dwall",
         "source%3DLowerMethodCall%3Breceiver_type%3DTypeDynamic%3Bclass%3DMonotonicTime%3Bmethod%3Dnow",

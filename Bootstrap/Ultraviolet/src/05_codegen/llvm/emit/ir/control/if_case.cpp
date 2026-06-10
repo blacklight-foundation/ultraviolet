@@ -1568,7 +1568,14 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
           llvm::BasicBlock::Create(emitter.GetContext(), "ifcase.unmatched", func);
       builder.CreateCondBr(cond, arm_bb, unmatched_bb);
       builder.SetInsertPoint(unmatched_bb);
-      builder.CreateUnreachable();
+      // Spec EvalIfCases-None / §17.5.6: a full fall-through panics with
+      // MatchFail; it MUST NOT be undefined behavior.
+      StorePanicRecord(emitter, &builder, PanicCode(PanicReason::MatchFail));
+      EmitReturn(emitter, &builder);
+      if (!builder.GetInsertBlock()->getTerminator())
+      {
+        builder.CreateUnreachable();
+      }
     }
     else
     {

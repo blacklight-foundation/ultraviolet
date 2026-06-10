@@ -49,11 +49,11 @@ typedef struct UVDynObject {
   void* vtable;
 } UVDynObject;
 
-// Context record. The System field is zero-sized in the runtime layout.
 typedef struct UVContext {
   UVDynObject io;
   UVDynObject net;
   UVDynObject heap;
+  UVDynObject sys;
   UVDynObject reactor;
   UVDynObject time;
 } UVContext;
@@ -679,28 +679,28 @@ void ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall_x5fcoarsen(
 
 // System builtins
 void ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexit(
-  const void* self,
+  const UVDynObject* self,
   const int32_t* code);
 
 UVStringView ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aget_x5fenv(
-  const void* self,
+  const UVDynObject* self,
   const UVStringView* key);
 
 UVStringView ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexecutable_x5fpath(
-  const void* self);
+  const UVDynObject* self);
 
 uint64_t ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument_x5fcount(
-  const void* self);
+  const UVDynObject* self);
 
 UVStringView ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument(
-  const void* self,
+  const UVDynObject* self,
   const uint64_t* index);
 
 UVStringView ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3acurrent_x5fdirectory(
-  const void* self);
+  const UVDynObject* self);
 
 int32_t ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3arun(
-  const void* self,
+  const UVDynObject* self,
   const UVStringView* command);
 
 // -----------------------------------------------------------------------------

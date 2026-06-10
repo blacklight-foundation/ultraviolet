@@ -50,6 +50,10 @@ typedef struct UVNetState {
   int valid;
 } UVNetState;
 
+typedef struct UVSystemState {
+  int valid;
+} UVSystemState;
+
 typedef enum UVTimeStateKind {
   UV_TIME_STATE_ROOT = 0,
   UV_TIME_STATE_MONOTONIC = 1,
@@ -622,7 +626,7 @@ _Static_assert(sizeof(UVStringManaged) == 24, "string@Managed layout");
 _Static_assert(sizeof(UVBytesView) == 16, "bytes@View layout");
 _Static_assert(sizeof(UVBytesManaged) == 24, "bytes@Managed layout");
 _Static_assert(sizeof(UVDynObject) == 16, "dynamic object layout");
-_Static_assert(sizeof(UVContext) == 80, "Context layout");
+_Static_assert(sizeof(UVContext) == 96, "Context layout");
 _Static_assert(sizeof(UVExecutionDomain) == 24, "ExecutionDomain layout");
 _Static_assert(sizeof(UVDuration) == 16, "Duration layout");
 _Static_assert(sizeof(UVMonotonicInstant) == 32, "MonotonicInstant layout");

@@ -37,7 +37,7 @@ static UVStringView uv_system_get_env_none(void) {
 }
 
 void ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexit(
-    const void* self,
+    const UVDynObject* self,
     const int32_t* code) {
   (void)self;
   const int32_t exit_code = code ? *code : 1;
@@ -49,7 +49,7 @@ void ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexit(
 }
 
 UVStringView ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aget_x5fenv(
-    const void* self,
+    const UVDynObject* self,
     const UVStringView* key) {
   (void)self;
   if (!key || !key->data || key->len == 0) {
@@ -105,7 +105,7 @@ UVStringView ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aget_x5fenv(
 
 UVStringView
 ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexecutable_x5fpath(
-    const void* self) {
+    const UVDynObject* self) {
   (void)self;
   UVStringView out =
       uv_system_query_string_view(uv_rt_executable_path_query_utf8);
@@ -115,7 +115,7 @@ ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexecutable_x5fpath(
 }
 
 uint64_t ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument_x5fcount(
-    const void* self) {
+    const UVDynObject* self) {
   (void)self;
   uv_rt_uptr_t count = uv_rt_argument_count_query();
   uv_trace_emit_rule("System-ArgumentCount");
@@ -124,7 +124,7 @@ uint64_t ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument_x5fcount(
 }
 
 UVStringView ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument(
-    const void* self,
+    const UVDynObject* self,
     const uint64_t* index) {
   (void)self;
   const uint64_t index_value = index ? *index : 0u;
@@ -161,7 +161,7 @@ UVStringView ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument(
 
 UVStringView
 ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3acurrent_x5fdirectory(
-    const void* self) {
+    const UVDynObject* self) {
   (void)self;
   UVStringView out =
       uv_system_query_string_view(uv_rt_current_directory_query_utf8);
@@ -171,7 +171,7 @@ ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3acurrent_x5fdirectory(
 }
 
 int32_t ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3arun(
-    const void* self,
+    const UVDynObject* self,
     const UVStringView* command) {
   (void)self;
   if (!command || !command->data || command->len == 0) {

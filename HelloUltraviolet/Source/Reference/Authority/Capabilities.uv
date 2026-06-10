@@ -13,14 +13,14 @@ internal record CapabilityCompositeCarrier {
     internal net: $Network
     internal heap: $HeapAllocator
     internal reactor: $Reactor
-    internal sys: System
+    internal sys: $System
     internal time: $Time
     internal domain: $ExecutionDomain
 }
 
 internal enum CapabilityEnumCarrier {
     Io($IO)
-    System(System)
+    System($System)
 }
 
 internal modal CapabilityModalCarrier {
@@ -79,7 +79,7 @@ internal procedure capabilityReactorCanTrack(reactor: $Reactor) -> bool {
     return capabilityUnionI32Is(result, 17)
 }
 
-internal procedure capabilitySystemCanObserve(sys: System) -> bool {
+internal procedure capabilitySystemCanObserve(sys: $System) -> bool {
     return string::length(sys~>current_directory()) > 0usize
 }
 
@@ -213,12 +213,12 @@ internal procedure capabilityFromApplied(
     return capabilityIOCanObserve(carrier.value)
 }
 
-internal procedure capabilityFromUnion(value: $IO | System) -> bool {
+internal procedure capabilityFromUnion(value: $IO | $System) -> bool {
     return if value is {
         io: $IO {
             capabilityIOCanObserve(io)
         }
-        sys: System {
+        sys: $System {
             capabilitySystemCanObserve(sys)
         }
     }
@@ -271,8 +271,8 @@ internal procedure capabilityStructuralTypeRequirements(context: Context) -> boo
         time: context.time,
         domain: context~>inline()
     }
-    let union_io: $IO | System = context.io
-    let union_system: $IO | System = context.sys
+    let union_io: $IO | $System = context.io
+    let union_system: $IO | $System = context.sys
     let applied_carrier: CapabilityAppliedCarrier<$IO> =
         CapabilityAppliedCarrier { value: context.io }
     let enum_io: CapabilityEnumCarrier = CapabilityEnumCarrier::Io(context.io)
@@ -319,16 +319,16 @@ internal procedure capabilityRecursiveContextProvider() -> Context {
     return capabilityRecursiveContextProvider()
 }
 
-internal procedure capabilityAllRootTokensSatisfyContextRequirement(
+internal procedure capabilityAllRootClassesSatisfyContextRequirement(
     io: $IO,
     net: $Network,
     heap: $HeapAllocator,
     reactor: $Reactor,
-    sys: System,
+    sys: $System,
     time: $Time,
     domain: $ExecutionDomain
 ) -> bool {
-    let tokens_are_operational: bool = capabilityIOCanObserve(io) &&
+    let classes_are_operational: bool = capabilityIOCanObserve(io) &&
         capabilityNetworkCanAttenuate(net) &&
         capabilityHeapCanAttenuate(heap) &&
         capabilityReactorCanTrack(reactor) &&
@@ -339,7 +339,7 @@ internal procedure capabilityAllRootTokensSatisfyContextRequirement(
         let context: Context = capabilityRecursiveContextProvider()
         return capabilityDirectCallRequiresContext(context)
     }
-    return tokens_are_operational
+    return classes_are_operational
 }
 
 internal procedure capabilityDirectCallRequirementsSatisfied(context: Context) -> bool {
@@ -354,7 +354,7 @@ internal procedure capabilityDirectCallRequirementsSatisfied(context: Context) -
     }
     return capabilityDirectCallRequiresIO(context.io) &&
         capabilityDirectCallRequiresComposite(carrier) &&
-        capabilityAllRootTokensSatisfyContextRequirement(
+        capabilityAllRootClassesSatisfyContextRequirement(
             context.io,
             context.net,
             context.heap,
@@ -449,7 +449,7 @@ internal procedure capabilityObservableSequenceReference(context: Context) -> bo
 
 /// Exercises the Authority Capabilities reference surface.
 public procedure runAuthorityCapabilitiesReference(context: Context) -> bool {
-    return capabilityTokenUniverseReference() &&
+    return capabilityClassUniverseReference() &&
         capInTypeSignatureReference() &&
         capInTypeRootMappingsReference() &&
         capInTypePermissionReference() &&

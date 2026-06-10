@@ -48,11 +48,6 @@ bool IsGpuIntrinsicName(std::string_view name);
 bool IsGpuExecutionBarrierName(std::string_view name);
 std::optional<TypeRef> LookupGpuIntrinsicType(std::string_view name);
 
-// Built-in execution domain class declarations
-ast::ClassDecl BuildCpuDomainClassDecl();
-ast::ClassDecl BuildGpuDomainClassDecl();
-ast::ClassDecl BuildInlineDomainClassDecl();
-
 // -----------------------------------------------------------------------------
 // Spawned<T> modal type (§18.4.2)
 // -----------------------------------------------------------------------------

@@ -418,6 +418,7 @@ using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ recordPatternUn
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ rangePatternNonConstExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ rangePatternEmptyExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ ifCaseEnumNonExhaustiveExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ ifCaseEnumRefutablePayloadCoverageExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ ifCaseModalNonExhaustiveExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ ifCaseUnionNonExhaustiveExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ ifCaseUnreachableExpectedDiagnosticFileMatches }
@@ -3012,6 +3013,11 @@ internal procedure runReferenceCorpusPart09(
         context,
         "ifCaseEnumNonExhaustiveExpectedDiagnosticFileMatches",
         ifCaseEnumNonExhaustiveExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "ifCaseEnumRefutablePayloadCoverageExpectedDiagnosticFileMatches",
+        ifCaseEnumRefutablePayloadCoverageExpectedDiagnosticFileMatches(context)
     ) && passed
     passed = recordReferenceResult(
         context,

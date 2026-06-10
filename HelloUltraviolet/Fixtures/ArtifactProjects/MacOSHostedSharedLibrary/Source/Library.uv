@@ -1,7 +1,7 @@
 //! Artifact fixture for Apple Silicon macOS hosted shared library output.
 
 public record MacOSHostedContext {
-    public sys: System
+    public sys: $System
 }
 
 #host_export("C")

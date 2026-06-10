@@ -444,9 +444,10 @@ bool IsBuiltinCapClass(const analysis::TypePath& class_path) {
   const auto cap_class = ToClassPath(class_path);
   return analysis::IsIOClassPath(cap_class) ||
          analysis::IsNetworkClassPath(cap_class) ||
-         analysis::IsHeapAllocatorClassPath(cap_class) ||
-         analysis::IsExecutionDomainClassPath(cap_class) ||
-         analysis::IsReactorClassPath(cap_class) ||
+          analysis::IsHeapAllocatorClassPath(cap_class) ||
+          analysis::IsExecutionDomainClassPath(cap_class) ||
+          analysis::IsSystemTypePath(class_path) ||
+          analysis::IsReactorClassPath(cap_class) ||
          analysis::IsTimeClassPath(cap_class) ||
          analysis::IsMonotonicTimeClassPath(cap_class) ||
          analysis::IsWallTimeClassPath(cap_class);

@@ -4,6 +4,48 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup013() -> usize {
     var count: usize = 0usize
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
+            "grammar.StringTypes.Syntax",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesStringsReference",
+            "Source/Reference/ModalTypes/Strings.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.13.Parse-String-Type",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesStringsReference",
+            "Source/Reference/ModalTypes/Strings.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.13.Parse-StringState-None",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesStringsReference",
+            "Source/Reference/ModalTypes/Strings.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
             "rule.13.Parse-StringState-Managed",
             "HelloUltraviolet::Reference::ModalTypes",
             "runModalTypesStringsReference",
@@ -2752,48 +2794,6 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup013() -> usize {
             "HelloUltraviolet::Audit",
             "artifactProjectEmitLlExercise",
             "Source/Audit/ArtifactProjectExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "diag.ClosureTypes",
-            "HelloUltraviolet::Reference::ModalTypes",
-            "runModalTypesClosuresReference",
-            "Source/Reference/ModalTypes/Closures.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "grammar.GenericParamsAndArgsSyntax",
-            "HelloUltraviolet::Reference::Polymorphism",
-            "runPolymorphismGenericParametersReference",
-            "Source/Reference/Polymorphism/GenericParameters.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.GenericArgsTrailingComma",
-            "HelloUltraviolet::Reference::Polymorphism",
-            "runPolymorphismGenericParametersReference",
-            "Source/Reference/Polymorphism/GenericParameters.uv",
             false,
             true,
             false,

@@ -694,10 +694,12 @@ AttributeValidationResult ValidateAttributes(
         result.diag_id = "E-CON-0412";
       } else if (attr.name == ::ultraviolet::analysis::attrs::kLibrary) {
         result.diag_id = "E-SYS-3345";
+      } else if (attr.name == ::ultraviolet::analysis::attrs::kTest) {
+        // Spec §9.6.7: `#test` applied outside an ordinary procedure owns a
+        // dedicated code, distinct from the generic wrong-target diagnostic.
+        SPEC_RULE("req.TestAttributeProcedureTarget");
+        result.diag_id = "E-TST-0109";
       } else {
-        if (attr.name == ::ultraviolet::analysis::attrs::kTest) {
-          SPEC_RULE("req.TestAttributeProcedureTarget");
-        }
         if (attr.name == ::ultraviolet::analysis::attrs::kLayout) {
           SPEC_RULE("def.LayoutAttributeApplicability");
         }
@@ -1157,9 +1159,14 @@ AttributeValidationResult ValidateUnsupportedAttributeTarget(
     }
 
     result.ok = false;
-    result.diag_id =
-        attr.name == ::ultraviolet::analysis::attrs::kLibrary ? "E-SYS-3345"
-                                                          : "E-MOD-2452";
+    if (attr.name == ::ultraviolet::analysis::attrs::kLibrary) {
+      result.diag_id = "E-SYS-3345";
+    } else if (attr.name == ::ultraviolet::analysis::attrs::kTest) {
+      // Spec §9.6.7: dedicated code for `#test` on a non-procedure target.
+      result.diag_id = "E-TST-0109";
+    } else {
+      result.diag_id = "E-MOD-2452";
+    }
     result.span = attr.span;
     result.message = "Attribute '" + attr.name + "' cannot be applied to " +
                      std::string(target_name);

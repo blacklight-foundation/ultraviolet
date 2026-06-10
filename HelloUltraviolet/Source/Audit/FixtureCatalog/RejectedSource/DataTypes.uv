@@ -131,14 +131,14 @@ public procedure validatedDataTypesRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/DataTypes/GenericInvariantSubtyping",
             "Fixtures/RejectedSource/DataTypes/GenericInvariantSubtyping/Source/Main.uv",
             "Fixtures/RejectedSource/DataTypes/GenericInvariantSubtyping/Expected.uv",
-            expectedDiagnostic("E-TYP-1520", "Sub-Generic-Invariant-Err")
+            expectedDiagnostic("E-TYP-1520", "Chk-Generic-Invariant-Err")
         ),
         "GenericInvariantSubtyping",
         "Fixtures/RejectedSource/DataTypes/GenericInvariantSubtyping",
         "Fixtures/RejectedSource/DataTypes/GenericInvariantSubtyping/Source/Main.uv",
         "Fixtures/RejectedSource/DataTypes/GenericInvariantSubtyping/Expected.uv",
         "E-TYP-1520",
-        "Sub-Generic-Invariant-Err"
+        "Chk-Generic-Invariant-Err"
     ) {
         count = count + 1usize
     }
@@ -148,14 +148,14 @@ public procedure validatedDataTypesRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/DataTypes/GenericCovariantSubtyping",
             "Fixtures/RejectedSource/DataTypes/GenericCovariantSubtyping/Source/Main.uv",
             "Fixtures/RejectedSource/DataTypes/GenericCovariantSubtyping/Expected.uv",
-            expectedDiagnostic("E-TYP-1521", "Sub-Generic-Covariant-Err")
+            expectedDiagnostic("E-TYP-1521", "Chk-Generic-Variance-Err")
         ),
         "GenericCovariantSubtyping",
         "Fixtures/RejectedSource/DataTypes/GenericCovariantSubtyping",
         "Fixtures/RejectedSource/DataTypes/GenericCovariantSubtyping/Source/Main.uv",
         "Fixtures/RejectedSource/DataTypes/GenericCovariantSubtyping/Expected.uv",
         "E-TYP-1521",
-        "Sub-Generic-Covariant-Err"
+        "Chk-Generic-Variance-Err"
     ) {
         count = count + 1usize
     }
@@ -165,14 +165,14 @@ public procedure validatedDataTypesRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/DataTypes/GenericContravariantSubtyping",
             "Fixtures/RejectedSource/DataTypes/GenericContravariantSubtyping/Source/Main.uv",
             "Fixtures/RejectedSource/DataTypes/GenericContravariantSubtyping/Expected.uv",
-            expectedDiagnostic("E-TYP-1521", "Sub-Generic-Contravariant-Err")
+            expectedDiagnostic("E-TYP-1521", "Chk-Generic-Variance-Err")
         ),
         "GenericContravariantSubtyping",
         "Fixtures/RejectedSource/DataTypes/GenericContravariantSubtyping",
         "Fixtures/RejectedSource/DataTypes/GenericContravariantSubtyping/Source/Main.uv",
         "Fixtures/RejectedSource/DataTypes/GenericContravariantSubtyping/Expected.uv",
         "E-TYP-1521",
-        "Sub-Generic-Contravariant-Err"
+        "Chk-Generic-Variance-Err"
     ) {
         count = count + 1usize
     }

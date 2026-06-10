@@ -51,12 +51,12 @@ bool IsRegionOptionsTypePath(const ast::TypePath& path);
 std::optional<ast::Path> LookupBuiltinRecordCtorPath(const ast::TypePath& path);
 std::optional<ast::Path> LookupBuiltinRecordCtorPath(std::string_view ident);
 
-// Built-in record declarations
+// Built-in record and capability-class declarations
 ast::RecordDecl BuildContextRecordDecl();
 ast::RecordDecl BuildTestAuthorityRecordDecl();
 ast::RecordDecl BuildPanicRecordDecl();
 ast::RecordDecl BuildRegionOptionsRecordDecl();
-ast::RecordDecl BuildSystemRecordDecl();
+ast::ClassDecl BuildSystemClassDecl();
 
 // =============================================================================
 // Main signature validation (§5.9.4)
@@ -90,8 +90,15 @@ ast::EnumDecl BuildPriorityEnumDecl();
 /// Check if a type is a capability type (dynamic class or Context)
 bool IsCapabilityType(const TypeRef& type);
 
-/// Check if a class path refers to a capability class
+/// Check if a class path refers to a built-in (root) capability class
 bool IsCapabilityClassPath(const ast::ClassPath& path);
+
+struct ScopeContext;
+
+/// Spec §6.1.1 CapClass: a class is a capability class iff it is a built-in
+/// root capability class or declares a capability superclass via `<:`
+/// (transitively). The capability-class universe is open to user classes.
+bool IsCapabilityClass(const ScopeContext& ctx, const ast::ClassPath& path);
 
 /// Check if a type contains any capability types (for FFI isolation)
 bool TypeContainsCapability(const TypeRef& type);

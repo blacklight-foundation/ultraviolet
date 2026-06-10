@@ -5,7 +5,7 @@
 // SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 5.9.4 "Context Record" (lines 13202-13247)
 //   - Context fields: io ($IO), net ($Network), heap ($HeapAllocator),
-//                     sys (System), reactor ($Reactor), time ($Time)
+//                     sys ($System), reactor ($Reactor), time ($Time)
 //   - Context methods: cpu(), gpu(), inline() -> $ExecutionDomain
 //   - Main signature: public procedure main(ctx: ContextBundle) -> i32
 //
@@ -53,7 +53,6 @@ static constexpr std::array<std::string_view, 8> kBuiltinRecordNames = {
     "DirEntry",
     "Context",
     "TestAuthority",
-    "System",
     "Duration",
     "MonotonicInstant",
     "UtcInstant",
@@ -232,7 +231,7 @@ static bool MatchesContextBundleFieldType(const ast::Type& type,
     return MatchesDynamicBuiltinType(type, "HeapAllocator");
   }
   if (IdEq(field_name, "sys")) {
-    return MatchesNamedBuiltinType(type, "System");
+    return MatchesDynamicBuiltinType(type, "System");
   }
   if (IdEq(field_name, "reactor")) {
     return MatchesDynamicBuiltinType(type, "Reactor");
@@ -394,7 +393,7 @@ std::optional<TypeRef> ContextFieldType(std::string_view field_name) {
     return MakeTypeDynamic({"HeapAllocator"});
   }
   if (IdEq(field_name, "sys")) {
-    return MakeTypePath({"System"});
+    return MakeTypeDynamic({"System"});
   }
   if (IdEq(field_name, "reactor")) {
     return MakeTypeDynamic({"Reactor"});
@@ -552,12 +551,51 @@ ast::EnumDecl BuildPriorityEnumDecl() {
   return decl;
 }
 
+static bool IsCapabilityClassImpl(
+    const ScopeContext& ctx,
+    const ast::ClassPath& path,
+    std::vector<decltype(PathKeyOf(std::declval<const ast::ClassPath&>()))>&
+        visiting) {
+  if (IsCapabilityClassPath(path)) {
+    return true;
+  }
+  const auto key = PathKeyOf(path);
+  for (const auto& seen : visiting) {
+    if (seen == key) {
+      return false;  // superclass cycle: classhood is determined elsewhere
+    }
+  }
+  const auto it = ctx.sigma.classes.find(key);
+  if (it == ctx.sigma.classes.end()) {
+    return false;
+  }
+  visiting.push_back(key);
+  for (const auto& super : it->second.supers) {
+    if (IsCapabilityClassImpl(ctx, super, visiting)) {
+      visiting.pop_back();
+      return true;
+    }
+  }
+  visiting.pop_back();
+  return false;
+}
+
+bool IsCapabilityClass(const ScopeContext& ctx, const ast::ClassPath& path) {
+  // Spec §6.1.1 CapClass: built-in roots plus user classes whose superclass
+  // chain reaches a capability class.
+  SPEC_RULE("def.6.CapClass");
+  std::vector<decltype(PathKeyOf(std::declval<const ast::ClassPath&>()))>
+      visiting;
+  return IsCapabilityClassImpl(ctx, path, visiting);
+}
+
 bool IsCapabilityClassPath(const ast::ClassPath& path) {
   SpecDefsContextCaps();
   return PathMatchesBuiltinName(path, "IO") ||
          PathMatchesBuiltinName(path, "Network") ||
          PathMatchesBuiltinName(path, "HeapAllocator") ||
          PathMatchesBuiltinName(path, "ExecutionDomain") ||
+         PathMatchesBuiltinName(path, "System") ||
          PathMatchesBuiltinName(path, "Reactor") ||
          PathMatchesBuiltinName(path, "Time") ||
          PathMatchesBuiltinName(path, "MonotonicTime") ||

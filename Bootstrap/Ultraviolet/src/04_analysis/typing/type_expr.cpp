@@ -3773,16 +3773,6 @@ static ExprTypeResult TypeExprImpl(const ScopeContext& ctx,
           r.type = typed.type;
           return r;
         } else if constexpr (std::is_same_v<T, ast::RecordExpr>) {
-          TypePath target_path;
-          if (const auto* path = std::get_if<ast::TypePath>(&node.target)) {
-            target_path = *path;
-          }
-          if (!target_path.empty() && IsSystemTypePath(target_path) &&
-              !IsInUnsafeSpan(ctx, e->span)) {
-            ExprTypeResult r;
-            r.diag_id = "E-CON-0020";
-            return r;
-          }
           return expr::TypeRecordExprImpl(ctx, type_ctx, node, env);
         } else if constexpr (std::is_same_v<T, ast::EnumLiteralExpr>) {
           return expr::TypeEnumLiteralExprImpl(ctx, type_ctx, node, env);
@@ -4890,7 +4880,7 @@ bool IsCapabilityType(const TypeRef& type) {
            IsExecutionDomainTypePath(dyn->path);
   }
   if (const auto* path = std::get_if<TypePathType>(&stripped->node)) {
-    return IsContextTypePath(path->path) || IsSystemTypePath(path->path);
+    return IsContextTypePath(path->path);
   }
   return false;
 }

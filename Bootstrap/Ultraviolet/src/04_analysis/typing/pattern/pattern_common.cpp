@@ -1006,4 +1006,211 @@ bool IrrefutablePattern(const ScopeContext& ctx,
       pattern->node);
 }
 
+bool EnumPatternCoversVariant(const ScopeContext& ctx,
+                              const ast::PatternPtr& pattern,
+                              const TypeRef& expected) {
+  // Spec §17.6.4 CoversVariant: a case contributes exhaustiveness coverage
+  // only when every payload subpattern is irrefutable.
+  SPEC_RULE("CoversVariant");
+  if (!pattern || !expected) {
+    return false;
+  }
+  const auto* node = std::get_if<ast::EnumPattern>(&pattern->node);
+  if (!node) {
+    return false;
+  }
+  // Trivially irrefutable payloads (no payload, all identifier/wildcard
+  // tuple elements, all shorthand/identifier/wildcard record fields) cover
+  // their variant without needing a resolvable enum declaration; built-in
+  // enums such as `AllocationError` have no user-visible declaration.
+  const bool trivially_irrefutable_payload = [&]() {
+    if (!node->payload_opt.has_value()) {
+      return true;
+    }
+    if (const auto* tuple =
+            std::get_if<ast::TuplePayloadPattern>(&*node->payload_opt)) {
+      for (const auto& elem : tuple->elements) {
+        if (!elem) {
+          return false;
+        }
+        if (!std::holds_alternative<ast::IdentifierPattern>(elem->node) &&
+            !std::holds_alternative<ast::WildcardPattern>(elem->node)) {
+          return false;
+        }
+      }
+      return true;
+    }
+    if (const auto* record =
+            std::get_if<ast::RecordPayloadPattern>(&*node->payload_opt)) {
+      for (const auto& field : record->fields) {
+        if (!field.pattern_opt) {
+          continue;
+        }
+        if (!std::holds_alternative<ast::IdentifierPattern>(
+                field.pattern_opt->node) &&
+            !std::holds_alternative<ast::WildcardPattern>(
+                field.pattern_opt->node)) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
+  }();
+
+  const auto* expected_path = AppliedTypePath(*expected);
+  const auto* expected_args = AppliedTypeArgs(*expected);
+  if (!expected_path || !expected_args ||
+      !TypePathEqLocal(*expected_path, node->path)) {
+    return false;
+  }
+  const auto* decl = LookupEnumDecl(ctx, *expected_path);
+  if (!decl) {
+    return trivially_irrefutable_payload;
+  }
+  const auto generic_ctx =
+      BuildEnumPatternGenericContext(ctx, *decl, *expected_args);
+  if (!generic_ctx.ok) {
+    return false;
+  }
+  const ast::VariantDecl* variant = nullptr;
+  for (const auto& v : decl->variants) {
+    if (IdEq(v.name, node->name)) {
+      variant = &v;
+      break;
+    }
+  }
+  if (!variant) {
+    return false;
+  }
+  if (!variant->payload_opt.has_value()) {
+    return !node->payload_opt.has_value();
+  }
+  if (!node->payload_opt.has_value()) {
+    return false;
+  }
+  if (std::holds_alternative<ast::VariantPayloadTuple>(*variant->payload_opt)) {
+    const auto& tuple_payload =
+        std::get<ast::VariantPayloadTuple>(*variant->payload_opt);
+    const auto* tuple =
+        std::get_if<ast::TuplePayloadPattern>(&*node->payload_opt);
+    if (!tuple || tuple->elements.size() != tuple_payload.elements.size()) {
+      return false;
+    }
+    for (std::size_t i = 0; i < tuple->elements.size(); ++i) {
+      const auto lowered =
+          LowerType(generic_ctx.payload_ctx, tuple_payload.elements[i]);
+      if (!lowered.ok) {
+        return false;
+      }
+      const TypeRef elem_type = InstantiateType(lowered.type, generic_ctx.subst);
+      if (!IrrefutablePattern(ctx, tuple->elements[i], elem_type)) {
+        return false;
+      }
+    }
+    return true;
+  }
+  const auto& record_payload =
+      std::get<ast::VariantPayloadRecord>(*variant->payload_opt);
+  const auto* record =
+      std::get_if<ast::RecordPayloadPattern>(&*node->payload_opt);
+  if (!record) {
+    return false;
+  }
+  for (const auto& field : record->fields) {
+    const auto field_type = EnumFieldType(record_payload,
+                                          generic_ctx.payload_ctx,
+                                          field.name,
+                                          generic_ctx.subst);
+    if (!field_type.has_value()) {
+      return false;
+    }
+    if (!field.pattern_opt) {
+      continue;  // shorthand field binds an identifier - irrefutable
+    }
+    if (!IrrefutablePattern(ctx, field.pattern_opt, *field_type)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool ModalPatternCoversState(const ScopeContext& ctx,
+                             const ast::PatternPtr& pattern,
+                             const TypeRef& expected) {
+  // Spec §17.6.4 CoversState: a modal case contributes exhaustiveness
+  // coverage only when every payload field subpattern is irrefutable.
+  // Shorthand field binds and identifier/wildcard subpatterns are
+  // irrefutable independently of the field type, so they must not require
+  // a resolvable modal declaration (built-in modals such as `Async`,
+  // `File`, and `Spawned` have no user-visible declaration).
+  SPEC_RULE("CoversState");
+  if (!pattern || !expected) {
+    return false;
+  }
+  const auto* node = std::get_if<ast::ModalPattern>(&pattern->node);
+  if (!node) {
+    return false;
+  }
+  if (!node->fields_opt.has_value()) {
+    return true;
+  }
+  bool needs_field_types = false;
+  for (const auto& field : node->fields_opt->fields) {
+    if (!field.pattern_opt) {
+      continue;  // shorthand field binds an identifier - irrefutable
+    }
+    if (std::holds_alternative<ast::IdentifierPattern>(field.pattern_opt->node) ||
+        std::holds_alternative<ast::WildcardPattern>(field.pattern_opt->node)) {
+      continue;  // unconditionally irrefutable subpatterns
+    }
+    needs_field_types = true;
+    break;
+  }
+  if (!needs_field_types) {
+    return true;
+  }
+  const auto* path_type = AppliedTypePath(*expected);
+  const auto* path_args = AppliedTypeArgs(*expected);
+  const auto* modal_state = std::get_if<TypeModalState>(&expected->node);
+  const ast::ModalDecl* decl = nullptr;
+  std::vector<TypeRef> modal_args;
+  std::string_view state = node->state;
+  if (path_type) {
+    decl = LookupModalDecl(ctx, *path_type);
+    if (path_args) {
+      modal_args = *path_args;
+    }
+  } else if (modal_state) {
+    if (!IdEq(modal_state->state, state)) {
+      return false;
+    }
+    decl = LookupModalDecl(ctx, modal_state->path);
+    modal_args = modal_state->generic_args;
+  }
+  if (!decl || !HasState(*decl, state)) {
+    // Nested non-trivial subpatterns over an unresolvable (built-in) modal
+    // payload cannot be proven irrefutable; conservatively no coverage.
+    return false;
+  }
+  for (const auto& field : node->fields_opt->fields) {
+    if (!field.pattern_opt) {
+      continue;
+    }
+    if (std::holds_alternative<ast::IdentifierPattern>(field.pattern_opt->node) ||
+        std::holds_alternative<ast::WildcardPattern>(field.pattern_opt->node)) {
+      continue;
+    }
+    const auto field_type =
+        ModalFieldType(*decl, state, ctx, field.name, modal_args);
+    if (!field_type.has_value()) {
+      return false;
+    }
+    if (!IrrefutablePattern(ctx, field.pattern_opt, *field_type)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 }  // namespace ultraviolet::analysis

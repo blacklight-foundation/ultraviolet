@@ -1065,9 +1065,7 @@ std::vector<CapabilityLeak> DetectCapabilityLeaks(const CallGraph& cg) {
         leak.path = {edge->caller, edge->callee};
 
         // Determine which capability leaked
-        if (edge->capabilities_passed.has_context) {
-          leak.capability = CapabilityKind::Context;
-        } else if (edge->capabilities_passed.has_io) {
+        if (edge->capabilities_passed.has_io) {
           leak.capability = CapabilityKind::IO;
         } else if (edge->capabilities_passed.has_network) {
           leak.capability = CapabilityKind::Network;
@@ -1081,6 +1079,10 @@ std::vector<CapabilityLeak> DetectCapabilityLeaks(const CallGraph& cg) {
           leak.capability = CapabilityKind::System;
         } else if (edge->capabilities_passed.has_time) {
           leak.capability = CapabilityKind::Time;
+        } else if (edge->capabilities_passed.has_monotonic_time) {
+          leak.capability = CapabilityKind::MonotonicTime;
+        } else if (edge->capabilities_passed.has_wall_time) {
+          leak.capability = CapabilityKind::WallTime;
         }
 
         std::ostringstream msg;

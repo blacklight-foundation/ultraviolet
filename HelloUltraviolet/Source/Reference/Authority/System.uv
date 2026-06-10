@@ -25,23 +25,23 @@ internal procedure systemAuthorityCanObserveHost(
         (reference.can_read_environment || reference.can_spawn_process)
 }
 
-internal procedure systemExecutablePathIsAvailable(sys: System) -> bool {
+internal procedure systemExecutablePathIsAvailable(sys: $System) -> bool {
     let executable_path: string@View = sys~>executable_path()
     return string::length(executable_path) > 0usize
 }
 
-internal procedure systemMissingEnvironmentIsEmpty(sys: System) -> bool {
+internal procedure systemMissingEnvironmentIsEmpty(sys: $System) -> bool {
     let missing_value: string@View =
         sys~>get_env("HUV_REFERENCE_ENVIRONMENT_KEY_SHOULD_NOT_EXIST")
     return auditTextEquals(missing_value, "")
 }
 
-internal procedure systemCurrentDirectoryIsAvailable(sys: System) -> bool {
+internal procedure systemCurrentDirectoryIsAvailable(sys: $System) -> bool {
     let current_directory: string@View = sys~>current_directory()
     return string::length(current_directory) > 0usize
 }
 
-internal procedure systemArgumentSurfaceIsAvailable(sys: System) -> bool {
+internal procedure systemArgumentSurfaceIsAvailable(sys: $System) -> bool {
     let count: usize = sys~>argument_count()
     if count == 0usize {
         return true
@@ -89,7 +89,7 @@ public procedure authoritySystemStateReference() -> bool {
         exited.exit_code == 17
 }
 
-internal procedure systemRunSuccessCommand(sys: System) -> string@View {
+internal procedure systemRunSuccessCommand(sys: $System) -> string@View {
     let target_profile: string@View = auditTargetProfile(sys)
     if auditTargetProfileIsWindows(target_profile) {
         return "cmd /C exit 0"
@@ -97,7 +97,7 @@ internal procedure systemRunSuccessCommand(sys: System) -> string@View {
     return "exit 0"
 }
 
-internal procedure systemRunExitSevenCommand(sys: System) -> string@View {
+internal procedure systemRunExitSevenCommand(sys: $System) -> string@View {
     let target_profile: string@View = auditTargetProfile(sys)
     if auditTargetProfileIsWindows(target_profile) {
         return "cmd /C exit 7"
@@ -106,7 +106,7 @@ internal procedure systemRunExitSevenCommand(sys: System) -> string@View {
 }
 
 public procedure authoritySystemPrimitiveJudgmentsReference(context: Context) -> bool {
-    let sys: System = context.sys
+    let sys: $System = context.sys
     let missing_value: string@View =
         sys~>get_env("HUV_REFERENCE_ENVIRONMENT_KEY_SHOULD_NOT_EXIST")
     let zero_status: i32 = sys~>run(systemRunSuccessCommand(sys))
@@ -130,7 +130,7 @@ public procedure authoritySystemStateElidedEquivalencesReference(
 }
 
 public procedure authoritySystemPrimitiveCallsReference(context: Context) -> bool {
-    let sys: System = context.sys
+    let sys: $System = context.sys
     let missing_value: string@View =
         sys~>get_env("HUV_REFERENCE_ENVIRONMENT_KEY_SHOULD_NOT_EXIST")
     let executable_path: string@View = sys~>executable_path()
@@ -149,7 +149,7 @@ public procedure authoritySystemPrimitiveCallsReference(context: Context) -> boo
 }
 
 public procedure authoritySystemEnvironmentPrimitiveReference(context: Context) -> bool {
-    let sys: System = context.sys
+    let sys: $System = context.sys
     let search_path: string@View = sys~>get_env("PATH")
     let missing_value: string@View =
         sys~>get_env("HUV_REFERENCE_ENVIRONMENT_KEY_SHOULD_NOT_EXIST")
@@ -159,7 +159,7 @@ public procedure authoritySystemEnvironmentPrimitiveReference(context: Context) 
 }
 
 public procedure authoritySystemRunPrimitiveReference(context: Context) -> bool {
-    let sys: System = context.sys
+    let sys: $System = context.sys
     let zero_status: i32 = sys~>run(systemRunSuccessCommand(sys))
     let nonzero_status: i32 = sys~>run(systemRunExitSevenCommand(sys))
     return zero_status == 0 && nonzero_status == 7

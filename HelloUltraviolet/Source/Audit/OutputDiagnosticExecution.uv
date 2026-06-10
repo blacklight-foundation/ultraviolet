@@ -2470,12 +2470,24 @@ internal procedure outputDiagnosticDirSeqReadFailureBuildCaseWithPaths(
     let _ = authority.io~>remove(output_path)
     let _ = authority.io~>remove(error_path)
     let out_dir_ready: Outcome<(), IoError> = authority.io~>ensure_dir(out_dir_path)
-    if !diagnosticIoSucceeded(out_dir_ready) ||
-        !outputDiagnosticStageDirSeqReadFailureProject(
+    if !diagnosticIoSucceeded(out_dir_ready) {
+        let _ = diagnosticReportFixtureFailure(
             authority,
-            project_root,
+            "output diagnostic DirSeq out-dir setup failed: ",
+            out_dir_path
+        )
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+    if !outputDiagnosticStageDirSeqReadFailureProject(
+        authority,
+        project_root,
+        blocked_dir
+    ) {
+        let _ = diagnosticReportFixtureFailure(
+            authority,
+            "output diagnostic DirSeq permission setup failed: ",
             blocked_dir
-        ) {
+        )
         return diagnosticFixtureExecutionResult(false, 0usize)
     }
 
@@ -2681,12 +2693,81 @@ internal procedure outputDiagnosticDirSeqReadFailureExercise(
     )
 }
 
-internal procedure outputDiagnosticDirSeqReadFailureWithProjectSuffix(
+internal procedure outputDiagnosticDirSeqReadFailureProbeProjectWithPaths(
     authority: TestAuthority,
+    project_root: string@View,
+    blocked_dir: string@View
+) -> bool {
+    let staged: bool = outputDiagnosticStageDirSeqReadFailureProject(
+        authority,
+        project_root,
+        blocked_dir
+    )
+    let restored: bool =
+        outputDiagnosticDirSeqReadFailureRestoreAccess(authority, blocked_dir)
+    let _ = authority.io~>remove(project_root)
+    return staged && restored
+}
+
+internal procedure outputDiagnosticDirSeqReadFailureProbeProjectWithRootPath(
+    authority: TestAuthority,
+    root_path: string@View,
+    project_suffix: string@View
+) -> bool {
+    if string::length(root_path) == 0usize {
+        return false
+    }
+
+    let project_created: Outcome<unique string@Managed, AllocationError> =
+        string::from(root_path, authority.heap)
+    return if move project_created is {
+        @Value { value: project_path } {
+            if !diagnosticBuildPath(project_path, project_suffix, authority.heap) {
+                false
+            } else {
+                let project_root: string@View = string::as_view(project_path)
+                outputDiagnosticDirSeqReadFailureProbeProject(authority, project_root)
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure outputDiagnosticDirSeqReadFailureProbeProject(
+    authority: TestAuthority,
+    project_root: string@View
+) -> bool {
+    let blocked_created: Outcome<unique string@Managed, AllocationError> =
+        string::from(project_root, authority.heap)
+    return if move blocked_created is {
+        @Value { value } {
+            if !diagnosticBuildPath(value, "Source", authority.heap) ||
+                !diagnosticBuildPath(value, "Blocked", authority.heap) {
+                false
+            } else {
+                let blocked_dir: string@View = string::as_view(value)
+                outputDiagnosticDirSeqReadFailureProbeProjectWithPaths(
+                    authority,
+                    project_root,
+                    blocked_dir
+                )
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure outputDiagnosticDirSeqReadFailureWithRootAndProjectSuffix(
+    authority: TestAuthority,
+    root_path: string@View,
     project_suffix: string@View
 ) -> DiagnosticFixtureExecutionResult {
     let project_created: Outcome<unique string@Managed, AllocationError> =
-        string::from(authority.temporary_directory, authority.heap)
+        string::from(root_path, authority.heap)
     return if move project_created is {
         @Value { value } {
             if !diagnosticBuildPath(
@@ -2707,6 +2788,97 @@ internal procedure outputDiagnosticDirSeqReadFailureWithProjectSuffix(
             diagnosticFixtureExecutionResult(false, 0usize)
         }
     }
+}
+
+internal procedure outputDiagnosticDirSeqReadFailureWithProjectSuffix(
+    authority: TestAuthority,
+    project_suffix: string@View
+) -> DiagnosticFixtureExecutionResult {
+    if outputDiagnosticDirSeqReadFailureProbeProjectWithRootPath(
+        authority,
+        authority.temporary_directory,
+        project_suffix
+    ) {
+        return outputDiagnosticDirSeqReadFailureWithRootAndProjectSuffix(
+            authority,
+            authority.temporary_directory,
+            project_suffix
+        )
+    }
+
+    if auditTextEquals(authority.target_profile, "x86_64-win64") {
+        let temp_directory: string@View = authority.sys~>get_env("TEMP")
+        if outputDiagnosticDirSeqReadFailureProbeProjectWithRootPath(
+            authority,
+            temp_directory,
+            project_suffix
+        ) {
+            return outputDiagnosticDirSeqReadFailureWithRootAndProjectSuffix(
+                authority,
+                temp_directory,
+                project_suffix
+            )
+        }
+
+        let tmp_directory: string@View = authority.sys~>get_env("TMP")
+        if outputDiagnosticDirSeqReadFailureProbeProjectWithRootPath(
+            authority,
+            tmp_directory,
+            project_suffix
+        ) {
+            return outputDiagnosticDirSeqReadFailureWithRootAndProjectSuffix(
+                authority,
+                tmp_directory,
+                project_suffix
+            )
+        }
+    } else {
+        let tmpdir_directory: string@View = authority.sys~>get_env("TMPDIR")
+        if outputDiagnosticDirSeqReadFailureProbeProjectWithRootPath(
+            authority,
+            tmpdir_directory,
+            project_suffix
+        ) {
+            return outputDiagnosticDirSeqReadFailureWithRootAndProjectSuffix(
+                authority,
+                tmpdir_directory,
+                project_suffix
+            )
+        }
+
+        let temp_directory: string@View = authority.sys~>get_env("TEMP")
+        if outputDiagnosticDirSeqReadFailureProbeProjectWithRootPath(
+            authority,
+            temp_directory,
+            project_suffix
+        ) {
+            return outputDiagnosticDirSeqReadFailureWithRootAndProjectSuffix(
+                authority,
+                temp_directory,
+                project_suffix
+            )
+        }
+
+        let tmp_directory: string@View = authority.sys~>get_env("TMP")
+        if outputDiagnosticDirSeqReadFailureProbeProjectWithRootPath(
+            authority,
+            tmp_directory,
+            project_suffix
+        ) {
+            return outputDiagnosticDirSeqReadFailureWithRootAndProjectSuffix(
+                authority,
+                tmp_directory,
+                project_suffix
+            )
+        }
+    }
+
+    let _ = diagnosticReportFixtureFailure(
+        authority,
+        "output diagnostic DirSeq permission scratch root unavailable: ",
+        project_suffix
+    )
+    return diagnosticFixtureExecutionResult(false, 0usize)
 }
 
 internal procedure outputDiagnosticManifestRequiredTypesInvalidExercise(

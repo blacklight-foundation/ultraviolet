@@ -927,7 +927,7 @@ static SubtypingResult SubtypingUncached(const ScopeContext& ctx,
                   return {false, sub.diag_id, false};
                 }
                 if (!sub.subtype) {
-                  SPEC_RULE("Sub-Generic-Covariant-Err");
+                  SPEC_RULE("Chk-Generic-Variance-Err");
                   return {true, std::optional<std::string_view>{"E-TYP-1521"}, false};
                 }
                 break;
@@ -938,7 +938,7 @@ static SubtypingResult SubtypingUncached(const ScopeContext& ctx,
                   return {false, sub.diag_id, false};
                 }
                 if (!sub.subtype) {
-                  SPEC_RULE("Sub-Generic-Contravariant-Err");
+                  SPEC_RULE("Chk-Generic-Variance-Err");
                   return {true, std::optional<std::string_view>{"E-TYP-1521"}, false};
                 }
                 break;
@@ -949,7 +949,7 @@ static SubtypingResult SubtypingUncached(const ScopeContext& ctx,
                   return {false, equiv.diag_id, false};
                 }
                 if (!equiv.equiv) {
-                  SPEC_RULE("Sub-Generic-Invariant-Err");
+                  SPEC_RULE("Chk-Generic-Invariant-Err");
                   return {true, std::optional<std::string_view>{"E-TYP-1520"}, false};
                 }
                 break;
@@ -1016,17 +1016,6 @@ static SubtypingResult SubtypingUncached(const ScopeContext& ctx,
     }
     SPEC_RULE("Sub-Async");
     return {true, std::nullopt, true};
-  }
-
-  if (const auto* ldyn = std::get_if<TypeDynamic>(&lhs->node)) {
-    if (const auto* rdyn = std::get_if<TypeDynamic>(&rhs->node)) {
-      if (IsExecutionDomainTypePath(rdyn->path)) {
-        if (IsCpuDomainTypePath(ldyn->path) || IsGpuDomainTypePath(ldyn->path) ||
-            IsInlineDomainTypePath(ldyn->path)) {
-          return {true, std::nullopt, true};
-        }
-      }
-    }
   }
 
   // §11.3: ConcreteType <: $ClassName when ConcreteType implements ClassName

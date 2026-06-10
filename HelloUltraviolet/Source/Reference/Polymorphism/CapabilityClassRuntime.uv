@@ -7,7 +7,7 @@ internal record CapabilityContextFields {
     internal io: $IO
     internal net: $Network
     internal heap: $HeapAllocator
-    internal sys: System
+    internal sys: $System
     internal reactor: $Reactor
     internal time: $Time
     internal cpu: $ExecutionDomain
@@ -34,6 +34,10 @@ internal procedure capabilityBoundAcceptsHeapAllocator<TValue <: HeapAllocator>(
 
 internal procedure capabilityBoundAcceptsExecutionDomain<TValue <: ExecutionDomain>() -> bool {
     return sizeof($ExecutionDomain) > 0usize
+}
+
+internal procedure capabilityBoundAcceptsSystem<TValue <: System>() -> bool {
+    return sizeof($System) > 0usize
 }
 
 internal procedure capabilityBoundAcceptsReactor<TValue <: Reactor>() -> bool {
@@ -169,11 +173,11 @@ internal procedure capabilityReactorRuns(reactor: $Reactor) -> bool {
         capabilityUnionI32Is(tracked_value, 41)
 }
 
-internal procedure capabilitySystemExitTypechecks(sys: System, code: i32) -> ! {
+internal procedure capabilitySystemExitTypechecks(sys: $System, code: i32) -> ! {
     return sys~>exit(code)
 }
 
-internal procedure capabilitySystemRunSuccessCommand(sys: System) -> string@View {
+internal procedure capabilitySystemRunSuccessCommand(sys: $System) -> string@View {
     let target_profile: string@View = auditTargetProfile(sys)
     if auditTargetProfileIsWindows(target_profile) {
         return "cmd /C exit 0"
@@ -181,7 +185,7 @@ internal procedure capabilitySystemRunSuccessCommand(sys: System) -> string@View
     return "exit 0"
 }
 
-internal procedure capabilitySystemObserved(sys: System) -> bool {
+internal procedure capabilitySystemObserved(sys: $System) -> bool {
     let missing_environment: string@View =
         sys~>get_env("HUV_CAPABILITY_CLASSES_ENVIRONMENT_KEY_SHOULD_NOT_EXIST")
     let executable_path: string@View = sys~>executable_path()

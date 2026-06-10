@@ -105,32 +105,6 @@ static RefineUnpack UnpackRefine(const TypeRef& type) {
   return out;
 }
 
-static bool PredicatesImply(const std::vector<ast::ExprPtr>& premises,
-                            const std::vector<ast::ExprPtr>& goals) {
-  if (goals.empty()) {
-    return true;
-  }
-  StaticProofContext proof_ctx;
-  const core::Span default_span =
-      goals.front() ? goals.front()->span : core::Span{};
-  for (const auto& premise : premises) {
-    if (!premise) {
-      continue;
-    }
-    AddFact(proof_ctx, premise, default_span);
-  }
-  for (const auto& goal : goals) {
-    if (!goal) {
-      return false;
-    }
-    const auto proof = StaticProof(proof_ctx, goal);
-    if (!proof.provable) {
-      return false;
-    }
-  }
-  return true;
-}
-
 static bool PredicateEquiv(const std::vector<ast::ExprPtr>& lhs_preds,
                            const std::vector<ast::ExprPtr>& rhs_preds) {
   if (lhs_preds.empty() && rhs_preds.empty()) {
@@ -139,20 +113,21 @@ static bool PredicateEquiv(const std::vector<ast::ExprPtr>& lhs_preds,
   if (lhs_preds.empty() || rhs_preds.empty()) {
     return false;
   }
-  if (lhs_preds.size() == rhs_preds.size()) {
-    bool struct_equal = true;
-    for (std::size_t i = 0; i < lhs_preds.size(); ++i) {
-      if (!ExprStructEqual(lhs_preds[i], rhs_preds[i])) {
-        struct_equal = false;
-        break;
-      }
-    }
-    if (struct_equal) {
-      return true;
+  // Spec §8.1 PredicateEquiv: structural equality after subject
+  // normalization, and nothing broader. Refinement predicates uniformly
+  // spell the subject as `self`, so structural equality realizes PredNorm.
+  // Semantic (prover-based) equivalence is intentionally NOT accepted here;
+  // implication-based reasoning remains valid only for refinement
+  // subsumption checks, never for type equivalence.
+  if (lhs_preds.size() != rhs_preds.size()) {
+    return false;
+  }
+  for (std::size_t i = 0; i < lhs_preds.size(); ++i) {
+    if (!ExprStructEqual(lhs_preds[i], rhs_preds[i])) {
+      return false;
     }
   }
-  return PredicatesImply(lhs_preds, rhs_preds) &&
-         PredicatesImply(rhs_preds, lhs_preds);
+  return true;
 }
 
 struct TypePairKey {

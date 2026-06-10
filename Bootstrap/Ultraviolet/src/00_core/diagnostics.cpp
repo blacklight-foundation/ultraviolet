@@ -221,7 +221,8 @@ static void RecordDiagnosticTableObligations(const Diagnostic& diag,
       code == "E-TST-0102" ||
       code == "E-TST-0103" || code == "E-TST-0104" ||
       code == "E-TST-0105" || code == "E-TST-0106" ||
-      code == "E-TST-0107" || code == "E-TST-0108") {
+      code == "E-TST-0107" || code == "E-TST-0108" ||
+      code == "E-TST-0109") {
     RecordDiagnosticObligation(diag, "diagnostics.TestAttributes", payload);
   }
   if (code == "E-CNF-0401" || code == "E-SRC-0510" ||
@@ -363,7 +364,7 @@ static void RecordDiagnosticTableObligations(const Diagnostic& diag,
       code == "E-SEM-2591" || code == "E-MEM-3031" ||
       code == "E-UNS-0102" || code == "E-UNS-0103" ||
       code == "E-UNS-0104" || code == "E-UNS-0107" ||
-      code == "W-SAFE-0100") {
+      code == "W-SAF-0100") {
     RecordDiagnosticObligation(
         diag, "diag.16.ExpressionDiagnosticsSupplement", payload);
   }
@@ -520,7 +521,7 @@ static void RecordDiagnosticTableObligations(const Diagnostic& diag,
   }
   if (code == "E-SEM-2528" || code == "E-MEM-3030" ||
       code == "E-MEM-3031" || code == "E-UNS-0104" ||
-      code == "W-SAFE-0100") {
+      code == "W-SAF-0100") {
     RecordDiagnosticObligation(
         diag, "diag.16.CastAndTransmuteExpressions", payload);
   }

@@ -948,8 +948,14 @@ ComptimeResult ComptimePass(const std::vector<ast::ASTModule>& modules,
     SPEC_RULE("requirement.22.Phase2ExecutionPosition");
     const auto& module = modules[module_index];
     available_modules.clear();
+    std::vector<const ast::ASTModule*> phase2_expanded_modules;
+    phase2_expanded_modules.reserve(processed_modules.size());
     for (const std::size_t processed_index : processed_modules) {
-      available_modules.push_back(&expanded[processed_index]);
+      // Spec §22.1.4: other modules are visible in their Phase-1
+      // (source-present) form only; Phase-2 emissions of other modules are
+      // not referenceable (CtExpand-CrossModule-Emit-Err / E-CTE-0090).
+      available_modules.push_back(&modules[processed_index]);
+      phase2_expanded_modules.push_back(&expanded[processed_index]);
     }
     available_modules.push_back(&expanded[module_index]);
 
@@ -967,6 +973,7 @@ ComptimeResult ComptimePass(const std::vector<ast::ASTModule>& modules,
     env.source_root = SourceRootForModule(module, options);
     env.next_hygiene = next_hygiene;
     env.available_modules = available_modules;
+    env.phase2_expanded_modules = std::move(phase2_expanded_modules);
     env.available_module_names = std::move(available_module_names);
     env.files = project_files;
 

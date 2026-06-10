@@ -111,7 +111,7 @@ public procedure testAttributeWrongTargetExpectedDiagnosticFileMatches(context: 
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Attributes/TestAttributeWrongTarget/Expected.uv",
-        "//! Expected diagnostic metadata for the TestAttributeWrongTarget rejected-source specimen.\n\nexpectedDiagnostic(\"E-MOD-2452\", \"diagnostics.TestAttributes\")\nexpectedDiagnostic(\"E-MOD-2452\", \"req.TestAttributeProcedureTarget\")\n"
+        "//! Expected diagnostic metadata for the TestAttributeWrongTarget rejected-source specimen.\n\nexpectedDiagnostic(\"E-TST-0109\", \"diagnostics.TestAttributes\")\nexpectedDiagnostic(\"E-TST-0109\", \"req.TestAttributeProcedureTarget\")\n"
     )
 }
 
@@ -227,7 +227,7 @@ public procedure genericInvariantSubtypingExpectedDiagnosticFileMatches(
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/GenericInvariantSubtyping/Expected.uv",
-        "//! Expected diagnostic metadata for the GenericInvariantSubtyping rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1520\", \"Sub-Generic-Invariant-Err\")\n"
+        "//! Expected diagnostic metadata for the GenericInvariantSubtyping rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1520\", \"Chk-Generic-Invariant-Err\")\n"
     )
 }
 
@@ -237,7 +237,7 @@ public procedure genericCovariantSubtypingExpectedDiagnosticFileMatches(
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/GenericCovariantSubtyping/Expected.uv",
-        "//! Expected diagnostic metadata for the GenericCovariantSubtyping rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1521\", \"Sub-Generic-Covariant-Err\")\n"
+        "//! Expected diagnostic metadata for the GenericCovariantSubtyping rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1521\", \"Chk-Generic-Variance-Err\")\n"
     )
 }
 
@@ -247,7 +247,7 @@ public procedure genericContravariantSubtypingExpectedDiagnosticFileMatches(
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/GenericContravariantSubtyping/Expected.uv",
-        "//! Expected diagnostic metadata for the GenericContravariantSubtyping rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1521\", \"Sub-Generic-Contravariant-Err\")\n"
+        "//! Expected diagnostic metadata for the GenericContravariantSubtyping rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1521\", \"Chk-Generic-Variance-Err\")\n"
     )
 }
 
@@ -1740,6 +1740,16 @@ public procedure ifCaseEnumNonExhaustiveExpectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Patterns/IfCaseEnumNonExhaustive/Expected.uv",
         "//! Expected diagnostic metadata for the IfCaseEnumNonExhaustive rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2741\", \"rule.17.IfCase-Enum-NonExhaustive\")\n"
+    )
+}
+
+public procedure ifCaseEnumRefutablePayloadCoverageExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Patterns/IfCaseEnumRefutablePayloadCoverage/Expected.uv",
+        "//! Expected diagnostic metadata for the IfCaseEnumRefutablePayloadCoverage rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2741\", \"rule.17.IfCase-Enum-NonExhaustive\")\n"
     )
 }
 

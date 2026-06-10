@@ -4,6 +4,48 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup025() -> usize {
     var count: usize = 0usize
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
+            "rule.24.ABI-ForeignCall",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.PanicRecordAndPanicOut",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.MangleJudgementAndConstructors",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
             "def.24.PathSymbolHelpers",
             "HelloUltraviolet::Audit",
             "artifactProjectEmitLlExercise",
@@ -2749,48 +2791,6 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup025() -> usize {
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
             "rule.24.Destroy-Cons",
-            "HelloUltraviolet::Audit",
-            "artifactProjectEmitLlExercise",
-            "Source/Audit/ArtifactProjectExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.24.CleanupJudgDyn",
-            "HelloUltraviolet::Audit",
-            "artifactProjectEmitLlExercise",
-            "Source/Audit/ArtifactProjectExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.24.Cleanup-Empty",
-            "HelloUltraviolet::Audit",
-            "artifactProjectEmitLlExercise",
-            "Source/Audit/ArtifactProjectExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.24.Cleanup-Cons-Drop",
             "HelloUltraviolet::Audit",
             "artifactProjectEmitLlExercise",
             "Source/Audit/ArtifactProjectExecution.uv",

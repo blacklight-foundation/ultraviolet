@@ -4,6 +4,48 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup011() -> usize {
     var count: usize = 0usize
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
+            "Parse-Slice-Type",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesSlicesReference",
+            "Source/Reference/DataTypes/Slices.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "req.IndexAccessSliceOwnership",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesSlicesReference",
+            "Source/Reference/DataTypes/Slices.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.TypeSliceAst",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesSlicesReference",
+            "Source/Reference/DataTypes/Slices.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
             "req.IndexAccessSliceExpressionSemantics",
             "HelloUltraviolet::Reference::DataTypes",
             "runDataTypesSlicesReference",
@@ -2749,48 +2791,6 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup011() -> usize {
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
             "def.UnionTaggedBits",
-            "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesUnionsReference",
-            "Source/Reference/DataTypes/Unions.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.UnionBits",
-            "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesUnionsReference",
-            "Source/Reference/DataTypes/Unions.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.UnionValueBits",
-            "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesUnionsReference",
-            "Source/Reference/DataTypes/Unions.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.UnionValueType",
             "HelloUltraviolet::Reference::DataTypes",
             "runDataTypesUnionsReference",
             "Source/Reference/DataTypes/Unions.uv",

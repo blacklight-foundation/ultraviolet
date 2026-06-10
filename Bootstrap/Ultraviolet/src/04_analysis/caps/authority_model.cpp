@@ -68,9 +68,6 @@ std::optional<CapabilityKind> CapabilityKindFromTypeRef(const TypeRef& type) {
   if (const auto* dyn = std::get_if<TypeDynamic>(&type->node)) {
     return CapabilityKindFromDynamic(*dyn);
   }
-  if (const auto* path = std::get_if<TypePathType>(&type->node)) {
-    return CapabilityKindFromPath(path->path);
-  }
   return std::nullopt;
 }
 
@@ -1457,16 +1454,6 @@ CapabilityPath TraceCapabilityFlow(
           }
           return result;
         }
-        // Identifier that is the Context parameter itself
-        else if constexpr (std::is_same_v<T, ast::IdentifierExpr>) {
-          if (IsContextBinding(node.name) && IsContextType(expr_type)) {
-            result.root = node.name;
-            result.path = {node.name};
-            result.capability = CapabilityKind::Context;
-            result.valid = true;
-          }
-          return result;
-        }
         else {
           return result;
         }
@@ -1798,8 +1785,9 @@ bool IsCapabilityFieldAccess(
     return false;
   }
 
-  return IdEq(access.name, "io") || IdEq(access.name, "heap") ||
-         IdEq(access.name, "sys") || IdEq(access.name, "reactor");
+  return IdEq(access.name, "io") || IdEq(access.name, "net") ||
+         IdEq(access.name, "heap") || IdEq(access.name, "sys") ||
+         IdEq(access.name, "reactor") || IdEq(access.name, "time");
 }
 
 // =============================================================================

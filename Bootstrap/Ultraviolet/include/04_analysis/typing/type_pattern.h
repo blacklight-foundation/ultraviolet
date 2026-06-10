@@ -15,4 +15,16 @@ bool IrrefutablePattern(const ScopeContext& ctx,
                         const ast::PatternPtr& pattern,
                         const TypeRef& expected);
 
+// Spec §17.6.4 CoversVariant: true iff `pattern` is an enum pattern for a
+// variant of `expected` whose payload subpatterns are all irrefutable.
+bool EnumPatternCoversVariant(const ScopeContext& ctx,
+                              const ast::PatternPtr& pattern,
+                              const TypeRef& expected);
+
+// Spec §17.6.4 CoversState: true iff `pattern` is a modal pattern for a state
+// of `expected` whose payload field subpatterns are all irrefutable.
+bool ModalPatternCoversState(const ScopeContext& ctx,
+                             const ast::PatternPtr& pattern,
+                             const TypeRef& expected);
+
 }  // namespace ultraviolet::analysis

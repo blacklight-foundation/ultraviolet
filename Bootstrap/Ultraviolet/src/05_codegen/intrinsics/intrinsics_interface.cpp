@@ -840,7 +840,7 @@ std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
       analysis::MakeTypeDynamic({"MonotonicTime"});
   const analysis::TypeRef t_wall_time = analysis::MakeTypeDynamic({"WallTime"});
   const analysis::TypeRef t_context = analysis::MakeTypePath({"Context"});
-  const analysis::TypeRef t_system = analysis::MakeTypePath({"System"});
+  const analysis::TypeRef t_system = analysis::MakeTypeDynamic({"System"});
   const analysis::TypeRef t_io_error = analysis::MakeTypePath({"IoError"});
   const analysis::TypeRef t_time_error = analysis::MakeTypePath({"TimeError"});
   const analysis::TypeRef t_duration = analysis::MakeTypePath({"Duration"});

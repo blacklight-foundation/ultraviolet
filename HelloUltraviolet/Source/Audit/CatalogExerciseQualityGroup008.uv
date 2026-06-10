@@ -4,6 +4,48 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup008() -> usize {
     var count: usize = 0usize
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
+            "Unify-Perm",
+            "HelloUltraviolet::Reference::Types",
+            "runTypesInferenceReference",
+            "Source/Reference/Types/Inference.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Unify-Perm-Fail",
+            "HelloUltraviolet::Reference::Types",
+            "runTypesInferenceReference",
+            "Source/Reference/Types/Inference.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Unify-Func",
+            "HelloUltraviolet::Reference::Types",
+            "runTypesInferenceReference",
+            "Source/Reference/Types/Inference.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
             "Unify-Func-Fail",
             "HelloUltraviolet::Reference::Types",
             "runTypesInferenceReference",
@@ -2752,48 +2794,6 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup008() -> usize {
             "HelloUltraviolet::Audit",
             "rejectedSourceFixturesCompileAndEmitExpectedDiagnostics",
             "Source/Audit/DiagnosticFixtureExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.BindingActivityNoAliasCreation",
-            "HelloUltraviolet::Reference::Permissions",
-            "runPermissionsActivityStatesReference",
-            "Source/Reference/Permissions/ActivityStates.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.BindingActivityDeterministicReactivation",
-            "HelloUltraviolet::Reference::Permissions",
-            "runPermissionsActivityStatesReference",
-            "Source/Reference/Permissions/ActivityStates.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "conformance.BindingActivityLowering",
-            "HelloUltraviolet::Audit",
-            "artifactProjectEmitLlExercise",
-            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
