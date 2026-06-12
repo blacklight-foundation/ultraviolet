@@ -181,11 +181,11 @@ The verification runner executes:
 - `Tools/ExtractObligationLedger.py --check`
 - `Tools/GenerateHelloCatalog.py --check`
 - The platform release package build.
-- `uv build HelloUltraviolet --check`.
-- `uv build HelloUltraviolet`.
+- `uvc build HelloUltraviolet --check`.
+- `uvc build HelloUltraviolet`.
 - `HelloUltraviolet`.
 - `HelloUltraviolet --audit`.
-- `uv test HelloUltraviolet`.
+- `uvc test HelloUltraviolet`.
 
 The verification must end with `Verification result: PASS` and a
 `Verification transcript SHA256:` line. Include the verification text or CI artifact URL in
@@ -205,13 +205,13 @@ cmake --preset windows-release
 cmake --build --preset windows-release-package
 cd C:\Dev\Ultraviolet
 
-.\Bootstrap\Ultraviolet\build\windows\out\uv.exe build .\HelloUltraviolet `
+.\Bootstrap\Ultraviolet\build\windows\out\uvc.exe build .\HelloUltraviolet `
     --target-profile x86_64-win64 --check
-.\Bootstrap\Ultraviolet\build\windows\out\uv.exe build .\HelloUltraviolet `
+.\Bootstrap\Ultraviolet\build\windows\out\uvc.exe build .\HelloUltraviolet `
     --target-profile x86_64-win64
 .\HelloUltraviolet\Build\Binary\HelloUltraviolet.exe
 .\HelloUltraviolet\Build\Binary\HelloUltraviolet.exe --audit
-.\Bootstrap\Ultraviolet\build\windows\out\uv.exe test .\HelloUltraviolet `
+.\Bootstrap\Ultraviolet\build\windows\out\uvc.exe test .\HelloUltraviolet `
     --target-profile x86_64-win64
 ```
 

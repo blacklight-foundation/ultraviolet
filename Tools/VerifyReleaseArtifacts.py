@@ -164,7 +164,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--compiler",
         type=Path,
-        default=ROOT / "Bootstrap" / "Ultraviolet" / "build" / "macos" / "out" / "uv",
+        default=ROOT
+        / "Bootstrap"
+        / "Ultraviolet"
+        / "build"
+        / "macos"
+        / "out"
+        / "uvc",
         help="staged macOS compiler executable",
     )
     parser.add_argument(
