@@ -2,9 +2,10 @@ param(
     [string] $Version = "latest",
     [string] $InstallDir = "",
     [string] $BinDir = "",
-    [string] $Command = "uv",
+    [string] $Command = "uvc",
     [switch] $UseUv,
     [switch] $Both,
+    [string] $PythonUvCommand = "pyuv",
     [switch] $NoPath,
     [switch] $Yes,
     [string] $SourceUrl = "",
@@ -220,6 +221,9 @@ if ($env:ULTRAVIOLET_BIN_DIR -and -not $PSBoundParameters.ContainsKey("BinDir"))
 if ($env:ULTRAVIOLET_INSTALL_COMMAND -and -not $PSBoundParameters.ContainsKey("Command")) {
     $Command = $env:ULTRAVIOLET_INSTALL_COMMAND
 }
+if ($env:ULTRAVIOLET_INSTALL_PYTHON_UV_COMMAND -and -not $PSBoundParameters.ContainsKey("PythonUvCommand")) {
+    $PythonUvCommand = $env:ULTRAVIOLET_INSTALL_PYTHON_UV_COMMAND
+}
 if ($env:ULTRAVIOLET_INSTALL_SOURCE_URL -and -not $PSBoundParameters.ContainsKey("SourceUrl")) {
     $SourceUrl = $env:ULTRAVIOLET_INSTALL_SOURCE_URL
 }
@@ -254,6 +258,15 @@ $Command = $Command.ToLowerInvariant()
 if (@("uvc", "uv", "both") -notcontains $Command) {
     Fail-Install "-Command must be one of: uvc, uv, both"
 }
+if (-not $PythonUvCommand -or
+    $PythonUvCommand.Contains("/") -or
+    $PythonUvCommand.Contains("\") -or
+    $PythonUvCommand -notmatch "^[A-Za-z0-9._-]+$") {
+    Fail-Install "-PythonUvCommand must be a command name containing only letters, digits, '.', '_', and '-'"
+}
+if (@("uv", "uvc") -contains $PythonUvCommand.ToLowerInvariant()) {
+    Fail-Install "-PythonUvCommand cannot be uv or uvc"
+}
 
 if (-not $SourceUrl -and -not $FromLocal) {
     if ($Version -eq "latest") {
@@ -279,31 +292,30 @@ if ($existingUv -and -not (Test-InsideDirectory $existingUv.Path $BinDir)) {
     }
 }
 
-if ($pythonUvDetected -and
-    -not $PSBoundParameters.ContainsKey("Command") -and
-    -not $UseUv -and
-    -not $Both -and
-    -not $Yes) {
-    Write-Host ""
-    Write-Host "Detected existing Python uv: $($existingUv.Path)"
-    Write-Host "Version: $($existingUv.Version)"
-    Write-Host "Recommended: install Ultraviolet as uv and expose Python uv as pyuv."
-    $answer = Read-Host "Choose command mode [uv/uvc/both] (default: uv)"
-    if ($answer) {
-        $answer = $answer.ToLowerInvariant()
-        if (@("uvc", "uv", "both") -notcontains $answer) {
-            Fail-Install "invalid command mode: $answer"
-        }
-        $Command = $answer
-    }
+function Test-CommandInstallsUv {
+    param([string] $CommandMode)
+    return $CommandMode -eq "uv" -or $CommandMode -eq "both"
 }
 
-if ($pythonUvDetected -and
-    -not $PSBoundParameters.ContainsKey("Command") -and
-    -not $UseUv -and
-    -not $Both -and
-    $Yes) {
-    $Command = "uvc"
+function Write-PythonUvConflictWarning {
+    Write-Host ""
+    Write-Host "Warning: installing Ultraviolet as uv can shadow Python uv."
+    Write-Host "Detected Python uv: $($existingUv.Path)"
+    Write-Host "Version: $($existingUv.Version)"
+    Write-Host "Python uv will be available as: $PythonUvCommand"
+}
+
+if ($pythonUvDetected -and (Test-CommandInstallsUv $Command)) {
+    Write-PythonUvConflictWarning
+    if (-not $Yes -and -not $DryRun) {
+        if ([Console]::IsInputRedirected) {
+            Fail-Install "Python uv conflict detected; rerun with -Yes to confirm, use the default uvc command, or choose a different -PythonUvCommand"
+        }
+        $answer = Read-Host "Continue? [y/N]"
+        if (@("y", "yes") -notcontains $answer.ToLowerInvariant()) {
+            Fail-Install "install cancelled"
+        }
+    }
 }
 
 Write-InstallLog "Ultraviolet installer"
@@ -327,6 +339,9 @@ if ($DryRun) {
     }
     if ($pythonUvDetected) {
         Write-InstallLog "Detected Python uv: $($existingUv.Path)"
+        if (Test-CommandInstallsUv $Command) {
+            Write-InstallLog "Would preserve Python uv as: $PythonUvCommand"
+        }
     }
     Write-InstallLog "Dry run complete."
     return
@@ -382,6 +397,9 @@ try {
     if (-not (Test-Path -LiteralPath $compilerUvc)) {
         $compilerUvc = $compilerUv
     }
+    if (-not (Test-Path -LiteralPath $compilerUv)) {
+        $compilerUv = $compilerUvc
+    }
 
     switch ($Command) {
         "uvc" {
@@ -389,13 +407,13 @@ try {
         }
         "uv" {
             if ($pythonUvDetected) {
-                New-CmdShim "pyuv" $existingUv.Path
+                New-CmdShim $PythonUvCommand $existingUv.Path
             }
             New-CmdShim "uv" $compilerUv
         }
         "both" {
             if ($pythonUvDetected) {
-                New-CmdShim "pyuv" $existingUv.Path
+                New-CmdShim $PythonUvCommand $existingUv.Path
             }
             New-CmdShim "uv" $compilerUv
             New-CmdShim "uvc" $compilerUvc
@@ -421,7 +439,7 @@ try {
     }
     if ($pythonUvDetected -and ($Command -eq "uv" -or $Command -eq "both")) {
         Write-InstallLog "Python uv is available as:"
-        Write-InstallLog "  pyuv --version"
+        Write-InstallLog "  $PythonUvCommand --version"
     }
 } finally {
     Remove-Item -LiteralPath $tempRoot -Recurse -Force -ErrorAction SilentlyContinue

@@ -55,7 +55,13 @@ TARGETS = {
         configure_preset="linux-release",
         package_preset="linux-release-package",
         release_platform="linux",
-        compiler_path=ROOT / "Bootstrap" / "Ultraviolet" / "build" / "linux" / "out" / "uv",
+        compiler_path=ROOT
+        / "Bootstrap"
+        / "Ultraviolet"
+        / "build"
+        / "linux"
+        / "out"
+        / "uvc",
         executable_path=ROOT / "HelloUltraviolet" / "Build" / "Binary" / "HelloUltraviolet",
     ),
     "x86_64-win64": TargetConfig(
@@ -70,7 +76,7 @@ TARGETS = {
         / "build"
         / "windows"
         / "out"
-        / "uv.exe",
+        / "uvc.exe",
         executable_path=ROOT
         / "HelloUltraviolet"
         / "Build"
@@ -83,7 +89,13 @@ TARGETS = {
         configure_preset="macos-release",
         package_preset="macos-release-package",
         release_platform="macos",
-        compiler_path=ROOT / "Bootstrap" / "Ultraviolet" / "build" / "macos" / "out" / "uv",
+        compiler_path=ROOT
+        / "Bootstrap"
+        / "Ultraviolet"
+        / "build"
+        / "macos"
+        / "out"
+        / "uvc",
         executable_path=ROOT / "HelloUltraviolet" / "Build" / "Binary" / "HelloUltraviolet",
     ),
 }
@@ -562,14 +574,14 @@ def release_package_probe_gates(
             install_script_probe_command(config),
         ),
         VerificationGate(
-            f"{label} installed uv help",
-            ROOT,
-            (str(installed_command_path(config, "uv")), "--help"),
-        ),
-        VerificationGate(
             f"{label} installed uvc help",
             ROOT,
             (str(installed_command_path(config, "uvc")), "--help"),
+        ),
+        VerificationGate(
+            f"{label} installed uv help",
+            ROOT,
+            (str(installed_command_path(config, "uv")), "--help"),
         ),
     ]
 

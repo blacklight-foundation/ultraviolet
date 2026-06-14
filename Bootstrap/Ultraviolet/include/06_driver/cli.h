@@ -58,9 +58,9 @@ struct CliOptions {
   ColorMode color_mode = ColorMode::Auto;  // --color
   Verbosity verbosity = Verbosity::Normal; // -v/--verbose
   std::string input_path;
-  std::optional<std::string> test_target;  // optional positional uv test target
-  std::optional<std::string> test_name_filter;      // uv test --test
-  std::optional<std::string> test_coverage_filter;  // uv test --coverage
+  std::optional<std::string> test_target;  // optional positional test target
+  std::optional<std::string> test_name_filter;      // test --test
+  std::optional<std::string> test_coverage_filter;  // test --coverage
   std::optional<std::string> test_harness_assembly;  // internal harness build
   std::optional<std::string> test_harness_module;    // internal harness build
   std::optional<std::string> test_harness_dir;       // internal harness build
@@ -68,7 +68,7 @@ struct CliOptions {
   bool do_init = false;              // init subcommand
   bool do_clean = false;             // clean subcommand
   bool do_test = false;              // test subcommand
-  bool test_target_rejected = false; // too many uv test positionals
+  bool test_target_rejected = false; // too many test positionals
 };
 
 // Result of CLI parsing. On failure, error_message explains what went wrong.

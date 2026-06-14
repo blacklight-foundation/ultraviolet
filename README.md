@@ -173,8 +173,12 @@ The repository is organized into three major sections:
 ## Installing the Compiler
 
 Public alpha release builds can be installed from the command line. The default
-install command is `uv`. If Python's `uv` package manager is already detected,
-the installer asks before taking over `uv`.
+install command is `uvc`. To install Ultraviolet as `uv`, pass `--use-uv` on
+Linux or macOS, or `-UseUv` on Windows PowerShell. To install both commands,
+pass `--both` or `-Both`. If Python's `uv` package manager is already detected
+when `uv` is requested, the installer warns before continuing and preserves the
+existing command as `pyuv` by default. Use `--python-uv-command <name>` or
+`-PythonUvCommand <name>` to choose another preserved command name.
 
 Current public alpha release:
 [`v0.1.0-alpha`](https://github.com/blacklight-foundation/ultraviolet/releases/tag/v0.1.0-alpha).
@@ -229,27 +233,27 @@ shim directory to the user `PATH` by default:
 * Windows package: `%LOCALAPPDATA%\Ultraviolet\current`
 * Windows shims: `%LOCALAPPDATA%\Ultraviolet\bin`
 
-If Python `uv` is already installed, the recommended interactive choice is to
-install Ultraviolet as `uv` and preserve the existing Python command as `pyuv`.
-Noninteractive conflict installs use `uvc` unless the command mode is specified.
+The default install does not claim `uv`, so it avoids Python `uv` command
+conflicts. If you explicitly install Ultraviolet as `uv`, the installers preserve
+an existing Python `uv` command under a second shim name.
 
-Linux recommended `uv`/`pyuv` layout:
+Linux optional `uv` layout with Python `uv` preserved as `python-uv`:
 
 ```bash
 release=v0.1.0-alpha
 curl -fsSL "https://raw.githubusercontent.com/blacklight-foundation/ultraviolet/${release}/Tools/InstallUltraviolet.sh" \
-    | sh -s -- --version "$release" --use-uv
+    | sh -s -- --version "$release" --use-uv --python-uv-command python-uv
 ```
 
 macOS uses the same shell installer. Apple Silicon hosts require Xcode Command
 Line Tools so the packaged `clang++` driver can resolve the active SDK.
 
-Windows recommended `uv`/`pyuv` layout:
+Windows optional `uv` layout with Python `uv` preserved as `python-uv`:
 
 ```powershell
 $release = "v0.1.0-alpha"
 $script = irm "https://raw.githubusercontent.com/blacklight-foundation/ultraviolet/$release/Tools/InstallUltraviolet.ps1"
-& ([scriptblock]::Create($script)) -Version $release -UseUv
+& ([scriptblock]::Create($script)) -Version $release -UseUv -PythonUvCommand python-uv
 ```
 
 To avoid modifying `PATH`, pass `--no-path` on Linux or set
@@ -344,22 +348,25 @@ The package step copies the required macOS LLVM tools and ICU dylibs from those
    # Windows: cmake --build --preset windows-release-package
    ```
 
-Upon completion, the compiled command-line compiler is staged as `uv.exe`
-(Windows) or `uv` (Linux/macOS) under the preset build directory:
-* Windows: `Bootstrap/Ultraviolet/build/windows/out/uv.exe`
-* Linux: `Bootstrap/Ultraviolet/build/linux/out/uv`
-* macOS: `Bootstrap/Ultraviolet/build/macos/out/uv`
+Upon completion, the compiled command-line compiler is staged as `uvc.exe`
+(Windows) or `uvc` (Linux/macOS) under the preset build directory:
+* Windows: `Bootstrap/Ultraviolet/build/windows/out/uvc.exe`
+* Linux: `Bootstrap/Ultraviolet/build/linux/out/uvc`
+* macOS: `Bootstrap/Ultraviolet/build/macos/out/uvc`
+
+The package staging step also includes a `uv` alias so installers can provide
+that command when explicitly requested.
 
 ---
 
 ## Getting Started with Ultraviolet Projects
 
-Once the `uv` compiler is on your path, you can create and build projects.
+Once the `uvc` compiler is on your path, you can create and build projects.
 
 ### 1. Initialize a Project
 Create a new directory and initialize a minimal Ultraviolet project structure:
 ```bash
-uv init my_project
+uvc init my_project
 cd my_project
 ```
 This generates the standard layout:
@@ -373,16 +380,16 @@ Source/
 To compile your project, you must explicitly specify a **Target Profile** using the `--target-profile` CLI flag (or configure it in the `Ultraviolet.toml` manifest under `[toolchain].target_profile`):
 
 ```bash
-uv build --target-profile x86_64-sysv  # Linux
-uv build --target-profile aarch64-darwin # Apple Silicon macOS
-uv build --target-profile x86_64-win64 # Windows
+uvc build --target-profile x86_64-sysv  # Linux
+uvc build --target-profile aarch64-darwin # Apple Silicon macOS
+uvc build --target-profile x86_64-win64 # Windows
 ```
 
 ### 3. Run Project Tests
 Ultraviolet supports native unit tests defined using `#test` blocks inside your code. Run them using:
 ```bash
-uv test --target-profile x86_64-sysv
-# macOS: uv test --target-profile aarch64-darwin
+uvc test --target-profile x86_64-sysv
+# macOS: uvc test --target-profile aarch64-darwin
 ```
 
 ---
@@ -393,7 +400,7 @@ The [HelloUltraviolet](HelloUltraviolet/) directory is the release conformance s
 
 For public-alpha verification, run the verification runner from the repository root.
 The verification checks the generated obligation ledger, generated HelloUltraviolet
-catalog, package build, `uv build --check`, `uv build`, the executable corpus,
+catalog, package build, `uvc build --check`, `uvc build`, the executable corpus,
 the audit corpus, source-native `#test` procedures, and the platform release
 archive install probe. On macOS it also validates Mach-O arm64 artifacts,
 packaged LLVM sidecar tools, bundled dylib load names, and required LC_RPATH
@@ -431,15 +438,15 @@ Manual diagnostic runs are still possible after a compiler package has been
 staged:
 
 ```bash
-./Bootstrap/Ultraviolet/build/linux/out/uv build HelloUltraviolet \
+./Bootstrap/Ultraviolet/build/linux/out/uvc build HelloUltraviolet \
     --target-profile x86_64-sysv
 ./HelloUltraviolet/Build/Binary/HelloUltraviolet
 ./HelloUltraviolet/Build/Binary/HelloUltraviolet --audit
-./Bootstrap/Ultraviolet/build/linux/out/uv test HelloUltraviolet \
+./Bootstrap/Ultraviolet/build/linux/out/uvc test HelloUltraviolet \
     --target-profile x86_64-sysv
 ```
 
-On macOS, use `Bootstrap/Ultraviolet/build/macos/out/uv` and
+On macOS, use `Bootstrap/Ultraviolet/build/macos/out/uvc` and
 `--target-profile aarch64-darwin`. The full verification also builds the macOS
 artifact fixture projects before validation so executable, static archive,
 hosted dylib, and external dylib import outputs are present and verified. To
