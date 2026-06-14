@@ -584,7 +584,7 @@ std::string ResolveCommandName(const char* argv0) {
 
   std::string name = candidate.filename().string();
   if (name.empty()) {
-    return "uv";
+    return "uvc";
   }
   return name;
 }

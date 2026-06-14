@@ -16,7 +16,7 @@ dylib, and external dylib import outputs. For the hosted dylib, it creates a
 hosted session, calls the exported fixture procedure, destroys the session, and
 verifies the handle is no longer live. Every target verification creates that
 platform's public release archive, installs the local archive into a probe
-directory, and runs the installed `uv` and `uvc` help commands.
+directory, and runs the installed `uvc` and optional `uv` help commands.
 
 `FetchTargetExterns.py` restores only the extern archive needed by one target
 profile. Use it before local verifications when the vendored LLVM and ICU roots
@@ -42,21 +42,23 @@ run these Tools-owned installers from the selected repository ref. Set
 
 Default install behavior:
 
-- Install the compiler command as `uv`.
+- Install the compiler command as `uvc`.
 - Add the shim directory to the user `PATH`.
-- Ask before replacing an existing Python `uv` command.
-- Use `uvc` for noninteractive conflict installs unless the command mode is
-  specified.
+- Avoid claiming the `uv` command unless explicitly requested.
 
-Recommended interactive conflict behavior:
+Optional `uv` behavior:
 
-- Install Ultraviolet as `uv`.
-- Preserve the existing Python `uv` command as `pyuv`.
+- Install Ultraviolet as `uv` with `--use-uv` or `-UseUv`.
+- Install both commands with `--both` or `-Both`.
+- Warn before shadowing an existing Python `uv` command.
+- Preserve the existing Python `uv` command as `pyuv`, or another name chosen
+  with `--python-uv-command` or `-PythonUvCommand`.
 
 Useful options:
 
 ```bash
 Tools/InstallUltraviolet.sh --use-uv
+Tools/InstallUltraviolet.sh --python-uv-command python-uv
 Tools/InstallUltraviolet.sh --no-path
 Tools/InstallUltraviolet.sh --version <tag>
 Tools/InstallUltraviolet.sh --from-local Build/Release/ultraviolet-linux-x86_64.tar.gz \
@@ -68,6 +70,7 @@ Tools/InstallUltraviolet.sh --from-local Build/Release/ultraviolet-linux-x86_64.
 
 ```powershell
 .\Tools\InstallUltraviolet.ps1 -UseUv
+.\Tools\InstallUltraviolet.ps1 -PythonUvCommand python-uv
 .\Tools\InstallUltraviolet.ps1 -NoPath
 .\Tools\InstallUltraviolet.ps1 -Version <tag>
 .\Tools\InstallUltraviolet.ps1 -FromLocal Build\Release\ultraviolet-windows-x86_64.zip `

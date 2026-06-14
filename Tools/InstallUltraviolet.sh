@@ -9,8 +9,8 @@ DEFAULT_BIN_DIR="${HOME}/.ultraviolet/bin"
 version="${ULTRAVIOLET_INSTALL_VERSION:-latest}"
 install_dir="${ULTRAVIOLET_INSTALL_DIR:-$DEFAULT_INSTALL_DIR}"
 bin_dir="${ULTRAVIOLET_BIN_DIR:-$DEFAULT_BIN_DIR}"
-command_mode="${ULTRAVIOLET_INSTALL_COMMAND:-uv}"
-command_was_set=0
+command_mode="${ULTRAVIOLET_INSTALL_COMMAND:-uvc}"
+python_uv_command="${ULTRAVIOLET_INSTALL_PYTHON_UV_COMMAND:-pyuv}"
 modify_path=1
 yes=0
 dry_run=0
@@ -18,10 +18,6 @@ source_url="${ULTRAVIOLET_INSTALL_SOURCE_URL:-}"
 checksum_url="${ULTRAVIOLET_INSTALL_CHECKSUM_URL:-}"
 checksum_file="${ULTRAVIOLET_INSTALL_CHECKSUM_FILE:-}"
 from_local=""
-
-if [ "${ULTRAVIOLET_INSTALL_COMMAND:-}" != "" ]; then
-    command_was_set=1
-fi
 
 if [ "${ULTRAVIOLET_INSTALL_NO_PATH:-}" = "1" ]; then
     modify_path=0
@@ -42,11 +38,14 @@ Options:
   --version <tag>       GitHub release tag to install. Default: latest.
   --install-dir <dir>   Package install directory. Default: ~/.ultraviolet/current.
   --bin-dir <dir>       Directory for command shims. Default: ~/.ultraviolet/bin.
-  --command <mode>      Command shims to install: uv, uvc, or both. Default: uv.
+  --command <mode>      Command shims to install: uvc, uv, or both. Default: uvc.
   --use-uv              Equivalent to --command uv.
   --both                Equivalent to --command both.
+  --python-uv-command <name>
+                        Command name for an existing Python uv when Ultraviolet
+                        is installed as uv. Default: pyuv.
   --no-path             Do not add the shim directory to the user shell profile.
-  --yes                 Noninteractive mode. Uses uvc if Python uv conflicts.
+  --yes                 Noninteractive mode. Confirms explicit uv installs.
   --source-url <url>    Override the compiler archive URL.
   --checksum-url <url>  Override the SHA-256 checksum URL.
   --checksum-file <path>
@@ -55,10 +54,11 @@ Options:
   --dry-run             Print planned actions without changing files.
   -h, --help            Show this help text.
 
-The default command is uv. When an existing Python uv command is detected,
-interactive installs ask before taking over uv. The recommended choice is uv:
-Ultraviolet owns uv and the existing command is exposed as pyuv. Noninteractive
-conflict installs use uvc to avoid replacing Python uv without consent.
+The default command is uvc. Use --use-uv or --command uv to install the uv
+command instead, or --both to install both commands. If an existing Python uv
+command is detected while uv is requested, the installer warns before continuing
+and preserves the existing command as pyuv unless --python-uv-command supplies a
+different name.
 EOF
 }
 
@@ -91,18 +91,20 @@ while [ "$#" -gt 0 ]; do
         --command)
             [ "$#" -ge 2 ] || fail "--command requires an argument"
             command_mode="$2"
-            command_was_set=1
             shift 2
             ;;
         --use-uv)
             command_mode="uv"
-            command_was_set=1
             shift
             ;;
         --both)
             command_mode="both"
-            command_was_set=1
             shift
+            ;;
+        --python-uv-command)
+            [ "$#" -ge 2 ] || fail "--python-uv-command requires an argument"
+            python_uv_command="$2"
+            shift 2
             ;;
         --no-path)
             modify_path=0
@@ -149,6 +151,21 @@ done
 case "$command_mode" in
     uvc|uv|both) ;;
     *) fail "--command must be one of: uvc, uv, both" ;;
+esac
+
+case "$python_uv_command" in
+    ""|*/*|*\\*)
+        fail "--python-uv-command must be a command name, not a path"
+        ;;
+    *[!ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789._-]*)
+        fail "--python-uv-command may only contain letters, digits, '.', '_', and '-'"
+        ;;
+esac
+
+case "$python_uv_command" in
+    uv|uvc)
+        fail "--python-uv-command cannot be uv or uvc"
+        ;;
 esac
 
 host_system="$(uname -s)"
@@ -209,28 +226,42 @@ if [ -n "$existing_uv" ] && ! is_inside_dir "$existing_uv" "$bin_dir"; then
     esac
 fi
 
-if [ "$python_uv_detected" -eq 1 ] &&
-   [ "$command_was_set" -eq 0 ] &&
-   [ "$yes" -eq 0 ] &&
-   [ -r /dev/tty ]; then
-    {
-        printf '\nDetected existing Python uv: %s\n' "$existing_uv"
-        printf 'Version: %s\n' "$existing_uv_version"
-        printf 'Recommended: install Ultraviolet as uv and expose Python uv as pyuv.\n'
-        printf 'Choose command mode [uv/uvc/both] (default: uv): '
-    } > /dev/tty
-    IFS= read -r answer < /dev/tty || answer=""
-    case "$answer" in
-        "") command_mode="uv" ;;
-        uvc|uv|both) command_mode="$answer" ;;
-        *) fail "invalid command mode: $answer" ;;
-    esac
-fi
+command_mode_uses_uv() {
+    [ "$command_mode" = "uv" ] || [ "$command_mode" = "both" ]
+}
 
-if [ "$python_uv_detected" -eq 1 ] &&
-   [ "$command_was_set" -eq 0 ] &&
-   [ "$yes" -eq 1 ]; then
-    command_mode="uvc"
+warn_python_uv_conflict() {
+    if [ -r /dev/tty ]; then
+        {
+            printf '\nWarning: installing Ultraviolet as uv can shadow Python uv.\n'
+            printf 'Detected Python uv: %s\n' "$existing_uv"
+            printf 'Version: %s\n' "$existing_uv_version"
+            printf 'Python uv will be available as: %s\n' "$python_uv_command"
+        } > /dev/tty
+    else
+        {
+            printf 'Warning: installing Ultraviolet as uv can shadow Python uv.\n'
+            printf 'Detected Python uv: %s\n' "$existing_uv"
+            printf 'Version: %s\n' "$existing_uv_version"
+            printf 'Python uv will be available as: %s\n' "$python_uv_command"
+        } >&2
+    fi
+}
+
+if [ "$python_uv_detected" -eq 1 ] && command_mode_uses_uv; then
+    warn_python_uv_conflict
+    if [ "$yes" -eq 0 ] && [ "$dry_run" -eq 0 ]; then
+        if [ -r /dev/tty ]; then
+            printf 'Continue? [y/N]: ' > /dev/tty
+            IFS= read -r answer < /dev/tty || answer=""
+            case "$answer" in
+                y|Y|yes|YES) ;;
+                *) fail "install cancelled" ;;
+            esac
+        else
+            fail "Python uv conflict detected; rerun with --yes to confirm, use the default uvc command, or choose a different --python-uv-command"
+        fi
+    fi
 fi
 
 download() {
@@ -361,6 +392,9 @@ if [ "$dry_run" -eq 1 ]; then
     [ -n "$checksum_file" ] && log "Would verify local checksum: $checksum_file"
     if [ "$python_uv_detected" -eq 1 ]; then
         log "Detected Python uv: $existing_uv"
+        if command_mode_uses_uv; then
+            log "Would preserve Python uv as: $python_uv_command"
+        fi
     fi
     log "Dry run complete."
     exit 0
@@ -416,6 +450,7 @@ mv "$stage" "$install_dir"
 compiler_uv="$install_dir/uv"
 compiler_uvc="$install_dir/uvc"
 [ -x "$compiler_uvc" ] || compiler_uvc="$compiler_uv"
+[ -x "$compiler_uv" ] || compiler_uv="$compiler_uvc"
 
 case "$command_mode" in
     uvc)
@@ -423,13 +458,13 @@ case "$command_mode" in
         ;;
     uv)
         if [ "$python_uv_detected" -eq 1 ]; then
-            create_link "pyuv" "$existing_uv"
+            create_link "$python_uv_command" "$existing_uv"
         fi
         create_link "uv" "$compiler_uv"
         ;;
     both)
         if [ "$python_uv_detected" -eq 1 ]; then
-            create_link "pyuv" "$existing_uv"
+            create_link "$python_uv_command" "$existing_uv"
         fi
         create_link "uv" "$compiler_uv"
         create_link "uvc" "$compiler_uvc"
@@ -453,5 +488,5 @@ esac
 if [ "$python_uv_detected" -eq 1 ] &&
    { [ "$command_mode" = "uv" ] || [ "$command_mode" = "both" ]; }; then
     log "Python uv is available as:"
-    log "  pyuv --version"
+    log "  $python_uv_command --version"
 fi
