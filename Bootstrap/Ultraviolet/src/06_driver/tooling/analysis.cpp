@@ -112,6 +112,13 @@ AnalysisSnapshot AnalyzeWorkspace(
       options.target_profile.has_value() ? options.target_profile
                                          : sema_project.toolchain.target_profile;
   if (!selected_target_profile.has_value()) {
+    // Fall back to a caller-supplied default (e.g. the language server's host
+    // profile) so analysis can still build a symbol index for projects that do
+    // not pin a target profile. Callers that require an explicit target leave
+    // this empty, preserving the hard error.
+    selected_target_profile = options.fallback_target_profile;
+  }
+  if (!selected_target_profile.has_value()) {
     core::EmitExternalDiagnostic(snapshot.diagnostics, "E-PRJ-0112");
     return snapshot;
   }
