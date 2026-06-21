@@ -2,7 +2,7 @@
 
 
 public procedure countModuleLevelFormsModuleAndFileAggregationObligations() -> usize {
-    return 188usize
+    return 162usize
 }
 
 public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() -> usize {
@@ -116,15 +116,6 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Module-Path-Rel-Fail",
-        32042usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "def.ModuleDirOf",
         32060usize,
         "HelloUltraviolet::Audit",
@@ -163,33 +154,6 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     if acceptedObligationEntryMatches(
         "WF-Module-Path-Ok",
         32121usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "WF-Module-Path-Reserved",
-        32139usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedModulesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Modules/ReservedModuleKeyword/Source/if/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "WF-Module-Path-Ident-Err",
-        32157usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "WF-Module-Path-Collision",
-        32175usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -269,15 +233,6 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "ReadBytes-Err",
-        32317usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "def.BytesOfFile",
         32335usize,
         "HelloUltraviolet::Reference::Modules",
@@ -289,51 +244,6 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     if acceptedObligationEntryMatches(
         "ParseModule-Ok",
         32349usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ParseModule-Err-Read",
-        32367usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ParseModule-Err-Load",
-        32385usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.LoadSourceShortCircuit",
-        32403usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedSourceTextRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/SourceText/InvalidUTF8/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ParseModule-Err-Unit",
-        32418usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ParseModule-Err-Parse",
-        32436usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -368,15 +278,6 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.HasErrorDiagnostics",
-        32496usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "def.ModState",
         32510usize,
         "HelloUltraviolet::Reference::Modules",
@@ -395,44 +296,8 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Mod-Start-Err-Unit",
-        32543usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "Mod-Scan",
         32561usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Mod-Scan-Err-Read",
-        32579usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Mod-Scan-Err-Load",
-        32597usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Mod-Scan-Err-Parse",
-        32615usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -460,15 +325,6 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     if acceptedObligationEntryMatches(
         "ParseModules-Ok",
         32666usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ParseModules-Err",
-        32684usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -505,33 +361,6 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     if acceptedObligationEntryMatches(
         "Disc-Add",
         32751usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Disc-Collision",
-        32769usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "Disc-Invalid-Component",
-        32787usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedModulesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Modules/ReservedModuleKeyword/Source/if/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Disc-Rel-Fail",
-        32805usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -638,15 +467,6 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "ModulePrefix-None",
-        33013usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "Resolve-ModulePath-Direct",
         33031usize,
         "HelloUltraviolet::Audit",
@@ -658,15 +478,6 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     if acceptedObligationEntryMatches(
         "Resolve-ModulePath-Current",
         33049usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveModulePath-Err",
-        33067usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -710,15 +521,6 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "ItemOfPath-None",
-        33145usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "def.ImportCoveragePredicates",
         33163usize,
         "HelloUltraviolet::Reference::Modules",
@@ -755,15 +557,6 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Import-Ok-Err",
-        33228usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "Resolve-Import-Direct",
         33246usize,
         "HelloUltraviolet::Audit",
@@ -781,27 +574,9 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "Resolve-Import-Err",
-        33282usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedModulesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Modules/MissingImport/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "Resolve-Using-Ok",
         33300usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Resolve-Using-Err",
-        33318usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1687,15 +1462,6 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
         "HelloUltraviolet::Audit",
         "moduleSourceProjectExternAbiFormsExecute",
         "Source/Audit/ModuleSourceProjectInfrastructureExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.ModuleAggregation",
-        35039usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedModulesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Modules/ReservedModuleKeyword/Source/if/Main.uv"
     ) {
         count = count + 1usize
     }

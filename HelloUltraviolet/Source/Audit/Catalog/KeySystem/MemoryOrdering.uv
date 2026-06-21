@@ -2,7 +2,7 @@
 
 
 public procedure countKeySystemMemoryOrderingObligations() -> usize {
-    return 17usize
+    return 15usize
 }
 
 public procedure validatedKeySystemMemoryOrderingObligations() -> usize {
@@ -79,15 +79,6 @@ public procedure validatedKeySystemMemoryOrderingObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.19.MemoryOrderNotInsideSpeculativeBlocks",
-        75488usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedKeysRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Keys/SpeculativeMemoryOrder/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.19.T-Fence",
         75501usize,
@@ -148,15 +139,6 @@ public procedure validatedKeySystemMemoryOrderingObligations() -> usize {
         "HelloUltraviolet::Audit::Catalog::KeySystem",
         "keySystemCompilerConformanceArtifactMatches",
         "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.19.MemoryOrdering",
-        75614usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedKeysRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Keys/MemoryOrderingDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

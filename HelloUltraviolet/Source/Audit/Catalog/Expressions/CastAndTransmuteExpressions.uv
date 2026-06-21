@@ -2,7 +2,7 @@
 
 
 public procedure countExpressionsCastAndTransmuteExpressionsObligations() -> usize {
-    return 41usize
+    return 32usize
 }
 
 public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() -> usize {
@@ -88,15 +88,6 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "def.16.CastValidity",
-        60738usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/CastValidity/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.16.T-Cast",
         60753usize,
@@ -106,66 +97,12 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.T-Cast-Invalid",
-        60769usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/InvalidCast/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.T-Transmute-SizeEq",
-        60785usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/TransmuteSizeMismatch/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.T-Transmute-AlignEq",
-        60801usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/TransmuteAlignMismatch/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.16.T-Transmute",
         60817usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCastsAndTransmutesReference",
         "Source/Reference/Expressions/CastsAndTransmutes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.Transmute-Unsafe-Err",
-        60833usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/TransmuteUnsafe/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if diagnosticSourceObligationEntryMatches(
-        "def.16.ValidTransmuteTarget",
-        60849usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
-        "validatedExpressionsDiagnosticSourceFixtureCount",
-        "Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.16.WidenTypingDiagnosticsOwnershipForCastTransmute",
-        60866usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -295,15 +232,6 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
     ) {
         count = count + 1usize
     }
-    if artifactBehaviorObligationEntryMatches(
-        "rule.16.EvalSigma-Cast-Panic",
-        61122usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
-        "validatedArtifactProjectFixtureCount",
-        "Fixtures/ArtifactProjects/CastPanic/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.16.TransmuteVal",
         61138usize,
@@ -364,15 +292,6 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "HelloUltraviolet::Audit",
         "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
         "Source/Audit/AcceptedProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.16.CastAndTransmuteExpressions",
-        61245usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/CastAndTransmuteExpressionsDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

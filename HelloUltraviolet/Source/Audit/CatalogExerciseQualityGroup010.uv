@@ -4,38 +4,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     var count: usize = 0usize
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Import-Ok-Covered",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Import-Ok-Err",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Resolve-Import-Direct",
+            "def.LoweringChecksJudgementSet",
             "HelloUltraviolet::Audit",
-            "moduleSourceProjectExternAbiFormsExecute",
-            "Source/Audit/ModuleSourceProjectInfrastructureExecution.uv",
+            "acceptedProjectLoweringChecksJudgementSetObligation",
+            "Source/Audit/AcceptedProjectExecution.uv",
             false,
             true,
             false,
@@ -46,1424 +18,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Resolve-Import-Current",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Resolve-Using-Ok",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Resolve-Using-Err",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.ResolvedItemAccessibilityOwnedByVisibilityChapter",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.ModuleInitializationDependencyEnvironment",
-            "HelloUltraviolet::Audit",
-            "moduleSourceProjectExternAbiFormsExecute",
-            "Source/Audit/ModuleSourceProjectInfrastructureExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Reachable-Edge",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Reachable-Step",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.ModuleInitializationPathHelpers",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.TypeRefsJudgementSet",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.TypeReferenceEnvironmentAliases",
-            "HelloUltraviolet::Audit",
-            "moduleSourceProjectExternAbiFormsExecute",
-            "Source/Audit/ModuleSourceProjectInfrastructureExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-Path",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-Using",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-Path-Local",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-Dynamic",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-ModalState",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-Apply",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-Perm",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-Prim",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-Tuple",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-Array",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-Slice",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-Union",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-Func",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-String",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-Bytes",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-Ptr",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-RawPtr",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-Range",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-RangeInclusive",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-RangeFrom",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-RangeTo",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-RangeToInclusive",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-RangeFull",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-Ref-Path",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-Ref-Apply",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-Ref-ModalState",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-RecordExpr",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-EnumLiteral",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-QualBrace",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-Cast",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-Transmute",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-CallTypeArgs",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.TypeRefsExprRules",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.NoSpecificTypeRefsExpr",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-Expr-Sub",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-RecordPattern",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-EnumPattern",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-LiteralPattern",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-WildcardPattern",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-IdentifierPattern",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-TypedPattern",
-            "HelloUltraviolet::Reference::Patterns",
-            "runPatternsBasicPatternsReference",
-            "Source/Reference/Patterns/BasicPatterns.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-TuplePattern",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-ModalPattern-None",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-ModalPattern-Record",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-RangePattern",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-Field-Explicit",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRef-Field-Implicit",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRefsExprs-Empty",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRefsExprs-Cons",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.TypeRefsArgsJudgementSet",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRefsArgs-Empty",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRefsArgs-Cons",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRefsEnumPayload-None",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRefsEnumPayload-Tuple",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRefsEnumPayload-Record",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRefsFields-Empty",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRefsFields-Cons",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRefsPayload-None",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRefsPayload-Tuple",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "TypeRefsPayload-Record",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.ValueReferenceEnvironmentAliases",
-            "HelloUltraviolet::Audit",
-            "moduleSourceProjectExternAbiFormsExecute",
-            "Source/Audit/ModuleSourceProjectInfrastructureExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.ValueRefsJudgementSet",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "ValueRef-Ident",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "ValueRef-Ident-Local",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "ValueRef-Qual",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "ValueRef-Qual-Local",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "ValueRef-QualApply",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "ValueRef-QualApply-Local",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "ValueRef-QualApply-Brace",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.ValueRefsRules",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.NoSpecificValueRefsExpr",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "ValueRef-Expr-Sub",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "ValueRefsArgs-Empty",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "ValueRefsArgs-Cons",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "ValueRefsFields-Empty",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "ValueRefsFields-Cons",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.AstTraversalNodeHelpers",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.EnumVariantTypeSets",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.GeneralTypePositionSetHelpers",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.RecordMemberTypeSets",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.ClassItemTypeSets",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.DeclarationTypePositions",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.TypePositionExpressions",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.TypeDeps",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.ValueDependencyExpressionSets",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.ValueDepsEagerLazy",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.ModuleDependencyGraphs",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "WF-Acyclic-Eager",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "conformance.ModuleAggregationDynamicSemantics",
-            "HelloUltraviolet::Reference::Modules",
-            "runModulesAggregationReference",
-            "Source/Reference/Modules/Aggregation.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "conformance.ModuleAggregationEagerGraphLoweringInput",
-            "HelloUltraviolet::Audit",
-            "moduleSourceProjectExternAbiFormsExecute",
-            "Source/Audit/ModuleSourceProjectInfrastructureExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "conformance.ModuleAggregationLifecycleLoweringOwnership",
-            "HelloUltraviolet::Audit",
-            "moduleSourceProjectExternAbiFormsExecute",
-            "Source/Audit/ModuleSourceProjectInfrastructureExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "grammar.PrimitiveTypeSyntax",
+            "def.RangeValueBits",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesPrimitivesReference",
-            "Source/Reference/DataTypes/Primitives.uv",
+            "runDataTypesRangesReference",
+            "Source/Reference/DataTypes/Ranges.uv",
             false,
             true,
             false,
@@ -1474,10 +32,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.PrimLexemeSet",
+            "Size-Range",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesPrimitivesReference",
-            "Source/Reference/DataTypes/Primitives.uv",
+            "sizeRangeReference",
+            "Source/Reference/DataTypes/Ranges.uv",
             false,
             true,
             false,
@@ -1488,10 +46,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Parse-Prim-Type",
+            "Align-Range",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesPrimitivesReference",
-            "Source/Reference/DataTypes/Primitives.uv",
+            "alignRangeReference",
+            "Source/Reference/DataTypes/Ranges.uv",
             false,
             true,
             false,
@@ -1502,10 +60,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Parse-Unit-Type",
+            "Layout-Range",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesPrimitivesReference",
-            "Source/Reference/DataTypes/Primitives.uv",
+            "layoutRangeReference",
+            "Source/Reference/DataTypes/Ranges.uv",
             false,
             true,
             false,
@@ -1516,10 +74,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Parse-Never-Type",
+            "Size-RangeInclusive",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesPrimitivesReference",
-            "Source/Reference/DataTypes/Primitives.uv",
+            "sizeRangeInclusiveReference",
+            "Source/Reference/DataTypes/Ranges.uv",
             false,
             true,
             false,
@@ -1530,10 +88,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.PrimitiveTypeName",
+            "Align-RangeInclusive",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesPrimitivesReference",
-            "Source/Reference/DataTypes/Primitives.uv",
+            "alignRangeInclusiveReference",
+            "Source/Reference/DataTypes/Ranges.uv",
             false,
             true,
             false,
@@ -1544,10 +102,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.TypePrimAst",
+            "Layout-RangeInclusive",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesPrimitivesReference",
-            "Source/Reference/DataTypes/Primitives.uv",
+            "layoutRangeInclusiveReference",
+            "Source/Reference/DataTypes/Ranges.uv",
             false,
             true,
             false,
@@ -1558,10 +116,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.NumericPrimitiveTypeSets",
+            "Size-RangeFrom",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesPrimitivesReference",
-            "Source/Reference/DataTypes/Primitives.uv",
+            "sizeRangeFromReference",
+            "Source/Reference/DataTypes/Ranges.uv",
             false,
             true,
             false,
@@ -1572,10 +130,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.TypeWFJudgementSet",
+            "Align-RangeFrom",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesPrimitivesReference",
-            "Source/Reference/DataTypes/Primitives.uv",
+            "alignRangeFromReference",
+            "Source/Reference/DataTypes/Ranges.uv",
             false,
             true,
             false,
@@ -1586,10 +144,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "WF-Prim",
+            "Layout-RangeFrom",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesPrimitivesReference",
-            "Source/Reference/DataTypes/Primitives.uv",
+            "layoutRangeFromReference",
+            "Source/Reference/DataTypes/Ranges.uv",
             false,
             true,
             false,
@@ -1600,10 +158,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.PrimitiveFloatRepresentation",
+            "Size-RangeTo",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesPrimitivesReference",
-            "Source/Reference/DataTypes/Primitives.uv",
+            "sizeRangeToReference",
+            "Source/Reference/DataTypes/Ranges.uv",
             false,
             true,
             false,
@@ -1614,10 +172,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.DefaultNumericTypes",
+            "Align-RangeTo",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesPrimitivesReference",
-            "Source/Reference/DataTypes/Primitives.uv",
+            "alignRangeToReference",
+            "Source/Reference/DataTypes/Ranges.uv",
             false,
             true,
             false,
@@ -1628,10 +186,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.PrimitiveIntegerWidths",
+            "Layout-RangeTo",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesPrimitivesReference",
-            "Source/Reference/DataTypes/Primitives.uv",
+            "layoutRangeToReference",
+            "Source/Reference/DataTypes/Ranges.uv",
             false,
             true,
             false,
@@ -1642,10 +200,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.PrimitiveRangeOf",
+            "Size-RangeToInclusive",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesPrimitivesReference",
-            "Source/Reference/DataTypes/Primitives.uv",
+            "sizeRangeToInclusiveReference",
+            "Source/Reference/DataTypes/Ranges.uv",
             false,
             true,
             false,
@@ -1656,10 +214,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.PrimitiveValueTypes",
+            "Align-RangeToInclusive",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesPrimitivesReference",
-            "Source/Reference/DataTypes/Primitives.uv",
+            "alignRangeToInclusiveReference",
+            "Source/Reference/DataTypes/Ranges.uv",
             false,
             true,
             false,
@@ -1670,10 +228,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "req.PrimitiveOperationEvaluationOwnership",
+            "Layout-RangeToInclusive",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesPrimitivesReference",
-            "Source/Reference/DataTypes/Primitives.uv",
+            "layoutRangeToInclusiveReference",
+            "Source/Reference/DataTypes/Ranges.uv",
             false,
             true,
             false,
@@ -1684,10 +242,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.PrimitiveValueBits",
+            "Size-RangeFull",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesPrimitivesReference",
-            "Source/Reference/DataTypes/Primitives.uv",
+            "sizeRangeFullReference",
+            "Source/Reference/DataTypes/Ranges.uv",
             false,
             true,
             false,
@@ -1698,10 +256,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "req.PrimitiveLayoutAbiOwnership",
+            "Align-RangeFull",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesPrimitivesReference",
-            "Source/Reference/DataTypes/Primitives.uv",
+            "alignRangeFullReference",
+            "Source/Reference/DataTypes/Ranges.uv",
             false,
             true,
             false,
@@ -1712,10 +270,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "req.PrimitiveTypeDiagnosticOwnership",
+            "Layout-RangeFull",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesPrimitivesReference",
-            "Source/Reference/DataTypes/Primitives.uv",
+            "layoutRangeFullReference",
+            "Source/Reference/DataTypes/Ranges.uv",
             false,
             true,
             false,
@@ -1726,10 +284,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "grammar.TupleSyntax",
+            "req.RangeDiagnosticOwnership",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRangesReference",
+            "Source/Reference/DataTypes/Ranges.uv",
             false,
             true,
             false,
@@ -1740,10 +298,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "req.TupleSingletonCommaIllFormed",
+            "grammar.RecordSyntax",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -1754,10 +312,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Parse-Tuple-Type",
+            "Parse-Record",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -1768,10 +326,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Parse-TupleTypeElems-Empty",
+            "Parse-RecordBody",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -1782,10 +340,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Parse-TupleTypeElems-One",
+            "Parse-RecordMemberList-End",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -1796,10 +354,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Parse-TupleTypeElems-Many",
+            "Parse-RecordMemberList-Cons",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -1810,10 +368,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.TupleScanDelimiterDeltas",
+            "Parse-RecordMember-Method",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -1824,10 +382,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.TupleScanDepthAndStep",
+            "Parse-RecordMember-AssociatedType",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -1838,10 +396,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.TupleScanPredicates",
+            "Parse-RecordMember-Field",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -1852,10 +410,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "TupleScan-EOF",
+            "Parse-RecordFieldDeclAfterVis",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -1866,10 +424,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "TupleScan-EndParen",
+            "Parse-RecordFieldInitOpt-None",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -1880,10 +438,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "TupleScan-SingletonComma",
+            "Parse-RecordFieldInitOpt-Yes",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -1894,10 +452,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "TupleScan-Separator",
+            "Parse-Record-Literal",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -1908,10 +466,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "TupleScan-Advance",
+            "def.RecordDeclAst",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -1922,10 +480,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.TupleParen",
+            "def.RecordMemberAst",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -1936,10 +494,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Parse-Tuple-Literal",
+            "def.RecordExprAst",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -1950,10 +508,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Parse-TupleExprElems-Empty",
+            "def.RecordMembersSelectors",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -1964,10 +522,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Parse-TupleExprElems-Single",
+            "def.RecordPath",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -1978,10 +536,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Parse-TupleExprElems-Many",
+            "Bind-Record",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -1992,10 +550,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Postfix-TupleIndex",
+            "Resolve-RecordPath",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -2006,10 +564,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.TupleTypeAst",
+            "ResolveQual-Name-Record",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -2020,10 +578,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.TupleExpressionAst",
+            "ResolveQual-Apply-RecordLit",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -2034,10 +592,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.TupleFields",
+            "ResolveItem-Record",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -2048,10 +606,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "WF-Tuple",
+            "def.RecordFieldInitOk",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -2062,10 +620,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "T-Tuple-Unit",
+            "def.RecordFieldVisibility",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -2076,10 +634,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "T-Tuple",
+            "WF-Record",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -2090,10 +648,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "T-Tuple-Index",
+            "WF-RecordDecl",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -2104,10 +662,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "T-Tuple-Index-Perm",
+            "def.RecordDefaultConstructible",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -2118,10 +676,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "P-Tuple-Index",
+            "def.RecordCallee",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -2132,10 +690,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "P-Tuple-Index-Perm",
+            "T-Record-Default",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -2146,10 +704,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.ConstTupleIndex",
+            "def.RecordFieldNameSets",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -2160,10 +718,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "req.TuplePatternRulesOwnership",
+            "def.RecordFieldLookup",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesTuplesReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -2174,10 +732,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.TupleValueType",
+            "T-Record-Literal",
             "HelloUltraviolet::Reference::DataTypes",
-            "tupleValueTypeReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -2188,10 +746,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "EvalSigma-Tuple",
+            "def.RecordValueType",
             "HelloUltraviolet::Reference::DataTypes",
-            "evalSigmaTupleReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "recordValueTypeReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -2202,10 +760,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "EvalSigma-Tuple-Ctrl",
+            "EvalSigma-Record",
             "HelloUltraviolet::Reference::DataTypes",
-            "evalSigmaTupleCtrlReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "evalSigmaRecordReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -2216,10 +774,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "EvalSigma-TupleAccess",
+            "EvalSigma-Record-Ctrl",
             "HelloUltraviolet::Reference::DataTypes",
-            "evalSigmaTupleAccessReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "evalSigmaRecordCtrlReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -2230,10 +788,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "EvalSigma-TupleAccess-Ctrl",
+            "def.RecordDefaultInits",
             "HelloUltraviolet::Reference::DataTypes",
-            "evalSigmaTupleAccessCtrlReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "recordDefaultInitsReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -2244,10 +802,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.TupleLayoutJudgementSet",
+            "ApplyRecordCtorSigma",
             "HelloUltraviolet::Reference::DataTypes",
-            "tupleLayoutJudgementSetReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "applyRecordCtorSigmaReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -2258,10 +816,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Layout-Tuple-Empty",
+            "ApplyRecordCtorSigma-Ctrl",
             "HelloUltraviolet::Reference::DataTypes",
-            "layoutTupleEmptyReference",
-            "Source/Reference/DataTypes/Tuples.uv",
+            "applyRecordCtorSigmaCtrlReference",
+            "Source/Reference/DataTypes/Records.uv",
             false,
             true,
             false,
@@ -2272,7 +830,735 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.TupleValueBits",
+            "def.RecordLayoutHelpers",
+            "HelloUltraviolet::Reference::DataTypes",
+            "recordLayoutHelpersReference",
+            "Source/Reference/DataTypes/Records.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Layout-Record-Empty",
+            "HelloUltraviolet::Reference::DataTypes",
+            "layoutRecordEmptyReference",
+            "Source/Reference/DataTypes/Records.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.FieldOffset",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.FieldValueList",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.StructBits",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.PadBytes",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RecordValueBits",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesRecordsReference",
+            "Source/Reference/DataTypes/Records.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "grammar.EnumSyntax",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "req.EnumVariantSeparatorSyntax",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Parse-Enum",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Parse-EnumBody",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Parse-VariantMembers-Empty",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Parse-VariantMembers-Cons",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Parse-VariantSep-End",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Parse-VariantSep-Terminator",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Parse-Variant",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Parse-VariantPayloadOpt-None",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Parse-VariantPayloadOpt-Tuple",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Parse-VariantPayloadOpt-Record",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Parse-VariantDiscriminantOpt-None",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Parse-VariantDiscriminantOpt-Yes",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "req.EnumLiteralResolutionOwnership",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.EnumDeclAst",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.VariantDeclAst",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.EnumVariantHelpers",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Bind-Enum",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.EnumPayloadWellFormedness",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Resolve-EnumUnit",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Resolve-EnumTuple",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Resolve-EnumRecord",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "ResolveQual-Name-Enum",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "ResolveQual-Apply-Enum-Tuple",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "ResolveQual-Apply-Enum-Record",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "ResolveItem-Enum",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.EnumDiscriminantSequence",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.EnumDiscriminantType",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "WF-EnumDecl",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.EnumLiteralPayloadHelpers",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "T-Enum-Lit-Unit",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "T-Enum-Lit-Tuple",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "T-Enum-Lit-Record",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.EnumValueType",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesEnumsReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "EvalSigma-Enum-Unit",
+            "HelloUltraviolet::Reference::DataTypes",
+            "evalSigmaEnumUnitReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "EvalSigma-Enum-Tuple",
+            "HelloUltraviolet::Reference::DataTypes",
+            "evalSigmaEnumTupleReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "EvalSigma-Enum-Tuple-Ctrl",
+            "HelloUltraviolet::Reference::DataTypes",
+            "evalSigmaEnumTupleCtrlReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "EvalSigma-Enum-Record",
+            "HelloUltraviolet::Reference::DataTypes",
+            "evalSigmaEnumRecordReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "EvalSigma-Enum-Record-Ctrl",
+            "HelloUltraviolet::Reference::DataTypes",
+            "evalSigmaEnumRecordCtrlReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.EnumLayoutHelpers",
+            "HelloUltraviolet::Reference::DataTypes",
+            "enumLayoutHelpersReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Layout-Enum-Tagged",
+            "HelloUltraviolet::Reference::DataTypes",
+            "layoutEnumTaggedReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Size-Enum",
+            "HelloUltraviolet::Reference::DataTypes",
+            "sizeEnumReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Align-Enum",
+            "HelloUltraviolet::Reference::DataTypes",
+            "alignEnumReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Layout-Enum",
+            "HelloUltraviolet::Reference::DataTypes",
+            "layoutEnumReference",
+            "Source/Reference/DataTypes/Enums.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.EnumPayloadBits",
             "HelloUltraviolet::Audit",
             "artifactProjectEmitLlExercise",
             "Source/Audit/ArtifactProjectExecution.uv",
@@ -2286,10 +1572,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "grammar.ArraySyntax",
-            "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "def.EnumValueBits",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2300,10 +1586,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Parse-Array-Type",
-            "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "Lower-Expr-Enum-Unit",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
             false,
             true,
             false,
@@ -2314,10 +1600,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Parse-Array-Segment-Elem",
-            "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "Lower-Expr-Enum-Tuple",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
             false,
             true,
             false,
@@ -2328,10 +1614,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Parse-Array-Segment-Repeat",
-            "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "Lower-Expr-Enum-Record",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
             false,
             true,
             false,
@@ -2342,10 +1628,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Parse-Array-Segment-List-Empty",
+            "grammar.UnionTypeSyntax",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2356,10 +1642,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Parse-Array-Segment-List-Single",
+            "req.UnionIntroductionSemantic",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2370,10 +1656,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Parse-Array-Segment-List-Comma",
+            "Parse-UnionTail-None",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2384,10 +1670,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Parse-Array-Literal",
+            "Parse-UnionTail-Cons",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2398,10 +1684,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Postfix-Index",
+            "def.TypeUnionAst",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2412,10 +1698,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.ArrayAstForms",
+            "def.UnionMemberSets",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2426,10 +1712,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "req.IndexAccessArrayOwnership",
+            "WF-Union",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2440,10 +1726,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.ConstIndex",
+            "def.UnionMember",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2454,10 +1740,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.IndexUsizeExpr",
+            "Sub-Member-Union",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2468,10 +1754,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "WF-Array",
+            "Sub-Union-Width",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2482,10 +1768,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.ArraySegmentLength",
+            "T-Union-Intro",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2496,10 +1782,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "T-Array-Literal-Segments",
+            "req.UnionMatchingPropagationOwnership",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2510,10 +1796,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "T-Index-Array",
+            "def.UnionCase",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2524,10 +1810,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "T-Index-Array-Dynamic",
+            "def.UnionNicheOrderingHelpers",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2538,10 +1824,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "T-Index-Array-Perm",
+            "def.UnionTypeOrderingKeys",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2552,10 +1838,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "T-Index-Array-Perm-Dynamic",
+            "def.TypeKey",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2566,10 +1852,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "P-Index-Array",
+            "def.TypeKeyOrdering",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2580,10 +1866,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "P-Index-Array-Perm",
+            "def.UnionMemberLayoutSelection",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2594,10 +1880,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "P-Index-Array-Dynamic",
+            "def.UnionLayoutHelpers",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2608,10 +1894,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "P-Index-Array-Perm-Dynamic",
+            "Layout-Union-Niche",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2622,10 +1908,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.ArrayValueType",
+            "Layout-Union-Tagged",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2636,10 +1922,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.ArrayIndexRuntimeHelpers",
+            "Size-Union",
             "HelloUltraviolet::Reference::DataTypes",
-            "arrayIndexRuntimeHelpersReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2650,10 +1936,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "EvalSigma-Array",
+            "Align-Union",
             "HelloUltraviolet::Reference::DataTypes",
-            "evalSigmaArrayReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2664,10 +1950,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "EvalSigma-Array-Ctrl",
+            "Layout-Union",
             "HelloUltraviolet::Reference::DataTypes",
-            "evalSigmaArrayCtrlReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2678,10 +1964,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "EvalSigma-Index",
+            "def.UnionNicheBits",
             "HelloUltraviolet::Reference::DataTypes",
-            "evalSigmaIndexReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2692,10 +1978,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Size-Array",
+            "def.UnionPayloadBits",
             "HelloUltraviolet::Reference::DataTypes",
-            "sizeArrayReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2706,10 +1992,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Align-Array",
+            "def.TaggedBits",
             "HelloUltraviolet::Reference::DataTypes",
-            "alignArrayReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2720,10 +2006,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Layout-Array",
+            "def.UnionTaggedBits",
             "HelloUltraviolet::Reference::DataTypes",
-            "layoutArrayReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2734,10 +2020,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.ArrayLen",
+            "def.UnionBits",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2748,10 +2034,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.ArrayValueBits",
+            "def.UnionValueBits",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2762,10 +2048,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "req.ArrayDiagnosticOwnership",
+            "def.UnionValueType",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesArraysReference",
-            "Source/Reference/DataTypes/Arrays.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2776,10 +2062,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "grammar.SliceSyntax",
+            "req.UnionDiagnosticOwnership",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesSlicesReference",
-            "Source/Reference/DataTypes/Slices.uv",
+            "runDataTypesUnionsReference",
+            "Source/Reference/DataTypes/Unions.uv",
             false,
             true,
             false,
@@ -2790,10 +2076,724 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup010() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "req.ArrayToSliceCoercionSemantic",
+            "grammar.TypeAliasSyntax",
             "HelloUltraviolet::Reference::DataTypes",
-            "runDataTypesSlicesReference",
-            "Source/Reference/DataTypes/Slices.uv",
+            "runDataTypesTypeAliasesReference",
+            "Source/Reference/DataTypes/TypeAliases.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Parse-Type-Alias",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesTypeAliasesReference",
+            "Source/Reference/DataTypes/TypeAliases.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.TypeAliasDeclAst",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesTypeAliasesReference",
+            "Source/Reference/DataTypes/TypeAliases.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.TypeAliasAccessors",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesTypeAliasesReference",
+            "Source/Reference/DataTypes/TypeAliases.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Bind-TypeAlias",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesTypeAliasesReference",
+            "Source/Reference/DataTypes/TypeAliases.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "ResolveItem-TypeAlias",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesTypeAliasesReference",
+            "Source/Reference/DataTypes/TypeAliases.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.AliasNormalization",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesTypeAliasesReference",
+            "Source/Reference/DataTypes/TypeAliases.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.AliasPathNormalization",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesTypeAliasesReference",
+            "Source/Reference/DataTypes/TypeAliases.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.AliasTransparent",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesTypeAliasesReference",
+            "Source/Reference/DataTypes/TypeAliases.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.AliasGraph",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesTypeAliasesReference",
+            "Source/Reference/DataTypes/TypeAliases.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.TypePaths",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesTypeAliasesReference",
+            "Source/Reference/DataTypes/TypeAliases.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.TypePathsOfModalRef",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesTypeAliasesReference",
+            "Source/Reference/DataTypes/TypeAliases.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "TypeAlias-Ok",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesTypeAliasesReference",
+            "Source/Reference/DataTypes/TypeAliases.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "req.TypeAliasDynamicSemantics",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesTypeAliasesReference",
+            "Source/Reference/DataTypes/TypeAliases.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Size-Alias",
+            "HelloUltraviolet::Reference::DataTypes",
+            "sizeAliasReference",
+            "Source/Reference/DataTypes/TypeAliases.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Align-Alias",
+            "HelloUltraviolet::Reference::DataTypes",
+            "alignAliasReference",
+            "Source/Reference/DataTypes/TypeAliases.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Layout-Alias",
+            "HelloUltraviolet::Reference::DataTypes",
+            "layoutAliasReference",
+            "Source/Reference/DataTypes/TypeAliases.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.TypeAliasValueBits",
+            "HelloUltraviolet::Reference::DataTypes",
+            "runDataTypesTypeAliasesReference",
+            "Source/Reference/DataTypes/TypeAliases.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "grammar.ModalDeclarations.Syntax",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.13.Parse-Modal",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.13.Parse-ModalBody",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.13.Parse-StateBlock",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ModalTypeRef.Parser",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.13.Parse-Modal-State-Type",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.13.Parse-Record-Literal-ModalState",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "req.ModalStateMemberDispatch",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ModalDeclAst",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.StateBlockAst",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.StateMemberAst",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ModalRefAst",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.TypeRefModalStateAst",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ModalStateAccessors",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ModalStatePayload",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.BuiltinModalSet",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ModalPath",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ModalSelfRef",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ModalSelfTypes",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ModalRefAccessors",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ModalDeclOf",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ModalRefSubst",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ModalPayloadSubstitution",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.PayloadMap",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ModalPayloadMap",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.13.WF-Modal-Payload",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.13.Modal-Payload-DupField",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.13.WF-ModalState",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.StateMemberVisOk",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.13.WF-ModalDecl",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.13.Modal-WF",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.13.State-Specific-WF",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ModalPayloadNames",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.13.T-Modal-State-Intro",
+            "HelloUltraviolet::Reference::ModalTypes",
+            "runModalTypesModalDeclarationsReference",
+            "Source/Reference/ModalTypes/ModalDeclarations.uv",
             false,
             true,
             false,

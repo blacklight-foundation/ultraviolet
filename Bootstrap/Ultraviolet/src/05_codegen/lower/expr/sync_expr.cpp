@@ -14,6 +14,7 @@
 
 #include "05_codegen/lower/expr/sync_expr.h"
 #include "04_analysis/typing/type_expr.h"
+#include "04_analysis/typing/outcome.h"
 #include "00_core/assert_spec.h"
 
 namespace ultraviolet::codegen {
@@ -60,12 +61,13 @@ LowerResult LowerSyncExpr(const ast::SyncExpr& expr, LowerCtx& ctx) {
         }
     }
 
-    // Preserve typed result metadata for LLVM emission.
+    // Preserve typed result metadata for LLVM emission. `sync` yields
+    // Outcome<Result, E> (matches T-Sync); the type checker's type wins below,
+    // this is the fallback when the whole-expr type is unavailable.
     analysis::TypeRef sync_value_type = sync.result_type;
     if (sync.result_type && sync.error_type) {
-        sync_value_type = analysis::IsPrimType(sync.error_type, "!")
-            ? sync.result_type
-            : analysis::MakeTypeUnion({sync.result_type, sync.error_type});
+        sync_value_type =
+            analysis::MakeOutcomeType(sync.result_type, sync.error_type);
     }
     if (ctx.expr_type) {
         ast::Expr sync_expr_wrapper;

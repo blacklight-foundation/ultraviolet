@@ -233,6 +233,22 @@ IRPtr LowerLetStmt(const ast::LetStmt& stmt, LowerCtx& ctx) {
     var_type = ctx.LookupValueType(init_result.value);
   }
 
+  // (T-Outcome-Intro) §13.1.4: a bare initializer bound to a variable annotated
+  // Outcome<T_s, E_s> introduces implicitly as Outcome::Value/Error. No-op when
+  // the annotation is not an Outcome or the initializer is already one.
+  if (var_type && binding.init) {
+    analysis::TypeRef init_type = ctx.LookupValueType(init_result.value);
+    if (!init_type && ctx.expr_type) {
+      init_type = ctx.expr_type(*binding.init);
+    }
+    bool wrapped = false;
+    IRValue introduced = MaybeWrapImplicitOutcome(init_result.value, init_type,
+                                                  var_type, ctx, &wrapped);
+    if (wrapped) {
+      init_result = LowerResult{init_result.ir, introduced};
+    }
+  }
+
   // Implicit dynamic widening: when the binding type is $ClassName (TypeDynamic)
   // and the initializer is a concrete record type, we need to create a dense
   // pointer {data_ptr, vtable_ptr} via DynPack.

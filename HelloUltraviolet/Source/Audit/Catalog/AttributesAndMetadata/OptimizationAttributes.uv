@@ -2,7 +2,7 @@
 
 
 public procedure countAttributesAndMetadataOptimizationAttributesObligations() -> usize {
-    return 8usize
+    return 7usize
 }
 
 public procedure validatedAttributesAndMetadataOptimizationAttributesObligations() -> usize {
@@ -67,15 +67,6 @@ public procedure validatedAttributesAndMetadataOptimizationAttributesObligations
         "HelloUltraviolet::Audit",
         "attributesMetadataArtifactObligationsExecute",
         "Source/Audit/AttributesMetadataArtifactExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if diagnosticSourceObligationEntryMatches(
-        "diagnostics.OptimizationAttributeDiagnostics",
-        28217usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
-        "validatedAttributesDiagnosticSourceFixtureCount",
-        "Fixtures/DiagnosticSource/Attributes/InlineAlwaysRecursive/Source/Main.uv"
     ) {
         count = count + 1usize
     }

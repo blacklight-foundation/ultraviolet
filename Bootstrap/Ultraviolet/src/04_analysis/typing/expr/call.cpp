@@ -45,6 +45,7 @@
 #include "04_analysis/typing/type_predicates.h"
 #include "04_analysis/typing/deprecation_warnings.h"
 #include "04_analysis/typing/typecheck.h"
+#include "04_analysis/typing/outcome.h"
 
 namespace ultraviolet::analysis::expr {
 
@@ -3669,6 +3670,23 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
                               const TypeRef& expected) -> ArgCheckResult {
     const auto checked =
         CheckExprAgainst(ctx, arg_ctx_for(expected), inner, expected, env);
+    if (!checked.ok && expected) {
+      // (T-Outcome-Intro-Value/Error) §13.1.4: a bare argument introduces into
+      // an Outcome parameter. Accept the unambiguous case (the candidate stays
+      // viable); reject the ambiguous case with E-TYP-2261.
+      if (const auto typed = TypeExpr(ctx, arg_ctx_for(expected), inner, env);
+          typed.ok) {
+        const auto intro = ClassifyOutcomeIntro(ctx, typed.type, expected);
+        if (intro == OutcomeIntro::Ambiguous) {
+          return ArgCheckResult{false,
+                                std::optional<std::string_view>{"E-TYP-2261"},
+                                {}, std::nullopt};
+        }
+        if (intro == OutcomeIntro::Value || intro == OutcomeIntro::Error) {
+          return ArgCheckResult{true, std::nullopt, {}, std::nullopt};
+        }
+      }
+    }
     return ArgCheckResult{checked.ok, checked.diag_id, checked.diag_detail,
                           checked.diag_span};
   };

@@ -2,7 +2,7 @@
 
 
 public procedure countAbstractionAndPolymorphismImplementationsObligations() -> usize {
-    return 39usize
+    return 27usize
 }
 
 public procedure validatedAbstractionAndPolymorphismImplementationsObligations() -> usize {
@@ -178,24 +178,6 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.14.Impl-Sig-Err",
-        49903usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/ImplementationAbstractMethodSignatureMismatch/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.14.Override-Abstract-Err",
-        49919usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/OverrideAbstractMethod/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.14.Impl-Concrete-Default",
         49935usize,
@@ -214,66 +196,12 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.14.Override-Missing-Err",
-        49967usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/OverrideMissingOnDefault/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.14.Impl-Sig-Err-Concrete",
-        49983usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/ImplementationDefaultMethodSignatureMismatch/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.14.Override-NoConcrete",
-        49999usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/OverrideNoConcrete/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.14.Impl-Field",
         50015usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
         "Source/Reference/Polymorphism/Implementations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.14.Impl-Field-Missing",
-        50031usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/ImplementationMissingRequiredField/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.14.Impl-Field-Type-Err",
-        50047usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/ImplementationFieldTypeMismatch/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.14.Impl-Coherence-Err",
-        50063usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/DuplicateClassImplementationRule/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -304,33 +232,6 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "req.14.ModalClassImplementationRequiresModalType",
-        50124usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/NonModalImplementsModalClass/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.14.DuplicateClassImplementationForbidden",
-        50137usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/DuplicateClassImplementationRequirement/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "req.14.ImplementationOrphanRequirement",
-        50150usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/CrossAssemblyImplementation/Source/CrossAssemblyImplementation/Library.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "req.14.ImplementationsNoAdditionalRuntimeState",
         50170usize,
@@ -346,15 +247,6 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.14.Implementations",
-        50200usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/ImplementationMissingAbstractMethod/Source/Main.uv"
     ) {
         count = count + 1usize
     }

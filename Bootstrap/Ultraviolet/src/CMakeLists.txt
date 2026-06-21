@@ -1163,28 +1163,6 @@ target_link_libraries(uv_tooling PUBLIC
   uv_analysis
 )
 
-add_library(uv_lsp_core STATIC
-  06_driver/lsp/diagnostic_adapter.cpp
-  06_driver/lsp/json_rpc.cpp
-  06_driver/lsp/protocol.cpp
-  06_driver/lsp/semantic_tokens.cpp
-  06_driver/lsp/server.cpp
-)
-
-target_include_directories(uv_lsp_core PUBLIC
-  ${CMAKE_SOURCE_DIR}/include
-  ${LLVM_INCLUDE_DIRS}
-)
-
-target_compile_features(uv_lsp_core PUBLIC cxx_std_20)
-target_link_libraries(uv_lsp_core PUBLIC uv_tooling)
-
-if(LLVM_FOUND)
-  llvm_map_components_to_libnames(LLVM_SUPPORT_LIBS Support)
-  target_compile_definitions(uv_lsp_core PRIVATE ${LLVM_DEFINITIONS})
-  target_link_libraries(uv_lsp_core PRIVATE ${LLVM_SUPPORT_LIBS})
-endif()
-
 set(UV_COMPILER_VERSION_OVERRIDE "" CACHE STRING "Override the compiler version string for release builds")
 
 function(uv_apply_compiler_version_override target_name)
@@ -1241,32 +1219,8 @@ if(LLVM_FOUND)
   target_compile_definitions(uvc PRIVATE ${LLVM_DEFINITIONS})
 endif()
 
-add_executable(uv-lsp
-  06_driver/lsp/main.cpp
-  06_driver/version.cpp
-)
-
-set_target_properties(uv-lsp PROPERTIES OUTPUT_NAME "uv-lsp")
-
-target_link_libraries(uv-lsp PRIVATE uv_lsp_core)
-
-target_include_directories(uv-lsp PRIVATE
-  ${CMAKE_SOURCE_DIR}/include
-  ${LLVM_INCLUDE_DIRS}
-)
-
-target_compile_features(uv-lsp PRIVATE cxx_std_20)
-uv_apply_compiler_version_override(uv-lsp)
-
-if(LLVM_FOUND)
-  target_compile_definitions(uv-lsp PRIVATE ${LLVM_DEFINITIONS})
-endif()
-
 if(APPLE AND LLVM_FOUND)
   target_link_options(uvc PRIVATE
-    "LINKER:-lto_library,${UV_MACOS_LLVM_LTO_LIBRARY}"
-  )
-  target_link_options(uv-lsp PRIVATE
     "LINKER:-lto_library,${UV_MACOS_LLVM_LTO_LIBRARY}"
   )
 endif()
@@ -1275,30 +1229,21 @@ if(NOT WIN32)
   if(APPLE)
     add_dependencies(uvc-debug uv_macos_icu_sidecars)
     add_dependencies(uvc uv_macos_icu_sidecars)
-    add_dependencies(uv-lsp uv_macos_icu_sidecars)
     set_target_properties(uvc-debug PROPERTIES
       BUILD_RPATH "@loader_path/lib;@loader_path/macos/lib;@loader_path/../lib"
       INSTALL_RPATH "@executable_path/macos/lib;@executable_path/lib"
     )
     set_target_properties(uvc PROPERTIES
-      BUILD_RPATH "@loader_path/lib;@loader_path/macos/lib;@loader_path/../lib"
-      INSTALL_RPATH "@executable_path/macos/lib;@executable_path/lib"
-    )
-    set_target_properties(uv-lsp PROPERTIES
       BUILD_RPATH "@loader_path/lib;@loader_path/macos/lib;@loader_path/../lib"
       INSTALL_RPATH "@executable_path/macos/lib;@executable_path/lib"
     )
   else()
     add_dependencies(uvc-debug uv_linux_icu_sidecars)
     add_dependencies(uvc uv_linux_icu_sidecars)
-    add_dependencies(uv-lsp uv_linux_icu_sidecars)
     target_link_options(uvc-debug PRIVATE
       "LINKER:--no-as-needed"
     )
     target_link_options(uvc PRIVATE
-      "LINKER:--no-as-needed"
-    )
-    target_link_options(uv-lsp PRIVATE
       "LINKER:--no-as-needed"
     )
     set_target_properties(uvc-debug PROPERTIES
@@ -1306,10 +1251,6 @@ if(NOT WIN32)
       BUILD_RPATH "\$ORIGIN/lib;\$ORIGIN/linux/lib;\$ORIGIN/../lib"
     )
     set_target_properties(uvc PROPERTIES
-      BUILD_RPATH_USE_ORIGIN TRUE
-      BUILD_RPATH "\$ORIGIN/lib;\$ORIGIN/linux/lib;\$ORIGIN/../lib"
-    )
-    set_target_properties(uv-lsp PROPERTIES
       BUILD_RPATH_USE_ORIGIN TRUE
       BUILD_RPATH "\$ORIGIN/lib;\$ORIGIN/linux/lib;\$ORIGIN/../lib"
     )
@@ -1322,19 +1263,12 @@ if(MSVC)
   set(CMAKE_MSVC_RUNTIME_LIBRARY "${UV_MSVC_RUNTIME}" CACHE STRING "" FORCE)
   set_property(TARGET uvc PROPERTY
     MSVC_RUNTIME_LIBRARY "${UV_MSVC_RUNTIME}")
-  set_property(TARGET uv-lsp PROPERTY
-    MSVC_RUNTIME_LIBRARY "${UV_MSVC_RUNTIME}")
 
   target_link_libraries(uvc PRIVATE delayimp)
-  target_link_libraries(uv-lsp PRIVATE delayimp)
   target_link_options(uvc PRIVATE
     "/DELAYLOAD:icuuc72.dll"
     "/DELAYLOAD:icuin72.dll"
     "/STACK:16777216"
-  )
-  target_link_options(uv-lsp PRIVATE
-    "/DELAYLOAD:icuuc72.dll"
-    "/DELAYLOAD:icuin72.dll"
   )
 endif()
 

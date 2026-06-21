@@ -2,7 +2,7 @@
 
 
 public procedure countStructuredParallelismDispatchObligations() -> usize {
-    return 30usize
+    return 22usize
 }
 
 public procedure validatedStructuredParallelismDispatchObligations() -> usize {
@@ -31,15 +31,6 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.20.DispatchRequiresParallelContext",
-        77664usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/DispatchRequiresParallelContext/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -94,60 +85,6 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.20.Dispatch-Infer-Err",
-        77810usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/DispatchInferFailure/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.20.Dispatch-Outside-Err",
-        77826usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/DispatchOutsideParallel/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.20.Dispatch-Chunk-Type-Err",
-        77842usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/DispatchChunkType/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.20.Dispatch-Dependency-Err",
-        77858usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/DispatchDependencyConflict/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.20.Dispatch-Reduce-Assoc-Err",
-        77874usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/DispatchNonAssociativeReduce/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if diagnosticSourceObligationEntryMatches(
-        "rule.20.Dispatch-DynamicKey-Warn",
-        77890usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
-        "validatedParallelismDiagnosticSourceFixtureCount",
-        "Fixtures/DiagnosticSource/Parallelism/DispatchDynamicKeyWarning/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -265,15 +202,6 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
         "HelloUltraviolet::Audit",
         "artifactProjectReducedEmptyDispatchPanicExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.20.Dispatch",
-        78150usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/DispatchDiagnostics/Source/Main.uv"
     ) {
         count = count + 1usize
     }

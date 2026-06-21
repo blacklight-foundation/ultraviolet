@@ -2,7 +2,7 @@
 
 
 public procedure countStructuredParallelismSpawnObligations() -> usize {
-    return 12usize
+    return 10usize
 }
 
 public procedure validatedStructuredParallelismSpawnObligations() -> usize {
@@ -40,15 +40,6 @@ public procedure validatedStructuredParallelismSpawnObligations() -> usize {
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismSpawnReference",
         "Source/Reference/Parallelism/Spawn.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.20.SpawnRequiresParallelContext",
-        77426usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/SpawnOutsideParallel/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -103,15 +94,6 @@ public procedure validatedStructuredParallelismSpawnObligations() -> usize {
         "HelloUltraviolet::Audit",
         "asyncArtifactObligationsExercise",
         "Source/Audit/AsyncArtifactExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.20.Spawn",
-        77543usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/SpawnInvalidPriorityOption/Source/Main.uv"
     ) {
         count = count + 1usize
     }

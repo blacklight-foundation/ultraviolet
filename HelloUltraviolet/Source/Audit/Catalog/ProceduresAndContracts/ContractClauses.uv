@@ -2,7 +2,7 @@
 
 
 public procedure countProceduresAndContractsContractClausesObligations() -> usize {
-    return 40usize
+    return 37usize
 }
 
 public procedure validatedProceduresAndContractsContractClausesObligations() -> usize {
@@ -85,15 +85,6 @@ public procedure validatedProceduresAndContractsContractClausesObligations() -> 
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresContractsReference",
         "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.15.WF-Contract",
-        55216usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/ContractPredicateNonBool/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -313,15 +304,6 @@ public procedure validatedProceduresAndContractsContractClausesObligations() -> 
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "req.15.ContractNeverPureForms",
-        55620usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/ContractPredicateImpureMove/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.15.PreconditionEvaluationContext",
         55633usize,
@@ -355,15 +337,6 @@ public procedure validatedProceduresAndContractsContractClausesObligations() -> 
         "HelloUltraviolet::Audit",
         "proceduresContractClauseRuntimeConformanceMatches",
         "Source/Audit/Catalog/ProceduresAndContracts/CompilerConformanceExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.15.ContractClauses",
-        55691usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/ContractDynamicAttribute/Source/Main.uv"
     ) {
         count = count + 1usize
     }

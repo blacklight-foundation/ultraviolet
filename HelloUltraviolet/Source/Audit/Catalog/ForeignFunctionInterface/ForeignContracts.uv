@@ -2,7 +2,7 @@
 
 
 public procedure countForeignFunctionInterfaceForeignContractsObligations() -> usize {
-    return 33usize
+    return 26usize
 }
 
 public procedure validatedForeignFunctionInterfaceForeignContractsObligations() -> usize {
@@ -98,15 +98,6 @@ public procedure validatedForeignFunctionInterfaceForeignContractsObligations() 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.23.Parse-EnsuresPredicate-Error",
-        89316usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIForeignContractsReference",
-        "Source/Reference/FFI/ForeignContracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "rule.23.Parse-EnsuresPredicate-NullResult",
         89332usize,
         "HelloUltraviolet::Reference::FFI",
@@ -151,15 +142,6 @@ public procedure validatedForeignFunctionInterfaceForeignContractsObligations() 
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.23.ForeignPredicateContext",
-        89423usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedFFIRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/FFI/ForeignPredicateContext/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.23.ForeignPreconditionVerificationModes",
         89449usize,
@@ -187,15 +169,6 @@ public procedure validatedForeignFunctionInterfaceForeignContractsObligations() 
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.23.ForeignPostconditionPredicateBindings",
-        89495usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedFFIRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/FFI/ForeignPostconditionPredicateBindings/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.23.ForeignPostconditionClassification",
         89515usize,
@@ -205,39 +178,12 @@ public procedure validatedForeignFunctionInterfaceForeignContractsObligations() 
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.23.NullResultWellFormedness",
-        89548usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedFFIRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/FFI/NullResultWellFormedness/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.23.NullableFfiResult",
         89564usize,
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.23.ForeignEnsures-NullResult-Err",
-        89580usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedFFIRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/FFI/ForeignEnsuresNullResult/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.23.ErrorPredicateWellFormedness",
-        89599usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedFFIRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/FFI/ErrorPredicateWellFormedness/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -292,15 +238,6 @@ public procedure validatedForeignFunctionInterfaceForeignContractsObligations() 
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.23.ForeignContractDiagnostics",
-        89708usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedFFIRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/FFI/ForeignContractDiagnostics/Source/Main.uv"
     ) {
         count = count + 1usize
     }

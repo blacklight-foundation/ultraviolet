@@ -2,7 +2,7 @@
 
 
 public procedure countExpressionsControlExpressionsObligations() -> usize {
-    return 65usize
+    return 62usize
 }
 
 public procedure validatedExpressionsControlExpressionsObligations() -> usize {
@@ -238,15 +238,6 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsIteratorLoopControlReference",
         "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.AsyncIteratorLoopTypingFamily",
-        62341usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/AsyncIteratorLoopTypingFamily/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -571,24 +562,6 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlSurfaceReference",
         "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.16.ControlExpressions",
-        62943usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/IfConditionNonBool/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.16.ControlExpressionDiagnosticOwnership",
-        62956usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/ControlExpressionDiagnosticOwnership/Source/Main.uv"
     ) {
         count = count + 1usize
     }

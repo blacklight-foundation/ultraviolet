@@ -2,7 +2,7 @@
 
 
 public procedure countSourceTextAndLexicalStructureLexicalAnalysisObligations() -> usize {
-    return 138usize
+    return 104usize
 }
 
 public procedure validatedSourceTextAndLexicalStructureLexicalAnalysisObligations() -> usize {
@@ -134,26 +134,8 @@ public procedure validatedSourceTextAndLexicalStructureLexicalAnalysisObligation
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.NonCharacter",
-        8266usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "def.DigitCharacters",
         8281usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.SensitiveCharacters",
-        8299usize,
         "HelloUltraviolet::Reference::SourceText",
         "runSourceTextLiteralsReference",
         "Source/Reference/SourceText/Literals.uv"
@@ -337,15 +319,6 @@ public procedure validatedSourceTextAndLexicalStructureLexicalAnalysisObligation
         "HelloUltraviolet::Reference::SourceText",
         "runSourceTextLiteralsReference",
         "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "Block-Comment-Unterminated",
-        8641usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedSourceTextRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/SourceText/UnterminatedBlockComment/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -610,30 +583,12 @@ public procedure validatedSourceTextAndLexicalStructureLexicalAnalysisObligation
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "Lex-Numeric-Err",
-        9147usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedSourceTextRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/SourceText/MalformedNumericLiteral/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.DecimalLeadingZeros",
         9165usize,
         "HelloUltraviolet::Reference::SourceText",
         "runSourceTextLiteralsReference",
         "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if diagnosticSourceObligationEntryMatches(
-        "Warn-DecimalLeadingZero",
-        9181usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
-        "validatedSourceTextDiagnosticSourceFixtureCount",
-        "Fixtures/DiagnosticSource/SourceText/DecimalLeadingZeroWarning/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -674,56 +629,11 @@ public procedure validatedSourceTextAndLexicalStructureLexicalAnalysisObligation
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.LineFeedOrEOFBeforeClose",
-        9268usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "def.EscapeMatch",
         9282usize,
         "HelloUltraviolet::Reference::SourceText",
         "runSourceTextLiteralsReference",
         "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.BadEscapeAt",
-        9296usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "def.FirstBadStringEscape",
-        9310usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedSourceTextRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/SourceText/InvalidStringEscape/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "Lex-String-Unterminated",
-        9324usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedSourceTextRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/SourceText/UnterminatedString/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "Lex-String-BadEscape",
-        9342usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedSourceTextRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/SourceText/InvalidStringEscape/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -763,54 +673,9 @@ public procedure validatedSourceTextAndLexicalStructureLexicalAnalysisObligation
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "def.FirstBadCharEscape",
-        9424usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedSourceTextRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/SourceText/InvalidStringEscape/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.CharacterLiteralInvalid",
-        9438usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.CharacterScalarCount",
         9452usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Lex-Char-Unterminated",
-        9470usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "Lex-Char-BadEscape",
-        9488usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedSourceTextRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/SourceText/InvalidStringEscape/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Lex-Char-Invalid",
-        9506usize,
         "HelloUltraviolet::Reference::SourceText",
         "runSourceTextLiteralsReference",
         "Source/Reference/SourceText/Literals.uv"
@@ -971,116 +836,8 @@ public procedure validatedSourceTextAndLexicalStructureLexicalAnalysisObligation
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Max-Munch-Err",
-        9812usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "def.GenericCloseException",
         9830usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.LexicalSecurityInputs",
-        9846usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.LiteralAndCommentRanges",
-        9861usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.SensitivePositionsInSpan",
-        9880usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.UnsafeTokenSpans",
-        9895usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.LexicalSecurityCheck",
-        9927usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "LexSecure-Err",
-        9942usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "LexSecure-Warn",
-        9960usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.ConfusableIdentifierChecks",
-        9978usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Confusable-Err",
-        9994usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "MixedScript-Err",
-        10012usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.LexicalSecurityDiagnosticSpans",
-        10030usize,
         "HelloUltraviolet::Reference::SourceText",
         "runSourceTextLiteralsReference",
         "Source/Reference/SourceText/Literals.uv"
@@ -1160,42 +917,6 @@ public procedure validatedSourceTextAndLexicalStructureLexicalAnalysisObligation
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Lex-String-Unterminated-Recover",
-        10188usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Lex-Char-Unterminated-Recover",
-        10206usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Lex-Sensitive",
-        10224usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.SensitiveTokenPositions",
-        10242usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "conformance.TupleProjectionLexicalDisambiguation",
         10258usize,
         "HelloUltraviolet::Reference::SourceText",
@@ -1214,35 +935,8 @@ public procedure validatedSourceTextAndLexicalStructureLexicalAnalysisObligation
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Lex-Token-Err",
-        10291usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "Tokenize-Ok",
         10311usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Tokenize-Secure-Err",
-        10329usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Tokenize-Err",
-        10347usize,
         "HelloUltraviolet::Reference::SourceText",
         "runSourceTextLiteralsReference",
         "Source/Reference/SourceText/Literals.uv"

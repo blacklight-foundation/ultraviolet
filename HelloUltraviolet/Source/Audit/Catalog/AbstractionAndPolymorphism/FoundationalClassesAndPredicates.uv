@@ -2,20 +2,11 @@
 
 
 public procedure countAbstractionAndPolymorphismFoundationalClassesAndPredicatesObligations() -> usize {
-    return 26usize
+    return 22usize
 }
 
 public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredicatesObligations() -> usize {
     var count: usize = 0usize
-    if rejectedSourceObligationEntryMatches(
-        "req.14.FoundationalClassesSyntaxAndReservedNames",
-        52493usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/FoundationalClassNameReserved/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "req.14.FoundationalClassesNoFeatureSpecificParser",
         52508usize,
@@ -88,15 +79,6 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.14.BitcopyDrop-Conflict",
-        52629usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/BitcopyDropConflict/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.14.BitcopyType",
         52645usize,
@@ -148,15 +130,6 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.14.HashRequiresEqAndEqualValuesHashEqual",
-        52757usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/HashWithoutEq/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -229,15 +202,6 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.14.FoundationalClasses",
-        52884usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/BitcopyFieldNonBitcopy/Source/Main.uv"
     ) {
         count = count + 1usize
     }

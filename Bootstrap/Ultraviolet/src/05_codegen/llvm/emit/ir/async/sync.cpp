@@ -4,7 +4,56 @@
 // =============================================================================
 #include "../../ir_instruction_visitor.h"
 
+#include "04_analysis/typing/outcome.h"
+
 namespace ultraviolet::codegen::emit_detail {
+
+// Shared owner: builds `Outcome::Value/Error(payload)` enum values for the
+// async result expressions (sync/race-return/all). Reuses the EnumLit
+// materialization path by registering a transient derived value on the active
+// lowering ctx, mirroring how the synchronous `?` operator constructs Outcome.
+llvm::Value *IRInstructionVisitor::BuildOutcomeEnumValue(
+    const analysis::TypeRef &outcome_type,
+    const char *variant,
+    llvm::Value *payload,
+    const analysis::TypeRef &payload_type,
+    const std::string &name_hint) const
+{
+  LowerCtx *ctx = emitter.GetCurrentCtx();
+  if (!ctx || !outcome_type || !analysis::OutcomeSigOf(outcome_type))
+  {
+    return nullptr;
+  }
+
+  static std::uint64_t outcome_temp_index = 0;
+  const std::uint64_t idx = outcome_temp_index++;
+
+  // Carry the already-materialized payload as an opaque temp so the EnumLit
+  // path can evaluate it. Unit/never payloads (null) become a default value.
+  IRValue payload_ir;
+  payload_ir.kind = IRValue::Kind::Opaque;
+  payload_ir.name = name_hint + ".outcome.payload." + std::to_string(idx);
+  if (payload_type)
+  {
+    ctx->RegisterValueType(payload_ir, payload_type);
+  }
+  emitter.SetTempValue(payload_ir, payload ? payload : DefaultFor(payload_ir));
+
+  // Outcome::<variant>(payload) via the shared EnumLit materialization.
+  IRValue outcome_ir;
+  outcome_ir.kind = IRValue::Kind::Opaque;
+  outcome_ir.name = name_hint + ".outcome." + std::to_string(idx);
+  ctx->RegisterValueType(outcome_ir, outcome_type);
+
+  DerivedValueInfo info;
+  info.kind = DerivedValueInfo::Kind::EnumLit;
+  info.variant = variant;
+  info.static_path = {"Outcome"};
+  info.payload_elems = {payload_ir};
+  ctx->RegisterDerivedValue(outcome_ir, info);
+
+  return emitter.EvaluateIRValue(outcome_ir);
+}
 
 void IRInstructionVisitor::operator()(const IRSync &s) const
 {
@@ -435,8 +484,13 @@ void IRInstructionVisitor::operator()(const IRSync &s) const
   llvm::Value *completed_async = builder.CreateLoad(async_struct, async_slot);
   llvm::Value *completed_payload =
       extract_async_payload(completed_async, completed_type);
-  llvm::Value *completed_result =
-      coerce_to_result(completed_payload, completed_type);
+  // `sync` produces Outcome::Value(result) on completion (EvalSigma-Sync-Completed).
+  llvm::Value *completed_result = BuildOutcomeEnumValue(
+      target_type, "Value", completed_payload, completed_type, s.result.name);
+  if (!completed_result)
+  {
+    completed_result = coerce_to_result(completed_payload, completed_type);
+  }
   if (result_slot && !completed_result)
   {
     completed_result = llvm::Constant::getNullValue(expected);
@@ -452,7 +506,13 @@ void IRInstructionVisitor::operator()(const IRSync &s) const
     builder.SetInsertPoint(failed_bb);
     llvm::Value *failed_async = builder.CreateLoad(async_struct, async_slot);
     llvm::Value *failed_payload = extract_async_payload(failed_async, error_type);
-    llvm::Value *failed_result = coerce_to_result(failed_payload, error_type);
+    // `sync` produces Outcome::Error(error) on failure (EvalSigma-Sync-Failed).
+    llvm::Value *failed_result = BuildOutcomeEnumValue(
+        target_type, "Error", failed_payload, error_type, s.result.name);
+    if (!failed_result)
+    {
+      failed_result = coerce_to_result(failed_payload, error_type);
+    }
     if (result_slot && !failed_result)
     {
       failed_result = llvm::Constant::getNullValue(expected);

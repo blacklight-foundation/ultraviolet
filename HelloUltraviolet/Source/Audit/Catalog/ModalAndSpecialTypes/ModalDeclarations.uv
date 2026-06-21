@@ -2,7 +2,7 @@
 
 
 public procedure countModalAndSpecialTypesModalDeclarationsObligations() -> usize {
-    return 108usize
+    return 101usize
 }
 
 public procedure validatedModalAndSpecialTypesModalDeclarationsObligations() -> usize {
@@ -260,15 +260,6 @@ public procedure validatedModalAndSpecialTypesModalDeclarationsObligations() -> 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.WF-ModalState-ArgCount-Err",
-        42207usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "def.StateMemberVisOk",
         42223usize,
         "HelloUltraviolet::Reference::ModalTypes",
@@ -287,44 +278,8 @@ public procedure validatedModalAndSpecialTypesModalDeclarationsObligations() -> 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.StateMemberVisOk-Err",
-        42251usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "rule.13.Modal-WF",
         42267usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Modal-NoStates-Err",
-        42283usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Modal-DupState-Err",
-        42299usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Modal-StateName-Err",
-        42315usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
         "Source/Reference/ModalTypes/ModalDeclarations.uv"
@@ -355,15 +310,6 @@ public procedure validatedModalAndSpecialTypesModalDeclarationsObligations() -> 
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
         "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.13.Record-FileDir-Err",
-        42380usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedModalAndSpecialTypesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/ModalAndSpecialTypes/SpecialModalRecordLiteral/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -478,15 +424,6 @@ public procedure validatedModalAndSpecialTypesModalDeclarationsObligations() -> 
     if acceptedObligationEntryMatches(
         "req.RegionFreeAtScopeExit",
         42549usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Region-Unchecked-Unsafe-Err",
-        42561usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
         "Source/Reference/ModalTypes/ModalDeclarations.uv"

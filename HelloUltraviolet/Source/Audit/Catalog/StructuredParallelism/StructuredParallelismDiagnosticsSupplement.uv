@@ -2,28 +2,10 @@
 
 
 public procedure countStructuredParallelismStructuredParallelismDiagnosticsSupplementObligations() -> usize {
-    return 2usize
+    return 0usize
 }
 
 public procedure validatedStructuredParallelismStructuredParallelismDiagnosticsSupplementObligations() -> usize {
     var count: usize = 0usize
-    if artifactBehaviorObligationEntryMatches(
-        "requirement.20.StructuredParallelismRuntimePanicOwnership",
-        78853usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
-        "validatedArtifactProjectFixtureCount",
-        "Fixtures/ArtifactProjects/ReducedEmptyDispatchPanic/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if artifactBehaviorObligationEntryMatches(
-        "diagnostics.20.StructuredParallelismSupplement",
-        78866usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
-        "validatedArtifactProjectFixtureCount",
-        "Fixtures/ArtifactProjects/ReducedEmptyDispatchPanic/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     return count
 }

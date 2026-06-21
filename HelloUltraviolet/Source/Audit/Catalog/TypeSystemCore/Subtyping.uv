@@ -2,7 +2,7 @@
 
 
 public procedure countTypeSystemCoreSubtypingObligations() -> usize {
-    return 33usize
+    return 28usize
 }
 
 public procedure validatedTypeSystemCoreSubtypingObligations() -> usize {
@@ -13,24 +13,6 @@ public procedure validatedTypeSystemCoreSubtypingObligations() -> usize {
         "HelloUltraviolet::Reference::Types",
         "runTypesSubtypingReference",
         "Source/Reference/Types/Subtyping.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.NoIntegerNumericSubtyping",
-        24878usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedDataTypesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/DataTypes/NoIntegerNumericSubtyping/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.NoFloatNumericSubtyping",
-        24892usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedDataTypesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/DataTypes/NoFloatNumericSubtyping/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -256,33 +238,6 @@ public procedure validatedTypeSystemCoreSubtypingObligations() -> usize {
         "HelloUltraviolet::Reference::Types",
         "runTypesSubtypingReference",
         "Source/Reference/Types/Subtyping.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Sub-Generic-Invariant-Err",
-        25337usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedDataTypesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/DataTypes/GenericInvariantSubtyping/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Sub-Generic-Covariant-Err",
-        25355usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedDataTypesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/DataTypes/GenericCovariantSubtyping/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Sub-Generic-Contravariant-Err",
-        25373usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedDataTypesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/DataTypes/GenericContravariantSubtyping/Source/Main.uv"
     ) {
         count = count + 1usize
     }

@@ -2,7 +2,7 @@
 
 
 public procedure countNameResolutionAndVisibilitySharedResolutionHelpersAndResolutionPassObligations() -> usize {
-    return 166usize
+    return 161usize
 }
 
 public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndResolutionPassObligations() -> usize {
@@ -575,15 +575,6 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "ResolveExpr-Ident-Err",
-        22449usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "ResolveExpr-Qualified",
         22467usize,
         "HelloUltraviolet::Reference::Names",
@@ -721,15 +712,6 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     if acceptedObligationEntryMatches(
         "ResolveKeyPathExpr",
         22712usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveKeyPathExpr-Err",
-        22730usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1394,15 +1376,6 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Validate-ModulePath-Reserved-Err",
-        24007usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "req.ResolveItemFeatureOwnership",
         24025usize,
         "HelloUltraviolet::Reference::Names",
@@ -1477,24 +1450,6 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     if acceptedObligationEntryMatches(
         "ResolveModules-Ok",
         24159usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveModules-Err-Parse",
-        24177usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveModules-Err-Resolve",
-        24195usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"

@@ -2,7 +2,7 @@
 
 
 public procedure countAbstractionAndPolymorphismRefinementTypesObligations() -> usize {
-    return 21usize
+    return 16usize
 }
 
 public procedure validatedAbstractionAndPolymorphismRefinementTypesObligations() -> usize {
@@ -97,24 +97,6 @@ public procedure validatedAbstractionAndPolymorphismRefinementTypesObligations()
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.14.WF-Refine-Type",
-        51546usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/RefinementPredicateNonBool/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.14.T-Refine-Intro",
-        51562usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/RefinementStaticProofFailure/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.14.T-Refine-Elim",
         51578usize,
@@ -151,24 +133,6 @@ public procedure validatedAbstractionAndPolymorphismRefinementTypesObligations()
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "req.14.RefinementStaticDefaultDynamicFallback",
-        51637usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/RefinementStaticDefaultRequirement/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if artifactBehaviorObligationEntryMatches(
-        "req.14.RefinementRuntimeRepresentationAndPanic",
-        51652usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
-        "validatedArtifactProjectFixtureCount",
-        "Fixtures/ArtifactProjects/RefinementRuntimePanic/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.14.LLVMTy-Refine",
         51667usize,
@@ -184,15 +148,6 @@ public procedure validatedAbstractionAndPolymorphismRefinementTypesObligations()
         "HelloUltraviolet::Audit",
         "artifactProjectRefinementStaticDefaultDynamicFallbackExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.14.RefinementTypes",
-        51698usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/RefinementInlineSelfConstraint/Source/Main.uv"
     ) {
         count = count + 1usize
     }

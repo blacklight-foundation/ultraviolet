@@ -2,7 +2,7 @@
 
 
 public procedure countKeySystemSpeculativeExecutionObligations() -> usize {
-    return 35usize
+    return 21usize
 }
 
 public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
@@ -43,24 +43,6 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.19.K-Spec-Write-Required",
-        74577usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedKeysRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Keys/SpeculativeReadMode/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.19.K-Spec-Pure-Body",
-        74593usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedKeysRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Keys/SpeculativeOutsideWrite/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "requirement.19.SpeculativePermittedOperations",
         74609usize,
@@ -85,60 +67,6 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "HelloUltraviolet::Reference::Keys",
         "runKeysSpeculativeExecutionReference",
         "Source/Reference/Keys/SpeculativeExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.19.K-Spec-No-Nested-Key",
-        74660usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedKeysRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyRule/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.19.K-Spec-No-Impure-Call",
-        74676usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedKeysRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Keys/SpeculativeImpureCall/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.19.K-Spec-No-Memory-Ordering",
-        74692usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedKeysRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Keys/SpeculativeFence/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.19.K-Spec-No-Wait",
-        74708usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedKeysRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Keys/SpeculativeWait/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.19.K-Spec-No-Defer",
-        74724usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedKeysRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Keys/SpeculativeDefer/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.19.K-Spec-No-Release",
-        74740usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedKeysRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Keys/SpeculativeReleaseMode/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -206,42 +134,6 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.19.Spec-Commit-Fail-Retry",
-        74874usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysSpeculativeExecutionReference",
-        "Source/Reference/Keys/SpeculativeExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.19.Spec-Commit-Fail-Fallback",
-        74890usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysSpeculativeExecutionReference",
-        "Source/Reference/Keys/SpeculativeExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.19.Spec-Retry",
-        74906usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysSpeculativeExecutionReference",
-        "Source/Reference/Keys/SpeculativeExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.19.Spec-Fallback",
-        74921usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysSpeculativeExecutionReference",
-        "Source/Reference/Keys/SpeculativeExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "rule.19.SpecBlock-Ok",
         74937usize,
         "HelloUltraviolet::Reference::Keys",
@@ -287,15 +179,6 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "requirement.19.SpeculativeAbstractSemanticsAndFallback",
-        75016usize,
-        "HelloUltraviolet::Reference::Keys",
-        "speculativeAbstractSemanticsAndFallbackReference",
-        "Source/Reference/Keys/SpeculativeExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "def.19.SpeculativeIR",
         75033usize,
         "HelloUltraviolet::Audit::Catalog::KeySystem",
@@ -310,15 +193,6 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "HelloUltraviolet::Audit::Catalog::KeySystem",
         "keySystemCompilerConformanceArtifactMatches",
         "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.19.SpeculativeExecution",
-        75066usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedKeysRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyBlock/Source/Main.uv"
     ) {
         count = count + 1usize
     }

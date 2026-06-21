@@ -32,6 +32,7 @@
 #include "04_analysis/typing/type_lower.h"
 #include "04_analysis/typing/type_predicates.h"
 #include "04_analysis/typing/types.h"
+#include "04_analysis/typing/outcome.h"
 
 #include <cstdio>
 
@@ -292,7 +293,29 @@ StmtTypeResult TypeLetStmt(const ScopeContext& ctx,
     const bool shared_materialized_ok =
         IsSharedMaterializedInitCompatible(ctx, read_ctx, env, ann.type,
                                            binding.init);
+    // (T-Outcome-Intro-Value/Error) §13.1.4: a bare initializer introduces into
+    // an Outcome-annotated binding. Accept the unambiguous case (falling through
+    // to pattern typing against the annotation); reject the ambiguous case with
+    // E-TYP-2261.
+    bool outcome_intro_ok = false;
     if (!check.ok && !unique_move_ok && !shared_materialized_ok) {
+      if (const auto inferred_intro =
+              InferExpr(ctx, binding.init, read_type_expr, read_type_place,
+                        read_type_ident);
+          inferred_intro.ok) {
+        const auto intro =
+            ClassifyOutcomeIntro(ctx, inferred_intro.type, ann.type);
+        if (intro == OutcomeIntro::Ambiguous) {
+          return {false, "E-TYP-2261", {}, {}, {},
+                  binding.init ? std::optional<core::Span>(binding.init->span)
+                               : std::nullopt};
+        }
+        outcome_intro_ok =
+            intro == OutcomeIntro::Value || intro == OutcomeIntro::Error;
+      }
+    }
+    if (!check.ok && !unique_move_ok && !shared_materialized_ok &&
+        !outcome_intro_ok) {
       if (core::IsDebugEnabled("sema") || core::IsDebugEnabled("pipeline")) {
         const auto inferred_dbg =
             InferExpr(ctx, binding.init, read_type_expr, read_type_place,

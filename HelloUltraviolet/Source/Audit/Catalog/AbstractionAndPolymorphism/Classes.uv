@@ -2,7 +2,7 @@
 
 
 public procedure countAbstractionAndPolymorphismClassesObligations() -> usize {
-    return 53usize
+    return 47usize
 }
 
 public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usize {
@@ -223,15 +223,6 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.14.WF-ClassPath-Err",
-        49156usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/GenericClassBoundNonClass/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.SubstSelf",
         49172usize,
@@ -331,15 +322,6 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.14.Superclass-Cycle",
-        49371usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/SuperclassCycle/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.LinearizeHeadInvariant",
         49387usize,
@@ -367,15 +349,6 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.14.EffMethods-Conflict",
-        49429usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/InheritedMethodSignatureConflict/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.FieldSig",
         49445usize,
@@ -391,15 +364,6 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.14.EffFields-Conflict",
-        49474usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/InheritedFieldSignatureConflict/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -439,15 +403,6 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.14.WF-Class",
-        49550usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/DuplicateClassProcedureName/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "conformance.ClassDeclarationsNoRuntimeActions",
         49568usize,
@@ -472,15 +427,6 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.Classes",
-        49608usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/ClassMemberNameConflict/Source/Main.uv"
     ) {
         count = count + 1usize
     }

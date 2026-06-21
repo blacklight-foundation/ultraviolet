@@ -2,7 +2,7 @@
 
 
 public procedure countCommonLoweringProgramLifecycleAndBackendSharedLoweringJudgmentsObligations() -> usize {
-    return 83usize
+    return 80usize
 }
 
 public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLoweringJudgmentsObligations() -> usize {
@@ -697,33 +697,6 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if artifactBehaviorObligationEntryMatches(
-        "def.24.LLVMText21Acceptance",
-        91387usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
-        "validatedArtifactProjectFixtureCount",
-        "Fixtures/ArtifactProjects/EmitBcLibrary/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if artifactBehaviorObligationEntryMatches(
-        "rule.24.EmitLLVM-Err",
-        91401usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics",
-        "validatedOutputLoweringDiagnosticFixtureCount",
-        "Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if artifactBehaviorObligationEntryMatches(
-        "requirement.24.LLVMToolAcceptanceAndResolveOwnership",
-        91417usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics",
-        "validatedOutputLoweringDiagnosticFixtureCount",
-        "Fixtures/OutputDiagnostics/Lowering/LlvmToolResolveOwnership/Source/Library.uv"
     ) {
         count = count + 1usize
     }

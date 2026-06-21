@@ -2,10 +2,14 @@
 
 using HelloUltraviolet::Reference::Async::{ runAsyncAsyncTypeReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionChainReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionChainSourceFailureReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionCombinatorsReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFilterReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFoldFailureReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFoldReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFormsReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionMapCompletionReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionMapFailureReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionMapReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionSyncSuspendedUnitReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionTakeReference }
@@ -26,6 +30,11 @@ public procedure catalogCompiledSymbolsExecuteReferenceAsync(context: Context) -
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
+        "runAsyncCompositionChainSourceFailureReference",
+        runAsyncCompositionChainSourceFailureReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
         "runAsyncCompositionCombinatorsReference",
         runAsyncCompositionCombinatorsReference()
     ) && passed
@@ -36,6 +45,11 @@ public procedure catalogCompiledSymbolsExecuteReferenceAsync(context: Context) -
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
+        "runAsyncCompositionFoldFailureReference",
+        runAsyncCompositionFoldFailureReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
         "runAsyncCompositionFoldReference",
         runAsyncCompositionFoldReference()
     ) && passed
@@ -43,6 +57,16 @@ public procedure catalogCompiledSymbolsExecuteReferenceAsync(context: Context) -
         context,
         "runAsyncCompositionFormsReference",
         runAsyncCompositionFormsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncCompositionMapCompletionReference",
+        runAsyncCompositionMapCompletionReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncCompositionMapFailureReference",
+        runAsyncCompositionMapFailureReference()
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,

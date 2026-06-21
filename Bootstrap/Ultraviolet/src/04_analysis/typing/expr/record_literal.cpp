@@ -25,6 +25,7 @@
 #include "04_analysis/typing/type_lower.h"
 #include "04_analysis/typing/if_case_check.h"
 #include "04_analysis/typing/type_infer.h"
+#include "04_analysis/typing/outcome.h"
 
 namespace ultraviolet::analysis::expr {
 
@@ -457,6 +458,24 @@ ExprTypeResult TypeRecordExprImpl(const ScopeContext& ctx,
     const auto check = CheckExprAgainst(ctx, type_ctx, field_init.value,
                                         *field_type_opt, env);
     if (!check.ok) {
+      // (T-Outcome-Intro-Value/Error) §13.1.4: a bare field initializer
+      // introduces into an Outcome-typed field. Accept the unambiguous case;
+      // reject the ambiguous case with E-TYP-2261.
+      if (const auto typed_field = TypeExpr(ctx, type_ctx, field_init.value, env);
+          typed_field.ok) {
+        const auto intro =
+            ClassifyOutcomeIntro(ctx, typed_field.type, *field_type_opt);
+        if (intro == OutcomeIntro::Ambiguous) {
+          result.diag_id = "E-TYP-2261";
+          result.diag_span = field_init.value
+                                 ? std::optional<core::Span>(field_init.value->span)
+                                 : std::nullopt;
+          return result;
+        }
+        if (intro == OutcomeIntro::Value || intro == OutcomeIntro::Error) {
+          continue;
+        }
+      }
       result.diag_id = check.diag_id;
       result.diag_detail = check.diag_detail;
       result.diag_span = check.diag_span;

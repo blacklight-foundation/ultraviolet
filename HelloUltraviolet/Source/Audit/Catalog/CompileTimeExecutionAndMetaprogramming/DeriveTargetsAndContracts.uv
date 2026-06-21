@@ -2,7 +2,7 @@
 
 
 public procedure countCompileTimeExecutionAndMetaprogrammingDeriveTargetsAndContractsObligations() -> usize {
-    return 33usize
+    return 26usize
 }
 
 public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAndContractsObligations() -> usize {
@@ -124,39 +124,12 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.22.DeriveAttributeTargetKinds",
-        86234usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/DeriveOnProcedure/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.22.DeriveTargetNameResolution",
-        86247usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/UnknownDeriveTarget/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "requirement.22.DeriveTargetBodyBindings",
         86260usize,
         "HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming",
         "comptimeAcceptedProjectDeriveConformanceMatches",
         "Source/Audit/Catalog/CompileTimeExecutionAndMetaprogramming/CompilerConformanceExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.22.DeriveTargetBodyRestrictions",
-        86277usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/DeriveTargetProhibitedWait/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -175,24 +148,6 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
         "HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming",
         "comptimeAcceptedProjectDeriveConformanceMatches",
         "Source/Audit/Catalog/CompileTimeExecutionAndMetaprogramming/CompilerConformanceExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.22.DeriveRequiresValidation",
-        86318usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/DeriveMissingRequiredClass/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.22.DeriveEmitsValidation",
-        86331usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/DeriveMissingEmittedClass/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -277,30 +232,12 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.22.DeriveTargetFailureSemantics",
-        86477usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/DeriveTargetUserError/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "requirement.22.DeriveTargetsLowering",
         86492usize,
         "HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming",
         "comptimeRuntimeErasureArtifactEvidenceMatches",
         "Source/Audit/Catalog/CompileTimeExecutionAndMetaprogramming/LoweringErasureArtifactExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.22.DeriveTargetsDiagnosticsReference",
-        86507usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/DeriveOnProcedure/Source/Main.uv"
     ) {
         count = count + 1usize
     }

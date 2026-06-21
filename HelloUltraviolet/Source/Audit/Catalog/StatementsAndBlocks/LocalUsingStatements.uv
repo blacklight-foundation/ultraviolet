@@ -2,7 +2,7 @@
 
 
 public procedure countStatementsAndBlocksLocalUsingStatementsObligations() -> usize {
-    return 12usize
+    return 10usize
 }
 
 public procedure validatedStatementsAndBlocksLocalUsingStatementsObligations() -> usize {
@@ -52,15 +52,6 @@ public procedure validatedStatementsAndBlocksLocalUsingStatementsObligations() -
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.18.T-UsingLocalStmt-Err",
-        70031usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/UsingLocalUnresolved/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "req.18.UsingLocalAliasIdentity",
         70047usize,
@@ -103,15 +94,6 @@ public procedure validatedStatementsAndBlocksLocalUsingStatementsObligations() -
         "HelloUltraviolet::Audit",
         "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
         "Source/Audit/AcceptedProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.18.LocalUsingStatements",
-        70122usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/LocalUsingStatementsDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

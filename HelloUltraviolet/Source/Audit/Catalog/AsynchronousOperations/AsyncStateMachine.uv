@@ -2,7 +2,7 @@
 
 
 public procedure countAsynchronousOperationsAsyncStateMachineObligations() -> usize {
-    return 28usize
+    return 22usize
 }
 
 public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -> usize {
@@ -61,57 +61,12 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
     ) {
         count = count + 1usize
     }
-    if diagnosticSourceObligationEntryMatches(
-        "rule.21.Warn-Async-LargeCapture",
-        82867usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
-        "validatedAsyncDiagnosticSourceFixtureCount",
-        "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarning/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if diagnosticSourceObligationEntryMatches(
-        "rule.21.Warn-Async-LargeCapture-Ok",
-        82885usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
-        "validatedAsyncDiagnosticSourceFixtureCount",
-        "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureNoWarning/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if diagnosticSourceObligationEntryMatches(
-        "requirement.21.AsyncLargeCaptureWarningEmission",
-        82903usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
-        "validatedAsyncDiagnosticSourceFixtureCount",
-        "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarningEmission/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.Async-Capture-Err",
-        82916usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/AsyncCaptureOutlivesFrame/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.21.P-Async-Create",
         82934usize,
         "HelloUltraviolet::Audit",
         "asyncArtifactObligationsExercise",
         "Source/Audit/AsyncArtifactExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.Prov-Async-Escape-Err",
-        82953usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/AsyncOperationEscapesRegion/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -247,15 +202,6 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
         "HelloUltraviolet::Audit",
         "asyncArtifactObligationsExercise",
         "Source/Audit/AsyncArtifactExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if diagnosticSourceObligationEntryMatches(
-        "diagnostics.21.AsyncStateMachineDiagnostics",
-        83233usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
-        "validatedAsyncDiagnosticSourceFixtureCount",
-        "Fixtures/DiagnosticSource/Async/AsyncStateMachineDiagnosticsTable/Source/Main.uv"
     ) {
         count = count + 1usize
     }

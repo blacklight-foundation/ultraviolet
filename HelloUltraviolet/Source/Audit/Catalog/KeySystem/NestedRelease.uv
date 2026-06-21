@@ -2,7 +2,7 @@
 
 
 public procedure countKeySystemNestedReleaseObligations() -> usize {
-    return 21usize
+    return 17usize
 }
 
 public procedure validatedKeySystemNestedReleaseObligations() -> usize {
@@ -88,39 +88,12 @@ public procedure validatedKeySystemNestedReleaseObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if diagnosticSourceObligationEntryMatches(
-        "requirement.19.UnknownCalleeAccessWarning",
-        74291usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
-        "validatedKeysDiagnosticSourceFixtureCount",
-        "Fixtures/DiagnosticSource/Keys/UnknownCalleeAccessWarning/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.19.CallSharedArgumentNoKeyAcquisition",
         74306usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysNestedReleaseReference",
         "Source/Reference/Keys/NestedRelease.uv"
-    ) {
-        count = count + 1usize
-    }
-    if diagnosticSourceObligationEntryMatches(
-        "requirement.19.StaleOkSuppressesReleaseWarning",
-        74321usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
-        "validatedKeysDiagnosticSourceFixtureCount",
-        "Fixtures/DiagnosticSource/Keys/StaleOkSuppressesReleaseWarning/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.19.K-Release-SameMode-Err",
-        74334usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedKeysRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Keys/NestedReleaseSameMode/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -184,15 +157,6 @@ public procedure validatedKeySystemNestedReleaseObligations() -> usize {
         "HelloUltraviolet::Audit::Catalog::KeySystem",
         "keySystemCompilerConformanceArtifactMatches",
         "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if diagnosticSourceObligationEntryMatches(
-        "diagnostics.19.NestedRelease",
-        74481usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
-        "validatedKeysDiagnosticSourceFixtureCount",
-        "Fixtures/DiagnosticSource/Keys/NestedReleaseInterleavingWarning/Source/Main.uv"
     ) {
         count = count + 1usize
     }

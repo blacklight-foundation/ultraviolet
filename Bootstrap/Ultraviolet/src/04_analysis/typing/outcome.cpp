@@ -6,6 +6,7 @@
 
 #include "00_core/assert_spec.h"
 #include "04_analysis/caps/builtin_paths.h"
+#include "04_analysis/typing/subtyping.h"
 #include "04_analysis/typing/type_predicates.h"
 
 namespace ultraviolet::analysis {
@@ -52,16 +53,6 @@ std::optional<ast::GenericParams> MakeGenericParams(
   return generic_params;
 }
 
-ast::StateFieldDecl MakeStateField(std::string_view name, ast::TypePtr type) {
-  ast::StateFieldDecl field{};
-  field.vis = ast::Visibility::Public;
-  field.name = std::string(name);
-  field.type = std::move(type);
-  field.span = core::Span{};
-  field.doc_opt = std::nullopt;
-  return field;
-}
-
 }  // namespace
 
 bool IsOutcomeTypePath(const ast::TypePath& path) {
@@ -72,16 +63,6 @@ bool IsOutcomeTypePath(const ast::TypePath& path) {
 TypeRef MakeOutcomeType(TypeRef value_type, TypeRef error_type) {
   SpecDefsOutcome();
   return MakeTypePath({"Outcome"}, {std::move(value_type), std::move(error_type)});
-}
-
-TypeRef MakeOutcomeStateType(TypeRef value_type,
-                             TypeRef error_type,
-                             std::string_view state) {
-  SpecDefsOutcome();
-  return MakeTypeModalState(
-      {"Outcome"},
-      std::string(state),
-      {std::move(value_type), std::move(error_type)});
 }
 
 std::optional<OutcomeSig> OutcomeSigOf(const TypeRef& type) {
@@ -104,9 +85,6 @@ std::optional<OutcomeSig> OutcomeSigOf(const TypeRef& type) {
   } else if (const auto* applied = std::get_if<TypeApply>(&stripped->node)) {
     path = &applied->path;
     args = &applied->args;
-  } else if (const auto* state = std::get_if<TypeModalState>(&stripped->node)) {
-    path = &state->path;
-    args = &state->generic_args;
   }
 
   if (!path || !args || !IsOutcomeTypePath(*path) || args->size() != 2) {
@@ -116,9 +94,9 @@ std::optional<OutcomeSig> OutcomeSigOf(const TypeRef& type) {
   return OutcomeSig{(*args)[0], (*args)[1]};
 }
 
-ast::ModalDecl BuildOutcomeModalDecl() {
+ast::EnumDecl BuildOutcomeEnumDecl() {
   SpecDefsOutcome();
-  ast::ModalDecl decl{};
+  ast::EnumDecl decl{};
   decl.vis = ast::Visibility::Public;
   decl.name = "Outcome";
   decl.generic_params = MakeGenericParams({
@@ -127,27 +105,50 @@ ast::ModalDecl BuildOutcomeModalDecl() {
   });
   decl.implements = {};
 
-  ast::StateBlock value_state{};
-  value_state.name = "Value";
-  value_state.members = {
-      MakeStateField("value", MakeTypePathAst({"TValue"})),
+  auto make_variant = [](std::string_view name, ast::TypePtr payload_type) {
+    ast::VariantDecl variant{};
+    variant.name = std::string(name);
+    ast::VariantPayloadTuple tuple{};
+    tuple.elements.push_back(std::move(payload_type));
+    variant.payload_opt = ast::VariantPayload{std::move(tuple)};
+    variant.discriminant_opt = std::nullopt;
+    variant.span = core::Span{};
+    variant.doc_opt = std::nullopt;
+    return variant;
   };
-  value_state.span = core::Span{};
-  value_state.doc_opt = std::nullopt;
-  decl.states.push_back(std::move(value_state));
 
-  ast::StateBlock error_state{};
-  error_state.name = "Error";
-  error_state.members = {
-      MakeStateField("error", MakeTypePathAst({"TError"})),
-  };
-  error_state.span = core::Span{};
-  error_state.doc_opt = std::nullopt;
-  decl.states.push_back(std::move(error_state));
+  decl.variants.push_back(make_variant("Value", MakeTypePathAst({"TValue"})));
+  decl.variants.push_back(make_variant("Error", MakeTypePathAst({"TError"})));
 
   decl.span = core::Span{};
   decl.doc = {};
   return decl;
+}
+
+OutcomeIntro ClassifyOutcomeIntro(const ScopeContext& ctx,
+                                  const TypeRef& from,
+                                  const TypeRef& to) {
+  SpecDefsOutcome();
+  const auto sig = OutcomeSigOf(to);
+  if (!sig || !from) {
+    return OutcomeIntro::None;
+  }
+  // Already an Outcome value (or a subtype of the target): no introduction.
+  if (Subtyping(ctx, from, to).subtype) {
+    return OutcomeIntro::None;
+  }
+  const bool to_value = Subtyping(ctx, from, sig->value).subtype;
+  const bool to_error = Subtyping(ctx, from, sig->error).subtype;
+  if (to_value && to_error) {
+    return OutcomeIntro::Ambiguous;
+  }
+  if (to_value) {
+    return OutcomeIntro::Value;
+  }
+  if (to_error) {
+    return OutcomeIntro::Error;
+  }
+  return OutcomeIntro::None;
 }
 
 }  // namespace ultraviolet::analysis

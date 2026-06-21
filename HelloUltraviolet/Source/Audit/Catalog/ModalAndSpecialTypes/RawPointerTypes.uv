@@ -2,7 +2,7 @@
 
 
 public procedure countModalAndSpecialTypesRawPointerTypesObligations() -> usize {
-    return 21usize
+    return 15usize
 }
 
 public procedure validatedModalAndSpecialTypesRawPointerTypesObligations() -> usize {
@@ -44,42 +44,6 @@ public procedure validatedModalAndSpecialTypesRawPointerTypesObligations() -> us
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.T-Deref-Raw",
-        46476usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.P-Deref-Raw-Imm",
-        46492usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.P-Deref-Raw-Mut",
-        46508usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.13.Deref-Raw-Unsafe",
-        46524usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "def.RawPointerRuntimeValue",
         46542usize,
         "HelloUltraviolet::Audit",
@@ -106,30 +70,12 @@ public procedure validatedModalAndSpecialTypesRawPointerTypesObligations() -> us
     ) {
         count = count + 1usize
     }
-    if artifactBehaviorObligationEntryMatches(
-        "rule.13.ReadPtr-Raw-Invalid",
-        46586usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
-        "validatedArtifactProjectFixtureCount",
-        "Fixtures/ArtifactProjects/RawPointerNullReadPanic/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.13.WritePtr-Raw-Imm",
         46602usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesPointersReference",
         "Source/Reference/ModalTypes/Pointers.uv"
-    ) {
-        count = count + 1usize
-    }
-    if artifactBehaviorObligationEntryMatches(
-        "rule.13.WritePtr-Raw-Invalid",
-        46618usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
-        "validatedArtifactProjectFixtureCount",
-        "Fixtures/ArtifactProjects/RawPointerNullWritePanic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

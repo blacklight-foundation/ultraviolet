@@ -459,6 +459,7 @@ static const DiagMapEntry kTypecheckDiagMap[] = {
   {"E-TYP-2106", "E-TYP-2106"},
   {"E-TYP-2201", "E-TYP-2201"},
   {"E-TYP-2202", "E-TYP-2202"},
+  {"E-TYP-2261", "E-TYP-2261"},
   {"E-TYP-2301", "E-TYP-2301"},
   {"E-TYP-2302", "E-TYP-2302"},
   {"E-TYP-2303", "E-TYP-2303"},

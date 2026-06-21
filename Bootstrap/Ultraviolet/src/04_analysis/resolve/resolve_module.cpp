@@ -814,7 +814,7 @@ void PopulateSigma(ScopeContext& ctx) {
   {
     ast::Path path;
     path.emplace_back("Outcome");
-    ctx.sigma.types[PathKeyOf(path)] = BuildOutcomeModalDecl();
+    ctx.sigma.types[PathKeyOf(path)] = BuildOutcomeEnumDecl();
   }
   {
     ast::Path path;

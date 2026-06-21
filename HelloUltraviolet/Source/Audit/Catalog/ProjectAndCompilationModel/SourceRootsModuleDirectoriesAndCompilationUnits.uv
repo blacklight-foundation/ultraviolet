@@ -2,7 +2,7 @@
 
 
 public procedure countProjectAndCompilationModelSourceRootsModuleDirectoriesAndCompilationUnitsObligations() -> usize {
-    return 15usize
+    return 11usize
 }
 
 public procedure validatedProjectAndCompilationModelSourceRootsModuleDirectoriesAndCompilationUnitsObligations() -> usize {
@@ -19,15 +19,6 @@ public procedure validatedProjectAndCompilationModelSourceRootsModuleDirectories
     if acceptedObligationEntryMatches(
         "WF-Source-Root",
         4293usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsModuleDiscoveryReference",
-        "Source/Reference/Projects/ModuleDiscovery.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "WF-Source-Root-Err",
-        4311usize,
         "HelloUltraviolet::Reference::Projects",
         "runProjectsModuleDiscoveryReference",
         "Source/Reference/Projects/ModuleDiscovery.uv"
@@ -62,15 +53,6 @@ public procedure validatedProjectAndCompilationModelSourceRootsModuleDirectories
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "CompilationUnit-Rel-Fail",
-        4375usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsModuleDiscoveryReference",
-        "Source/Reference/Projects/ModuleDiscovery.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "refs.ModuleDiscoverySection",
         4393usize,
         "HelloUltraviolet::Reference::Projects",
@@ -82,15 +64,6 @@ public procedure validatedProjectAndCompilationModelSourceRootsModuleDirectories
     if acceptedObligationEntryMatches(
         "Modules-Ok",
         4407usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsModuleDiscoveryReference",
-        "Source/Reference/Projects/ModuleDiscovery.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Modules-Err",
-        4425usize,
         "HelloUltraviolet::Reference::Projects",
         "runProjectsModuleDiscoveryReference",
         "Source/Reference/Projects/ModuleDiscovery.uv"
@@ -127,15 +100,6 @@ public procedure validatedProjectAndCompilationModelSourceRootsModuleDirectories
     if acceptedObligationEntryMatches(
         "OwnAssemblies-Ok",
         4486usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsAssemblyModelReference",
-        "Source/Reference/Projects/AssemblyModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "WF-Assembly-Root-Owner-Ambiguous",
-        4504usize,
         "HelloUltraviolet::Reference::Projects",
         "runProjectsAssemblyModelReference",
         "Source/Reference/Projects/AssemblyModel.uv"

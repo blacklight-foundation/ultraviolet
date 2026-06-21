@@ -12,6 +12,7 @@
 #include "04_analysis/typing/type_expr.h"
 #include "04_analysis/typing/typecheck.h"
 #include "04_analysis/typing/types.h"
+#include "04_analysis/typing/outcome.h"
 
 namespace ultraviolet::analysis::expr {
 
@@ -26,7 +27,7 @@ static inline void SpecDefsAllExpr() {
 }  // namespace
 
 // T-All: Wait for all async expressions to complete
-// all { async1, async2, ... } : (T_1, T_2, ...) | E_1 | E_2 | ...
+// all { async1, async2, ... } : Outcome<(T_1, T_2, ...), E_1 | E_2 | ...>
 ExprTypeResult TypeAllExprImpl(const ScopeContext& ctx,
                                const StmtTypeContext& type_ctx,
                                const ast::AllExpr& expr,
@@ -66,24 +67,12 @@ ExprTypeResult TypeAllExprImpl(const ScopeContext& ctx,
 
   SPEC_RULE("rule.21.T-All");
 
-  // Result is tuple of all success types | union of all error types
+  // Result is Outcome<tuple of all success types, union of all error types>.
   const auto tuple_type = MakeTypeTuple(std::move(result_types));
-  std::vector<TypeRef> members;
-  members.reserve(1 + error_types.size());
-  members.push_back(tuple_type);
-  members.insert(members.end(), error_types.begin(), error_types.end());
-  const auto union_type = MakeTypeUnion(std::move(members));
+  const TypeRef error_union =
+      error_types.empty() ? MakeTypePrim("!") : MakeTypeUnion(error_types);
   result.ok = true;
-  if (union_type && std::holds_alternative<TypeUnion>(union_type->node)) {
-    const auto intro = TypeUnionIntro(ctx, tuple_type, union_type);
-    if (!intro.ok) {
-      result.diag_id = intro.diag_id;
-      return result;
-    }
-    result.type = intro.type;
-  } else {
-    result.type = union_type;
-  }
+  result.type = MakeOutcomeType(tuple_type, error_union);
   return result;
 }
 

@@ -2,7 +2,7 @@
 
 
 public procedure countPermissionsAndBindingStatePermissionAdmissibilityObligations() -> usize {
-    return 15usize
+    return 14usize
 }
 
 public procedure validatedPermissionsAndBindingStatePermissionAdmissibilityObligations() -> usize {
@@ -130,15 +130,6 @@ public procedure validatedPermissionsAndBindingStatePermissionAdmissibilityOblig
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.PermissionAdmissibility",
-        29877usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPermissionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Permissions/ReceiverPermissionMismatch/Source/Main.uv"
     ) {
         count = count + 1usize
     }

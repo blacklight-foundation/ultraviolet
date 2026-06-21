@@ -2,7 +2,7 @@
 
 
 public procedure countDiagnosticInfrastructureDiagnosticRecordsAndEmissionObligations() -> usize {
-    return 11usize
+    return 4usize
 }
 
 public procedure validatedDiagnosticInfrastructureDiagnosticRecordsAndEmissionObligations() -> usize {
@@ -37,69 +37,6 @@ public procedure validatedDiagnosticInfrastructureDiagnosticRecordsAndEmissionOb
     if acceptedObligationEntryMatches(
         "req.DiagnosticCodeOwnership",
         1548usize,
-        "HelloUltraviolet::Reference::Diagnostics",
-        "runDiagnosticsDiagnosticRecordsReference",
-        "Source/Reference/Diagnostics/DiagnosticRecords.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.DiagnosticStream",
-        1562usize,
-        "HelloUltraviolet::Reference::Diagnostics",
-        "runDiagnosticsDiagnosticRecordsReference",
-        "Source/Reference/Diagnostics/DiagnosticRecords.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Emit-Append",
-        1577usize,
-        "HelloUltraviolet::Reference::Diagnostics",
-        "runDiagnosticsDiagnosticRecordsReference",
-        "Source/Reference/Diagnostics/DiagnosticRecords.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.DiagnosticTableColumns",
-        1594usize,
-        "HelloUltraviolet::Reference::Diagnostics",
-        "runDiagnosticsDiagnosticRecordsReference",
-        "Source/Reference/Diagnostics/DiagnosticRecords.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.EmitImplicit",
-        1613usize,
-        "HelloUltraviolet::Reference::Diagnostics",
-        "runDiagnosticsDiagnosticRecordsReference",
-        "Source/Reference/Diagnostics/DiagnosticRecords.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.EmitList",
-        1628usize,
-        "HelloUltraviolet::Reference::Diagnostics",
-        "runDiagnosticsDiagnosticRecordsReference",
-        "Source/Reference/Diagnostics/DiagnosticRecords.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.DiagnosticMessageLookup",
-        1643usize,
-        "HelloUltraviolet::Reference::Diagnostics",
-        "runDiagnosticsDiagnosticRecordsReference",
-        "Source/Reference/Diagnostics/DiagnosticRecords.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.CompileStatus",
-        1658usize,
         "HelloUltraviolet::Reference::Diagnostics",
         "runDiagnosticsDiagnosticRecordsReference",
         "Source/Reference/Diagnostics/DiagnosticRecords.uv"

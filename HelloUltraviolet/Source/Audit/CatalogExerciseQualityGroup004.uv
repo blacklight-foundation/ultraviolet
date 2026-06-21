@@ -4,2148 +4,6 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup004() -> usize {
     var count: usize = 0usize
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.ObservableEffect",
-            "HelloUltraviolet::Reference::Authority",
-            "observableEffectVariantsReference",
-            "Source/Reference/Authority/CapabilityFormalModel.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.ObservableEvent",
-            "HelloUltraviolet::Reference::Authority",
-            "observableEventDefinitionReference",
-            "Source/Reference/Authority/CapabilityFormalModel.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.ObservableBehavior",
-            "HelloUltraviolet::Reference::Authority",
-            "observableBehaviorDefinitionReference",
-            "Source/Reference/Authority/CapabilityFormalModel.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.AsIfObservablePreservation",
-            "HelloUltraviolet::Reference::Authority",
-            "asIfObservablePreservationReference",
-            "Source/Reference/Authority/CapabilityFormalModel.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.AsIfForbiddenObservableChanges",
-            "HelloUltraviolet::Reference::Authority",
-            "asIfForbiddenObservableChangesReference",
-            "Source/Reference/Authority/CapabilityFormalModel.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.SequencePoint",
-            "HelloUltraviolet::Reference::Authority",
-            "sequencePointDefinitionReference",
-            "Source/Reference/Authority/CapabilityFormalModel.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.CanonicalSequencePoints",
-            "HelloUltraviolet::Reference::Authority",
-            "canonicalSequencePointsReference",
-            "Source/Reference/Authority/CapabilityFormalModel.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.SequencePointLTRPreservation",
-            "HelloUltraviolet::Reference::Authority",
-            "sequencePointLTRPreservationReference",
-            "Source/Reference/Authority/CapabilityFormalModel.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "conformance.UnsafeForeignAuthority",
-            "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-            "validatedFFIRejectedSourceFixtureCount",
-            "Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnosticOwnership/Source/Main.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.IOHostPrimitiveSets",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOHostPrimitiveSetsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.OtherHostPrimitiveSets",
-            "HelloUltraviolet::Audit",
-            "artifactProjectRuntimeInterfaceSymbolsExercise",
-            "Source/Audit/RuntimeInterfaceArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.HostPrimitiveUniverse",
-            "HelloUltraviolet::Reference::Authority",
-            "hostPrimitiveUniverseReference",
-            "Source/Reference/Authority/HostPrimitives.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.DiagnosticHostPrimitives",
-            "HelloUltraviolet::Reference::Authority",
-            "diagnosticHostPrimitivesReference",
-            "Source/Reference/Authority/HostPrimitives.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.RuntimeHostPrimitives",
-            "HelloUltraviolet::Audit",
-            "artifactProjectRuntimeInterfaceSymbolsExercise",
-            "Source/Audit/RuntimeInterfaceArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.HostPrimitiveMappingAndFailure",
-            "HelloUltraviolet::Reference::Authority",
-            "hostPrimitiveMappingAndFailureReference",
-            "Source/Reference/Authority/HostPrimitives.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.UnmappedHostPrimitiveFailureIllFormed",
-            "HelloUltraviolet::Reference::Authority",
-            "hostPrimitiveMappingAndFailureReference",
-            "Source/Reference/Authority/HostPrimitives.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "conformance.IOPrimitiveOwnership",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveSemanticModelReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.IOPrimitiveJudgments",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveSemanticModelReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.IOPrimitiveResultTypes",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveSemanticModelReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.IOStateTypes",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveSemanticModelReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.IOStateProjections",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveSemanticModelReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.IOEntryQueries",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveSemanticModelReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.FileHandleQueries",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOFileHandleSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.DirectoryIteratorQueries",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIODirectoryIteratorSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.FileFlushedQuery",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOFileHandleSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.IOExplicitStateJudgments",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveSemanticModelReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.IOStateElidedEquivalences",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveSemanticModelReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.RestrictPathSuccess",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIORestrictionAndPathSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.RestrictPathFailure",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIORestrictionAndPathSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.IOPathOperationSet",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveSemanticModelReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IORestrict-Delegate",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIORestrictionAndPathSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IORestrict-InvalidPath",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIORestrictionAndPathSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IORestrict-ExistsInvalidFalse",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIORestrictionAndPathSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.IOPathErrorOperationSets",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPathErrorOperationSetsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.IOPathErrorPredicates",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPathErrorPredicatesReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IOPath-InvalidPath-NoData",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPathErrorOperationSetsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IOPath-InvalidPath-Data",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPathErrorOperationSetsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IOPath-NotFound",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIORestrictionAndPathSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IOPath-PermissionDenied",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIORestrictionAndPathSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IOPath-CreateWriteAlreadyExists",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIORestrictionAndPathSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IOPath-CreateDirAlreadyExistsNonDir",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIORestrictionAndPathSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IOPath-OpenDirInvalidNonDir",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIORestrictionAndPathSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IOPath-Busy",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIORestrictionAndPathSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IOPath-OtherFailure",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPathErrorPredicatesReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.IORemoveSemantics",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIORemoveSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IORemove-RemoveFile",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIORemoveSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IORemove-RemoveOtherEntry",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIORemoveSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IORemove-RemoveEmptyDir",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIORemoveSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IORemove-DirectoryNotEmpty",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIORemoveSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IOReadFile-InvalidUtf8",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOFileHandleSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "FileReadAll-InvalidUtf8",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOFileHandleSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IOExists-True",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIORestrictionAndPathSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IOExists-False",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIORestrictionAndPathSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.FileHandleStateAndMode",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOFileHandleSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.FileLengthAndByteLength",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOFileHandleSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.DirectoryEntryOrdering",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIODirectoryIteratorSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IOOpenRead-HandleState",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOFileHandleSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IOOpenWrite-HandleState",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOFileHandleSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IOOpenAppend-HandleState",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOFileHandleSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IOCreateWrite-HandleState",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOFileHandleSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IOReadFile-DelegatesThroughHandle",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOFileHandleSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IOReadBytes-DelegatesThroughHandle",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOFileHandleSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "FileReadAll-ClosedFailure",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOFileHandleSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "FileReadAllBytes-ClosedFailure",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOFileHandleSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "FileWrite-ClosedFailure",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOFileHandleSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "FileFlush-ClosedFailure",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOFileHandleSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "FileReadAll-AdvancesToEnd",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOFileHandleSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "FileReadAllBytes-AdvancesToEnd",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOFileHandleSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "FileWrite-PositionUpdate",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOFileHandleSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "FileWrite-LengthUpdate",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOFileHandleSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "FileFlush-RecordsFlushed",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOFileHandleSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "FileClose-ClosesHandle",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOFileHandleSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "IOOpenDir-IteratorState",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIODirectoryIteratorSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "DirNext-ClosedFailure",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIODirectoryIteratorSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "DirNext-Exhausted",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIODirectoryIteratorSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "DirNext-YieldsEntry",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIODirectoryIteratorSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "DirClose-ClosesIterator",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIODirectoryIteratorSemanticsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.SystemState",
-            "HelloUltraviolet::Reference::Authority",
-            "authoritySystemStateReference",
-            "Source/Reference/Authority/System.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.SystemPrimitiveJudgments",
-            "HelloUltraviolet::Reference::Authority",
-            "authoritySystemPrimitiveJudgmentsReference",
-            "Source/Reference/Authority/System.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.SystemPrimitiveStateElidedEquivalences",
-            "HelloUltraviolet::Reference::Authority",
-            "authoritySystemStateElidedEquivalencesReference",
-            "Source/Reference/Authority/System.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.EmptyStringVal",
-            "HelloUltraviolet::Reference::Authority",
-            "authoritySystemEnvironmentPrimitiveReference",
-            "Source/Reference/Authority/System.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "System-GetEnv-Ok",
-            "HelloUltraviolet::Reference::Authority",
-            "authoritySystemEnvironmentPrimitiveReference",
-            "Source/Reference/Authority/System.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "System-GetEnv-None",
-            "HelloUltraviolet::Reference::Authority",
-            "authoritySystemEnvironmentPrimitiveReference",
-            "Source/Reference/Authority/System.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "System-Exit",
-            "HelloUltraviolet::Audit",
-            "artifactProjectFixturesBuildAndExerciseOutputObligations",
-            "Source/Audit/ArtifactProjectExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "System-Run",
-            "HelloUltraviolet::Reference::Authority",
-            "authoritySystemRunPrimitiveReference",
-            "Source/Reference/Authority/System.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.TimePrimitiveJudgments",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityTimePrimitiveCallsReference",
-            "Source/Reference/Authority/Time.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.TimePrimitiveValueConstructors",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityTimePrimitiveCallsReference",
-            "Source/Reference/Authority/Time.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.TimePrimitiveAttenuationSemantics",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityTimePrimitiveCallsReference",
-            "Source/Reference/Authority/Time.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.MonotonicTimePrimitiveSemantics",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityTimePrimitiveCallsReference",
-            "Source/Reference/Authority/Time.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.WallTimePrimitiveSemantics",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityTimePrimitiveCallsReference",
-            "Source/Reference/Authority/Time.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.NetworkPrimitiveJudgments",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityNetworkPrimitiveCallsReference",
-            "Source/Reference/Authority/Network.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.NetRestrictHostRequiredSemantics",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityNetworkRestrictionRuntimeStateReference",
-            "Source/Reference/Authority/Network.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.NetRestrictHostSubsetAuthority",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityNetworkRestrictionRuntimeStateReference",
-            "Source/Reference/Authority/Network.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.NetRestrictHostEqualityEnforcement",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityNetworkRestrictionRuntimeStateReference",
-            "Source/Reference/Authority/Network.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.NetRestrictRejectBeforeObservableEffect",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityNetworkRestrictionRuntimeStateReference",
-            "Source/Reference/Authority/Network.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.NetRestrictNoUnrelatedMutation",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityNetworkRestrictionRuntimeStateReference",
-            "Source/Reference/Authority/Network.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.PrimitiveReceiverHandleHelpers",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityFileDirPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.PrimitiveMethodNameAndOwner",
-            "HelloUltraviolet::Audit",
-            "artifactProjectRuntimeInterfaceSymbolsExercise",
-            "Source/Audit/RuntimeInterfaceArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.PrimCallJudgment",
-            "HelloUltraviolet::Audit",
-            "artifactProjectRuntimeInterfaceSymbolsExercise",
-            "Source/Audit/RuntimeInterfaceArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-IO-OpenRead",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-IO-OpenWrite",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-IO-OpenAppend",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-IO-CreateWrite",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-IO-ReadFile",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-IO-ReadBytes",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-IO-WriteFile",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-IO-WriteStdout",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-IO-WriteStderr",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-IO-Exists",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-IO-Remove",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-IO-OpenDir",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-IO-CreateDir",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-IO-EnsureDir",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-IO-Kind",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-IO-Restrict",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityIOPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-File-ReadAll",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityFileDirPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-File-ReadAllBytes",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityFileDirPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-File-Write",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityFileDirPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-File-Flush",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityFileDirPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-File-Write-Append",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityFileDirPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-File-Flush-Append",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityFileDirPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-File-Close-Read",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityFileDirPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-File-Close-Write",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityFileDirPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-File-Close-Append",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityFileDirPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-Dir-Next",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityFileDirPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-Dir-Close",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityFileDirPrimitiveCallsReference",
-            "Source/Reference/Authority/IO.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-System-GetEnv",
-            "HelloUltraviolet::Reference::Authority",
-            "authoritySystemPrimitiveCallsReference",
-            "Source/Reference/Authority/System.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-System-ExecutablePath",
-            "HelloUltraviolet::Reference::Authority",
-            "authoritySystemPrimitiveCallsReference",
-            "Source/Reference/Authority/System.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-System-ArgumentCount",
-            "HelloUltraviolet::Reference::Authority",
-            "authoritySystemPrimitiveCallsReference",
-            "Source/Reference/Authority/System.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-System-Argument",
-            "HelloUltraviolet::Reference::Authority",
-            "authoritySystemPrimitiveCallsReference",
-            "Source/Reference/Authority/System.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-System-CurrentDirectory",
-            "HelloUltraviolet::Reference::Authority",
-            "authoritySystemPrimitiveCallsReference",
-            "Source/Reference/Authority/System.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-System-Exit",
-            "HelloUltraviolet::Audit",
-            "artifactProjectFixturesBuildAndExerciseOutputObligations",
-            "Source/Audit/ArtifactProjectExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-System-Run",
-            "HelloUltraviolet::Audit",
-            "artifactProjectFixturesBuildAndExerciseOutputObligations",
-            "Source/Audit/ArtifactProjectExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-Time-Monotonic",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityTimePrimitiveCallsReference",
-            "Source/Reference/Authority/Time.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-Time-Wall",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityTimePrimitiveCallsReference",
-            "Source/Reference/Authority/Time.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-MonotonicTime-Now",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityTimePrimitiveCallsReference",
-            "Source/Reference/Authority/Time.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-MonotonicTime-Resolution",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityTimePrimitiveCallsReference",
-            "Source/Reference/Authority/Time.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-MonotonicTime-Elapsed",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityTimePrimitiveCallsReference",
-            "Source/Reference/Authority/Time.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-MonotonicTime-Coarsen",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityTimePrimitiveCallsReference",
-            "Source/Reference/Authority/Time.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-WallTime-NowUtc",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityTimePrimitiveCallsReference",
-            "Source/Reference/Authority/Time.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-WallTime-Resolution",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityTimePrimitiveCallsReference",
-            "Source/Reference/Authority/Time.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-WallTime-Coarsen",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityTimePrimitiveCallsReference",
-            "Source/Reference/Authority/Time.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Prim-Network-RestrictHost",
-            "HelloUltraviolet::Reference::Authority",
-            "authorityNetworkPrimitiveCallsReference",
-            "Source/Reference/Authority/Network.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.BindingStateDomain",
-            "HelloUltraviolet::Reference::Authority",
-            "runAuthorityBindingRuntimeStateReference",
-            "Source/Reference/Authority/BindingRuntimeState.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.BindInfo",
-            "HelloUltraviolet::Reference::Authority",
-            "runAuthorityBindingRuntimeStateReference",
-            "Source/Reference/Authority/BindingRuntimeState.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.BindingEnvironment",
-            "HelloUltraviolet::Audit",
-            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
-            "Source/Audit/AcceptedProjectExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.BindingScopeStackOps",
-            "HelloUltraviolet::Reference::Authority",
-            "runAuthorityBindingRuntimeStateReference",
-            "Source/Reference/Authority/BindingRuntimeState.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.BindingLookup",
-            "HelloUltraviolet::Reference::Authority",
-            "runAuthorityBindingRuntimeStateReference",
-            "Source/Reference/Authority/BindingRuntimeState.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.BindingUpdate",
-            "HelloUltraviolet::Reference::Authority",
-            "runAuthorityBindingRuntimeStateReference",
-            "Source/Reference/Authority/BindingRuntimeState.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.BindingIntro",
-            "HelloUltraviolet::Reference::Authority",
-            "runAuthorityBindingRuntimeStateReference",
-            "Source/Reference/Authority/BindingRuntimeState.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.PermissionOfType",
-            "HelloUltraviolet::Reference::Authority",
-            "runAuthorityBindingRuntimeStateReference",
-            "Source/Reference/Authority/BindingRuntimeState.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.PermissionActivityDomain",
-            "HelloUltraviolet::Reference::Authority",
-            "runAuthorityBindingRuntimeStateReference",
-            "Source/Reference/Authority/BindingRuntimeState.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.PermissionEnvironment",
-            "HelloUltraviolet::Audit",
-            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
-            "Source/Audit/AcceptedProjectExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
             "def.PermissionScopeStackOps",
             "HelloUltraviolet::Reference::Authority",
             "runAuthorityBindingRuntimeStateReference",
@@ -2273,48 +131,6 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup004() -> usize {
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
             "Trans-Reassign",
-            "HelloUltraviolet::Reference::Authority",
-            "runAuthorityBindingRuntimeStateReference",
-            "Source/Reference/Authority/BindingRuntimeState.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Trans-Moved-NoAccess",
-            "HelloUltraviolet::Reference::Authority",
-            "runAuthorityBindingRuntimeStateReference",
-            "Source/Reference/Authority/BindingRuntimeState.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Trans-Partial-NoAccess",
-            "HelloUltraviolet::Reference::Authority",
-            "runAuthorityBindingRuntimeStateReference",
-            "Source/Reference/Authority/BindingRuntimeState.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Trans-Let-NoReassign",
             "HelloUltraviolet::Reference::Authority",
             "runAuthorityBindingRuntimeStateReference",
             "Source/Reference/Authority/BindingRuntimeState.uv",
@@ -2794,6 +610,2190 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup004() -> usize {
             "HelloUltraviolet::Reference::Authority",
             "runAuthorityBindingRuntimeStateReference",
             "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.StatementSubExpressions",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.StatementSubStatements",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.SubBlocks",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.MapEntries",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.MapUnion",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.IntroduceAllBindings",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.BindInfoMap",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.EffectiveMovability",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RegionBindingInfo",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.BindingNames",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.JoinAllBindings",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.JoinAllPermissions",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.PermissionTopScopeOps",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.PermissionRoots",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ConsumeOnMove",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.MoveExpressionInnerPlace",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.BindingJudgmentSet",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.StaticBindingMaps",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ProcedureEntryBindingScopes",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ParameterBindingMap",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.MethodParameterBindingMap",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ParameterTypeMap",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ParameterMoveAndResponsibility",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.InitialBindingEnvironment",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.InitialPermissionEnvironment",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.BindCheck",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ProcedureBindingCheck",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.MethodParametersForBinding",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.MethodBindingCheck",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ClassMethodBindingCheck",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.StateMethodBindingCheck",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.TransitionBindingCheck",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.BindingDiagnosticReferences",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "req.FeatureSpecificBJudgmentOwnership",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RegionOptionsFields",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RegionOptionsDecl",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RegionPreallocation",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RegionActiveType",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.FreshRegion",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RegionOptionsExpression",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RegionBind",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.InnermostActiveRegion",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.FrameBind",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "req.RegionSyntheticIdentifierRestriction",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "req.FrameSyntheticIdentifierRestriction",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ProvenanceTags",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RegionNesting",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.StrictProvenanceLifetimeOrder",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ProvenanceLifetimeOrder",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.FrameTarget",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.FrameTargetProvenanceOrder",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ProvenanceJoin",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.JoinAllProvenance",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ProvenanceEnvironmentShape",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ProvenanceScopeAccessors",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ProvenanceScopeStackOps",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ProvenanceLookup",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ProvenanceIntro",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ProvenanceIntroAll",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ParameterProvenanceInitialization",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ProvenanceRegionEntryResolution",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ProvenanceRegionAliasIntro",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.FreshRegionTag",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.AllocationRegionTagSelection",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.FreshRegionExpression",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ProvenanceJudgmentSets",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.CaseBodyProvenance",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.CasePatternProvenanceEnvironment",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.CaseProvenance",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.CaseElseProvenance",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rules.ProvenanceChecking",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "P-If-Is",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "P-If-Cases",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ClosureCaptureProvenance",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ClosureTargetProvenance",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ClosureLocalSharedCaptures",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ClosureEscapeCheck",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "P-Closure-NonCapturing",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "P-Closure-Capturing",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.FrameProvenance",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.BreakProvenance",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.IteratorElementProvenance",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.InfiniteLoopProvenance",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.FiniteLoopProvenance",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ExtendProvenanceForPattern",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "P-Loop-Infinite",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "P-Loop-Conditional",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "P-Loop-Iter",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ProvenanceEscapeHelpers",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "req.NoGeneralHeapEscapeConversion",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.BindingProvenance",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.StaticBindingProvenance",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.AssignmentProvenanceEscapeCheck",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ProvenanceEscapeJudgmentSet",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "req.ProvenanceEscapeCheckPurpose",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ScopeEntry",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.DynamicScopeStack",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.UpdateScopeStack",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RuntimeScopePushPop",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.AppendCleanup",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.CleanupList",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ScopeById",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ReplaceScopeById",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.SetCleanupList",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.PoisonedModule",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "req.HostedSessionPoisonFlagLocalization",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.PoisonedModules",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RuntimeBindingIdentityAndValue",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.FreshBindId",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.Last",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.NearestScope",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.LookupBind",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RuntimeBindingValueLookup",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RuntimeBindingStateLookup",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "LookupVal-Bind-Value",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "LookupVal-Bind-Alias",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "LookupVal-Path",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "LookupValPath-Builtin",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "LookupValPath-Static",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "LookupValPath-Proc",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "LookupValPath-RecordCtor",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ScopeValueAndStateUpdate",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.UpdateRuntimeBindingValue",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.SetRuntimeBindingState",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RuntimeBindingTypeAndInfo",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.BindRuntimeValue",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.BindPatternValue",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.PatternBindingOrder",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.BindRuntimeList",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.BindPattern",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RuntimeRegionEntry",
+            "HelloUltraviolet::Audit",
+            "artifactProjectRuntimeInterfaceSymbolsExercise",
+            "Source/Audit/RuntimeInterfaceArtifactExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RuntimeAddressTags",
+            "HelloUltraviolet::Audit",
+            "artifactProjectRuntimeInterfaceSymbolsExercise",
+            "Source/Audit/RuntimeInterfaceArtifactExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RuntimeRegionStack",
+            "HelloUltraviolet::Audit",
+            "artifactProjectRuntimeInterfaceSymbolsExercise",
+            "Source/Audit/RuntimeInterfaceArtifactExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RegionArena",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.UpdateRegionArena",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ArenaNew",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.FreshRuntimeAddress",
+            "HelloUltraviolet::Audit",
+            "artifactProjectRuntimeInterfaceSymbolsExercise",
+            "Source/Audit/RuntimeInterfaceArtifactExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.Prefix",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ArenaAppend",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ArenaMark",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ArenaResetTo",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ArenaClear",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ArenaRemove",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RegionValue",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ResolveRuntimeRegionEntry",
+            "HelloUltraviolet::Audit",
+            "artifactProjectRuntimeInterfaceSymbolsExercise",
+            "Source/Audit/RuntimeInterfaceArtifactExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ActiveRuntimeRegion",
+            "HelloUltraviolet::Audit",
+            "artifactProjectRuntimeInterfaceSymbolsExercise",
+            "Source/Audit/RuntimeInterfaceArtifactExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ResolveRuntimeRegionTargetAndTag",
+            "HelloUltraviolet::Audit",
+            "artifactProjectRuntimeInterfaceSymbolsExercise",
+            "Source/Audit/RuntimeInterfaceArtifactExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.FreshRuntimeRegionTagAndArena",
+            "HelloUltraviolet::Audit",
+            "artifactProjectRuntimeInterfaceSymbolsExercise",
+            "Source/Audit/RuntimeInterfaceArtifactExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.UpdateRegionStack",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RegionNew",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RegionOpen",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.FrameEnter",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.BindRegionAlias",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.TagAddr",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.TagAddrFrom",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RegionAlloc",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityRegionsAndFramesReference",
+            "Source/Reference/Authority/RegionsAndFrames.uv",
             false,
             true,
             false,

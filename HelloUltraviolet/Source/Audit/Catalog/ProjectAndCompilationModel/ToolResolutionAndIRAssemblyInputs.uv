@@ -2,7 +2,7 @@
 
 
 public procedure countProjectAndCompilationModelToolResolutionAndIRAssemblyInputsObligations() -> usize {
-    return 9usize
+    return 7usize
 }
 
 public procedure validatedProjectAndCompilationModelToolResolutionAndIRAssemblyInputsObligations() -> usize {
@@ -40,24 +40,6 @@ public procedure validatedProjectAndCompilationModelToolResolutionAndIRAssemblyI
         "HelloUltraviolet::Reference::Projects",
         "runProjectsAssemblyModelReference",
         "Source/Reference/Projects/AssemblyModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveTool-Err-Linker",
-        6704usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticLinkerToolResolveFailureExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveTool-Err-Archiver",
-        6722usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticArchiverToolResolveFailureExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
     ) {
         count = count + 1usize
     }

@@ -235,8 +235,14 @@ void IRInstructionVisitor::operator()(const IRRaceReturn &r) const
     {
       source_type = active_ctx->LookupValueType(arm_eval.arm->handler_result);
     }
-    llvm::Value *handler_out =
-        coerce_to_result(EvaluateOrDefault(arm_eval.arm->handler_result), source_type);
+    // Return-mode race produces Outcome::Value(handler result) (RaceStepReturn-Completed).
+    llvm::Value *handler_value = EvaluateOrDefault(arm_eval.arm->handler_result);
+    llvm::Value *handler_out = BuildOutcomeEnumValue(
+        target_type, "Value", handler_value, source_type, r.result.name);
+    if (!handler_out)
+    {
+      handler_out = coerce_to_result(handler_value, source_type);
+    }
     builder.CreateStore(handler_out, result_slot);
   };
 
@@ -246,7 +252,13 @@ void IRInstructionVisitor::operator()(const IRRaceReturn &r) const
         extract_async_payload(arm_eval.async_slot,
                               arm_eval.async_struct,
                               arm_eval.error_type);
-    llvm::Value *out = coerce_to_result(error_payload, arm_eval.error_type);
+    // Return-mode race produces Outcome::Error(error) (RaceStepReturn-Failed).
+    llvm::Value *out = BuildOutcomeEnumValue(
+        target_type, "Error", error_payload, arm_eval.error_type, r.result.name);
+    if (!out)
+    {
+      out = coerce_to_result(error_payload, arm_eval.error_type);
+    }
     builder.CreateStore(out, result_slot);
   };
 

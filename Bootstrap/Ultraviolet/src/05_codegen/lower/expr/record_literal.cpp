@@ -18,6 +18,7 @@
 
 #include "00_core/assert_spec.h"
 #include "00_core/spec_trace.h"
+#include "04_analysis/typing/type_lookup.h"
 #include "04_analysis/typing/type_lower.h"
 #include "04_analysis/typing/type_predicates.h"
 
@@ -213,6 +214,41 @@ LowerResult LowerRecord(const ast::Expr& full_expr,
   if (!record_type) {
     record_type = LowerRecordTargetType(expr, ctx);
   }
+
+  // (T-Outcome-Intro) §13.1.4: wrap bare field initializers that introduce into
+  // an Outcome-typed field as Outcome::Value/Error. No-op for non-record target
+  // types, non-Outcome fields, or values already of the field type.
+  if (record_type && ctx.sigma) {
+    const analysis::ScopeContext& scope = ScopeForLowering(ctx);
+    analysis::TypeRef stripped = analysis::StripPerm(record_type);
+    if (!stripped) {
+      stripped = record_type;
+    }
+    const analysis::TypePath* path = nullptr;
+    std::vector<analysis::TypeRef> generic_args;
+    if (const auto* tp = std::get_if<analysis::TypePathType>(&stripped->node)) {
+      path = &tp->path;
+      generic_args = tp->generic_args;
+    } else if (const auto* ta = std::get_if<analysis::TypeApply>(&stripped->node)) {
+      path = &ta->path;
+      generic_args = ta->args;
+    }
+    if (path) {
+      if (const ast::RecordDecl* record =
+              analysis::LookupRecordDecl(scope, *path)) {
+        for (auto& field : field_values) {
+          const auto field_type =
+              analysis::FieldType(*record, field.first, scope, generic_args);
+          if (field_type) {
+            field.second = MaybeWrapImplicitOutcome(
+                field.second, ctx.LookupValueType(field.second), *field_type,
+                ctx);
+          }
+        }
+      }
+    }
+  }
+
   IRValue record_value = RegisterLoweredRecordValue(
       std::move(field_values),
       record_type,

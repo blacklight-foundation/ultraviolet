@@ -2,7 +2,7 @@
 
 
 public procedure countModuleLevelFormsStaticDeclarationsObligations() -> usize {
-    return 53usize
+    return 49usize
 }
 
 public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usize {
@@ -91,24 +91,6 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
     if acceptedObligationEntryMatches(
         "WF-StaticDecl-Ann-Mismatch",
         30808usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesStaticsReference",
-        "Source/Reference/Modules/Statics.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "WF-StaticDecl-MissingType",
-        30826usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedModulesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Modules/StaticMissingTypeAnnotation/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "StaticVisOk-Err",
-        30844usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesStaticsReference",
         "Source/Reference/Modules/Statics.uv"
@@ -463,24 +445,6 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.StaticDeclarations",
-        31488usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedModulesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Modules/StaticMissingTypeAnnotation/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.StaticDeclarationDiagnosticOwnership",
-        31508usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesStaticsReference",
-        "Source/Reference/Modules/Statics.uv"
     ) {
         count = count + 1usize
     }

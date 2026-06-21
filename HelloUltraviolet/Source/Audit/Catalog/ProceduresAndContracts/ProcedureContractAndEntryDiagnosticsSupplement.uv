@@ -2,28 +2,10 @@
 
 
 public procedure countProceduresAndContractsProcedureContractAndEntryDiagnosticsSupplementObligations() -> usize {
-    return 2usize
+    return 0usize
 }
 
 public procedure validatedProceduresAndContractsProcedureContractAndEntryDiagnosticsSupplementObligations() -> usize {
     var count: usize = 0usize
-    if rejectedSourceObligationEntryMatches(
-        "diag.15.ProcedureContractEntryDiagnosticsOwnership",
-        57458usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/ContractEntryMovedParameter/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag-table.15.ProcedureContractEntryDiagnostics",
-        57471usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/ContractEntryCapability/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     return count
 }

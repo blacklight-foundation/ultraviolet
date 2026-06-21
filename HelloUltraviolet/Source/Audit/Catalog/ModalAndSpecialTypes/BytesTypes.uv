@@ -2,7 +2,7 @@
 
 
 public procedure countModalAndSpecialTypesBytesTypesObligations() -> usize {
-    return 48usize
+    return 44usize
 }
 
 public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
@@ -179,26 +179,8 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.BytesWithCapacity-Err",
-        45475usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesBytesReference",
-        "Source/Reference/ModalTypes/Bytes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "rule.13.BytesFromSlice-Ok",
         45491usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesBytesReference",
-        "Source/Reference/ModalTypes/Bytes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.BytesFromSlice-Err",
-        45507usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"
@@ -217,15 +199,6 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
     if acceptedObligationEntryMatches(
         "rule.13.BytesToManaged-Ok",
         45539usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesBytesReference",
-        "Source/Reference/ModalTypes/Bytes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.BytesToManaged-Err",
-        45555usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"
@@ -262,15 +235,6 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
     if acceptedObligationEntryMatches(
         "rule.13.BytesAppend-Ok",
         45619usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesBytesReference",
-        "Source/Reference/ModalTypes/Bytes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.BytesAppend-Err",
-        45635usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"

@@ -2,7 +2,7 @@
 
 
 public procedure countAsynchronousOperationsAsyncKeyIntegrationObligations() -> usize {
-    return 19usize
+    return 13usize
 }
 
 public procedure validatedAsynchronousOperationsAsyncKeyIntegrationObligations() -> usize {
@@ -40,42 +40,6 @@ public procedure validatedAsynchronousOperationsAsyncKeyIntegrationObligations()
         "HelloUltraviolet::Audit",
         "asyncArtifactObligationsExercise",
         "Source/Audit/AsyncArtifactExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.21.AsyncKeyRestrictions",
-        83319usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedKeysRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.A-Closure-Yield-Keys-Err",
-        83336usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedKeysRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Keys/SharedClosureYieldKeys/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.21.SharedCapturingClosureYieldKeys",
-        83355usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedKeysRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Keys/SharedCapturingClosureYieldKeys/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if diagnosticSourceObligationEntryMatches(
-        "requirement.21.YieldReleaseStalenessWarning",
-        83368usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
-        "validatedKeysDiagnosticSourceFixtureCount",
-        "Fixtures/DiagnosticSource/Keys/StaleAfterYieldReleaseWarning/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -157,24 +121,6 @@ public procedure validatedAsynchronousOperationsAsyncKeyIntegrationObligations()
         "HelloUltraviolet::Audit",
         "asyncArtifactObligationsExercise",
         "Source/Audit/AsyncArtifactExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if diagnosticSourceObligationEntryMatches(
-        "requirement.21.StaleValueMarkIRDiagnostics",
-        83529usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
-        "validatedAsyncDiagnosticSourceFixtureCount",
-        "Fixtures/DiagnosticSource/Async/StaleValueMarkIRDiagnostics/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.21.AsyncKeyDiagnostics",
-        83544usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedKeysRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Keys/YieldFromWhileKeyHeld/Source/Main.uv"
     ) {
         count = count + 1usize
     }

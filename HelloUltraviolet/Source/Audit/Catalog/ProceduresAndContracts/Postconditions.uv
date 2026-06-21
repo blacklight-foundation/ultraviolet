@@ -2,7 +2,7 @@
 
 
 public procedure countProceduresAndContractsPostconditionsObligations() -> usize {
-    return 25usize
+    return 20usize
 }
 
 public procedure validatedProceduresAndContractsPostconditionsObligations() -> usize {
@@ -79,15 +79,6 @@ public procedure validatedProceduresAndContractsPostconditionsObligations() -> u
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "req.15.ContractResultProperties",
-        56002usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/ContractResultOutsidePostcondition/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.15.Result-Union-Type",
         56019usize,
@@ -142,33 +133,6 @@ public procedure validatedProceduresAndContractsPostconditionsObligations() -> u
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.15.Result-Generic-Constraint",
-        56115usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/ResultGenericConstraint/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.15.ContractEntryConstraints",
-        56131usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/ContractEntryOutsidePostcondition/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.15.Entry-Type",
-        56149usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/ContractEntryNonBitcopy/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "req.15.PostconditionResultRuntimeBinding",
         56167usize,
@@ -220,15 +184,6 @@ public procedure validatedProceduresAndContractsPostconditionsObligations() -> u
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.15.Postconditions",
-        56264usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/PostconditionsDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

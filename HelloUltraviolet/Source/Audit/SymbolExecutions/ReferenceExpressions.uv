@@ -8,6 +8,7 @@ using HelloUltraviolet::Reference::Expressions::{ runExpressionsClosuresAndPipel
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsConstructionReference }
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsControlReference }
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsControlSurfaceReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsEffectfulCoreReference }
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsEvalSigmaIfCasesReference }
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsEvalSigmaIfIsReference }
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsEvalSigmaIfTrueReference }
@@ -61,6 +62,11 @@ public procedure catalogCompiledSymbolsExecuteReferenceExpressions(context: Cont
         context,
         "runExpressionsControlSurfaceReference",
         runExpressionsControlSurfaceReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsEffectfulCoreReference",
+        runExpressionsEffectfulCoreReference()
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,

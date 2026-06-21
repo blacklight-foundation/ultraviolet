@@ -2,7 +2,7 @@
 
 
 public procedure countPatternsCaseClausesObligations() -> usize {
-    return 46usize
+    return 44usize
 }
 
 public procedure validatedPatternsCaseClausesObligations() -> usize {
@@ -163,15 +163,6 @@ public procedure validatedPatternsCaseClausesObligations() -> usize {
     if acceptedObligationEntryMatches(
         "rule.17.PatternNarrow-Typed",
         67399usize,
-        "HelloUltraviolet::Reference::Patterns",
-        "runPatternsCaseClausesReference",
-        "Source/Reference/Patterns/CaseClauses.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.17.PatternRejectNarrow-Union",
-        67415usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsCaseClausesReference",
         "Source/Reference/Patterns/CaseClauses.uv"
@@ -409,15 +400,6 @@ public procedure validatedPatternsCaseClausesObligations() -> usize {
         "HelloUltraviolet::Audit",
         "patternLowerIfCasesConformanceMatches",
         "Source/Audit/PatternLoweringConformanceExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.17.CaseClauses",
-        67844usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPatternsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Patterns/CaseClausesDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

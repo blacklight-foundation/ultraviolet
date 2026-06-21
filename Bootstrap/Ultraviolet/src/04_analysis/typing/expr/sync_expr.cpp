@@ -10,6 +10,7 @@
 #include "04_analysis/typing/type_infer.h"
 #include "04_analysis/typing/type_stmt.h"
 #include "04_analysis/typing/type_expr.h"
+#include "04_analysis/typing/outcome.h"
 #include "04_analysis/caps/cap_concurrency.h"
 #include "02_source/ast/ast.h"
 
@@ -400,23 +401,11 @@ ExprTypeResult TypeSyncExpr(const ScopeContext& ctx,
   SPEC_RULE("T-Sync");
   SPEC_RULE("rule.21.T-Sync");
   result.ok = true;
-  // If error type is ! (never), the union simplifies to just the result type
-  // because T | ! is equivalent to T (! contributes no inhabitants)
-  if (IsPrimType(async_sig->err, "!")) {
-    result.type = async_sig->result;
-  } else {
-    const auto union_type = MakeTypeUnion({async_sig->result, async_sig->err});
-    if (union_type && std::holds_alternative<TypeUnion>(union_type->node)) {
-      const auto intro = TypeUnionIntro(ctx, async_sig->result, union_type);
-      if (!intro.ok) {
-        result.diag_id = intro.diag_id;
-        return result;
-      }
-      result.type = intro.type;
-    } else {
-      result.type = union_type;
-    }
-  }
+  // (T-Sync) §17.3.5: `sync` is unconditionally typed `Outcome<Result, E>`,
+  // even when E ≡ ! — the result is the Outcome enum, never a bare result or
+  // a `Result | E` union. This mirrors the migrated dynamics
+  // (EvalSigma-Sync-Completed/Failed) which produce Outcome::Value/Error.
+  result.type = MakeOutcomeType(async_sig->result, async_sig->err);
   return result;
 }
 

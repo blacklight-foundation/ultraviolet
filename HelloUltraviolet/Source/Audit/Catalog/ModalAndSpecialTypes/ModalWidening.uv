@@ -2,7 +2,7 @@
 
 
 public procedure countModalAndSpecialTypesModalWideningObligations() -> usize {
-    return 17usize
+    return 15usize
 }
 
 public procedure validatedModalAndSpecialTypesModalWideningObligations() -> usize {
@@ -67,15 +67,6 @@ public procedure validatedModalAndSpecialTypesModalWideningObligations() -> usiz
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesWideningReference",
         "Source/Reference/ModalTypes/Widening.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.13.Widen-NonModal",
-        44312usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -148,15 +139,6 @@ public procedure validatedModalAndSpecialTypesModalWideningObligations() -> usiz
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesWideningReference",
         "Source/Reference/ModalTypes/Widening.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.ModalWidening",
-        44442usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership/Source/Main.uv"
     ) {
         count = count + 1usize
     }

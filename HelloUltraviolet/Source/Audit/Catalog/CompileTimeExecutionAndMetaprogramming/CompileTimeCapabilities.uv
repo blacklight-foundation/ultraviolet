@@ -2,7 +2,7 @@
 
 
 public procedure countCompileTimeExecutionAndMetaprogrammingCompileTimeCapabilitiesObligations() -> usize {
-    return 36usize
+    return 27usize
 }
 
 public procedure validatedCompileTimeExecutionAndMetaprogrammingCompileTimeCapabilitiesObligations() -> usize {
@@ -142,24 +142,6 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingCompileTimeCapab
     ) {
         count = count + 1usize
     }
-    if diagnosticSourceObligationEntryMatches(
-        "requirement.22.ProjectFilesPathRestrictions",
-        84764usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
-        "validatedComptimeDiagnosticSourceFixtureCount",
-        "Fixtures/DiagnosticSource/Comptime/ProjectFilesInvalidPath/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.22.TypeEmitterEmitTypeRequirement",
-        84781usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.22.CtCapabilityDynamicHelpers",
         84796usize,
@@ -197,15 +179,6 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingCompileTimeCapab
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.22.CtBuiltin-Read-InvalidPath",
-        84867usize,
-        "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeCapabilitiesReference",
-        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "rule.22.CtBuiltin-ReadBytes",
         84883usize,
         "HelloUltraviolet::Reference::Comptime",
@@ -215,26 +188,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingCompileTimeCapab
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.22.CtBuiltin-ReadBytes-InvalidPath",
-        84899usize,
-        "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeCapabilitiesReference",
-        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "rule.22.CtBuiltin-Exists",
         84915usize,
-        "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeCapabilitiesReference",
-        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.22.CtBuiltin-Exists-InvalidPath",
-        84931usize,
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeCompileTimeCapabilitiesReference",
         "Source/Reference/Comptime/CompileTimeCapabilities.uv"
@@ -256,33 +211,6 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingCompileTimeCapab
         "HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming",
         "comptimeAcceptedProjectCapabilitiesConformanceMatches",
         "Source/Audit/Catalog/CompileTimeExecutionAndMetaprogramming/CompilerConformanceExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.22.CtBuiltin-Diagnostics-Error",
-        84979usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/UserDiagnosticError/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if diagnosticSourceObligationEntryMatches(
-        "rule.22.CtBuiltin-Diagnostics-Warning",
-        84995usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
-        "validatedComptimeDiagnosticSourceFixtureCount",
-        "Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if diagnosticSourceObligationEntryMatches(
-        "rule.22.CtBuiltin-Diagnostics-Note",
-        85011usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
-        "validatedComptimeDiagnosticSourceFixtureCount",
-        "Fixtures/DiagnosticSource/Comptime/UserDiagnosticNote/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -319,15 +247,6 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingCompileTimeCapab
         "HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming",
         "comptimeRuntimeErasureArtifactEvidenceMatches",
         "Source/Audit/Catalog/CompileTimeExecutionAndMetaprogramming/LoweringErasureArtifactExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.22.CompileTimeCapabilitiesDiagnosticsReference",
-        85089usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem/Source/Main.uv"
     ) {
         count = count + 1usize
     }

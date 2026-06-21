@@ -3374,11 +3374,11 @@ IOResType(DirNext) = `Outcome<DirEntry | (), IoError>`
 IOResType(DirClose) = `ok`
 
 When `IOResType(Op) = Outcome<T, E>`, a primitive relation in this section that
-returns a successful payload `v` denotes `Outcome<T, E>@Value{value: v}`.
+returns a successful payload `v` denotes `Outcome::Value(v)`.
 A primitive relation that returns an `IoError` value `e` denotes
-`Outcome<T, IoError>@Error{error: e}`. For `DirNext`, the successful payload
+`Outcome::Error(e)`. For `DirNext`, the successful payload
 type is `DirEntry | ()`, so exhausted iteration returns the `()` member inside
-`Outcome<DirEntry | (), IoError>@Value`.
+`Outcome::Value(...)`.
 
 Handle = ℕ
 Entry ::= FileEntry(bytes) | DirEntry(names) | OtherEntry
@@ -3597,8 +3597,8 @@ DurationVal(n) = RecordValue(TypePath(["Duration"]), [⟨`nanoseconds`, IntVal("
 MonotonicInstantVal(domain, ticks) = RecordValue(TypePath(["MonotonicInstant"]), [⟨`domain`, IntVal("usize", domain)⟩, ⟨`ticks`, IntVal("u128", ticks)⟩])
 UtcInstantVal(n) = RecordValue(TypePath(["UtcInstant"]), [⟨`unix_nanoseconds`, IntVal("i128", n)⟩])
 TimeErrorVal(name) = EnumValue(["TimeError", name], ⊥)
-TimeOk(T, v) = `Outcome<T, TimeError>@Value`{`value`: v}
-TimeErr(T, name) = `Outcome<T, TimeError>@Error`{`error`: TimeErrorVal(name)}
+TimeOk(T, v) = EnumValue(["Outcome", `Value`], TuplePayload([v]))
+TimeErr(T, name) = EnumValue(["Outcome", `Error`], TuplePayload([TimeErrorVal(name)]))
 
 `TimeMonotonic` and `TimeWall` are attenuation relations from the process time root. `MonotonicTimeCoarsen` and `WallTimeCoarsen` are attenuation relations from an existing clock capability.
 
@@ -10314,6 +10314,13 @@ Rules **(Sub-Member-Union)**, **(Sub-Union-Width)** are defined once by §8.2.
 ──────────────────────────────────────────────
 Γ ⊢ e : U
 
+The fallible/error channel of an API is expressed with the `Outcome<T, E>` enum,
+not with a union. `Outcome` discriminates success from error by a tag that is
+independent of the payload types, so it works even when `T` and `E` coincide or
+overlap and is the form required for error-generic code. A union is the general
+structural sum, appropriate when the alternatives are distinct existing types
+that should not be re-wrapped (for example `DirEntry | ()`).
+
 Rule **(Union-DirectAccess-Err)** is defined once by §16.2.4.
 
 Union matching and propagation are defined by §§16.8 and 17.5.
@@ -10581,6 +10588,7 @@ This section owns diagnostics for array, slice, and union data-type rules that a
 | `E-TYP-1820` | Error    | Compile-time | Slice index expression has non-`usize` type (`Index-Slice-NonUsize`) |
 | `E-TYP-2201` | Error    | Compile-time | Union type has fewer than two member types (`WF-Union-TooFew`) |
 | `E-TYP-2202` | Error    | Compile-time | Direct access on union value without pattern matching (`Union-DirectAccess-Err`) |
+| `E-TYP-2261` | Error    | Compile-time | Ambiguous implicit `Outcome` introduction: success and error types coincide |
 
 ## 13. Modal and Special Types
 
@@ -10858,31 +10866,40 @@ TrackedDecl = ModalDecl(⊥, `public`, `Tracked`, TrackedParams, ⊥, [], Tracke
 Σ.Types["Tracked"] = `modal` TrackedDecl
 
 ["Outcome"] ∈ dom(Σ.Types)
-States(`Outcome`) = { `@Value`, `@Error` }
+
+Outcome is a two-variant enum (not a modal). Its variant `Value` carries a
+single `TValue` payload and `Error` carries a single `TError` payload.
 
 OutcomeParams = [⟨`TValue`, [], ⊥, ⊥⟩, ⟨`TError`, [], ⊥, ⊥⟩]
-OutcomeValueFields = [⟨`value`, TypePath(["TValue"])⟩]
-OutcomeErrorFields = [⟨`error`, TypePath(["TError"])⟩]
 
-Payload(`Outcome`, `@Value`) = OutcomeValueFields
-Payload(`Outcome`, `@Error`) = OutcomeErrorFields
+OutcomeVariants = [
+  VariantDecl(`Value`, TuplePayload([TypePath(["TValue"])]), ⊥, ⊥, ⊥),
+  VariantDecl(`Error`, TuplePayload([TypePath(["TError"])]), ⊥, ⊥, ⊥)
+]
+OutcomeDecl = EnumDecl(⊥, `public`, `Outcome`, OutcomeParams, ⊥, [], OutcomeVariants, ⊥, ⊥, ⊥)
 
-OutcomeValueMembers = [
-  StateFieldDecl(⊥, `public`, false, `value`, TypePath(["TValue"]), ⊥, ⊥)
-]
-OutcomeErrorMembers = [
-  StateFieldDecl(⊥, `public`, false, `error`, TypePath(["TError"]), ⊥, ⊥)
-]
-OutcomeStates = [
-  StateBlock(`@Value`, OutcomeValueMembers, ⊥, ⊥),
-  StateBlock(`@Error`, OutcomeErrorMembers, ⊥, ⊥)
-]
-OutcomeDecl = ModalDecl(⊥, `public`, `Outcome`, OutcomeParams, ⊥, [], OutcomeStates, ⊥, ⊥, ⊥)
-
-Σ.Types["Outcome"] = `modal` OutcomeDecl
+Σ.Types["Outcome"] = `enum` OutcomeDecl
 
 OutcomeSig(T) = ⟨TValue, TError⟩ ⇔ AliasNorm(T) = TypeApply(["Outcome"], [TValue, TError])
 OutcomeSig(T) = ⊥ otherwise
+
+**(T-Outcome-Intro-Value)**
+Γ; R; L ⊢ e : T    OutcomeSig(U) = ⟨T_s, E_s⟩    Γ ⊢ T <: T_s    ¬(Γ ⊢ T <: E_s)
+──────────────────────────────────────────────────
+Γ; R; L ⊢ e : U
+
+**(T-Outcome-Intro-Error)**
+Γ; R; L ⊢ e : T    OutcomeSig(U) = ⟨T_s, E_s⟩    Γ ⊢ T <: E_s    ¬(Γ ⊢ T <: T_s)
+───────────────────────────────────────────────────
+Γ; R; L ⊢ e : U
+
+In a context expecting `Outcome<T_s, E_s>`, a value of type `T` introduces
+implicitly as `Outcome::Value(e)` when `T <: T_s` (and not `T <: E_s`), and as
+`Outcome::Error(e)` when `T <: E_s` (and not `T <: T_s`). When `T` is admissible
+to both slots (in particular when `T_s ≡ E_s`), implicit introduction is
+ambiguous and is rejected with `E-TYP-2261` ("ambiguous Outcome introduction:
+success and error types coincide"); use the explicit `Outcome::Value(e)` /
+`Outcome::Error(e)` form there. The explicit forms are always available.
 
 DirIterOpenMembers = [
   StateFieldDecl(⊥, `public`, false, `handle`, TypePrim("usize"), ⊥, ⊥),
@@ -13529,10 +13546,10 @@ CapType(Cl) = TypeDynamic(Cl)
 
 IOInterface =
 {
- ⟨"open_read", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeUnion([TypeModalState(["File"], `@Read`), TypePath(["IoError"])])⟩,
- ⟨"open_write", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeUnion([TypeModalState(["File"], `@Write`), TypePath(["IoError"])])⟩,
- ⟨"open_append", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeUnion([TypeModalState(["File"], `@Append`), TypePath(["IoError"])])⟩,
- ⟨"create_write", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeUnion([TypeModalState(["File"], `@Write`), TypePath(["IoError"])])⟩,
+ ⟨"open_read", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypeModalState(["File"], `@Read`), TypePath(["IoError"])])⟩,
+ ⟨"open_write", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypeModalState(["File"], `@Write`), TypePath(["IoError"])])⟩,
+ ⟨"open_append", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypeModalState(["File"], `@Append`), TypePath(["IoError"])])⟩,
+ ⟨"create_write", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypeModalState(["File"], `@Write`), TypePath(["IoError"])])⟩,
  ⟨"read_file", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypePerm(`unique`, TypeString(`@Managed`)), TypePath(["IoError"])])⟩,
  ⟨"read_bytes", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypePerm(`unique`, TypeBytes(`@Managed`)), TypePath(["IoError"])])⟩,
  ⟨"write_file", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩, ⟨⊥, `data`, TypeBytes(`@View`)⟩], TypeApply(["Outcome"], [TypePrim("()"), TypePath(["IoError"])])⟩,
@@ -13540,10 +13557,10 @@ IOInterface =
  ⟨"write_stderr", `const`, [⟨⊥, `data`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypePrim("()"), TypePath(["IoError"])])⟩,
  ⟨"exists", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypePrim("bool")⟩,
  ⟨"remove", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypePrim("()"), TypePath(["IoError"])])⟩,
- ⟨"open_dir", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeUnion([TypeModalState(["DirIter"], `@Open`), TypePath(["IoError"])])⟩,
+ ⟨"open_dir", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypeModalState(["DirIter"], `@Open`), TypePath(["IoError"])])⟩,
  ⟨"create_dir", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypePrim("()"), TypePath(["IoError"])])⟩,
  ⟨"ensure_dir", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypePrim("()"), TypePath(["IoError"])])⟩,
- ⟨"kind", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeUnion([TypePath(["FileKind"]), TypePath(["IoError"])])⟩,
+ ⟨"kind", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypePath(["FileKind"]), TypePath(["IoError"])])⟩,
  ⟨"restrict", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeDynamic(`IO`)⟩
 }
 
@@ -13683,7 +13700,7 @@ PriorityDecl = EnumDecl(⊥, `public`, `Priority`, ⊥, ⊥, [], PriorityVariant
 
 ReactorMethodParams = [⟨`T`, [], ⊥, ⊥⟩, ⟨`E`, [], ⊥, ⊥⟩]
 ReactorMethods = [
-  ClassMethodDecl(⊥, `public`, "run", ReactorMethodParams, ReceiverShorthand(`const`), [⟨⊥, `future`, TypeApply(["Future"], [TypePath(["T"]), TypePath(["E"])])⟩], TypeUnion([TypePath(["T"]), TypePath(["E"])]), ⊥, ⊥, ⊥, ⊥),
+  ClassMethodDecl(⊥, `public`, "run", ReactorMethodParams, ReceiverShorthand(`const`), [⟨⊥, `future`, TypeApply(["Future"], [TypePath(["T"]), TypePath(["E"])])⟩], TypeApply(["Outcome"], [TypePath(["T"]), TypePath(["E"])]), ⊥, ⊥, ⊥, ⊥),
   ClassMethodDecl(⊥, `public`, "register", ReactorMethodParams, ReceiverShorthand(`const`), [⟨⊥, `future`, TypeApply(["Future"], [TypePath(["T"]), TypePath(["E"])])⟩], TypeApply(["Tracked"], [TypePath(["T"]), TypePath(["E"])]), ⊥, ⊥, ⊥, ⊥)
 ]
 ReactorMethodNames = { m.name | m ∈ ReactorMethods }
@@ -17365,24 +17382,24 @@ AsyncSig(R) = ⟨Out, In, Result, E⟩    E = TypePrim("!")    Γ; R; L ⊢ e : 
 Γ ⊢ EvalSigma(AllocExpr(r, e), σ) ⇓ (Ctrl(κ), σ_1)
 
 **(EvalSigma-Propagate-Success-Outcome)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    U = ExprType(e)    AsyncSig(RetType(Γ)) = ⊥    OutcomeSig(U) = ⟨T_s, E_s⟩    OutcomeSig(RetType(Γ)) = ⟨T_r, E_r⟩    ModalCase(v) = ⟨`@Value`, v_s⟩
+Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    U = ExprType(e)    AsyncSig(RetType(Γ)) = ⊥    OutcomeSig(U) = ⟨T_s, E_s⟩    OutcomeSig(RetType(Γ)) = ⟨T_r, E_r⟩    v = EnumValue(["Outcome", `Value`], TuplePayload([v_s]))
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalSigma(Propagate(e), σ) ⇓ (Val(FieldValue(v_s, `value`)), σ_1)
+Γ ⊢ EvalSigma(Propagate(e), σ) ⇓ (Val(v_s), σ_1)
 
 **(EvalSigma-Propagate-Success-Async-Outcome)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    U = ExprType(e)    AsyncSig(RetType(Γ)) = ⟨Out, In, Result, E⟩    OutcomeSig(U) = ⟨T_s, E_s⟩    ModalCase(v) = ⟨`@Value`, v_s⟩
+Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    U = ExprType(e)    AsyncSig(RetType(Γ)) = ⟨Out, In, Result, E⟩    OutcomeSig(U) = ⟨T_s, E_s⟩    v = EnumValue(["Outcome", `Value`], TuplePayload([v_s]))
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalSigma(Propagate(e), σ) ⇓ (Val(FieldValue(v_s, `value`)), σ_1)
+Γ ⊢ EvalSigma(Propagate(e), σ) ⇓ (Val(v_s), σ_1)
 
 **(EvalSigma-Propagate-Error-Outcome)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    U = ExprType(e)    AsyncSig(RetType(Γ)) = ⊥    OutcomeSig(U) = ⟨T_s, E_s⟩    OutcomeSig(RetType(Γ)) = ⟨T_r, E_r⟩    ModalCase(v) = ⟨`@Error`, v_e⟩
-out = `Outcome`<T_r, E_r>`@Error`{`error`: FieldValue(v_e, `error`)}
+Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    U = ExprType(e)    AsyncSig(RetType(Γ)) = ⊥    OutcomeSig(U) = ⟨T_s, E_s⟩    OutcomeSig(RetType(Γ)) = ⟨T_r, E_r⟩    v = EnumValue(["Outcome", `Error`], TuplePayload([v_e]))
+out = EnumValue(["Outcome", `Error`], TuplePayload([v_e]))
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ EvalSigma(Propagate(e), σ) ⇓ (Ctrl(Return(out)), σ_1)
 
 **(EvalSigma-Propagate-Error-Async-Outcome)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    U = ExprType(e)    AsyncSig(RetType(Γ)) = ⟨Out, In, Result, E⟩    E ≠ TypePrim("!")    OutcomeSig(U) = ⟨T_s, E_s⟩    ModalCase(v) = ⟨`@Error`, v_e⟩
-async_failed = RecordValue(ModalStateRef([`Async`], `@Failed`), [⟨`error`, FieldValue(v_e, `error`)⟩])
+Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    U = ExprType(e)    AsyncSig(RetType(Γ)) = ⟨Out, In, Result, E⟩    E ≠ TypePrim("!")    OutcomeSig(U) = ⟨T_s, E_s⟩    v = EnumValue(["Outcome", `Error`], TuplePayload([v_e]))
+async_failed = RecordValue(ModalStateRef([`Async`], `@Failed`), [⟨`error`, v_e⟩])
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ EvalSigma(Propagate(e), σ) ⇓ (Ctrl(Fail(async_failed)), σ_1)
 
@@ -17494,14 +17511,14 @@ TerminalExpr(⟨Ctrl(κ), σ⟩)
 Γ ⊢ LowerExpr(AllocExpr(r_opt, e)) ⇓ ⟨SeqIR(IR_e, AllocIR(r_opt, v)), v_alloc⟩
 
 **(Lower-Expr-Propagate-Success-Outcome)**
-Γ ⊢ LowerExpr(e) ⇓ ⟨IR_e, v⟩    U = ExprType(e)    OutcomeSig(U) = ⟨T_s, E_s⟩    OutcomeState(v) = `@Value`    OutcomeField(v, `value`) = v_s
+Γ ⊢ LowerExpr(e) ⇓ ⟨IR_e, v⟩    U = ExprType(e)    OutcomeSig(U) = ⟨T_s, E_s⟩    v = EnumValue(["Outcome", `Value`], TuplePayload([v_s]))
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ LowerExpr(Propagate(e)) ⇓ ⟨IR_e, v_s⟩
 
 **(Lower-Expr-Propagate-Return-Outcome)**
-Γ ⊢ LowerExpr(e) ⇓ ⟨IR_e, v⟩    U = ExprType(e)    OutcomeSig(U) = ⟨T_s, E_s⟩    OutcomeState(v) = `@Error`    OutcomeField(v, `error`) = v_e
+Γ ⊢ LowerExpr(e) ⇓ ⟨IR_e, v⟩    U = ExprType(e)    OutcomeSig(U) = ⟨T_s, E_s⟩    v = EnumValue(["Outcome", `Error`], TuplePayload([v_e]))
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerExpr(Propagate(e)) ⇓ ⟨SeqIR(IR_e, ReturnIR(`Outcome@Error`{`error`: v_e})), v_unreach⟩
+Γ ⊢ LowerExpr(Propagate(e)) ⇓ ⟨SeqIR(IR_e, ReturnIR(EnumValue(["Outcome", `Error`], TuplePayload([v_e])))), v_unreach⟩
 
 **(Lower-Expr-Propagate-Success-Union)**
 Γ ⊢ LowerExpr(e) ⇓ ⟨IR_e, v⟩    U = ExprType(e)    SuccessMember(RetType(Γ), U) = T_s    UnionCase(v) = ⟨T_s, v_s⟩
@@ -23684,7 +23701,7 @@ YieldFromInExpr(e)
 ```text
 AsyncSig(R) = ⊥    Γ; R; L ⊢ e : T_e    AsyncSig(T_e) = ⟨Out, In, Result, E⟩    Out = TypePrim("()")    In = TypePrim("()")
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ; R; L ⊢ SyncExpr(e) : TypeUnion([Result, E])
+Γ; R; L ⊢ SyncExpr(e) : TypeApply(["Outcome"], [Result, E])
 ```
 
 **(Sync-Async-Context-Err)**
@@ -23725,7 +23742,7 @@ n = |arms|    n ≥ 2    RaceMode(arms) = `return`
 Out_i = TypePrim("()")    In_i = TypePrim("()")    Γ ⊢ pat_i ⇐ Result_i ⊣ B_i    Distinct(PatNames(pat_i))
 Γ_i = IntroAll(Γ, B_i)    Γ_i; R; L ⊢ r_i : T_i^r    AllEq_Γ([T_1^r, …, T_n^r])    T_r = T_1^r
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ; R; L ⊢ RaceExpr(arms) : TypeUnion([T_r, E_1, …, E_n])
+Γ; R; L ⊢ RaceExpr(arms) : TypeApply(["Outcome"], [T_r, TypeUnion([E_1, …, E_n])])
 ```
 
 **(T-Race-Stream)**
@@ -23803,7 +23820,7 @@ In_i = TypePrim("()")    Γ ⊢ pat_i ⇐ Out_i ⊣ B_i    Distinct(PatNames(pat
 n = |exprs|    ∀ i, Γ; R; L ⊢ e_i : T_i    AsyncSig(T_i) = ⟨Out_i, In_i, Result_i, E_i⟩
 Out_i = TypePrim("()")    In_i = TypePrim("()")    T_tuple = TypeTuple([Result_1, …, Result_n])
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ; R; L ⊢ AllExpr([e_1, …, e_n]) : TypeUnion([T_tuple, E_1, …, E_n])
+Γ; R; L ⊢ AllExpr([e_1, …, e_n]) : TypeApply(["Outcome"], [T_tuple, TypeUnion([E_1, …, E_n])])
 ```
 
 **(All-Out-Err)**
@@ -23890,8 +23907,8 @@ Manual stepping advances an async value by inspecting its modal state and invoki
 
 1. Evaluate `e` to `a`.
 2. While `a` is `@Suspended { output = () }`, set `a := a~>resume(())`.
-3. If `a` is `@Completed { value }`, produce `value`.
-4. If `a` is `@Failed { error }`, produce the union error value.
+3. If `a` is `@Completed { value }`, produce `Outcome::Value(value)`.
+4. If `a` is `@Failed { error }`, produce `Outcome::Error(error)`.
 
 Formal `sync` rules:
 
@@ -23918,14 +23935,14 @@ ModalState(a) = @Suspended    a.output = ()    Γ ⊢ EvalSigma(Resume(a, ()), �
 ```text
 Γ ⊢ EvalSigma(e, σ) ⇓ (Val(a), σ_1)    ModalState(a) = @Completed    a.value = v
 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalSigma(SyncExpr(e), σ) ⇓ (Val(v), σ_1)
+Γ ⊢ EvalSigma(SyncExpr(e), σ) ⇓ (Val(EnumValue(["Outcome", `Value`], TuplePayload([v]))), σ_1)
 ```
 
 **(EvalSigma-Sync-Failed)**
 ```text
 Γ ⊢ EvalSigma(e, σ) ⇓ (Val(a), σ_1)    ModalState(a) = @Failed    a.error = err
 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalSigma(SyncExpr(e), σ) ⇓ (Val(err), σ_1)
+Γ ⊢ EvalSigma(SyncExpr(e), σ) ⇓ (Val(EnumValue(["Outcome", `Error`], TuplePayload([err]))), σ_1)
 ```
 
 `race` return-mode evaluation is:
@@ -23933,7 +23950,7 @@ ModalState(a) = @Suspended    a.output = ()    Γ ⊢ EvalSigma(Resume(a, ()), �
 1. Initiate all async expressions concurrently.
 2. When any arm completes or fails, handle that arm.
 3. Cancel all remaining arms.
-4. Produce the selected handler result or propagated error value.
+4. Produce `Outcome::Value(`selected handler result`)` or `Outcome::Error(`propagated error`)`.
 
 `race` streaming-mode evaluation is:
 
@@ -23982,7 +23999,7 @@ RaceStepReturn : RaceState × [RaceArm] × State → EvalOut × State
 arm_i = arms[i]    Γ ⊢ BindPattern(arm_i.pat, v) ⇓ Γ_1    Γ_1 ⊢ EvalSigma(arm_i.handler.expr, σ) ⇓ (Val(r), σ_1)
 CancelAll(race_state.active ∖ {a_i}, σ_1) ⇓ σ_2
 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ RaceStepReturn(race_state, arms, σ) ⇓ (Val(r), σ_2)
+Γ ⊢ RaceStepReturn(race_state, arms, σ) ⇓ (Val(EnumValue(["Outcome", `Value`], TuplePayload([r]))), σ_2)
 ```
 
 **(RaceStepReturn-Failed)**
@@ -23990,7 +24007,7 @@ CancelAll(race_state.active ∖ {a_i}, σ_1) ⇓ σ_2
 ∃ i. ModalState(race_state.active[i]) = @Failed    a_i = race_state.active[i]    a_i.error = e
 CancelAll(race_state.active ∖ {a_i}, σ) ⇓ σ_1
 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ RaceStepReturn(race_state, arms, σ) ⇓ (Val(e), σ_1)
+Γ ⊢ RaceStepReturn(race_state, arms, σ) ⇓ (Val(EnumValue(["Outcome", `Error`], TuplePayload([e]))), σ_1)
 ```
 
 **(RaceStepReturn-Continue)**
@@ -24153,14 +24170,14 @@ AllLoop : AllState × State → EvalOut × State
 ```text
 ∀ i. all_state.results[i] ≠ ⊥    all_state.failed = ⊥    tuple = (all_state.results[1], …, all_state.results[n])
 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ AllLoop(all_state, σ) ⇓ (Val(tuple), σ)
+Γ ⊢ AllLoop(all_state, σ) ⇓ (Val(EnumValue(["Outcome", `Value`], TuplePayload([tuple]))), σ)
 ```
 
 **(AllLoop-Failed)**
 ```text
 all_state.failed = e    e ≠ ⊥
 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ AllLoop(all_state, σ) ⇓ (Val(e), σ)
+Γ ⊢ AllLoop(all_state, σ) ⇓ (Val(EnumValue(["Outcome", `Error`], TuplePayload([e]))), σ)
 ```
 
 **(AllLoop-Continue)**
@@ -24348,7 +24365,7 @@ AsyncComposeIR = {SyncLoopIR, RaceInitIR, RaceSelectIR, RaceResumeIR, AllInitIR,
 Γ ⊢ LowerExpr(SyncExpr(e)) ⇓ ⟨SeqIR(IR_e, SyncLoopIR(v_e)), SyncResult(v_e)⟩
 ```
 
-`SyncLoopIR(v)` MUST loop on the modal state of `v`, resuming `@Suspended` with input `()`, returning `@Completed.value`, and returning the union error value from `@Failed.error`.
+`SyncLoopIR(v)` MUST loop on the modal state of `v`, resuming `@Suspended` with input `()`, returning `Outcome::Value(@Completed.value)`, and returning `Outcome::Error(@Failed.error)`.
 
 **(Lower-Expr-Race-Return)**
 ```text
@@ -24376,7 +24393,7 @@ For `RaceInitIR(arms, mode)`, lowering MUST:
 Γ ⊢ LowerExpr(AllExpr(exprs)) ⇓ ⟨AllInitIR(exprs), AllJoinIR(exprs)⟩
 ```
 
-`AllJoinIR` MUST preserve expression order in the result tuple and MUST cancel unfinished operands on the first failure.
+`AllJoinIR` MUST preserve expression order in the result tuple and MUST cancel unfinished operands on the first failure. It MUST yield `Outcome::Value(tuple)` on success and `Outcome::Error(error)` on the first failure.
 
 Async combinators lower to wrapper async state machines around their source operand:
 
@@ -29356,7 +29373,7 @@ A conforming implementation MUST satisfy all of the following:
 
 ReactorJudg = {ReactorRun(v_reactor, f) ⇓ r, ReactorRegister(v_reactor, f) ⇓ h}
 
-`ReactorRun` and `ReactorRegister` are runtime host-primitive relations that interface the async model (§19) with a concrete event loop.
+`ReactorRun` and `ReactorRegister` are runtime host-primitive relations that interface the async model (§19) with a concrete event loop. The `ReactorRun` relation yields an `Outcome<…>` value: `r` is `Outcome::Value(result)` on normal completion of the driven future and `Outcome::Error(error)` on failure, so `Reactor::run` produces an `Outcome` consistent with `sync`, `race`, and `all`.
 
 **(Prim-Reactor-Run)**
 Γ ⊢ ReactorRun(v_reactor, f) ⇓ r

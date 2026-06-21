@@ -4,2152 +4,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     var count: usize = 0usize
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "requirement.21.WaitRuntimeSemantics",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.21.WaitRuntimeHelpers",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Wait-Spawned-Ready",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Wait-Spawned-Pending",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.FailedSpawnedWaitHandledByParallelPanic",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Wait-Tracked-Ready",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Wait-Tracked-Pending",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Wait-Ctrl",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.YieldRuntimeSemantics",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.21.ResumptionHelpers",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Yield",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Yield-Release",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Yield-Resume",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.YieldFromRuntimeSemantics",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-YieldFrom-Suspended",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-YieldFrom-Completed",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-YieldFrom-Failed",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-YieldFrom-Resume",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.21.EvalYieldFromContinueSignature",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalYieldFromContinue-Suspended",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalYieldFromContinue-Completed",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalYieldFromContinue-Failed",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.21.SuspensionLoweringForms",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Lower-Wait-Spawned",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Lower-Wait-Tracked",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Lower-Yield",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Lower-Yield-Release",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.YieldReleaseReacquireLowering",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Lower-YieldFrom",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.YieldFromEnterLoweringLoop",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.AsyncIterationSyntax",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "grammar.21.CompositionForms",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.AsyncMethodCallSurfaces",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.UntilMethodCallSurface",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionUntilReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "parse.21.CompositionPrimaryExpressions",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Parse-Sync-Expr",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Parse-Race-Expr",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Parse-RaceArms-Cons",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Parse-RaceArm",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Parse-RaceArmsTail-End",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Parse-RaceArmsTail-TrailingComma",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Parse-RaceArmsTail-Comma",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Parse-RaceHandler-Yield",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Parse-RaceHandler-Return",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Parse-All-Expr",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "parse.21.CompositionOrdinarySurfaces",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "ast.21.CompositionForms",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "ast.21.AsyncIterationLoopForm",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "ast.21.CompositionMethodCallForms",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "ast.21.CompositionResolution",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "ast.21.CompositionEvaluationOrder",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.ManualSteppingRequirement",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.21.SyncYieldContainment",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.T-Sync",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.21.RaceMode",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.T-Race",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.T-Race-Stream",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.T-All",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.21.UntilType",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionUntilReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.21.AsyncCombinatorTypes",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionCombinatorsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.AsyncCombinatorMemberLookup",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionCombinatorsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.T-Async-Map",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionMapReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.T-Async-Filter",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFilterReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.T-Async-Take",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionTakeReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.T-Async-Fold",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFoldReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.T-Async-Chain",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionChainReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.AsyncIterationRuntimeSemantics",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.ManualSteppingRuntimeSemantics",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.SyncRuntimeSemantics",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.21.SyncStepSignature",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionSyncSuspendedUnitReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.SyncStep-Suspended",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionSyncSuspendedUnitReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Sync-Suspended",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Sync-Completed",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Sync-Failed",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.RaceReturnRuntimeSemantics",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.RaceStreamingRuntimeSemantics",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.21.RaceSelectionAndState",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.InitRace",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.21.RaceStepReturnSignature",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.RaceStepReturn-Completed",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.RaceStepReturn-Failed",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.RaceStepReturn-Continue",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Race-Return",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.21.RaceStepStreamSignature",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.RaceStepStream-Yield-Initial",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.RaceStepStream-AllComplete",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.RaceStepStream-Failed",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Race-Stream",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.21.CancelAllSignature",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.CancelAll",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.21.RaceStreamSuspensionState",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.RaceStepStream-Yield-Resumable",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.ResumeRaceState-Step",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.ResumeRaceState-Done",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Race-Stream-Resume",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.StreamingRaceResumptionOrder",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.AllRuntimeSemantics",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.21.AllStateAndInitSignature",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.InitAll",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.21.AllStepSignature",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.AllStep-Complete",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.AllStep-Failed",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.AllStep-Resume",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.21.AllLoopSignature",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.AllLoop-AllCompleted",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.AllLoop-Failed",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.AllLoop-Continue",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFormsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-All",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.UntilRuntimeSemantics",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionUntilReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.21.AsyncCombinatorRuntimeWrappers",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionCombinatorsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Map-Create",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionMapReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Map-Resume-Yield",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionMapReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Map-Resume-Complete",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionMapReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Map-Resume-Failed",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionMapReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Filter-Create",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFilterReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Filter-Resume-Pass",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFilterReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Filter-Resume-Skip",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFilterReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Filter-Resume-Complete",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFilterReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Take-Create",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionTakeReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Take-Resume-Yield",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionTakeReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Take-Resume-Done",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionTakeReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Take-Resume-Source-Complete",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionTakeReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Fold-Create",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFoldReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Fold-Resume-Accumulate",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFoldReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Fold-Resume-Complete",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFoldReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Fold-Resume-Failed",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFoldReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Chain-Create",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionChainReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Chain-Resume-Source-Complete",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionChainReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Chain-Resume-Chained",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionChainReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.EvalSigma-Chain-Resume-Source-Failed",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionChainReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.21.AsyncComposeIR",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Lower-Expr-Sync",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.SyncLoopIRSemantics",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Lower-Expr-Race-Return",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Lower-Expr-Race-Stream",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.RaceInitIRSemantics",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.RaceResumeIRSemantics",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Lower-Expr-All",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.AllJoinIRSemantics",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.AsyncCombinatorWrapperLowering",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionCombinatorsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Lower-Async-Map",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionMapReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Lower-Async-Filter",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFilterReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Lower-Async-Take",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionTakeReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Lower-Async-Fold",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionFoldReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Lower-Async-Chain",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionChainReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.AsyncWrapperLoweringSemantics",
-            "HelloUltraviolet::Reference::Async",
-            "runAsyncCompositionCombinatorsReference",
-            "Source/Reference/Async/CompositionForms.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.AsyncStateMachineSyntaxSurface",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.21.AsyncProcedureDefinition",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.AsyncStateMachineParsingSurface",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.21.AsyncStateMachineHelperForms",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.AsyncFrameStoredState",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.21.LiveAcrossSuspension",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.P-Async-Create",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "requirement.21.AsyncErrorPropagationTypingReference",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "rule.22.Parse-DeriveClauseTail-End",
+            "HelloUltraviolet::Reference::Comptime",
+            "runComptimeDeriveTargetsReference",
+            "Source/Reference/Comptime/DeriveTargets.uv",
             false,
             true,
             false,
@@ -2160,10 +18,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "requirement.21.AsyncProcedureCallRuntimeSemantics",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "rule.22.Parse-DeriveClauseTail-Comma",
+            "HelloUltraviolet::Reference::Comptime",
+            "runComptimeDeriveTargetsReference",
+            "Source/Reference/Comptime/DeriveTargets.uv",
             false,
             true,
             false,
@@ -2174,10 +32,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "requirement.21.AsyncSettlementRuntimeSemantics",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "def.22.DeriveTargetDecl",
+            "HelloUltraviolet::Reference::Comptime",
+            "runComptimeDeriveTargetsReference",
+            "Source/Reference/Comptime/DeriveTargets.uv",
             false,
             true,
             false,
@@ -2188,10 +46,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "requirement.21.AsyncResumeRuntimeSemantics",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "def.22.DeriveGraphAndOrder",
+            "HelloUltraviolet::Reference::Comptime",
+            "runComptimeDeriveTargetsReference",
+            "Source/Reference/Comptime/DeriveTargets.uv",
             false,
             true,
             false,
@@ -2202,10 +60,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "requirement.21.AsyncFailureRuntimeSemantics",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "requirement.22.DeriveTargetBodyBindings",
+            "HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming",
+            "comptimeAcceptedProjectDeriveConformanceMatches",
+            "Source/Audit/Catalog/CompileTimeExecutionAndMetaprogramming/CompilerConformanceExecution.uv",
             false,
             true,
             false,
@@ -2216,10 +74,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.21.AsyncStateMachineLoweringJudgements",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "requirement.22.DeriveExecutionOrder",
+            "HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming",
+            "comptimeAcceptedProjectDeriveConformanceMatches",
+            "Source/Audit/Catalog/CompileTimeExecutionAndMetaprogramming/CompilerConformanceExecution.uv",
             false,
             true,
             false,
@@ -2230,10 +88,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.21.AsyncStateMachineFrameHelpers",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "requirement.22.DeriveOrderTieBreaker",
+            "HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming",
+            "comptimeAcceptedProjectDeriveConformanceMatches",
+            "Source/Audit/Catalog/CompileTimeExecutionAndMetaprogramming/CompilerConformanceExecution.uv",
             false,
             true,
             false,
@@ -2244,10 +102,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "rule.21.Lower-Async-Proc",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "requirement.22.DeriveRequiresEmitsScope",
+            "HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming",
+            "comptimeAcceptedProjectDeriveConformanceMatches",
+            "Source/Audit/Catalog/CompileTimeExecutionAndMetaprogramming/CompilerConformanceExecution.uv",
             false,
             true,
             false,
@@ -2258,10 +116,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "requirement.21.AsyncFrameInitIRSemantics",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "requirement.22.DeriveTargetDeclPhase2Lifetime",
+            "HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming",
+            "comptimeAcceptedProjectDeriveConformanceMatches",
+            "Source/Audit/Catalog/CompileTimeExecutionAndMetaprogramming/CompilerConformanceExecution.uv",
             false,
             true,
             false,
@@ -2272,10 +130,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "rule.21.Lower-Async-Resume",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "rule.22.CtExpandItem-DeriveTargetDecl",
+            "HelloUltraviolet::Reference::Comptime",
+            "runComptimeDeriveTargetsReference",
+            "Source/Reference/Comptime/DeriveTargets.uv",
             false,
             true,
             false,
@@ -2286,10 +144,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "requirement.21.AsyncResumeSwitchIRSemantics",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "rule.22.RunDeriveSet-Empty",
+            "HelloUltraviolet::Reference::Comptime",
+            "runComptimeDeriveTargetsReference",
+            "Source/Reference/Comptime/DeriveTargets.uv",
             false,
             true,
             false,
@@ -2300,10 +158,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "rule.21.Lower-Async-Suspend",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "rule.22.RunDeriveSet-Cons",
+            "HelloUltraviolet::Reference::Comptime",
+            "runComptimeDeriveTargetsReference",
+            "Source/Reference/Comptime/DeriveTargets.uv",
             false,
             true,
             false,
@@ -2314,10 +172,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "rule.21.Lower-Async-Complete",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "rule.22.RunDeriveTarget",
+            "HelloUltraviolet::Reference::Comptime",
+            "runComptimeDeriveTargetsReference",
+            "Source/Reference/Comptime/DeriveTargets.uv",
             false,
             true,
             false,
@@ -2328,10 +186,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "rule.21.Lower-Async-Fail",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "def.22.BindDeriveTargetInputs",
+            "HelloUltraviolet::Reference::Comptime",
+            "runComptimeDeriveTargetsReference",
+            "Source/Reference/Comptime/DeriveTargets.uv",
             false,
             true,
             false,
@@ -2342,10 +200,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "requirement.21.AsyncFailStateIRSemantics",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "rule.22.CtExpandItem-DeriveAnnotatedDecl",
+            "HelloUltraviolet::Reference::Comptime",
+            "runComptimeDeriveTargetsReference",
+            "Source/Reference/Comptime/DeriveTargets.uv",
             false,
             true,
             false,
@@ -2356,10 +214,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "requirement.21.AsyncKeySyntaxSurface",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "requirement.22.DeriveTargetExecutionTiming",
+            "HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming",
+            "comptimeAcceptedProjectDeriveConformanceMatches",
+            "Source/Audit/Catalog/CompileTimeExecutionAndMetaprogramming/CompilerConformanceExecution.uv",
             false,
             true,
             false,
@@ -2370,10 +228,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "requirement.21.AsyncKeyParsingSurface",
-            "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "requirement.22.DeriveTargetsLowering",
+            "HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming",
+            "comptimeRuntimeErasureArtifactEvidenceMatches",
+            "Source/Audit/Catalog/CompileTimeExecutionAndMetaprogramming/LoweringErasureArtifactExecution.uv",
             false,
             true,
             false,
@@ -2384,9 +242,9 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.21.AsyncKeyExistingAstForms",
+            "requirement.23.FFIBoundaryDefinition",
             "HelloUltraviolet::Audit",
-            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "acceptedProjectHostedExercise",
             "Source/Audit/AcceptedProjectExecution.uv",
             false,
             true,
@@ -2398,10 +256,24 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "requirement.21.AsyncKeyNoAdditionalAstVariants",
+            "def.23.FFIBoundary",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIFfiSafeReference",
+            "Source/Reference/FFI/FfiSafe.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.FfiSafeSyntaxNoAdditionalForm",
             "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2412,10 +284,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "requirements.21.AsyncCapabilityRequirements",
+            "requirement.23.FfiSafeParsingNoAdditionalRules",
             "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2426,10 +298,66 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "requirement.21.AsyncSuspensionAccessRights",
+            "def.23.FfiSafeTypePredicateAstForm",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIFfiSafeReference",
+            "Source/Reference/FFI/FfiSafe.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.FfiSafePredicateMeaning",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIFfiSafeReference",
+            "Source/Reference/FFI/FfiSafe.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.FfiSafeJudgements",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIFfiSafeReference",
+            "Source/Reference/FFI/FfiSafe.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.FfiPrimitiveTypes",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIFfiSafeReference",
+            "Source/Reference/FFI/FfiSafe.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.FfiLayoutAndPayloadHelpers",
             "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2440,10 +368,262 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "requirement.21.YieldReleaseRuntimeReference",
+            "def.23.FfiTypeParameterSetHelper",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIFfiSafeReference",
+            "Source/Reference/FFI/FfiSafe.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.FfiAliasHelpers",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIFfiSafeReference",
+            "Source/Reference/FFI/FfiSafe.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.TypeSubst",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIFfiSafeReference",
+            "Source/Reference/FFI/FfiSafe.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.TypeParamsIn",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIFfiSafeReference",
+            "Source/Reference/FFI/FfiSafe.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.FfiFieldAndPayloadTypeParamHelpers",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIFfiSafeReference",
+            "Source/Reference/FFI/FfiSafe.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.FfiSafePredicateClauseHelpers",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIFfiSafeReference",
+            "Source/Reference/FFI/FfiSafe.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.FfiByValueHelpers",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIFfiSafeReference",
+            "Source/Reference/FFI/FfiSafe.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.FfiSafe-Prim",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIFfiSafeReference",
+            "Source/Reference/FFI/FfiSafe.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.FfiSafe-RawPtr",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIFfiSafeReference",
+            "Source/Reference/FFI/FfiSafe.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.FfiSafe-Array",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIFfiSafeReference",
+            "Source/Reference/FFI/FfiSafe.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.FfiSafe-Func",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIFfiSafeReference",
+            "Source/Reference/FFI/FfiSafe.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.FfiSafe-Perm",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIFfiSafeReference",
+            "Source/Reference/FFI/FfiSafe.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.FfiSafe-Alias",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIFfiSafeReference",
+            "Source/Reference/FFI/FfiSafe.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.FfiSafe-Alias-Apply",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIFfiSafeReference",
+            "Source/Reference/FFI/FfiSafe.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.FfiSafe-Record",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIFfiSafeReference",
+            "Source/Reference/FFI/FfiSafe.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.FfiSafe-Record-Apply",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIFfiSafeReference",
+            "Source/Reference/FFI/FfiSafe.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.FfiSafe-Enum",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIFfiSafeReference",
+            "Source/Reference/FFI/FfiSafe.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.FfiSafe-Enum-Apply",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIFfiSafeReference",
+            "Source/Reference/FFI/FfiSafe.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.FfiSafeProhibitedCategories",
             "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2454,10 +634,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "requirement.21.AsyncKeyFailureHandlingReference",
+            "requirement.23.FfiSafeRaiiByValueRule",
             "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2468,10 +648,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.21.AsyncKeyIR",
+            "requirement.23.FfiSafeGenericBounds",
             "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2482,24 +662,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "rule.21.Lower-Wait-Key-Illegal",
-            "HelloUltraviolet::Reference::Async",
-            "asyncWaitHeldKeyLoweringFailureReference",
-            "Source/Reference/Async/AsyncKeyIntegration.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "rule.21.Lower-Yield-Release-Keys",
+            "requirement.23.FfiSafeDynamicSemantics",
             "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2510,10 +676,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "rule.21.Lower-YieldFrom-Release-Keys",
+            "requirement.23.FfiSafeLowering",
             "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2524,10 +690,80 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "rule.21.Lower-Closure-Yield-Shared",
+            "grammar.23.ExternProcedureDecl",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIExternProceduresReference",
+            "Source/Reference/FFI/ExternProcedures.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.Parse-ExternProcDecl",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIExternProceduresReference",
+            "Source/Reference/FFI/ExternProcedures.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "ast.23.ExternProcDeclForm",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIExternProceduresReference",
+            "Source/Reference/FFI/ExternProcedures.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.ExternProcedureDerivedForms",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIExternProceduresReference",
+            "Source/Reference/FFI/ExternProcedures.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.ExternProcedureMeaning",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIExternProceduresReference",
+            "Source/Reference/FFI/ExternProcedures.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.ExternAbiStrings",
             "HelloUltraviolet::Audit",
-            "asyncArtifactObligationsExercise",
-            "Source/Audit/AsyncArtifactExecution.uv",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2538,10 +774,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "requirement.22.Phase2ExecutionPosition",
-            "HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming",
-            "comptimeAcceptedProjectPhaseExecutionConformanceMatches",
-            "Source/Audit/Catalog/CompileTimeExecutionAndMetaprogramming/CompilerConformanceExecution.uv",
+            "def.23.ExternSignatureRequirements",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2552,10 +788,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "grammar.22.CompileTimeForms",
-            "HelloUltraviolet::Reference::Comptime",
-            "runComptimeCompileTimeFormsReference",
-            "Source/Reference/Comptime/CompileTimeForms.uv",
+            "requirement.23.ExternFfiConstraints",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2566,10 +802,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.22.CtParseJudg",
-            "HelloUltraviolet::Reference::Comptime",
-            "runComptimeCompileTimeFormsReference",
-            "Source/Reference/Comptime/CompileTimeForms.uv",
+            "requirement.23.ExternDynamicSemantics",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2580,10 +816,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "rule.22.Parse-CtProc",
-            "HelloUltraviolet::Reference::Comptime",
-            "runComptimeCompileTimeFormsReference",
-            "Source/Reference/Comptime/CompileTimeForms.uv",
+            "requirement.23.ExternLowering",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2594,10 +830,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "rule.22.Parse-CtStmt",
-            "HelloUltraviolet::Reference::Comptime",
-            "runComptimeCompileTimeFormsReference",
-            "Source/Reference/Comptime/CompileTimeForms.uv",
+            "requirement.23.RawExportedProcedureClassification",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2608,10 +844,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "rule.22.Parse-CtExpr",
-            "HelloUltraviolet::Reference::Comptime",
-            "runComptimeCompileTimeFormsReference",
-            "Source/Reference/Comptime/CompileTimeForms.uv",
+            "requirement.23.RawExportParsingUsesOrdinaryProcedureParser",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2622,10 +858,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "rule.22.Parse-CtIf",
-            "HelloUltraviolet::Reference::Comptime",
-            "runComptimeCompileTimeFormsReference",
-            "Source/Reference/Comptime/CompileTimeForms.uv",
+            "requirement.23.RawExportParsingClassification",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2636,10 +872,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "rule.22.Parse-CtLoopIter",
-            "HelloUltraviolet::Reference::Comptime",
-            "runComptimeCompileTimeFormsReference",
-            "Source/Reference/Comptime/CompileTimeForms.uv",
+            "ast.23.RawExportProcedureForm",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2650,10 +886,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "rule.22.Parse-CtElseOpt-None",
-            "HelloUltraviolet::Reference::Comptime",
-            "runComptimeCompileTimeFormsReference",
-            "Source/Reference/Comptime/CompileTimeForms.uv",
+            "def.23.RawExportedProcedureMeaning",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2664,10 +900,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "rule.22.Parse-CtElseOpt-Block",
-            "HelloUltraviolet::Reference::Comptime",
-            "runComptimeCompileTimeFormsReference",
-            "Source/Reference/Comptime/CompileTimeForms.uv",
+            "def.23.ZeroValueHelpers",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2678,10 +914,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "rule.22.Parse-CtElseOpt-ElseIf",
-            "HelloUltraviolet::Reference::Comptime",
-            "runComptimeCompileTimeFormsReference",
-            "Source/Reference/Comptime/CompileTimeForms.uv",
+            "def.23.ExportSignatureHelpers",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2692,10 +928,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.22.CtNodeForms",
-            "HelloUltraviolet::Reference::Comptime",
-            "runComptimeCompileTimeFormsReference",
-            "Source/Reference/Comptime/CompileTimeForms.uv",
+            "rule.23.ExportSig-Ok",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2706,10 +942,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.22.CtExecutionState",
-            "HelloUltraviolet::Reference::Comptime",
-            "runComptimeCompileTimeFormsReference",
-            "Source/Reference/Comptime/CompileTimeForms.uv",
+            "requirement.23.RawExportOrdinaryBodyAndCatchReturn",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2720,10 +956,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.22.CompileTimeJudgementSets",
-            "HelloUltraviolet::Reference::Comptime",
-            "runComptimeCompileTimeFormsReference",
-            "Source/Reference/Comptime/CompileTimeForms.uv",
+            "requirement.23.RawExportLowering",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2734,10 +970,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.22.CtValueForms",
-            "HelloUltraviolet::Reference::Comptime",
-            "runComptimeCompileTimeFormsReference",
-            "Source/Reference/Comptime/CompileTimeForms.uv",
+            "grammar.23.FfiAttributes",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIAttributesReference",
+            "Source/Reference/FFI/Attributes.uv",
             false,
             true,
             false,
@@ -2748,10 +984,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.22.CompileTimeTypingEnvironment",
-            "HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming",
-            "comptimeAcceptedProjectFormsConformanceMatches",
-            "Source/Audit/Catalog/CompileTimeExecutionAndMetaprogramming/CompilerConformanceExecution.uv",
+            "requirement.23.FfiAttributesParsing",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,
@@ -2762,10 +998,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.22.CtAvailabilityAndForbiddenTypes",
-            "HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming",
-            "comptimeTypeAvailabilityConformanceMatches",
-            "Source/Audit/Catalog/CompileTimeExecutionAndMetaprogramming/CompilerConformanceExecution.uv",
+            "ast.23.FfiAttributesAttachedEntries",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIAttributesReference",
+            "Source/Reference/FFI/Attributes.uv",
             false,
             true,
             false,
@@ -2776,10 +1012,10 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "rule.22.T-CtStmt",
-            "HelloUltraviolet::Reference::Comptime",
-            "runComptimeCompileTimeFormsReference",
-            "Source/Reference/Comptime/CompileTimeForms.uv",
+            "ast.23.FfiAttributeTargets",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIAttributesReference",
+            "Source/Reference/FFI/Attributes.uv",
             false,
             true,
             false,
@@ -2790,10 +1026,1774 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup022() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "rule.22.T-CtExpr",
-            "HelloUltraviolet::Reference::Comptime",
-            "runComptimeCompileTimeFormsReference",
-            "Source/Reference/Comptime/CompileTimeForms.uv",
+            "requirement.23.MangleAttributeSemantics",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.LibraryLinkKinds",
+            "HelloUltraviolet::Audit",
+            "artifactProjectRawDylibExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.LibraryAttributeSemantics",
+            "HelloUltraviolet::Audit",
+            "artifactProjectRawDylibExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.UnwindModes",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.UnwindDefaultMode",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.ExportAttributeSemantics",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.HostExportAttributeSemantics",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectHostedExercise",
+            "Source/Audit/AcceptedProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.FfiPassByValueAttributeSemantics",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.FfiAttributesDynamicSemantics",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.FfiAttributesLowering",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.CapabilityIsolationSyntaxNoAdditionalForm",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.CapabilityIsolationParsingNoAdditionalRules",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "ast.23.CapabilityIsolationNoDedicatedAst",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.CapabilityIsolationSemantics",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.CapabilityIsolationHelpers",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.CapabilityIsolationDynamicSemantics",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.CapabilityIsolationLowering",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "grammar.23.ForeignContracts",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.ForeignContractStart",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.Parse-ForeignContractClauseListOpt-None",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.Parse-ForeignContractClauseListOpt-Yes",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.Parse-ForeignContractClauseList-Cons",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.Parse-ForeignContractClauseListTail-End",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.Parse-ForeignContractClauseListTail-Cons",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.Parse-ForeignContractClause-Assumes",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.Parse-ForeignContractClause-Ensures",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.ForeignEnsuresKindAndExpr",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.Parse-EnsuresPredicate-NullResult",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.Parse-EnsuresPredicate-Plain",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "ast.23.ForeignContractsForm",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "ast.23.EnsuresPredicateForms",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.ForeignPreconditions",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.ForeignPreconditionVerificationModes",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.ForeignPreconditionVerificationLowering",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.ForeignPostconditions",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.ForeignPostconditionClassification",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.NullableFfiResult",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.ForeignPostconditionVerificationModes",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.ForeignPostconditionStaticVerification",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.ForeignContractVerificationSummary",
+            "HelloUltraviolet::Reference::FFI",
+            "runFFIForeignContractsReference",
+            "Source/Reference/FFI/ForeignContracts.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.ForeignPreconditionDynamicFailure",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.ForeignPostconditionDynamicChecks",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.ForeignContractsLowering",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.BoundaryUnwindingSyntax",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.BoundaryUnwindingParsingNoAdditionalRules",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "ast.23.BoundaryUnwindPolicySource",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.UnwindModeAstHelpers",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.DetermineUnwindMode",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.ParseUnwindArg",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.UnwindMode-Valid",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.BoundaryUnwindDynamicEffects",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.23.GeneralDestructionAndUnwindCleanupReference",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.23.BoundaryUnwindCodeGenerationEffects",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.CodeGen-UnwindAbort-Import",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.CodeGen-UnwindCatch-Import",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.CodeGen-UnwindAbort-Export",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.23.CodeGen-UnwindCatch-Export",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "diagnostics.23.BoundaryUnwindingNoAdditionalDiagnostics",
+            "HelloUltraviolet::Audit",
+            "rejectedSourceFixturesCompileAndEmitExpectedDiagnostics",
+            "Source/Audit/DiagnosticFixtureExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.24.SharedLoweringScope",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.CodegenModelAndTargets",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.CodegenJudgements",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.IRDefined",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.CodegenCorrectnessPredicates",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.CodegenCorrectAndUndefined",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.IRFormsAndEmissionJudgements",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.PanicOutCodegenParams",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.MethodAndTransitionParams",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.SeqIR",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.EvalOrderJudgements",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.ChildExpressionListHelpers",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.ChildrenLTRExpressions",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.LowerExprJudgementsAndRetType",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.Lower-Expr-Correctness",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.LowerExprTotal",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.ExecIRJudgements",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-ReadVar",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-ReadPath",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-StoreVar",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-StoreVarNoDrop",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-BindVar",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-ReadPtr",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-WritePtr",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.AllocTarget",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Alloc",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.MoveState-Root",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.MoveState-Field",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-MoveState",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.ExecIRControlResults",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Defer",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.ExecIRBlockHelpers",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-If-True",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-If-False",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Block",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-IfCase",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Infinite-Step",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Infinite-Continue",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Infinite-Break",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Infinite-Ctrl",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Cond-False",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Cond-True-Step",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Cond-Continue",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Cond-Break",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Cond-Ctrl",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Cond-Body-Ctrl",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.LoopIterIRJudgement",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Iter",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Loop-Iter-Ctrl",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.LoopIterIR-Done",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.LoopIterIR-Step-Val",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.LoopIterIR-Step-Continue",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.LoopIterIR-Step-Break",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.LoopIterIR-Step-Ctrl",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Region",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Frame-Implicit",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.ExecIR-Frame-Explicit",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.LowerList-Empty",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.LowerList-Cons",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.LowerFieldInits-Empty",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.LowerFieldInits-Cons",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.LowerOpt-None",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.LowerOpt-Some",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.RefSyms",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.ExpandIR",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.UniqueEmits",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.24.ModuleItems",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "rule.24.CG-Project",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "requirement.24.NoAdditionalFeatureLocalCodegenItemRules",
+            "HelloUltraviolet::Audit",
+            "artifactProjectEmitLlExercise",
+            "Source/Audit/ArtifactProjectExecution.uv",
             false,
             true,
             false,

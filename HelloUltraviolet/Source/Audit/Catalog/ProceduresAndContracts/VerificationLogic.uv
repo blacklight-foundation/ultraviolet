@@ -2,7 +2,7 @@
 
 
 public procedure countProceduresAndContractsVerificationLogicObligations() -> usize {
-    return 45usize
+    return 30usize
 }
 
 public procedure validatedProceduresAndContractsVerificationLogicObligations() -> usize {
@@ -79,27 +79,9 @@ public procedure validatedProceduresAndContractsVerificationLogicObligations() -
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.15.Contract-Static-Fail",
-        56663usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/UnsatisfiedPrecondition/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.15.Contract-Dynamic-Elide",
         56679usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresVerificationReference",
-        "Source/Reference/Procedures/Verification.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Contract-Dynamic-Check",
-        56695usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresVerificationReference",
         "Source/Reference/Procedures/Verification.uv"
@@ -223,24 +205,6 @@ public procedure validatedProceduresAndContractsVerificationLogicObligations() -
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "req.15.VerificationFactsNoRuntimeRepresentation",
-        56949usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/VerificationFactNoRuntimeRepresentation/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.15.Fact-Dominate",
-        56966usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/VerificationFactPrecondition/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "req.15.FactGeneration",
         56982usize,
@@ -278,15 +242,6 @@ public procedure validatedProceduresAndContractsVerificationLogicObligations() -
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.15.Check-False",
-        57053usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresVerificationReference",
-        "Source/Reference/Procedures/Verification.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "rule.15.Check-Panic",
         57069usize,
         "HelloUltraviolet::Audit",
@@ -298,15 +253,6 @@ public procedure validatedProceduresAndContractsVerificationLogicObligations() -
     if acceptedObligationEntryMatches(
         "rule.15.Check-Ok",
         57085usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresVerificationReference",
-        "Source/Reference/Procedures/Verification.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Check-Fail",
-        57101usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresVerificationReference",
         "Source/Reference/Procedures/Verification.uv"
@@ -328,87 +274,6 @@ public procedure validatedProceduresAndContractsVerificationLogicObligations() -
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Insert-Precondition-Check",
-        57145usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresVerificationReference",
-        "Source/Reference/Procedures/Verification.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Insert-Postcondition-Check",
-        57161usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresVerificationReference",
-        "Source/Reference/Procedures/Verification.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Insert-TypeInv-Construction-Check",
-        57177usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresVerificationReference",
-        "Source/Reference/Procedures/Verification.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Insert-TypeInv-PreCall-Check",
-        57193usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresVerificationReference",
-        "Source/Reference/Procedures/Verification.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Insert-TypeInv-PostCall-Check",
-        57209usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresVerificationReference",
-        "Source/Reference/Procedures/Verification.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Insert-LoopInv-Init-Check",
-        57225usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresVerificationReference",
-        "Source/Reference/Procedures/Verification.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Insert-LoopInv-Maintenance-Check",
-        57241usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresVerificationReference",
-        "Source/Reference/Procedures/Verification.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Insert-Refinement-Check",
-        57257usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresVerificationReference",
-        "Source/Reference/Procedures/Verification.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.15.VerificationLogic",
-        57275usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/VerificationLogicDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

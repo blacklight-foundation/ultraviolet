@@ -33,6 +33,7 @@
 #include "04_analysis/typing/subtyping.h"
 #include "04_analysis/typing/type_expr.h"
 #include "04_analysis/typing/type_infer.h"
+#include "04_analysis/typing/outcome.h"
 #include "04_analysis/typing/if_case_check.h"
 #include "02_source/ast/ast.h"
 
@@ -833,7 +834,28 @@ StmtTypeResult TypeAssignStmt(const ScopeContext& ctx,
   // Type check the value against the place type
   const auto check =
       CheckExprAgainst(ctx, read_ctx, node.value, assign_target_type, env);
+  // (T-Outcome-Intro-Value/Error) §13.1.4: a bare RHS assigned to an Outcome
+  // place introduces implicitly as Outcome::Value/Error. Accept the unambiguous
+  // case; reject the ambiguous case with E-TYP-2261.
+  bool outcome_intro_ok = false;
   if (!check.ok) {
+    const auto inferred_intro = InferExpr(
+        ctx, node.value,
+        [&](const ast::ExprPtr& inner) {
+          return TypeExprWithCurrentEnv(ctx, read_ctx, env, type_expr, inner);
+        },
+        type_place_current, IdentTypeWithCurrentEnv(ctx, env, type_ident));
+    if (inferred_intro.ok) {
+      const auto intro =
+          ClassifyOutcomeIntro(ctx, inferred_intro.type, assign_target_type);
+      if (intro == OutcomeIntro::Ambiguous) {
+        return {false, "E-TYP-2261", {}, {}};
+      }
+      outcome_intro_ok =
+          intro == OutcomeIntro::Value || intro == OutcomeIntro::Error;
+    }
+  }
+  if (!check.ok && !outcome_intro_ok) {
     if (core::IsDebugEnabled("sema") || core::IsDebugEnabled("pipeline")) {
       const auto inferred_dbg =
           InferExpr(ctx, node.value,

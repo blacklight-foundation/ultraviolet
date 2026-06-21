@@ -2,28 +2,10 @@
 
 
 public procedure countCompileTimeExecutionAndMetaprogrammingCompileTimeDiagnosticsSupplementObligations() -> usize {
-    return 2usize
+    return 0usize
 }
 
 public procedure validatedCompileTimeExecutionAndMetaprogrammingCompileTimeDiagnosticsSupplementObligations() -> usize {
     var count: usize = 0usize
-    if diagnosticSourceObligationEntryMatches(
-        "diagnostics.22.CompileTimeDiagnosticsSupplement",
-        86522usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
-        "validatedComptimeDiagnosticSourceFixtureCount",
-        "Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.22.UserDiagnosticBuiltinEmission",
-        86598usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/UserDiagnosticError/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     return count
 }

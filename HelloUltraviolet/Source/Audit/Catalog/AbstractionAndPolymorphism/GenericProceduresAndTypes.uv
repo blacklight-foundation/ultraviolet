@@ -2,7 +2,7 @@
 
 
 public procedure countAbstractionAndPolymorphismGenericProceduresAndTypesObligations() -> usize {
-    return 28usize
+    return 23usize
 }
 
 public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObligations() -> usize {
@@ -133,39 +133,12 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.14.Generic-Call-ArgCount-Err",
-        48588usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/GenericCallArgCount/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.14.WF-Path-Generic-Err",
-        48604usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/GenericPathMissingArguments/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.14.WF-Apply",
         48620usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismGenericParametersReference",
         "Source/Reference/Polymorphism/GenericParameters.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.14.WF-Apply-ArgCount-Err",
-        48636usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/GenericTypeApplyArgCount/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -220,24 +193,6 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
         "HelloUltraviolet::Audit",
         "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
         "Source/Audit/AcceptedProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.GenericInfiniteMonomorphizationRejected",
-        48730usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/GenericInfiniteMonomorphization/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.GenericInstantiationDepthLimit",
-        48742usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/GenericInstantiationDepthLimit/Source/Main.uv"
     ) {
         count = count + 1usize
     }

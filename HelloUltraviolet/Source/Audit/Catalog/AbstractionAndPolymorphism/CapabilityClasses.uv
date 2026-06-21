@@ -2,7 +2,7 @@
 
 
 public procedure countAbstractionAndPolymorphismCapabilityClassesObligations() -> usize {
-    return 44usize
+    return 39usize
 }
 
 public procedure validatedAbstractionAndPolymorphismCapabilityClassesObligations() -> usize {
@@ -250,42 +250,6 @@ public procedure validatedAbstractionAndPolymorphismCapabilityClassesObligations
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "req.14.CapabilityClassNamesReserved",
-        52215usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/CapabilityClassNameReserved/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.14.HeapAllocatorRawCallsRequireUnsafe",
-        52228usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/HeapAllocatorRawCallRequiresUnsafe/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.14.AllocRaw-Unsafe-Err",
-        52241usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/HeapAllocRawUnsafe/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.14.DeallocRaw-Unsafe-Err",
-        52257usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/HeapDeallocRawUnsafe/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.14.BuiltinTypesIO",
         52273usize,
@@ -391,15 +355,6 @@ public procedure validatedAbstractionAndPolymorphismCapabilityClassesObligations
         "HelloUltraviolet::Audit",
         "artifactProjectRuntimeInterfaceSymbolsExercise",
         "Source/Audit/RuntimeInterfaceArtifactExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.14.CapabilityClasses",
-        52476usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/CapabilityClassesDiagnostics/Source/Main.uv"
     ) {
         count = count + 1usize
     }

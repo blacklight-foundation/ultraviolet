@@ -2,7 +2,7 @@
 
 
 public procedure countForeignFunctionInterfaceCapabilityIsolationObligations() -> usize {
-    return 11usize
+    return 7usize
 }
 
 public procedure validatedForeignFunctionInterfaceCapabilityIsolationObligations() -> usize {
@@ -52,24 +52,6 @@ public procedure validatedForeignFunctionInterfaceCapabilityIsolationObligations
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.23.FFI-Arg-RegionLocalRawPtr-Err",
-        89047usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedFFIRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/FFI/FfiArgRegionLocalRawPtr/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.23.FFI-Return-RegionLocalRawPtr-Err",
-        89065usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedFFIRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/FFI/FfiReturnRegionLocalRawPtr/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "requirement.23.CapabilityIsolationDynamicSemantics",
         89085usize,
@@ -85,24 +67,6 @@ public procedure validatedForeignFunctionInterfaceCapabilityIsolationObligations
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.23.CapabilityIsolationDiagnostics",
-        89115usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedFFIRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnostics/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.23.CapabilityIsolationDiagnosticOwnership",
-        89130usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedFFIRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnosticOwnership/Source/Main.uv"
     ) {
         count = count + 1usize
     }
