@@ -451,7 +451,7 @@ internal procedure asyncArtifactObligationsExercise(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(
                 value,
                 "ArtifactProjectAsyncObligationsBuild",
@@ -470,7 +470,7 @@ internal procedure asyncArtifactObligationsExercise(
                 let read_result: Outcome<unique string@Managed, IoError> =
                     authority.io~>read_file(path)
                 return if move read_result is {
-                    @Value { value: conformance_text } {
+                    Outcome::Value(conformance_text) {
                         let conformance_view: string@View =
                             string::as_view(conformance_text)
                         let passed: bool =
@@ -499,13 +499,13 @@ internal procedure asyncArtifactObligationsExercise(
                             )
                         }
                     }
-                    @Error {
+                    Outcome::Error(_) {
                         diagnosticFixtureExecutionResult(false, 0usize)
                     }
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             diagnosticFixtureExecutionResult(false, 0usize)
         }
     }

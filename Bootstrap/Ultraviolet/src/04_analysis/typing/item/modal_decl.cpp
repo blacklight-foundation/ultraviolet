@@ -169,7 +169,8 @@ static bool HasReservedSelfParam(const std::vector<ast::Param>& params) {
 
 static bool ReceiverIsConst(const ast::Receiver& receiver) {
   if (const auto* shorthand = std::get_if<ast::ReceiverShorthand>(&receiver)) {
-    return shorthand->perm == ast::ReceiverPerm::Const;
+    return shorthand->perm == ast::ReceiverPerm::Const &&
+           !shorthand->mode_opt.has_value();
   }
   return false;
 }
@@ -773,7 +774,7 @@ ModalDeclResult TypeModalDecl(
           }
         }
         const std::optional<BindSelfParam> self_param =
-            BindSelfParam{state_type, std::nullopt, recv_perm};
+            BindSelfParam{state_type, RecvModeOf(method.receiver), recv_perm};
         const auto bind_result = BindCheckBody(
             ctx, module_path, method.params, method.body, self_param);
         if (!bind_result.ok) {

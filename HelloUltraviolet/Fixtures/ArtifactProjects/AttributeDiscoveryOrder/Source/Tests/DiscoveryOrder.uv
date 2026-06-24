@@ -4,10 +4,10 @@ internal procedure attributeDiscoveryOrderIoUnitSucceeded(
     result: Outcome<(), IoError>
 ) -> bool {
     return if result is {
-        @Value {
+        Outcome::Value(_) {
             true
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -48,11 +48,11 @@ internal procedure attributeDiscoveryOrderReadTextEquals(
     expected: string@View
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let text: string@View = string::as_view(value)
             attributeDiscoveryOrderTextEquals(text, expected)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }

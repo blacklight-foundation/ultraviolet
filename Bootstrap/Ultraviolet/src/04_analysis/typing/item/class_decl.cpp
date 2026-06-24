@@ -379,7 +379,7 @@ ClassDeclResult TypeClassDecl(
       }
     }
     const std::optional<BindSelfParam> self_param =
-        BindSelfParam{result.self_type, std::nullopt, recv_perm};
+        BindSelfParam{result.self_type, RecvModeOf(method.receiver), recv_perm};
 
     ClassMethodInfo method_info;
     method_info.name = method.name;

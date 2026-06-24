@@ -7,11 +7,11 @@ internal procedure expectedDiagnosticFileMatches(
 ) -> bool {
     let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(expected_path)
     return if move read_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let text: string@View = string::as_view(value)
             auditTextEquals(text, expected_text)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }

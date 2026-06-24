@@ -52,21 +52,21 @@ internal procedure patternRejectedFixtureMatchesExpectedAndRecordsObligation(
     let output_result: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move output_result is {
-        @Value { value: output_path } {
+        Outcome::Value(output_path) {
             if !diagnosticBuildPath(output_path, output_suffix, authority.heap) {
                 false
             } else {
                 let error_result: Outcome<unique string@Managed, AllocationError> =
                     string::from(authority.temporary_directory, authority.heap)
                 return if move error_result is {
-                    @Value { value: error_path } {
+                    Outcome::Value(error_path) {
                         if !diagnosticBuildPath(error_path, error_suffix, authority.heap) {
                             false
                         } else {
                             let out_dir_result: Outcome<unique string@Managed, AllocationError> =
                                 string::from(authority.temporary_directory, authority.heap)
                             return if move out_dir_result is {
-                                @Value { value: out_dir_path } {
+                                Outcome::Value(out_dir_path) {
                                     if !diagnosticBuildPath(
                                         out_dir_path,
                                         out_dir_suffix,
@@ -80,7 +80,7 @@ internal procedure patternRejectedFixtureMatchesExpectedAndRecordsObligation(
                                                 authority.heap
                                             )
                                         return if move conformance_result is {
-                                            @Value { value: conformance_path } {
+                                            Outcome::Value(conformance_path) {
                                                 if !diagnosticBuildPath(
                                                     conformance_path,
                                                     "Logs",
@@ -118,25 +118,25 @@ internal procedure patternRejectedFixtureMatchesExpectedAndRecordsObligation(
                                                         )
                                                 }
                                             }
-                                            @Error {
+                                            Outcome::Error(_) {
                                                 false
                                             }
                                         }
                                     }
                                 }
-                                @Error {
+                                Outcome::Error(_) {
                                     false
                                 }
                             }
                         }
                     }
-                    @Error {
+                    Outcome::Error(_) {
                         false
                     }
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }

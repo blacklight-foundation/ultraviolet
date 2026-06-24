@@ -21,10 +21,10 @@ internal procedure managedBytesRuntimeLengthResultMatches(
     expected_length: usize
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             bytes::length(bytes::as_view(value)) == expected_length
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }

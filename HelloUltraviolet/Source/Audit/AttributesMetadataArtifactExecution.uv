@@ -191,7 +191,7 @@ internal procedure attributesMetadataRunTestCommand(
     let created: Outcome<unique string@Managed, AllocationError> =
         string::from("", authority.heap)
     return if move created is {
-        @Value { value } {
+        Outcome::Value(value) {
             var command_ready: bool =
                 outputDiagnosticAppendCommandStart(value, authority)
             command_ready =
@@ -238,7 +238,7 @@ internal procedure attributesMetadataRunTestCommand(
                 -1
             }
         }
-        @Error {
+        Outcome::Error(_) {
             -1
         }
     }
@@ -257,7 +257,7 @@ internal procedure attributesMetadataRunCoverageCommand(
     let created: Outcome<unique string@Managed, AllocationError> =
         string::from("", authority.heap)
     return if move created is {
-        @Value { value } {
+        Outcome::Value(value) {
             var command_ready: bool =
                 outputDiagnosticAppendCommandStart(value, authority)
             command_ready =
@@ -304,7 +304,7 @@ internal procedure attributesMetadataRunCoverageCommand(
                 -1
             }
         }
-        @Error {
+        Outcome::Error(_) {
             -1
         }
     }
@@ -322,7 +322,7 @@ internal procedure attributesMetadataRunAllTestsCommand(
     let created: Outcome<unique string@Managed, AllocationError> =
         string::from("", authority.heap)
     return if move created is {
-        @Value { value } {
+        Outcome::Value(value) {
             var command_ready: bool =
                 outputDiagnosticAppendCommandStart(value, authority)
             command_ready =
@@ -363,7 +363,7 @@ internal procedure attributesMetadataRunAllTestsCommand(
                 -1
             }
         }
-        @Error {
+        Outcome::Error(_) {
             -1
         }
     }
@@ -402,15 +402,15 @@ internal procedure attributesMetadataRunTestCase(authority: TestAuthority) -> bo
     let output_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move output_created is {
-        @Value { value: output_path } {
+        Outcome::Value(output_path) {
             let error_created: Outcome<unique string@Managed, AllocationError> =
                 string::from(authority.temporary_directory, authority.heap)
             if move error_created is {
-                @Value { value: error_path } {
+                Outcome::Value(error_path) {
                     let out_dir_created: Outcome<unique string@Managed, AllocationError> =
                         string::from(authority.temporary_directory, authority.heap)
                     if move out_dir_created is {
-                        @Value { value: out_dir_path } {
+                        Outcome::Value(out_dir_path) {
                             if !diagnosticBuildPath(
                                 output_path,
                                 "AttributeTestHarness.out",
@@ -436,17 +436,17 @@ internal procedure attributesMetadataRunTestCase(authority: TestAuthority) -> bo
                                 )
                             }
                         }
-                        @Error {
+                        Outcome::Error(_) {
                             false
                         }
                     }
                 }
-                @Error {
+                Outcome::Error(_) {
                     false
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -486,15 +486,15 @@ internal procedure attributesMetadataRunDynamicSemanticsCase(
     let output_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move output_created is {
-        @Value { value: output_path } {
+        Outcome::Value(output_path) {
             let error_created: Outcome<unique string@Managed, AllocationError> =
                 string::from(authority.temporary_directory, authority.heap)
             if move error_created is {
-                @Value { value: error_path } {
+                Outcome::Value(error_path) {
                     let out_dir_created: Outcome<unique string@Managed, AllocationError> =
                         string::from(authority.temporary_directory, authority.heap)
                     if move out_dir_created is {
-                        @Value { value: out_dir_path } {
+                        Outcome::Value(out_dir_path) {
                             if !diagnosticBuildPath(
                                 output_path,
                                 "AttributeDynamicSemantics.out",
@@ -520,17 +520,17 @@ internal procedure attributesMetadataRunDynamicSemanticsCase(
                                 )
                             }
                         }
-                        @Error {
+                        Outcome::Error(_) {
                             false
                         }
                     }
                 }
-                @Error {
+                Outcome::Error(_) {
                     false
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -570,15 +570,15 @@ internal procedure attributesMetadataRunDiscoveryOrderCase(
     let output_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move output_created is {
-        @Value { value: output_path } {
+        Outcome::Value(output_path) {
             let error_created: Outcome<unique string@Managed, AllocationError> =
                 string::from(authority.temporary_directory, authority.heap)
             if move error_created is {
-                @Value { value: error_path } {
+                Outcome::Value(error_path) {
                     let out_dir_created: Outcome<unique string@Managed, AllocationError> =
                         string::from(authority.temporary_directory, authority.heap)
                     if move out_dir_created is {
-                        @Value { value: out_dir_path } {
+                        Outcome::Value(out_dir_path) {
                             if !diagnosticBuildPath(
                                 output_path,
                                 "AttributeDiscoveryOrder.out",
@@ -604,17 +604,17 @@ internal procedure attributesMetadataRunDiscoveryOrderCase(
                                 )
                             }
                         }
-                        @Error {
+                        Outcome::Error(_) {
                             false
                         }
                     }
                 }
-                @Error {
+                Outcome::Error(_) {
                     false
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -730,15 +730,15 @@ internal procedure attributesMetadataRunMetadataDiscoveryCase(
     let output_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move output_created is {
-        @Value { value: output_path } {
+        Outcome::Value(output_path) {
             let error_created: Outcome<unique string@Managed, AllocationError> =
                 string::from(authority.temporary_directory, authority.heap)
             if move error_created is {
-                @Value { value: error_path } {
+                Outcome::Value(error_path) {
                     let out_dir_created: Outcome<unique string@Managed, AllocationError> =
                         string::from(authority.temporary_directory, authority.heap)
                     if move out_dir_created is {
-                        @Value { value: out_dir_path } {
+                        Outcome::Value(out_dir_path) {
                             if !diagnosticBuildPath(
                                 output_path,
                                 "AttributeMetadataDiscovery.out",
@@ -764,17 +764,17 @@ internal procedure attributesMetadataRunMetadataDiscoveryCase(
                                 )
                             }
                         }
-                        @Error {
+                        Outcome::Error(_) {
                             false
                         }
                     }
                 }
-                @Error {
+                Outcome::Error(_) {
                     false
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -825,7 +825,7 @@ internal procedure attributesSourceNativeDiagnosticsExpectedFileContains(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from("", authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticAppendProjectPath(value, authority, expected_path) {
                 false
             } else {
@@ -836,7 +836,7 @@ internal procedure attributesSourceNativeDiagnosticsExpectedFileContains(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -861,7 +861,7 @@ internal procedure attributesSourceNativeDiagnosticsRejectedFixturePasses(
     let expected_line_created: Outcome<unique string@Managed, AllocationError> =
         string::from("expectedDiagnostic(\"", authority.heap)
     return if move expected_line_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticAppendText(value, expected_code, authority.heap) ||
                 !diagnosticAppendText(
                     value,
@@ -877,7 +877,7 @@ internal procedure attributesSourceNativeDiagnosticsRejectedFixturePasses(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -944,7 +944,7 @@ internal procedure attributesSourceNativeDiagnosticsRunUnknownTargetCommand(
     let created: Outcome<unique string@Managed, AllocationError> =
         string::from("", authority.heap)
     return if move created is {
-        @Value { value } {
+        Outcome::Value(value) {
             var command_ready: bool =
                 outputDiagnosticAppendCommandStart(value, authority)
             command_ready =
@@ -973,7 +973,7 @@ internal procedure attributesSourceNativeDiagnosticsRunUnknownTargetCommand(
                 -1
             }
         }
-        @Error {
+        Outcome::Error(_) {
             -1
         }
     }
@@ -1017,11 +1017,11 @@ internal procedure attributesSourceNativeDiagnosticsUnknownTargetPasses(
     let output_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move output_created is {
-        @Value { value: output_path } {
+        Outcome::Value(output_path) {
             let error_created: Outcome<unique string@Managed, AllocationError> =
                 string::from(authority.temporary_directory, authority.heap)
             if move error_created is {
-                @Value { value: error_path } {
+                Outcome::Value(error_path) {
                     if !diagnosticBuildPath(
                         output_path,
                         "AttributeUnknownTestTarget.out",
@@ -1041,12 +1041,12 @@ internal procedure attributesSourceNativeDiagnosticsUnknownTargetPasses(
                         )
                     }
                 }
-                @Error {
+                Outcome::Error(_) {
                     false
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -1086,15 +1086,15 @@ internal procedure attributesMetadataRunAuthorityShapeCase(
     let output_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move output_created is {
-        @Value { value: output_path } {
+        Outcome::Value(output_path) {
             let error_created: Outcome<unique string@Managed, AllocationError> =
                 string::from(authority.temporary_directory, authority.heap)
             if move error_created is {
-                @Value { value: error_path } {
+                Outcome::Value(error_path) {
                     let out_dir_created: Outcome<unique string@Managed, AllocationError> =
                         string::from(authority.temporary_directory, authority.heap)
                     if move out_dir_created is {
-                        @Value { value: out_dir_path } {
+                        Outcome::Value(out_dir_path) {
                             if !diagnosticBuildPath(
                                 output_path,
                                 "AttributeTestAuthorityAndShape.out",
@@ -1120,17 +1120,17 @@ internal procedure attributesMetadataRunAuthorityShapeCase(
                                 )
                             }
                         }
-                        @Error {
+                        Outcome::Error(_) {
                             false
                         }
                     }
                 }
-                @Error {
+                Outcome::Error(_) {
                     false
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }

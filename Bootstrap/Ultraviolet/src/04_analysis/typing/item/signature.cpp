@@ -507,11 +507,7 @@ SignatureResult BuildMethodSignature(
   if (recv.type) {
     const auto recv_subst = SubstSelfType(self_type, recv.type, assoc_subst);
     result.bindings.emplace_back("self", recv_subst);
-    // Receiver mode depends on type
-    std::optional<ParamMode> recv_mode;
-    if (const auto* explicit_recv = std::get_if<ast::ReceiverExplicit>(&receiver)) {
-      recv_mode = LowerParamMode(explicit_recv->mode_opt);
-    }
+    const std::optional<ParamMode> recv_mode = RecvModeOf(receiver);
     func_params.push_back({recv_mode, recv_subst});
   }
 

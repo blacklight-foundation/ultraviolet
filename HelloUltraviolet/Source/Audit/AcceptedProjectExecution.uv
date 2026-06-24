@@ -33,7 +33,7 @@ internal procedure acceptedProjectTempFileExists(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if diagnosticBuildPath(value, out_dir_suffix, authority.heap) &&
                 diagnosticBuildPath(value, file_suffix, authority.heap) {
                 let path: string@View = string::as_view(value)
@@ -42,7 +42,7 @@ internal procedure acceptedProjectTempFileExists(
                 false
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -56,7 +56,7 @@ internal procedure acceptedProjectTempFileDoesNotExist(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if diagnosticBuildPath(value, out_dir_suffix, authority.heap) &&
                 diagnosticBuildPath(value, file_suffix, authority.heap) {
                 let path: string@View = string::as_view(value)
@@ -65,7 +65,7 @@ internal procedure acceptedProjectTempFileDoesNotExist(
                 false
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -80,7 +80,7 @@ internal procedure acceptedProjectTempFileContains(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if diagnosticBuildPath(value, out_dir_suffix, authority.heap) &&
                 diagnosticBuildPath(value, file_suffix, authority.heap) {
                 let path: string@View = string::as_view(value)
@@ -89,7 +89,7 @@ internal procedure acceptedProjectTempFileContains(
                 false
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -104,7 +104,7 @@ internal procedure acceptedProjectConformanceContains(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, out_dir_suffix, authority.heap) ||
                 !diagnosticBuildPath(value, "Logs", authority.heap) ||
                 !diagnosticBuildPath(value, "Conformance", authority.heap) ||
@@ -115,7 +115,7 @@ internal procedure acceptedProjectConformanceContains(
                 outputDiagnosticFileContains(authority, path, required_text)
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -153,7 +153,7 @@ internal procedure acceptedProjectConformanceLineContains(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, out_dir_suffix, authority.heap) ||
                 !diagnosticBuildPath(value, "Logs", authority.heap) ||
                 !diagnosticBuildPath(value, "Conformance", authority.heap) ||
@@ -164,20 +164,20 @@ internal procedure acceptedProjectConformanceLineContains(
                 let read_result: Outcome<unique string@Managed, IoError> =
                     authority.io~>read_file(path)
                 if move read_result is {
-                    @Value { value: text } {
+                    Outcome::Value(text) {
                         acceptedProjectConformanceTextContainsLine(
                             string::as_view(text),
                             required_marker,
                             required_payload
                         )
                     }
-                    @Error {
+                    Outcome::Error(_) {
                         false
                     }
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -195,7 +195,7 @@ internal procedure acceptedProjectRunBuildCommand(
     let created: Outcome<unique string@Managed, AllocationError> =
         string::from("", authority.heap)
     return if move created is {
-        @Value { value } {
+        Outcome::Value(value) {
             var command_ready: bool =
                 outputDiagnosticAppendCommandStart(value, authority)
             command_ready =
@@ -244,7 +244,7 @@ internal procedure acceptedProjectRunBuildCommand(
                 -1
             }
         }
-        @Error {
+        Outcome::Error(_) {
             -1
         }
     }
@@ -316,7 +316,7 @@ internal procedure acceptedProjectRunCaseWithError(
     let out_dir_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move out_dir_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, out_dir_suffix, authority.heap) {
                 false
             } else {
@@ -331,7 +331,7 @@ internal procedure acceptedProjectRunCaseWithError(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -349,7 +349,7 @@ internal procedure acceptedProjectRunCaseWithOutput(
     let error_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move error_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, error_suffix, authority.heap) {
                 false
             } else {
@@ -364,7 +364,7 @@ internal procedure acceptedProjectRunCaseWithOutput(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -382,7 +382,7 @@ internal procedure acceptedProjectRunCase(
     let output_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move output_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, output_suffix, authority.heap) {
                 false
             } else {
@@ -397,7 +397,7 @@ internal procedure acceptedProjectRunCase(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }

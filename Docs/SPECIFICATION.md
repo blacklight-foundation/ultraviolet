@@ -25088,8 +25088,8 @@ VariantInfoFields = [⟨`name`, TypeString(`@Managed`)⟩, ⟨`payload_kind`, Ty
 StateInfoFields = [⟨`name`, TypeString(`@Managed`)⟩, ⟨`field_names`, TypeSlice(TypeString(`@Managed`))⟩, ⟨`method_names`, TypeSlice(TypeString(`@Managed`))⟩, ⟨`transition_names`, TypeSlice(TypeString(`@Managed`))⟩, ⟨`span`, TypePath(["SourceSpan"])⟩]
 
 ModulePathText(path) = StringOfPath(path)
-CtOutcomeValue(T, v) = CtModalState(TypeApply(["Outcome"], [T, TypePath(["IoError"])]), `@Value`, [⟨`value`, v⟩])
-CtOutcomeError(T, e) = CtModalState(TypeApply(["Outcome"], [T, TypePath(["IoError"])]), `@Error`, [⟨`error`, CtEnum([`IoError`], IoErrorVariant(e), ⊥)⟩])
+CtOutcomeValue(T, v) = CtEnum([`Outcome`], `Value`, CtTuplePayload([v]))
+CtOutcomeError(T, e) = CtEnum([`Outcome`], `Error`, CtTuplePayload([CtEnum([`IoError`], IoErrorVariant(e), ⊥)]))
 CtFileResult(r, T) = CtOutcomeValue(T, CtString(r))    if r ∈ String
 CtFileResult(r, T) = CtOutcomeValue(T, CtBytes(r))    if r ∈ Bytes
 CtFileResult(r, T) = CtOutcomeValue(T, CtPrim(r))    if r ∈ Bool

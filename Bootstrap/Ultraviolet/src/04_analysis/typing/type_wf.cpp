@@ -197,7 +197,8 @@ static bool ReceiverIsConst(const ScopeContext& ctx,
                             const ast::ClassMethodDecl& method) {
   if (const auto* shorthand =
           std::get_if<ast::ReceiverShorthand>(&method.receiver)) {
-    return shorthand->perm == ast::ReceiverPerm::Const;
+    return shorthand->perm == ast::ReceiverPerm::Const &&
+           !shorthand->mode_opt.has_value();
   }
 
   if (const auto* explicit_recv =

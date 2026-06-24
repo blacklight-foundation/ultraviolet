@@ -623,6 +623,7 @@ static Permission LowerReceiverPerm(ast::ReceiverPerm perm) {
 struct MethodSig {
   bool ok = false;
   TypeRef recv_type;
+  std::optional<ParamMode> recv_mode;
   std::vector<TypeFuncParam> params;
   TypeRef ret;
 };
@@ -635,6 +636,7 @@ static MethodSig MethodSigSelf(const ScopeContext& ctx,
   if (const auto* shorthand =
           std::get_if<ast::ReceiverShorthand>(&method.receiver)) {
     sig.recv_type = MakeTypePerm(LowerReceiverPerm(shorthand->perm), self);
+    sig.recv_mode = LowerParamMode(shorthand->mode_opt);
   } else if (const auto* explicit_recv =
                  std::get_if<ast::ReceiverExplicit>(&method.receiver)) {
     const auto lowered = LowerType(ctx, explicit_recv->type);
@@ -642,6 +644,7 @@ static MethodSig MethodSigSelf(const ScopeContext& ctx,
       return sig;
     }
     sig.recv_type = SubstSelfType(self, lowered.type);
+    sig.recv_mode = LowerParamMode(explicit_recv->mode_opt);
   }
 
   for (const auto& param : method.params) {
@@ -664,6 +667,9 @@ static MethodSig MethodSigSelf(const ScopeContext& ctx,
 
 static bool SigEqual(const MethodSig& lhs, const MethodSig& rhs) {
   if (!lhs.ok || !rhs.ok) {
+    return false;
+  }
+  if (lhs.recv_mode != rhs.recv_mode) {
     return false;
   }
   const auto recv_eq = TypeEquiv(lhs.recv_type, rhs.recv_type);
@@ -691,6 +697,7 @@ static bool SigEqual(const MethodSig& lhs, const MethodSig& rhs) {
 
 static void AppendMethodSig(std::string& out, const MethodSig& sig) {
   out += "recv:";
+  out += sig.recv_mode.has_value() ? "move " : "ref ";
   out += TypeToString(sig.recv_type);
   out += ";params:[";
   for (std::size_t i = 0; i < sig.params.size(); ++i) {

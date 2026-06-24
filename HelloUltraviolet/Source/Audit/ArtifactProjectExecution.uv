@@ -86,7 +86,7 @@ internal procedure artifactProjectTemporaryFileContains(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if diagnosticBuildPath(value, file_suffix, authority.heap) {
                 let path: string@View = string::as_view(value)
                 outputDiagnosticFileContains(authority, path, required_text)
@@ -94,7 +94,7 @@ internal procedure artifactProjectTemporaryFileContains(
                 false
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -108,7 +108,7 @@ internal procedure artifactProjectSourceFileContains(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from("", authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if diagnosticAppendProjectPath(value, authority, file_suffix) {
                 let path: string@View = string::as_view(value)
                 outputDiagnosticFileContains(authority, path, required_text)
@@ -116,7 +116,7 @@ internal procedure artifactProjectSourceFileContains(
                 false
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -130,7 +130,7 @@ internal procedure artifactProjectTemporaryFileExcludes(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if diagnosticBuildPath(value, file_suffix, authority.heap) {
                 let path: string@View = string::as_view(value)
                 outputDiagnosticFileExcludes(authority, path, forbidden_text)
@@ -138,7 +138,7 @@ internal procedure artifactProjectTemporaryFileExcludes(
                 false
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -153,7 +153,7 @@ internal procedure artifactProjectTempFileExcludes(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if diagnosticBuildPath(value, out_dir_suffix, authority.heap) &&
                 diagnosticBuildPath(value, file_suffix, authority.heap) {
                 let path: string@View = string::as_view(value)
@@ -162,7 +162,7 @@ internal procedure artifactProjectTempFileExcludes(
                 false
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -193,7 +193,7 @@ internal procedure artifactProjectRunBuildCommand(
     let created: Outcome<unique string@Managed, AllocationError> =
         string::from("", authority.heap)
     return if move created is {
-        @Value { value } {
+        Outcome::Value(value) {
             var command_ready: bool =
                 outputDiagnosticAppendCommandStart(value, authority)
             command_ready =
@@ -261,7 +261,7 @@ internal procedure artifactProjectRunBuildCommand(
                 -1
             }
         }
-        @Error {
+        Outcome::Error(_) {
             -1
         }
     }
@@ -280,7 +280,7 @@ internal procedure artifactProjectRunDumpCommand(
     let created: Outcome<unique string@Managed, AllocationError> =
         string::from("", authority.heap)
     return if move created is {
-        @Value { value } {
+        Outcome::Value(value) {
             var command_ready: bool =
                 outputDiagnosticAppendCommandStart(value, authority)
             command_ready =
@@ -329,7 +329,7 @@ internal procedure artifactProjectRunDumpCommand(
                 -1
             }
         }
-        @Error {
+        Outcome::Error(_) {
             -1
         }
     }
@@ -539,7 +539,7 @@ internal procedure artifactProjectRunCaseWithError(
     let out_dir_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move out_dir_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, out_dir_suffix, authority.heap) {
                 false
             } else {
@@ -555,7 +555,7 @@ internal procedure artifactProjectRunCaseWithError(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -574,7 +574,7 @@ internal procedure artifactProjectRunDumpCaseWithError(
     let out_dir_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move out_dir_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, out_dir_suffix, authority.heap) {
                 false
             } else {
@@ -590,7 +590,7 @@ internal procedure artifactProjectRunDumpCaseWithError(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -609,7 +609,7 @@ internal procedure artifactProjectRunCaseWithOutput(
     let error_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move error_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, error_suffix, authority.heap) {
                 false
             } else {
@@ -625,7 +625,7 @@ internal procedure artifactProjectRunCaseWithOutput(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -644,7 +644,7 @@ internal procedure artifactProjectRunDumpCaseWithOutput(
     let error_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move error_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, error_suffix, authority.heap) {
                 false
             } else {
@@ -660,7 +660,7 @@ internal procedure artifactProjectRunDumpCaseWithOutput(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -683,7 +683,7 @@ internal procedure artifactProjectRunCase(
     let output_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move output_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, output_suffix, authority.heap) {
                 false
             } else {
@@ -699,7 +699,7 @@ internal procedure artifactProjectRunCase(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -723,15 +723,15 @@ internal procedure artifactProjectRunAssemblyCase(
     let output_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move output_created is {
-        @Value { value: output_path } {
+        Outcome::Value(output_path) {
             let error_created: Outcome<unique string@Managed, AllocationError> =
                 string::from(authority.temporary_directory, authority.heap)
             if move error_created is {
-                @Value { value: error_path } {
+                Outcome::Value(error_path) {
                     let out_dir_created: Outcome<unique string@Managed, AllocationError> =
                         string::from(authority.temporary_directory, authority.heap)
                     if move out_dir_created is {
-                        @Value { value: out_dir_path } {
+                        Outcome::Value(out_dir_path) {
                             if !diagnosticBuildPath(
                                 output_path,
                                 output_suffix,
@@ -762,17 +762,17 @@ internal procedure artifactProjectRunAssemblyCase(
                                 )
                             }
                         }
-                        @Error {
+                        Outcome::Error(_) {
                             false
                         }
                     }
                 }
-                @Error {
+                Outcome::Error(_) {
                     false
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -793,7 +793,7 @@ internal procedure artifactProjectRunCaseWithRuntimeLogOutDir(
     let runtime_log_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move runtime_log_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, out_dir_suffix, authority.heap) ||
                 !diagnosticBuildPath(value, runtime_log_suffix, authority.heap) {
                 false
@@ -811,7 +811,7 @@ internal procedure artifactProjectRunCaseWithRuntimeLogOutDir(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -831,7 +831,7 @@ internal procedure artifactProjectRunCaseWithRuntimeLogError(
     let out_dir_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move out_dir_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, out_dir_suffix, authority.heap) {
                 false
             } else {
@@ -849,7 +849,7 @@ internal procedure artifactProjectRunCaseWithRuntimeLogError(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -869,7 +869,7 @@ internal procedure artifactProjectRunCaseWithRuntimeLogOutput(
     let error_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move error_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, error_suffix, authority.heap) {
                 false
             } else {
@@ -886,7 +886,7 @@ internal procedure artifactProjectRunCaseWithRuntimeLogOutput(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -910,7 +910,7 @@ internal procedure artifactProjectRunCaseWithRuntimeLogPath(
     let output_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move output_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, output_suffix, authority.heap) {
                 false
             } else {
@@ -927,7 +927,7 @@ internal procedure artifactProjectRunCaseWithRuntimeLogPath(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -950,7 +950,7 @@ internal procedure artifactProjectRunDumpCase(
     let output_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move output_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, output_suffix, authority.heap) {
                 false
             } else {
@@ -966,7 +966,7 @@ internal procedure artifactProjectRunDumpCase(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -979,7 +979,7 @@ internal procedure artifactProjectRunExecutablePath(
     let created: Outcome<unique string@Managed, AllocationError> =
         string::from("", authority.heap)
     return if move created is {
-        @Value { value } {
+        Outcome::Value(value) {
             var command_ready: bool =
                 artifactProjectAppendShellStart(value, authority)
             command_ready =
@@ -997,7 +997,7 @@ internal procedure artifactProjectRunExecutablePath(
                 -1
             }
         }
-        @Error {
+        Outcome::Error(_) {
             -1
         }
     }
@@ -1012,7 +1012,7 @@ internal procedure artifactProjectRunExecutablePathWithTwoArgs(
     let created: Outcome<unique string@Managed, AllocationError> =
         string::from("", authority.heap)
     return if move created is {
-        @Value { value } {
+        Outcome::Value(value) {
             var command_ready: bool =
                 artifactProjectAppendShellStart(value, authority)
             command_ready =
@@ -1042,7 +1042,7 @@ internal procedure artifactProjectRunExecutablePathWithTwoArgs(
                 -1
             }
         }
-        @Error {
+        Outcome::Error(_) {
             -1
         }
     }
@@ -1057,7 +1057,7 @@ internal procedure artifactProjectRunExecutable(
     let executable_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move executable_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, out_dir_suffix, authority.heap) ||
                 !diagnosticBuildPath(value, executable_suffix, authority.heap) {
                 false
@@ -1069,7 +1069,7 @@ internal procedure artifactProjectRunExecutable(
                 ) == expected_status
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -1086,15 +1086,15 @@ internal procedure artifactProjectRunExecutableWithTwoArgs(
     let executable_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move executable_created is {
-        @Value { value: executable_path } {
+        Outcome::Value(executable_path) {
             let first_arg_created: Outcome<unique string@Managed, AllocationError> =
                 string::from(authority.temporary_directory, authority.heap)
             if move first_arg_created is {
-                @Value { value: first_arg_path } {
+                Outcome::Value(first_arg_path) {
                     let second_arg_created: Outcome<unique string@Managed, AllocationError> =
                         string::from(authority.temporary_directory, authority.heap)
                     if move second_arg_created is {
-                        @Value { value: second_arg_path } {
+                        Outcome::Value(second_arg_path) {
                             if !diagnosticBuildPath(
                                 executable_path,
                                 out_dir_suffix,
@@ -1135,17 +1135,17 @@ internal procedure artifactProjectRunExecutableWithTwoArgs(
                                 ) == expected_status
                             }
                         }
-                        @Error {
+                        Outcome::Error(_) {
                             false
                         }
                     }
                 }
-                @Error {
+                Outcome::Error(_) {
                     false
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -1159,7 +1159,7 @@ internal procedure artifactProjectRunExecutableNonZero(
     let executable_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move executable_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, out_dir_suffix, authority.heap) ||
                 !diagnosticBuildPath(value, executable_suffix, authority.heap) {
                 false
@@ -1171,7 +1171,7 @@ internal procedure artifactProjectRunExecutableNonZero(
                 ) != 0
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -2384,7 +2384,7 @@ internal procedure artifactProjectEmitLlIrLineContains(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, "ArtifactProjectEmitLlBuild", authority.heap) ||
                 !diagnosticBuildPath(value, "Intermediate", authority.heap) ||
                 !diagnosticBuildPath(value, "IR", authority.heap) ||
@@ -2396,7 +2396,7 @@ internal procedure artifactProjectEmitLlIrLineContains(
                 let read_result: Outcome<unique string@Managed, IoError> =
                     authority.io~>read_file(path)
                 if move read_result is {
-                    @Value { value: text } {
+                    Outcome::Value(text) {
                         artifactProjectTextLineContainsAll(
                             string::as_view(text),
                             required_one,
@@ -2404,13 +2404,13 @@ internal procedure artifactProjectEmitLlIrLineContains(
                             required_three
                         )
                     }
-                    @Error {
+                    Outcome::Error(_) {
                         false
                     }
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -2450,7 +2450,7 @@ internal procedure artifactProjectFindIrUseWithin(
     let created: Outcome<unique string@Managed, AllocationError> =
         string::from(prefix, authority.heap)
     return if move created is {
-        @Value { value: needle } {
+        Outcome::Value(needle) {
             if diagnosticAppendText(needle, value, authority.heap) &&
                 diagnosticAppendText(needle, suffix, authority.heap) {
                 artifactProjectFindTextWithin(text, string::as_view(needle), start, limit)
@@ -2458,7 +2458,7 @@ internal procedure artifactProjectFindIrUseWithin(
                 string::length(text)
             }
         }
-        @Error {
+        Outcome::Error(_) {
             string::length(text)
         }
     }
@@ -2575,7 +2575,7 @@ internal procedure artifactProjectEmitLlReferenceCaptureIrMatches(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, "ArtifactProjectEmitLlBuild", authority.heap) ||
                 !diagnosticBuildPath(value, "Intermediate", authority.heap) ||
                 !diagnosticBuildPath(value, "IR", authority.heap) ||
@@ -2587,19 +2587,19 @@ internal procedure artifactProjectEmitLlReferenceCaptureIrMatches(
                 let read_result: Outcome<unique string@Managed, IoError> =
                     authority.io~>read_file(path)
                 if move read_result is {
-                    @Value { value: text } {
+                    Outcome::Value(text) {
                         artifactProjectEmitLlReferenceCaptureIrTextMatches(
                             authority,
                             string::as_view(text)
                         )
                     }
-                    @Error {
+                    Outcome::Error(_) {
                         false
                     }
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -7753,7 +7753,7 @@ internal procedure artifactProjectRuntimeCheckLogMatches(
     let payload_result: Outcome<unique string@Managed, AllocationError> =
         string::from("runtime_check%3D", authority.heap)
     return if move payload_result is {
-        @Value { value: payload } {
+        Outcome::Value(payload) {
             diagnosticAppendText(payload, runtime_check, authority.heap) &&
                 diagnosticAppendText(
                     payload,
@@ -7784,7 +7784,7 @@ internal procedure artifactProjectRuntimeCheckLogMatches(
                     string::as_view(payload)
                 )
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }

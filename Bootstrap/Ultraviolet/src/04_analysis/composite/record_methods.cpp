@@ -286,7 +286,7 @@ std::optional<ParamMode> RecvModeOf(const ast::Receiver& receiver) {
       [&](const auto& recv) -> std::optional<ParamMode> {
         using R = std::decay_t<decltype(recv)>;
         if constexpr (std::is_same_v<R, ast::ReceiverShorthand>) {
-          return std::nullopt;
+          return LowerParamMode(recv.mode_opt);
         } else {
           return LowerParamMode(recv.mode_opt);
         }

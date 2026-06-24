@@ -8,10 +8,10 @@ internal procedure sourceNativeOrdinaryProcedure() -> bool {
 
 internal procedure sourceNativeIoUnitSucceeded(result: Outcome<(), IoError>) -> bool {
     return if result is {
-        @Value {
+        Outcome::Value(_) {
             true
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -22,11 +22,11 @@ internal procedure sourceNativeReadTextEquals(
     expected: string@View
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let text: string@View = string::as_view(value)
             auditTextEquals(text, expected)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -36,10 +36,10 @@ internal procedure sourceNativeDurationOutcomeSucceeded(
     result: Outcome<Duration, TimeError>
 ) -> bool {
     return if result is {
-        @Value { value } {
+        Outcome::Value(value) {
             value.nanoseconds >= 0u128
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -49,10 +49,10 @@ internal procedure sourceNativeUtcInstantOutcomeSucceeded(
     result: Outcome<UtcInstant, TimeError>
 ) -> bool {
     return if result is {
-        @Value {
+        Outcome::Value(_) {
             true
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }

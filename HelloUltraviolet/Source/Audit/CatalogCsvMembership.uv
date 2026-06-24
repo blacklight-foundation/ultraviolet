@@ -88,11 +88,11 @@ public procedure catalogMatchesCsvObligations(context: Context) -> bool {
         "Docs/Internal/UltravioletObligations.csv"
     )
     return if move read_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let csv_text: string@View = string::as_view(value)
             csvFileShapeMatches(csv_text) && generatedCatalogKeysMatchCsv()
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }

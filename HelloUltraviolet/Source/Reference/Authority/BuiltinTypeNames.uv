@@ -170,14 +170,14 @@ internal procedure builtinFileReadObserved(
     move result: Outcome<unique BuiltinFileReadName, BuiltinIoErrorName>
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let text: Outcome<unique string@Managed, BuiltinIoErrorName> =
                 value~>read_all()
             let closed: File@Closed = value~>close()
             let _ = closed
             readableTextObserved(move text)
         }
-        @Error { error } {
+        Outcome::Error(error) {
             ioErrorVariantIsKnown(error)
         }
     }
@@ -187,13 +187,13 @@ internal procedure builtinDirIterObserved(
     move result: Outcome<unique BuiltinDirIterOpenName, BuiltinIoErrorName>
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let first: Outcome<BuiltinDirEntryName | (), BuiltinIoErrorName> =
                 value~>next()
             let closed: DirIter@Closed = value~>close()
             let _ = closed
             return if first is {
-                @Value { value: first_value } {
+                Outcome::Value(first_value) {
                     return if first_value is {
                         entry: BuiltinDirEntryName {
                             string::length(string::as_view(entry.name)) > 0usize &&
@@ -205,12 +205,12 @@ internal procedure builtinDirIterObserved(
                         }
                     }
                 }
-                @Error { error } {
+                Outcome::Error(error) {
                     ioErrorVariantIsKnown(error)
                 }
             }
         }
-        @Error { error } {
+        Outcome::Error(error) {
             ioErrorVariantIsKnown(error)
         }
     }
@@ -220,11 +220,11 @@ internal procedure readableTextObserved(
     move result: Outcome<unique string@Managed, BuiltinIoErrorName>
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let text: string@View = string::as_view(value)
             string::length(text) > 0usize
         }
-        @Error { error } {
+        Outcome::Error(error) {
             ioErrorVariantIsKnown(error)
         }
     }
@@ -234,10 +234,10 @@ internal procedure missingTextObserved(
     move result: Outcome<unique string@Managed, BuiltinIoErrorName>
 ) -> bool {
     return if move result is {
-        @Value {
+        Outcome::Value(_) {
             false
         }
-        @Error { error } {
+        Outcome::Error(error) {
             ioErrorVariantIsKnown(error)
         }
     }
@@ -251,10 +251,10 @@ internal procedure elapsedOutcomeObserved(
     result: Outcome<BuiltinDurationName, BuiltinTimeErrorName>
 ) -> bool {
     return if result is {
-        @Value { value } {
+        Outcome::Value(value) {
             durationIsResolved(value)
         }
-        @Error { error } {
+        Outcome::Error(error) {
             timeErrorVariantIsKnown(error)
         }
     }
@@ -264,10 +264,10 @@ internal procedure wallInstantOutcomeObserved(
     result: Outcome<BuiltinUtcInstantName, BuiltinTimeErrorName>
 ) -> bool {
     return if result is {
-        @Value {
+        Outcome::Value(_) {
             true
         }
-        @Error { error } {
+        Outcome::Error(error) {
             timeErrorVariantIsKnown(error)
         }
     }
@@ -277,10 +277,10 @@ internal procedure wallCoarsenOutcomeObserved(
     result: Outcome<$WallTime, BuiltinTimeErrorName>
 ) -> bool {
     return if result is {
-        @Value {
+        Outcome::Value(_) {
             true
         }
-        @Error { error } {
+        Outcome::Error(error) {
             timeErrorVariantIsKnown(error)
         }
     }

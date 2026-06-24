@@ -52,10 +52,10 @@ internal procedure diagnosticAllocationSucceeded(
     result: Outcome<(), AllocationError>
 ) -> bool {
     return if result is {
-        @Value {
+        Outcome::Value(_) {
             true
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -63,10 +63,10 @@ internal procedure diagnosticAllocationSucceeded(
 
 internal procedure diagnosticIoSucceeded(result: Outcome<(), IoError>) -> bool {
     return if result is {
-        @Value {
+        Outcome::Value(_) {
             true
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -354,14 +354,14 @@ internal procedure diagnosticConformancePathContainsExpectedObligation(
     let read_result: Outcome<unique string@Managed, IoError> =
         authority.io~>read_file(conformance_path)
     return if move read_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let conformance_text: string@View = string::as_view(value)
             diagnosticConformanceContainsExpectedObligation(
                 conformance_text,
                 expected_obligation
             )
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -504,7 +504,7 @@ internal procedure diagnosticRunCompiler(
     let created: Outcome<unique string@Managed, AllocationError> =
         string::from("", authority.heap)
     return if move created is {
-        @Value { value } {
+        Outcome::Value(value) {
             var command_ready: bool = true
             if auditTextEquals(authority.target_profile, "x86_64-win64") {
                 command_ready =
@@ -571,7 +571,7 @@ internal procedure diagnosticRunCompiler(
                 -1
             }
         }
-        @Error {
+        Outcome::Error(_) {
             -1
         }
     }
@@ -584,7 +584,7 @@ internal procedure diagnosticOutputMatchedDirectiveCount(
     conformance_path: string@View
 ) -> usize {
     return if move output_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let output_text: string@View = string::as_view(value)
             diagnosticExpectedDirectiveMatchCount(
                 authority,
@@ -594,7 +594,7 @@ internal procedure diagnosticOutputMatchedDirectiveCount(
                 true
             )
         }
-        @Error {
+        Outcome::Error(_) {
             0usize
         }
     }
@@ -607,7 +607,7 @@ internal procedure diagnosticReadTextMatchedDirectiveCount(
     conformance_path: string@View
 ) -> usize {
     return if move expected_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let expected_text: string@View = string::as_view(value)
             diagnosticOutputMatchedDirectiveCount(
                 authority,
@@ -616,7 +616,7 @@ internal procedure diagnosticReadTextMatchedDirectiveCount(
                 conformance_path
             )
         }
-        @Error {
+        Outcome::Error(_) {
             0usize
         }
     }
@@ -631,7 +631,7 @@ internal procedure diagnosticConformanceMatchedDirectiveCount(
     let expected_path_result: Outcome<unique string@Managed, AllocationError> =
         string::from("", authority.heap)
     return if move expected_path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticAppendProjectPath(value, authority, expected_path) {
                 0usize
             } else {
@@ -648,7 +648,7 @@ internal procedure diagnosticConformanceMatchedDirectiveCount(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             0usize
         }
     }
@@ -744,7 +744,7 @@ internal procedure diagnosticExerciseFixtureWithOutDirPath(
     let conformance_created: Outcome<unique string@Managed, AllocationError> =
         string::from(out_dir_path, authority.heap)
     return if move conformance_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if diagnosticBuildPath(value, "Logs", authority.heap) &&
                 diagnosticBuildPath(value, "Conformance", authority.heap) &&
                 diagnosticBuildPath(
@@ -767,7 +767,7 @@ internal procedure diagnosticExerciseFixtureWithOutDirPath(
                 diagnosticFixtureExecutionResult(false, 0usize)
             }
         }
-        @Error {
+        Outcome::Error(_) {
             diagnosticFixtureExecutionResult(false, 0usize)
         }
     }
@@ -784,7 +784,7 @@ internal procedure diagnosticExerciseFixtureWithErrorPath(
     let out_dir_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move out_dir_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(
                 value,
                 "DiagnosticFixtureBuild",
@@ -803,7 +803,7 @@ internal procedure diagnosticExerciseFixtureWithErrorPath(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             diagnosticFixtureExecutionResult(false, 0usize)
         }
     }
@@ -827,7 +827,7 @@ internal procedure diagnosticExerciseFixtureWithOutputPath(
     let error_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move error_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(
                 value,
                 "DiagnosticFixtureError.txt",
@@ -845,7 +845,7 @@ internal procedure diagnosticExerciseFixtureWithOutputPath(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             diagnosticFixtureExecutionResult(false, 0usize)
         }
     }
@@ -860,7 +860,7 @@ internal procedure diagnosticExerciseFixture(
     let output_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move output_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             diagnosticExerciseFixtureWithOutputPath(
                 authority,
                 fixture_path,
@@ -869,7 +869,7 @@ internal procedure diagnosticExerciseFixture(
                 value
             )
         }
-        @Error {
+        Outcome::Error(_) {
             diagnosticFixtureExecutionResult(false, 0usize)
         }
     }
@@ -925,7 +925,7 @@ internal procedure diagnosticExerciseDirectoryStep(
     should_reject: bool
 ) -> DiagnosticFixtureDirectoryStepResult {
     return if result is {
-        @Value { value } {
+        Outcome::Value(value) {
             return if value is {
                 entry: DirEntry {
                     diagnosticExerciseDirectoryEntry(
@@ -939,7 +939,7 @@ internal procedure diagnosticExerciseDirectoryStep(
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             let _ = diagnosticReportFixtureFailure(
                 authority,
                 "directory iterator step failed: ",
@@ -957,7 +957,7 @@ internal procedure diagnosticExerciseOpenFixtureDirectory(
     should_reject: bool
 ) -> DiagnosticFixtureExecutionResult {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             var fixture_count: usize = 0usize
             let directory_passed: bool = loop {
                 let next_result: Outcome<DirEntry | (), IoError> = value~>next()
@@ -983,7 +983,7 @@ internal procedure diagnosticExerciseOpenFixtureDirectory(
                 fixture_count
             )
         }
-        @Error {
+        Outcome::Error(_) {
             let _ = diagnosticReportFixtureFailure(
                 authority,
                 "open fixture directory failed: ",
@@ -1002,7 +1002,7 @@ internal procedure diagnosticExerciseFixtureDirectory(
     let expected_path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(directory_path, authority.heap)
     return if move expected_path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, "Expected.uv", authority.heap) {
                 diagnosticFixtureExecutionResult(false, 0usize)
             } else {
@@ -1028,7 +1028,7 @@ internal procedure diagnosticExerciseFixtureDirectory(
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             diagnosticFixtureExecutionResult(false, 0usize)
         }
     }
@@ -1042,7 +1042,7 @@ internal procedure diagnosticExerciseProjectFixtureDirectory(
     let directory_path_result: Outcome<unique string@Managed, AllocationError> =
         string::from("", authority.heap)
     return if move directory_path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticAppendProjectPath(value, authority, directory_path) {
                 diagnosticFixtureExecutionResult(false, 0usize)
             } else {
@@ -1053,7 +1053,7 @@ internal procedure diagnosticExerciseProjectFixtureDirectory(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             diagnosticFixtureExecutionResult(false, 0usize)
         }
     }

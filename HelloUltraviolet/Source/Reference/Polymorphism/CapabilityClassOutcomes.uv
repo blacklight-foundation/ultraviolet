@@ -11,10 +11,10 @@ internal procedure capabilityViewEquals(
 
 internal procedure capabilityUnitSucceeded(result: Outcome<(), IoError>) -> bool {
     return if result is {
-        @Value {
+        Outcome::Value(_) {
             true
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -25,10 +25,10 @@ internal procedure capabilityTextEquals(
     expected: string@View
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             capabilityViewEquals(string::as_view(value), expected)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -39,10 +39,10 @@ internal procedure capabilityBytesLengthEquals(
     expected: usize
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             bytes::length(bytes::as_view(value)) == expected
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -50,7 +50,7 @@ internal procedure capabilityBytesLengthEquals(
 
 internal procedure capabilityFileKindIsFile(result: Outcome<FileKind, IoError>) -> bool {
     return if result is {
-        @Value { value } {
+        Outcome::Value(value) {
             return if value is {
                 FileKind::File {
                     true
@@ -63,7 +63,7 @@ internal procedure capabilityFileKindIsFile(result: Outcome<FileKind, IoError>) 
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -144,10 +144,10 @@ internal procedure capabilityDurationOutcomeObserved(
     result: Outcome<Duration, TimeError>
 ) -> bool {
     return if result is {
-        @Value { value } {
+        Outcome::Value(value) {
             value.nanoseconds >= 0u128
         }
-        @Error { error } {
+        Outcome::Error(error) {
             capabilityTimeErrorKnown(error)
         }
     }
@@ -157,10 +157,10 @@ internal procedure capabilityUtcOutcomeObserved(
     result: Outcome<UtcInstant, TimeError>
 ) -> bool {
     return if result is {
-        @Value {
+        Outcome::Value(_) {
             true
         }
-        @Error { error } {
+        Outcome::Error(error) {
             capabilityTimeErrorKnown(error)
         }
     }
@@ -170,10 +170,10 @@ internal procedure capabilityMonotonicOutcomeObserved(
     result: Outcome<$MonotonicTime, TimeError>
 ) -> bool {
     return if result is {
-        @Value {
+        Outcome::Value(_) {
             true
         }
-        @Error { error } {
+        Outcome::Error(error) {
             capabilityTimeErrorKnown(error)
         }
     }
@@ -183,10 +183,10 @@ internal procedure capabilityWallOutcomeObserved(
     result: Outcome<$WallTime, TimeError>
 ) -> bool {
     return if result is {
-        @Value {
+        Outcome::Value(_) {
             true
         }
-        @Error { error } {
+        Outcome::Error(error) {
             capabilityTimeErrorKnown(error)
         }
     }
@@ -211,13 +211,13 @@ internal procedure capabilityReadHandleEquals(
     expected: string@View
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let read_result: Outcome<unique string@Managed, IoError> = value~>read_all()
             let closed: File@Closed = value~>close()
             let _ = closed
             capabilityTextEquals(move read_result, expected)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -228,7 +228,7 @@ internal procedure capabilityWriteHandleAccepts(
     payload: string@View
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let write_result: Outcome<(), IoError> =
                 value~>write(bytes::view_string(payload))
             let flush_result: Outcome<(), IoError> = value~>flush()
@@ -237,7 +237,7 @@ internal procedure capabilityWriteHandleAccepts(
             capabilityUnitSucceeded(write_result) &&
                 capabilityUnitSucceeded(flush_result)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -248,7 +248,7 @@ internal procedure capabilityAppendHandleAccepts(
     payload: string@View
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let write_result: Outcome<(), IoError> =
                 value~>write(bytes::view_string(payload))
             let flush_result: Outcome<(), IoError> = value~>flush()
@@ -257,7 +257,7 @@ internal procedure capabilityAppendHandleAccepts(
             capabilityUnitSucceeded(write_result) &&
                 capabilityUnitSucceeded(flush_result)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -267,12 +267,12 @@ internal procedure capabilityDirectoryHasEntry(
     move result: Outcome<unique DirIter@Open, IoError>
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let first: Outcome<DirEntry | (), IoError> = value~>next()
             let closed: DirIter@Closed = value~>close()
             let _ = closed
             return if first is {
-                @Value { value: first_value } {
+                Outcome::Value(first_value) {
                     return if first_value is {
                         entry: DirEntry {
                             string::length(string::as_view(entry.name)) > 0usize &&
@@ -284,12 +284,12 @@ internal procedure capabilityDirectoryHasEntry(
                         }
                     }
                 }
-                @Error {
+                Outcome::Error(_) {
                     false
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }

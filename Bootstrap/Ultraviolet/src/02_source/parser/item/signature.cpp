@@ -204,33 +204,34 @@ ParseElemResult<std::vector<Param>> ParseMethodParams(Parser parser) {
 //   ~ (const) - read-only access, expands to self: const Self
 //   ~! (unique) - exclusive mutable, expands to self: unique Self
 //   ~% (shared) - synchronized shared, expands to self: shared Self
+//   move ~, move ~!, move ~% - consuming shorthand receiver
 //
 // Explicit receiver:
 //   [move] self: Type
 
 ParseElemResult<Receiver> ParseReceiver(Parser parser) {
-  if (IsOp(parser, "~")) {
+  Parser start = parser;
+  ParseElemResult<std::optional<ParamMode>> mode = ParseParamModeOpt(parser);
+  if (IsOp(mode.parser, "~")) {
     SPEC_RULE("Parse-Receiver-Short-Const");
-    Parser next = parser;
+    Parser next = mode.parser;
     Advance(next);
-    return {next, ReceiverShorthand{ReceiverPerm::Const}};
+    return {next, ReceiverShorthand{ReceiverPerm::Const, mode.elem}};
   }
-  if (IsOp(parser, "~!")) {
+  if (IsOp(mode.parser, "~!")) {
     SPEC_RULE("Parse-Receiver-Short-Unique");
-    Parser next = parser;
+    Parser next = mode.parser;
     Advance(next);
-    return {next, ReceiverShorthand{ReceiverPerm::Unique}};
+    return {next, ReceiverShorthand{ReceiverPerm::Unique, mode.elem}};
   }
-  if (IsOp(parser, "~%")) {
+  if (IsOp(mode.parser, "~%")) {
     SPEC_RULE("Parse-Receiver-Short-Shared");
-    Parser next = parser;
+    Parser next = mode.parser;
     Advance(next);
-    return {next, ReceiverShorthand{ReceiverPerm::Shared}};
+    return {next, ReceiverShorthand{ReceiverPerm::Shared, mode.elem}};
   }
 
   SPEC_RULE("Parse-Receiver-Explicit");
-  Parser start = parser;
-  ParseElemResult<std::optional<ParamMode>> mode = ParseParamModeOpt(parser);
   ParseElemResult<Identifier> name = ParseIdent(mode.parser);
   if (!(name.elem == "self")) {
     EmitParseSyntaxErr(start, TokSpan(start));

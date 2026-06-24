@@ -26,6 +26,20 @@ internal procedure effectfulCoreUnionIsValue(value: i32 | bool, expected: i32) -
     }
 }
 
+internal procedure effectfulCoreOutcomeIsValue(
+    value: Outcome<i32, bool>,
+    expected: i32
+) -> bool {
+    return if value is {
+        Outcome::Value(actual) {
+            actual == expected
+        }
+        Outcome::Error(failed) {
+            false
+        }
+    }
+}
+
 internal procedure effectfulCoreAsyncPropagation(
     should_fail: bool,
     value: i32
@@ -199,8 +213,8 @@ public procedure evalSigmaPropagateSuccessReference() -> bool {
 
 /// Exercises EvalSigma-Propagate-Success-Async by unwrapping a successful async propagation.
 public procedure evalSigmaPropagateSuccessAsyncReference() -> bool {
-    let result: i32 | bool = sync effectfulCoreAsyncPropagation(false, 61)
-    return effectfulCoreUnionIsValue(result, 62)
+    let result: Outcome<i32, bool> = sync effectfulCoreAsyncPropagation(false, 61)
+    return effectfulCoreOutcomeIsValue(result, 62)
 }
 
 internal procedure evalSigmaPropagateErrorValue() -> bool {

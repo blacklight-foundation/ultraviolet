@@ -176,11 +176,11 @@ internal procedure outputDiagnosticExpectedFileMatches(
 ) -> bool {
     let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(expected_path)
     return if move read_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let text: string@View = string::as_view(value)
             auditTextEquals(text, expected_text)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -345,11 +345,11 @@ internal procedure artifactTextContains(
 ) -> bool {
     let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(artifact_path)
     return if move read_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let text: string@View = string::as_view(value)
             auditTextContains(text, required_text)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -362,11 +362,11 @@ internal procedure artifactTextExcludes(
 ) -> bool {
     let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(artifact_path)
     return if move read_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let text: string@View = string::as_view(value)
             !auditTextContains(text, forbidden_text)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }

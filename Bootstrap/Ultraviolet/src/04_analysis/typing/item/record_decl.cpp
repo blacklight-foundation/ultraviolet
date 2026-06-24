@@ -999,10 +999,11 @@ RecordDeclResult TypeRecordDecl(
         recv_perm = Permission::Shared;
       } else {
         recv_perm = Permission::Const;
-        const_receiver = true;
+        const_receiver = !shorthand->mode_opt.has_value();
       }
     }
-    std::optional<BindSelfParam> self_param = BindSelfParam{result.self_type, std::nullopt, recv_perm};
+    std::optional<BindSelfParam> self_param =
+        BindSelfParam{result.self_type, RecvModeOf(method->receiver), recv_perm};
 
     // Build method signature
     const auto sig = BuildMethodSignature(

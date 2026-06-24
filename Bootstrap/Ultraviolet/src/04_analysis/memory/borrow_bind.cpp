@@ -79,6 +79,7 @@
 #include "00_core/process_config.h"
 #include "04_analysis/composite/classes.h"
 #include "04_analysis/composite/function_types.h"
+#include "04_analysis/composite/record_methods.h"
 #include "04_analysis/modal/modal_transitions.h"
 #include "04_analysis/resolve/scopes.h"
 #include "04_analysis/typing/type_equiv.h"
@@ -2379,10 +2380,7 @@ static std::optional<std::vector<ParamInfo>> ParamsForMethod(
     if (!method) {
       return std::nullopt;
     }
-    if (const auto* explicit_recv =
-            std::get_if<ast::ReceiverExplicit>(&method->receiver)) {
-      recv_mode = LowerParamMode(explicit_recv->mode_opt);
-    }
+    recv_mode = RecvModeOf(method->receiver);
     std::vector<ParamInfo> params;
     params.reserve(method->params.size());
     for (const auto& param : method->params) {
@@ -2421,10 +2419,7 @@ static std::optional<std::vector<ParamInfo>> ParamsForMethod(
       if (!IdEq(method->name, name)) {
         continue;
       }
-      if (const auto* explicit_recv =
-              std::get_if<ast::ReceiverExplicit>(&method->receiver)) {
-        recv_mode = LowerParamMode(explicit_recv->mode_opt);
-      }
+      recv_mode = RecvModeOf(method->receiver);
       std::vector<ParamInfo> params;
       params.reserve(method->params.size());
       for (const auto& param : method->params) {
@@ -2456,10 +2451,7 @@ static std::optional<std::vector<ParamInfo>> ParamsForMethod(
   }
 
   if (default_method) {
-    if (const auto* explicit_recv =
-            std::get_if<ast::ReceiverExplicit>(&default_method->receiver)) {
-      recv_mode = LowerParamMode(explicit_recv->mode_opt);
-    }
+    recv_mode = RecvModeOf(default_method->receiver);
     std::vector<ParamInfo> params;
     params.reserve(default_method->params.size());
     for (const auto& param : default_method->params) {

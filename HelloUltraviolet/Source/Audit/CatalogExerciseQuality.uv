@@ -131,13 +131,13 @@ public procedure catalogAcceptedExercisesAreNontrivialAndExecuted(
             "HelloUltraviolet/Audit/ExerciseQualityManifest.csv"
         )
     return if move read_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let manifest_text: string@View = string::as_view(value)
             catalogAcceptedExerciseQualityManifestShapeMatches(
                 manifest_text
             )
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }

@@ -78,10 +78,10 @@ internal procedure runtimeInterfaceManagedStringValueSucceeded(
     expected_length: usize
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             string::length(string::as_view(value)) == expected_length
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -92,10 +92,10 @@ internal procedure runtimeInterfaceManagedBytesValueSucceeded(
     expected_length: usize
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             bytes::length(bytes::as_view(value)) == expected_length
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -185,10 +185,10 @@ public procedure runtimeInterfaceRuntimeValueDomainProbe(
 
 internal procedure runtimeInterfaceIoUnitSucceeded(result: Outcome<(), IoError>) -> bool {
     return if result is {
-        @Value {
+        Outcome::Value(_) {
             true
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -198,11 +198,11 @@ internal procedure runtimeInterfaceManagedTextSucceeded(
     move result: Outcome<unique string@Managed, IoError>
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let text: string@View = string::as_view(value)
             string::length(text) >= 0usize
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -212,11 +212,11 @@ internal procedure runtimeInterfaceManagedBytesSucceeded(
     move result: Outcome<unique bytes@Managed, IoError>
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let data: bytes@View = bytes::as_view(value)
             bytes::length(data) >= 0usize
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -226,13 +226,13 @@ internal procedure runtimeInterfaceCloseRead(
     move result: Outcome<unique File@Read, IoError>
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let read_result: Outcome<unique string@Managed, IoError> = value~>read_all()
             let closed: File@Closed = value~>close()
             let _ = closed
             runtimeInterfaceManagedTextSucceeded(move read_result)
         }
-        @Error {
+        Outcome::Error(_) {
             true
         }
     }
@@ -242,14 +242,14 @@ internal procedure runtimeInterfaceReadBytesAndClose(
     move result: Outcome<unique File@Read, IoError>
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let read_result: Outcome<unique bytes@Managed, IoError> =
                 value~>read_all_bytes()
             let closed: File@Closed = value~>close()
             let _ = closed
             runtimeInterfaceManagedBytesSucceeded(move read_result)
         }
-        @Error {
+        Outcome::Error(_) {
             true
         }
     }
@@ -260,7 +260,7 @@ internal procedure runtimeInterfaceCloseWrite(
     data: bytes@View
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let write_result: Outcome<(), IoError> = value~>write(data)
             let flush_result: Outcome<(), IoError> = value~>flush()
             let closed: File@Closed = value~>close()
@@ -268,7 +268,7 @@ internal procedure runtimeInterfaceCloseWrite(
             runtimeInterfaceIoUnitSucceeded(write_result) &&
                 runtimeInterfaceIoUnitSucceeded(flush_result)
         }
-        @Error {
+        Outcome::Error(_) {
             true
         }
     }
@@ -279,7 +279,7 @@ internal procedure runtimeInterfaceCloseAppend(
     data: bytes@View
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let write_result: Outcome<(), IoError> = value~>write(data)
             let flush_result: Outcome<(), IoError> = value~>flush()
             let closed: File@Closed = value~>close()
@@ -287,7 +287,7 @@ internal procedure runtimeInterfaceCloseAppend(
             runtimeInterfaceIoUnitSucceeded(write_result) &&
                 runtimeInterfaceIoUnitSucceeded(flush_result)
         }
-        @Error {
+        Outcome::Error(_) {
             true
         }
     }
@@ -297,13 +297,13 @@ internal procedure runtimeInterfaceCloseDirectory(
     move result: Outcome<unique DirIter@Open, IoError>
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let _ = value~>next()
             let closed: DirIter@Closed = value~>close()
             let _ = closed
             true
         }
-        @Error {
+        Outcome::Error(_) {
             true
         }
     }

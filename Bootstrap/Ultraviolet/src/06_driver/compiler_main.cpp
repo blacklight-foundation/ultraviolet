@@ -1760,6 +1760,10 @@ std::string ReceiverSignature(SourceTextCache& sources,
         using T = std::decay_t<decltype(node)>;
         if constexpr (std::is_same_v<T, ultraviolet::ast::ReceiverShorthand>) {
           AppendSignatureAtom(out, "shorthand");
+          AppendSignatureBool(out, node.mode_opt.has_value());
+          if (node.mode_opt.has_value()) {
+            AppendSignatureAtom(out, ParamModeSignature(*node.mode_opt));
+          }
           AppendSignatureAtom(out, ReceiverPermSignature(node.perm));
         } else {
           AppendSignatureAtom(out, "explicit");

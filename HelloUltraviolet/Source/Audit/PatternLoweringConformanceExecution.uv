@@ -101,7 +101,7 @@ internal procedure patternLoweringConformanceContainsEntry(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, out_dir_suffix, authority.heap) ||
                 !diagnosticBuildPath(value, "Logs", authority.heap) ||
                 !diagnosticBuildPath(value, "Conformance", authority.heap) ||
@@ -116,7 +116,7 @@ internal procedure patternLoweringConformanceContainsEntry(
                 let read_result: Outcome<unique string@Managed, IoError> =
                     authority.io~>read_file(path)
                 if move read_result is {
-                    @Value { value: text } {
+                    Outcome::Value(text) {
                         patternConformanceTextContainsEntry(
                             string::as_view(text),
                             obligation_marker,
@@ -125,13 +125,13 @@ internal procedure patternLoweringConformanceContainsEntry(
                             required_payload_three
                         )
                     }
-                    @Error {
+                    Outcome::Error(_) {
                         false
                     }
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }

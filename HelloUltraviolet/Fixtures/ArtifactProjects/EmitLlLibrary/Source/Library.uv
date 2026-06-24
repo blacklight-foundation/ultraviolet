@@ -926,12 +926,12 @@ public procedure emitLlRuntimeCreateWriteCarrierProbe(
 ) -> bool {
     let created: Outcome<unique File@Write, IoError> = context.io~>create_write(path)
     return if move created is {
-        @Value { value } {
+        Outcome::Value(value) {
             let closed: File@Closed = value~>close()
             let _ = closed
             true
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }

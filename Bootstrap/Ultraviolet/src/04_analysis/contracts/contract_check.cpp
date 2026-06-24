@@ -964,7 +964,8 @@ namespace ultraviolet::analysis
             using R = std::decay_t<decltype(recv)>;
             if constexpr (std::is_same_v<R, ast::ReceiverShorthand>)
             {
-              return recv.perm == ast::ReceiverPerm::Const;
+              return recv.perm == ast::ReceiverPerm::Const &&
+                     !recv.mode_opt.has_value();
             }
             else
             {

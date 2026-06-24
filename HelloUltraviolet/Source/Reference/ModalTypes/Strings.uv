@@ -12,10 +12,10 @@ internal procedure managedStringRuntimeLengthResultMatches(
     expected_length: usize
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             string::length(string::as_view(value)) == expected_length
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
