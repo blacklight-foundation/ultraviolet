@@ -41,7 +41,7 @@ public modal ModalReference {
 }
 
 #reflect
-internal modal GenericModalReference<TValue> |: Bitcopy(TValue) {
+internal modal GenericModalReference<TValue <: Bitcopy> {
     @Empty {}
 
     @Present {

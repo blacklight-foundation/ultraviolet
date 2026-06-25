@@ -190,16 +190,6 @@ void CollectGenericParamsNames(const std::optional<ast::GenericParams>& params_o
   }
 }
 
-void CollectWhereClauseNames(const std::optional<ast::PredicateClause>& clause_opt,
-                             HygieneContext& ctx) {
-  if (!clause_opt.has_value()) {
-    return;
-  }
-  for (const auto& predicate : *clause_opt) {
-    CollectTypeNames(predicate.type, ctx);
-  }
-}
-
 void CollectTypeInvariantNames(
     const std::optional<ast::TypeInvariant>& invariant_opt,
     HygieneContext& ctx) {
@@ -610,16 +600,12 @@ void CollectBlockNames(const Block& block, HygieneContext& ctx) {
 }
 
 void CollectMethodLikeNames(const std::optional<ast::GenericParams>& generic_params,
-                            const std::optional<ast::PredicateClause>* where_clause_opt,
                             const std::vector<ast::Param>& params,
                             const TypePtr& return_type_opt,
                             const std::optional<ast::ContractClause>& contract,
                             const BlockPtr& body_opt,
                             HygieneContext& ctx) {
   CollectGenericParamsNames(generic_params, ctx);
-  if (where_clause_opt) {
-    CollectWhereClauseNames(*where_clause_opt, ctx);
-  }
   for (const auto& param : params) {
     ReserveName(ctx, param.name, param.name_splice_opt.has_value());
     CollectTypeNames(param.type, ctx);
@@ -644,16 +630,9 @@ void CollectItemNames(const ASTItem& item, HygieneContext& ctx) {
         } else if constexpr (std::is_same_v<T, ast::ProcedureDecl> ||
                       std::is_same_v<T, ast::ComptimeProcedureDecl>) {
           ReserveName(ctx, node.name, false);
-          if constexpr (std::is_same_v<T, ast::ProcedureDecl>) {
-            CollectMethodLikeNames(node.generic_params,
-                                   &node.predicate_clause_opt,
-                                   node.params, node.return_type_opt,
-                                   node.contract, node.body, ctx);
-          } else {
-            CollectMethodLikeNames(node.generic_params, nullptr,
-                                   node.params, node.return_type_opt,
-                                   node.contract, node.body, ctx);
-          }
+          CollectMethodLikeNames(node.generic_params, node.params,
+                                 node.return_type_opt, node.contract,
+                                 node.body, ctx);
         } else if constexpr (std::is_same_v<T, ast::ExternBlock>) {
           for (const auto& ext : node.items) {
             std::visit(
@@ -662,7 +641,6 @@ void CollectItemNames(const ASTItem& item, HygieneContext& ctx) {
                   if constexpr (std::is_same_v<E, ast::ExternProcDecl>) {
                     ReserveName(ctx, ext_item.name, false);
                     CollectMethodLikeNames(ext_item.generic_params,
-                                           &ext_item.where_clause,
                                            ext_item.params,
                                            ext_item.return_type_opt,
                                            ext_item.contract, nullptr, ctx);
@@ -673,7 +651,6 @@ void CollectItemNames(const ASTItem& item, HygieneContext& ctx) {
         } else if constexpr (std::is_same_v<T, ast::RecordDecl>) {
           ReserveName(ctx, node.name, false);
           CollectGenericParamsNames(node.generic_params, ctx);
-          CollectWhereClauseNames(node.predicate_clause_opt, ctx);
           CollectTypeInvariantNames(node.invariant_opt, ctx);
           for (const auto& member : node.members) {
             std::visit(
@@ -684,7 +661,6 @@ void CollectItemNames(const ASTItem& item, HygieneContext& ctx) {
                     CollectExprNames(rec_member.init_opt, ctx);
                   } else if constexpr (std::is_same_v<M, ast::MethodDecl>) {
                     CollectMethodLikeNames(std::optional<ast::GenericParams>{},
-                                           nullptr,
                                            rec_member.params,
                                            rec_member.return_type_opt,
                                            rec_member.contract,
@@ -698,7 +674,6 @@ void CollectItemNames(const ASTItem& item, HygieneContext& ctx) {
         } else if constexpr (std::is_same_v<T, ast::EnumDecl>) {
           ReserveName(ctx, node.name, false);
           CollectGenericParamsNames(node.generic_params, ctx);
-          CollectWhereClauseNames(node.predicate_clause_opt, ctx);
           CollectTypeInvariantNames(node.invariant_opt, ctx);
           for (const auto& variant : node.variants) {
             if (variant.payload_opt.has_value()) {
@@ -721,7 +696,6 @@ void CollectItemNames(const ASTItem& item, HygieneContext& ctx) {
         } else if constexpr (std::is_same_v<T, ast::ModalDecl>) {
           ReserveName(ctx, node.name, false);
           CollectGenericParamsNames(node.generic_params, ctx);
-          CollectWhereClauseNames(node.predicate_clause_opt, ctx);
           CollectTypeInvariantNames(node.invariant_opt, ctx);
           for (const auto& state : node.states) {
             for (const auto& member : state.members) {
@@ -732,7 +706,6 @@ void CollectItemNames(const ASTItem& item, HygieneContext& ctx) {
                       CollectTypeNames(state_member.type, ctx);
                     } else if constexpr (std::is_same_v<M, ast::StateMethodDecl>) {
                       CollectMethodLikeNames(state_member.generic_params,
-                                             nullptr,
                                              state_member.params,
                                              state_member.return_type_opt,
                                              state_member.contract,
@@ -752,7 +725,6 @@ void CollectItemNames(const ASTItem& item, HygieneContext& ctx) {
         } else if constexpr (std::is_same_v<T, ast::ClassDecl>) {
           ReserveName(ctx, node.name, false);
           CollectGenericParamsNames(node.generic_params, ctx);
-          CollectWhereClauseNames(node.predicate_clause_opt, ctx);
           for (const auto& member : node.items) {
             std::visit(
                 [&](const auto& class_item) {
@@ -762,7 +734,6 @@ void CollectItemNames(const ASTItem& item, HygieneContext& ctx) {
                     CollectTypeNames(class_item.type, ctx);
                   } else if constexpr (std::is_same_v<M, ast::ClassMethodDecl>) {
                     CollectMethodLikeNames(class_item.generic_params,
-                                           nullptr,
                                            class_item.params,
                                            class_item.return_type_opt,
                                            class_item.contract,
@@ -784,7 +755,6 @@ void CollectItemNames(const ASTItem& item, HygieneContext& ctx) {
         } else if constexpr (std::is_same_v<T, ast::TypeAliasDecl>) {
           ReserveName(ctx, node.name, false);
           CollectGenericParamsNames(node.generic_params, ctx);
-          CollectWhereClauseNames(node.predicate_clause_opt, ctx);
           CollectTypeNames(node.type, ctx);
         } else if constexpr (std::is_same_v<T, ast::DeriveTargetDecl>) {
           ReserveName(ctx, node.name, false);
@@ -1360,16 +1330,6 @@ void RenameGenericParams(std::optional<ast::GenericParams>& params_opt,
   }
 }
 
-void RenameWhereClause(std::optional<ast::PredicateClause>& clause_opt,
-                       HygieneContext& ctx) {
-  if (!clause_opt.has_value() || !ctx.ok) {
-    return;
-  }
-  for (auto& predicate : *clause_opt) {
-    RenameType(predicate.type, ctx);
-  }
-}
-
 void RenameTypeInvariant(std::optional<ast::TypeInvariant>& invariant_opt,
                          HygieneContext& ctx) {
   if (!invariant_opt.has_value() || !ctx.ok) {
@@ -1390,7 +1350,6 @@ void BindParams(std::vector<ast::Param>& params,
 }
 
 void RenameMethodLike(std::optional<ast::GenericParams>& generic_params,
-                      std::optional<ast::PredicateClause>* where_clause_opt,
                       std::vector<ast::Param>& params,
                       TypePtr& return_type_opt,
                       std::optional<ast::ContractClause>& contract,
@@ -1399,9 +1358,6 @@ void RenameMethodLike(std::optional<ast::GenericParams>& generic_params,
                       const CtAst& ast) {
   PushScope(ctx);
   RenameGenericParams(generic_params, ctx, ast);
-  if (where_clause_opt) {
-    RenameWhereClause(*where_clause_opt, ctx);
-  }
   RenameType(return_type_opt, ctx);
   BindParams(params, ctx, ast);
   RenameContract(contract, ctx);
@@ -1429,15 +1385,9 @@ void RenameItem(ASTItem& item, HygieneContext& ctx, const CtAst& ast) {
         } else if constexpr (std::is_same_v<T, ast::ProcedureDecl> ||
                       std::is_same_v<T, ast::ComptimeProcedureDecl>) {
           BindPreservedName(ctx, node.name);
-          if constexpr (std::is_same_v<T, ast::ProcedureDecl>) {
-            RenameMethodLike(node.generic_params, &node.predicate_clause_opt,
-                             node.params, node.return_type_opt,
-                             node.contract, &node.body, ctx, ast);
-          } else {
-            RenameMethodLike(node.generic_params, nullptr,
-                             node.params, node.return_type_opt,
-                             node.contract, &node.body, ctx, ast);
-          }
+          RenameMethodLike(node.generic_params, node.params,
+                           node.return_type_opt, node.contract, &node.body,
+                           ctx, ast);
         } else if constexpr (std::is_same_v<T, ast::ExternBlock>) {
           for (auto& ext : node.items) {
             std::visit(
@@ -1446,7 +1396,6 @@ void RenameItem(ASTItem& item, HygieneContext& ctx, const CtAst& ast) {
                   if constexpr (std::is_same_v<E, ast::ExternProcDecl>) {
                     BindPreservedName(ctx, ext_item.name);
                     RenameMethodLike(ext_item.generic_params,
-                                     &ext_item.where_clause,
                                      ext_item.params,
                                      ext_item.return_type_opt,
                                      ext_item.contract,
@@ -1459,7 +1408,6 @@ void RenameItem(ASTItem& item, HygieneContext& ctx, const CtAst& ast) {
           BindPreservedName(ctx, node.name);
           PushScope(ctx);
           RenameGenericParams(node.generic_params, ctx, ast);
-          RenameWhereClause(node.predicate_clause_opt, ctx);
           RenameTypeInvariant(node.invariant_opt, ctx);
           for (auto& member : node.members) {
             std::visit(
@@ -1470,7 +1418,7 @@ void RenameItem(ASTItem& item, HygieneContext& ctx, const CtAst& ast) {
                     RenameExpr(rec_member.init_opt, ctx);
                   } else if constexpr (std::is_same_v<M, ast::MethodDecl>) {
                     std::optional<ast::GenericParams> no_generic_params;
-                    RenameMethodLike(no_generic_params, nullptr,
+                    RenameMethodLike(no_generic_params,
                                      rec_member.params, rec_member.return_type_opt,
                                      rec_member.contract, &rec_member.body, ctx, ast);
                   } else if constexpr (std::is_same_v<M, ast::AssociatedTypeDecl>) {
@@ -1484,7 +1432,6 @@ void RenameItem(ASTItem& item, HygieneContext& ctx, const CtAst& ast) {
           BindPreservedName(ctx, node.name);
           PushScope(ctx);
           RenameGenericParams(node.generic_params, ctx, ast);
-          RenameWhereClause(node.predicate_clause_opt, ctx);
           RenameTypeInvariant(node.invariant_opt, ctx);
           for (auto& variant : node.variants) {
             if (variant.payload_opt.has_value()) {
@@ -1509,7 +1456,6 @@ void RenameItem(ASTItem& item, HygieneContext& ctx, const CtAst& ast) {
           BindPreservedName(ctx, node.name);
           PushScope(ctx);
           RenameGenericParams(node.generic_params, ctx, ast);
-          RenameWhereClause(node.predicate_clause_opt, ctx);
           RenameTypeInvariant(node.invariant_opt, ctx);
           for (auto& state : node.states) {
             for (auto& member : state.members) {
@@ -1519,7 +1465,7 @@ void RenameItem(ASTItem& item, HygieneContext& ctx, const CtAst& ast) {
                     if constexpr (std::is_same_v<M, ast::StateFieldDecl>) {
                       RenameType(state_member.type, ctx);
                     } else if constexpr (std::is_same_v<M, ast::StateMethodDecl>) {
-                      RenameMethodLike(state_member.generic_params, nullptr,
+                      RenameMethodLike(state_member.generic_params,
                                        state_member.params,
                                        state_member.return_type_opt,
                                        state_member.contract,
@@ -1539,7 +1485,6 @@ void RenameItem(ASTItem& item, HygieneContext& ctx, const CtAst& ast) {
           BindPreservedName(ctx, node.name);
           PushScope(ctx);
           RenameGenericParams(node.generic_params, ctx, ast);
-          RenameWhereClause(node.predicate_clause_opt, ctx);
           for (auto& class_item : node.items) {
             std::visit(
                 [&](auto& entry) {
@@ -1548,7 +1493,7 @@ void RenameItem(ASTItem& item, HygieneContext& ctx, const CtAst& ast) {
                                 std::is_same_v<M, ast::AbstractFieldDecl>) {
                     RenameType(entry.type, ctx);
                   } else if constexpr (std::is_same_v<M, ast::ClassMethodDecl>) {
-                    RenameMethodLike(entry.generic_params, nullptr,
+                    RenameMethodLike(entry.generic_params,
                                      entry.params, entry.return_type_opt,
                                      entry.contract, &entry.body_opt, ctx, ast);
                   } else if constexpr (std::is_same_v<M, ast::AssociatedTypeDecl>) {
@@ -1572,7 +1517,6 @@ void RenameItem(ASTItem& item, HygieneContext& ctx, const CtAst& ast) {
           BindPreservedName(ctx, node.name);
           PushScope(ctx);
           RenameGenericParams(node.generic_params, ctx, ast);
-          RenameWhereClause(node.predicate_clause_opt, ctx);
           RenameType(node.type, ctx);
           PopScope(ctx);
         } else if constexpr (std::is_same_v<T, ast::DeriveTargetDecl>) {

@@ -103,7 +103,7 @@ SpecialTypeNames = {Self, Drop, Bitcopy, Clone, Eq, Hash, Hasher, Iterator,
 AsyncTypeNames   = {Async, Future, Sequence, Stream, Pipe, Exchange, Tracked}
 ```
 
-The key sets derived from these are `PrimTypeKeys`, `SpecialTypeKeys`, and `AsyncTypeKeys` (each `{IdKey(x) | x ∈ …}`). Because `S_universe` is always the *outermost* scope, every one of these names is already bound before any of your code runs. Attempting to declare or alias one at module scope (or any inner scope) is therefore a name-reuse error via `(Intro-Outer-Err)` (§5.2), not a special case. The spec calls this out explicitly: `Drop`, `Bitcopy`, `Clone`, and `FfiSafe` are reserved predicate names included in `SpecialTypeNames`; reuse of these names at any scope is an error because `UniverseBindings` is the outermost scope and contains them.
+The key sets derived from these are `PrimTypeKeys`, `SpecialTypeKeys`, and `AsyncTypeKeys` (each `{IdKey(x) | x ∈ …}`). Because `S_universe` is always the *outermost* scope, every one of these names is already bound before any of your code runs. Attempting to declare or alias one at module scope (or any inner scope) is therefore a name-reuse error via `(Intro-Outer-Err)` (§5.2), not a special case. The spec calls this out explicitly: `Drop`, `Bitcopy`, `Clone`, `FfiSafe`, and `GpuSafe` are reserved foundational class names included in `SpecialTypeNames`; reuse of these names at any scope is an error because `UniverseBindings` is the outermost scope and contains them.
 
 The single `ModuleAlias` binding `ultraviolet` reserves the standard-library root.
 
@@ -948,7 +948,7 @@ The following diagnostics are owned by §7.8. Each maps to the rule(s) above.
 Common mistakes and how they surface:
 
 - **Trying to shadow → `E-MOD-1304`.** Re-binding a name that is already visible in any enclosing scope (a parameter inside the body, a module-level name inside a procedure, a universe type name anywhere) fails. When the outer binding is a *universe* name (a primitive, special, or async type — e.g. naming a local `string` or `bool`, or declaring a class `Clone`), the message SHOULD identify the category. Fix: choose a fresh name, or use `using ... as ...` for a deliberate alias of the same entity.
-- **Reusing `Drop`, `Bitcopy`, `Clone`, or `FfiSafe`** as a class or value binding fails via `(Intro-Outer-Err)` (`E-MOD-1304`) — these are reserved predicate names in `SpecialTypeNames` and live in the universe scope.
+- **Reusing `Drop`, `Bitcopy`, `Clone`, `FfiSafe`, or `GpuSafe`** as a class or value binding fails via `(Intro-Outer-Err)` (`E-MOD-1304`) — these are reserved foundational class names in `SpecialTypeNames` and live in the universe scope.
 - **`gen_`-prefixed identifiers → `E-CNF-0406`,** and the module-path validator rejects reserved module paths (anything beginning with `ultraviolet` or containing a `gen_` segment) via `Validate-ModulePath-Reserved-Err`. Using a keyword as a module-scope name is `Validate-Module-Keyword-Err`.
 - **Two declarations sharing a name → `E-MOD-1302`;** if either side is a `using`/`import` name, you instead get `E-MOD-1203`. The collision is detected at collection time and is order-independent, so reordering declarations will not hide it.
 - **Referencing a `private` item from another module, or an `internal` item from another assembly → `E-MOD-1207`.** Widen the declaration's visibility deliberately, or move the caller into the same module/assembly — do not work around accessibility.

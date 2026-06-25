@@ -30,12 +30,16 @@
 
 #include <algorithm>
 #include <initializer_list>
+#include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 #include <unordered_set>
 #include <vector>
 
 #include "00_core/assert_spec.h"
+#include "04_analysis/composite/classes.h"
+#include "04_analysis/typing/type_lower.h"
 #include "04_analysis/typing/type_predicates.h"
 #include "05_codegen/checks/checks.h"
 
@@ -252,6 +256,84 @@ bool IsBoolBinOp(const std::string& op) {
          op == ">=" || op == "&&" || op == "||";
 }
 
+std::optional<ast::ClassPath> ClassPathFromExpr(const ast::ExprPtr& expr) {
+  if (!expr) {
+    return std::nullopt;
+  }
+  return std::visit(
+      [](const auto& node) -> std::optional<ast::ClassPath> {
+        using T = std::decay_t<decltype(node)>;
+        if constexpr (std::is_same_v<T, ast::IdentifierExpr>) {
+          return ast::ClassPath{node.name};
+        } else if constexpr (std::is_same_v<T, ast::QualifiedNameExpr> ||
+                             std::is_same_v<T, ast::PathExpr>) {
+          ast::ClassPath path = node.path;
+          path.push_back(node.name);
+          return path;
+        } else {
+          return std::nullopt;
+        }
+      },
+      expr->node);
+}
+
+ast::TypePtr TypePathAstFromExprPath(ast::TypePath path) {
+  ast::TypePathType type_path;
+  type_path.path = std::move(path);
+  auto type = std::make_shared<ast::Type>();
+  type->node = std::move(type_path);
+  return type;
+}
+
+std::optional<ast::TypePtr> TypeAstFromExpr(const ast::ExprPtr& expr) {
+  if (!expr) {
+    return std::nullopt;
+  }
+  return std::visit(
+      [](const auto& node) -> std::optional<ast::TypePtr> {
+        using T = std::decay_t<decltype(node)>;
+        if constexpr (std::is_same_v<T, ast::TypeLiteralExpr>) {
+          return node.type;
+        } else if constexpr (std::is_same_v<T, ast::IdentifierExpr>) {
+          return TypePathAstFromExprPath(ast::TypePath{node.name});
+        } else if constexpr (std::is_same_v<T, ast::QualifiedNameExpr> ||
+                             std::is_same_v<T, ast::PathExpr>) {
+          ast::TypePath path = node.path;
+          path.push_back(node.name);
+          return TypePathAstFromExprPath(std::move(path));
+        } else {
+          return std::nullopt;
+        }
+      },
+      expr->node);
+}
+
+LowerResult LowerClassSatisfactionExpr(const ast::BinaryExpr& expr, LowerCtx& ctx) {
+  const auto lhs_type_ast = TypeAstFromExpr(expr.lhs);
+  const auto rhs_class_path = ClassPathFromExpr(expr.rhs);
+  if (!lhs_type_ast.has_value() || !rhs_class_path.has_value()) {
+    ctx.codegen_failed = true;
+    return LowerResult{EmptyIR(), IRValue{}};
+  }
+
+  const analysis::ScopeContext& scope = ScopeForLowering(ctx);
+  auto lowered = analysis::LowerType(scope, *lhs_type_ast);
+  if (!lowered.ok || !lowered.type) {
+    ctx.codegen_failed = true;
+    return LowerResult{EmptyIR(), IRValue{}};
+  }
+
+  analysis::TypeRef lowered_type = lowered.type;
+  if (ctx.active_generic_type_subst.has_value()) {
+    lowered_type = analysis::InstantiateType(lowered_type, *ctx.active_generic_type_subst);
+  }
+
+  const bool satisfies = analysis::TypeImplementsClass(scope, lowered_type, *rhs_class_path);
+  IRValue value = BoolImmediate(satisfies);
+  ctx.RegisterValueType(value, analysis::MakeTypePrim("bool"));
+  return LowerResult{EmptyIR(), value};
+}
+
 analysis::TypeRef StripPermType(const analysis::TypeRef& type) {
   if (!type) {
     return nullptr;
@@ -447,6 +529,9 @@ LowerResult LowerBinaryExpr(const ast::BinaryExpr& expr, LowerCtx& ctx) {
     CollectShortCircuitOperands(*expr.lhs, op, operands);
     CollectShortCircuitOperands(*expr.rhs, op, operands);
     return LowerShortCircuitChain(op, operands, ctx);
+  }
+  if (op == "<:") {
+    return LowerClassSatisfactionExpr(expr, ctx);
   }
 
   // All other operators use LowerBinOp

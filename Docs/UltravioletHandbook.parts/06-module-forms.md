@@ -323,7 +323,7 @@ extern_block      ::= attribute_list? visibility? "extern" abi_string? "{" exter
 abi_string        ::= string_literal
 extern_item       ::= foreign_procedure
 foreign_procedure ::= attribute_list? visibility? "procedure" identifier generic_params?
-                      signature predicate_clause? contract_clause?
+                      signature contract_clause?
                       foreign_contract_clause_list? terminator
 ```
 

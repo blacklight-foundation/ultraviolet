@@ -59,10 +59,8 @@ ParseElemResult<AttrOpt> ParseAttributeListOpt(Parser parser);
 // Forward declarations for type parsing
 ParseElemResult<std::shared_ptr<Type>> ParseType(Parser parser);
 
-// Forward declarations for generic params and where clause parsing
+// Forward declarations for generic params parsing
 ParseElemResult<std::optional<GenericParams>> ParseGenericParamsOpt(
-    Parser parser);
-ParseElemResult<std::optional<PredicateClause>> ParsePredicateClauseOpt(
     Parser parser);
 
 // Forward declarations from record_decl.cpp
@@ -421,11 +419,10 @@ ParseElemResult<std::vector<VariantDecl>> ParseEnumBody(Parser parser) {
 //   Γ ⊢ ParseIdent(Advance(P_1)) ⇓ (P_2, name)
 //   Γ ⊢ ParseGenericParamsOpt(P_2) ⇓ (P_3, gen_params_opt)
 //   Γ ⊢ ParseImplementsOpt(P_3) ⇓ (P_4, impls)
-//   Γ ⊢ ParseWhereClauseOpt(P_4) ⇓ (P_5, where_clause_opt)
-//   Γ ⊢ ParseEnumBody(P_5) ⇓ (P_6, variants)
-//   Γ ⊢ ParseInvariantOpt(P_6) ⇓ (P_7, invariant_opt)
+//   Γ ⊢ ParseEnumBody(P_4) ⇓ (P_5, variants)
+//   Γ ⊢ ParseInvariantOpt(P_5) ⇓ (P_6, invariant_opt)
 //   ────────────────────────────────────────────────────────────────────
-//   Γ ⊢ ParseItem(P) ⇓ (P_7, ⟨EnumDecl, ...⟩)
+//   Γ ⊢ ParseItem(P) ⇓ (P_6, ⟨EnumDecl, ...⟩)
 
 ParseItemResult ParseEnumDecl(Parser parser, Visibility vis,
                               AttributeList attrs) {
@@ -448,11 +445,6 @@ ParseItemResult ParseEnumDecl(Parser parser, Visibility vis,
   ParseElemResult<std::vector<ClassPath>> impls = ParseImplementsOpt(parser);
   parser = impls.parser;
 
-  // Parse optional predicate clause
-  ParseElemResult<std::optional<PredicateClause>> predicate_clause_opt =
-      ParsePredicateClauseOpt(parser);
-  parser = predicate_clause_opt.parser;
-
   // Parse enum body
   ParseElemResult<std::vector<VariantDecl>> vars = ParseEnumBody(parser);
   parser = vars.parser;
@@ -467,15 +459,14 @@ ParseItemResult ParseEnumDecl(Parser parser, Visibility vis,
   decl.vis = vis;
   decl.name = name.elem;
   decl.generic_params = gen_params.elem;
-  decl.predicate_clause_opt = predicate_clause_opt.elem;
   decl.implements = std::move(impls.elem);
   decl.variants = std::move(vars.elem);
   decl.invariant_opt = invariant.elem;
   decl.span = SpanBetween(start, parser);
   decl.doc = {};
 
-  RecordGenericPredicateOwnerClause("EnumDecl", decl.name, decl.generic_params,
-                                    decl.predicate_clause_opt, decl.span);
+  RecordGenericOwnerClause("EnumDecl", decl.name, decl.generic_params,
+                           decl.span);
   RecordNominalRelationFormOnOwnerDecl("EnumDecl", decl.name, "implements",
                                        decl.implements, decl.span);
 

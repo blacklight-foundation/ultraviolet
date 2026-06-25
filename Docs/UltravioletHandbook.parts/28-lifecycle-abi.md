@@ -344,7 +344,7 @@ HasDropMethod(T) ⇔ T = TypePath(p) ∧ RecordDecl(p) = R ∧ ∃ m ∈ Methods
                    MethodName(m) = `drop` ∧ Sig_T(T, m) = ⟨unique T, [], ()⟩
 ```
 
-So a user destructor is a method named **`drop`** taking a `unique` self, no other parameters, and returning `()`. The `Drop` foundational class is satisfied exactly when `DropType(T)` holds (`PredOk(Drop, T) ⇔ DropType(T)`), and a type may not be both `Bitcopy` and `Drop` — that combination is a compile-time conflict (§14.10, **BitcopyDrop-Conflict**). You require droppability in a generic predicate clause with `|: Drop(T)` (`predicate_req ::= ("Bitcopy" | "Clone" | "Drop" | "FfiSafe") "(" type ")"`).
+So a user destructor is a method named **`drop`** taking a `unique` self, no other parameters, and returning `()`. The `Drop` foundational class is satisfied exactly when `DropType(T)` holds (`Γ ⊢ T <: Drop ⇔ DropType(T)`), and a type may not be both `Bitcopy` and `Drop` — that combination is a compile-time conflict (§14.10, **BitcopyDrop-Conflict**). You require droppability in a generic bound with `<T <: Drop>`.
 
 ```ultraviolet
 /// Owns a foreign handle and releases it deterministically on scope exit.

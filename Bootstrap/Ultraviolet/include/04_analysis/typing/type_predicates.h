@@ -63,7 +63,7 @@ struct FoundationalBuiltinMethodSig {
 };
 
 // Lookup intrinsic built-in Eq/Discrete method signatures on types that satisfy
-// the corresponding foundational predicates intrinsically.
+// the corresponding foundational classes intrinsically.
 std::optional<FoundationalBuiltinMethodSig> LookupFoundationalBuiltinMethodSig(
     const TypeRef& recv_base,
     std::string_view name);

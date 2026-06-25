@@ -1,6 +1,6 @@
 //! Reference specimens for Parallelism / ParallelBlocks.
 
-internal record GpuSafePayload<TValue> |: GpuSafe(TValue) {
+internal record GpuSafePayload<TValue <: GpuSafe> {
     internal value: TValue
 }
 

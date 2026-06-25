@@ -707,7 +707,6 @@ ast::ClassDecl BuildAsyncClassDecl() {
       MakeTypeParam("TError", nullptr),
   });
   decl.supers = {};
-  decl.predicate_clause_opt = std::nullopt;
   decl.items = {};
   decl.span = core::Span{};
   decl.doc = {};
@@ -823,7 +822,6 @@ ast::ClassDecl BuildExecutionDomainClassDecl() {
   decl.modal = false;
   decl.generic_params = std::nullopt;
   decl.supers = {};
-  decl.predicate_clause_opt = std::nullopt;
   decl.items = {
       MakeClassMethod("name",
                       std::nullopt,
@@ -854,7 +852,6 @@ ast::ClassDecl BuildReactorClassDecl() {
   decl.modal = false;
   decl.generic_params = std::nullopt;
   decl.supers = {};
-  decl.predicate_clause_opt = std::nullopt;
   auto make_reactor_generics = []() {
     return MakeGenericParams({
         MakeTypeParam("T", nullptr),

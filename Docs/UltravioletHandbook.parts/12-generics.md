@@ -1,10 +1,10 @@
 ## 12. Generics & Parametric Polymorphism
 
-Ultraviolet supports parametric polymorphism through *generic parameters*: a declaration may abstract over one or more **type** parameters and is then *instantiated* at concrete type arguments. The model is **monomorphizing**: every distinct instantiation produces a distinct, fully specialized declaration with its own layout and its own compiled code. There is no type erasure, no runtime type passing, and no hidden boxing — generic parameter declarations, generic argument lists, class-bound lists, and predicate clauses have *no* runtime semantics and are eliminated before abstract-machine evaluation (§14.1.5).
+Ultraviolet supports parametric polymorphism through *generic parameters*: a declaration may abstract over one or more **type** parameters and is then *instantiated* at concrete type arguments. The model is **monomorphizing**: every distinct instantiation produces a distinct, fully specialized declaration with its own layout and its own compiled code. There is no type erasure, no runtime type passing, and no hidden boxing — generic parameter declarations, generic argument lists, and class-bound lists have *no* runtime semantics and are eliminated before abstract-machine evaluation (§14.1.5).
 
-This chapter specifies the declaration syntax for generic parameters (§14.1), the inline class bounds (`<:`) and predicate clauses (`|:`) that constrain them, parameter defaults, and the rules governing generic procedures and generic types — including type-argument inference and the monomorphization cost model (§14.2).
+This chapter specifies the declaration syntax for generic parameters (§14.1), the inline class bounds (`<:`) that constrain them, parameter defaults, and the rules governing generic procedures and generic types — including type-argument inference and the monomorphization cost model (§14.2).
 
-Generic parameters appear on procedures, records, enums, modals, classes, and type aliases. Every owning declaration form embeds the same `generic_params` and `predicate_clause` grammar at a fixed point in its own production (records in Chapter "Records & Data Aggregation", enums in "Enums", modals in "Modal Types", classes in "Classes & Polymorphism", aliases in "Type Aliases"). The foundational predicate vocabulary — `Bitcopy`, `Clone`, `Drop`, `FfiSafe` — connects to the value-semantics chapter and is discharged intrinsically, not by class-implementation lookup (§14.10.4).
+Generic parameters appear on procedures, records, enums, modals, classes, and type aliases. Every owning declaration form embeds the same `generic_params` grammar at a fixed point in its own production (records in Chapter "Records & Data Aggregation", enums in "Enums", modals in "Modal Types", classes in "Classes & Polymorphism", aliases in "Type Aliases"). The foundational class vocabulary — `Bitcopy`, `Clone`, `Drop`, `FfiSafe`, and `GpuSafe` — connects to the value-semantics, FFI, and GPU chapters and is discharged intrinsically by the compiler (§14.10.4).
 
 > Spec mapping. This chapter covers Specification §14.1 (Generic Parameters and Arguments) and §14.2 (Generic Procedures and Types). Handbook section numbers below (12.1, 12.2, …) are local to the handbook; the parenthetical "§14.x" references point at the governing specification clause.
 
@@ -12,14 +12,12 @@ Generic parameters appear on procedures, records, enums, modals, classes, and ty
 
 #### 12.1.1 Grammar
 
-The canonical productions for the generic-parameter list, a single parameter, the argument list, and the predicate clause are (§14.1.1):
+The canonical productions for the generic-parameter list, a single parameter, and the argument list are (§14.1.1):
 
 ```ebnf
 generic_params       ::= "<" generic_param (";" generic_param)* ">"
 generic_param        ::= identifier ("<:" class_bound ("," class_bound)*)? ("=" type)?
 generic_args         ::= "<" type ("," type)* ","? ">"
-predicate_clause     ::= "|:" predicate_req (terminator predicate_req)* terminator?
-predicate_req        ::= ("Bitcopy" | "Clone" | "Drop" | "FfiSafe") "(" type ")"
 ```
 
 Appendix B (§B.2) factors the same grammar into named helper productions, which are equivalent:
@@ -43,9 +41,9 @@ Two separator conventions are load-bearing and must not be confused:
 
 A trailing comma in `generic_args` is permitted only where `TrailingCommaAllowed` holds (§5.5). A trailing comma does **not** denote an additional type argument (§14.1.1).
 
-Inline bounds introduced by `<:` are **class bounds only**. The foundational value-semantics requirements (`Bitcopy`, `Clone`, `Drop`, `FfiSafe`) are **not** written as `<:` bounds; they belong to the separate `predicate_clause` introduced by `|:` (§14.1.1).
+Inline bounds introduced by `<:` are **class bounds**. Foundational requirements such as `Bitcopy`, `Clone`, `Drop`, `FfiSafe`, and `GpuSafe` are built-in classes, so they use the same bound position as user-defined classes: `<TValue <: Bitcopy>`, `<TValue <: FfiSafe>`, and so on.
 
-> The `|:` token is overloaded. A `|:` immediately followed by `{` is a contract clause, type invariant, or loop invariant — *not* a predicate clause. `Parse-PredicateClauseOpt-None` returns "no predicate clause" when the token after `|:` is `{`. A predicate clause is `|:` followed by a predicate requirement such as `Bitcopy(TValue)`; an invariant is `|: { … }`.
+The `|:` token does not introduce generic constraints. In generic-adjacent syntax it belongs to contracts, invariants, and refinement types, where its operand is a boolean expression or braced predicate.
 
 #### 12.1.2 Parameter Form and Naming
 
@@ -107,70 +105,39 @@ record Keyed<TKey <: Eq; TValue> {
 
 > Operators are not class-bound dispatch. The built-in `==` / `!=` operators are typed by `T-Compare-Eq`, which requires the *intrinsic* predicate `EqType(T)` on the operand type — it does **not** fire on a bare type parameter merely because that parameter carries a `<: Eq` bound. Inside a generic body, a type parameter `TKey` is a type variable, not an `EqType`, so `someKey == otherKey` does not typecheck through the `<: Eq` bound. A `<: Eq` bound makes the *instantiated* type usable wherever `Eq` is demanded (including the language's intrinsic equality on concrete `EqType` instantiations); it does not turn the operator into bounded dispatch on the parameter itself. Constrain generic bodies to operations the spec actually licenses; do not assume an operator resolves through a bound.
 
-#### 12.1.5 Predicate Clauses (`|:`)
+#### 12.1.5 Foundational Class Bounds
 
-A predicate clause attaches *foundational value-semantics requirements* to a declaration. It is written after the signature/header with `|:`, and lists one or more predicate requirements separated by terminators (a `;` or a newline), with an optional trailing terminator:
+`Bitcopy`, `Clone`, `Drop`, `FfiSafe`, and `GpuSafe` are built-in foundational classes. They are ordinary class names in generic bound syntax, but their satisfaction is defined by intrinsic compiler judgments instead of user-written `implements` declarations:
 
-```ebnf
-predicate_clause ::= "|:" predicate_req (terminator predicate_req)* terminator?
-predicate_req    ::= ("Bitcopy" | "Clone" | "Drop" | "FfiSafe") "(" type ")"
-```
+- **`T <: Bitcopy`** means `BitcopyType(T)` holds. A `unique`-permission type is never `Bitcopy`, and no type may be both `Bitcopy` and `Drop`.
+- **`T <: Clone`** means `CloneType(T)` holds. Built-in bit-copyable types are cloneable, and a record may also satisfy `Clone` through an exact `clone` method.
+- **`T <: Drop`** means `DropType(T)` holds. A type satisfies it through built-in owning string/bytes types or an exact `drop` method.
+- **`T <: FfiSafe`** means `FfiSafeType(T)` checks successfully. Generic FFI-safe aggregates must bound every stored type parameter with `FfiSafe` or a subclass of it.
+- **`T <: GpuSafe`** means `GpuSafeType(T)` checks successfully. Generic GPU-safe aggregates must bound every stored type parameter with `GpuSafe` or a subclass of it.
 
-Only the four foundational predicate names are admissible: `Bitcopy`, `Clone`, `Drop`, `FfiSafe` (§14.1.1, `IsPredName`). Each requirement names one predicate and applies it to a type argument, typically a generic parameter of the same declaration.
-
-Their meanings (§14.1.4, §14.10.4):
-
-- **`Bitcopy(T)`** — `T` is a bit-copyable (trivially duplicable) type: `PredOk(Bitcopy, T) ⇔ BitcopyType(T)`. A `unique`-permission type is never `Bitcopy` (`BitcopyTypeCore` is `false` for `TypePerm(unique, _)`). `Bitcopy` and `Drop` are mutually exclusive: no type is both (`BitcopyDrop-Conflict`).
-- **`Clone(T)`** — `T` can be explicitly cloned: `PredOk(Clone, T) ⇔ CloneType(T)`, where `CloneType(T) ⇔ BuiltinCloneType(T) ∨ HasCloneMethod(StripPerm(T)) ∨ BitcopyType(T)`. Every `Bitcopy` type is therefore also `Clone`.
-- **`Drop(T)`** — `T` has destruction semantics: `PredOk(Drop, T) ⇔ DropType(T)`, where `DropType(T) ⇔ BuiltinDropType(T) ∨ HasDropMethod(StripPerm(T))`.
-- **`FfiSafe(T)`** — `T` has a stable, FFI-compatible representation: `PredOk(FfiSafe, T) ⇔ Γ ⊢ FfiSafeType(T) ⇓ ok`.
-
-These four foundational obligations are discharged by **intrinsic satisfaction judgments**, not by user-defined class-implementation lookup (§14.10.4). That is why they are spelled as a predicate clause rather than as `<:` class bounds.
-
-Well-formedness of a predicate clause (its type argument must be well-formed under the parameter bindings) is:
-
-```text
-(PredicateReq-WF-Predicate)
-wp = PredicateReq(pred, ty)    pred ∈ PredicateName    Γ' = BindTypeParams(Γ, params)    Γ' ⊢ ty wf
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ; params ⊢ wp wf
-```
-
-At instantiation, after the substitution `θ` that maps each parameter to its argument, every requirement must hold:
-
-```text
-(PredicateReq-Predicate)
-wp = ⟨pred, ty⟩    PredOk(pred, ty[θ])
-──────────────────────────────────────
-Γ ⊢ wp[θ] ok
-```
-
-Inline `<:` bounds and `|:` predicate requirements are jointly conjunctive: an instantiation satisfies the parameter only when it satisfies **both** (§14.1.4).
+These are class bounds, so they sit directly on the constrained parameter:
 
 ```ultraviolet
-record Buffer<TElement> |: Bitcopy(TElement) {
+record Buffer<TElement <: Bitcopy> {
     data: [TElement]
     length: usize
 }
 ```
 
-`Buffer` constrains `TElement` to be bit-copyable. Instantiating `Buffer<f32>` is well-formed because `f32` is `Bitcopy`; an attempt to instantiate `Buffer` with a type for which `Bitcopy` fails (for example a managed-string element, which is `Drop`) fails the predicate after substitution (`E-TYP-2302`, "Type argument does not satisfy required class bound or predicate"). The clause appears between the parameter list and the record body, matching `record_decl ::= … generic_params? implements_clause? predicate_clause? "{" … "}"`.
+`Buffer` constrains `TElement` to be bit-copyable. Instantiating `Buffer<f32>` is well-formed because `f32` satisfies `Bitcopy`; an attempt to instantiate `Buffer` with a type for which `BitcopyType` fails raises `E-TYP-2302`.
 
-A predicate clause may carry several requirements over more than one parameter:
+Multiple foundational requirements over more than one parameter use the same generic-parameter list syntax as other bounds:
 
 ```ultraviolet
-procedure copyPair<TFirst; TSecond>(
+procedure copyPair<TFirst <: Bitcopy; TSecond <: Bitcopy>(
     first: TFirst,
     second: TSecond
-) -> Pair<TFirst, TSecond>
-|: Bitcopy(TFirst)
-   Bitcopy(TSecond)
-{
+) -> Pair<TFirst, TSecond> {
     return Pair { first: first, second: second }
 }
 ```
 
-The two requirements are separated by a newline `terminator` (the predicate-clause separator is `;` or newline — *not* a comma). The returned `Pair` is built with a bare-identifier record literal whose type arguments come from the procedure's declared return type (see §12.2.5).
+Because the bound follows the parameter it constrains, the source spelling remains local: a constraint on `TFirst` is written next to `TFirst`, a constraint on `TSecond` next to `TSecond`, and a contract on a return value remains in the procedure's contract clause.
 
 #### 12.1.6 Parameter Defaults (`= type`)
 
@@ -207,29 +174,29 @@ record RingBuffer<TElement; TIndex = usize> {
 
 #### 12.1.8 No Runtime Semantics
 
-Generic-parameter declarations, generic-argument lists, class-bound lists, and predicate clauses have **no runtime semantics**. They are eliminated before abstract-machine evaluation (§14.1.5). All of their force is discharged statically during well-formedness checking and monomorphization (§12.2.7).
+Generic-parameter declarations, generic-argument lists, and class-bound lists have **no runtime semantics**. They are eliminated before abstract-machine evaluation (§14.1.5). All of their force is discharged statically during well-formedness checking and monomorphization (§12.2.7).
 
 ### 12.2 Generic Procedures and Generic Types
 
 #### 12.2.1 Grammar
 
 ```ebnf
-generic_procedure ::= "procedure" identifier generic_params? signature predicate_clause? contract_clause? block
+generic_procedure ::= "procedure" identifier generic_params? signature contract_clause? block
 generic_call      ::= callee generic_args "(" arg_list? ")"
 generic_type_use  ::= type_path generic_args
 ```
 
-The generic-parameter list and predicate clause are not parsed by a standalone "generic declaration" parser; instead each owning declaration form invokes `ParseGenericParamsOpt` and `ParsePredicateClauseOpt` at the appropriate point in its own grammar before its body-specific parser (§14.2.2). From Appendix B (§B.6):
+The generic-parameter list is not parsed by a standalone "generic declaration" parser; instead each owning declaration form invokes `ParseGenericParamsOpt` at the appropriate point in its own grammar before its body-specific parser (§14.2.2). From Appendix B (§B.6):
 
 ```ebnf
-procedure_decl  ::= attribute_list? visibility? "procedure" identifier generic_params? signature predicate_clause? contract_clause? block_expr
-record_decl     ::= attribute_list? visibility? "record" identifier generic_params? implements_clause? predicate_clause? "{" record_body "}" type_invariant?
-enum_decl       ::= attribute_list? visibility? "enum" identifier generic_params? implements_clause? predicate_clause? "{" variant_members? "}" type_invariant?
-modal_decl      ::= attribute_list? visibility? "modal" identifier generic_params? implements_clause? predicate_clause? "{" state_block+ "}" type_invariant?
-type_alias_decl ::= attribute_list? visibility? "type" identifier generic_params? predicate_clause? "=" type
+procedure_decl  ::= attribute_list? visibility? "procedure" identifier generic_params? signature contract_clause? block_expr
+record_decl     ::= attribute_list? visibility? "record" identifier generic_params? implements_clause? "{" record_body "}" type_invariant?
+enum_decl       ::= attribute_list? visibility? "enum" identifier generic_params? implements_clause? "{" variant_members? "}" type_invariant?
+modal_decl      ::= attribute_list? visibility? "modal" identifier generic_params? implements_clause? "{" state_block+ "}" type_invariant?
+type_alias_decl ::= attribute_list? visibility? "type" identifier generic_params? "=" type
 ```
 
-Note the fixed ordering for nominal types: `generic_params` precedes `implements_clause` (`<: class_list`), which precedes `predicate_clause` (`|: …`). A generic *type use* is just a type path applied to arguments via `nominal_type ::= type_path generic_args?` (§B.2).
+Note the fixed ordering for nominal types: `generic_params` precedes `implements_clause` (`<: class_list`). A generic *type use* is just a type path applied to arguments via `nominal_type ::= type_path generic_args?` (§B.2).
 
 #### 12.2.2 Declaring a Generic Procedure
 
@@ -243,14 +210,12 @@ A generic procedure is well-formed when its parameter list is well-formed and, u
 ```
 
 ```ultraviolet
-procedure swap<TValue>(first: TValue, second: TValue) -> Pair<TValue, TValue>
-|: Bitcopy(TValue)
-{
+procedure swap<TValue <: Bitcopy>(first: TValue, second: TValue) -> Pair<TValue, TValue> {
     return Pair { first: second, second: first }
 }
 ```
 
-`swap` abstracts over one parameter `TValue`, requires it to be `Bitcopy` so the values can be duplicated, and returns a `Pair` with the two fields swapped. The `predicate_clause` follows the signature and precedes the block, exactly as `generic_procedure` prescribes. The record literal `Pair { … }` is a bare-identifier literal (record literals carry no type arguments); its `TValue` instantiation is supplied by the declared return type `Pair<TValue, TValue>` during return-expression checking (`T-Return-Value` checks the return expression against the return type, and `T-Record-Literal-ExpectedApply` resolves the type arguments from that expected type).
+`swap` abstracts over one parameter `TValue`, requires it to be `Bitcopy` so the values can be duplicated, and returns a `Pair` with the two fields swapped. The bound follows the parameter it constrains. The record literal `Pair { … }` is a bare-identifier literal (record literals carry no type arguments); its `TValue` instantiation is supplied by the declared return type `Pair<TValue, TValue>` during return-expression checking (`T-Return-Value` checks the return expression against the return type, and `T-Record-Literal-ExpectedApply` resolves the type arguments from that expected type).
 
 #### 12.2.3 Calling a Generic Procedure: Explicit Type Arguments
 
@@ -260,17 +225,16 @@ The explicit form supplies type arguments between the callee and the argument li
 generic_call ::= callee generic_args "(" arg_list? ")"
 ```
 
-A call site is recognized as a type-argument call when the post-callee token can begin generic arguments, those arguments parse, and the next token is `(` (`CallTypeArgsStart`, §14.2.2). The typing rule resolves the callee to a generic procedure, fills defaults, substitutes, and checks bounds, the predicate clause, and the arguments (§14.2.4):
+A call site is recognized as a type-argument call when the post-callee token can begin generic arguments, those arguments parse, and the next token is `(` (`CallTypeArgsStart`, §14.2.2). The typing rule resolves the callee to a generic procedure, fills defaults, substitutes, and checks bounds and the arguments (§14.2.4):
 
 ```text
 (T-Generic-Call)
-GenericCalleeProc(callee) = ProcedureDecl(_, _, _, gen_params_opt, predicate_clause_opt, params, ret_opt, _, _, _, _)
+GenericCalleeProc(callee) = ProcedureDecl(_, _, _, gen_params_opt, params, ret_opt, _, _, _, _)
 params_gen = TypeParamsOpt(gen_params_opt)    params_gen = [P_1, …, P_n]
 DefaultArgs(params_gen, [A_1, …, A_k]) = [A_1', …, A_n']
 θ = [A_1'/P_1.name, …, A_n'/P_n.name]
 params_θ = [⟨mode_j, TypeSubst(θ, T_j)⟩ | ⟨mode_j, x_j, T_j⟩ ∈ params]
 ∀ i ∈ 1..n. Γ ⊢ A_i' satisfies Bounds(P_i)
-Γ ⊢ predicate_clause_opt[θ] ok
 Γ; R; L ⊢ ArgsOk_T(params_θ, args)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ CallTypeArgs(callee, [A_1, …, A_k], args) : ProcReturn(ret_opt)[θ]
@@ -282,7 +246,7 @@ The result type is the procedure's return type with `θ` applied. If `DefaultArg
 let swapped: Pair<i32, i32> = swap<i32>(10, 20)
 ```
 
-`swap<i32>(10, 20)` binds `TValue = i32`, checks `Bitcopy(i32)` (which holds), and yields `Pair<i32, i32>`.
+`swap<i32>(10, 20)` binds `TValue = i32`, checks `i32 <: Bitcopy` (which holds), and yields `Pair<i32, i32>`.
 
 #### 12.2.4 Type-Argument Inference
 
@@ -290,7 +254,7 @@ Type arguments **may** be omitted at a generic-procedure call site, but **only**
 
 ```text
 (GenericCallInference)
-GenericCalleeProc(callee) = ProcedureDecl(_, _, _, gen_params_opt, predicate_clause_opt, params, ret_opt, _, _, _, _)
+GenericCalleeProc(callee) = ProcedureDecl(_, _, _, gen_params_opt, params, ret_opt, _, _, _, _)
 params_gen = TypeParamsOpt(gen_params_opt)    params_gen = [P_1, …, P_n]
 FreshTypeArgs(params_gen) = [X_1, …, X_n]    θ_var = [X_1/P_1.name, …, X_n/P_n.name]
 params_i = [⟨mode_j, TypeSubst(θ_var, T_j)⟩ | ⟨mode_j, x_j, T_j⟩ ∈ params]
@@ -300,7 +264,7 @@ C_ret = {(R_i, T_exp)}  if T_exp_opt = T_exp ;  ∅ otherwise
 Γ ⊢ Solve(C_args ∪ C_ret) ⇓ θ_s
 raw_args = [θ_s(X_1), …, θ_s(X_n)]
 InferTypeArgs(params_gen, raw_args) = [A_1, …, A_n]    θ = [A_1/P_1.name, …, A_n/P_n.name]
-∀ i ∈ 1..n. Γ ⊢ A_i satisfies Bounds(P_i)    Γ ⊢ predicate_clause_opt[θ] ok
+∀ i ∈ 1..n. Γ ⊢ A_i satisfies Bounds(P_i)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ GenericCallInference(callee, args, T_exp_opt) ⇓ [A_1, …, A_n]
 ```
@@ -326,14 +290,13 @@ Because both arguments are `i32`, `Solve` binds the fresh variable to `i32` and 
 
 #### 12.2.5 Generic Records and Other Nominal Types
 
-A generic nominal type is declared by placing `generic_params` after its name, and is *used* by applying type arguments. The well-formedness rule for an applied type fills defaults, substitutes, and checks each argument's well-formedness, its bounds, and the owner's predicate clause (§14.2.4):
+A generic nominal type is declared by placing `generic_params` after its name, and is *used* by applying type arguments. The well-formedness rule for an applied type fills defaults, substitutes, and checks each argument's well-formedness and bounds (§14.2.4):
 
 ```text
 (WF-Apply)
 T = TypeApply(p, args)    p ∈ dom(Σ.Types)    params_gen = TypeParamsOf(p)
 DefaultArgs(params_gen, args) = args'    θ = [args'_i / params_gen[i].name]
 ∀ i, Γ ⊢ args'_i wf    ∀ i, Γ ⊢ args'_i satisfies Bounds(params_gen[i])
-Γ ⊢ TypePredicateClauseOf(p)[θ] ok
 ──────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ T wf
 ```
@@ -357,7 +320,7 @@ This is the diagnostic for "use of a generic nominal declaration without require
 A complete worked generic record with a constrained parameter, a default, methods, and instantiation:
 
 ```ultraviolet
-record Stack<TElement; TIndex = usize> |: Clone(TElement) {
+record Stack<TElement <: Clone; TIndex = usize> {
     data: [TElement]
     count: TIndex
 
@@ -378,7 +341,7 @@ procedure makeIntStack() -> Stack<i32> {
 }
 ```
 
-`Stack<i32>` (a *type*, in the return position and the `let` annotation) is elaborated by `DefaultArgs` to `Stack<i32, usize>`. The `|: Clone(TElement)` clause is checked at every application: `Clone(i32)` holds (`i32` is `Bitcopy`, hence `Clone`), so `Stack<i32>` is well-formed. The construction `Stack { data: storage, count: 0 }` is a bare-identifier record literal; its type arguments come from the `let stack: Stack<i32>` annotation via `T-Record-Literal-ExpectedApply`. The receivers follow `receiver_shorthand ::= "~" | "~!" | "~%"`: `push` uses `~%` (write-key receiver, mutating) and `top` uses `~` (read-key receiver).
+`Stack<i32>` (a *type*, in the return position and the `let` annotation) is elaborated by `DefaultArgs` to `Stack<i32, usize>`. The `<TElement <: Clone>` bound is checked at every application: `i32 <: Clone` holds (`i32` is `Bitcopy`, hence `Clone`), so `Stack<i32>` is well-formed. The construction `Stack { data: storage, count: 0 }` is a bare-identifier record literal; its type arguments come from the `let stack: Stack<i32>` annotation via `T-Record-Literal-ExpectedApply`. The receivers follow `receiver_shorthand ::= "~" | "~!" | "~%"`: `push` uses `~%` (write-key receiver, mutating) and `top` uses `~` (read-key receiver).
 
 A generic enum follows the same shape:
 
@@ -400,7 +363,7 @@ Each enum-literal use names the variant through a plain `type_path "::" identifi
 
 #### 12.2.6 Generic Type Aliases
 
-A type alias may carry generic parameters and a predicate clause and expands to its right-hand type after substitution (`type_alias_decl ::= … "type" identifier generic_params? predicate_clause? "=" type`, §B.6):
+A type alias may carry generic parameters and expands to its right-hand type after substitution (`type_alias_decl ::= … "type" identifier generic_params? "=" type`, §B.6):
 
 ```ultraviolet
 type IndexPair<TIndex> = Pair<TIndex, TIndex>
@@ -428,9 +391,9 @@ Because generic class methods are monomorphized rather than dispatched dynamical
 
 - **Prefix every type parameter with `T` and give it a role name.** Use `TValue`, `TElement`, `TKey`, `TError`, `TState`, `TResource` — `PascalCase` with a leading `T` (AGENTS.md). This keeps type parameters visually distinct from concrete types at every mention.
 - **Separate parameters with `;`, arguments and bounds with `,`.** This is the single most common syntax mistake. `<TFirst; TSecond>` declares two parameters; `<i32, f64>` is an argument list; `<: Eq, Hash` is a comma-separated bound list.
-- **Choose the right constraint mechanism.** Use a `<:` class bound when you need an instantiation to implement a class (`Eq`, `Hash`, `Iterator`, an associated method). Use a `|:` predicate clause for the four foundational value-semantics properties (`Bitcopy`, `Clone`, `Drop`, `FfiSafe`) — these are satisfied intrinsically and cannot be expressed as `<:` bounds.
+- **Use `<:` for generic constraints.** Use a class bound when you need an instantiation to implement a user-defined class (`Eq`, `Hash`, `Iterator`, an associated method) or satisfy a built-in foundational class (`Bitcopy`, `Clone`, `Drop`, `FfiSafe`, `GpuSafe`).
 - **Do not assume operators dispatch through bounds.** `==`/`!=` require the intrinsic `EqType` on the operand type, not a `<: Eq` bound on a type parameter. Constrain generic bodies to operations the spec licenses for type-variable operands; rely on the bound to make the *instantiated* type acceptable where the class is demanded.
-- **Constrain no more than necessary.** Add a bound or predicate only when the declaration actually relies on it. Over-constraining narrows the valid instantiations without benefit; under-constraining is caught by the checker (`E-TYP-2302`).
+- **Constrain no more than necessary.** Add a bound only when the declaration actually relies on it. Over-constraining narrows the valid instantiations without benefit; under-constraining is caught by the checker (`E-TYP-2302`).
 - **Construct generic records and enums with bare names.** Write `Stack { … }` and `Outcome::Ok(x)`, and let the expected type (annotation, return type, field type) supply the type arguments. Never put `<…>` on a record-literal head or an enum-literal path.
 - **Prefer inference at call sites, but annotate when it clarifies.** Omit type arguments when they are unambiguously inferable from the actual arguments or the expected type; supply them explicitly when the parameter appears only in the return type or when the reader benefits from seeing the instantiation.
 - **Keep defaults a trailing suffix that references only earlier parameters.** Order parameters so defaulted ones come last (`<TElement; TIndex = usize>`), and write defaults that mention only parameters to their left.
@@ -440,12 +403,12 @@ Because generic class methods are monomorphized rather than dispatched dynamical
 ### Pitfalls & Diagnostics
 
 - **Using `,` to separate parameters, or `;` to separate arguments.** `<TFirst, TSecond>` is wrong (parameters use `;`); `<i32; f64>` is wrong (arguments use `,`). Match the grammar exactly.
-- **Writing a foundational property as a `<:` bound.** `<TValue <: Bitcopy>` is invalid: `Bitcopy`, `Clone`, `Drop`, and `FfiSafe` are predicate-clause requirements (`|: Bitcopy(TValue)`), not class bounds. A `<:` bound whose path is not a class is rejected with `E-TYP-2305`.
+- **Putting a bound away from the parameter it constrains.** Write `<TValue <: Bitcopy>`, not a detached clause after the signature or declaration header. A `<:` bound whose path is not a class is rejected with `E-TYP-2305`.
 - **Putting type arguments on a record or enum literal.** `Stack<i32> { … }` and `Outcome<string, string>::Err(…)` do not parse: record-literal heads are a single bare identifier, and enum-literal paths carry no generic arguments. Use `Stack { … }` / `Outcome::Err(…)` with an expected type that fixes the arguments.
-- **Confusing `|: Predicate(T)` with `|: { … }`.** A `|:` followed by `{` is a contract clause, type invariant, or loop invariant — not a predicate clause. A predicate clause is `|:` followed by a predicate requirement (e.g. `Bitcopy(TValue)`).
+- **Using `|:` for generic constraints.** `|:` introduces contracts, invariants, and refinement predicates. It does not constrain generic type parameters; put those constraints in the parameter list with `<:`.
 - **Assuming `==` works on a `<: Eq` parameter.** Operators require the intrinsic `EqType`/`OrdType`, not the class bound; a bare type parameter is never an `EqType`. The bound governs instantiation, not in-body operator typing.
-- **Bound or predicate not satisfied by the argument.** Instantiating a parameter with a type that fails a `<:` bound or a `|:` predicate raises `E-TYP-2302` ("Type argument does not satisfy required class bound or predicate") — for example, putting a `Drop` type into `Buffer<TElement> |: Bitcopy(TElement)`.
-- **`Bitcopy`/`Drop` conflict.** No type is simultaneously `Bitcopy` and `Drop` (`BitcopyDrop-Conflict`); a type that satisfies both is itself ill-formed (`E-TYP-2621`, "Type satisfies both `BitcopyType` and `DropType`"). A predicate clause demanding `Bitcopy(T)` therefore excludes every `Drop` type at instantiation (`E-TYP-2302`).
+- **Bound not satisfied by the argument.** Instantiating a parameter with a type that fails a `<:` bound raises `E-TYP-2302` — for example, putting a `Drop` type into `Buffer<TElement <: Bitcopy>`.
+- **`Bitcopy`/`Drop` conflict.** No type is simultaneously `Bitcopy` and `Drop` (`BitcopyDrop-Conflict`); a type that satisfies both is itself ill-formed (`E-TYP-2621`, "Type satisfies both `BitcopyType` and `DropType`"). A `<T <: Bitcopy>` bound therefore excludes every `Drop` type at instantiation (`E-TYP-2302`).
 - **Wrong number of type arguments.** Supplying too many, or too few without defaults to cover the gap, makes `DefaultArgs` undefined and yields a wrong-arity error (`Generic-Call-ArgCount-Err` for calls, `WF-Apply-ArgCount-Err` for applied types); the catalogued code in this family is `E-TYP-2303` ("Wrong number of type arguments").
 - **Using a generic nominal type without arguments in type position.** Mentioning `Stack` (no `<…>`) where a type is required is ill-formed (`WF-Path-Generic-Err`); always apply the type, e.g. `Stack<i32>`.
 - **Inference failure.** When type arguments cannot be inferred (e.g. the parameter is return-only and no expected type is present), the compiler raises `E-TYP-2301`; supply the arguments explicitly.

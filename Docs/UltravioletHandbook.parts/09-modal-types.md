@@ -13,7 +13,7 @@ This chapter corresponds to specification §13.1–§13.5. All grammar productio
 A modal declaration begins with the `modal` keyword and contains zero or more **state blocks**, each introduced by `@` followed by a state name. The §13.1.1 grammar is:
 
 ```ebnf
-modal_decl        ::= attribute_list? visibility? "modal" identifier generic_params? implements_clause? predicate_clause? modal_body type_invariant?
+modal_decl        ::= attribute_list? visibility? "modal" identifier generic_params? implements_clause? modal_body type_invariant?
 modal_body        ::= "{" state_block* "}"
 state_block       ::= "@" identifier "{" state_member* "}"
 state_member      ::= state_field_decl | state_method_def | transition_def
@@ -25,7 +25,7 @@ modal_state_expr  ::= modal_type_ref "@" identifier "{" field_init_list? "}"
 The consolidated Appendix B form (B.6) shows the same structure with the `state_block+` requirement (at least one state) made explicit:
 
 ```ebnf
-modal_decl        ::= attribute_list? visibility? "modal" identifier generic_params? implements_clause? predicate_clause? "{" state_block+ "}" type_invariant?
+modal_decl        ::= attribute_list? visibility? "modal" identifier generic_params? implements_clause? "{" state_block+ "}" type_invariant?
 ```
 
 (The `modal_body` production permits `state_block*`; well-formedness rule `(Modal-NoStates-Err)` then rejects the zero-state case at type-check time. Appendix B folds that requirement into the grammar as `state_block+`.)
@@ -57,17 +57,15 @@ The static rules (§13.1.4) impose the following on every modal declaration `M`:
 - **State-member visibility may not exceed the modal's visibility.** `StateMemberVisOk(M)` requires every payload field, method, and transition to have visibility rank ≤ the modal's; violations raise `(StateMemberVisOk-Err)` → `E-TYP-2063`.
 - **Unique payload field names within a state.** Duplicate payload field names in one state are rejected by `(Modal-Payload-DupField)` → `E-TYP-2058`.
 
-A modal may carry **generic parameters** (`generic_params`), an **implements clause** (`implements_clause`, written `<: class_list`), a **predicate clause** (`predicate_clause`), and a **type invariant** (`type_invariant`), exactly like `record` and `enum` declarations. The predicate-clause and type-invariant productions (B.6, B.7) are:
+A modal may carry **generic parameters** (`generic_params`), an **implements clause** (`implements_clause`, written `<: class_list`), and a **type invariant** (`type_invariant`), exactly like `record` and `enum` declarations. Generic constraints are written as bounds on the relevant type parameters. The type-invariant and implements-clause productions are:
 
 ```ebnf
-predicate_clause ::= "|:" predicate_req (terminator predicate_req)* terminator?
-predicate_req    ::= ("Bitcopy" | "Clone" | "Drop" | "FfiSafe") "(" type ")"
 type_invariant   ::= "|:" "{" predicate_expr "}"
 implements_clause ::= "<:" class_list
 class_list        ::= type_path ("," type_path)*
 ```
 
-See the Classes & Contracts chapters for predicate clauses, type invariants, and `<:` bounds in detail; they behave identically on modal types.
+See the Classes & Contracts chapters for type invariants and `<:` bounds in detail; they behave identically on modal types.
 
 #### Worked example: the declaration shape
 
@@ -710,4 +708,4 @@ Three further conceptual pitfalls worth calling out:
 - **Trying to "flip" a state in place.** There is no in-place tag mutation. A state change is always a transition that constructs and returns a fresh target-state value (§13.4.6). Model the change as a `transition`, not as field assignment.
 - **Putting a `contract_clause` on a `transition`.** The transition grammar (`transition_def ::= … "->" "@" identifier block_expr`) has no contract slot, so `transition open() -> @Open |: … |= …` does not parse. Move the contract onto a validating state method, or rely on the source-state type to enforce the sequencing precondition.
 
-Related chapters: **Permissions & Binding State** (`const`/`shared`/`unique`, receiver admissibility via `PermAdmits`, move semantics), **Records & Classes** (the `<:` implements clause, predicate clauses, and type invariants shared with modals), **Pattern Matching & `if … is`** (modal patterns and exhaustiveness, Chapter 17), and the **Concurrency / Async** chapter (the built-in `Spawned`, `Tracked`, `Async`, and `CancelToken` modals).
+Related chapters: **Permissions & Binding State** (`const`/`shared`/`unique`, receiver admissibility via `PermAdmits`, move semantics), **Records & Classes** (the `<:` implements clause and type invariants shared with modals), **Pattern Matching & `if … is`** (modal patterns and exhaustiveness, Chapter 17), and the **Concurrency / Async** chapter (the built-in `Spawned`, `Tracked`, `Async`, and `CancelToken` modals).

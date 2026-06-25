@@ -38,9 +38,6 @@ ResolveResult<std::optional<std::vector<ast::ForeignContractClause>>>
 ResolveForeignContractsOpt(
     ResolveContext& ctx,
     const std::optional<std::vector<ast::ForeignContractClause>>& contracts_opt);
-ResolveResult<std::optional<ast::PredicateClause>> ResolveWhereClauseOpt(
-    ResolveContext& ctx,
-    const std::optional<ast::PredicateClause>& where_opt);
 ResolveResult<std::optional<ast::TypeInvariant>> ResolveInvariantOpt(
     ResolveContext& ctx,
     const std::optional<ast::TypeInvariant>& invariant_opt);
@@ -723,12 +720,6 @@ ResolveResult<ast::ASTItem> ResolveItem(ResolveContext& ctx,
             return {false, resolved_gen.diag_id, resolved_gen.span, {}};
           }
           out.generic_params = resolved_gen.value;
-          const auto resolved_where =
-              ResolveWhereClauseOpt(proc_res, node.predicate_clause_opt);
-          if (!resolved_where.ok) {
-            return {false, resolved_where.diag_id, resolved_where.span, {}};
-          }
-          out.predicate_clause_opt = resolved_where.value;
 
           const auto resolved_params = ResolveParams(proc_res, node.params);
           if (!resolved_params.ok) {
@@ -834,12 +825,6 @@ ResolveResult<ast::ASTItem> ResolveItem(ResolveContext& ctx,
             return {false, resolved_gen.diag_id, resolved_gen.span, {}};
           }
           out.generic_params = resolved_gen.value;
-          const auto resolved_where =
-              ResolveWhereClauseOpt(alias_ctx, node.predicate_clause_opt);
-          if (!resolved_where.ok) {
-            return {false, resolved_where.diag_id, resolved_where.span, {}};
-          }
-          out.predicate_clause_opt = resolved_where.value;
           const auto resolved = ResolveType(alias_ctx, node.type);
           if (!resolved.ok) {
             return {false, resolved.diag_id, resolved.span, {}};
@@ -858,12 +843,6 @@ ResolveResult<ast::ASTItem> ResolveItem(ResolveContext& ctx,
             return {false, resolved_gen.diag_id, resolved_gen.span, {}};
           }
           out.generic_params = resolved_gen.value;
-          const auto resolved_where =
-              ResolveWhereClauseOpt(record_ctx, node.predicate_clause_opt);
-          if (!resolved_where.ok) {
-            return {false, resolved_where.diag_id, resolved_where.span, {}};
-          }
-          out.predicate_clause_opt = resolved_where.value;
           const auto impls = ResolveClassPathList(record_ctx, node.implements);
           if (!impls.ok) {
             return {false, impls.diag_id, impls.span, {}};
@@ -894,12 +873,6 @@ ResolveResult<ast::ASTItem> ResolveItem(ResolveContext& ctx,
             return {false, resolved_gen.diag_id, resolved_gen.span, {}};
           }
           out.generic_params = resolved_gen.value;
-          const auto resolved_where =
-              ResolveWhereClauseOpt(enum_ctx, node.predicate_clause_opt);
-          if (!resolved_where.ok) {
-            return {false, resolved_where.diag_id, resolved_where.span, {}};
-          }
-          out.predicate_clause_opt = resolved_where.value;
           const auto impls = ResolveClassPathList(enum_ctx, node.implements);
           if (!impls.ok) {
             return {false, impls.diag_id, impls.span, {}};
@@ -929,12 +902,6 @@ ResolveResult<ast::ASTItem> ResolveItem(ResolveContext& ctx,
             return {false, resolved_gen.diag_id, resolved_gen.span, {}};
           }
           out.generic_params = resolved_gen.value;
-          const auto resolved_where =
-              ResolveWhereClauseOpt(modal_ctx, node.predicate_clause_opt);
-          if (!resolved_where.ok) {
-            return {false, resolved_where.diag_id, resolved_where.span, {}};
-          }
-          out.predicate_clause_opt = resolved_where.value;
           const auto impls = ResolveClassPathList(modal_ctx, node.implements);
           if (!impls.ok) {
             return {false, impls.diag_id, impls.span, {}};
@@ -965,12 +932,6 @@ ResolveResult<ast::ASTItem> ResolveItem(ResolveContext& ctx,
             return {false, resolved_gen.diag_id, resolved_gen.span, {}};
           }
           out.generic_params = resolved_gen.value;
-          const auto resolved_where =
-              ResolveWhereClauseOpt(class_ctx, node.predicate_clause_opt);
-          if (!resolved_where.ok) {
-            return {false, resolved_where.diag_id, resolved_where.span, {}};
-          }
-          out.predicate_clause_opt = resolved_where.value;
           const auto supers = ResolveClassPathList(class_ctx, node.supers);
           if (!supers.ok) {
             return {false, supers.diag_id, supers.span, {}};
@@ -1015,16 +976,6 @@ ResolveResult<ast::ASTItem> ResolveItem(ResolveContext& ctx,
                       return;
                     }
                     proc_out.generic_params = resolved_gen.value;
-
-                    const auto resolved_where =
-                        ResolveWhereClauseOpt(proc_ctx, ext.where_clause);
-                    if (!resolved_where.ok) {
-                      ext_ok = false;
-                      ext_diag_id = resolved_where.diag_id;
-                      ext_span = resolved_where.span;
-                      return;
-                    }
-                    proc_out.where_clause = resolved_where.value;
 
                     const auto resolved_params = ResolveParams(proc_ctx, ext.params);
                     if (!resolved_params.ok) {

@@ -500,7 +500,7 @@ A record is a named product type with named fields. It is the primary vehicle fo
 The §12.6.1 grammar:
 
 ```ebnf
-record_decl     ::= attribute_list? visibility? "record" identifier generic_params? implements_clause? predicate_clause? record_body type_invariant?
+record_decl     ::= attribute_list? visibility? "record" identifier generic_params? implements_clause? record_body type_invariant?
 record_body     ::= "{" record_member* "}"
 record_field    ::= attribute_list? visibility? key_boundary? identifier ":" type record_field_init_opt
 key_boundary    ::= "#"
@@ -511,7 +511,7 @@ default_record  ::= identifier "(" ")"
 The Appendix B declaration grammar (B.6) gives the member and field-init productions and the `<:` implements clause:
 
 ```ebnf
-record_decl       ::= attribute_list? visibility? "record" identifier generic_params? implements_clause? predicate_clause? "{" record_body "}" type_invariant?
+record_decl       ::= attribute_list? visibility? "record" identifier generic_params? implements_clause? "{" record_body "}" type_invariant?
 record_body       ::= record_member*
 record_member     ::= record_field_decl | method_def
 record_field_decl ::= attribute_list? visibility? identifier ":" type record_field_init?
@@ -528,7 +528,7 @@ field_init_list ::= field_init ("," field_init)* ","?
 field_init      ::= identifier ":" expression | identifier
 ```
 
-A record declaration is `record Name { … }`. Members are fields and methods (and associated types). A field is `vis name: Type` with an optional `= default` initializer. The `#` **key boundary** marker (`key_boundary`) may prefix a field name. A record may declare generic parameters, an `<:` implements clause listing the classes it conforms to, a predicate clause, and a trailing type invariant.
+A record declaration is `record Name { … }`. Members are fields and methods (and associated types). A field is `vis name: Type` with an optional `= default` initializer. The `#` **key boundary** marker (`key_boundary`) may prefix a field name. A record may declare generic parameters, an `<:` implements clause listing the classes it conforms to, and a trailing type invariant.
 
 #### 8.6.2 Field visibility
 
@@ -651,7 +651,7 @@ An enum is a named sum type: a value is exactly one of a fixed set of variants. 
 The §12.7.1 grammar:
 
 ```ebnf
-enum_decl        ::= attribute_list? visibility? "enum" identifier generic_params? implements_clause? predicate_clause? enum_body type_invariant?
+enum_decl        ::= attribute_list? visibility? "enum" identifier generic_params? implements_clause? enum_body type_invariant?
 enum_body        ::= "{" variant_members? "}"
 variant_members  ::= variant (terminator variant)* terminator?
 variant          ::= identifier variant_payload_opt variant_discriminant_opt
@@ -662,7 +662,7 @@ variant_literal  ::= qualified_variant | qualified_variant "(" arg_exprs? ")" | 
 The Appendix B declaration grammar (B.6):
 
 ```ebnf
-enum_decl       ::= attribute_list? visibility? "enum" identifier generic_params? implements_clause? predicate_clause? "{" variant_members? "}" type_invariant?
+enum_decl       ::= attribute_list? visibility? "enum" identifier generic_params? implements_clause? "{" variant_members? "}" type_invariant?
 variant_members ::= variant (terminator variant)* terminator?
 variant         ::= identifier variant_payload? ("=" integer_literal)?
 variant_payload ::= "(" type_list ")" | "{" field_decl_list "}"
@@ -836,10 +836,10 @@ A type alias gives an existing type a new name. It introduces no new runtime typ
 #### 8.9.1 Exact syntax
 
 ```ebnf
-type_alias_decl ::= attribute_list? visibility? "type" identifier generic_params? predicate_clause? "=" type
+type_alias_decl ::= attribute_list? visibility? "type" identifier generic_params? "=" type
 ```
 
-A type alias is `type Name = SomeType`. It may be generic and may carry a predicate clause; it has no implements clause and no body block.
+A type alias is `type Name = SomeType`. It may be generic; it has no implements clause and no body block.
 
 #### 8.9.2 Semantics
 

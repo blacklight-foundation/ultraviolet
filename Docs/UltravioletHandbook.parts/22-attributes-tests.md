@@ -490,7 +490,7 @@ contract_intrinsic ::= decorated_identifier("@", "result")
                      | decorated_identifier("@", "entry") "(" expression ")"
 ```
 
-A test typically uses the `"|=" postcondition_expr` form (a postcondition with no precondition), and references the procedure's result with the `@result` intrinsic. The `@result` and `@entry(...)` source spellings are `@` decorator sequences, not combined lexer tokens. Note that in the `procedure_decl` grammar the contract clause sits after the signature and before the body (`… signature predicate_clause? contract_clause? block_expr`).
+A test typically uses the `"|=" postcondition_expr` form (a postcondition with no precondition), and references the procedure's result with the `@result` intrinsic. The `@result` and `@entry(...)` source spellings are `@` decorator sequences, not combined lexer tokens. Note that in the `procedure_decl` grammar the contract clause sits after the signature and before the body (`… signature contract_clause? block_expr`).
 
 #### 22.6.5 The `TestAuthority` parameter
 

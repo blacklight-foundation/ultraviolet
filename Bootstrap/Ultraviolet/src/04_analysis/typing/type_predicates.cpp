@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "00_core/assert_spec.h"
+#include "04_analysis/composite/classes.h"
 #include "04_analysis/composite/enums.h"
 #include "04_analysis/modal/modal.h"
 #include "04_analysis/typing/context.h"
@@ -46,8 +47,7 @@ static inline void SpecDefsTypePredicates() {
   SPEC_DEF("GpuSafePrimTypes", "20.2.4");
   SPEC_DEF("ProhibitedGpuType", "20.2.4");
   SPEC_DEF("GpuSafeComponents", "20.2.4");
-  SPEC_DEF("HasGpuSafeReq", "20.2.4");
-  SPEC_DEF("GpuSafePredicateClauseOk", "20.2.4");
+  SPEC_DEF("GpuSafeGenericBoundsOk", "20.2.4");
   SPEC_DEF("GpuSafe-Prim", "20.2.4");
   SPEC_DEF("GpuSafe-RawPtr", "20.2.4");
   SPEC_DEF("GpuSafe-Array", "20.2.4");
@@ -230,43 +230,26 @@ static bool AstTypeMentionsParam(const std::shared_ptr<ast::Type>& type,
       type->node);
 }
 
-static bool HasFfiSafeReq(const std::optional<ast::PredicateClause>& where_clause_opt,
-                          std::string_view param_name) {
-  if (!where_clause_opt.has_value()) {
+static bool GenericParamHasClassBound(
+    const ScopeContext& ctx,
+    const std::optional<ast::GenericParams>& generic_params_opt,
+    std::string_view param_name,
+    std::string_view class_name) {
+  if (!generic_params_opt.has_value()) {
     return false;
   }
-  for (const auto& pred : *where_clause_opt) {
-    if (!IdEq(pred.pred, "FfiSafe") || !pred.type) {
+  for (const auto& param : generic_params_opt->params) {
+    if (!IdEq(param.name, param_name)) {
       continue;
     }
-    const auto* path = std::get_if<ast::TypePathType>(&pred.type->node);
-    if (!path || !path->generic_args.empty() || path->path.size() != 1) {
-      continue;
+    const ast::ClassPath target_path{std::string(class_name)};
+    for (const auto& bound : param.bounds) {
+      if ((bound.class_path.size() == 1 && IdEq(bound.class_path[0], class_name)) ||
+          ClassSubtypes(ctx, bound.class_path, target_path)) {
+        return true;
+      }
     }
-    if (IdEq(path->path[0], param_name)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-static bool HasGpuSafeReq(const std::optional<ast::PredicateClause>& where_clause_opt,
-                         std::string_view param_name) {
-  SPEC_RULE("HasGpuSafeReq");
-  if (!where_clause_opt.has_value()) {
     return false;
-  }
-  for (const auto& pred : *where_clause_opt) {
-    if (!IdEq(pred.pred, "GpuSafe") || !pred.type) {
-      continue;
-    }
-    const auto* path = std::get_if<ast::TypePathType>(&pred.type->node);
-    if (!path || path->path.size() != 1) {
-      continue;
-    }
-    if (IdEq(path->path[0], param_name)) {
-      return true;
-    }
   }
   return false;
 }
@@ -414,14 +397,14 @@ static std::vector<std::string> GpuSafeEnumTypeParamsInPayloads(
 }
 
 static bool GenericParamsMissingFfiSafeReqs(
+    const ScopeContext& ctx,
     const std::optional<ast::GenericParams>& generic_params_opt,
-    const std::optional<ast::PredicateClause>& where_clause_opt,
     const std::vector<std::string>& used_params) {
   if (!generic_params_opt.has_value() || used_params.empty()) {
     return false;
   }
   for (const auto& name : used_params) {
-    if (!HasFfiSafeReq(where_clause_opt, name)) {
+    if (!GenericParamHasClassBound(ctx, generic_params_opt, name, "FfiSafe")) {
       return true;
     }
   }
@@ -429,15 +412,15 @@ static bool GenericParamsMissingFfiSafeReqs(
 }
 
 static bool GenericParamsMissingGpuSafeReqs(
+    const ScopeContext& ctx,
     const std::optional<ast::GenericParams>& generic_params_opt,
-    const std::optional<ast::PredicateClause>& where_clause_opt,
     const std::vector<std::string>& used_params) {
-  SPEC_RULE("GpuSafePredicateClauseOk");
+  SPEC_RULE("GpuSafeGenericBoundsOk");
   if (!generic_params_opt.has_value() || used_params.empty()) {
     return false;
   }
   for (const auto& name : used_params) {
-    if (!HasGpuSafeReq(where_clause_opt, name)) {
+    if (!GenericParamHasClassBound(ctx, generic_params_opt, name, "GpuSafe")) {
       return true;
     }
   }
@@ -576,35 +559,6 @@ static bool IsBuiltinBitcopyPath(const TypePath& path) {
           IdEq(path[0], "System"));
 }
 
-static bool TypeParamHasPredicateBound(const ScopeContext& ctx,
-                                       const TypePath& path,
-                                       std::string_view predicate_name) {
-  if (path.size() != 1) {
-    return false;
-  }
-
-  const auto key = IdKeyOf(path[0]);
-  for (const auto& scope : ctx.scopes) {
-    const auto it = scope.find(key);
-    if (it == scope.end()) {
-      continue;
-    }
-    const Entity& entity = it->second;
-    if (entity.kind != EntityKind::Type ||
-        (entity.target_opt.has_value() && !IdEq(*entity.target_opt, path[0]))) {
-      continue;
-    }
-    return std::any_of(
-        entity.type_param_predicate_bounds.begin(),
-        entity.type_param_predicate_bounds.end(),
-        [&](const std::string& bound) {
-          return IdEq(bound, predicate_name);
-        });
-  }
-
-  return false;
-}
-
 static bool TypeParamHasClassBound(const ScopeContext& ctx,
                                    const TypePath& path,
                                    std::string_view class_name) {
@@ -627,8 +581,10 @@ static bool TypeParamHasClassBound(const ScopeContext& ctx,
         entity.type_param_class_bounds.begin(),
         entity.type_param_class_bounds.end(),
         [&](const ast::TypeBound& bound) {
-          return bound.class_path.size() == 1 &&
-                 IdEq(bound.class_path[0], class_name);
+          const ast::ClassPath target_path{std::string(class_name)};
+          return (bound.class_path.size() == 1 &&
+                  IdEq(bound.class_path[0], class_name)) ||
+                 ClassSubtypes(ctx, bound.class_path, target_path);
         });
   }
 
@@ -976,7 +932,7 @@ static bool BitcopyTypeImpl(const ScopeContext& ctx,
           }
           if constexpr (std::is_same_v<T, TypePathType>) {
             if (node.generic_args.empty() &&
-                TypeParamHasPredicateBound(ctx, applied_path, "Bitcopy")) {
+                TypeParamHasClassBound(ctx, applied_path, "Bitcopy")) {
               return true;
             }
           }
@@ -1147,8 +1103,8 @@ static std::optional<std::string_view> FfiSafeRecordDiag(
     SPEC_RULE("rule.23.FfiSafe-Record-LayoutC-Err");
     return std::optional<std::string_view>{"E-TYP-2624"};
   }
-  if (GenericParamsMissingFfiSafeReqs(decl.generic_params,
-                                      decl.predicate_clause_opt,
+  if (GenericParamsMissingFfiSafeReqs(ctx,
+                                      decl.generic_params,
                                       FfiSafeRecordTypeParamsInFields(decl))) {
     RecordFfiSafeGenericBoundsFailureRule(true, is_type_application);
     return std::optional<std::string_view>{"E-TYP-2629"};
@@ -1195,8 +1151,8 @@ static std::optional<std::string_view> FfiSafeEnumDiag(
     SPEC_RULE("rule.23.FfiSafe-Enum-LayoutC-Err");
     return std::optional<std::string_view>{"E-TYP-2625"};
   }
-  if (GenericParamsMissingFfiSafeReqs(decl.generic_params,
-                                      decl.predicate_clause_opt,
+  if (GenericParamsMissingFfiSafeReqs(ctx,
+                                      decl.generic_params,
                                       FfiSafeEnumTypeParamsInPayloads(decl))) {
     RecordFfiSafeGenericBoundsFailureRule(false, is_type_application);
     return std::optional<std::string_view>{"E-TYP-2629"};
@@ -1354,8 +1310,8 @@ static std::optional<std::string_view> FfiSafeDiagForTypeImpl(
                 if constexpr (std::is_same_v<D, ast::RecordDecl>) {
                   if (applied_args.empty() &&
                       GenericParamsMissingFfiSafeReqs(
+                          ctx,
                           resolved_decl.generic_params,
-                          resolved_decl.predicate_clause_opt,
                           FfiSafeRecordTypeParamsInFields(resolved_decl))) {
                     RecordFfiSafeGenericBoundsFailureRule(
                         true, is_type_application);
@@ -1373,8 +1329,8 @@ static std::optional<std::string_view> FfiSafeDiagForTypeImpl(
                 } else if constexpr (std::is_same_v<D, ast::EnumDecl>) {
                   if (applied_args.empty() &&
                       GenericParamsMissingFfiSafeReqs(
+                          ctx,
                           resolved_decl.generic_params,
-                          resolved_decl.predicate_clause_opt,
                           FfiSafeEnumTypeParamsInPayloads(resolved_decl))) {
                     RecordFfiSafeGenericBoundsFailureRule(
                         false, is_type_application);
@@ -1744,8 +1700,8 @@ static std::optional<std::string_view> GpuSafeRecordDiag(
     const TypeRef& record_type,
     const std::vector<TypeRef>& generic_args,
     std::set<PathKey>& active_paths) {
-  if (GenericParamsMissingGpuSafeReqs(decl.generic_params,
-                                      decl.predicate_clause_opt,
+  if (GenericParamsMissingGpuSafeReqs(ctx,
+                                      decl.generic_params,
                                       GpuSafeRecordTypeParamsInFields(decl))) {
     SPEC_RULE("GpuSafe-Generic-Unbounded-Err");
     SPEC_RULE("rule.20.GpuSafe-Generic-Unbounded-Err");
@@ -1787,8 +1743,8 @@ static std::optional<std::string_view> GpuSafeEnumDiag(
     const TypeRef& enum_type,
     const std::vector<TypeRef>& generic_args,
     std::set<PathKey>& active_paths) {
-  if (GenericParamsMissingGpuSafeReqs(decl.generic_params,
-                                      decl.predicate_clause_opt,
+  if (GenericParamsMissingGpuSafeReqs(ctx,
+                                      decl.generic_params,
                                       GpuSafeEnumTypeParamsInPayloads(decl))) {
     SPEC_RULE("GpuSafe-Generic-Unbounded-Err");
     SPEC_RULE("rule.20.GpuSafe-Generic-Unbounded-Err");

@@ -36,10 +36,8 @@ bool IsOp(const Parser& parser, std::string_view op);
 // Forward declaration for type parsing
 ParseElemResult<std::shared_ptr<Type>> ParseType(Parser parser);
 
-// Forward declarations for generic params and where clause parsing
+// Forward declarations for generic params parsing
 ParseElemResult<std::optional<GenericParams>> ParseGenericParamsOpt(
-    Parser parser);
-ParseElemResult<std::optional<PredicateClause>> ParsePredicateClauseOpt(
     Parser parser);
 
 // =============================================================================
@@ -54,9 +52,8 @@ ParseElemResult<std::optional<PredicateClause>> ParsePredicateClauseOpt(
 //   Γ ⊢ ParseGenericParamsOpt(P_2) ⇓ (P_3, gen_params_opt)
 //   IsOp(Tok(P_3), "=")
 //   Γ ⊢ ParseType(Advance(P_3)) ⇓ (P_4, ty)
-//   Γ ⊢ ParseWhereClauseOpt(P_4) ⇓ (P_5, where_clause_opt)
 //   ────────────────────────────────────────────────────────────────────
-//   Γ ⊢ ParseItem(P) ⇓ (P_5, ⟨TypeAliasDecl, ...⟩)
+//   Γ ⊢ ParseItem(P) ⇓ (P_4, ⟨TypeAliasDecl, ...⟩)
 
 ParseItemResult ParseTypeAliasDecl(Parser parser, Visibility vis,
                                    AttributeList attrs) {
@@ -75,11 +72,6 @@ ParseItemResult ParseTypeAliasDecl(Parser parser, Visibility vis,
       ParseGenericParamsOpt(parser);
   parser = gen_params.parser;
 
-  // Parse optional predicate clause (constraints on generic parameters)
-  ParseElemResult<std::optional<PredicateClause>> predicate_clause_opt =
-      ParsePredicateClauseOpt(parser);
-  parser = predicate_clause_opt.parser;
-
   // Expect = operator
   if (!IsOp(parser, "=")) {
     EmitParseSyntaxErr(parser, TokSpan(parser));
@@ -96,14 +88,12 @@ ParseItemResult ParseTypeAliasDecl(Parser parser, Visibility vis,
   decl.vis = vis;
   decl.name = name.elem;
   decl.generic_params = gen_params.elem;
-  decl.predicate_clause_opt = predicate_clause_opt.elem;
   decl.type = ty.elem;
   decl.span = SpanBetween(start, parser);
   decl.doc = {};
 
-  RecordGenericPredicateOwnerClause("TypeAliasDecl", decl.name,
-                                    decl.generic_params,
-                                    decl.predicate_clause_opt, decl.span);
+  RecordGenericOwnerClause("TypeAliasDecl", decl.name, decl.generic_params,
+                           decl.span);
 
   return {parser, decl};
 }

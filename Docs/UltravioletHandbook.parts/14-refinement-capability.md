@@ -1,6 +1,6 @@
 ## 14. Opaque, Refinement & Capability Classes
 
-This chapter covers four closely related parts of Ultraviolet's type system that all govern *what a value lets you do* rather than *what a value is made of*: **opaque types** (§14.7), which hide a concrete representation behind a class interface across a module boundary; **refinement types** (§14.8), which attach a statically-checked predicate to an existing type; **capability classes** (§14.9), the `$`-typed authority handles such as `$IO` that gate every externally-observable effect; and the **foundational classes and predicates** (§14.10) — `Bitcopy`, `Clone`, `Drop`, `FfiSafe`, `Eq`, `Hasher`, `Hash`, `Iterator`, and `Discrete` — that the language interprets intrinsically. It closes with the consolidated refinement/polymorphism diagnostics supplement (§14.11).
+This chapter covers four closely related parts of Ultraviolet's type system that all govern *what a value lets you do* rather than *what a value is made of*: **opaque types** (§14.7), which hide a concrete representation behind a class interface across a module boundary; **refinement types** (§14.8), which attach a statically-checked predicate to an existing type; **capability classes** (§14.9), the `$`-typed authority handles such as `$IO` that gate every externally-observable effect; and the **foundational classes** (§14.10) — `Bitcopy`, `Clone`, `Drop`, `FfiSafe`, `GpuSafe`, `Eq`, `Hasher`, `Hash`, `Iterator`, and `Discrete` — that the language interprets intrinsically. It closes with the consolidated refinement/polymorphism diagnostics supplement (§14.11).
 
 These features build directly on the class machinery of this chapter's earlier sections: ordinary class declarations (§14.3), the concrete-implementer relation (§14.4), associated types (§14.5), and dynamic class objects (§14.6, the `$Class` form). Read those first; this chapter relies on their grammar and judgments without re-deriving them.
 
@@ -155,10 +155,10 @@ refinement_clause ::= "|:" "{" predicate_expr "}"
 predicate_expr    ::= logical_or_expr
 ```
 
-The general type-alias declaration is the broader form from §12.9.1 (and Appendix B), which carries an optional `predicate_clause` (the `Bitcopy`/`Clone`/`Drop`/`FfiSafe` requirement list of §14.10) and generic parameters:
+The general type-alias declaration is the broader form from §12.9.1 (and Appendix B), which carries optional generic parameters:
 
 ```ebnf
-type_alias_decl ::= attribute_list? visibility? "type" identifier generic_params? predicate_clause? "=" type
+type_alias_decl ::= attribute_list? visibility? "type" identifier generic_params? "=" type
 ```
 
 A refinement attached to a *parameter's* type is an **inline parameter constraint**. There is no separate parameter-constraint production. Crucially, the inline form's predicate references the parameter **by name** and **MUST NOT use `self`** — doing so is `E-TYP-1956`. Only the standalone refinement-type-alias form binds `self` to the constrained value.
@@ -309,7 +309,7 @@ So a capability appears in a type as `$IO`, in a parameter list as `io: $IO`, an
 
 ```ebnf
 class_decl        ::= attribute_list? visibility? "modal"? "class" identifier generic_params?
-                      ("<:" superclass_bounds)? predicate_clause? "{" class_body? "}"
+                      ("<:" superclass_bounds)? "{" class_body? "}"
 superclass_bounds ::= class_bound ("+" class_bound)*
 ```
 
@@ -472,25 +472,25 @@ public class AuditLog <: IO {
 
 Because `AuditLog` has the capability superclass `IO`, `CapClass(AuditLog)` holds, and `$AuditLog` is a capability type that — through `CapUp` — also satisfies requirements stated against `$IO`.
 
-### 14.10 Foundational Classes and Predicates
+### 14.10 Foundational Classes
 
-The foundational classes are the small set the language treats **intrinsically**: `Bitcopy`, `Clone`, `Drop`, `FfiSafe`, `Eq`, `Hasher`, `Hash`, `Iterator`, and `Discrete`. Their bounds are not always discharged by ordinary class-implementation lookup; several are satisfied by built-in judgments over the type's structure.
+The foundational classes are the small set the language treats **intrinsically**: `Bitcopy`, `Clone`, `Drop`, `FfiSafe`, `GpuSafe`, `Eq`, `Hasher`, `Hash`, `Iterator`, and `Discrete`. Their bounds are not always discharged by ordinary class-implementation lookup; several are satisfied by built-in judgments over the type's structure.
 
 #### 14.10.1 Syntax
 
-Foundational classes use ordinary class syntax (§14.3). The nine names above are **reserved**. The predicate-requirement form `predicate_clause` is how `Bitcopy`, `Clone`, `Drop`, and `FfiSafe` are demanded as side constraints on a generic declaration or alias:
+Foundational classes use ordinary class syntax (§14.3). The ten names above are **reserved**. `Bitcopy`, `Clone`, `Drop`, `FfiSafe`, and `GpuSafe` are demanded as ordinary generic class bounds on the constrained parameter:
 
 ```ebnf
-predicate_clause ::= "|:" predicate_req (terminator predicate_req)* terminator?
-predicate_req    ::= ("Bitcopy" | "Clone" | "Drop" | "FfiSafe") "(" type ")"
+generic_param ::= identifier ("<:" class_bound ("," class_bound)*)? ("=" type)?
+class_bound   ::= type_path generic_args?
 ```
 
-This `predicate_clause` (a list of `Bitcopy(T)`-style requirements) is distinct from a `refinement_clause` (`|: { … }`, §14.8). Both begin with the `|:` token, but a `predicate_clause` lists foundational predicate requirements while a `refinement_clause` carries a single braced boolean predicate. The grammar position disambiguates: a `predicate_clause` follows generic parameters on a declaration; a `refinement_clause` follows a `non_permission_type`.
+The `|:` token is reserved for contract clauses, invariants, and refinement clauses such as `|: { … }` (§14.8). It does not introduce foundational generic constraints.
 
-#### 14.10.2 AST Representation and Predicates
+#### 14.10.2 AST Representation and Structural Relations
 
 ```text
-FoundationalClassName = {`Bitcopy`, `Clone`, `Drop`, `FfiSafe`, `Eq`, `Hasher`, `Hash`, `Iterator`, `Discrete`}
+FoundationalClassName = {`Bitcopy`, `Clone`, `Drop`, `FfiSafe`, `GpuSafe`, `Eq`, `Hasher`, `Hash`, `Iterator`, `Discrete`}
 ```
 
 A type has a user `clone`/`drop` method when its signature matches exactly:
@@ -502,7 +502,7 @@ HasDropMethod(T)  ⇔ ∃ p, R, m. T = TypePath(p) ∧ RecordDecl(p) = R ∧ m �
                     ∧ MethodName(m) = `drop` ∧ Sig_T(T, m) = ⟨TypePerm(`unique`, T), [], TypePrim("()")⟩
 ```
 
-The derived predicates:
+The derived structural relations:
 
 ```text
 CloneType(T) ⇔ BuiltinCloneType(T) ∨ HasCloneMethod(StripPerm(T)) ∨ BitcopyType(T)
@@ -575,7 +575,7 @@ At the final owning scope exit, `drop` is invoked when `DropType(T)` holds, owne
 
 #### 14.10.5 Lowering
 
-`Eq::eq` on `EqType(T)` lowers intrinsically to the built-in equality relation; `Discrete::successor`/`predecessor` on `BuiltinDiscreteType(T)` lower intrinsically to the built-in stepping relation; other `Eq`/`Discrete` calls lower through ordinary method-call lowering. These predicates introduce no separate representation; they influence lowering through copy semantics, drop-glue generation, built-in call selection, and whether a dynamic-class vtable header carries a non-null drop entry.
+`Eq::eq` on `EqType(T)` lowers intrinsically to the built-in equality relation; `Discrete::successor`/`predecessor` on `BuiltinDiscreteType(T)` lower intrinsically to the built-in stepping relation; other `Eq`/`Discrete` calls lower through ordinary method-call lowering. These foundational class relations introduce no separate representation; they influence lowering through copy semantics, drop-glue generation, built-in call selection, and whether a dynamic-class vtable header carries a non-null drop entry.
 
 #### 14.10.6 Worked Examples
 
@@ -612,18 +612,18 @@ public record OwnedText {
 
 The `drop` method matches `Sig_T(T, m) = ⟨unique T, [], ()⟩`, so `HasDropMethod(OwnedText)` holds. `OwnedText` is not `Bitcopy` (its `string@Managed` field is a built-in `Drop` type), so **(BitcopyDrop-Ok)** is satisfied and there is no `E-TYP-2621` conflict.
 
-**A foundational predicate requirement on a generic alias:**
+**A foundational class bound on a generic alias:**
 
 ```ultraviolet
 /// `Pair<TValue>` is well-formed only for `Bitcopy` element types.
-public type Pair<TValue> |: Bitcopy(TValue) = (TValue, TValue)
+public type Pair<TValue <: Bitcopy> = (TValue, TValue)
 ```
 
-The `predicate_clause` `|: Bitcopy(TValue)` constrains instantiation: substituting a non-`Bitcopy` argument fails the bound (`E-TYP-2302` / `E-TYP-2530`).
+The `<TValue <: Bitcopy>` bound constrains instantiation: substituting a non-`Bitcopy` argument fails the bound (`E-TYP-2302` / `E-TYP-2530`).
 
 ### 14.11 Refinement and Polymorphism Diagnostics Supplement
 
-This section owns the diagnostics for refinement types, generic instantiation, class implementation, dynamic objects, and foundational predicate requirements. The codes most directly relevant to this chapter:
+This section owns the diagnostics for refinement types, generic instantiation, class implementation, dynamic objects, and foundational class requirements. The codes most directly relevant to this chapter:
 
 **Refinement (§14.8):**
 
@@ -644,7 +644,7 @@ This section owns the diagnostics for refinement types, generic instantiation, c
 | `E-TYP-2511` | Error | Compile-time | Opaque return type does not implement required class |
 | `E-TYP-2512` | Error | Compile-time | Attempting to assign incompatible opaque types |
 
-**Foundational predicates (§14.10):**
+**Foundational classes (§14.10):**
 
 | Code | Severity | Detection | Condition |
 | --- | --- | --- | --- |
@@ -660,7 +660,7 @@ This section owns the diagnostics for refinement types, generic instantiation, c
 | `E-CON-0412` | Error | Compile-time | `#dynamic` applied to field declaration |
 | `W-CON-0401` | Warning | Compile-time | `#dynamic` present but all proofs succeed statically |
 
-**Capability classes (§14.9)** surface through the dynamic-object diagnostics — `E-TYP-2540` (non-vtable-eligible procedure called on `$`), `E-TYP-2541` (dynamic class type created from non-dispatchable class), `E-TYP-2542` (generic procedure in class not vtable-eligible for `$` dispatch) — plus the `unsafe`-required allocation codes `AllocRaw-Unsafe-Err`/`DeallocRaw-Unsafe-Err` from §14.9.4. Generic and class-implementation codes in the same table that are relevant when capability or foundational classes are used as bounds include `E-TYP-2302`/`E-TYP-2530` (argument fails class bound or predicate), `E-TYP-2305` (class bound references a non-class type), `E-TYP-2503` (missing or mismatched required procedure), `E-TYP-2506` (duplicate class implementation), `E-TYP-2507` (orphan-rule violation), `E-TYP-2508` (cyclic superclass dependency), and `E-TYP-2509` (superclass bound refers to undefined class).
+**Capability classes (§14.9)** surface through the dynamic-object diagnostics — `E-TYP-2540` (non-vtable-eligible procedure called on `$`), `E-TYP-2541` (dynamic class type created from non-dispatchable class), `E-TYP-2542` (generic procedure in class not vtable-eligible for `$` dispatch) — plus the `unsafe`-required allocation codes `AllocRaw-Unsafe-Err`/`DeallocRaw-Unsafe-Err` from §14.9.4. Generic and class-implementation codes in the same table that are relevant when capability or foundational classes are used as bounds include `E-TYP-2302`/`E-TYP-2530` (argument fails class bound), `E-TYP-2305` (class bound references a non-class type), `E-TYP-2503` (missing or mismatched required procedure), `E-TYP-2506` (duplicate class implementation), `E-TYP-2507` (orphan-rule violation), `E-TYP-2508` (cyclic superclass dependency), and `E-TYP-2509` (superclass bound refers to undefined class).
 
 ### Idioms & Best Practices
 
@@ -670,13 +670,13 @@ This section owns the diagnostics for refinement types, generic instantiation, c
 - **Reserve `#dynamic` for genuinely dynamic refinements.** It converts a static proof obligation into a runtime panic check. The style guide warns: "Do not use `[[dynamic]]` to bypass correct static conformance" (the compiling token is `#dynamic`). If a static formulation exists, use it; the compiler warns with `W-CON-0401` when a `#dynamic` scope's proofs all succeed statically.
 - **Keep authority narrow.** Pass `$IO`, not `Context`; pass `$MonotonicTime`, not `$Time`, when you only read a monotonic clock. The style guide makes this a design rule, not a cleanup pass: "Do not thread through broad 'god context' objects for convenience" and "Capability narrowing is part of API design, not an optional cleanup pass." When several capabilities genuinely travel together at a real boundary, define a narrow projected context record — it still satisfies `MainSigOk` via `ContextBundleType`.
 - **Mint sub-capabilities to attenuate.** Use the built-in narrowing methods — `io~>restrict(path)`, `net~>restrict_to_host(host)`, `heap~>with_quota(size)`, `time~>monotonic()` — to hand downstream code a strictly weaker capability than you hold.
-- **Let foundational predicates be structural.** Do not hand-write `clone` for a type whose fields are all `Bitcopy`; `clone` is already `copy` there. Reserve a user `drop` for types that own an external resource, and remember a `Drop` type can never be `Bitcopy`.
+- **Let foundational class relations be structural.** Do not hand-write `clone` for a type whose fields are all `Bitcopy`; `clone` is already `copy` there. Reserve a user `drop` for types that own an external resource, and remember a `Drop` type can never be `Bitcopy`.
 - **Keep raw allocation inside `unsafe` wrappers.** `alloc_raw`/`dealloc_raw` require `unsafe` (§14.9.4); wrap them in a safe API that re-establishes invariants, per the style guide's `unsafe` rules ("Wrap unsafe operations in safe APIs that re-establish project invariants").
 
 ### Pitfalls & Diagnostics
 
 - **Reading hidden members of an opaque value.** `opaque Counter` exposes only `Counter`'s interface; `c.count` (a concrete field) is `E-TYP-2510`. Returning a body whose type does not implement the named class is `E-TYP-2511`; mixing two different opaque class paths in an assignment is `E-TYP-2512`.
-- **`|:` is one operator.** The refinement/predicate operator `|:` is a single token in `OperatorSet`; it is not a union bar `|` adjacent to a colon. The refinement braces are mandatory: `T |: { P }`.
+- **`|:` is one operator.** The refinement operator `|:` is a single token in `OperatorSet`; it is not a union bar `|` adjacent to a colon. The refinement braces are mandatory: `T |: { P }`.
 - **`var`, not `let mut`; `loop`, not `while`.** Ultraviolet has no `mut` keyword and no `while` keyword. Mutable bindings are declared with `var`; condition loops are written `loop <condition> { … }`. Code copied from Rust-shaped examples that uses `let mut` or `while` will not parse.
 - **Impure or non-`bool` predicates.** A refinement predicate must be pure (`E-TYP-1954`) and of type `bool` (`E-TYP-1955`). Effects, capability calls, or side-effecting expressions inside the predicate are rejected.
 - **Unprovable refinement outside `#dynamic`.** If the prover cannot discharge `P[e/self]` and you are not in a `#dynamic` scope, the program is ill-formed (`E-TYP-1953`). Inside `#dynamic`, the same failure inserts a runtime check that panics on violation (`P-TYP-1953`).

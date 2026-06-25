@@ -57,10 +57,8 @@ namespace ultraviolet::ast
   ParseElemResult<std::optional<ContractClause>> ParseContractClauseOpt(
       Parser parser);
 
-  // Forward declarations for generic params and where clause parsing
+  // Forward declarations for generic params parsing
   ParseElemResult<std::optional<GenericParams>> ParseGenericParamsOpt(
-      Parser parser);
-  ParseElemResult<std::optional<PredicateClause>> ParsePredicateClauseOpt(
       Parser parser);
 
   // Forward declaration from signature.cpp
@@ -565,11 +563,10 @@ ParseElemResult<std::vector<RecordMember>> ParseRecordMemberList(
   //   Γ ⊢ ParseIdent(Advance(P_1)) ⇓ (P_2, name)
   //   Γ ⊢ ParseGenericParamsOpt(P_2) ⇓ (P_3, gen_params_opt)
   //   Γ ⊢ ParseImplementsOpt(P_3) ⇓ (P_4, impls)
-  //   Γ ⊢ ParseWhereClauseOpt(P_4) ⇓ (P_5, where_clause_opt)
-  //   Γ ⊢ ParseRecordBody(P_5) ⇓ (P_6, members)
-  //   Γ ⊢ ParseInvariantOpt(P_6) ⇓ (P_7, invariant_opt)
+  //   Γ ⊢ ParseRecordBody(P_4) ⇓ (P_5, members)
+  //   Γ ⊢ ParseInvariantOpt(P_5) ⇓ (P_6, invariant_opt)
   //   ────────────────────────────────────────────────────────────────────
-  //   Γ ⊢ ParseItem(P) ⇓ (P_7, ⟨RecordDecl, ...⟩)
+  //   Γ ⊢ ParseItem(P) ⇓ (P_6, ⟨RecordDecl, ...⟩)
 
   ParseItemResult ParseRecordDecl(Parser parser, Visibility vis,
                                   AttributeList attrs)
@@ -593,11 +590,6 @@ ParseElemResult<std::vector<RecordMember>> ParseRecordMemberList(
     ParseElemResult<std::vector<ClassPath>> impls = ParseImplementsOpt(parser);
     parser = impls.parser;
 
-    // Parse optional predicate clause
-    ParseElemResult<std::optional<PredicateClause>> predicate_clause_opt =
-        ParsePredicateClauseOpt(parser);
-    parser = predicate_clause_opt.parser;
-
     // Parse record body
     ParseElemResult<std::vector<RecordMember>> members = ParseRecordBody(parser);
     parser = members.parser;
@@ -612,16 +604,14 @@ ParseElemResult<std::vector<RecordMember>> ParseRecordMemberList(
     decl.vis = vis;
     decl.name = name.elem;
     decl.generic_params = gen_params.elem;
-    decl.predicate_clause_opt = predicate_clause_opt.elem;
     decl.implements = std::move(impls.elem);
     decl.members = std::move(members.elem);
     decl.invariant_opt = invariant.elem;
     decl.span = SpanBetween(start, parser);
     decl.doc = {};
 
-    RecordGenericPredicateOwnerClause("RecordDecl", decl.name,
-                                      decl.generic_params,
-                                      decl.predicate_clause_opt, decl.span);
+    RecordGenericOwnerClause("RecordDecl", decl.name, decl.generic_params,
+                             decl.span);
     RecordNominalRelationFormOnOwnerDecl("RecordDecl", decl.name,
                                          "implements", decl.implements,
                                          decl.span);

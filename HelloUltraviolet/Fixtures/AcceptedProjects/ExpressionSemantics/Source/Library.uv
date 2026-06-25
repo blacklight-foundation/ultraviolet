@@ -388,9 +388,7 @@ public procedure lowerMethodCallFamilyReference() -> i32 {
     return receiver~>readValue()
 }
 
-public procedure lowerGenericIdentity<TValue>(value: TValue) -> TValue
-|: Bitcopy(TValue)
-{
+public procedure lowerGenericIdentity<TValue <: Bitcopy>(value: TValue) -> TValue {
     return value
 }
 

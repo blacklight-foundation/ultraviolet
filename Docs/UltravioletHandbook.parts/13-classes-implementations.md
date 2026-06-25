@@ -29,7 +29,7 @@ specification's Appendix B and the §14.3–14.6 inference rules.
 A class declaration is a top-level item. The canonical production (Appendix B.6) is:
 
 ```ebnf
-class_declaration   ::= attribute_list? visibility? "modal"? "class" identifier generic_params? ("<:" superclass_bounds)? predicate_clause? "{" class_item* "}"
+class_declaration   ::= attribute_list? visibility? "modal"? "class" identifier generic_params? ("<:" superclass_bounds)? "{" class_item* "}"
 superclass_bounds   ::= class_bound ("+" class_bound)*
 class_item          ::= abstract_procedure | concrete_procedure | abstract_field | abstract_state | associated_type
 abstract_procedure  ::= "procedure" identifier signature contract_clause?
@@ -44,7 +44,7 @@ associated_type     ::= "type" identifier ("=" type)?
 The §14.3.1 grammar gives the same form with the canonical class-item alternatives:
 
 ```ebnf
-class_decl     ::= attribute_list? visibility? "modal"? "class" identifier generic_params? ("<:" superclass_bounds)? predicate_clause? "{" class_body? "}"
+class_decl     ::= attribute_list? visibility? "modal"? "class" identifier generic_params? ("<:" superclass_bounds)? "{" class_body? "}"
 class_item     ::= class_method | associated_type | abstract_field | abstract_state
 abstract_state ::= "@" identifier "{" abstract_field* "}"
 abstract_field ::= attribute_list? visibility? key_boundary? identifier ":" type
@@ -269,9 +269,9 @@ The implements clause appears after the type name and generic params on each con
 declaration (Appendix B.6):
 
 ```ebnf
-record_decl ::= attribute_list? visibility? "record" identifier generic_params? implements_clause? predicate_clause? "{" record_body "}" type_invariant?
-enum_decl   ::= attribute_list? visibility? "enum"   identifier generic_params? implements_clause? predicate_clause? "{" variant_members? "}" type_invariant?
-modal_decl  ::= attribute_list? visibility? "modal"  identifier generic_params? implements_clause? predicate_clause? "{" state_block+ "}" type_invariant?
+record_decl ::= attribute_list? visibility? "record" identifier generic_params? implements_clause? "{" record_body "}" type_invariant?
+enum_decl   ::= attribute_list? visibility? "enum"   identifier generic_params? implements_clause? "{" variant_members? "}" type_invariant?
+modal_decl  ::= attribute_list? visibility? "modal"  identifier generic_params? implements_clause? "{" state_block+ "}" type_invariant?
 ```
 
 Methods on the implementing type are ordinary `method_def`s; a method that replaces a

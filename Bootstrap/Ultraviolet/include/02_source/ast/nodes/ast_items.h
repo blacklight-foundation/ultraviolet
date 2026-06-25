@@ -21,7 +21,7 @@
 //   ErrorItem     - parse-error sentinel item
 //
 // Supporting structures:
-//   GenericParams, TypeParam, TypeBound, PredicateClause, PredicateReq
+//   GenericParams, TypeParam, TypeBound
 //   ContractClause, ForeignContractClause, TypeInvariant
 //   Param, Receiver (ReceiverShorthand, ReceiverExplicit)
 //   FieldDecl, MethodDecl, RecordMember
@@ -267,112 +267,10 @@ namespace ultraviolet::ast
         core::Span span;
     };
 
-    // Predicate requirement: PredicateReq = <pred, type>
-    struct PredicateReq
-    {
-        Identifier pred; // Predicate name (Bitcopy, Clone, Drop, FfiSafe)
-        TypePtr type;    // Type being constrained
-    };
-
-    // Predicate clause: PredicateClause = [PredicateReq]
-    using PredicateClause = std::vector<PredicateReq>;
-
-    inline const std::vector<PredicateReq>& EmptyPredicateReqList() {
-        static const std::vector<PredicateReq> kEmpty;
-        return kEmpty;
-    }
-
-    inline std::string PredicateReqsPathPayload(const TypePath& path) {
-        std::string payload;
-        for (std::size_t i = 0; i < path.size(); ++i) {
-            if (i > 0) {
-                payload += "::";
-            }
-            payload += path[i];
-        }
-        return payload;
-    }
-
-    inline std::string PredicateReqsTypePayload(const TypePtr& type) {
-        if (!type) {
-            return "none";
-        }
-
-        return std::visit(
-            [&](const auto& node) -> std::string {
-                using T = std::decay_t<decltype(node)>;
-                if constexpr (std::is_same_v<T, TypePrim>) {
-                    return "TypePrim:" + std::string(node.name);
-                } else if constexpr (std::is_same_v<T, TypePathType>) {
-                    return "TypePath:" + PredicateReqsPathPayload(node.path);
-                } else if constexpr (std::is_same_v<T, TypeApply>) {
-                    return "TypeApply:" + PredicateReqsPathPayload(node.path) +
-                           ":args=" + std::to_string(node.args.size());
-                } else if constexpr (std::is_same_v<T, TypeString>) {
-                    return "TypeString";
-                } else if constexpr (std::is_same_v<T, TypeBytes>) {
-                    return "TypeBytes";
-                } else if constexpr (std::is_same_v<T, TypeTuple>) {
-                    return "TypeTuple:elems=" +
-                           std::to_string(node.elements.size());
-                } else {
-                    return "TypeOther";
-                }
-            },
-            type->node);
-    }
-
-    inline std::string PredicateReqsPayload(
-        const char* predicate_opt,
-        const std::vector<PredicateReq>& predicates) {
-        std::string payload;
-        payload += "predicate_opt=";
-        payload += predicate_opt;
-        payload += ";predicate_count=";
-        payload += std::to_string(predicates.size());
-        payload += ";predicate_names=";
-        for (std::size_t i = 0; i < predicates.size(); ++i) {
-            if (i > 0) {
-                payload += ",";
-            }
-            payload += predicates[i].pred;
-        }
-        payload += ";predicate_types=";
-        for (std::size_t i = 0; i < predicates.size(); ++i) {
-            if (i > 0) {
-                payload += ",";
-            }
-            payload += PredicateReqsTypePayload(predicates[i].type);
-        }
-        return payload;
-    }
-
-    inline const std::vector<PredicateReq>& PredicateReqs(
-        const std::optional<PredicateClause>& predicate_clause_opt,
-        std::optional<core::Span> span = std::nullopt) {
-        if (predicate_clause_opt.has_value()) {
-            if (core::Conformance::Enabled()) {
-                core::Conformance::Record(
-                    "PredicateReqs(W)",
-                    span,
-                    PredicateReqsPayload("some", *predicate_clause_opt));
-            }
-            return *predicate_clause_opt;
-        }
-        if (core::Conformance::Enabled()) {
-            core::Conformance::Record(
-                "PredicateReqs(?)",
-                span,
-                PredicateReqsPayload("none", EmptyPredicateReqList()));
-        }
-        return EmptyPredicateReqList();
-    }
-
-    inline void RecordGenericPredicateOwnerClause(
+    inline void RecordGenericOwnerClause(
         std::string_view owner_kind,
         const Identifier& name,
         const std::optional<GenericParams>& generic_params_opt,
-        const std::optional<PredicateClause>& predicate_clause_opt,
         const core::Span& span) {
         if (!core::Conformance::Enabled()) {
             return;
@@ -399,24 +297,9 @@ namespace ultraviolet::ast
                 payload += generic_params_opt->params[i].name;
             }
         }
-        payload += ";predicate_clause=";
-        payload += predicate_clause_opt.has_value() ? "some" : "none";
-        payload += ";predicate_count=";
-        payload += std::to_string(predicate_clause_opt.has_value()
-                                      ? predicate_clause_opt->size()
-                                      : 0);
-        payload += ";predicate_names=";
-        if (predicate_clause_opt.has_value()) {
-            for (std::size_t i = 0; i < predicate_clause_opt->size(); ++i) {
-                if (i > 0) {
-                    payload += ",";
-                }
-                payload += (*predicate_clause_opt)[i].pred;
-            }
-        }
 
         core::Conformance::Record(
-            "GenericParamsAndPredicateClausesOnOwnerDecl", span, payload);
+            "GenericParamsOnOwnerDecl", span, payload);
     }
 
     inline void RecordNominalRelationFormOnOwnerDecl(
@@ -507,7 +390,6 @@ namespace ultraviolet::ast
         bool visibility_explicit = false;
         Identifier name;
         std::optional<GenericParams> generic_params;
-        std::optional<PredicateClause> predicate_clause_opt;
         std::vector<Param> params;
         TypePtr return_type_opt; // may be null if not specified
         std::optional<ContractClause> contract;
@@ -557,7 +439,6 @@ namespace ultraviolet::ast
         Visibility vis;
         Identifier name;
         std::optional<GenericParams> generic_params;
-        std::optional<PredicateClause> where_clause;
         std::vector<Param> params;
         TypePtr return_type_opt;
         std::optional<ContractClause> contract;
@@ -618,14 +499,13 @@ namespace ultraviolet::ast
     using RecordMember = std::variant<FieldDecl, MethodDecl, AssociatedTypeDecl>;
 
     // Record declaration
-    // public record Name<T> <: Class1, Class2 where Bitcopy(T) where { invariant } { members }
+    // public record Name<T> <: Class1, Class2 |: { invariant } { members }
     struct RecordDecl
     {
         AttributeList attrs;
         Visibility vis;
         Identifier name;
         std::optional<GenericParams> generic_params;
-        std::optional<PredicateClause> predicate_clause_opt;
         std::vector<ClassPath> implements; // <: implemented classes
         std::vector<RecordMember> members;
         std::optional<TypeInvariant> invariant_opt;
@@ -663,14 +543,13 @@ namespace ultraviolet::ast
     };
 
     // Enum declaration
-    // public enum Name<T> <: Class where Bitcopy(T) where { invariant } { variants }
+    // public enum Name<T> <: Class |: { invariant } { variants }
     struct EnumDecl
     {
         AttributeList attrs;
         Visibility vis;
         Identifier name;
         std::optional<GenericParams> generic_params;
-        std::optional<PredicateClause> predicate_clause_opt;
         std::vector<ClassPath> implements;
         std::vector<VariantDecl> variants;
         std::optional<TypeInvariant> invariant_opt;
@@ -736,14 +615,13 @@ namespace ultraviolet::ast
     };
 
     // Modal type declaration
-    // public modal Name<T> <: Class where Bitcopy(T) where { invariant } { states }
+    // public modal Name<T> <: Class |: { invariant } { states }
     struct ModalDecl
     {
         AttributeList attrs;
         Visibility vis;
         Identifier name;
         std::optional<GenericParams> generic_params;
-        std::optional<PredicateClause> predicate_clause_opt;
         std::vector<ClassPath> implements;
         std::vector<StateBlock> states;
         std::optional<TypeInvariant> invariant_opt;
@@ -826,8 +704,8 @@ namespace ultraviolet::ast
         AbstractStateDecl>;
 
     // Class declaration
-    // public class Name<T> <: Super where Bitcopy(T) { items }
-    // public modal class Name<T> <: Super where Bitcopy(T) { items }
+    // public class Name<T> <: Super { items }
+    // public modal class Name<T> <: Super { items }
     struct ClassDecl
     {
         AttributeList attrs;
@@ -835,7 +713,6 @@ namespace ultraviolet::ast
         bool modal = false; // modal class flag
         Identifier name;
         std::optional<GenericParams> generic_params;
-        std::optional<PredicateClause> predicate_clause_opt;
         std::vector<ClassPath> supers; // <: super classes
         std::vector<ClassItem> items;
         core::Span span;
@@ -847,14 +724,13 @@ namespace ultraviolet::ast
     // ===========================================================================
 
     // Type alias declaration
-    // public type Name<T> = Type where Bitcopy(T)
+    // public type Name<T> = Type
     struct TypeAliasDecl
     {
         AttributeList attrs;
         Visibility vis;
         Identifier name;
         std::optional<GenericParams> generic_params;
-        std::optional<PredicateClause> predicate_clause_opt;
         TypePtr type;
         core::Span span;
         DocList doc;

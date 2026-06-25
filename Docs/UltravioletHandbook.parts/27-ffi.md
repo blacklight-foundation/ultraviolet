@@ -70,14 +70,14 @@ T = TypePerm(_, U)    Γ ⊢ FfiSafeType(U) ⇓ ok
 Γ ⊢ FfiSafeType(T) ⇓ ok
 ```
 
-**Type aliases** are transparent to the predicate. `FfiSafe-Alias` (for a `TypePath` alias) checks the alias body; `FfiSafe-Alias-Apply` (for an applied generic alias) additionally substitutes the type arguments and checks the alias's predicate clause under that substitution.
+**Type aliases** are transparent to the predicate. `FfiSafe-Alias` (for a `TypePath` alias) checks the alias body; `FfiSafe-Alias-Apply` (for an applied generic alias) substitutes the type arguments and checks the substituted alias body.
 
 **Records** are FFI-safe only when they carry `#layout(C)`, have no unconstrained generic parameters, have a complete (known) layout, and every field type is itself FFI-safe:
 
 ```text
 (FfiSafe-Record)
 T = TypePath(p)    RecordDecl(p) = R    HasLayoutC(R)    TypeParamsOpt(R.gen_params_opt) = []
-Γ ⊢ layout(T) ⇓ _    ∀ f : T_f ∈ Fields(R). Γ ⊢ FfiSafeType(T_f) ⇓ ok    FfiSafePredicateClauseOk([], R.predicate_clause_opt, ∅)
+Γ ⊢ layout(T) ⇓ _    ∀ f : T_f ∈ Fields(R). Γ ⊢ FfiSafeType(T_f) ⇓ ok
 ──────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ FfiSafeType(T) ⇓ ok
 ```
@@ -119,12 +119,7 @@ To pass any of these across the boundary you must lower it to an FFI-safe repres
 
 #### 27.1.4 Generic bounds and the by-value RAII rule
 
-**Generic bounds.** Any type parameter that appears in a field type or variant payload of a type satisfying `FfiSafeType` MUST be constrained by a predicate requirement of the form `FfiSafe(X)` in the declaration's `|:` clause. Otherwise the type is ill-formed: `E-TYP-2629` (`FfiSafe-Generic-Unbounded-Err`). The predicate-requirement grammar (§12.x) is:
-
-```ebnf
-predicate_clause ::= "|:" predicate_req (terminator predicate_req)* terminator?
-predicate_req    ::= ("Bitcopy" | "Clone" | "Drop" | "FfiSafe") "(" type ")"
-```
+**Generic bounds.** Any type parameter that appears in a field type or variant payload of a type satisfying `FfiSafeType` MUST be constrained by a class bound that implies `FfiSafe`, such as `<TValue <: FfiSafe>`. Otherwise the type is ill-formed: `E-TYP-2629` (`FfiSafe-Generic-Unbounded-Err`).
 
 **RAII by-value rule.** If a type satisfies *both* `DropType` and `FfiSafeType`, then any by-value appearance of that type in an FFI signature requires the defining `record`/`enum` to carry `#ffi_pass_by_value` (§27.4.6). Without it, the by-value use is `E-TYP-2630`. Formally (§23.1.4):
 
@@ -146,16 +141,16 @@ public record Point {
     public y: f64
 }
 
-/// A pair generic over any FFI-safe element. The `FfiSafe(TValue)` bound is
+/// A pair generic over any FFI-safe element. The `<TValue <: FfiSafe>` bound is
 /// mandatory because `TValue` appears in the field types.
 #layout(C)
-public record Pair<TValue> |: FfiSafe(TValue) {
+public record Pair<TValue <: FfiSafe> {
     public first: TValue,
     public second: TValue
 }
 ```
 
-Here `Point` and `Pair<i32>` both satisfy `FfiSafeType`. Omitting `#layout(C)` would raise `E-TYP-2624`; omitting the `|: FfiSafe(TValue)` clause on `Pair` would raise `E-TYP-2629`.
+Here `Point` and `Pair<i32>` both satisfy `FfiSafeType`. Omitting `#layout(C)` would raise `E-TYP-2624`; omitting the `<TValue <: FfiSafe>` bound on `Pair` would raise `E-TYP-2629`.
 
 #### 27.1.6 Diagnostics (§23.1.7)
 
@@ -177,13 +172,13 @@ An **extern procedure** is a declaration whose implementation is supplied by for
 #### 27.2.1 Syntax
 
 ```ebnf
-extern_procedure_decl ::= attribute_list? visibility? "procedure" identifier generic_params? signature predicate_clause? contract_clause? foreign_contract_clause_list? terminator
+extern_procedure_decl ::= attribute_list? visibility? "procedure" identifier generic_params? signature contract_clause? foreign_contract_clause_list? terminator
 ```
 
 The AST form is (§23.2.3):
 
 ```text
-ExternProcDecl = ⟨attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, params, return_type_opt, contract_opt, foreign_contracts_opt, span, doc⟩
+ExternProcDecl = ⟨attrs_opt, vis, name, gen_params_opt, params, return_type_opt, contract_opt, foreign_contracts_opt, span, doc⟩
 ```
 
 Unlike an ordinary `procedure_decl`, an extern procedure ends in a `terminator` (a newline or `;`) rather than a `block_expr` — it has no body.
@@ -756,7 +751,7 @@ public procedure parseHeader(data: *imm u8, length: usize) -> u32 {
 - **Always wrap FFI in a safe API.** Expose project-level types and contracts, not foreign symbols. A caller of `normalizeGain` or `absoluteValue` above should never see `unsafe` or a raw pointer. Re-establish project invariants inside the wrapper (AGENTS.md §`unsafe`).
 - **Keep `unsafe` blocks minimal.** The required `unsafe` around an extern call should contain *only* the call. Document ownership, lifetime, thread affinity, and caller obligations at every unsafe boundary (AGENTS.md §`unsafe`).
 - **Lower prohibited types explicitly.** Convert `bool` ⇄ `u8`, slices ⇄ `(*imm T, usize)`, and strings ⇄ pointer/length (or NUL-terminated `*imm u8`) in the wrapper. Do not attempt to pass a `bool`, slice, tuple, string, range, modal type, dynamic object, or `Context` directly — they are not `FfiSafe`.
-- **Make C-ABI types `#layout(C)` and document them.** Every record/enum crossing the boundary needs `#layout(C)`. Bound every generic parameter that appears in such a type with `FfiSafe(X)`.
+- **Make C-ABI types `#layout(C)` and document them.** Every record/enum crossing the boundary needs `#layout(C)`. Bound every generic parameter that appears in such a type with `<T <: FfiSafe>` or a subclass of `FfiSafe`.
 - **Prefer `catch` only when you can recover.** `catch` forces the `C-unwind` ABI and a zeroable return; design the return type so that `ZeroValue(R)` is a meaningful failure sentinel (e.g. `0` length, a null pointer). When abort-on-panic is the right policy, accept the `abort` default and omit `#unwind`.
 - **Use foreign contracts to encode caller and callee obligations.** Express positivity, non-null, length, and error/null-result guarantees with `@foreign_assumes` and `@foreign_ensures` rather than ad-hoc runtime checks. FFI wrappers should be especially strict about contracts (AGENTS.md §Contracts Are Mandatory Where Expressible).
 - **Use hosted exports for capability-managed libraries.** When foreign callers need access to project capabilities, prefer `#host_export` with a *narrow projected* `Context` bundle over hand-rolled global state. Pass only the capabilities the boundary actually uses (AGENTS.md §Capability Passing).
@@ -766,7 +761,7 @@ public procedure parseHeader(data: *imm u8, length: usize) -> u32 {
 
 - **`bool` at the boundary → `E-TYP-2623`.** `bool` is *not* in `FfiPrimTypes`. Use `u8`. The same error fires for tuples, unions, slices, strings/bytes, ranges, modal types, `Ptr<T>`, dynamic objects (`$Class`), opaque types, and `Context`.
 - **Missing `#layout(C)` → `E-TYP-2624` / `E-TYP-2625`.** A record/enum used at the boundary without `#layout(C)` is not `FfiSafe`.
-- **Unbounded generic in an FFI-safe aggregate → `E-TYP-2629`.** Add the `|: FfiSafe(TValue)` clause for every parameter used in a field or payload.
+- **Unbounded generic in an FFI-safe aggregate → `E-TYP-2629`.** Add a `<TValue <: FfiSafe>` bound for every parameter used in a field or payload.
 - **By-value `Drop` type without `#ffi_pass_by_value` → `E-TYP-2630`.** Either pass it behind a raw pointer, or mark the defining record/enum `#ffi_pass_by_value`.
 - **Calling an extern outside `unsafe` → `E-TYP-2106`.** Wrap the call. Conversely, a generic parameter on the extern signature itself is `E-TYP-2306`.
 - **`catch` without `C-unwind` or with a non-zeroable return.** `#unwind("catch")` demands the `C-unwind` ABI; an export/hosted export with a non-zeroable `R` under catch is `E-TYP-2631` / `E-TYP-2635`. Choose a zeroable return type.

@@ -303,7 +303,6 @@ static ast::ProcedureDecl AsProcedureDecl(const ast::ComptimeProcedureDecl& decl
   proc.generic_params = decl.generic_params;
   proc.params = decl.params;
   proc.return_type_opt = decl.return_type_opt;
-  proc.predicate_clause_opt = std::nullopt;
   proc.contract = decl.contract;
   proc.body = decl.body;
   proc.span = decl.span;
@@ -1705,33 +1704,6 @@ static bool ExpandTypeArgsWithDefaults(
   return true;
 }
 
-static bool IsPredicateReqName(std::string_view name) {
-  return IdEq(name, "Bitcopy") || IdEq(name, "Clone") ||
-         IdEq(name, "Drop") || IdEq(name, "FfiSafe") ||
-         IdEq(name, "GpuSafe");
-}
-
-static bool PredicateReqSatisfied(const ScopeContext& ctx,
-                                  std::string_view pred,
-                                  const TypeRef& type) {
-  if (IdEq(pred, "Bitcopy")) {
-    return BitcopyType(ctx, type);
-  }
-  if (IdEq(pred, "Clone")) {
-    return CloneType(ctx, type);
-  }
-  if (IdEq(pred, "Drop")) {
-    return DropType(ctx, type);
-  }
-  if (IdEq(pred, "FfiSafe")) {
-    return FfiSafeType(ctx, type);
-  }
-  if (IdEq(pred, "GpuSafe")) {
-    return !GpuSafeDiagForType(ctx, type).has_value();
-  }
-  return false;
-}
-
 static bool ClassBoundPathExists(const ScopeContext& ctx,
                                  const ast::ClassPath& path) {
   if (IsCapabilityClassPath(path)) {
@@ -1762,24 +1734,6 @@ static std::optional<std::string_view> ValidateProcedureTypeArgConstraints(
       if (!TypeImplementsClass(ctx, arg_it->second, bound.class_path)) {
         return std::optional<std::string_view>{"E-TYP-2302"};
       }
-    }
-  }
-
-  if (!proc.predicate_clause_opt.has_value()) {
-    return std::nullopt;
-  }
-
-  for (const auto& wp : *proc.predicate_clause_opt) {
-    if (!IsPredicateReqName(wp.pred)) {
-      return std::optional<std::string_view>{"E-TYP-2302"};
-    }
-    const auto lowered = LowerType(ctx, wp.type);
-    if (!lowered.ok) {
-      return lowered.diag_id;
-    }
-    const auto instantiated = InstantiateType(lowered.type, subst);
-    if (!PredicateReqSatisfied(ctx, wp.pred, instantiated)) {
-      return std::optional<std::string_view>{"E-TYP-2302"};
     }
   }
 

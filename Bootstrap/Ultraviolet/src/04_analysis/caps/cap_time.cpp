@@ -238,7 +238,6 @@ ast::RecordDecl BuildDurationRecordDecl() {
   record.name = ast::Identifier{"Duration"};
   record.generic_params = std::nullopt;
   record.implements = {};
-  record.predicate_clause_opt = std::nullopt;
   record.invariant_opt = std::nullopt;
   record.members = {
       MakeField("nanoseconds", MakeTypePrimAst("u128"), ast::Visibility::Public),
@@ -256,7 +255,6 @@ ast::RecordDecl BuildMonotonicInstantRecordDecl() {
   record.name = ast::Identifier{"MonotonicInstant"};
   record.generic_params = std::nullopt;
   record.implements = {};
-  record.predicate_clause_opt = std::nullopt;
   record.invariant_opt = std::nullopt;
   record.members = {
       MakeField("domain", MakeTypePrimAst("usize"), ast::Visibility::Private),
@@ -275,7 +273,6 @@ ast::RecordDecl BuildUtcInstantRecordDecl() {
   record.name = ast::Identifier{"UtcInstant"};
   record.generic_params = std::nullopt;
   record.implements = {};
-  record.predicate_clause_opt = std::nullopt;
   record.invariant_opt = std::nullopt;
   record.members = {
       MakeField("unix_nanoseconds",

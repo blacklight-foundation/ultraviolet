@@ -58,15 +58,15 @@ public procedure catalogAcceptedExerciseQualityEntryCount() -> usize {
 }
 
 public procedure expectedCatalogAcceptedExerciseQualityEntryDigest() -> usize {
-    return 8633226usize
+    return 352969702usize
 }
 
 public procedure catalogAcceptedExerciseQualityEntryDigest() -> usize {
-    return 8633226usize
+    return 352969702usize
 }
 
 public procedure catalogAcceptedExerciseQualityManifestByteCount() -> usize {
-    return 832879usize
+    return 832883usize
 }
 
 public procedure catalogAcceptedExerciseQualityManifestLineBreakCount() -> usize {
@@ -131,13 +131,13 @@ public procedure catalogAcceptedExercisesAreNontrivialAndExecuted(
             "HelloUltraviolet/Audit/ExerciseQualityManifest.csv"
         )
     return if move read_result is {
-        Outcome::Value(value) {
+        @Value { value } {
             let manifest_text: string@View = string::as_view(value)
             catalogAcceptedExerciseQualityManifestShapeMatches(
                 manifest_text
             )
         }
-        Outcome::Error(_) {
+        @Error {
             false
         }
     }

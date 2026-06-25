@@ -113,19 +113,6 @@ bool ContractMayNeedProjectFiles(
          ExprMayNeedProjectFiles(contract_opt->postcondition);
 }
 
-bool WhereClauseMayNeedProjectFiles(
-    const std::optional<ast::PredicateClause>& where_opt) {
-  if (!where_opt.has_value()) {
-    return false;
-  }
-  for (const auto& pred : *where_opt) {
-    if (TypeMayNeedProjectFiles(pred.type)) {
-      return true;
-    }
-  }
-  return false;
-}
-
 bool GenericParamsMayNeedProjectFiles(
     const std::optional<ast::GenericParams>& params_opt) {
   if (!params_opt.has_value()) {
@@ -787,7 +774,6 @@ bool ItemMayNeedProjectFiles(const ast::ASTItem& item) {
             const auto& proc = std::get<ast::ExternProcDecl>(ext_item);
             if (HasFilesAttr(proc.attrs) ||
                 GenericParamsMayNeedProjectFiles(proc.generic_params) ||
-                WhereClauseMayNeedProjectFiles(proc.where_clause) ||
                 ParamsMayNeedProjectFiles(proc.params) ||
                 TypeMayNeedProjectFiles(proc.return_type_opt) ||
                 ContractMayNeedProjectFiles(proc.contract)) {
@@ -807,7 +793,6 @@ bool ItemMayNeedProjectFiles(const ast::ASTItem& item) {
         } else if constexpr (std::is_same_v<T, ast::RecordDecl>) {
           if (HasDeriveAttr(node.attrs) ||
               GenericParamsMayNeedProjectFiles(node.generic_params) ||
-              WhereClauseMayNeedProjectFiles(node.predicate_clause_opt) ||
               (node.invariant_opt.has_value() &&
                ExprMayNeedProjectFiles(node.invariant_opt->predicate))) {
             return true;
@@ -821,7 +806,6 @@ bool ItemMayNeedProjectFiles(const ast::ASTItem& item) {
         } else if constexpr (std::is_same_v<T, ast::EnumDecl>) {
           if (HasDeriveAttr(node.attrs) ||
               GenericParamsMayNeedProjectFiles(node.generic_params) ||
-              WhereClauseMayNeedProjectFiles(node.predicate_clause_opt) ||
               (node.invariant_opt.has_value() &&
                ExprMayNeedProjectFiles(node.invariant_opt->predicate))) {
             return true;
@@ -836,7 +820,6 @@ bool ItemMayNeedProjectFiles(const ast::ASTItem& item) {
         } else if constexpr (std::is_same_v<T, ast::ModalDecl>) {
           if (HasDeriveAttr(node.attrs) ||
               GenericParamsMayNeedProjectFiles(node.generic_params) ||
-              WhereClauseMayNeedProjectFiles(node.predicate_clause_opt) ||
               (node.invariant_opt.has_value() &&
                ExprMayNeedProjectFiles(node.invariant_opt->predicate))) {
             return true;
@@ -850,8 +833,7 @@ bool ItemMayNeedProjectFiles(const ast::ASTItem& item) {
           }
           return false;
         } else if constexpr (std::is_same_v<T, ast::ClassDecl>) {
-          if (GenericParamsMayNeedProjectFiles(node.generic_params) ||
-              WhereClauseMayNeedProjectFiles(node.predicate_clause_opt)) {
+          if (GenericParamsMayNeedProjectFiles(node.generic_params)) {
             return true;
           }
           for (const auto& class_item : node.items) {
@@ -862,7 +844,6 @@ bool ItemMayNeedProjectFiles(const ast::ASTItem& item) {
           return false;
         } else if constexpr (std::is_same_v<T, ast::TypeAliasDecl>) {
           return GenericParamsMayNeedProjectFiles(node.generic_params) ||
-                 WhereClauseMayNeedProjectFiles(node.predicate_clause_opt) ||
                  TypeMayNeedProjectFiles(node.type);
         } else if constexpr (std::is_same_v<T, ast::DeriveTargetDecl>) {
           // Derive bodies receive TypeEmitter and may emit declarations that

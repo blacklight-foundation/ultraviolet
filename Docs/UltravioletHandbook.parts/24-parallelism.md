@@ -196,7 +196,7 @@ Only **GPU-safe** types may cross into GPU code. `GpuSafeType(T)` holds iff `¬P
 GpuSafePrimTypes = {i8, i16, i32, i64, u8, u16, u32, u64, isize, usize, f16, f32, f64, bool, ()}
 ```
 
-Prohibited types (`ProhibitedGpuType`) include `$`-dynamic types, `Context`, capability types, managed `string`/`bytes` (`@Managed`), valid safe pointers (`Ptr@Valid`), modal-state types, and modal-reference types. Arrays, tuples, raw pointers, permission-wrapped types, and `Bitcopy` records/enums of GPU-safe components are themselves GPU-safe; `string@View` and `bytes@View` are GPU-safe. A non-GPU-safe type raises `GpuSafeType-Err` (`E-TYP-2640`); a generic record/enum used GPU-safely whose payload type parameters are not bounded by `GpuSafe(X)` in the declaration predicate clause raises `GpuSafe-Generic-Unbounded-Err` (`E-TYP-2642`). **The key system is not available within GPU execution contexts** — a key block in a GPU context is rejected (`E-CON-0155`).
+Prohibited types (`ProhibitedGpuType`) include `$`-dynamic types, `Context`, capability types, managed `string`/`bytes` (`@Managed`), valid safe pointers (`Ptr@Valid`), modal-state types, and modal-reference types. Arrays, tuples, raw pointers, permission-wrapped types, and `Bitcopy` records/enums of GPU-safe components are themselves GPU-safe; `string@View` and `bytes@View` are GPU-safe. A non-GPU-safe type raises `GpuSafeType-Err` (`E-TYP-2640`); a generic record/enum used GPU-safely whose payload type parameters are not bounded by `<T <: GpuSafe>` or a subclass of `GpuSafe` raises `GpuSafe-Generic-Unbounded-Err` (`E-TYP-2642`). **The key system is not available within GPU execution contexts** — a key block in a GPU context is rejected (`E-CON-0155`).
 
 #### 24.2.4 Domain example
 

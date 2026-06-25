@@ -463,7 +463,7 @@ visibility ::= "public" | "internal" | "private"
 **Modules and visibility.** `import` brings a module into scope (optionally aliased). `using` brings names in: a single name, a brace list, or the wildcard `::*` (the style guide restricts `using module::*` to internal/implementation modules — never public API). Always write `visibility` explicitly (`public`, `internal`, `private`); the style guide treats visibility as part of the API contract.
 
 ```ebnf
-procedure_decl ::= attribute_list? visibility? "procedure" identifier generic_params? signature predicate_clause? contract_clause? block_expr
+procedure_decl ::= attribute_list? visibility? "procedure" identifier generic_params? signature contract_clause? block_expr
 signature      ::= "(" param_list? ")" ("->" return_type)?
 param_list     ::= param ("," param)* ","?
 param          ::= param_mode? identifier ":" type
@@ -477,10 +477,10 @@ receiver_shorthand ::= "~" | "~!" | "~%"
 explicit_receiver  ::= param_mode? "self" ":" type
 ```
 
-**Procedures and methods.** A `procedure_decl` may carry a generic parameter list, a `predicate_clause` (`|: Bitcopy(T)`), and/or a `contract_clause` (B.7). A method's first parameter is a **receiver**: the shorthands `~` (`const` self — shared read), `~!` (`unique` self — mutable), and `~%` (`shared` self), or an explicit `self: Type` (optionally `move self: Type`). `override` marks a method that replaces a class default. Return types may be a single type or a `union_return` `A | B`.
+**Procedures and methods.** A `procedure_decl` may carry a generic parameter list and/or a `contract_clause` (B.7). A method's first parameter is a **receiver**: the shorthands `~` (`const` self — shared read), `~!` (`unique` self — mutable), and `~%` (`shared` self), or an explicit `self: Type` (optionally `move self: Type`). `override` marks a method that replaces a class default. Return types may be a single type or a `union_return` `A | B`.
 
 ```ebnf
-record_decl       ::= attribute_list? visibility? "record" identifier generic_params? implements_clause? predicate_clause? "{" record_body "}" type_invariant?
+record_decl       ::= attribute_list? visibility? "record" identifier generic_params? implements_clause? "{" record_body "}" type_invariant?
 record_body       ::= record_member*
 record_member     ::= record_field_decl | method_def
 record_field_decl ::= attribute_list? visibility? identifier ":" type record_field_init?
@@ -489,7 +489,7 @@ field_decl        ::= visibility? identifier ":" type
 implements_clause ::= "<:" class_list
 class_list        ::= type_path ("," type_path)*
 
-enum_decl       ::= attribute_list? visibility? "enum" identifier generic_params? implements_clause? predicate_clause? "{" variant_members? "}" type_invariant?
+enum_decl       ::= attribute_list? visibility? "enum" identifier generic_params? implements_clause? "{" variant_members? "}" type_invariant?
 variant_members ::= variant (terminator variant)* terminator?
 variant         ::= identifier variant_payload? ("=" integer_literal)?
 variant_payload ::= "(" type_list ")" | "{" field_decl_list "}"
@@ -500,22 +500,20 @@ field_decl_list ::= field_decl ("," field_decl)* ","?
 **Records and enums.** A `record` holds fields (with optional `= default` initializers) and methods, may `<:` implement classes, and may end with a `type_invariant`. An `enum` lists variants separated by terminators; each `variant` may carry a tuple payload `(T, U)` or record payload `{ field: T }` and an explicit discriminant `= 3`.
 
 ```ebnf
-modal_decl        ::= attribute_list? visibility? "modal" identifier generic_params? implements_clause? predicate_clause? "{" state_block+ "}" type_invariant?
+modal_decl        ::= attribute_list? visibility? "modal" identifier generic_params? implements_clause? "{" state_block+ "}" type_invariant?
 state_block       ::= "@" state_name "{" state_member* "}"
 state_member      ::= state_field_decl | state_method_def | transition_def
 state_field_decl  ::= attribute_list? visibility? identifier ":" type
 state_method_def       ::= attribute_list? visibility? "procedure" identifier generic_params? state_method_signature contract_clause? block_expr
 state_method_signature ::= "(" receiver ("," param_list)? ")" ("->" type)?
-predicate_clause       ::= "|:" predicate_req (terminator predicate_req)* terminator?
-predicate_req          ::= ("Bitcopy" | "Clone" | "Drop" | "FfiSafe") "(" type ")"
 transition_def    ::= attribute_list? visibility? "transition" identifier "(" param_list ")" "->" "@" target_state block_expr
 target_state      ::= identifier
 ```
 
-**Modals.** A `modal` declares one or more `@State { ... }` blocks. Each state block holds state-local fields, state methods, and `transition` definitions. A `transition name(params) -> @TargetState { ... }` consumes the source-state value (the receiver `self` is implicit — a `transition_def` takes only a `param_list`, never a `receiver`) and produces a value in the target state — the preferred way to model lifecycle protocols (style guide). The `predicate_clause` form `|: Bitcopy(T)` declares structural capability requirements (`Bitcopy`, `Clone`, `Drop`, `FfiSafe`).
+**Modals.** A `modal` declares one or more `@State { ... }` blocks. Each state block holds state-local fields, state methods, and `transition` definitions. A `transition name(params) -> @TargetState { ... }` consumes the source-state value (the receiver `self` is implicit — a `transition_def` takes only a `param_list`, never a `receiver`) and produces a value in the target state — the preferred way to model lifecycle protocols (style guide). Structural requirements such as `Bitcopy`, `Clone`, `Drop`, `FfiSafe`, and `GpuSafe` are generic class bounds.
 
 ```ebnf
-class_declaration   ::= attribute_list? visibility? "modal"? "class" identifier generic_params? ("<:" superclass_bounds)? predicate_clause? "{" class_item* "}"
+class_declaration   ::= attribute_list? visibility? "modal"? "class" identifier generic_params? ("<:" superclass_bounds)? "{" class_item* "}"
 superclass_bounds   ::= class_bound ("+" class_bound)*
 class_item          ::= abstract_procedure | concrete_procedure | abstract_field | abstract_state | associated_type
 abstract_procedure  ::= "procedure" identifier signature contract_clause?
@@ -526,15 +524,15 @@ abstract_state      ::= "@" identifier "{" field_list? "}"
 field_list          ::= abstract_field ("," abstract_field)* ","?
 associated_type     ::= "type" identifier ("=" type)?
 
-type_alias_decl ::= attribute_list? visibility? "type" identifier generic_params? predicate_clause? "=" type
+type_alias_decl ::= attribute_list? visibility? "type" identifier generic_params? "=" type
 
 extern_block      ::= attribute_list? visibility? "extern" abi_string? "{" extern_item* "}"
 abi_string        ::= string_literal
 extern_item       ::= foreign_procedure
-foreign_procedure ::= attribute_list? visibility? "procedure" identifier generic_params? signature predicate_clause? contract_clause? foreign_contract_clause_list? terminator
+foreign_procedure ::= attribute_list? visibility? "procedure" identifier generic_params? signature contract_clause? foreign_contract_clause_list? terminator
 ```
 
-**Classes, aliases, extern.** A `class` declares abstract and concrete procedures, abstract fields (optionally key-boundary-marked with `#`), abstract states, and associated types. Superclass bounds join with `+`. `modal class` declares a stateful class. A `type` alias may carry generics and a predicate clause. `extern` blocks declare foreign procedures (see B.13).
+**Classes, aliases, extern.** A `class` declares abstract and concrete procedures, abstract fields (optionally key-boundary-marked with `#`), abstract states, and associated types. Superclass bounds join with `+`. `modal class` declares a stateful class. A `type` alias may carry generics. `extern` blocks declare foreign procedures (see B.13).
 
 ```ultraviolet
 public modal Connection {
@@ -894,7 +892,7 @@ The foreign function interface: extern blocks, foreign procedures, FFI verificat
 extern_block                 ::= attribute_list? visibility? "extern" abi_string? "{" extern_item* "}"
 abi_string                   ::= string_literal
 extern_item                  ::= foreign_procedure
-foreign_procedure            ::= attribute_list? visibility? "procedure" identifier generic_params? signature predicate_clause? contract_clause? foreign_contract_clause_list? terminator
+foreign_procedure            ::= attribute_list? visibility? "procedure" identifier generic_params? signature contract_clause? foreign_contract_clause_list? terminator
 
 ffi_verification_attr        ::= "#" ffi_verification_mode
 ffi_verification_mode        ::= "static" | "dynamic"
@@ -1016,7 +1014,7 @@ These are the easily-confused tokens drawn directly from the productions above. 
 
 - **One-element tuples use a trailing `;`**: the tuple *type* is `(T;)` and the tuple *literal* and *pattern* are `(expr;)` / `(pat;)`. `(T)` is just a parenthesized type, and `()` is the unit type/value.
 - **Generic *parameter* lists are `;`-separated** (`<TKey; TValue>`), but generic *argument* lists are `,`-separated (`Map<K, V>`).
-- **`|:` is overloaded by position**: it introduces a `predicate_clause` (B.6), a `contract_clause` (B.7), a `refinement_clause`/`type_invariant`/`loop_invariant` (braced, B.2/B.7), and the foreign-contract clauses (B.13). Read the following token sequence (`{`, a predicate-requirement identifier, the `@foreign_assumes` decorator spelling, or a bare predicate) to disambiguate.
+- **`|:` is overloaded by position**: it introduces a `contract_clause` (B.7), a `refinement_clause`/`type_invariant`/`loop_invariant` (braced, B.2/B.7), and the foreign-contract clauses (B.13). Read the following token sequence (`{`, the `@foreign_assumes` decorator spelling, or a bare predicate expression) to disambiguate.
 - **Raw pointer qualifier precedes the type**: `*imm T` and `*mut T`, not `*T imm`.
 - **`Ptr::null()` is the exact null-pointer expression**; `Ptr<T>@Null` is the corresponding type state.
 - **`..` family**: `..` exclusive, `..=` inclusive — used in both `range_expression` and `range_pattern`.

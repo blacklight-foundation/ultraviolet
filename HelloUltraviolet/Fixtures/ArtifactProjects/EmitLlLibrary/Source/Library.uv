@@ -26,7 +26,7 @@ public record EmitLlDroppingFfiByValueRecord {
 }
 
 #layout(C)
-public record EmitLlGenericFfiBox<TValue> |: FfiSafe(TValue)
+public record EmitLlGenericFfiBox<TValue <: FfiSafe>
 {
     public value: TValue
 }

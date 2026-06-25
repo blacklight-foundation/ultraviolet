@@ -10,7 +10,7 @@ This chapter covers the contract grammar (§15.4), preconditions (§15.5), postc
 
 #### 16.1.1 Exact syntax
 
-A contract clause attaches to a procedure or method **after the signature (and, for a free procedure, after the optional `predicate_clause`), and before the body block**. The grammar, reproduced verbatim from §15.4.1 and Appendix B.7:
+A contract clause attaches to a procedure or method **after the signature and before the body block**. The grammar, reproduced verbatim from §15.4.1 and Appendix B.7:
 
 ```ebnf
 contract_clause    ::= "|:" contract_body
@@ -25,7 +25,7 @@ predicate_expr     ::= logical_or_expr
 The placement is fixed by the declaration grammar. For a free procedure (Appendix B.6):
 
 ```ebnf
-procedure_decl ::= attribute_list? visibility? "procedure" identifier generic_params? signature predicate_clause? contract_clause? block_expr
+procedure_decl ::= attribute_list? visibility? "procedure" identifier generic_params? signature contract_clause? block_expr
 signature      ::= "(" param_list? ")" ("->" return_type)?
 ```
 
@@ -38,7 +38,7 @@ receiver_shorthand ::= "~" | "~!" | "~%"
 explicit_receiver  ::= param_mode? "self" ":" type
 ```
 
-So the canonical order for a free procedure is `procedure name(...) -> RetType |: PRE |= POST { body }`, and for a method `procedure name(~recv, ...) -> RetType |: PRE |= POST { body }`. Note the precise difference: only `procedure_decl` carries a `predicate_clause?` slot before `contract_clause?`; `method_def` has no `predicate_clause` — its contract clause follows the optional return type directly. A contract clause is **optional**; a procedure with no `|:` simply has precondition `true` and postcondition `true`.
+So the canonical order for a free procedure is `procedure name(...) -> RetType |: PRE |= POST { body }`, and for a method `procedure name(~recv, ...) -> RetType |: PRE |= POST { body }`. In both forms, the contract clause follows the optional return type directly. A contract clause is **optional**; a procedure with no `|:` simply has precondition `true` and postcondition `true`.
 
 The three `contract_body` alternatives give three shapes:
 
@@ -279,9 +279,9 @@ loop_invariant ::= "|:" "{" predicate_expr "}"
 A type invariant attaches **after** the closing brace of a `record`, `enum`, or `modal` declaration body (Appendix B.6):
 
 ```ebnf
-record_decl ::= attribute_list? visibility? "record" identifier generic_params? implements_clause? predicate_clause? "{" record_body "}" type_invariant?
-enum_decl   ::= attribute_list? visibility? "enum"   identifier generic_params? implements_clause? predicate_clause? "{" variant_members? "}" type_invariant?
-modal_decl  ::= attribute_list? visibility? "modal"  identifier generic_params? implements_clause? predicate_clause? "{" state_block+ "}" type_invariant?
+record_decl ::= attribute_list? visibility? "record" identifier generic_params? implements_clause? "{" record_body "}" type_invariant?
+enum_decl   ::= attribute_list? visibility? "enum"   identifier generic_params? implements_clause? "{" variant_members? "}" type_invariant?
+modal_decl  ::= attribute_list? visibility? "modal"  identifier generic_params? implements_clause? "{" state_block+ "}" type_invariant?
 ```
 
 A loop invariant attaches between the loop condition and the loop body (Appendix B.3):
@@ -331,7 +331,7 @@ public record Percentage {
 } |: { self.value <= 100 }
 ```
 
-The braced invariant `|: { self.value <= 100 }` trails the closing brace of the record body. The single field `value` is **not** declared `public`, so it is private by default, which satisfies the no-public-mutable-field rule; the only way to obtain a `Percentage` is through the `clamp` factory, whose result is checked post-construction. The read accessor `get(~)` uses the `~` (const) receiver shorthand. This record needs neither an `implements_clause` nor a `predicate_clause`, so both are omitted; were a predicate clause needed it would take the form `|: Bitcopy(...)`, `|: Clone(...)`, `|: Drop(...)`, or `|: FfiSafe(...)`, never an arbitrary identifier.
+The braced invariant `|: { self.value <= 100 }` trails the closing brace of the record body. The single field `value` is **not** declared `public`, so it is private by default, which satisfies the no-public-mutable-field rule; the only way to obtain a `Percentage` is through the `clamp` factory, whose result is checked post-construction. The read accessor `get(~)` uses the `~` (const) receiver shorthand. This record needs no `implements_clause`; any generic constraints would be written as bounds in its `generic_params` list.
 
 #### 16.4.3 Loop-invariant semantics
 
@@ -601,8 +601,8 @@ The contract, entry, and invariant diagnostics owned by §15.10, the `#dynamic`-
 Common mistakes and how to avoid them:
 
 - **Spelling contracts with English keywords.** There is no `requires` / `ensures` / `invariant` keyword. Use `|:`, `|=`, `@result`, `@entry(...)`, and `|: { ... }` for invariants. Foreign procedures use `@foreign_assumes(...)` / `@foreign_ensures(...)`.
-- **Confusing the `|:` forms.** `|: P` is a *contract clause* (precondition `P`); `|: { P }` is an *invariant* (type or loop); `|: @foreign_assumes(P)` is a *foreign* contract; `type T = U |: { P }` is a *refinement type*; and on a type or generic parameter declaration, `|: Bitcopy(T)` / `Clone(T)` / `Drop(T)` / `FfiSafe(T)` is a *predicate clause*. The brace, the leading `@foreign_*` decorator spelling, and the position disambiguate — the parser keys on exactly these token sequences.
-- **Misplacing the clause.** A contract clause sits **after** the signature (and, for a free procedure, after any `predicate_clause`) and **before** the body. A type invariant sits **after** the closing brace of the declaration body. A loop invariant sits **between** the condition and the body.
+- **Confusing the `|:` forms.** `|: P` is a *contract clause* (precondition `P`); `|: { P }` is an *invariant* (type or loop); `|: @foreign_assumes(P)` is a *foreign* contract; and `type T = U |: { P }` is a *refinement type*. Generic constraints use `<:` bounds, not `|:`.
+- **Misplacing the clause.** A contract clause sits **after** the signature and **before** the body. A type invariant sits **after** the closing brace of the declaration body. A loop invariant sits **between** the condition and the body.
 - **Malformed receivers.** A method receiver is a shorthand — `~` (const), `~!` (unique/mutable), or `~%` (shared) — **or** an explicit `self : Type`; you cannot combine them (`~! self` is not a receiver). Inside the body the receiver is named `self`; a `~!` receiver is required for any method that mutates `self`, including one whose postcondition compares `self.field` against `@entry(self.field)`.
 - **Impure or non-`bool` predicates.** A predicate that calls a capability-taking procedure, mutates, allocates, spawns, or yields is impure (`E-SEM-2802` / `E-SEM-3004`); a predicate that does not have type `bool` is `E-SEM-2808`. Keep predicates to pure comparisons, boolean combinators, field / index access, casts, and pure calls.
 - **`@result` / `@entry` misuse.** `@result` outside a postcondition is `E-SEM-2806`. `@entry` over a non-`Bitcopy` type is `E-SEM-2805`; over a moved parameter is `E-SEM-2807`; with side effects is `E-CON-0416`; needing a capability is `E-CON-0415`; referencing anything other than parameters and the receiver is ill-formed. Snapshot scalar `Bitcopy` fields only.

@@ -143,7 +143,7 @@ const std::vector<std::string_view>& UniverseProtectedNames() {
       "u16",    "u32",    "u64",    "u128",   "f16",    "f32",
       "f64",    "bool",   "char",   "usize",  "isize",  "Self",
       "Drop", "Bitcopy", "Clone", "Eq", "Hash", "Hasher", "Iterator", "Discrete",
-      "FfiSafe", "string", "bytes",  "Modal",  "Region", "RegionOptions",
+      "FfiSafe", "GpuSafe", "string", "bytes",  "Modal",  "Region", "RegionOptions",
       "CancelToken", "Context", "TestAuthority", "System", "IO",
       "HeapAllocator", "ExecutionDomain", "Reactor", "Network", "Time",
       "MonotonicTime", "WallTime", "Duration", "MonotonicInstant",

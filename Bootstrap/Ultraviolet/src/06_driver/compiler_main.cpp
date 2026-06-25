@@ -1713,24 +1713,6 @@ void AppendGenericSignature(
   }
 }
 
-void AppendPredicateSignature(
-    SourceTextCache& sources,
-    std::vector<std::string>& fields,
-    const std::optional<ultraviolet::ast::PredicateClause>& predicates_opt) {
-  fields.push_back(std::string("predicates=") +
-                   (predicates_opt.has_value() ? "1" : "0"));
-  if (!predicates_opt.has_value()) {
-    return;
-  }
-  fields.push_back("predicate-count=" + std::to_string(predicates_opt->size()));
-  for (const auto& predicate : *predicates_opt) {
-    std::string out;
-    AppendSignatureAtom(out, predicate.pred);
-    AppendSignatureAtom(out, TypeSignature(sources, predicate.type));
-    fields.push_back("predicate=" + out);
-  }
-}
-
 std::string ParamSignature(SourceTextCache& sources,
                            const ultraviolet::ast::Param& param) {
   std::string out;
@@ -1856,7 +1838,6 @@ void AppendCallableSignature(
     ultraviolet::ast::Visibility vis,
     std::string_view name,
     const std::optional<ultraviolet::ast::GenericParams>& generic_params,
-    const std::optional<ultraviolet::ast::PredicateClause>& predicate_clause,
     const std::vector<ultraviolet::ast::Param>& params,
     const ultraviolet::ast::TypePtr& return_type,
     const std::optional<ultraviolet::ast::ContractClause>& contract) {
@@ -1865,7 +1846,6 @@ void AppendCallableSignature(
   fields.push_back("vis=" + std::string(VisibilitySignature(vis)));
   fields.push_back("name=" + std::string(name));
   AppendGenericSignature(sources, fields, generic_params);
-  AppendPredicateSignature(sources, fields, predicate_clause);
   AppendParamsSignature(sources, fields, params);
   fields.push_back("return=" + TypeSignature(sources, return_type));
   AppendContractSignature(sources, fields, contract);
@@ -2027,7 +2007,6 @@ std::string ItemInterfaceHash(SourceTextCache& sources,
                                           proc.vis,
                                           proc.name,
                                           proc.generic_params,
-                                          proc.where_clause,
                                           proc.params,
                                           proc.return_type_opt,
                                           proc.contract);
@@ -2057,7 +2036,6 @@ std::string ItemInterfaceHash(SourceTextCache& sources,
                                   node.vis,
                                   node.name,
                                   node.generic_params,
-                                  node.predicate_clause_opt,
                                   node.params,
                                   node.return_type_opt,
                                   node.contract);
@@ -2070,7 +2048,6 @@ std::string ItemInterfaceHash(SourceTextCache& sources,
                                   node.vis,
                                   node.name,
                                   node.generic_params,
-                                  std::nullopt,
                                   node.params,
                                   node.return_type_opt,
                                   node.contract);
@@ -2080,7 +2057,6 @@ std::string ItemInterfaceHash(SourceTextCache& sources,
           fields.push_back("vis=" + std::string(VisibilitySignature(node.vis)));
           fields.push_back("name=" + node.name);
           AppendGenericSignature(sources, fields, node.generic_params);
-          AppendPredicateSignature(sources, fields, node.predicate_clause_opt);
           fields.push_back("implements=" + std::to_string(node.implements.size()));
           for (const auto& impl : node.implements) {
             fields.push_back("implements-path=" + PathSignature(impl));
@@ -2119,7 +2095,6 @@ std::string ItemInterfaceHash(SourceTextCache& sources,
           fields.push_back("vis=" + std::string(VisibilitySignature(node.vis)));
           fields.push_back("name=" + node.name);
           AppendGenericSignature(sources, fields, node.generic_params);
-          AppendPredicateSignature(sources, fields, node.predicate_clause_opt);
           fields.push_back("implements=" + std::to_string(node.implements.size()));
           for (const auto& impl : node.implements) {
             fields.push_back("implements-path=" + PathSignature(impl));
@@ -2144,7 +2119,6 @@ std::string ItemInterfaceHash(SourceTextCache& sources,
           fields.push_back("vis=" + std::string(VisibilitySignature(node.vis)));
           fields.push_back("name=" + node.name);
           AppendGenericSignature(sources, fields, node.generic_params);
-          AppendPredicateSignature(sources, fields, node.predicate_clause_opt);
           fields.push_back("implements=" + std::to_string(node.implements.size()));
           for (const auto& impl : node.implements) {
             fields.push_back("implements-path=" + PathSignature(impl));
@@ -2217,7 +2191,6 @@ std::string ItemInterfaceHash(SourceTextCache& sources,
           fields.push_back(std::string("modal=") + (node.modal ? "1" : "0"));
           fields.push_back("name=" + node.name);
           AppendGenericSignature(sources, fields, node.generic_params);
-          AppendPredicateSignature(sources, fields, node.predicate_clause_opt);
           fields.push_back("supers=" + std::to_string(node.supers.size()));
           for (const auto& super : node.supers) {
             fields.push_back("super=" + PathSignature(super));
@@ -2233,7 +2206,6 @@ std::string ItemInterfaceHash(SourceTextCache& sources,
           fields.push_back("vis=" + std::string(VisibilitySignature(node.vis)));
           fields.push_back("name=" + node.name);
           AppendGenericSignature(sources, fields, node.generic_params);
-          AppendPredicateSignature(sources, fields, node.predicate_clause_opt);
           fields.push_back("type=" + TypeSignature(sources, node.type));
         } else if constexpr (std::is_same_v<T, ultraviolet::ast::DeriveTargetDecl>) {
           fields.push_back("item=derive-target");

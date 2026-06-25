@@ -8,6 +8,8 @@
 #include "04_analysis/typing/expr/binary.h"
 
 #include "00_core/assert_spec.h"
+#include "04_analysis/caps/cap_system.h"
+#include "04_analysis/composite/classes.h"
 #include "04_analysis/generics/monomorphize.h"
 #include "04_analysis/resolve/scopes.h"
 #include "04_analysis/resolve/scopes_lookup.h"
@@ -22,6 +24,7 @@
 #include "04_analysis/typing/types.h"
 #include "02_source/ast/ast_utils.h"
 
+#include <memory>
 #include <vector>
 
 namespace ultraviolet::analysis::expr {
@@ -52,6 +55,90 @@ struct BinaryOperandInfo {
 };
 
 constexpr std::string_view kBinaryOperandTypeMismatchDiag = "E-SEM-2525";
+
+static std::optional<ast::ClassPath> ClassPathFromExpr(const ast::ExprPtr& expr) {
+  if (!expr) {
+    return std::nullopt;
+  }
+  return std::visit(
+      [](const auto& node) -> std::optional<ast::ClassPath> {
+        using T = std::decay_t<decltype(node)>;
+        if constexpr (std::is_same_v<T, ast::IdentifierExpr>) {
+          return ast::ClassPath{node.name};
+        } else if constexpr (std::is_same_v<T, ast::QualifiedNameExpr> ||
+                             std::is_same_v<T, ast::PathExpr>) {
+          ast::ClassPath path = node.path;
+          path.push_back(node.name);
+          return path;
+        } else {
+          return std::nullopt;
+        }
+      },
+      expr->node);
+}
+
+static ast::TypePtr TypePathAstFromExprPath(ast::TypePath path) {
+  ast::TypePathType type_path;
+  type_path.path = std::move(path);
+  auto type = std::make_shared<ast::Type>();
+  type->node = std::move(type_path);
+  return type;
+}
+
+static std::optional<ast::TypePtr> TypeAstFromExpr(const ast::ExprPtr& expr) {
+  if (!expr) {
+    return std::nullopt;
+  }
+  return std::visit(
+      [](const auto& node) -> std::optional<ast::TypePtr> {
+        using T = std::decay_t<decltype(node)>;
+        if constexpr (std::is_same_v<T, ast::TypeLiteralExpr>) {
+          return node.type;
+        } else if constexpr (std::is_same_v<T, ast::IdentifierExpr>) {
+          return TypePathAstFromExprPath(ast::TypePath{node.name});
+        } else if constexpr (std::is_same_v<T, ast::QualifiedNameExpr> ||
+                             std::is_same_v<T, ast::PathExpr>) {
+          ast::TypePath path = node.path;
+          path.push_back(node.name);
+          return TypePathAstFromExprPath(std::move(path));
+        } else {
+          return std::nullopt;
+        }
+      },
+      expr->node);
+}
+
+static bool ClassPathExists(const ScopeContext& ctx, const ast::ClassPath& path) {
+  return IsCapabilityClassPath(path) ||
+         ctx.sigma.classes.find(PathKeyOf(path)) != ctx.sigma.classes.end();
+}
+
+static ExprTypeResult TypeClassSatisfactionExpr(const ScopeContext& ctx,
+                                                const ast::BinaryExpr& expr) {
+  ExprTypeResult result;
+  const auto lhs_type_ast = TypeAstFromExpr(expr.lhs);
+  const auto rhs_class_path = ClassPathFromExpr(expr.rhs);
+  if (!lhs_type_ast.has_value() || !rhs_class_path.has_value()) {
+    result.diag_id = kBinaryOperandTypeMismatchDiag;
+    return result;
+  }
+
+  if (!ClassPathExists(ctx, *rhs_class_path)) {
+    result.diag_id = "E-TYP-2305";
+    return result;
+  }
+
+  const auto lowered = LowerType(ctx, *lhs_type_ast);
+  if (!lowered.ok) {
+    result.diag_id = lowered.diag_id;
+    return result;
+  }
+
+  (void)TypeImplementsClass(ctx, lowered.type, *rhs_class_path);
+  result.ok = true;
+  result.type = MakeTypePrim("bool");
+  return result;
+}
 
 static PrimResolveResult ResolveAliasTransparentPrim(const ScopeContext& ctx,
                                                      const TypeRef& type) {
@@ -528,6 +615,10 @@ ExprTypeResult TypeBinaryExprImpl(const ScopeContext& ctx,
   SpecDefsBinary();
   ExprTypeResult result;
   const std::string_view op = expr.op;
+
+  if (op == "<:") {
+    return TypeClassSatisfactionExpr(ctx, expr);
+  }
 
   // Null literals are check-only by default (Chk-Null-Literal), but equality
   // needs contextual typing from the opposite operand.

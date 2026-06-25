@@ -48,8 +48,6 @@ namespace ultraviolet::ast
     SignatureResult ParseSignature(Parser parser);
     ParseElemResult<std::optional<GenericParams>> ParseGenericParamsOpt(
         Parser parser);
-    ParseElemResult<std::optional<PredicateClause>> ParsePredicateClauseOpt(
-        Parser parser);
     ParseElemResult<std::optional<ContractClause>> ParseContractClauseOpt(
         Parser parser);
 
@@ -72,15 +70,7 @@ namespace ultraviolet::ast
         SignatureResult sig = ParseSignature(parser);
         parser = sig.parser;
 
-        std::optional<PredicateClause> predicate_clause_opt = std::nullopt;
         std::optional<ContractClause> contract_opt = std::nullopt;
-        if (!comptime_prefix)
-        {
-            ParseElemResult<std::optional<PredicateClause>> predicate_clause =
-                ParsePredicateClauseOpt(parser);
-            parser = predicate_clause.parser;
-            predicate_clause_opt = predicate_clause.elem;
-        }
 
         ParseElemResult<std::optional<ContractClause>> contract =
             ParseContractClauseOpt(parser);
@@ -113,7 +103,6 @@ namespace ultraviolet::ast
         decl.visibility_explicit = visibility_explicit;
         decl.name = name.elem;
         decl.generic_params = gen_params.elem;
-        decl.predicate_clause_opt = predicate_clause_opt;
         decl.params = sig.params;
         decl.return_type_opt = sig.return_type_opt;
         decl.contract = contract_opt;
@@ -134,13 +123,12 @@ namespace ultraviolet::ast
     //   Γ ⊢ ParseIdent(Advance(P_1)) ⇓ (P_2, name)
     //   Γ ⊢ ParseGenericParamsOpt(P_2) ⇓ (P_3, gen_params_opt)
     //   Γ ⊢ ParseSignature(P_3) ⇓ (P_4, params, ret_opt)
-    //   Γ ⊢ ParsePredicateClauseOpt(P_4) ⇓ (P_5, predicate_clause_opt)
-    //   Γ ⊢ ParseContractClauseOpt(P_5) ⇓ (P_6, contract_opt)
-    //   Γ ⊢ ParseBlock(P_6) ⇓ (P_7, body)
+    //   Γ ⊢ ParseContractClauseOpt(P_4) ⇓ (P_5, contract_opt)
+    //   Γ ⊢ ParseBlock(P_5) ⇓ (P_6, body)
     //   ────────────────────────────────────────────────────────────────────
     //   Γ ⊢ ParseItem(P) ⇓ (P_7, ⟨ProcedureDecl, attrs_opt, vis, name,
-    //       gen_params_opt, predicate_clause_opt, params, ret_opt, contract_opt,
-    //       body, SpanBetween(P, P_7), []⟩)
+    //       gen_params_opt, params, ret_opt, contract_opt,
+    //       body, SpanBetween(P, P_6), []⟩)
 
     ParseItemResult ParseProcedureDecl(Parser parser, Visibility vis,
                                        AttributeList attrs,

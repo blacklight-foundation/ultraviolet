@@ -1,6 +1,6 @@
 ## 15. Procedures, Methods & Overloading
 
-This chapter defines the three core ways Ultraviolet packages executable behavior: free **procedures** declared with the `procedure` keyword (§15.1), **methods** that attach to a type through a **receiver** (§15.2), and the **overloading** rules that govern how a name with several declarations resolves to one of them (§15.3). The constructs here build directly on the type and permission machinery introduced in *Types & Type Constructors* and *Permissions & Ownership*, and they are the foundation on which *Records & Structs*, *Modal Types*, and *Classes & Conformance* layer their behavior. Contract clauses (`|: pre |= post`) and predicate-requirement clauses are introduced syntactically here — this chapter shows where they attach; how contracts are checked is owned in full by *Contracts* (§15.4).
+This chapter defines the three core ways Ultraviolet packages executable behavior: free **procedures** declared with the `procedure` keyword (§15.1), **methods** that attach to a type through a **receiver** (§15.2), and the **overloading** rules that govern how a name with several declarations resolves to one of them (§15.3). The constructs here build directly on the type and permission machinery introduced in *Types & Type Constructors* and *Permissions & Ownership*, and they are the foundation on which *Records & Structs*, *Modal Types*, and *Classes & Conformance* layer their behavior. Contract clauses (`|: pre |= post`) are introduced syntactically here — this chapter shows where they attach; how contracts are checked is owned in full by *Contracts* (§15.4).
 
 Every keyword, operator, and type name in this chapter is reproduced exactly from the specification. Several facts are worth stating up front because they recur throughout:
 
@@ -20,7 +20,7 @@ A procedure is a named, free-standing unit of behavior. It is a top-level item (
 The normative grammar in §15.1.1 is:
 
 ```ebnf
-procedure_decl ::= attribute_list? visibility? "procedure" identifier generic_params? signature predicate_clause? contract_clause? block_expr
+procedure_decl ::= attribute_list? visibility? "procedure" identifier generic_params? signature contract_clause? block_expr
 signature      ::= "(" param_list? ")" ("->" type)?
 param_list     ::= param ("," param)*
 param          ::= "move"? identifier ":" type
@@ -29,7 +29,7 @@ param          ::= "move"? identifier ":" type
 Appendix B (B.6) gives the same production with the trailing-comma and union-return refinements the parser also accepts:
 
 ```ebnf
-procedure_decl ::= attribute_list? visibility? "procedure" identifier generic_params? signature predicate_clause? contract_clause? block_expr
+procedure_decl ::= attribute_list? visibility? "procedure" identifier generic_params? signature contract_clause? block_expr
 signature      ::= "(" param_list? ")" ("->" return_type)?
 param_list     ::= param ("," param)* ","?
 param          ::= param_mode? identifier ":" type
@@ -46,9 +46,8 @@ Reading these together, a procedure declaration consists, in order, of:
 4. an `identifier` naming the procedure (`camelCase` per the style guide);
 5. optional `generic_params`, e.g. `<TValue>` or `<TValue <: Drawable>` (B.2: `generic_params ::= "<" generic_param_list ">"`; the parameters in `generic_param_list` are separated by `;`, and a bound is written with `<:`);
 6. a `signature`: a parenthesized `param_list` followed by an optional `-> return_type` annotation;
-7. an optional `predicate_clause` (the `Bitcopy` / `Clone` / `Drop` / `FfiSafe` requirements on generic parameters);
-8. an optional `contract_clause` (`|: pre |= post`, owned by §15.4); and
-9. the `block_expr` body, opened with a same-line brace.
+7. an optional `contract_clause` (`|: pre |= post`, owned by §15.4); and
+8. the `block_expr` body, opened with a same-line brace.
 
 ##### Parameters and the `move` mode
 
@@ -117,7 +116,7 @@ A conforming `main` is therefore **`public`**, takes exactly **one** parameter w
 
 #### 15.1.2 Semantics
 
-**Static.** Per **(WF-ProcedureDecl)**: type parameters are bound first (`Γ_g = BindTypeParams(Γ, params_gen)`), the predicate clause is checked against them, parameter names are checked distinct, every parameter type is checked well-formed in `Γ_g`, then a fresh scope is pushed and all parameter bindings are introduced (`IntroAll(Γ_0, ParamBinds(params))`). The body is then checked against the effective return type, and the explicit-return obligation applies.
+**Static.** Per **(WF-ProcedureDecl)**: type parameters are bound first (`Γ_g = BindTypeParams(Γ, params_gen)`), parameter names are checked distinct, every parameter type is checked well-formed in `Γ_g`, then a fresh scope is pushed and all parameter bindings are introduced (`IntroAll(Γ_0, ParamBinds(params))`). The body is then checked against the effective return type, and the explicit-return obligation applies.
 
 **Dynamic.** A call binds argument values to parameters and runs the body in a fresh block scope. Rule **(ApplyProcSigma)** (§15.1.5):
 
@@ -202,7 +201,7 @@ A method declaration is, in order: an optional `attribute_list`; an optional `vi
 Two structural facts distinguish a method from a free procedure:
 
 - The receiver occupies the **first slot inside the parentheses**, and the rest of the parameter list — if any — follows after a comma: `"(" receiver ("," param_list)? ")"`.
-- `method_def` has **no `predicate_clause`** of its own (only `contract_clause?`). Generic-parameter requirements that would appear in a procedure's predicate clause are not part of the method form.
+- `method_def` carries only `contract_clause?` after the signature. Generic-parameter requirements are written in the method's `generic_params` list.
 
 #### 15.2.2 Receiver forms and their meaning
 
@@ -330,7 +329,7 @@ Overloading is the presence of more than one visible declaration sharing a name;
 4. Genericity preference: if both generic and non-generic candidates remain, retain only
    the non-generic candidates.
 5. Constraint specificity: if multiple generic candidates remain, retain only those whose
-   bounds and predicate requirements are pointwise at least as specific as every remaining
+   bounds are pointwise at least as specific as every remaining
    alternative, with at least one strict improvement.
 6. If exactly one candidate remains, that candidate is selected.
 7. If no candidate remains, the call is ill-formed with E-SEM-3031.
@@ -417,4 +416,4 @@ Method-lookup diagnostics for missing methods and ambiguous inherited-default re
 
 ---
 
-*Related chapters:* *Permissions & Ownership* (the `const` / `unique` / `shared` permissions and the `move` semantics that parameter modes and receivers rely on); *Records & Structs* (how `method_def` members compose a record, and the record-literal field-completeness rule); *Classes & Conformance* (§14.3 — `override`, abstract vs. concrete class methods, and class-default resolution feeding `LookupMethod`); *Modal Types* (§13.3 — state methods and the separate `transition` form); *Contracts* (§15.4 — the `contract_clause` and `predicate_clause` that attach to the declarations shown here).
+*Related chapters:* *Permissions & Ownership* (the `const` / `unique` / `shared` permissions and the `move` semantics that parameter modes and receivers rely on); *Records & Structs* (how `method_def` members compose a record, and the record-literal field-completeness rule); *Classes & Conformance* (§14.3 — `override`, abstract vs. concrete class methods, and class-default resolution feeding `LookupMethod`); *Modal Types* (§13.3 — state methods and the separate `transition` form); *Contracts* (§15.4 — the `contract_clause` that attaches to the declarations shown here).

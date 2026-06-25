@@ -9,7 +9,7 @@ public record FFIPrimitiveRecord {
 
 /// Generic layout-compatible aggregate whose field parameter is FfiSafe-bounded.
 #layout(C)
-public record FFIGenericRecord<TValue> |: FfiSafe(TValue)
+public record FFIGenericRecord<TValue <: FfiSafe>
 {
     public value: TValue
 }
@@ -23,7 +23,7 @@ public enum FFIPrimitiveEnum {
 
 /// Generic layout-compatible tagged value whose payload parameter is FfiSafe-bounded.
 #layout(C)
-public enum FFIGenericEnum<TValue> |: FfiSafe(TValue)
+public enum FFIGenericEnum<TValue <: FfiSafe>
 {
     Value(TValue)
 }

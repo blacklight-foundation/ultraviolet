@@ -47,10 +47,8 @@ ParseElemResult<std::shared_ptr<Block>> ParseBlock(Parser parser);
 ParseElemResult<ClassPath> ParseClassPath(Parser parser);
 ParseElemResult<AttrOpt> ParseAttributeListOpt(Parser parser);
 
-// Forward declarations for generic params and where clause parsing
+// Forward declarations for generic params parsing
 ParseElemResult<std::optional<GenericParams>> ParseGenericParamsOpt(
-    Parser parser);
-ParseElemResult<std::optional<PredicateClause>> ParsePredicateClauseOpt(
     Parser parser);
 ParseElemResult<std::optional<ContractClause>> ParseContractClauseOpt(
     Parser parser);
@@ -518,10 +516,9 @@ ParseElemResult<std::vector<ClassPath>> ParseSuperclassOpt(Parser parser) {
 //   Γ ⊢ ParseIdent(Advance(P_2)) ⇓ (P_3, name)
 //   Γ ⊢ ParseGenericParamsOpt(P_3) ⇓ (P_4, gen_params_opt)
 //   Γ ⊢ ParseSuperclassOpt(P_4) ⇓ (P_5, supers)
-//   Γ ⊢ ParseWhereClauseOpt(P_5) ⇓ (P_6, where_clause_opt)
-//   Γ ⊢ ParseClassBody(P_6) ⇓ (P_7, items)
+//   Γ ⊢ ParseClassBody(P_5) ⇓ (P_6, items)
 //   ────────────────────────────────────────────────────────────────────
-//   Γ ⊢ ParseItem(P) ⇓ (P_7, ⟨ClassDecl, ...⟩)
+//   Γ ⊢ ParseItem(P) ⇓ (P_6, ⟨ClassDecl, ...⟩)
 //
 // Note: The `is_modal` parameter indicates if "modal" was seen before "class"
 
@@ -558,11 +555,6 @@ ParseItemResult ParseClassDecl(Parser parser, Visibility vis,
   ParseElemResult<std::vector<ClassPath>> supers = ParseSuperclassOpt(parser);
   parser = supers.parser;
 
-  // Parse optional predicate clause
-  ParseElemResult<std::optional<PredicateClause>> predicate_clause_opt =
-      ParsePredicateClauseOpt(parser);
-  parser = predicate_clause_opt.parser;
-
   // Parse class body
   ParseElemResult<std::vector<ClassItem>> items = ParseClassBody(parser);
   parser = items.parser;
@@ -573,15 +565,13 @@ ParseItemResult ParseClassDecl(Parser parser, Visibility vis,
   decl.modal = is_modal;
   decl.name = name.elem;
   decl.generic_params = gen_params.elem;
-  decl.predicate_clause_opt = predicate_clause_opt.elem;
   decl.supers = std::move(supers.elem);
   decl.items = std::move(items.elem);
   decl.span = SpanBetween(start, parser);
   decl.doc = {};
 
-  RecordGenericPredicateOwnerClause("ClassDecl", decl.name,
-                                    decl.generic_params,
-                                    decl.predicate_clause_opt, decl.span);
+  RecordGenericOwnerClause("ClassDecl", decl.name, decl.generic_params,
+                           decl.span);
   RecordNominalRelationFormOnOwnerDecl("ClassDecl", decl.name, "supers",
                                        decl.supers, decl.span);
 

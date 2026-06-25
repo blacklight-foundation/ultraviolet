@@ -20956,24 +20956,22 @@ Observed behavior:
 `QualifiedResolution.uv` contains records, a class, type aliases, ordinary
 procedures, qualified type paths, one generic type application
 `GenericEnumReference<i32>`, enum cases, record patterns, and a local `using`
-alias. It does not declare generic type parameters, predicate clauses, contract
-clauses, or invariants; a direct search for `where`, `requires`, `ensures`,
+alias. It does not declare generic type parameters, contract clauses, or
+invariants; a direct search for `where`, `requires`, `ensures`,
 `invariant`, `@entry`, `@result`, and `@old` in the file returns no matches.
 
 The generated shared-resolution catalog nevertheless credits
 `runNamesQualifiedResolutionReference` for `ResolveGenericParamsOpt-Yes`,
-`ResolveTypeParam`, both type-parameter-list rules,
-`ResolvePredicateClauseOpt-Yes`, the predicate-requirement list and predicate
-rules, `ResolveContractClauseOpt-Yes`, and `ResolveInvariantOpt-Yes`.
+`ResolveTypeParam`, both type-parameter-list rules, `ResolveContractClauseOpt-Yes`,
+and `ResolveInvariantOpt-Yes`.
 
 Expected behavior:
 
 Yes-branch optional-clause rows should be credited by sources that actually
 contain the corresponding optional syntax. Generic-parameter resolution needs a
 generic declaration with one or more type parameters and bounds/defaults where
-applicable. Predicate, contract, and invariant rows need declarations carrying
-those clauses so their contained type and expression resolution paths are
-executed.
+applicable. Contract and invariant rows need declarations carrying those clauses
+so their contained expression resolution paths are executed.
 
 Spec ambiguity:
 
@@ -20986,11 +20984,10 @@ clauses, or invariant clauses.
 Impact:
 
 HUV can mark the shared name-resolution helper paths for generic declarations,
-predicate clauses, contracts, and invariants as exercised by a qualified-name
-reference that never contains those clauses. Regressions in clause-local name
-resolution, type-parameter binding, predicate type resolution, contract
-expression resolution, or invariant type/expression resolution would not be
-detected by the credited target.
+contracts, and invariants as exercised by a qualified-name reference that never
+contains those clauses. Regressions in clause-local name resolution,
+type-parameter binding, contract expression resolution, or invariant
+type/expression resolution would not be detected by the credited target.
 
 ### UV-AUDIT-0321: Literal-value references credit lexer comment and token-stream obligations
 

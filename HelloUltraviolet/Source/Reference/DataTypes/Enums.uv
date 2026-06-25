@@ -18,7 +18,7 @@ public enum WideDiscriminantEnumReference {
     High = 256
 }
 
-public enum GenericEnumReference<TValue> |: Bitcopy(TValue) {
+public enum GenericEnumReference<TValue <: Bitcopy> {
     Item(TValue)
 }
 

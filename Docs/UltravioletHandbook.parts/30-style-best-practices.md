@@ -367,7 +367,7 @@ If a rule about safety, range, state, ownership, lifetime, authority, or valid s
 - Prefer precise contracts over broad defensive code where the language can state the constraint directly.
 - Public APIs, cross-module APIs, lifecycle transitions, and FFI wrappers should be especially strict about contracts.
 
-A contract clause is attached after the signature (`procedure_decl ::= attribute_list? visibility? "procedure" identifier generic_params? signature predicate_clause? contract_clause? block_expr`) with the form:
+A contract clause is attached after the signature (`procedure_decl ::= attribute_list? visibility? "procedure" identifier generic_params? signature contract_clause? block_expr`) with the form:
 
 ```ebnf
 contract_clause    ::= "|:" contract_body
@@ -666,6 +666,6 @@ Code review verifies that the standard above is realized *in the code*, not in t
 - **Capability-bearing value across FFI.** An extern or hosted-export signature containing `Context`, a capability class, or a `$Class` object is ill-formed; a region-local raw pointer crossing the boundary is `E-SYS-3360`. Convert to plain data before the call.
 - **`public using` of a non-public item.** A facade may only re-export public items; otherwise `E-MOD-1205`.
 - **Wildcard `using ::*` in a public module.** Forbidden by the style guide; it hides the imported surface. Restrict wildcards to internal/implementation modules and list names explicitly in public API code.
-- **Reserved-name collisions.** `Drop`, `Bitcopy`, `Clone`, and `FfiSafe` are reserved predicate names, and the integer/float/`Self`/`Context`/capability identifiers are universe-protected — do not shadow them with user declarations.
+- **Reserved-name collisions.** `Drop`, `Bitcopy`, `Clone`, `FfiSafe`, and `GpuSafe` are reserved foundational class names, and the integer/float/`Self`/`Context`/capability identifiers are universe-protected — do not shadow them with user declarations.
 - **Acronym normalization.** `Sdl3Bridge`, `Uuid`, `CpuTime` are defects; the correct forms are `SDL3Bridge`, `UUID`, `CPUTime`.
 - **Type info baked into names.** `count_u32`, `frame_ptr`, `manifest_obj` duplicate what the type already states; name for meaning, not representation.

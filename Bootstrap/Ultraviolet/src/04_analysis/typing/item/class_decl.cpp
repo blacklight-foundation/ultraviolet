@@ -287,21 +287,6 @@ ClassDeclResult TypeClassDecl(
     result.generic_params.push_back(gp.name);
   }
 
-  // Process where clauses
-  if (decl.predicate_clause_opt.has_value()) {
-    std::vector<std::string> type_param_names;
-    for (const auto& gp : gen_params.params) {
-      type_param_names.push_back(gp.name);
-    }
-    const auto where_result = ProcessWhereClause(
-        ctx, *decl.predicate_clause_opt, type_param_names);
-    if (!where_result.ok) {
-      result.ok = false;
-      result.diag_id = where_result.diag_id;
-      return result;
-    }
-  }
-
   // Check superclass bounds are distinct
   if (!DistinctSuperclasses(decl.supers)) {
     SPEC_RULE("WF-Class-Super-Duplicate");

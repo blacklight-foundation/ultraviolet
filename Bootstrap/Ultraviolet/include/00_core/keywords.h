@@ -178,7 +178,7 @@ namespace ultraviolet::core
   }
 
   // Reserved identifiers that are not valid user-defined names.
-  inline constexpr std::array<std::string_view, 24> kUnsupportedLexemes = {
+  inline constexpr std::array<std::string_view, 23> kUnsupportedLexemes = {
       "attribute",
       "opaque_type",
       "refinement_type",
@@ -195,7 +195,6 @@ namespace ultraviolet::core
       "extern_block",
       "foreign_decl",
       "class_generics",
-      "class_where_clause",
       "associated_type",
       "modal_class",
       "class_contract",
