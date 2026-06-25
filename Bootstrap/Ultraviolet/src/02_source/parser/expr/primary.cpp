@@ -86,13 +86,9 @@ ParseElemResult<ExprPtr> ParseDispatchExpr(Parser parser);
 ParseElemResult<ExprPtr> ParseParallelExpr(Parser parser);
 ParseElemResult<ExprPtr> ParseSpawnExpr(Parser parser);
 std::optional<ParseElemResult<ExprPtr>> TryParseTransmuteExpr(Parser parser);
-std::optional<ParseElemResult<ExprPtr>> TryParseAllocExpr(Parser parser);
 std::optional<ParseElemResult<ExprPtr>> TryParseComptimeExpr(Parser parser);
 std::optional<ParseElemResult<ExprPtr>> TryParseTypeLiteralExpr(Parser parser);
 std::optional<ParseElemResult<ExprPtr>> TryParseQuoteExpr(Parser parser);
-ParseElemResult<ExprPtr> ParseExplicitAllocExpr(Parser parser,
-                                                const Identifier& region_name,
-                                                const Parser& start);
 
 namespace {
 
@@ -683,11 +679,6 @@ ParseElemResult<ExprPtr> ParsePrimary(Parser parser, bool allow_brace) {
     return *quote;
   }
 
-  // Allocation expression: ^value
-  if (auto alloc = TryParseAllocExpr(parser)) {
-    return *alloc;
-  }
-
   // Block expression (when allow_brace is true)
   if (allow_brace && IsPuncTok(*tok, "{")) {
     SPEC_RULE("Parse-Block-Expr");
@@ -741,14 +732,6 @@ ParseElemResult<ExprPtr> ParsePrimary(Parser parser, bool allow_brace) {
 
   // Identifier or qualified path
   if (IsIdentTok(*tok)) {
-    // Explicit region allocation: region ^ value
-    {
-      ParseElemResult<Identifier> alloc_region = ParseIdent(parser);
-      if (IsOp(alloc_region.parser, "^")) {
-        return ParseExplicitAllocExpr(alloc_region.parser, alloc_region.elem, parser);
-      }
-    }
-
     // Record literal (TypeName{...} or ModalType@State{...})
     if (allow_brace) {
       RecordLiteralStart record_start = ScanRecordLiteralStart(parser);

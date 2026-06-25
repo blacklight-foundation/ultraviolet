@@ -1,6 +1,6 @@
 ## 19. Statements, Blocks, Regions, Frames & Defer
 
-This chapter specifies the body of every Ultraviolet procedure, method, transition, and block expression: the statements that compose a block, how a block produces a value, the binding forms `let` and `var`, local `using` aliases, assignment and compound assignment, expression statements, deferred cleanup with `defer`, arena scopes with `region`, stack-like scopes with `frame`, control transfer with `return` / `break` / `continue`, and `unsafe` statements. It corresponds to specification §18 (Statements and Blocks). The arena-allocation operator `^` used inside `region` and `frame` is defined in §16.8 (Effectful Core Expressions) and Appendix B.14; this chapter shows how it is used.
+This chapter specifies the body of every Ultraviolet procedure, method, transition, and block expression: the statements that compose a block, how a block produces a value, the binding forms `let` and `var`, local `using` aliases, assignment and compound assignment, expression statements, deferred cleanup with `defer`, arena scopes with `region`, stack-like scopes with `frame`, control transfer with `return` / `break` / `continue`, and `unsafe` statements. It corresponds to specification §18 (Statements and Blocks). Region allocation uses a `Region@Active` handle's `~>alloc` method; this chapter shows how that method is used inside `region` and `frame` scopes.
 
 Related material: blocks are also expressions (Expressions chapter, §16.7); patterns used in `let` / `var` are covered in the Patterns chapter (§17); `loop`, `if`, and case analysis are in the Control-Flow Expressions chapter (§16.7); the `key` system that mediates `shared` writes is in the Key System chapter (§19 of the spec); permission semantics (`const`, `unique`, `shared`) are in the Permissions chapter (§10.4).
 
@@ -327,7 +327,7 @@ region_opts  ::= "(" expression ")"
 region_alias ::= "as" identifier
 ```
 
-A `region` statement opens an **arena** for the duration of its block. Allocations made into the arena (with `^`, §19.7.4) live until the region's block exits, at which point the **entire arena is released at once** (`ReleaseArena`). A region thus amortizes many small allocations into one bulk reservation and one bulk free.
+A `region` statement opens an **arena** for the duration of its block. Allocations made into the arena with a `Region@Active` handle's `~>alloc` method (§19.7.4) live until the region's block exits, at which point the **entire arena is released at once** (`ReleaseArena`). A region thus amortizes many small allocations into one bulk reservation and one bulk free.
 
 #### 19.7.2 Options and alias
 
@@ -341,9 +341,9 @@ A `region` statement opens an **arena** for the duration of its block. Allocatio
   - `stack_size: usize` — bytes to pre-reserve for the arena (default `0`, meaning no pre-reservation; `RegionPrealloc(opts) = opts.stack_size`).
   - `name: string` — a diagnostic name (default the empty string).
 
-- `region_alias` (`as name`) binds an identifier of type `unique Region@Active` to the region inside the block, so it can be named as an explicit allocation target or handed to a `frame`. The region binding has type `TypePerm(unique, TypeModalState([Region], @Active))`.
+- `region_alias` (`as name`) binds an identifier of type `unique Region@Active` to the region inside the block, so it can receive `~>alloc` calls or be handed to a `frame`. The region binding has type `TypePerm(unique, TypeModalState([Region], @Active))`.
 
-  If no alias is given, the region binding is **synthetic**: it is not introduced by name resolution and cannot be referenced by user code (`T-RegionStmt`). An anonymous region is still usable as the *implicit* allocation target via bare `^` inside its block.
+  If no alias is given, the region binding is **synthetic**: it is not introduced by name resolution and cannot be referenced by user code (`T-RegionStmt`). Source allocation requires a `Region@Active` handle, so code that allocates into a region names it with `as`.
 
 #### 19.7.3 Semantics
 
@@ -351,21 +351,19 @@ A `region` statement opens an **arena** for the duration of its block. Allocatio
 
 Dynamically (`ExecSigma-Region`): evaluate the options, create a new arena (`RegionNew`), bind the alias if present (`BindRegionAlias`), evaluate the body in the region's scope (`EvalInScopeSigma`), then `RegionRelease` — run scope cleanup (deferred blocks / destructors), then `ReleaseArena` frees the whole arena, then pop the scope. A control transfer out of the body still releases the arena on the way out (`ExecSigma-Region` propagates `out'`).
 
-#### 19.7.4 Allocating into a region with `^`
+#### 19.7.4 Allocating into a region with `~>alloc`
 
-Allocation uses the `^` operator. The implicit (bare) form is a primary expression (§16.8.1); the explicit (aliased) form is the Appendix B.14 region production:
+Allocation uses the Region modal method-call form:
 
 ```ebnf
-alloc_expr ::= "^" expression              (* §16.8.1: implicit form *)
-alloc_expr ::= identifier "^" expression   (* Appendix B.14: explicit form *)
+postfix_suffix ::= "~>" identifier "(" argument_list? ")"
 ```
 
-There are two forms:
-
-- **Implicit** — bare `^ value`: parses directly as `AllocExpr(⊥, e)` (`Parse-Alloc-Implicit`) and allocates `value` into the **innermost active region** in scope (`T-Alloc-Implicit`, `InnermostActiveRegion(Γ) = r`).
-- **Explicit** — `region_alias ^ value`: the surface form `r ^ e` parses as a binary `^` and is rewritten to `AllocExpr(r, e)` during name resolution when `r` resolves to a region alias (`ResolveExpr-Alloc-Explicit-ByAlias`). It allocates into the region named by the alias (`T-Alloc-Explicit`, which requires `RegionActiveType(T_r)`).
-
-The allocated expression keeps its value type `T`; the result carries the region's provenance, so the value may not escape the region's lifetime. A value with shorter-lived provenance escaping to a longer-lived location is `E-MEM-3020`. Using `^` with no active region in scope is `E-MEM-3021` (region allocation `^` outside region scope).
+`region_handle~>alloc(value)` allocates `value` into the region named by the
+receiver. The receiver must type as `unique Region@Active`. The allocated
+expression keeps its value type `T`; the result carries the region's
+provenance, so the value may not escape the region's lifetime. A value with
+shorter-lived provenance escaping to a longer-lived location is `E-MEM-3020`.
 
 #### 19.7.5 Worked example
 
@@ -374,11 +372,8 @@ procedure buildScene(scene_spec: SceneSpec) -> SceneReport {
     let report_count: usize = scene_spec.nodeCount()
 
     region (RegionOptions { stack_size: 64 * 1024, name: "scene" }) as scene_arena {
-        // Implicit allocation: innermost active region is `scene_arena`.
-        let nodes := ^ allocateNodes(scene_spec)
-
-        // Explicit allocation into the named region.
-        let edges := scene_arena ^ allocateEdges(scene_spec, nodes)
+        let nodes := scene_arena~>alloc(allocateNodes(scene_spec))
+        let edges := scene_arena~>alloc(allocateEdges(scene_spec, nodes))
 
         wireGraph(nodes, edges)
     }
@@ -405,7 +400,7 @@ A `frame` is a **stack-like sub-scope of an existing region**. On entry it recor
 - **Implicit** — `frame { ... }`: targets the **innermost active region** in scope (`FrameBind(Γ, ⊥)` via `InnermostActiveRegion`). If there is no active region in scope, it is `Frame-NoActiveRegion-Err` (`E-MEM-1207`).
 - **Explicit** — `region_alias.frame { ... }`: targets the named region. The identifier must resolve to a value whose type satisfies `RegionActiveType` (i.e. `Region@Active`); otherwise it is `Frame-Target-NotActive-Err` (`E-MEM-1208`).
 
-`FrameBind` introduces a fresh synthetic region identifier `F` for provenance only; it carries the same synthetic-binding restriction as an anonymous `region` binding and cannot be referenced by user code. Allocation inside a `frame` uses the same `^` operator and, for bare `^`, the same innermost-active-region rule — which, inside a `frame`, is the frame's target region.
+`FrameBind` introduces a fresh synthetic region identifier `F` for provenance only; it carries the same synthetic-binding restriction as an anonymous `region` binding and cannot be referenced by user code. Allocation inside a `frame` uses the frame target's `Region@Active` handle.
 
 #### 19.8.3 Semantics
 
@@ -418,8 +413,8 @@ procedure renderFrames(scratch: unique Region@Active, work_items: [WorkItem]) ->
     loop item in work_items {
         // Each iteration allocates scratch data, then rolls it back.
         scratch.frame {
-            let staging := scratch ^ buildStaging(item)   // allocated in `scratch`
-            let temp_mesh := ^ tessellate(staging)        // implicit: innermost = `scratch`
+            let staging := scratch~>alloc(buildStaging(item))
+            let temp_mesh := scratch~>alloc(tessellate(staging))
             submitToGpu(temp_mesh)
         }
         // `staging` and `temp_mesh` are reclaimed; `scratch` is reset to the mark.
@@ -432,7 +427,7 @@ The region `scratch` is reused across every iteration. Each `frame` allocates in
 ```ultraviolet
 region as work_arena {
     frame {
-        let buffer := ^ allocScratch(1024)   // innermost active region = work_arena
+        let buffer := work_arena~>alloc(allocScratch(1024))
         useBuffer(buffer)
     }
     // work_arena reset to the mark taken at `frame` entry.
@@ -565,7 +560,7 @@ Grounded in the Ultraviolet style guide (AGENTS.md) and the spec semantics above
 - **Newlines terminate statements.** Use `;` only to justify several short statements on one line; do not pepper code with semicolons. Use same-line K&R braces and 4-space indentation, targeting a 100-column maximum.
 - **Write explicit `return` in non-`unit` procedures.** The style guide prefers explicit `return` for clarity even where a tail expression would also work.
 - **Pair acquisition with `defer` immediately.** Register cleanup right after the resource is acquired, so the LIFO order mirrors acquisition order and no path can skip it. Prefer `defer` over hand-written cleanup before each `return`.
-- **Use `region` for bulk-lifetime allocation, `frame` for per-iteration scratch.** A `region` amortizes many allocations into one bulk free; a `frame` resets a region to a mark so a loop reuses scratch memory without per-iteration heap traffic. Name a region with `as` only when you must target it explicitly or hand it to a `frame`; otherwise leave it anonymous and use bare `^`.
+- **Use `region` for bulk-lifetime allocation, `frame` for per-iteration scratch.** A `region` amortizes many allocations into one bulk free; a `frame` resets a region to a mark so a loop reuses scratch memory without per-iteration heap traffic. Name a region with `as` when code allocates into it or hands it to a `frame`; leave it anonymous only when no source code needs the handle.
 - **Keep `unsafe` minimal and wrapped.** Make the `unsafe` block exactly the operation that requires it, and expose a safe wrapper that restores invariants. More code is not a justification for widening an `unsafe` span.
 - **Alias with `using ... as` only when it earns its place.** Do not use a local `using` to simulate shadowing or to rename for cosmetics. Wildcard `using module::*` is reserved for internal or implementation modules; never use it in a public API surface.
 - **Do not let allocated values escape their region/frame.** Treat the region/frame block as the lifetime boundary; return owned heap values, not arena-provenance values.
@@ -589,7 +584,7 @@ Grounded in the Ultraviolet style guide (AGENTS.md) and the spec semantics above
 | `return` at module scope | — | `E-SEM-3165` |
 | `frame` with no active region in scope | `Frame-NoActiveRegion-Err` | `E-MEM-1207` |
 | `r.frame` target not in `Region@Active` | `Frame-Target-NotActive-Err` | `E-MEM-1208` |
-| `^` allocation outside any region scope | — | `E-MEM-3021` |
+| Internal allocation without an active region target | — | `E-MEM-3021` |
 | Arena value escaping its region/frame (shorter-lived provenance) | provenance escape | `E-MEM-3020` |
 | `unique` binding from a place without `move` | `B-LetVar-UniqueNonMove-Err` | `E-MEM-3007` |
 | Moving from an immovable (`:=`) binding | `Trans-Let-NoReassign`, `B-Closure-MoveCapture-Immovable-Err` | `E-MEM-3006` |

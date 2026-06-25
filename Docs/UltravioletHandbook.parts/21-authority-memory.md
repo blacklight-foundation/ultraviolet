@@ -2,7 +2,12 @@
 
 Ultraviolet enforces a single, uncompromising rule about side effects: **nothing observable happens unless you hold a capability value and call through it.** There is no ambient authority — no global `print`, no implicit allocator, no hidden clock, no environment access that "just works." Every externally observable effect is gated behind a capability handle that must be threaded explicitly from the program entry point. This chapter specifies the authority model (§6.1), the runtime host primitives that capabilities mediate (§6.2), binding and permission runtime state (§6.3), the arena memory model with regions, frames, and provenance (§6.4), the dynamic scope stack and region runtime (§6.5), and the runtime/memory diagnostics that backstop all of it (§6.6).
 
-This chapter is the *why* behind explicit effects. For the type-level surface of capability classes and `$Class` dynamic objects, see "Refinement & Capability Classes." For modal types like `File@Read` and `Region@Active`, see "Modal Types & Transitions." For the `Outcome<T, E>` error type and the `?` propagation operator, see "Expressions & Operators." For the `region`/`frame` statement surface, see "Statements & Regions."
+This chapter is the *why* behind explicit effects. For the type-level surface of
+capability classes and `$Class` dynamic objects, see "Refinement & Capability
+Classes." For modal types like `File@Read` and `Region@Active`, see "Modal
+Types & Transitions." For the `Outcome<T, E>` error type and the `?`
+propagation operator, see "Expressions & Operators." For the `region`/`frame`
+statement surface, see "Statements & Regions."
 
 One token convention used throughout: the result type that the **programmer sees** for a capability method is the type declared in the capability *interface* (§14.9) — for example, `io~>open_read(path)` has type `Outcome<File@Read, IoError>`. This matches the lower-level host-primitive relations of §6.2 (`IOResType(IOOpenRead) = Outcome<File@Read, IoError>`). Always type your bindings against the interface return type.
 
@@ -431,7 +436,7 @@ This is why a non-`move` capability parameter behaves as a borrow: `procedure gr
 
 ### 21.4 Regions, Frames, and Provenance (§6.4)
 
-Ultraviolet's allocation model is **arena-based**. Beyond stack locals and the global allocator, you may open a *region*: a scoped arena into which you bulk-allocate with `^`, and which is reclaimed wholesale at scope exit. *Frames* carve sub-lifetimes inside a region. **Provenance** is the static lifetime ordering that prevents a shorter-lived value from escaping into longer-lived storage.
+Ultraviolet's allocation model is **arena-based**. Beyond stack locals and the global allocator, you may open a *region*: a scoped arena into which you bulk-allocate with a `Region@Active` handle's `~>alloc` method, and which is reclaimed wholesale at scope exit. *Frames* carve sub-lifetimes inside a region. **Provenance** is the static lifetime ordering that prevents a shorter-lived value from escaping into longer-lived storage.
 
 #### 21.4.1 Region Options
 
@@ -444,27 +449,27 @@ RegionOptionsFields = [
 
 `RegionOptions` is a built-in `public` record with fields `stack_size: usize` (default `0`) and `name: string` (default empty). `RegionPrealloc(opts) = opts.stack_size`; `NoPrealloc(opts) ⇔ stack_size = 0`.
 
-#### 21.4.2 The `region` Statement, the `frame` Statement, and `^` Allocation
+#### 21.4.2 The `region` Statement, the `frame` Statement, and Region Allocation
 
 ```ebnf
 region_stmt  ::= "region" region_opts? region_alias? block_expr
 region_opts  ::= "(" expression ")"
 region_alias ::= "as" identifier
-alloc_expr   ::= identifier "^" expression
 frame_stmt   ::= "frame" block_expr | identifier "." "frame" block_expr
 ```
 
-(Appendix B.14. There is also the unary primary form `alloc_expr ::= "^" expression` in §16.8.1 / B.3, where `^` is a `unary_operator`. The bare `^ e` form allocates into the innermost active region implicitly; the binary `r ^ e` form is rewritten to `AllocExpr(r, e)` after name resolution when `r` resolves to a region alias, and targets the named region `r`.)
+Allocation uses the ordinary modal method-call syntax
+`region_handle~>alloc(value)`. `^` is only the bitwise XOR operator.
 
-A `region` statement opens an arena for the duration of its block. The optional `(expr)` supplies a `RegionOptions` value (defaulting to `RegionOptions { }` via `RegionOptsExpr(⊥) = Call(Identifier(RegionOptions), [])`); the optional `as name` binds a `unique Region@Active` handle. Typing (**T-RegionStmt**, §18.7.4): the options expression checks against `RegionOptions`, the region binding is introduced as `unique Region@Active` (`RegionBind`), and the body is checked under it. If `as` is omitted, the region binding is *synthetic*: it MUST NOT be introduced by name resolution and MUST NOT be referenced by user code; allocation into it goes through the implicit `^` form.
+A `region` statement opens an arena for the duration of its block. The optional `(expr)` supplies a `RegionOptions` value (defaulting to `RegionOptions { }` via `RegionOptsExpr(⊥) = Call(Identifier(RegionOptions), [])`); the optional `as name` binds a `unique Region@Active` handle. Typing (**T-RegionStmt**, §18.7.4): the options expression checks against `RegionOptions`, the region binding is introduced as `unique Region@Active` (`RegionBind`), and the body is checked under it. If `as` is omitted, the region binding is *synthetic*: it MUST NOT be introduced by name resolution and MUST NOT be referenced by user code. Code that allocates into the region names it with `as`.
 
-**Allocation yields the value's own type, not a pointer.** Allocation `r ^ value` allocates `value` into region `r` and yields a value of the *same type* `T` as `value`, living in that region (**T-Alloc-Explicit**: `e : T`, `Identifier(r) : T_r`, `RegionActiveType(T_r)` ⇒ `AllocExpr(r, e) : T`). The implicit `^ value` form uses the innermost active region (**T-Alloc-Implicit**: `InnermostActiveRegion(Γ) = r`, `e : T` ⇒ `AllocExpr(⊥, e) : T`). Allocating with no active region in scope is `E-MEM-3021`. The allocated value carries region provenance `π_Region(tag)` but its *type* is just `T` — do not annotate it as `Ptr<T>`.
+**Allocation yields the value's own type, not a pointer.** Allocation `r~>alloc(value)` allocates `value` into region `r` and yields a value of the *same type* `T` as `value`, living in that region (`T-Region-Alloc-Method`: `r : unique Region@Active`, `value : T` ⇒ `MethodCall(r, alloc, [value]) : T_{π_Region(r)}`). The allocated value carries region provenance `π_Region(tag)` but its *type* is just `T` — do not annotate it as `Ptr<T>`.
 
 ```ultraviolet
 procedure buildScene(io: $IO) -> Outcome<(), IoError> {
     region as arena {
-        let a := arena ^ Node { id: 0u32 }
-        let b := arena ^ Node { id: 1u32 }
+        let a := arena~>alloc(Node { id: 0u32 })
+        let b := arena~>alloc(Node { id: 1u32 })
 
         // `a` and `b` are `Node` values living in `arena`; reclaimed in bulk at block end.
         io~>write_stdout("scene built\n")?
@@ -474,29 +479,19 @@ procedure buildScene(io: $IO) -> Outcome<(), IoError> {
 }
 ```
 
-The arena allocations bind with `:=` (immovable, `immov`): a region value is anchored to its arena and is not meant to be moved out. The implicit form, allocating into the innermost active region without naming it:
-
-```ultraviolet
-procedure sumRegion(io: $IO) -> Outcome<(), IoError> {
-    region {
-        let head := ^ Node { id: 0u32 }
-        io~>write_stdout("allocated in implicit region\n")?
-    }
-    return Outcome::Value(())
-}
-```
+The arena allocations bind with `:=` (immovable, `immov`): a region value is anchored to its arena and is not meant to be moved out.
 
 A `frame` carves a *sub-arena* of an active region. `frame { ... }` targets the innermost active region; `r.frame { ... }` targets the named region `r`. On entry it records the arena *mark* (`FrameMark`); on exit it resets the arena back to that mark (`ResetArena`), so frame-local allocations are freed while earlier region allocations survive. Typing (**T-FrameStmt-Implicit/Explicit**, §18.8.4): `frame { ... }` with no active region in scope is `E-MEM-1207` (`Frame-NoActiveRegion-Err`); `r.frame { ... }` where `r` is not `Region@Active` is `E-MEM-1208` (`Frame-Target-NotActive-Err`).
 
 ```ultraviolet
 procedure processBatches(io: $IO) -> Outcome<(), IoError> {
     region as arena {
-        let shared := arena ^ Config { batch_size: 256u32 }
+        let shared := arena~>alloc(Config { batch_size: 256u32 })
 
         loop i: usize in 0usize..4usize {
             arena.frame {
                 // Scratch allocations local to this batch:
-                let scratch := arena ^ Buffer { len: 0usize }
+                let scratch := arena~>alloc(Buffer { len: 0usize })
                 io~>write_stdout("batch done\n")?
             }
             // `scratch` reclaimed here; `shared` survives.
@@ -552,12 +547,12 @@ Two key provenance facts:
 | `Region::thaw(self: unique Region@Frozen)` | → `unique Region@Active` |
 | `Region::free_unchecked(self: unique (Region@Active \| Region@Frozen))` | → `unique Region@Freed` |
 
-`reset_unchecked` and `free_unchecked` require an `unsafe` context (`Region-Unchecked-Unsafe-Err`). After a reset or free, any dereference through a `Ptr<T>@Valid` whose address carries an inactive region tag MUST behave as `Expired` (see "Safe & Raw Pointers"); using a *non-pointer* value with provenance `π_Region(r)` after reset/free is outside conformance. `Region::free_unchecked` MUST be invoked exactly once on any region still `@Active`/`@Frozen` at scope exit — implementations MAY do this implicitly during `RegionStmt` cleanup, which is why the `region` statement frees its arena for you. The `^` operator is the everyday surface for `Region::alloc`; you rarely write `Region::alloc` by hand, but `Region::new_scoped` is how you obtain a region value to thread as a `unique Region@Active` parameter.
+`reset_unchecked` and `free_unchecked` require an `unsafe` context (`Region-Unchecked-Unsafe-Err`). After a reset or free, any dereference through a `Ptr<T>@Valid` whose address carries an inactive region tag MUST behave as `Expired` (see "Safe & Raw Pointers"); using a *non-pointer* value with provenance `π_Region(r)` after reset/free is outside conformance. `Region::free_unchecked` MUST be invoked exactly once on any region still `@Active`/`@Frozen` at scope exit — implementations MAY do this implicitly during `RegionStmt` cleanup, which is why the `region` statement frees its arena for you. The everyday surface for `Region::alloc` is `region_handle~>alloc(value)`; `Region::new_scoped` is how you obtain a region value to thread as a `unique Region@Active` parameter.
 
 ```ultraviolet
 procedure renderInto(scratch: unique Region@Active, io: $IO) -> Outcome<(), IoError> {
     // `scratch` is an explicitly-threaded region handle (e.g. from Region::new_scoped).
-    let mesh := scratch ^ Buffer { len: 1024usize }
+    let mesh := scratch~>alloc(Buffer { len: 1024usize })
     io~>write_stdout("rendered into scratch region\n")?
     return Outcome::Value(())
 }
@@ -628,7 +623,7 @@ This section owns the binding-state, region/frame, provenance, and unsafe-runtim
 | `E-MEM-3006` | Attempt to move from an immovable (`:=`) binding (`Trans-Let-NoReassign`, `B-Closure-MoveCapture-Immovable-Err`) |
 | `E-MEM-3007` | `unique` binding from a place expression requires explicit `move` (`B-LetVar-UniqueNonMove-Err`) |
 | `E-MEM-3020` | Value with shorter-lived provenance escapes to longer-lived location |
-| `E-MEM-3021` | Region allocation `^` outside region scope |
+| `E-MEM-3021` | Internal allocation node has no active region target |
 | `E-MEM-3030` | Unsafe operation outside `unsafe` block (`AllocRaw-Unsafe-Err`, `DeallocRaw-Unsafe-Err`, `Region-Unchecked-Unsafe-Err`, `Transmute-Unsafe-Err`) |
 
 Note also the capability-flow rejection of §6.1.2 (NAA-3): a call whose target requires a capability the caller does not effectively hold is rejected. Combined with the WF rule for `$Class` types (rejected when the class path is undefined or non-dispatchable, §14.6.4) and `LookupClassMethod-NotFound` (an unknown method on a `$Class`), these are the static guardrails for the entire authority model.
@@ -643,7 +638,7 @@ Note also the capability-flow rejection of §6.1.2 (NAA-3): a call whose target 
 - **Propagate with `?`, narrow at the altitude that decides the exit code.** In a fallible procedure returning `Outcome<_, IoError>`, write `io~>write_stdout(...)?`. At `main` (which returns `i32`), pattern-match the final `Outcome` (or `let _ = ...` to discard intentionally) and choose the status code.
 - **The `$IO` openers return `Outcome`, matched like any other `Outcome`.** `open_read`, `open_write`, `open_append`, `create_write`, `open_dir`, and `kind` return `Outcome<T, IoError>` (not a bare union). Test the error with `if x is Outcome::Error(e) { ... }` and the success with `if x is Outcome::Value(h) { ... }`.
 - **Prefer `region`/`frame` for bulk, short-lived allocation.** When you build a transient graph, parse into temporaries, or process per-iteration scratch, open a `region` (and a `frame` per iteration). Bind arena allocations with `:=`. Reclamation is wholesale and deterministic at block exit — drops run, then arena bytes are freed — with no per-object bookkeeping.
-- **An arena allocation has the value's own type.** `arena ^ Node { ... }` is a `Node` carrying region provenance; do not annotate it `Ptr<Node>`. If you need a pointer into the arena, take its address with `&` separately.
+- **An arena allocation has the value's own type.** `arena~>alloc(Node { ... })` is a `Node` carrying region provenance; do not annotate it `Ptr<Node>`. If you need a pointer into the arena, take its address with `&` separately.
 - **Right clock for the job.** `time~>monotonic()` for durations/benchmarks (it is monotone within its domain); `time~>wall()` then `now_utc()` for calendar time. Never measure elapsed time with the wall clock, and keep `elapsed(start, end)` instants in the same authorized clock domain.
 
 ### Pitfalls & Diagnostics
@@ -651,9 +646,9 @@ Note also the capability-flow rejection of §6.1.2 (NAA-3): a call whose target 
 - **Trying to perform an effect without a capability.** There is no ambient `print`. A procedure with no `$IO` (directly or via `Context`) that attempts `write_stdout` is rejected by NAA-3 (`CapReq(d_tgt) ⊄ EffectiveCapReq(d_src)`). The fix is to add the capability to the signature and thread it from `main`.
 - **Writing modal `@Value`/`@Error` forms for `Outcome`.** `Outcome` is a two-variant enum, not a modal: the modal record-literal (`Outcome@Value { value: v }`) and bare `@Value`/`@Error` pattern forms do not apply. Construct with `Outcome::Value(v)` / `Outcome::Error(e)` and match with the same enum patterns.
 - **Brace-less `if` bodies.** `if_tail` requires a `block_expr`: `if cond return 1` is a parse error. Always use braces — `if cond { return 1 }`.
-- **Mistyping an arena allocation as a pointer.** `let a: Ptr<Node>@Valid = arena ^ Node { ... }` is a type error: `arena ^ Node { ... }` has type `Node`. Bind it as a `Node` (idiomatically with `:=`).
-- **Letting a region-local value escape.** Returning, or assigning into a longer-lived location, a value allocated with `^` triggers `E-MEM-3020` — its provenance `π_Region(r)` is shorter-lived than the destination. Keep arena values inside the arena's scope, or allocate them somewhere longer-lived (e.g. through `$HeapAllocator`).
-- **`^` with no active region.** Allocating `^ value` with no enclosing `region` in scope is `E-MEM-3021`. Open a `region` block, or name a `Region@Active` and use `r ^ value`.
+- **Mistyping an arena allocation as a pointer.** `let a: Ptr<Node>@Valid = arena~>alloc(Node { ... })` is a type error: `arena~>alloc(Node { ... })` has type `Node`. Bind it as a `Node` (idiomatically with `:=`).
+- **Letting a region-local value escape.** Returning, or assigning into a longer-lived location, a value allocated with `Region@Active~>alloc` triggers `E-MEM-3020` — its provenance `π_Region(r)` is shorter-lived than the destination. Keep arena values inside the arena's scope, or allocate them somewhere longer-lived (e.g. through `$HeapAllocator`).
+- **Allocating without a region handle.** Source allocation needs a `unique Region@Active` receiver. Open `region as r { ... }`, pass a `Region@Active`, or create one with `Region::new_scoped(...)`, then call `r~>alloc(value)`.
 - **`frame` with no active region / on a non-active region.** `frame { ... }` outside any region is `E-MEM-1207`; `r.frame { ... }` where `r` is not `Region@Active` (e.g. it was frozen or freed) is `E-MEM-1208`.
 - **Calling `reset_unchecked`/`free_unchecked`/`alloc_raw`/`dealloc_raw` outside `unsafe`.** These require an `unsafe` block (`E-MEM-3030`, via `AllocRaw-Unsafe-Err`/`DeallocRaw-Unsafe-Err`/`Region-Unchecked-Unsafe-Err`). The safe path is to let the `region` statement reclaim the arena implicitly; use the unchecked procedures only as deliberate boundary tools.
 - **Use-after-reset.** After `Region::reset_unchecked`/`free_unchecked`, a `Ptr<T>@Valid` into the reclaimed arena reads as `Ptr@Expired` (its region tag is now inactive). Using a *non-pointer* value with `π_Region(r)` provenance after reset/free is *outside conformance* — there is no defined behavior to rely on.

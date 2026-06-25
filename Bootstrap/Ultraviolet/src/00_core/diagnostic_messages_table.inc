@@ -102,7 +102,7 @@ static const DiagMessageEntry kDiagMessages[] = {
   {"E-MEM-3006", Severity::Error, "Attempt to move from immovable binding (`:=`)"},
   {"E-MEM-3007", Severity::Error, "`unique` binding from place expression requires explicit `move`"},
   {"E-MEM-3020", Severity::Error, "Value with shorter-lived provenance escapes to longer-lived location"},
-  {"E-MEM-3021", Severity::Error, "Region allocation `^` outside region scope"},
+  {"E-MEM-3021", Severity::Error, "Internal allocation node has no active region target"},
   {"E-MEM-3030", Severity::Error, "Unsafe operation outside block"},
   {"E-MEM-3031", Severity::Error, "`transmute` source and target sizes differ"},
   {"E-MOD-1104", Severity::Error, "Module path collision after NFC + case folding"},

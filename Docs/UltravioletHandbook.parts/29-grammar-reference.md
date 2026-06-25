@@ -218,17 +218,17 @@ power_expr          ::= cast_expr ("**" power_expr)?
 cast_expr           ::= unary_expr ("as" type)?
 
 unary_expr     ::= unary_operator unary_expr | pipeline_expr
-unary_operator ::= "!" | "-" | "&" | "*" | "^" | "move" | "widen"
+unary_operator ::= "!" | "-" | "&" | "*" | "move" | "widen"
 pipeline_expr  ::= postfix_expr ("=>" postfix_expr)*
 
 postfix_expr   ::= primary_expr postfix_suffix*
 postfix_suffix ::= "." identifier | "." decimal_integer | "[" expression "]" | "~>" identifier "(" argument_list? ")" | "(" argument_list? ")" | "?"
 ```
 
-**Operator structure.** Precedence climbs from `logical_or` (lowest binary) down through bitwise OR, bitwise XOR, bitwise AND, shift, additive, multiplicative, power, and cast. `**` (power) is **right-associative** (`power_expr ::= cast_expr ("**" power_expr)?`). Unary operators are `!`, `-`, `&` (address-of), `*` (deref), `^` (region-alloc head; see B.14), `move`, and `widen`. The **pipeline** operator `=>` threads a value left-to-right through `postfix_expr` stages. Postfix suffixes are: field access `.name`, tuple index `.0`, indexing `[i]`, the **bound/dynamic call** `~>method(args)`, ordinary call `(args)`, and the propagation/try operator `?`.
+**Operator structure.** Precedence climbs from `logical_or` (lowest binary) down through bitwise OR, bitwise XOR, bitwise AND, shift, additive, multiplicative, power, and cast. `**` (power) is **right-associative** (`power_expr ::= cast_expr ("**" power_expr)?`). Unary operators are `!`, `-`, `&` (address-of), `*` (deref), `move`, and `widen`. The **pipeline** operator `=>` threads a value left-to-right through `postfix_expr` stages. Postfix suffixes are: field access `.name`, tuple index `.0`, indexing `[i]`, the **bound/dynamic call** `~>method(args)`, ordinary call `(args)`, and the propagation/try operator `?`.
 
 ```ebnf
-primary_expr ::= literal | identifier_expr | path_expr | tuple_literal | array_literal | record_literal | enum_literal | closure_expr | if_expr | loop_expr | block_expr | move_expr | copy_expr | widen_expr | address_of_expr | null_ptr_expr | transmute_expr | alloc_expr | sync_expr | race_expr | all_expr | wait_expr | yield_expr | yield_from_expr | spawn_expr | parallel_block | dispatch_expr | fence_expr | comptime_expr | comptime_if | comptime_loop | quote_expr | quote_type | quote_pattern | type_literal | splice_expr | splice_ident | contract_intrinsic
+primary_expr ::= literal | identifier_expr | path_expr | tuple_literal | array_literal | record_literal | enum_literal | closure_expr | if_expr | loop_expr | block_expr | move_expr | copy_expr | widen_expr | address_of_expr | null_ptr_expr | transmute_expr | sync_expr | race_expr | all_expr | wait_expr | yield_expr | yield_from_expr | spawn_expr | parallel_block | dispatch_expr | fence_expr | comptime_expr | comptime_if | comptime_loop | quote_expr | quote_type | quote_pattern | type_literal | splice_expr | splice_ident | contract_intrinsic
 
 literal ::= integer_literal | float_literal | string_literal | char_literal | bool_literal | null_literal | unit_literal
 
@@ -909,28 +909,28 @@ public extern "C" {
 
 ### 29.14 B.14 — Region Grammar
 
-Regions and frames: region statements with options and aliases, region allocation, and frame statements.
+Regions and frames: region statements with options and aliases, Region modal allocation, and frame statements.
 
 ```ebnf
 region_stmt  ::= "region" region_opts? region_alias? block_expr
 region_opts  ::= "(" expression ")"
 region_alias ::= "as" identifier
-alloc_expr   ::= identifier "^" expression
 frame_stmt   ::= "frame" block_expr | identifier "." "frame" block_expr
 ```
 
-**Semantics.** A `region (opts) as name { }` opens a memory region; the optional `(expr)` configures it, and `as name` binds a handle for region-targeted allocation. The **allocation expression** `region_handle ^ value` allocates `value` within the named region and yields a pointer into it (this is the `^` head referenced by `alloc_expr` in B.3). A `frame { }` statement opens a default frame scope; `handle.frame { }` opens a frame on a specific allocator handle. Regions and frames give scoped, deterministic deallocation without per-object lifetime tracking.
+**Semantics.** A `region (opts) as name { }` opens a memory region; the optional `(expr)` configures it, and `as name` binds a handle for region-targeted allocation. The method call `region_handle~>alloc(value)` allocates `value` within the named region and yields a value of the same type carrying that region's provenance. A `frame { }` statement opens a default frame scope; `handle.frame { }` opens a frame on a specific allocator handle. Regions and frames give scoped, deterministic deallocation without per-object lifetime tracking.
 
 ```ultraviolet
 procedure buildScene(descriptor: SceneDescriptor) -> SceneSummary {
     region as scene_arena {
-        let node_table: Ptr<NodeTable>@Valid = scene_arena ^ NodeTable { count: 0u32 }
+        let node_table: NodeTable = scene_arena~>alloc(NodeTable { count: 0u32 })
+        let node_table_ptr: Ptr<NodeTable>@Valid = &node_table
 
         frame {
-            populateNodes(node_table, descriptor)
+            populateNodes(node_table_ptr, descriptor)
         }
 
-        return summarize(node_table)
+        return summarize(node_table_ptr)
     }
 }
 ```

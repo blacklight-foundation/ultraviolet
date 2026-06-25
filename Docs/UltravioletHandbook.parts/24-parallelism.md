@@ -663,7 +663,7 @@ Because associative reducers combine via a deterministic tree, `reduce: +` (and 
 - **CPU-in-CPU shares the pool.** Inner CPU parallel blocks share the worker pool with outer CPU parallel blocks (nested CPU lowering reuses the enclosing pool handle), so deep nesting does not multiply thread pools.
 - **Heterogeneous nesting is allowed.** CPU and GPU blocks MAY be nested heterogeneously (e.g. a GPU block inside a CPU block).
 - **Captures re-checked per level.** Capture rules apply independently at each nesting level — an inner block re-validates its own captures.
-- **Allocation in tasks.** Work items MAY capture the `context.heap` field (a `$HeapAllocator` capability) and invoke allocation methods; a work item executing within a `region` block MAY allocate from that region using `^` (the region-allocation operator of *Chapter 22*).
+- **Allocation in tasks.** Work items MAY capture the `context.heap` field (a `$HeapAllocator` capability) and invoke allocation methods; a work item executing within a `region` block MAY allocate from that region using a `Region@Active` handle's `~>alloc` operation.
 
 #### 24.8.3 Nesting example
 
@@ -770,4 +770,4 @@ What this guarantees:
 - **GPU-specific traps.** Nesting a GPU block in a GPU block is `E-CON-0152`. Using a key block, a `shared` capture, a non-`GpuSafe` type, a heap-provenanced value, a barrier under divergent control flow, or a workgroup exceeding 1024 work-items inside GPU code each has its own error (`E-CON-0155`, `E-CON-0151`, `E-TYP-2640`/`E-CON-0153`, `E-CON-0156`/`E-CON-0158`, `E-CON-0157`). Calling a GPU intrinsic outside a GPU context is `E-CON-0154` (`E-CON-0156` for barriers).
 - **Assuming a panic stops siblings.** Without a `cancel` token, sibling tasks run to completion even after another task panics; the block still propagates the earliest panic at its boundary. Attach a token if you need abort-on-failure.
 
-Related chapters: *Chapter 13, Modal Types* (`Spawned<T>`, `Tracked<T, E>`, `CancelToken` as built-in modals); *Chapter 16, Closures* (capture-set computation reused here); *Chapter 19, The Key System* (`shared` synchronization, `key` clauses, key-held restrictions on `wait`); *Chapter 21, Asynchronous Execution* (`wait`, `Tracked<T, E>`, `yield`/`yield release`); *Chapter 22, Regions* (region allocation `^` inside work items).
+Related chapters: *Chapter 13, Modal Types* (`Spawned<T>`, `Tracked<T, E>`, `CancelToken` as built-in modals); *Chapter 16, Closures* (capture-set computation reused here); *Chapter 19, The Key System* (`shared` synchronization, `key` clauses, key-held restrictions on `wait`); *Chapter 21, Asynchronous Execution* (`wait`, `Tracked<T, E>`, `yield`/`yield release`); *Chapter 22, Regions* (`Region@Active~>alloc` inside work items).

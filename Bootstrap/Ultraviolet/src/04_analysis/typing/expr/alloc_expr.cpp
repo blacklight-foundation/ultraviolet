@@ -1,8 +1,8 @@
 // =================================================================
 // File: 04_analysis/typing/expr/alloc_expr.cpp
-// Construct: Allocation Expression Type Checking
-// Spec Section: 5.2.12
-// Spec Rules: T-Alloc-Explicit, T-Alloc-Implicit, Alloc-Region-NotFound-Err,
+// Construct: Internal Allocation Expression Type Checking
+// Spec Section: 16.8.4
+// Spec Rules: T-Internal-Alloc-Explicit, T-Internal-Alloc-Implicit, Alloc-Region-NotFound-Err,
 //             Alloc-Implicit-NoRegion-Err
 // =================================================================
 
@@ -18,10 +18,10 @@ namespace ultraviolet::analysis::expr {
 namespace {
 
 static inline void SpecDefsAlloc() {
-  SPEC_DEF("T-Alloc-Explicit", "5.2.12");
-  SPEC_DEF("T-Alloc-Implicit", "5.2.12");
-  SPEC_DEF("Alloc-Region-NotFound-Err", "5.2.12");
-  SPEC_DEF("Alloc-Implicit-NoRegion-Err", "5.2.12");
+  SPEC_DEF("T-Internal-Alloc-Explicit", "16.8.4");
+  SPEC_DEF("T-Internal-Alloc-Implicit", "16.8.4");
+  SPEC_DEF("Alloc-Region-NotFound-Err", "16.8.4");
+  SPEC_DEF("Alloc-Implicit-NoRegion-Err", "16.8.4");
 }
 
 }  // namespace
@@ -43,7 +43,7 @@ ExprTypeResult TypeAllocExprImpl(const ScopeContext& ctx,
     return result;
   }
 
-  // Explicit region allocation: region ^ value
+  // Explicit region allocation by region handle.
   if (expr.region_opt.has_value()) {
     const auto binding = BindOf(env, *expr.region_opt);
     if (!binding.has_value()) {
@@ -61,14 +61,14 @@ ExprTypeResult TypeAllocExprImpl(const ScopeContext& ctx,
       result.diag_id = inner.diag_id;
       return result;
     }
-    SPEC_RULE("T-Alloc-Explicit");
-    SPEC_RULE("rule.16.T-Alloc-Explicit");
+    SPEC_RULE("T-Internal-Alloc-Explicit");
+    SPEC_RULE("rule.16.T-Internal-Alloc-Explicit");
     result.ok = true;
     result.type = inner.type;
     return result;
   }
 
-  // Implicit region allocation: ^value (inside region block)
+  // Implicit allocation remains available to internal AST producers.
   const auto region = InnermostActiveRegion(env);
   if (!region.has_value()) {
     SPEC_RULE("diag.16.EffectfulCoreExpressions");
@@ -82,8 +82,8 @@ ExprTypeResult TypeAllocExprImpl(const ScopeContext& ctx,
     result.diag_id = inner.diag_id;
     return result;
   }
-  SPEC_RULE("T-Alloc-Implicit");
-  SPEC_RULE("rule.16.T-Alloc-Implicit");
+  SPEC_RULE("T-Internal-Alloc-Implicit");
+  SPEC_RULE("rule.16.T-Internal-Alloc-Implicit");
   result.ok = true;
   result.type = inner.type;
   return result;

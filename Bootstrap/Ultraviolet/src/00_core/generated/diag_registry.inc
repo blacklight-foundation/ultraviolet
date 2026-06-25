@@ -177,7 +177,7 @@ static constexpr DiagRegistryRow kDiagRegistryRows[] = {
   {"E-MEM-3006", "Error", "Attempt to move from immovable binding (`:=`) (`Trans-Let-NoReassign`, `B-Closure-MoveCapture-Immovable-Err`)"},
   {"E-MEM-3007", "Error", "`unique` binding from place expression requires explicit `move` (`B-LetVar-UniqueNonMove-Err`)"},
   {"E-MEM-3020", "Error", "Value with shorter-lived provenance escapes to longer-lived location"},
-  {"E-MEM-3021", "Error", "Region allocation `^` outside region scope"},
+  {"E-MEM-3021", "Error", "Internal allocation node has no active region target"},
   {"E-MEM-3030", "Error", "Unsafe operation outside block (`AllocRaw-Unsafe-Err`, `DeallocRaw-Unsafe-Err`, `Region-Unchecked-Unsafe-Err`, `Transmute-Unsafe-Err`)"},
   {"E-MEM-3031", "Error", "`transmute` source and target sizes differ"},
   {"E-MOD-1104", "Error", "Module path collision after NFC + case folding (`Disc-Collision`, `WF-Module-Path-Collision`)"},

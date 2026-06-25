@@ -322,7 +322,6 @@ add_library(uv_source STATIC
   02_source/lexer/token.cpp
   02_source/lexer/tokenize.cpp
   02_source/parser/expr/all_expr.cpp
-  02_source/parser/expr/alloc_expr.cpp
   02_source/parser/expr/array_literal.cpp
   02_source/parser/expr/addr_of.cpp
   02_source/parser/expr/binary.cpp

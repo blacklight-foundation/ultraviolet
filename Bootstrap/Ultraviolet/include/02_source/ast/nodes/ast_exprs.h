@@ -155,7 +155,7 @@ struct CopyExpr {
     ExprPtr value;
 };
 
-/// Allocation expression - ^value or region^value
+/// Allocation expression emitted by internal lowering and compile-time AST construction.
 struct AllocExpr {
     std::optional<Identifier> region_opt;
     ExprPtr value;

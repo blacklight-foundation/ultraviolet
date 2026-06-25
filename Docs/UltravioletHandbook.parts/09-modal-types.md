@@ -423,7 +423,7 @@ A concrete state value `M@S` can be *widened* to the general modal type `M`, dis
 widen_expr ::= "widen" unary_expr
 ```
 
-`widen` is a reserved keyword and a unary prefix operator (Appendix B.3: `unary_operator ::= "!" | "-" | "&" | "*" | "^" | "move" | "widen"`).
+`widen` is a reserved keyword and a unary prefix operator (Appendix B.3: `unary_operator ::= "!" | "-" | "&" | "*" | "move" | "widen"`).
 
 #### Semantics
 

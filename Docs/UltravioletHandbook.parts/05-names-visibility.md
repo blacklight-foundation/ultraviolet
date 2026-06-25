@@ -99,7 +99,7 @@ SpecialTypeNames = {Self, Drop, Bitcopy, Clone, Eq, Hash, Hasher, Iterator,
                     CancelToken, Context, TestAuthority, System, IO, HeapAllocator,
                     Network, ExecutionDomain, CpuSet, Priority, Reactor, Time,
                     MonotonicTime, WallTime, Duration, MonotonicInstant,
-                    UtcInstant, TimeError}
+                    UtcInstant, TimeError, Outcome}
 AsyncTypeNames   = {Async, Future, Sequence, Stream, Pipe, Exchange, Tracked}
 ```
 
@@ -822,16 +822,9 @@ NoSpecificResolveExpr(C(e_1, …, e_n))   ∀ i, Γ ⊢ ResolveExpr(e_i) ⇓ e_i
 Γ ⊢ ResolveExpr(C(e_1, …, e_n)) ⇓ C(e_1', …, e_n')
 ```
 
-One special value-name rule deserves note: a `^` binary expression whose left operand resolves to a region-alias value lowers to an explicit allocation:
-
-```text
-(ResolveExpr-Alloc-Explicit-ByAlias)
-Γ ⊢ ResolveValueName(r) ⇓ ent   RegionAlias(ent)   Γ ⊢ ResolveExpr(e) ⇓ e'
-───────────────────────────────────────────────────────────────────────────
-Γ ⊢ ResolveExpr(Binary("^", Identifier(r), e)) ⇓ AllocExpr(r, e')
-```
-
-(`^` is a member of `OperatorSet`. The plain `AllocExpr` forms are resolved by `ResolveExpr-Alloc-Implicit` for `AllocExpr(⊥, e)` and `ResolveExpr-Alloc-Explicit` for `AllocExpr(r, e)`.)
+Region allocation uses ordinary method-call resolution. A named region handle
+introduced by `region as r` is referenced as a value and targeted with
+`r~>alloc(value)`; `^` is only the bitwise XOR operator.
 
 #### 5.7.4 Module path validation and the module driver
 

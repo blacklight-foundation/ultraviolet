@@ -195,7 +195,6 @@ ExprKind(MoveExpr(_)) = `move`
 ExprKind(Unary(`"widen"`, _)) = `widen`
 ExprKind(TransmuteExpr(_, _, _)) = `transmute`
 ExprKind(UnsafeBlockExpr(_)) = `unsafe`
-ExprKind(AllocExpr(_, _)) = `region_alloc`
 ExprKind(MethodCall(_, _, _)) = `method_call`
 ExprKind(Propagate(_)) = `union_propagate`
 ExprKind(ParallelExpr(_, _, _)) = `parallel`
@@ -1915,7 +1914,7 @@ Next(K, i) = K[j] ⇔ j = min{ j | j > i ∧ K[j].kind ≠ newline }
 
 Ambig = {"+", "-", "*", "&", "|"}
 RangeCont = {"..", "..="}
-BeginsOperand(t) ⇔ t.kind ∈ {Identifier, IntLiteral, FloatLiteral, StringLiteral, CharLiteral, BoolLiteral, NullLiteral} ∨ (t.kind = Punctuator ∧ t.lexeme ∈ {"(", "[", "{"}) ∨ (t.kind = Operator ∧ t.lexeme ∈ {"!", "-", "&", "*", "^"}) ∨ (t.kind = Keyword ∧ t.lexeme ∈ {"if", "loop", "unsafe", "comptime", "quote", "move", "transmute", "widen", "parallel", "spawn", "dispatch", "yield", "sync", "race", "all"})
+BeginsOperand(t) ⇔ t.kind ∈ {Identifier, IntLiteral, FloatLiteral, StringLiteral, CharLiteral, BoolLiteral, NullLiteral} ∨ (t.kind = Punctuator ∧ t.lexeme ∈ {"(", "[", "{"}) ∨ (t.kind = Operator ∧ t.lexeme ∈ {"!", "-", "&", "*"}) ∨ (t.kind = Keyword ∧ t.lexeme ∈ {"if", "loop", "unsafe", "comptime", "quote", "move", "transmute", "widen", "parallel", "spawn", "dispatch", "yield", "sync", "race", "all"})
 UnaryOnly = {"!", "~", "?"}
 Adjacent(t_1, t_2) ⇔ t_1.span.end_offset = t_2.span.start_offset
 AttrBefore(K, i) ⇔ ∃ j. j < i ∧ K[j].kind = Operator ∧ K[j].lexeme = "#" ∧ Prev(K, i) is the final token of the attribute specification parsed from K[j]
@@ -2146,7 +2145,7 @@ ReservedIdentPrefix = {`gen_`}
 ReservedNamespacePhase = Phase3
 
 **Universe-Protected Bindings.**
-UniverseProtected = {`i8`, `i16`, `i32`, `i64`, `i128`, `u8`, `u16`, `u32`, `u64`, `u128`, `f16`, `f32`, `f64`, `bool`, `char`, `usize`, `isize`, `Self`, `Drop`, `Bitcopy`, `Clone`, `Eq`, `Hash`, `Hasher`, `Iterator`, `Discrete`, `FfiSafe`, `string`, `bytes`, `Modal`, `Region`, `RegionOptions`, `CancelToken`, `Context`, `TestAuthority`, `System`, `IO`, `HeapAllocator`, `Network`, `ExecutionDomain`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`, `Duration`, `MonotonicInstant`, `UtcInstant`, `TimeError`, `CpuSet`, `Priority`, `Async`, `Future`, `Sequence`, `Stream`, `Pipe`, `Exchange`, `Tracked`, `Spawned`}
+UniverseProtected = {`i8`, `i16`, `i32`, `i64`, `i128`, `u8`, `u16`, `u32`, `u64`, `u128`, `f16`, `f32`, `f64`, `bool`, `char`, `usize`, `isize`, `Self`, `Drop`, `Bitcopy`, `Clone`, `Eq`, `Hash`, `Hasher`, `Iterator`, `Discrete`, `FfiSafe`, `string`, `bytes`, `Modal`, `Region`, `RegionOptions`, `CancelToken`, `Context`, `TestAuthority`, `System`, `IO`, `HeapAllocator`, `Network`, `ExecutionDomain`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`, `Duration`, `MonotonicInstant`, `UtcInstant`, `TimeError`, `Outcome`, `CpuSet`, `Priority`, `Async`, `Future`, `Sequence`, `Stream`, `Pipe`, `Exchange`, `Tracked`, `Spawned`}
 UniverseProtectedPhase = Phase3
 
 `Drop`, `Bitcopy`, `Clone`, and `FfiSafe` are reserved predicate names. They MUST NOT be declared as classes or used as user-defined type/value bindings.
@@ -4746,7 +4745,7 @@ This section owns binding-state, region/frame, provenance, and unsafe-runtime di
 | `E-MEM-3006` | Error    | Compile-time | Attempt to move from immovable binding (`:=`) (`Trans-Let-NoReassign`, `B-Closure-MoveCapture-Immovable-Err`) |
 | `E-MEM-3007` | Error    | Compile-time | `unique` binding from place expression requires explicit `move` (`B-LetVar-UniqueNonMove-Err`) |
 | `E-MEM-3020` | Error    | Compile-time | Value with shorter-lived provenance escapes to longer-lived location |
-| `E-MEM-3021` | Error    | Compile-time | Region allocation `^` outside region scope                           |
+| `E-MEM-3021` | Error    | Compile-time | Internal allocation node has no active region target                 |
 | `E-MEM-3030` | Error    | Compile-time | Unsafe operation outside block (`AllocRaw-Unsafe-Err`, `DeallocRaw-Unsafe-Err`, `Region-Unchecked-Unsafe-Err`, `Transmute-Unsafe-Err`) |
 
 ## 7. Name Resolution and Visibility
@@ -4794,7 +4793,7 @@ ReservedModulePath(path) ⇔ (|path| ≥ 1 ∧ IdEq(path[0], `ultraviolet`)) ∨
 
 
 PrimTypeNames = {`i8`, `i16`, `i32`, `i64`, `i128`, `u8`, `u16`, `u32`, `u64`, `u128`, `f16`, `f32`, `f64`, `bool`, `char`, `usize`, `isize`}
-SpecialTypeNames = {`Self`, `Drop`, `Bitcopy`, `Clone`, `Eq`, `Hash`, `Hasher`, `Iterator`, `Discrete`, `FfiSafe`, `string`, `bytes`, `Modal`, `Region`, `RegionOptions`, `CancelToken`, `Context`, `TestAuthority`, `System`, `IO`, `HeapAllocator`, `Network`, `ExecutionDomain`, `CpuSet`, `Priority`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`, `Duration`, `MonotonicInstant`, `UtcInstant`, `TimeError`}
+SpecialTypeNames = {`Self`, `Drop`, `Bitcopy`, `Clone`, `Eq`, `Hash`, `Hasher`, `Iterator`, `Discrete`, `FfiSafe`, `string`, `bytes`, `Modal`, `Region`, `RegionOptions`, `CancelToken`, `Context`, `TestAuthority`, `System`, `IO`, `HeapAllocator`, `Network`, `ExecutionDomain`, `CpuSet`, `Priority`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`, `Duration`, `MonotonicInstant`, `UtcInstant`, `TimeError`, `Outcome`}
 AsyncTypeNames = {`Async`, `Future`, `Sequence`, `Stream`, `Pipe`, `Exchange`, `Tracked`}
 
 `Drop`, `Bitcopy`, `Clone`, and `FfiSafe` are reserved predicate names and are included in `SpecialTypeNames`. Reuse of these names at any scope is an error via `(Intro-Outer-Err)` (§7.2), since `UniverseBindings` is the outermost scope and contains these names.
@@ -5825,12 +5824,7 @@ key_clause_opt = ⟨path, mode⟩    Γ ⊢ ResolveKeyPathExpr(path) ⇓ path'
 ──────────────────────────────────────────────
 Γ ⊢ ResolveExpr(AllExpr(es)) ⇓ AllExpr(es')
 
-**(ResolveExpr-Alloc-Explicit-ByAlias)**
-Γ ⊢ ResolveValueName(r) ⇓ ent    RegionAlias(ent)    Γ ⊢ ResolveExpr(e) ⇓ e'
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ResolveExpr(Binary("^", Identifier(r), e)) ⇓ AllocExpr(r, e')
-
-ResolveExprRules = {ResolveExpr-Ident, ResolveExpr-Qualified, ResolveExpr-Call, ResolveExpr-Call-TypeArgs, ResolveExpr-RecordExpr, ResolveExpr-EnumLiteral, ResolveExpr-IfCase, ResolveExpr-LoopIter, ResolveExpr-Parallel, ResolveExpr-Spawn, ResolveExpr-Wait, ResolveExpr-Dispatch, ResolveExpr-Yield, ResolveExpr-YieldFrom, ResolveExpr-Sync, ResolveExpr-Race, ResolveExpr-All, ResolveExpr-Alloc-Explicit-ByAlias, ResolveExpr-Hom, ResolveExpr-Alloc-Implicit, ResolveExpr-Alloc-Explicit, ResolveExpr-Block}
+ResolveExprRules = {ResolveExpr-Ident, ResolveExpr-Qualified, ResolveExpr-Call, ResolveExpr-Call-TypeArgs, ResolveExpr-RecordExpr, ResolveExpr-EnumLiteral, ResolveExpr-IfCase, ResolveExpr-LoopIter, ResolveExpr-Parallel, ResolveExpr-Spawn, ResolveExpr-Wait, ResolveExpr-Dispatch, ResolveExpr-Yield, ResolveExpr-YieldFrom, ResolveExpr-Sync, ResolveExpr-Race, ResolveExpr-All, ResolveExpr-Hom, ResolveExpr-Internal-Alloc-Implicit, ResolveExpr-Internal-Alloc-Explicit, ResolveExpr-Block}
 
 NoSpecificResolveExpr(e) ⇔ ¬ ∃ r ∈ ResolveExprRules \ {ResolveExpr-Hom}. PremisesHold(r, e)
 
@@ -5839,12 +5833,12 @@ NoSpecificResolveExpr(C(e_1, …, e_n))    ∀ i, Γ ⊢ ResolveExpr(e_i) ⇓ e_
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ResolveExpr(C(e_1, …, e_n)) ⇓ C(e_1', …, e_n')
 
-**(ResolveExpr-Alloc-Implicit)**
+**(ResolveExpr-Internal-Alloc-Implicit)**
 Γ ⊢ ResolveExpr(e) ⇓ e'
 ────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ResolveExpr(AllocExpr(⊥, e)) ⇓ AllocExpr(⊥, e')
 
-**(ResolveExpr-Alloc-Explicit)**
+**(ResolveExpr-Internal-Alloc-Explicit)**
 Γ ⊢ ResolveValueName(r) ⇓ ent    Γ ⊢ ResolveExpr(e) ⇓ e'
 ────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ResolveExpr(AllocExpr(r, e)) ⇓ AllocExpr(r, e')
@@ -10027,7 +10021,7 @@ VariantPayload ∈ {TuplePayload = [Type], RecordPayload = [FieldDecl]}
 ∀ f ∈ RecordPayload. f.init_opt = ⊥
 
 Variants(E) = E.variants
-BuiltinEnum = {`FileKind`, `IoError`, `AllocationError`, `Priority`}
+BuiltinEnum = {`FileKind`, `IoError`, `AllocationError`, `Priority`, `Outcome`}
 EnumPathOf(E) = [E.name]    if E.name ∈ BuiltinEnum
 EnumPathOf(E) = FullPath(ModuleOf(E), E.name)    otherwise
 EnumPath(path) = p ⇔ SplitLast(path) = (p, n)
@@ -10661,7 +10655,7 @@ StateMembers(M, S) = b.members ⇔ StateBlockOf(M, S) = b
 
 Payload(M, S) = [⟨f, T⟩ | StateFieldDecl(_, _, _, f, T, _, _) ∈ StateMembers(M, S)]
 
-BuiltinModal = {`Region`, `File`, `DirIter`, `CancelToken`, `Spawned`, `Tracked`, `Async`, `Outcome`}
+BuiltinModal = {`Region`, `File`, `DirIter`, `CancelToken`, `Spawned`, `Tracked`, `Async`}
 ModalPath(M) = [M.name]    if M.name ∈ BuiltinModal
 ModalPath(M) = FullPath(ModuleOf(M), M.name)    otherwise
 
@@ -17194,11 +17188,13 @@ address_of_expr ::= "&" place_expr
 move_expr       ::= "move" place_expr
 copy_expr       ::= "copy" unary_expr
 deref_expr      ::= "*" unary_expr
-alloc_expr      ::= "^" expression
 propagate_expr  ::= postfix_expr "?"
 ```
 
-After name resolution, `Binary("^", Identifier(r), e)` MAY be rewritten to `AllocExpr(r, e)` when `r` is a region alias.
+Region allocation has no prefix or binary operator form. Source allocation is
+the builtin modal method call `receiver~>alloc(value)`, where the receiver has
+type `unique Region@Active`; it uses the method-call syntax from §16.3 and the
+`Region::alloc` signature from §13.1.4.
 
 #### 16.8.2 Parsing
 
@@ -17227,11 +17223,6 @@ IsOp(Tok(P), "?")
 ──────────────────────────────────────────────────────────────
 Γ ⊢ PostfixStep(P, e) ⇓ (Advance(P), Propagate(e))
 
-**(Parse-Alloc-Implicit)**
-IsOp(Tok(P), "^")    Γ ⊢ ParseExpr(Advance(P)) ⇓ (P_1, e)
-────────────────────────────────────────────────────────────────
-Γ ⊢ ParsePrimary(P) ⇓ (P_1, AllocExpr(⊥, e))
-
 **(Parse-Unsafe-Expr)**
 IsKw(Tok(P), `unsafe`)    Γ ⊢ ParseBlock(Advance(P)) ⇓ (P_1, b)
 ──────────────────────────────────────────────────────────────────────
@@ -17239,13 +17230,12 @@ IsKw(Tok(P), `unsafe`)    Γ ⊢ ParseBlock(Advance(P)) ⇓ (P_1, b)
 
 #### 16.8.3 AST Representation / Form
 
-Expr = UnsafeBlockExpr(body) | MoveExpr(place) | CopyExpr(expr) | AddressOf(place) | Deref(expr) | AllocExpr(region_opt, expr) | Propagate(expr) | …
+Expr = UnsafeBlockExpr(body) | MoveExpr(place) | CopyExpr(expr) | AddressOf(place) | Deref(expr) | Propagate(expr) | …
 
-ResolveExpr-Alloc-Explicit-ByAlias rewrites:
-
-Γ ⊢ ResolveValueName(r) ⇓ ent    RegionAlias(ent)    Γ ⊢ ResolveExpr(e) ⇓ e'
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ResolveExpr(Binary("^", Identifier(r), e)) ⇓ AllocExpr(r, e')
+Internal lowering and compile-time AST construction may use
+`AllocExpr(region_opt, expr)` to represent a region allocation after the source
+method-call form has selected `Region::alloc`. `AllocExpr` is not a source
+`primary_expr`.
 
 #### 16.8.4 Static Semantics
 
@@ -17290,12 +17280,21 @@ UnsafeSpan(span(Deref(e)))    Γ; R; L ⊢ e : TypeRawPtr(q, T)    BitcopyType(T
 ──────────────────────────────────────────────
 Γ; R; L ⊢ CopyExpr(e) : T
 
-**(T-Alloc-Explicit)**
+**(T-Region-Alloc-Method)**
+Γ; R; L ⊢ recv : TypePerm(`unique`, TypeModalState(["Region"], `@Active`))    Γ; R; L ⊢ value : T
+────────────────────────────────────────────────────────────────────────────────────────────────
+Γ; R; L ⊢ MethodCall(recv, `alloc`, [⟨⊥, value, _⟩]) : T_{π_Region(recv)}
+
+Internal allocation AST nodes are not source syntax. They are permitted only
+after elaboration or compile-time AST construction has already selected the
+region allocation operation.
+
+**(T-Internal-Alloc-Explicit)**
 Γ; R; L ⊢ e : T    Γ; R; L ⊢ Identifier(r) : T_r    RegionActiveType(T_r)
 ────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ AllocExpr(r, e) : T
 
-**(T-Alloc-Implicit)**
+**(T-Internal-Alloc-Implicit)**
 InnermostActiveRegion(Γ) = r    Γ; R; L ⊢ e : T
 ────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ AllocExpr(⊥, e) : T
@@ -17361,25 +17360,15 @@ AsyncSig(R) = ⟨Out, In, Result, E⟩    E = TypePrim("!")    Γ; R; L ⊢ e : 
 ──────────────────────────────────────────────────────
 Γ ⊢ EvalSigma(CopyExpr(e), σ) ⇓ (Ctrl(κ), σ_1)
 
-**(EvalSigma-Alloc-Implicit)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    ActiveTarget(σ_1) = r    RegionAlloc(σ_1, r, v) ⇓ (σ_2, v')
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalSigma(AllocExpr(⊥, e), σ) ⇓ (Val(v'), σ_2)
+**(EvalSigma-MethodCall-RegionAlloc)**
+Γ ⊢ EvalRecvSigma(recv, `unique`, σ) ⇓ (Val(⟨v_r, v_arg⟩), σ_1)    Γ ⊢ EvalSigma(value, σ_1) ⇓ (Val(v), σ_2)    RegionAllocProc(σ_2, v_r, v) ⇓ (σ_3, v')
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ EvalSigma(MethodCall(recv, `alloc`, [⟨⊥, value, _⟩]), σ) ⇓ (Val(v'), σ_3)
 
-**(EvalSigma-Alloc-Implicit-Ctrl)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Ctrl(κ), σ_1)
-──────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalSigma(AllocExpr(⊥, e), σ) ⇓ (Ctrl(κ), σ_1)
-
-**(EvalSigma-Alloc-Explicit)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    LookupVal(σ_1, r) = v_r    RegionHandleOf(v_r) = h    ResolveTarget(σ_1, h) = r_t    RegionAlloc(σ_1, r_t, v) ⇓ (σ_2, v')
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalSigma(AllocExpr(r, e), σ) ⇓ (Val(v'), σ_2)
-
-**(EvalSigma-Alloc-Explicit-Ctrl)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Ctrl(κ), σ_1)
-────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalSigma(AllocExpr(r, e), σ) ⇓ (Ctrl(κ), σ_1)
+**(EvalSigma-MethodCall-RegionAlloc-Ctrl)**
+Γ ⊢ EvalRecvSigma(recv, `unique`, σ) ⇓ (Val(⟨v_r, v_arg⟩), σ_1)    Γ ⊢ EvalSigma(value, σ_1) ⇓ (Ctrl(κ), σ_2)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ EvalSigma(MethodCall(recv, `alloc`, [⟨⊥, value, _⟩]), σ) ⇓ (Ctrl(κ), σ_2)
 
 **(EvalSigma-Propagate-Success-Outcome)**
 Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    U = ExprType(e)    AsyncSig(RetType(Γ)) = ⊥    OutcomeSig(U) = ⟨T_s, E_s⟩    OutcomeSig(RetType(Γ)) = ⟨T_r, E_r⟩    v = EnumValue(["Outcome", `Value`], TuplePayload([v_s]))
@@ -17438,25 +17427,10 @@ TerminalExpr(⟨Ctrl(κ), σ⟩)
 ────────────────────────────────
 ⟨e, σ⟩ → ⟨e', σ⟩
 
-**(StepSigma-Alloc-Implicit)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    ActiveTarget(σ_1) = r    RegionAlloc(σ_1, r, v) ⇓ (σ_2, v')
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-⟨AllocExpr(⊥, e), σ⟩ → ⟨Val(v'), σ_2⟩
-
-**(StepSigma-Alloc-Implicit-Ctrl)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Ctrl(κ), σ_1)
-────────────────────────────────────────────────────────────
-⟨AllocExpr(⊥, e), σ⟩ → ⟨Ctrl(κ), σ_1⟩
-
-**(StepSigma-Alloc-Explicit)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    LookupVal(σ_1, r) = v_r    RegionHandleOf(v_r) = h    ResolveTarget(σ_1, h) = r_t    RegionAlloc(σ_1, r_t, v) ⇓ (σ_2, v')
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-⟨AllocExpr(r, e), σ⟩ → ⟨Val(v'), σ_2⟩
-
-**(StepSigma-Alloc-Explicit-Ctrl)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Ctrl(κ), σ_1)
-──────────────────────────────────────────────
-⟨AllocExpr(r, e), σ⟩ → ⟨Ctrl(κ), σ_1⟩
+**(StepSigma-MethodCall-RegionAlloc)**
+Γ ⊢ EvalSigma(MethodCall(recv, `alloc`, [⟨⊥, value, _⟩]), σ) ⇓ (out, σ')
+────────────────────────────────────────────────────────────────────────────────────────────────
+⟨MethodCall(recv, `alloc`, [⟨⊥, value, _⟩]), σ⟩ → ⟨out, σ'⟩
 
 **(StepSigma-Block)**
 Γ ⊢ EvalBlockSigma(BlockExpr(stmts, tail_opt), σ) ⇓ (out, σ')
@@ -17474,7 +17448,7 @@ TerminalExpr(⟨Ctrl(κ), σ⟩)
 ⟨ℓ, σ⟩ → ⟨out, σ'⟩
 
 **(StepSigma-Stateful-Other)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (out, σ')    e ∉ {AllocExpr(_, _), BlockExpr(_, _), UnsafeBlockExpr(_), LoopInfinite(_, _), LoopConditional(_, _, _), LoopIter(_, _, _, _, _)}
+Γ ⊢ EvalSigma(e, σ) ⇓ (out, σ')    e ∉ {BlockExpr(_, _), UnsafeBlockExpr(_), LoopInfinite(_, _), LoopConditional(_, _, _), LoopIter(_, _, _, _, _)}
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ⟨e, σ⟩ → ⟨out, σ'⟩
 
@@ -17505,10 +17479,15 @@ TerminalExpr(⟨Ctrl(κ), σ⟩)
 ──────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ LowerExpr(Deref(e)) ⇓ ⟨SeqIR(IR_e, IR_d), v⟩
 
-**(Lower-Expr-Alloc)**
+**(Lower-MethodCall-Region-Alloc)**
+Γ ⊢ LowerExpr(recv) ⇓ ⟨IR_r, v_r⟩    Γ ⊢ LowerExpr(value) ⇓ ⟨IR_v, v⟩
+────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ LowerExpr(MethodCall(recv, `alloc`, [⟨⊥, value, _⟩])) ⇓ ⟨SeqIR(IR_r, IR_v, AllocIR(v_r, v)), v_alloc⟩
+
+**(Lower-Internal-AllocExpr)**
 Γ ⊢ LowerExpr(e) ⇓ ⟨IR_e, v⟩
 ────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerExpr(AllocExpr(r_opt, e)) ⇓ ⟨SeqIR(IR_e, AllocIR(r_opt, v)), v_alloc⟩
+Γ ⊢ LowerExpr(AllocExpr(r_ref, e)) ⇓ ⟨SeqIR(IR_e, AllocIR(r_ref, v)), v_alloc⟩
 
 **(Lower-Expr-Propagate-Success-Outcome)**
 Γ ⊢ LowerExpr(e) ⇓ ⟨IR_e, v⟩    U = ExprType(e)    OutcomeSig(U) = ⟨T_s, E_s⟩    v = EnumValue(["Outcome", `Value`], TuplePayload([v_s]))
@@ -17534,7 +17513,7 @@ TerminalExpr(⟨Ctrl(κ), σ⟩)
 
 #### 16.8.7 Diagnostics
 
-Diagnostics are defined for address-of on non-places, address-of of packed fields outside `unsafe`, non-`usize` indexing in address-of contexts, dereference of null or expired safe pointers, raw-pointer dereference outside `unsafe`, explicit allocation through a non-region binding, implicit allocation without an active region, and propagation inside async procedures whose error type is `!`.
+Diagnostics are defined for address-of on non-places, address-of of packed fields outside `unsafe`, non-`usize` indexing in address-of contexts, dereference of null or expired safe pointers, raw-pointer dereference outside `unsafe`, Region allocation through a receiver that is not `unique Region@Active`, internal allocation without an active region target, and propagation inside async procedures whose error type is `!`.
 
 ### 16.9 Closure and Pipeline Expressions
 
@@ -22811,7 +22790,7 @@ Capture rules apply independently at each nesting level.
 
 Work items MAY capture `ctx.heap` and invoke allocation methods.
 
-Work items executing within a `region` block MAY allocate from that region using `^`.
+Work items executing within a `region` block MAY allocate from that region using a `Region@Active` handle's `~>alloc` operation.
 
 TaskId(w) = n assigns each created work item a stable creation identifier.
 CompletionSeq(w) = n assigns each settled work item a global monotonically increasing completion identifier.
@@ -27177,12 +27156,13 @@ ExecIRSigma(ReadPtrIR(v_ptr), σ) ⇓ (out, σ')
 ExecIRSigma(WritePtrIR(v_ptr, v), σ) ⇓ (sout, σ')
 
 AllocTarget(σ, ⊥) = ActiveTarget(σ)
+AllocTarget(σ, v_r) = r ⇔ RegionHandleOf(v_r) = h ∧ ResolveTarget(σ, h) = r
 AllocTarget(σ, r) = ResolveTarget(σ, r)
 
 **(ExecIR-Alloc)**
-AllocTarget(σ, r_opt) = r    RegionAlloc(σ, r, v) ⇓ (σ', v')
+AllocTarget(σ, r_ref) = r    RegionAlloc(σ, r, v) ⇓ (σ', v')
 ──────────────────────────────────────────────────────────────────────────────
-ExecIRSigma(AllocIR(r_opt, v), σ) ⇓ (Val(v'), σ')
+ExecIRSigma(AllocIR(r_ref, v), σ) ⇓ (Val(v'), σ')
 
 **(MoveState-Root)**
 PlaceRoot(p) = x    FieldHead(p) = ⊥    LookupBind(σ, x) = b    SetState(σ, b, Moved) ⇓ σ'
@@ -29844,10 +29824,14 @@ GlobalVTable(sym, header, slots) = d
 ──────────────────────────────────────────────────────────────
 Γ ⊢ LowerIRDecl(d) ⇓ LLVMGlobalVTable(sym, header, slots)
 
+AllocLowerTarget(Γ, ⊥) = InnermostActiveRegion(Γ)
+AllocLowerTarget(Γ, v_r) = h ⇔ RegionHandleOf(v_r) = h
+AllocLowerTarget(Γ, r) = r
+
 **(Lower-AllocIR)**
-BuiltinModalSym(`Region::alloc`) ⇓ sym    r = InnermostActiveRegion(Γ) if r_opt = ⊥, otherwise r_opt    TypeOf(v) = T    sizeof(T) = n    alignof(T) = a    Γ ⊢ LowerIRInstr(CallIR(sym, [r, IntVal(`usize`, n), IntVal(`usize`, a)])) ⇓ ⟨I_a, p⟩    Store(p, v, T) = I_s
+BuiltinModalSym(`Region::alloc`) ⇓ sym    AllocLowerTarget(Γ, r_ref) = r    TypeOf(v) = T    sizeof(T) = n    alignof(T) = a    Γ ⊢ LowerIRInstr(CallIR(sym, [r, IntVal(`usize`, n), IntVal(`usize`, a)])) ⇓ ⟨I_a, p⟩    Store(p, v, T) = I_s
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(AllocIR(r_opt, v)) ⇓ ⟨I_a ++ I_s, p⟩
+Γ ⊢ LowerIRInstr(AllocIR(r_ref, v)) ⇓ ⟨I_a ++ I_s, p⟩
 
 **(Lower-BindVarIR)**
 Γ ⊢ BindSlot(x) ⇓ slot    TypeOf(x) = T_x
@@ -30683,13 +30667,13 @@ power_expr          ::= cast_expr ("**" power_expr)?
 cast_expr           ::= unary_expr ("as" type)?
 
 unary_expr     ::= unary_operator unary_expr | pipeline_expr
-unary_operator ::= "!" | "-" | "&" | "*" | "^" | "move" | "widen"
+unary_operator ::= "!" | "-" | "&" | "*" | "move" | "widen"
 pipeline_expr  ::= postfix_expr ("=>" postfix_expr)*
 
 postfix_expr   ::= primary_expr postfix_suffix*
 postfix_suffix ::= "." identifier | "." decimal_integer | "[" expression "]" | "~>" identifier "(" argument_list? ")" | "(" argument_list? ")" | "?"
 
-primary_expr ::= literal | identifier_expr | path_expr | tuple_literal | array_literal | record_literal | enum_literal | closure_expr | if_expr | loop_expr | block_expr | move_expr | copy_expr | widen_expr | address_of_expr | null_ptr_expr | transmute_expr | alloc_expr | sync_expr | race_expr | all_expr | wait_expr | yield_expr | yield_from_expr | spawn_expr | parallel_block | dispatch_expr | fence_expr | comptime_expr | comptime_if | comptime_loop | quote_expr | quote_type | quote_pattern | type_literal | splice_expr | splice_ident | contract_intrinsic
+primary_expr ::= literal | identifier_expr | path_expr | tuple_literal | array_literal | record_literal | enum_literal | closure_expr | if_expr | loop_expr | block_expr | move_expr | copy_expr | widen_expr | address_of_expr | null_ptr_expr | transmute_expr | sync_expr | race_expr | all_expr | wait_expr | yield_expr | yield_from_expr | spawn_expr | parallel_block | dispatch_expr | fence_expr | comptime_expr | comptime_if | comptime_loop | quote_expr | quote_type | quote_pattern | type_literal | splice_expr | splice_ident | contract_intrinsic
 
 literal ::= integer_literal | float_literal | string_literal | char_literal | bool_literal | null_literal | unit_literal
 
@@ -31051,7 +31035,6 @@ foreign_contract_clause_list ::= foreign_contract+
 region_stmt  ::= "region" region_opts? region_alias? block_expr
 region_opts  ::= "(" expression ")"
 region_alias ::= "as" identifier
-alloc_expr   ::= identifier "^" expression
 frame_stmt   ::= "frame" block_expr | identifier "." "frame" block_expr
 ```
 

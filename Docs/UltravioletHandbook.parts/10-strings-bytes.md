@@ -8,7 +8,7 @@ Every keyword, operator, type name, and grammar production in this chapter is re
 2. **Both types are byte sequences; `string` additionally carries a UTF-8 guarantee.** The dynamic model (§13.6.5) makes every `string` and `bytes` value a `List(u8)`. The `string` type's slicing operation is UTF-8-boundary-checked; the `bytes` type imposes no encoding constraint. Both lower to the same machine shape (pointer + length, plus capacity in the managed state).
 3. **`@View` borrows; `@Managed` owns.** A `@View` does not allocate, does not own memory, and must not outlive the storage it references. A `@Managed` value owns a heap allocation that is released automatically when it goes out of scope, via the `DropManaged` hook (§13.6.6, §13.7.6).
 
-Cross-references: heap allocation and the `$HeapAllocator` capability are covered in *Memory, Allocation & Regions*; the `Outcome<TValue, TError>` modal type and the `?` propagation operator (`propagate_expr ::= postfix_expr "?"`, §16.8) are covered in *Error Handling & Outcome*; slices (`[u8]`) and scalar indexing are covered in *Arrays, Slices & Indexing*; modal states and the `@State` syntax are covered in *Modal Types*.
+Cross-references: heap allocation and the `$HeapAllocator` capability are covered in *Memory, Allocation & Regions*; the `Outcome<TValue, TError>` enum type and the `?` propagation operator (`propagate_expr ::= postfix_expr "?"`, §16.8) are covered in *Error Handling & Outcome*; slices (`[u8]`) and scalar indexing are covered in *Arrays, Slices & Indexing*; modal states and the `@State` syntax are covered in *Modal Types*.
 
 ---
 

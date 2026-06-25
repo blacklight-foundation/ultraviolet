@@ -28,7 +28,7 @@ The expression grammar is a precedence cascade: each production layer binds more
 tightly than the one above it. The following block is the consolidated
 expression grammar reproduced verbatim from Appendix B.3 of the specification.
 It is the authoritative ordering; where the per-section grammar of §16.4.1 omits
-`cast_expr` and the prefix forms `& * ^ move widen` (deferring them to §16.5,
+`cast_expr` and the prefix forms `& * move widen` (deferring them to §16.5,
 §16.8, and §13.5), Appendix B.3 places them in their true cascade positions.
 
 ```ebnf
@@ -61,7 +61,7 @@ power_expr          ::= cast_expr ("**" power_expr)?
 cast_expr           ::= unary_expr ("as" type)?
 
 unary_expr     ::= unary_operator unary_expr | pipeline_expr
-unary_operator ::= "!" | "-" | "&" | "*" | "^" | "move" | "widen"
+unary_operator ::= "!" | "-" | "&" | "*" | "move" | "widen"
 pipeline_expr  ::= postfix_expr ("=>" postfix_expr)*
 
 postfix_expr   ::= primary_expr postfix_suffix*
@@ -85,7 +85,7 @@ From this cascade, precedence runs from **lowest** (loosest binding) to
 | 10 | multiplicative: `*` `/` `%` | left |
 | 11 | power: `**` | **right** |
 | 12 | cast: `as` | postfix (one type) |
-| 13 | prefix unary: `!` `-` `&` `*` `^` `move` `widen` | prefix |
+| 13 | prefix unary: `!` `-` `&` `*` `move` `widen` | prefix |
 | 14 | pipeline: `=>` | left |
 | 15 (highest) | postfix: `.field` `.index` `[...]` `~>m(...)` `(...)` `?` | left |
 
@@ -415,7 +415,7 @@ would call the field's value, not invoke a method.
 
 This section is the exact reference for every unary and binary operator. Within
 the §16.4 layer the prefix grammar is `unary_operator ::= "!" | "-"`; the
-additional prefix forms `& * ^ move widen` are owned by §16.8 (effectful core)
+additional prefix forms `& * move` are owned by §16.8 (effectful core)
 and §13.5 (`widen`), and are covered in §17.9 and the Types chapter.
 
 #### 17.5.1 Unary operators `!` and `-`
@@ -954,13 +954,12 @@ address_of_expr ::= "&" place_expr
 move_expr       ::= "move" place_expr
 copy_expr       ::= "copy" unary_expr
 deref_expr      ::= "*" unary_expr
-alloc_expr      ::= "^" expression
 propagate_expr  ::= postfix_expr "?"
 ```
 
-The explicit allocation form `r^e` is parsed first as `Binary("^", Identifier(r),
-e)` and rewritten by name resolution to `AllocExpr(r, e)` when `r` is a region
-alias.
+Region allocation is the modal method call `receiver~>alloc(value)` on a
+`unique Region@Active` receiver. It uses ordinary method-call syntax, not a
+prefix or binary operator form.
 
 #### 17.9.2 `unsafe` blocks
 
@@ -1006,18 +1005,16 @@ let owned_buffer = move scratch        // scratch is moved out
 let independent = copy small_value     // duplicate a Bitcopy value
 ```
 
-#### 17.9.5 Allocation `^`
+#### 17.9.5 Region allocation
 
-`^e` allocates `e` in the innermost active region (**T-Alloc-Implicit**,
-`AllocExpr(⊥, e)`). The explicit form `r^e` allocates in the region named by
-alias `r` (**T-Alloc-Explicit**, `AllocExpr(r, e)`); the alias must denote an
-active region (`RegionActiveType`). Implicit `^` without an active region, or
-explicit `^` through a non-region binding, are rejected. See the
+`receiver~>alloc(value)` allocates `value` in the region named by `receiver`.
+The receiver must have type `unique Region@Active`; the result has the same
+value type as `value` and carries the receiver region's provenance. See the
 Memory/Regions chapter for region scoping.
 
 ```ultraviolet
 region as arena {
-    let node = arena^Node { value: 7, next: Ptr::null() }
+    let node = arena~>alloc(Node { value: 7, next: Ptr::null() })
 }
 ```
 

@@ -1,9 +1,9 @@
 // =============================================================================
-// Expression Lowering: AllocExpr
+// Expression Lowering: Internal AllocExpr
 // =============================================================================
 //
-// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
-//   - Lines 16253-16256: (Lower-Expr-Alloc)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 16.8.6 (Expression Lowering)
+//   - (Lower-Internal-AllocExpr)
 //     Gamma |- LowerExpr(e) => <IR_e, v>
 //     Gamma |- LowerExpr(AllocExpr(r_opt, e)) => <SeqIR(IR_e, AllocIR(r_opt, v)), v_alloc>
 //
@@ -79,29 +79,29 @@ std::once_flag g_active_runtime_region_obligation_once;
 }  // namespace
 
 // =============================================================================
-// LowerAllocExpr - Lower an allocation expression to IR
+// LowerAllocExpr - Lower an internal allocation expression to IR
 // =============================================================================
-// SPEC: (Lower-Expr-Alloc)
+// SPEC: (Lower-Internal-AllocExpr)
 //   Gamma |- LowerExpr(e) => <IR_e, v>
 //   Gamma |- LowerExpr(AllocExpr(r_opt, e)) => <SeqIR(IR_e, AllocIR(r_opt, v)), v_alloc>
 //
-// Allocation expressions (^expr) allocate a value in a region:
+// Allocation expressions allocate a value in a region:
 // 1. Lower the value expression to get the value to allocate
 // 2. Determine the target region (optional name or innermost active region)
 // 3. Emit IRAlloc to perform the allocation
 // 4. Return a derived value representing the allocated value
 //
 // NOTES:
-//   - ^expr allocates in the innermost active region
-//   - r^expr allocates in the specified region r
-//   - The result is a pointer (Ptr<T>@Valid) to the allocated value
+//   - a missing region targets the innermost active region
+//   - a present region targets the specified region
+//   - the result is a value loaded from the region allocation
 // =============================================================================
 
 LowerResult LowerAllocExpr(const ast::Expr& expr,
                            const ast::AllocExpr& alloc,
                            LowerCtx& ctx) {
-    SPEC_RULE("Lower-Expr-Alloc");
-    SPEC_RULE("rule.16.Lower-Expr-Alloc");
+    SPEC_RULE("Lower-Internal-AllocExpr");
+    SPEC_RULE("rule.16.Lower-Internal-AllocExpr");
 
     // The allocated value is consumed by AllocIR and stored into the target
     // region. Its top-level value must remain owned by the allocation result.
@@ -165,8 +165,7 @@ LowerResult LowerAllocExpr(const ast::Expr& expr,
         };
     }
 
-    // Implicit region allocation: ^expr
-    // Uses the innermost active region
+    // A missing region uses the innermost active region.
     if (!ctx.active_region_aliases.empty()) {
         IRValue region_value;
         region_value.kind = IRValue::Kind::Local;

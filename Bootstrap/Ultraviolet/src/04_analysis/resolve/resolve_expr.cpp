@@ -1455,35 +1455,13 @@ ResExprResult ResolveExpr(ResolveContext& ctx,
           auto& out_node = std::get<ast::AllocExpr>(out.node);
           out_node.value = resolved.value;
           if (node.region_opt.has_value()) {
-            SPEC_RULE("ResolveExpr-Alloc-Explicit");
+            SPEC_RULE("ResolveExpr-Internal-Alloc-Explicit");
           } else {
-            SPEC_RULE("ResolveExpr-Alloc-Implicit");
+            SPEC_RULE("ResolveExpr-Internal-Alloc-Implicit");
           }
           return {true, std::nullopt, std::nullopt,
                   std::make_shared<ast::Expr>(std::move(out))};
         } else if constexpr (std::is_same_v<T, ast::BinaryExpr>) {
-          if (node.op == "^") {
-            if (node.lhs && std::holds_alternative<ast::IdentifierExpr>(node.lhs->node)) {
-              const auto& ident = std::get<ast::IdentifierExpr>(node.lhs->node).name;
-              const auto ent = ResolveValueName(*ctx.ctx, ident);
-              if (ent.has_value() && RegionAlias(*ent)) {
-                const auto resolved_rhs = ResolveExpr(ctx, node.rhs);
-                if (!resolved_rhs.ok) {
-                  return {false, resolved_rhs.diag_id, resolved_rhs.span, {},
-                          resolved_rhs.diag_detail, resolved_rhs.diag_children};
-                }
-                ast::AllocExpr alloc;
-                alloc.region_opt = ident;
-                alloc.value = resolved_rhs.value;
-                SPEC_RULE("ResolveExpr-Alloc-Explicit-ByAlias");
-                SPEC_RULE("req.16.RegionAliasAllocRewrite");
-                SPEC_RULE("rule.16.ResolveExpr-Alloc-Explicit-ByAlias");
-                SPEC_RULE("def.16.EffectfulCoreExprAst");
-                return {true, std::nullopt, std::nullopt,
-                        MakeExpr(expr->span, alloc)};
-              }
-            }
-          }
           return ResolveBinaryChain(ctx, expr, node.op);
         } else if constexpr (std::is_same_v<T, ast::UnaryExpr>) {
           const auto resolved = ResolveExpr(ctx, node.value);

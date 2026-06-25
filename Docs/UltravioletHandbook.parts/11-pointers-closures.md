@@ -2,7 +2,7 @@
 
 Ultraviolet distinguishes sharply between three kinds of indirection. *Safe pointers* (`Ptr<T>`) carry a statically tracked validity state and panic deterministically on misuse; they are the default tool whenever you need addressable indirection. *Raw pointers* (`*imm T`, `*mut T`) are an `unsafe`-only escape hatch for FFI and low-level work. *Function types* and *closure types* make procedures and closures first-class values you can pass, store, and invoke — the foundation for callbacks, sinks, and higher-order APIs.
 
-This chapter specifies the surface syntax, parsing, static and dynamic semantics, and lowering consequences of each, exactly as defined in §13.8–§13.11 (the type forms) and the expression rules in §16.1, §16.8, and §16.9 that create and consume them. Cross-references to *Arena Allocation & Regions* (the `^` operator and `region` statement), *Permissions* (`const`, `shared`, `unique`), and *Effectful Expressions* are noted where they bear on a rule.
+This chapter specifies the surface syntax, parsing, static and dynamic semantics, and lowering consequences of each, exactly as defined in §13.8–§13.11 (the type forms) and the expression rules in §16.1, §16.8, and §16.9 that create and consume them. Cross-references to *Arena Allocation & Regions* (`Region@Active~>alloc` and the `region` statement), *Permissions* (`const`, `shared`, `unique`), and *Effectful Expressions* are noted where they bear on a rule.
 
 > Terminology note. Throughout this chapter a *place* is an addressable storage location (a binding, field, tuple element, index, or dereference of a place); a *value* is a computed result. Only places have addresses, which is why `&` is restricted to place expressions (§16.8).
 
@@ -71,9 +71,9 @@ That is: a pointer that was `@Valid` into an arena automatically *observes* as `
 (WritePtr-Null)/(WritePtr-Expired) ⇒  Ctrl(Panic)
 ```
 
-#### 11.1.3 Creation: address-of (`&`) and arena allocation (`^`)
+#### 11.1.3 Creation: address-of (`&`) and region allocation
 
-There is no `Ptr::new`-style constructor in the core language. A `Ptr<T>@Valid` is produced in exactly two ways.
+There is no `Ptr::new`-style constructor in the core language. A `Ptr<T>@Valid` is produced by taking the address of an addressable place. Region allocation is related, but it creates a value with region provenance; use `&` on the resulting place when pointer indirection is needed.
 
 **Address-of a place (`&`).** The `address_of_expr ::= "&" place_expr` form (§16.8.1) takes the address of an existing place. Its typing rule (**T-AddrOf**, §16.8.4):
 
@@ -90,21 +90,21 @@ The operand must be a place. `AddrOfOk(p)` requires `IsPlace(p)`, and additional
 
 Applying `&` to a non-place is the error `E-TYP-2104`. At runtime (**EvalSigma-AddressOf**, §16.8.5) the result is `Ptr@Valid(addr)` for the place's address.
 
-**Arena allocation (`^`).** The alloc operator moves a value into the active region's arena and yields a `Ptr@Valid` into that arena. `^` is a unary operator (§B.3, `unary_operator` includes `"^"`). There are two surface forms (§16.8.1):
-
-```ebnf
-alloc_expr ::= "^" expression              // implicit: innermost active region
-alloc_expr ::= identifier "^" expression   // explicit: a named region alias
-```
-
-The implicit form `^e` allocates into the innermost active region (**T-Alloc-Implicit**, §16.8.4); the explicit form `r^e`, where `r` is a region alias bound by `region as r`, allocates into that specific region (**T-Alloc-Explicit**). The explicit form is produced after name resolution rewrites `Binary("^", Identifier(r), e)` to `AllocExpr(r, e)` when `r` is a region alias (**ResolveExpr-Alloc-Explicit-ByAlias**, §16.8.3). Both yield a value of the *same* type `T` as the operand `e`; the pointer wrapping is observed at the binding's declared type. Implicit allocation with no active region, or explicit allocation through a non-region binding, is `E-MEM-3021`. See *Arena Allocation & Regions* for the full lifetime model.
+**Region allocation.** A `unique Region@Active` handle allocates with the modal
+method call `region_handle~>alloc(value)`. The operation stores `value` in that
+region and yields a value of the same type `T`, carrying the region's provenance
+`π_Region(region_handle)`. It does not yield `Ptr<T>@Valid`; bind the allocated
+value, then take `&binding` to get a pointer to that place. Allocation through a
+receiver that is not `unique Region@Active` is rejected by ordinary method-call
+typing. See *Arena Allocation & Regions* for the full lifetime model.
 
 ```ultraviolet
 /// Sum a value built inside an arena. The arena pointer is created, used, and
 /// dropped entirely within the region, so nothing escapes (no E-MEM-3020).
 procedure scaledSum(value: i32, factor: i32) -> i32 {
     region as scratch {
-        let node: Ptr<i32>@Valid = scratch^value
+        let stored: i32 = scratch~>alloc(value)
+        let node: Ptr<i32>@Valid = &stored
         let scaled: i32 = *node * factor
         return scaled
     }
@@ -177,7 +177,7 @@ A safe pointer is one machine word: `sizeof(Ptr<T>) = sizeof(usize)`, `alignof(P
 
 The `@Valid` state carries a *niche*: because a valid pointer can never be the all-zero bit pattern (`NicheSet(Ptr<T>@Valid) = {LEBytes(0, PtrSize)}`, §13.8.6), the zero word is available as a discriminant. This is what lets, for example, an optional `Ptr<T>@Valid` (a union with a unit member) occupy a single word with no separate tag. The unrefined `Ptr<T>` and the `@Null`/`@Expired` forms carry no niche.
 
-To go from an unrefined `Ptr<T>` to a usable `@Valid` you narrow on the runtime state (pointer states are modal states; narrow with the modal `if ... is` form described in *Modal Types*), or you obtain a `@Valid` directly from `&` or `^` and keep it `@Valid` end-to-end.
+To go from an unrefined `Ptr<T>` to a usable `@Valid` you narrow on the runtime state (pointer states are modal states; narrow with the modal `if ... is` form described in *Modal Types*), or you obtain a `@Valid` directly from `&` and keep it `@Valid` end-to-end.
 
 ---
 
@@ -487,7 +487,7 @@ A non-capturing closure's `env_ptr` is `null`; a capturing closure's environment
 | To pass/return a small value | the value itself | No indirection; cheapest and safest. |
 | Addressable access to a place | `Ptr<T>@Valid` via `&` | State-tracked, panics on misuse, niche-optimizable. |
 | A nullable pointer slot | `Ptr<T>` (or `Ptr<T>@Null`) + `Ptr::null()` | Null is a first-class, checkable state. |
-| Arena-scoped allocation | `^` / `region` + `Ptr<T>@Valid` | Lifetime tied to the region; auto-`Expired` on exit. |
+| Arena-scoped allocation | `Region@Active~>alloc` / `region` + `&` when a pointer is needed | Lifetime tied to the region; pointers auto-`Expired` on exit. |
 | A first-class named procedure | `(...) -> R` (function type) | Bare code pointer; no environment. |
 | A callback/sink that captures state | a closure → `TypeClosure` | Captures `const`/`shared` by ref, owned data by `move`. |
 | FFI / foreign memory | `*imm T` / `*mut T` in `unsafe`, behind a safe wrapper | Last resort; document the boundary. |
@@ -498,7 +498,7 @@ The default is always the safe pointer or the plain value. Reach for raw pointer
 
 ### 11.6 Idioms & Best Practices
 
-- **Keep pointers `@Valid` end-to-end.** Obtain `Ptr<T>@Valid` from `&` or `^` and thread it through `@Valid`-typed signatures so dereference is always statically legal. Only widen to the unrefined `Ptr<T>` when you genuinely need to represent "valid or null/expired", and narrow back with a modal `if ... is` check before dereferencing.
+- **Keep pointers `@Valid` end-to-end.** Obtain `Ptr<T>@Valid` from `&` and thread it through `@Valid`-typed signatures so dereference is always statically legal. Only widen to the unrefined `Ptr<T>` when you genuinely need to represent "valid or null/expired", and narrow back with a modal `if ... is` check before dereferencing.
 - **Never let an arena pointer outlive its arena.** A `Ptr<T>@Valid` into a `region` becomes observably `Expired` once the region ends; returning or storing it past that point is what `E-MEM-3020` (escape) and the `@Expired` state guard against. Allocate, use, and consume arena pointers inside the same region; return *values* out of regions, not arena pointers.
 - **Root deref-writes in a `var` binding.** A write `*p = v` is an assignment whose place root is `p`; the root binding must be `var`. Bind the pointer in a `var` local (or take `&` of a `var` place) before writing through it.
 - **Use `Ptr::null()`, not `null`, for safe nulls,** and always in a context with an expected `Ptr<U>` type — a bare `Ptr::null()` with no expected type is `E-TYP-1530`. The plain `null` literal is for raw pointers only.
@@ -521,7 +521,7 @@ The default is always the safe pointer or the plain value. Reach for raw pointer
 | `&` of a `#layout(packed)` field outside `unsafe` | address-of packed-field diagnostic (§16.8.7) | Packed-field address-of needs `unsafe`; or copy the field out first. |
 | Non-`usize` index inside an address-of | address-of non-`usize` index diagnostic (§16.8.7) | The index `i` in `&a[i]` must have type `usize`. |
 | `Ptr::null()` with no expected pointer type | `E-TYP-1530` (`PtrNull-Infer-Err`) | Annotate the binding, or use it where a `Ptr<U>` is expected. |
-| `^e` outside a region / through a non-region binding | `E-MEM-3021` | Allocate only inside an active `region`, via `^` or `r^` where `r` is a region alias. |
+| Region allocation without an active region target | `E-MEM-3021` | Allocate through a `unique Region@Active` handle, such as `r~>alloc(value)` inside `region as r { ... }`. |
 | Arena pointer escapes its region | `E-MEM-3020` | A shorter-lived provenance reaches a longer-lived location. Return a value, not the pointer. |
 | Closure parameter type cannot be inferred | `E-SEM-2591` (`Infer-Closure-Params-Err`) | Annotate the parameter (`|x: i32| ...`) or supply an expected closure/function type. |
 | Implicit capture of a `unique` binding | `E-CON-0120` (`Capture-Unique-Err`) | Move the binding into the closure (`move`) instead of capturing it by reference. |
@@ -534,4 +534,4 @@ The default is always the safe pointer or the plain value. Reach for raw pointer
 
 Two non-obvious traps worth restating. First, a `Ptr<T>@Valid` is **not** a static guarantee that survives region teardown: the runtime recomputes state from address tags, so a `@Valid`-typed pointer into a dropped arena panics on use rather than reading freed memory — correct, but a panic nonetheless, so manage lifetimes deliberately. Second, the *unrefined* `Ptr<T>` cannot be dereferenced as-is (**T-Deref-Ptr** demands `@Valid`); it exists to model "maybe null/expired", and you must narrow it before reading through it.
 
-Related chapters: *Arena Allocation & Regions* (the `^` operator, `region` statement, and the lifetime model behind `@Expired`), *Permissions* (`const`/`shared`/`unique`, which drive closure capture classification), *Modal Types* (narrowing pointer states with `if ... is`), *Effectful Expressions* (`&`, `*`, `^`, `move`, `copy`, `unsafe`), and *Concurrency & Keys* (Chapter 19 — key acquisition for accessing the `shared` captures of escaping closures).
+Related chapters: *Arena Allocation & Regions* (`Region@Active~>alloc`, `region` statements, and the lifetime model behind `@Expired`), *Permissions* (`const`/`shared`/`unique`, which drive closure capture classification), *Modal Types* (narrowing pointer states with `if ... is`), *Effectful Expressions* (`&`, `*`, `move`, `copy`, `unsafe`), and *Concurrency & Keys* (Chapter 19 — key acquisition for accessing the `shared` captures of escaping closures).
