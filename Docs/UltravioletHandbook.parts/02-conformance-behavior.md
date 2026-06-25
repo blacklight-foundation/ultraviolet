@@ -658,7 +658,7 @@ comptime_expr           ::= attribute_list? "comptime" "{" expression "}"
 comptime_if             ::= "comptime" "if" expression block_expr ("else" (comptime_if | block_expr))?
 comptime_loop           ::= "comptime" "loop" pattern (":" type)? "in" expression block_expr
 comptime_procedure_decl ::= attribute_list? "comptime" visibility? "procedure" identifier generic_params? signature contract_clause? block_expr
-type_literal            ::= "Type" "::<" type ">"
+type_literal            ::= "Type" "::" "<" type ">"
 ```
 
 `comptime` is a reserved word (it appears in the language's `Reserved` set), so it is

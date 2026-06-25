@@ -122,7 +122,7 @@ The third principle, verbatim from §0.4:
 
 **Concrete consequences for everyday code:**
 
-- **No hidden allocation.** Region allocation is written as a `Region@Active` handle's `~>alloc` method call; it does not happen silently behind an innocent-looking expression. The reader sees which handle owns the allocation. See "Statements and Blocks" (region grammar, B.14).
+- **No hidden allocation.** Region allocation is written as `new value` for the current scoped region or as a `Region@Active` handle's `~>alloc` method call for an explicit target. It does not happen silently behind an innocent-looking expression. See "Statements and Blocks" (region grammar, B.14).
 - **No hidden copy.** Copying a value is the written `copy` operation, not an automatic consequence of using a value twice. Where a value would otherwise be moved, the author writes `copy` to opt into duplication.
 - **No hidden synchronization or authority acquisition.** Taking authority over shared data is written with a key block; there is no implicit lock.
 - **No hidden suspension.** An operation that can suspend says so through an explicit suspension form (`wait`, `yield`, `yield from`).
@@ -134,12 +134,12 @@ The style guide reinforces this directly. "Source constructs MUST NOT hide exter
 ```ultraviolet
 procedure accumulateStaged(values: [i32]) -> i32 {
     var total: i32 = 0
-    region as staging {
-        // Allocation is explicit: the named region handle receives the `alloc` call.
+    region {
+        // Allocation is explicit: `new` targets the current scoped region.
         // Nothing in the surrounding code hides it.
         // The allocated value is used inside the region; it does not escape (escaping a
         // region-allocated value is a static provenance error, E-MEM-3020).
-        let snapshot: Snapshot = staging~>alloc(Snapshot { sum: total, count: 0 })
+        let snapshot: Snapshot = new Snapshot { sum: total, count: 0 }
         total += snapshot.sum
     }
     return total
@@ -472,8 +472,8 @@ The following pitfalls are the ones most directly tied to violating the four fou
 - **Omitting an explicit return from a non-unit procedure.** A procedure with a non-unit return type requires an explicit trailing `return` (diagnostic `E-TYP-1507`, "Procedure with non-unit return type requires explicit return statement"). Falling off the end of a value-returning procedure body is ill-formed. A procedure declaration also requires an explicit return-type annotation (`E-TYP-1508`). For unit-returning procedures, `@result` has type `()` and an explicit return is not required.
 - **Writing `main` with the wrong signature.** `main` MUST be `public`, take exactly one Context-bundle parameter, and return `i32`. A zero-parameter `main`, a non-`public` `main`, a generic `main`, or a wrong return type is rejected: `E-MOD-2431` (invalid signature), `E-MOD-2432` (`main` is generic), `E-MOD-2434` (missing `main`), `E-MOD-2430` (multiple `main` procedures).
 - **Accessing a field by a bare name inside a method or transition.** Inside a method or transition body, only `self` and the declared parameters are in scope; fields are reached through the receiver as `self.field`. Writing the bare field name resolves to nothing and is ill-formed.
-- **Letting a region-allocated value escape its region.** A value allocated with `Region@Active~>alloc` carries region provenance; returning it (or otherwise storing it in a longer-lived location) is a static provenance escape (`E-MEM-3020`, `ProvenanceEscape`). Consume region-allocated values inside the region, or allocate them where they will live.
-- **Misspelling `region as` aliasing.** A named region is written `region as name { ... }` (`region_alias ::= "as" identifier`). `region name { ... }` does not bind a named region; the region binding is otherwise synthetic and cannot be referenced by user code.
+- **Letting a region-allocated value escape its region.** A value allocated with `new` or `Region@Active~>alloc` carries region provenance; returning it (or otherwise storing it in a longer-lived location) is a static provenance escape (`E-MEM-3020`, `ProvenanceEscape`). Consume region-allocated values inside the region, or allocate them where they will live.
+- **Misspelling `region as` aliasing.** A named region is written `region as name { ... }` (`region_alias ::= "as" identifier`). `region name { ... }` does not bind a named region; the region binding is otherwise synthetic and cannot be referenced by user code except as the implicit target of `new`.
 - **Assuming the target profile defaults to your host.** A conforming implementation MUST NOT infer `SelectedTargetProfile` from the host platform; if neither a CLI override nor `toolchain.target_profile` in `Ultraviolet.toml` provides it, the compilation invocation is ill-formed. Always set the target profile explicitly.
 - **Expecting a runtime check where the spec defines a static one (or vice versa).** The static/runtime partition is fixed (§1.1). Pattern exhaustiveness, type compatibility, permission violations, provenance escape, array bounds, and safe-pointer validity are *static* — compile errors, not runtime panics. Integer overflow, slice bounds, integer division by zero, shift range, and cast range are *runtime* checks, each of which **panics** on failure (`RuntimeBehavior(...) = Panic`). Do not write code expecting a graceful runtime fallback for a static violation, and do not assume a static rejection where the spec defers the check to a runtime panic. The full panic taxonomy is owned by "Common Lowering, Program Lifecycle, and Backend" (§24.5.2).
 - **Citing Appendix A as the source of a diagnostic's meaning.** Appendix A is informative only and MUST NOT define a diagnostic's code, severity, or condition (§2.4). The binding definition lives in the owning construct section. Trust the owner, not the index.

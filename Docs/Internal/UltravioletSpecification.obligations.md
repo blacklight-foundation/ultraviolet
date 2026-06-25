@@ -64958,10 +64958,10 @@ phase: runtime
 strength: required
 owner: spec.expressions
 applies-to: runtime.evaluator, compiler.lowering, oracle.reference-model, oracle.coverage
-summary: Defines pipeline expressions as application of the right-hand side to the left-hand side.
+summary: Defines pipeline expressions as left-first application through the right-hand callable.
 labels: pipeline_expr
 -->
-Pipeline expressions desugar to function or closure application: `e_1 => e_2 ≡ e_2(e_1)`.
+Pipeline expressions are a distinct left-first application form. `PipelineExpr(e_1, e_2)` evaluates `e_1` before `e_2`; after both produce values, the resulting function or closure value from `e_2` is applied to `[v_1]`. This is call-like lowering, not a source-level equivalence to `e_2(e_1)`.
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
 <!-- ULTRAVIOLET-SPEC-UNIT

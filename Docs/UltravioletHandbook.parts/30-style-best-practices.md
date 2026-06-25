@@ -378,7 +378,7 @@ precondition_expr  ::= predicate_expr
 postcondition_expr ::= predicate_expr
 ```
 
-Postconditions may reference the result via the intrinsic `@result` and the pre-call value of an expression via `@entry(expr)` (`contract_intrinsic ::= "@result" | "@entry" "(" expression ")"`). Contract predicates must be pure (`WF-Contract` requires `pure(P_pre)` and `pure(P_post)`); a predicate that calls an effectful or impure procedure is ill-formed.
+Postconditions may reference the result via the intrinsic `@result` and the pre-call value of an expression via `@entry(expr)`. In grammar these are decorated identifiers (`contract_intrinsic ::= decorated_identifier("@", "result") | decorated_identifier("@", "entry") "(" expression ")"`), not combined lexer tokens. Contract predicates must be pure (`WF-Contract` requires `pure(P_pre)` and `pure(P_post)`); a predicate that calls an effectful or impure procedure is ill-formed.
 
 ```ultraviolet
 /// Divide `numerator` by `denominator`.
@@ -513,7 +513,7 @@ Foreign interaction is fenced into dedicated boundary modules. The language enfo
 - Do not let FFI concerns leak into ordinary gameplay, tooling, or simulation code.
 - Prefer safe wrappers that expose project-level types and contracts instead of raw foreign handles or pointers.
 
-Foreign procedures may carry foreign contracts (`foreign_contract ::= "|:" "@foreign_assumes" "(" predicate_expr ")" | "|:" "@foreign_ensures" "(" ensures_predicate ")"`, where `ensures_predicate` additionally admits `"@error" ":" predicate_expr` and `"@null_result" ":" predicate_expr`). These document and check the trust boundary. Raw pointer types are spelled `*imm T` / `*mut T` (`raw_pointer_type ::= "*" raw_pointer_qual type`, `raw_pointer_qual ::= "imm" | "mut"`). See **FFI & Foreign Contracts**.
+Foreign procedures may carry foreign contracts (`foreign_contract ::= "|:" decorated_identifier("@", "foreign_assumes") "(" predicate_expr ")" | "|:" decorated_identifier("@", "foreign_ensures") "(" ensures_predicate ")"`, where `ensures_predicate` additionally admits `decorated_identifier("@", "error") ":" predicate_expr` and `decorated_identifier("@", "null_result") ":" predicate_expr`). These document and check the trust boundary. Raw pointer types are spelled `*imm T` / `*mut T` (`raw_pointer_type ::= "*" raw_pointer_qual type`, `raw_pointer_qual ::= "imm" | "mut"`). See **FFI & Foreign Contracts**.
 
 ```ultraviolet
 //! Boundary module: the only place that touches the C image codec.

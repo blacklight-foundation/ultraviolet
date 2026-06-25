@@ -550,13 +550,16 @@ Foreign contracts let an extern declaration state, in machine-checkable form, wh
 ffi_verification_attr        ::= "#" ffi_verification_mode
 ffi_verification_mode        ::= "static" | "dynamic"
 
-foreign_contract             ::= "|:" "@foreign_assumes" "(" predicate_expr ")"
-                               | "|:" "@foreign_ensures" "(" ensures_predicate ")"
+foreign_contract             ::= "|:" decorated_identifier("@", "foreign_assumes") "(" predicate_expr ")"
+                               | "|:" decorated_identifier("@", "foreign_ensures") "(" ensures_predicate ")"
 foreign_contract_clause_list ::= foreign_contract+
 ensures_predicate            ::= predicate_expr
-                               | "@error" ":" predicate_expr
-                               | "@null_result" ":" predicate_expr
+                               | decorated_identifier("@", "error") ":" predicate_expr
+                               | decorated_identifier("@", "null_result") ":" predicate_expr
 ```
+
+The `@...` forms are decorated identifiers: `Operator("@")` followed by the
+named identifier, not combined lexer tokens.
 
 #### 27.6.2 Foreign preconditions — `@foreign_assumes`
 

@@ -148,15 +148,20 @@ Verbatim from §19.2.1 (identical in Appendix B.9):
 
 ```ebnf
 key_block_stmt ::= key_block_head key_path_list key_options? block_expr
-key_block_head ::= "%read"
-                 | "%write"
-                 | "%release" key_mode
-                 | "%speculative" "write"
+key_block_head ::= decorated_identifier("%", "read")
+                 | decorated_identifier("%", "write")
+                 | decorated_identifier("%", "release") key_mode
+                 | decorated_identifier("%", "speculative") "write"
 key_mode       ::= "read" | "write"
 key_path_list  ::= key_path_expr ("," key_path_expr)*
 key_options    ::= "[" key_option ("," key_option)* ","? "]"
 key_option     ::= "ordered"
 ```
+
+The four heads are decorated identifiers: the `%` decorator is tokenized as
+`Operator("%")`, followed by the named identifier. The decorator and head
+identifier are adjacent in source; the `write` after `%speculative` is the
+ordinary key-mode identifier.
 
 The four heads:
 
@@ -165,7 +170,7 @@ The four heads:
 - `%release read` / `%release write` — nested release (§23.5).
 - `%speculative write` — speculative execution (§23.6).
 
-`ParseStmt` dispatches to the key-block parser (**Parse-KeyBlock-Stmt**) whenever the current token is the operator `%` (§19.2.2). The `ordered` option is the only key option; it tunes same-base indexed-path checking (§23.4.5) and modifies acquisition over the whole path set, not any single path and not the head mode (§19.2.1). `#dynamic` is an *ordinary attribute* applied to the whole key-block statement (it belongs to the attribute mechanism of Chapter 9, not to `key_block_head`, `key_path_list`, or `key_options`; §19.2.1).
+`ParseStmt` dispatches to the key-block parser (**Parse-KeyBlock-Stmt**) whenever the current token is the operator `%` (§19.2.2). The `ordered` option is the only key option; it tunes same-base indexed-path checking (§23.4.5) and modifies acquisition over the whole path set, not any single path and not the head mode (§19.2.1). `#dynamic` is an *ordinary attribute* applied to the whole key-block statement; the `#` decorator belongs to the attribute mechanism of Chapter 9, not to `key_block_head`, `key_path_list`, or `key_options` (§19.2.1).
 
 #### 23.3.2 Key Triples, Modes, and Mode Ordering
 
@@ -502,10 +507,15 @@ Speculative execution runs a `Write` body *optimistically without holding a key*
 Verbatim from §19.5.1:
 
 ```ebnf
-speculative_block ::= "%speculative" "write" key_path_list block_expr
+speculative_block ::= decorated_identifier("%", "speculative") "write" key_path_list block_expr
 ```
 
-`%speculative` must be followed by `write` — any other token after `%speculative` is `E-CON-0095` (**(K-Spec-Write-Required)**). It cannot be combined with `%release`; no concrete key-block statement can have both `SpeculativeWrite` and `Release` kind, so source that attempts to combine them is rejected during parsing (`E-CON-0094`, **(K-Spec-No-Release)**).
+The source spelling `%speculative` is the `%` decorator followed by the
+identifier `speculative`; it must be followed by `write`. Any other token after
+`%speculative` is `E-CON-0095` (**(K-Spec-Write-Required)**). It cannot be
+combined with `%release`; no concrete key-block statement can have both
+`SpeculativeWrite` and `Release` kind, so source that attempts to combine them
+is rejected during parsing (`E-CON-0094`, **(K-Spec-No-Release)**).
 
 #### 23.6.2 Body Restrictions
 

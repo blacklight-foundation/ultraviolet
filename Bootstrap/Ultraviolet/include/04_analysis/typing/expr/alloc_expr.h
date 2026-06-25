@@ -1,9 +1,9 @@
 // =================================================================
 // File: 03_analysis/types/expr/alloc.h
-// Construct: Internal Allocation Expression Type Checking
+// Construct: Region Allocation Expression Type Checking
 // Spec Section: 16.8.4
-// Spec Rules: T-Internal-Alloc-Explicit, T-Internal-Alloc-Implicit, Alloc-Region-NotFound-Err,
-//             Alloc-Implicit-NoRegion-Err
+// Spec Rules: T-Internal-Alloc-Explicit, T-New-CurrentRegion, Alloc-Region-NotFound-Err,
+//             New-NoActiveRegion-Err
 // =================================================================
 #pragma once
 
@@ -14,7 +14,7 @@
 
 namespace ultraviolet::analysis::expr {
 
-// §16.8.4 Internal Allocation Expression Typing
+// §16.8.4 Region Allocation Expression Typing
 ExprTypeResult TypeAllocExprImpl(const ScopeContext& ctx,
                                  const StmtTypeContext& type_ctx,
                                  const ast::AllocExpr& expr,

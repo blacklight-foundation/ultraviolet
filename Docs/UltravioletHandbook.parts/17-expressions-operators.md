@@ -60,8 +60,9 @@ multiplicative_op   ::= "*" | "/" | "%"
 power_expr          ::= cast_expr ("**" power_expr)?
 cast_expr           ::= unary_expr ("as" type)?
 
-unary_expr     ::= unary_operator unary_expr | pipeline_expr
-unary_operator ::= "!" | "-" | "&" | "*" | "move" | "widen"
+unary_expr     ::= new_expr | unary_operator unary_expr | pipeline_expr
+new_expr       ::= "new" unary_expr
+unary_operator ::= "!" | "-" | "&" | "*" | "move" | "copy" | "widen"
 pipeline_expr  ::= postfix_expr ("=>" postfix_expr)*
 
 postfix_expr   ::= primary_expr postfix_suffix*
@@ -954,12 +955,14 @@ address_of_expr ::= "&" place_expr
 move_expr       ::= "move" place_expr
 copy_expr       ::= "copy" unary_expr
 deref_expr      ::= "*" unary_expr
+new_expr        ::= "new" unary_expr
 propagate_expr  ::= postfix_expr "?"
 ```
 
-Region allocation is the modal method call `receiver~>alloc(value)` on a
-`unique Region@Active` receiver. It uses ordinary method-call syntax, not a
-prefix or binary operator form.
+Region allocation is either `new value` for the current scoped region or the
+modal method call `receiver~>alloc(value)` on a `unique Region@Active` receiver
+for an explicit target. `new` is contextual allocation syntax, not general
+construction.
 
 #### 17.9.2 `unsafe` blocks
 
@@ -1007,14 +1010,15 @@ let independent = copy small_value     // duplicate a Bitcopy value
 
 #### 17.9.5 Region allocation
 
+`new value` allocates `value` in the innermost active scoped region.
 `receiver~>alloc(value)` allocates `value` in the region named by `receiver`.
-The receiver must have type `unique Region@Active`; the result has the same
-value type as `value` and carries the receiver region's provenance. See the
-Memory/Regions chapter for region scoping.
+The receiver must have type `unique Region@Active`; both forms have the same
+value type as `value` and carry region provenance. See the Memory/Regions
+chapter for region scoping.
 
 ```ultraviolet
-region as arena {
-    let node = arena~>alloc(Node { value: 7, next: Ptr::null() })
+region {
+    let node = new Node { value: 7, next: Ptr::null() }
 }
 ```
 
@@ -1096,20 +1100,21 @@ let shifted: i32 = add_bias(5)
 #### 17.10.3 Pipelines `=>`
 
 The pipeline operator `=>` feeds a value into a single-argument function or
-closure: `e1 => e2 ≡ e2(e1)` (§16.9.5, `PipelineExpr`). The right operand must
+closure. It evaluates the left operand before the right callable, then applies
+the callable to that value (§16.9.5, `PipelineExpr`). The right operand must
 be a function or closure (`TypeFunc` / `TypeClosure`) taking **exactly one**
 parameter, whose parameter type the left operand satisfies (`<:`); the pipeline
 has the callee's return type (**T-Pipeline**). Violations are diagnosed:
 non-callable RHS (`E-SEM-2538`, **T-Pipeline-NotCallable-Err**); type mismatch
 (`E-SEM-2539`, **T-Pipeline-TypeMismatch-Err**); wrong arity (`E-SEM-2539`,
 **T-Pipeline-ArgCount-Err**). Pipelines are left-associative, so `a => f => g`
-is `g(f(a))`.
+evaluates as two left-first stages: first `a => f`, then that result `=> g`.
 
 ```ultraviolet
-// a => f => g  ==  g(f(a))
+// Left-associative pipeline stages: raw_input, then normalize, then clamp.
 let result: i32 = raw_input => normalize => clamp
 
-// Equivalent without the pipeline operator.
+// Same result when the calls are pure and ordinary call sequencing is irrelevant.
 let same: i32 = clamp(normalize(raw_input))
 ```
 

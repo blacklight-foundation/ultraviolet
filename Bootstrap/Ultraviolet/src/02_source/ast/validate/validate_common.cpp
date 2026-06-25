@@ -326,11 +326,10 @@ ValidationResult validate_expr_context(const Expr& expr,
           }
         }
 
-        // Internal allocation nodes require an explicit or ambient region context.
         if constexpr (std::is_same_v<T, AllocExpr>) {
           if (!ctx.in_region_block && !node.region_opt.has_value()) {
             emit_error(ctx, expr.span, "E-MEM-3021",
-                       "internal allocation requires region context");
+                       "`new` allocation requires an active region");
             result.valid = false;
           }
         }

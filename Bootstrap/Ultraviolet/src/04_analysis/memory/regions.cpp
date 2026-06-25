@@ -2266,12 +2266,26 @@ static ProvExprResult ProvExpr(const ScopeContext& ctx,
       return finish(inner);
     }
     const auto tag = AllocTag(env, alloc->region_opt);
-    SPEC_RULE("P-Alloc");
-    result.ok = true;
     if (tag.has_value()) {
+      if (alloc->region_opt.has_value()) {
+        SPEC_RULE("P-Internal-Alloc-Explicit");
+      } else {
+        SPEC_RULE("P-New-CurrentRegion");
+      }
+      result.ok = true;
       result.prov = RegionTag(*tag);
       return finish(result);
     }
+    if (!alloc->region_opt.has_value()) {
+      SPEC_RULE("New-NoActiveRegion-Err");
+      result.ok = false;
+      result.diag_id = "E-MEM-3021";
+      result.span = expr->span;
+      result.prov = BottomTag();
+      return finish(result);
+    }
+    SPEC_RULE("P-Internal-Alloc-InvalidRegion");
+    result.ok = true;
     result.prov = BottomTag();
     return finish(result);
   }

@@ -3,7 +3,7 @@
 // =============================================================================
 //
 // SPEC REFERENCE: Docs/SPECIFICATION.md Lines 16288-16302 (Pipeline Lowering)
-//   - Lower-Expr-Pipeline: e1 => e2 desugars to function/closure application
+//   - Lower-Expr-Pipeline: e1 => e2 lowers to call IR after left-first operand lowering
 //   - IsFunc case: CallIR(v_2, [v_1])
 //   - IsClosure case: IndirectCall(code, [env, v_1])
 //
@@ -138,8 +138,8 @@ analysis::TypeRef PipelineResultType(const analysis::TypeRef& type) {
 //   ---------------------------------------------------------------
 //   Gamma |- LowerExpr(e_1 => e_2) => <SeqIR(IR_1, IR_2, CallIR(v_2, [v_1])), v_call>
 //
-// Pipeline expressions desugar to function application where the LHS
-// becomes the first argument to the RHS function.
+// Pipeline expressions lower to function application after the LHS has
+// been lowered before the RHS.
 
 LowerResult LowerPipelineExpr(const ast::BinaryExpr& expr, LowerCtx& ctx) {
   SPEC_RULE("Lower-Expr-Pipeline");

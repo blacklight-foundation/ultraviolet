@@ -166,6 +166,13 @@ TokenKind ∈ { Identifier, Keyword(k), IntLiteral, FloatLiteral,
 
 A synthetic EOF token closes the stream: `TokenEOF(S) = ⟨EOF, ε, EOFSpan(S)⟩` with an empty lexeme at the end of input. Each token's lexeme is exactly the slice of `T` covered by its span (`LexemeBinding`).
 
+The operator tokens `#`, `%`, `@`, and `$` may act as decorators: they prefix a
+following token or token sequence while remaining ordinary `Operator` tokens.
+Spellings such as `%read`, `@result`, `$(`, and `#dynamic` are source spellings,
+not combined lexer tokens. For example, `%read` is `Operator("%")` followed by
+`Identifier("read")`, and `@result` is `Operator("@")` followed by
+`Identifier("result")`.
+
 #### 4.2.1 Character Classes
 
 The lexer's decisions are driven by a small set of scalar predicates:
@@ -212,6 +219,12 @@ That is, `Reserved` is exactly that 49-element set; `Keyword(s) ⇔ s ∈ Reserv
 - `null` lexes as `NullLiteral`.
 
 The remaining 46 reserved lexemes emit `Keyword(s)`.
+
+`in`, `key`, `wait`, and `new` are contextual keywords. They lex as
+`Identifier` tokens and are recognized only in the syntactic positions that
+own those forms: dispatch/key syntax, `wait` expressions, and current-region
+allocation. This is why qualified names such as `CancelToken::new` remain
+ordinary identifier paths.
 
 Beyond the hard keywords, the spec reserves two further categories (both activate in `Phase3`):
 

@@ -2,7 +2,8 @@
 
 // =============================================================================
 // SPEC REFERENCE: Docs/SPECIFICATION.md Section 16.8.6 (Expression Lowering)
-//   - (Lower-Internal-AllocExpr)
+//   - (Lower-New-CurrentRegion)
+//   - (Lower-Internal-Alloc-Explicit)
 //     Gamma |- LowerExpr(value) => <IR_v, v>
 //     Gamma |- LookupRegion(region_opt) => r
 //     Gamma |- Alloc(r, v) => ptr
@@ -17,8 +18,8 @@
 
 namespace ultraviolet::codegen {
 
-// Lower an internal allocation expression to IR.
-// Implements the (Lower-Internal-AllocExpr) rule from the spec.
+// Lower a region allocation expression to IR.
+// Implements the allocation lowering rules from the spec.
 //
 // Allocation expressions allocate a value in a region and return the stored value.
 //

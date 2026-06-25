@@ -8,6 +8,8 @@ The grammar is written in EBNF with these meta-conventions, used uniformly throu
 - `|` separates alternatives.
 - `*` means zero-or-more, `+` means one-or-more, `?` means optional.
 - Quoted text (`"let"`, `"::"`) is a literal terminal — it must appear exactly.
+- Parameterized helpers such as `decorated_identifier("@", "result")` constrain
+  a token sequence; they do not introduce a combined lexer token.
 - `(* ... *)` is an informative side-note, not a terminal.
 - Parentheses group, exactly as in regular expressions.
 
@@ -56,6 +58,11 @@ char_content ::= (* Unicode scalar except ', \\, or U+000A *)
 bool_literal ::= "true" | "false"
 null_literal ::= "null"
 unit_literal ::= "(" ")"
+
+decorated_identifier(d, s) ::= d identifier
+(* The parameters d and s constrain the decorator token and following
+   identifier lexeme. This notation denotes a token sequence, not a combined
+   lexer token. *)
 ```
 
 **Semantics.** A `source_file` is a sequence of normalized lines; the only line terminator is `"\n"` (`U+000A`). Identifiers follow the Unicode `XID_Start` / `XID_Continue` classes, with `_` admitted in both positions. Numeric literals admit underscore digit separators (`1_000_000`) and an optional width suffix that fixes the literal's type (`255u8`, `3.14f32`). Floats require at least one digit before the `.`; the fractional part, exponent, and suffix are each optional. The integer suffixes are exactly the integer type names (`i8`…`i128`, `u8`…`u128`, `isize`, `usize`); the float suffixes are `f`, `f16`, `f32`, `f64`. The `unit_literal` `()` is both the unit value and, in type position (B.2), the unit type.
@@ -217,15 +224,16 @@ multiplicative_op   ::= "*" | "/" | "%"
 power_expr          ::= cast_expr ("**" power_expr)?
 cast_expr           ::= unary_expr ("as" type)?
 
-unary_expr     ::= unary_operator unary_expr | pipeline_expr
-unary_operator ::= "!" | "-" | "&" | "*" | "move" | "widen"
+unary_expr     ::= new_expr | unary_operator unary_expr | pipeline_expr
+new_expr       ::= "new" unary_expr
+unary_operator ::= "!" | "-" | "&" | "*" | "move" | "copy" | "widen"
 pipeline_expr  ::= postfix_expr ("=>" postfix_expr)*
 
 postfix_expr   ::= primary_expr postfix_suffix*
 postfix_suffix ::= "." identifier | "." decimal_integer | "[" expression "]" | "~>" identifier "(" argument_list? ")" | "(" argument_list? ")" | "?"
 ```
 
-**Operator structure.** Precedence climbs from `logical_or` (lowest binary) down through bitwise OR, bitwise XOR, bitwise AND, shift, additive, multiplicative, power, and cast. `**` (power) is **right-associative** (`power_expr ::= cast_expr ("**" power_expr)?`). Unary operators are `!`, `-`, `&` (address-of), `*` (deref), `move`, and `widen`. The **pipeline** operator `=>` threads a value left-to-right through `postfix_expr` stages. Postfix suffixes are: field access `.name`, tuple index `.0`, indexing `[i]`, the **bound/dynamic call** `~>method(args)`, ordinary call `(args)`, and the propagation/try operator `?`.
+**Operator structure.** Precedence climbs from `logical_or` (lowest binary) down through bitwise OR, bitwise XOR, bitwise AND, shift, additive, multiplicative, power, and cast. `**` (power) is **right-associative** (`power_expr ::= cast_expr ("**" power_expr)?`). Unary forms are `new`, `!`, `-`, `&` (address-of), `*` (deref), `move`, `copy`, and `widen`. The **pipeline** operator `=>` threads a value left-to-right through `postfix_expr` stages. Postfix suffixes are: field access `.name`, tuple index `.0`, indexing `[i]`, the **bound/dynamic call** `~>method(args)`, ordinary call `(args)`, and the propagation/try operator `?`.
 
 ```ebnf
 primary_expr ::= literal | identifier_expr | path_expr | tuple_literal | array_literal | record_literal | enum_literal | closure_expr | if_expr | loop_expr | block_expr | move_expr | copy_expr | widen_expr | address_of_expr | null_ptr_expr | transmute_expr | sync_expr | race_expr | all_expr | wait_expr | yield_expr | yield_from_expr | spawn_expr | parallel_block | dispatch_expr | fence_expr | comptime_expr | comptime_if | comptime_loop | quote_expr | quote_type | quote_pattern | type_literal | splice_expr | splice_ident | contract_intrinsic
@@ -573,11 +581,13 @@ contract_body      ::= precondition_expr "|=" postcondition_expr
 precondition_expr  ::= predicate_expr
 postcondition_expr ::= predicate_expr
 predicate_expr     ::= logical_or_expr
-contract_intrinsic ::= "@result" | "@entry" "(" expression ")"
+contract_intrinsic ::= decorated_identifier("@", "result")
+                     | decorated_identifier("@", "entry") "(" expression ")"
 
-(* Contract intrinsics parse in any primary-expression position; `@result`
-   outside a postcondition and `@entry` outside a contract predicate are
-   rejected statically (E-SEM-2806, E-CON-0415, E-CON-0416). *)
+(* The @ spellings are decorated identifiers. Contract intrinsics parse in any
+   primary-expression position; `@result` outside a postcondition and `@entry`
+   outside a contract predicate are rejected statically
+   (E-SEM-2806, E-CON-0415, E-CON-0416). *)
 
 type_invariant ::= "|:" "{" predicate_expr "}"
 loop_invariant ::= "|:" "{" predicate_expr "}"
@@ -686,7 +696,10 @@ key_index     ::= key_marker? expression
 key_marker    ::= "#"
 
 key_block_stmt ::= key_block_head key_path_list key_options? block_expr
-key_block_head ::= "%read" | "%write" | "%release" key_mode | "%speculative" "write"
+key_block_head ::= decorated_identifier("%", "read")
+                 | decorated_identifier("%", "write")
+                 | decorated_identifier("%", "release") key_mode
+                 | decorated_identifier("%", "speculative") "write"
 key_path_list  ::= key_path_expr ("," key_path_expr)*
 key_options    ::= "[" key_option ("," key_option)* ","? "]"
 key_option     ::= "ordered"
@@ -832,12 +845,12 @@ comptime_if             ::= "comptime" "if" expression block_expr ("else" (compt
 comptime_loop           ::= "comptime" "loop" pattern (":" type)? "in" expression block_expr
 comptime_procedure_decl ::= attribute_list? "comptime" visibility? "procedure" identifier generic_params? signature contract_clause? block_expr
 
-type_literal   ::= "Type" "::<" type ">"
+type_literal   ::= "Type" "::" "<" type ">"
 quote_expr     ::= "quote" "{" quoted_content "}"
 quote_type     ::= "quote" "type" "{" type "}"
 quote_pattern  ::= "quote" "pattern" "{" pattern "}"
 quoted_content ::= expression | statement | top_level_item
-splice_expr    ::= "$(" expression ")"
+splice_expr    ::= "$" "(" expression ")"
 splice_ident   ::= "$" identifier
 
 (* Splice forms parse in any primary-expression position; use outside quoted
@@ -885,9 +898,11 @@ foreign_procedure            ::= attribute_list? visibility? "procedure" identif
 
 ffi_verification_attr        ::= "#" ffi_verification_mode
 ffi_verification_mode        ::= "static" | "dynamic"
-foreign_contract             ::= "|:" "@foreign_assumes" "(" predicate_expr ")"
-                               | "|:" "@foreign_ensures" "(" ensures_predicate ")"
-ensures_predicate            ::= predicate_expr | "@error" ":" predicate_expr | "@null_result" ":" predicate_expr
+foreign_contract             ::= "|:" decorated_identifier("@", "foreign_assumes") "(" predicate_expr ")"
+                               | "|:" decorated_identifier("@", "foreign_ensures") "(" ensures_predicate ")"
+ensures_predicate            ::= predicate_expr
+                               | decorated_identifier("@", "error") ":" predicate_expr
+                               | decorated_identifier("@", "null_result") ":" predicate_expr
 foreign_contract_clause_list ::= foreign_contract+
 ```
 
@@ -918,12 +933,12 @@ region_alias ::= "as" identifier
 frame_stmt   ::= "frame" block_expr | identifier "." "frame" block_expr
 ```
 
-**Semantics.** A `region (opts) as name { }` opens a memory region; the optional `(expr)` configures it, and `as name` binds a handle for region-targeted allocation. The method call `region_handle~>alloc(value)` allocates `value` within the named region and yields a value of the same type carrying that region's provenance. A `frame { }` statement opens a default frame scope; `handle.frame { }` opens a frame on a specific allocator handle. Regions and frames give scoped, deterministic deallocation without per-object lifetime tracking.
+**Semantics.** A `region (opts) as name { }` opens a memory region; the optional `(expr)` configures it, and `as name` binds a handle for explicit region-targeted allocation. `new value` allocates `value` within the current scoped region, including anonymous regions and frames. The method call `region_handle~>alloc(value)` allocates `value` within the named region and yields a value of the same type carrying that region's provenance. A `frame { }` statement opens a default frame scope; `handle.frame { }` opens a frame on a specific allocator handle. Regions and frames give scoped, deterministic deallocation without per-object lifetime tracking.
 
 ```ultraviolet
 procedure buildScene(descriptor: SceneDescriptor) -> SceneSummary {
     region as scene_arena {
-        let node_table: NodeTable = scene_arena~>alloc(NodeTable { count: 0u32 })
+        let node_table: NodeTable = new NodeTable { count: 0u32 }
         let node_table_ptr: Ptr<NodeTable>@Valid = &node_table
 
         frame {
@@ -1001,7 +1016,7 @@ These are the easily-confused tokens drawn directly from the productions above. 
 
 - **One-element tuples use a trailing `;`**: the tuple *type* is `(T;)` and the tuple *literal* and *pattern* are `(expr;)` / `(pat;)`. `(T)` is just a parenthesized type, and `()` is the unit type/value.
 - **Generic *parameter* lists are `;`-separated** (`<TKey; TValue>`), but generic *argument* lists are `,`-separated (`Map<K, V>`).
-- **`|:` is overloaded by position**: it introduces a `predicate_clause` (B.6), a `contract_clause` (B.7), a `refinement_clause`/`type_invariant`/`loop_invariant` (braced, B.2/B.7), and the foreign-contract clauses (B.13). Read the following token (`{`, a `predicate_req` keyword, `@foreign_assumes`, or a bare predicate) to disambiguate.
+- **`|:` is overloaded by position**: it introduces a `predicate_clause` (B.6), a `contract_clause` (B.7), a `refinement_clause`/`type_invariant`/`loop_invariant` (braced, B.2/B.7), and the foreign-contract clauses (B.13). Read the following token sequence (`{`, a predicate-requirement identifier, the `@foreign_assumes` decorator spelling, or a bare predicate) to disambiguate.
 - **Raw pointer qualifier precedes the type**: `*imm T` and `*mut T`, not `*T imm`.
 - **`Ptr::null()` is the exact null-pointer expression**; `Ptr<T>@Null` is the corresponding type state.
 - **`..` family**: `..` exclusive, `..=` inclusive — used in both `range_expression` and `range_pattern`.

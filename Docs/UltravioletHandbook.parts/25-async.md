@@ -695,7 +695,8 @@ To suspend legally while keys are held, use the `release` modifier. `yield relea
 
 Release and reacquisition use canonical key ordering to preserve the global lock-acquisition discipline and avoid deadlock. The reacquisition (`ReacquireHeldKeysIR`) is prepended to the resumption target, so the continuation always runs with its keys re-held.
 
-A key acquisition block uses the head form `%write` / `%read` (not a bare `key` keyword) over one or more key paths:
+A key acquisition block uses a decorated head such as `%write` or `%read`
+(not a bare `key` keyword) over one or more key paths:
 
 ```ultraviolet
 /// Holds a Write key to update shared progress, then `yield release`s so
@@ -775,7 +776,7 @@ A pure `Sequence<T>` that only computes and yields needs **no** capability. The 
 - **`let mut` is not a thing; mutable bindings use `var`.** A reassigned async loop counter or stepping handle declared with `let` is a reassignment of an immutable binding. Use `var`. The keyword `mut` exists only as a raw-pointer qualifier.
 - **Parameters cannot be reassigned.** Parameters are immutable `let` bindings, and the only parameter mode is `move`; there is no `mut` parameter. To step or mutate an async (or any value) you received as a parameter, `move` it into a local `var`.
 - **Enum/variant construction uses `::`, not `.`.** Write `Ack::Pending { queued: pending }`, never `Ack.Pending { … }`. The `.` form is field/method access; `::` is the path/variant separator.
-- **Key blocks use `%write` / `%read`, not a `key` keyword.** The acquisition head is `%write path { … }` (or `%read`, `%release read|write`, `%speculative write`). There is no `key write` / `key read` block form.
+- **Key blocks use decorated `%` heads, not a `key` keyword.** The acquisition head is `%write path { … }` (or `%read`, `%release read|write`, `%speculative write`). There is no `key write` / `key read` block form.
 - **`shared` is a type permission, not a parameter modifier.** Write `progress: shared Progress`. Do not prefix the parameter name with a bare `shared`.
 - **`yield`/`yield from`/`sync` are context-sensitive.** `yield` outside an async procedure is `E-CON-0210`; `yield from` outside is `E-CON-0220`; `sync` *inside* an async procedure is `E-CON-0250`. `yield` whose operand mistypes against `Out` is `E-CON-0211`; `yield from` whose `Out`/`In`/error don't match is `E-CON-0221`/`E-CON-0222`/`E-CON-0225`.
 - **`wait` takes a handle, not an async value.** `wait` operates on `Spawned<T>` or `Tracked<T, E>`. Passing an `Async`/`Future`/`Sequence` value is `E-CON-0132`. To run an async value, use `sync`, a `loop`, or manual `resume` — not `wait`.

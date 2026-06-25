@@ -615,6 +615,7 @@ static const DiagMapEntry kTypecheckDiagMap[] = {
   {"Modal-Payload-DupField", "E-TYP-2058"},
   {"Modal-StateName-Err", "E-TYP-2054"},
   {"Names-Step-Dup", "E-MOD-1302"},
+  {"New-NoActiveRegion-Err", "E-MEM-3021"},
   {"Out-Dirs-Err", "E-OUT-0401"},
   {"Out-IR-Collision", "E-OUT-0406"},
   {"Out-IR-Err", "E-OUT-0403"},

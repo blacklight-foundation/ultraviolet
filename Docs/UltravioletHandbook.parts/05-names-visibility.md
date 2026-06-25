@@ -822,9 +822,11 @@ NoSpecificResolveExpr(C(e_1, …, e_n))   ∀ i, Γ ⊢ ResolveExpr(e_i) ⇓ e_i
 Γ ⊢ ResolveExpr(C(e_1, …, e_n)) ⇓ C(e_1', …, e_n')
 ```
 
-Region allocation uses ordinary method-call resolution. A named region handle
-introduced by `region as r` is referenced as a value and targeted with
-`r~>alloc(value)`; `^` is only the bitwise XOR operator.
+Region allocation has two source forms. `new value` is contextual syntax for
+the current scoped region and does not resolve `new` as a value name. A named
+region handle introduced by `region as r` is referenced as a value and targeted
+with the ordinary method-call form `r~>alloc(value)`; `^` is only the bitwise
+XOR operator.
 
 #### 5.7.4 Module path validation and the module driver
 

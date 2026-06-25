@@ -20,7 +20,7 @@ bool IsKeyword(std::string_view s);
 bool IsFixedIdentifier(std::string_view s);
 bool IsFixedIdentTok(const Token& tok, std::string_view s);
 
-// Contextual keywords: "in", "key", "wait"
+// Contextual keywords: "in", "key", "wait", "new"
 // NOT reserved; identifier in most contexts
 bool IsCtxKeyword(std::string_view s);
 bool Ctx(const Token& tok, std::string_view s);

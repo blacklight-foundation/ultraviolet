@@ -2162,6 +2162,23 @@ PunctuatorSet = {"(", ")", "[", "]", "{", "}", ",", ":", ";", "."}
 
 The attribute delimiter is the operator `#`. It prefixes exactly one attribute specification; repeated adjacent attributes form an attribute list.
 
+**Decorator Tokens.**
+DecoratorToken = {"#", "%", "@", "$"}
+
+A decorator is an existing `Operator` token used as a syntactic prefix for a
+following token or token sequence. Decorated source spellings such as `%read`,
+`@result`, `$(`, and `#dynamic` are not lexer tokens. They are source spellings
+for token sequences over `OperatorSet`, `PunctuatorSet`, and identifiers.
+Compound source spellings can also span multiple operator tokens. The source
+spelling `Type::<T>` has the token sequence `Identifier("Type")`,
+`Operator("::")`, `Operator("<")`, type, `Operator(">")`.
+
+DecorIdent(P, d, s) ⇔ IsOp(Tok(P), d) ∧ IsIdent(Tok(Advance(P))) ∧ Lexeme(Tok(Advance(P))) = s
+DecorPunc(P, d, p) ⇔ IsOp(Tok(P), d) ∧ IsPunc(Tok(Advance(P)), p)
+DecorOp(P, d, o) ⇔ IsOp(Tok(P), d) ∧ IsOp(Tok(Advance(P)), o)
+Adjacent(t_1, t_2) ⇔ t_1.span.file = t_2.span.file ∧ t_1.span.end_offset = t_2.span.start_offset
+DecorIdentAdj(P, d, s) ⇔ DecorIdent(P, d, s) ∧ Adjacent(Tok(P), Tok(Advance(P)))
+
 OperatorSet ∩ PunctuatorSet = ∅
 
 #### 4.2.5 Comment and Whitespace Scanning
@@ -2821,7 +2838,7 @@ IsPunc(t, s) ⇔ t.kind = Punctuator(s)
 Lexeme(t) = t.lexeme
 
 **Contextual Keywords.**
-CtxKeyword = {"in", "key", "wait"}
+CtxKeyword = {"in", "key", "wait", "new"}
 Ctx(t, s) ⇔ IsIdent(t) ∧ Lexeme(t) = s ∧ s ∈ CtxKeyword
 ¬ Ctx(t, "as") ∧ ¬ Ctx(t, "move")
 
@@ -4339,6 +4356,21 @@ CaseElseProv(b, Ω) = [π] ⇔ CaseBodyProv(b, Ω) = π
 ──────────────────────────────────────────────────────────────────────────────
 Γ; Ω ⊢ MethodCall(recv, `alloc`, args) ⇓ π_Region(tag)
 
+**(P-New-CurrentRegion)**
+Γ; Ω ⊢ e ⇓ π_e    AllocTag(Ω, ⊥) = tag
+────────────────────────────────────────────────────────────────────────────────
+Γ; Ω ⊢ AllocExpr(⊥, e) ⇓ π_Region(tag)
+
+**(P-Internal-Alloc-Explicit)**
+Γ; Ω ⊢ e ⇓ π_e    AllocTag(Ω, r) = tag
+────────────────────────────────────────────────────────────────────────────────
+Γ; Ω ⊢ AllocExpr(r, e) ⇓ π_Region(tag)
+
+**(P-Internal-Alloc-InvalidRegion)**
+Γ; Ω ⊢ e ⇓ π_e    AllocTag(Ω, r) = ⊥
+────────────────────────────────────────────────────────────────────────────────
+Γ; Ω ⊢ AllocExpr(r, e) ⇓ ⊥
+
 **(P-If-Is)**
 CaseProv(⟨pat, then_block⟩) = π_t    CaseElseProv(else_opt, Ω) = π_else    JoinAllProv([π_t] ++ π_else) = π
 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -4745,7 +4777,7 @@ This section owns binding-state, region/frame, provenance, and unsafe-runtime di
 | `E-MEM-3006` | Error    | Compile-time | Attempt to move from immovable binding (`:=`) (`Trans-Let-NoReassign`, `B-Closure-MoveCapture-Immovable-Err`) |
 | `E-MEM-3007` | Error    | Compile-time | `unique` binding from place expression requires explicit `move` (`B-LetVar-UniqueNonMove-Err`) |
 | `E-MEM-3020` | Error    | Compile-time | Value with shorter-lived provenance escapes to longer-lived location |
-| `E-MEM-3021` | Error    | Compile-time | Internal allocation node has no active region target                 |
+| `E-MEM-3021` | Error    | Compile-time | `new` allocation used with no active region in scope (`New-NoActiveRegion-Err`) |
 | `E-MEM-3030` | Error    | Compile-time | Unsafe operation outside block (`AllocRaw-Unsafe-Err`, `DeallocRaw-Unsafe-Err`, `Region-Unchecked-Unsafe-Err`, `Transmute-Unsafe-Err`) |
 
 ## 7. Name Resolution and Visibility
@@ -5824,7 +5856,7 @@ key_clause_opt = ⟨path, mode⟩    Γ ⊢ ResolveKeyPathExpr(path) ⇓ path'
 ──────────────────────────────────────────────
 Γ ⊢ ResolveExpr(AllExpr(es)) ⇓ AllExpr(es')
 
-ResolveExprRules = {ResolveExpr-Ident, ResolveExpr-Qualified, ResolveExpr-Call, ResolveExpr-Call-TypeArgs, ResolveExpr-RecordExpr, ResolveExpr-EnumLiteral, ResolveExpr-IfCase, ResolveExpr-LoopIter, ResolveExpr-Parallel, ResolveExpr-Spawn, ResolveExpr-Wait, ResolveExpr-Dispatch, ResolveExpr-Yield, ResolveExpr-YieldFrom, ResolveExpr-Sync, ResolveExpr-Race, ResolveExpr-All, ResolveExpr-Hom, ResolveExpr-Internal-Alloc-Implicit, ResolveExpr-Internal-Alloc-Explicit, ResolveExpr-Block}
+ResolveExprRules = {ResolveExpr-Ident, ResolveExpr-Qualified, ResolveExpr-Call, ResolveExpr-Call-TypeArgs, ResolveExpr-RecordExpr, ResolveExpr-EnumLiteral, ResolveExpr-IfCase, ResolveExpr-LoopIter, ResolveExpr-Parallel, ResolveExpr-Spawn, ResolveExpr-Wait, ResolveExpr-Dispatch, ResolveExpr-Yield, ResolveExpr-YieldFrom, ResolveExpr-Sync, ResolveExpr-Race, ResolveExpr-All, ResolveExpr-Hom, ResolveExpr-New, ResolveExpr-Internal-Alloc-Explicit, ResolveExpr-Block}
 
 NoSpecificResolveExpr(e) ⇔ ¬ ∃ r ∈ ResolveExprRules \ {ResolveExpr-Hom}. PremisesHold(r, e)
 
@@ -5833,7 +5865,7 @@ NoSpecificResolveExpr(C(e_1, …, e_n))    ∀ i, Γ ⊢ ResolveExpr(e_i) ⇓ e_
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ResolveExpr(C(e_1, …, e_n)) ⇓ C(e_1', …, e_n')
 
-**(ResolveExpr-Internal-Alloc-Implicit)**
+**(ResolveExpr-New)**
 Γ ⊢ ResolveExpr(e) ⇓ e'
 ────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ResolveExpr(AllocExpr(⊥, e)) ⇓ AllocExpr(⊥, e')
@@ -14859,22 +14891,25 @@ Diagnostics for unsatisfied preconditions are attached to the call site.
 
 ```ebnf
 postcondition_expr ::= predicate_expr
-contract_intrinsic ::= "@result" | "@entry" "(" expression ")"
+contract_intrinsic ::= decorated_identifier("@", "result")
+                     | decorated_identifier("@", "entry") "(" expression ")"
 
-(* Contract intrinsics parse in any primary-expression position; `@result`
-   outside a postcondition and `@entry` outside a contract predicate are
-   rejected statically (E-SEM-2806, E-CON-0415, E-CON-0416). *)
+(* `decorated_identifier(d, s)` denotes the token sequence Operator(d)
+   followed by Identifier(s), not one lexer token. Contract intrinsics parse
+   in any primary-expression position; `@result` outside a postcondition and
+   `@entry` outside a contract predicate are rejected statically
+   (E-SEM-2806, E-CON-0415, E-CON-0416). *)
 ```
 
 #### 15.6.2 Parsing
 
 **(Parse-Contract-Result)**
-IsOp(Tok(P), "@")    IsIdent(Tok(Advance(P)))    Lexeme(Tok(Advance(P))) = `result`
+DecorIdent(P, "@", "result")
 ──────────────────────────────────────────────────────────────
 Γ ⊢ ParsePrimary(P) ⇓ (Advance(Advance(P)), ContractResult)
 
 **(Parse-Contract-Entry)**
-IsOp(Tok(P), "@")    IsIdent(Tok(Advance(P)))    Lexeme(Tok(Advance(P))) = `entry`    IsPunc(Tok(Advance(Advance(P))), "(")    Γ ⊢ ParseExpr(Advance(Advance(Advance(P)))) ⇓ (P_1, e)    IsPunc(Tok(P_1), ")")
+DecorIdent(P, "@", "entry")    IsPunc(Tok(Advance(Advance(P))), "(")    Γ ⊢ ParseExpr(Advance(Advance(Advance(P)))) ⇓ (P_1, e)    IsPunc(Tok(P_1), ")")
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ParsePrimary(P) ⇓ (Advance(P_1), ContractEntry(e))
 
@@ -17188,13 +17223,16 @@ address_of_expr ::= "&" place_expr
 move_expr       ::= "move" place_expr
 copy_expr       ::= "copy" unary_expr
 deref_expr      ::= "*" unary_expr
+new_expr        ::= "new" unary_expr
 propagate_expr  ::= postfix_expr "?"
 ```
 
-Region allocation has no prefix or binary operator form. Source allocation is
-the builtin modal method call `receiver~>alloc(value)`, where the receiver has
-type `unique Region@Active`; it uses the method-call syntax from §16.3 and the
-`Region::alloc` signature from §13.1.4.
+Region allocation has two source forms. `new value` allocates `value` in the
+innermost active scoped region. `receiver~>alloc(value)` allocates `value` in
+the region named by `receiver`, where the receiver has type
+`unique Region@Active`; it uses the method-call syntax from §16.3 and the
+`Region::alloc` signature from §13.1.4. `new` is contextual source syntax, not
+a reserved identifier and not a constructor form.
 
 #### 16.8.2 Parsing
 
@@ -17218,6 +17256,11 @@ IsKw(Tok(P), `copy`)    Γ ⊢ ParseUnary(Advance(P)) ⇓ (P_1, e)
 ────────────────────────────────────────────────────────────────
 Γ ⊢ ParseUnary(P) ⇓ (P_1, CopyExpr(e))
 
+**(Parse-New-Expr)**
+Ctx(Tok(P), `new`)    Γ ⊢ ParseUnary(Advance(P)) ⇓ (P_1, e)
+────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseUnary(P) ⇓ (P_1, AllocExpr(⊥, e))
+
 **(Postfix-Propagate)**
 IsOp(Tok(P), "?")
 ──────────────────────────────────────────────────────────────
@@ -17230,12 +17273,12 @@ IsKw(Tok(P), `unsafe`)    Γ ⊢ ParseBlock(Advance(P)) ⇓ (P_1, b)
 
 #### 16.8.3 AST Representation / Form
 
-Expr = UnsafeBlockExpr(body) | MoveExpr(place) | CopyExpr(expr) | AddressOf(place) | Deref(expr) | Propagate(expr) | …
+Expr = UnsafeBlockExpr(body) | MoveExpr(place) | CopyExpr(expr) | AddressOf(place) | Deref(expr) | AllocExpr(region_opt, expr) | Propagate(expr) | …
 
-Internal lowering and compile-time AST construction may use
-`AllocExpr(region_opt, expr)` to represent a region allocation after the source
-method-call form has selected `Region::alloc`. `AllocExpr` is not a source
-`primary_expr`.
+`AllocExpr(⊥, expr)` is the source AST representation for `new expr`.
+`AllocExpr(region, expr)` is reserved for internal elaboration and compile-time
+AST construction after an explicit target has already selected a region
+allocation operation.
 
 #### 16.8.4 Static Semantics
 
@@ -17285,19 +17328,25 @@ UnsafeSpan(span(Deref(e)))    Γ; R; L ⊢ e : TypeRawPtr(q, T)    BitcopyType(T
 ────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ MethodCall(recv, `alloc`, [⟨⊥, value, _⟩]) : T_{π_Region(recv)}
 
-Internal allocation AST nodes are not source syntax. They are permitted only
-after elaboration or compile-time AST construction has already selected the
-region allocation operation.
+An implicit `AllocExpr(⊥, e)` originates from source `new e` and requires an
+active scoped region. An explicit `AllocExpr(r, e)` is an internal form used
+after elaboration or compile-time AST construction has already selected an
+explicit region allocation operation.
 
 **(T-Internal-Alloc-Explicit)**
 Γ; R; L ⊢ e : T    Γ; R; L ⊢ Identifier(r) : T_r    RegionActiveType(T_r)
 ────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ AllocExpr(r, e) : T
 
-**(T-Internal-Alloc-Implicit)**
+**(T-New-CurrentRegion)**
 InnermostActiveRegion(Γ) = r    Γ; R; L ⊢ e : T
 ────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ AllocExpr(⊥, e) : T
+
+**(New-NoActiveRegion-Err)**
+InnermostActiveRegion(Γ) = ⊥
+────────────────────────────────────────────────────────────────────────────────
+Γ; R; L ⊢ AllocExpr(⊥, e) ⇑ `E-MEM-3021`
 
 SuccessMember(R, U) = T_s ⇔ U = TypeUnion([T_1, …, T_n]) ∧ ¬(Γ ⊢ T_s <: R) ∧ ∀ i ≠ s. Γ ⊢ T_i <: R
 
@@ -17484,9 +17533,14 @@ TerminalExpr(⟨Ctrl(κ), σ⟩)
 ────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ LowerExpr(MethodCall(recv, `alloc`, [⟨⊥, value, _⟩])) ⇓ ⟨SeqIR(IR_r, IR_v, AllocIR(v_r, v)), v_alloc⟩
 
-**(Lower-Internal-AllocExpr)**
+**(Lower-New-CurrentRegion)**
 Γ ⊢ LowerExpr(e) ⇓ ⟨IR_e, v⟩
 ────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ LowerExpr(AllocExpr(⊥, e)) ⇓ ⟨SeqIR(IR_e, AllocIR(CurrentRegion(Γ), v)), v_alloc⟩
+
+**(Lower-Internal-Alloc-Explicit)**
+Γ ⊢ LowerExpr(e) ⇓ ⟨IR_e, v⟩
+────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ LowerExpr(AllocExpr(r_ref, e)) ⇓ ⟨SeqIR(IR_e, AllocIR(r_ref, v)), v_alloc⟩
 
 **(Lower-Expr-Propagate-Success-Outcome)**
@@ -17513,7 +17567,7 @@ TerminalExpr(⟨Ctrl(κ), σ⟩)
 
 #### 16.8.7 Diagnostics
 
-Diagnostics are defined for address-of on non-places, address-of of packed fields outside `unsafe`, non-`usize` indexing in address-of contexts, dereference of null or expired safe pointers, raw-pointer dereference outside `unsafe`, Region allocation through a receiver that is not `unique Region@Active`, internal allocation without an active region target, and propagation inside async procedures whose error type is `!`.
+Diagnostics are defined for address-of on non-places, address-of of packed fields outside `unsafe`, non-`usize` indexing in address-of contexts, dereference of null or expired safe pointers, raw-pointer dereference outside `unsafe`, region allocation through a receiver that is not `unique Region@Active`, `new` allocation with no active scoped region, and propagation inside async procedures whose error type is `!`.
 
 ### 16.9 Closure and Pipeline Expressions
 
@@ -17869,7 +17923,7 @@ ApplyClosureSigma(env_ptr, code_ptr, vec_v, σ) = (out, σ') ⇔
 
 `ClosureCall(e_c, args)` is the resolved internal call form for an ordinary source call `Call(callee, args)` whose callee has closure type. §16.3.5 bridges the source call form to this internal dynamic-semantic form.
 
-Pipeline expressions desugar to function or closure application: `e_1 => e_2 ≡ e_2(e_1)`.
+Pipeline expressions are a distinct left-first application form. `PipelineExpr(e_1, e_2)` evaluates `e_1` before `e_2`; after both produce values, the resulting function or closure value from `e_2` is applied to `[v_1]`. This is call-like lowering, not a source-level equivalence to `e_2(e_1)`.
 
 **(EvalSigma-Pipeline-Func)**
 Γ ⊢ EvalSigma(e_1, σ) ⇓ (Val(v_1), σ_1)    Γ ⊢ EvalSigma(e_2, σ_1) ⇓ (Val(FuncVal(sym)), σ_2)
@@ -20432,15 +20486,21 @@ KeyPath(e) = P
 
 ```ebnf
 key_block_stmt ::= key_block_head key_path_list key_options? block_expr
-key_block_head ::= "%read"
-                 | "%write"
-                 | "%release" key_mode
-                 | "%speculative" "write"
+key_block_head ::= decorated_identifier("%", "read")
+                 | decorated_identifier("%", "write")
+                 | decorated_identifier("%", "release") key_mode
+                 | decorated_identifier("%", "speculative") "write"
 key_mode       ::= "read" | "write"
 key_path_list  ::= key_path_expr ("," key_path_expr)*
 key_options    ::= "[" key_option ("," key_option)* ","? "]"
 key_option     ::= "ordered"
 ```
+
+The key-block head spellings `%read`, `%write`, `%release`, and `%speculative`
+are decorated identifiers: each is tokenized as `Operator("%")` followed by an
+identifier token. The `%` decorator and the head identifier MUST be adjacent in
+source text. The `write` token after `%speculative` is the ordinary key mode
+identifier and need not be adjacent to `speculative`.
 
 The `ordered` option requests the same-base indexed-path checking defined in §19.3.4. It modifies acquisition over the whole parsed path set, not an individual path and not the head mode. Canonical path order remains the deterministic acquisition and conflict-resolution order for key blocks under §§19.2.5 and 19.3.5.
 
@@ -20464,22 +20524,22 @@ IsCtxIdent(Tok(P), "write")
 Γ ⊢ ParseKeyMode(P) ⇑ c
 
 **(Parse-KeyBlockHead-Read)**
-IsOp(Tok(P), "%")    IsCtxIdent(Tok(Advance(P)), "read")
+DecorIdentAdj(P, "%", "read")
 ────────────────────────────────────────────────────────────
 Γ ⊢ ParseKeyBlockHead(P) ⇓ (Advance(Advance(P)), ⟨Read, ⊥⟩)
 
 **(Parse-KeyBlockHead-Write)**
-IsOp(Tok(P), "%")    IsCtxIdent(Tok(Advance(P)), "write")
+DecorIdentAdj(P, "%", "write")
 ────────────────────────────────────────────────────────────
 Γ ⊢ ParseKeyBlockHead(P) ⇓ (Advance(Advance(P)), ⟨Write, ⊥⟩)
 
 **(Parse-KeyBlockHead-Release)**
-IsOp(Tok(P), "%")    IsCtxIdent(Tok(Advance(P)), "release")    Γ ⊢ ParseKeyMode(Advance(Advance(P))) ⇓ (P_1, mode)
+DecorIdentAdj(P, "%", "release")    Γ ⊢ ParseKeyMode(Advance(Advance(P))) ⇓ (P_1, mode)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ParseKeyBlockHead(P) ⇓ (P_1, ⟨Release, mode⟩)
 
 **(Parse-KeyBlockHead-SpeculativeWrite)**
-IsOp(Tok(P), "%")    IsCtxIdent(Tok(Advance(P)), "speculative")    IsCtxIdent(Tok(Advance(Advance(P))), "write")
+DecorIdentAdj(P, "%", "speculative")    IsCtxIdent(Tok(Advance(Advance(P))), "write")
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ParseKeyBlockHead(P) ⇓ (Advance(Advance(Advance(P))), ⟨SpeculativeWrite, ⊥⟩)
 
@@ -20519,7 +20579,7 @@ IsPunc(Tok(P), "[")    Γ ⊢ ParseOptList(ParseKeyOption, Advance(P)) ⇓ (P_1,
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ParseStmt(P) ⇓ (P_4, KeyBlockStmt(⊥, kind, paths, mode, options, body, sp))
 
-`SpanOfTokens(P, P')` is the span from the start of `Tok(P)` to the end of the last token consumed before `P'`. `ParseStmt` dispatches to `Parse-KeyBlock-Stmt` when `IsOp(Tok(P), "%")`. `attrs_opt` is populated by the shared attributed-statement mechanism of Chapter 9; `Parse-KeyBlock-Stmt` itself produces `⊥`. The option-list rules instantiate the shared schema of §5.5 with `El = ParseKeyOption`. `Parse-KeyOption-Ordered` consumes `ordered` only inside the bracketed option list following the complete path list. `Parse-KeyBlockHead-Release` consumes `%release` followed by the required target mode. `Parse-KeyBlockHead-SpeculativeWrite` consumes `%speculative write`; any other token after `%speculative` is a syntax error.
+`SpanOfTokens(P, P')` is the span from the start of `Tok(P)` to the end of the last token consumed before `P'`. `ParseStmt` dispatches to `Parse-KeyBlock-Stmt` when `IsOp(Tok(P), "%")`. `attrs_opt` is populated by the shared attributed-statement mechanism of Chapter 9; `Parse-KeyBlock-Stmt` itself produces `⊥`. The option-list rules instantiate the shared schema of §5.5 with `El = ParseKeyOption`. `Parse-KeyOption-Ordered` consumes `ordered` only inside the bracketed option list following the complete path list. `Parse-KeyBlockHead-Release` consumes the `%` decorator adjacent to `release`, followed by the required target mode. `Parse-KeyBlockHead-SpeculativeWrite` consumes the `%` decorator adjacent to `speculative`, followed by `write`; any other token after the decorated `speculative` head is a syntax error.
 
 #### 19.2.3 AST Representation / Form
 
@@ -21092,7 +21152,7 @@ IR_reacquire_outer = SeqIRList([AcquireKey(PathOf(k), KeyModeOf(k), KeyScopeOf(k
 #### 19.5.1 Syntax
 
 ```ebnf
-speculative_block ::= "%speculative" "write" key_path_list block_expr
+speculative_block ::= decorated_identifier("%", "speculative") "write" key_path_list block_expr
 ```
 
 #### 19.5.2 Parsing
@@ -22790,7 +22850,7 @@ Capture rules apply independently at each nesting level.
 
 Work items MAY capture `ctx.heap` and invoke allocation methods.
 
-Work items executing within a `region` block MAY allocate from that region using a `Region@Active` handle's `~>alloc` operation.
+Work items executing within a `region` block MAY allocate from that region using `new value`, or using a `Region@Active` handle's `~>alloc` operation when the source names the allocation target explicitly.
 
 TaskId(w) = n assigns each created work item a stable creation identifier.
 CompletionSeq(w) = n assigns each settled work item a global monotonically increasing completion identifier.
@@ -24724,7 +24784,7 @@ comptime_expr           ::= attribute_list? "comptime" "{" expression "}"
 comptime_if             ::= "comptime" "if" expression block_expr ("else" (comptime_if | block_expr))?
 comptime_loop           ::= "comptime" "loop" pattern (":" type)? "in" expression block_expr
 comptime_procedure_decl ::= attribute_list? "comptime" visibility? "procedure" identifier generic_params? signature contract_clause? block_expr
-type_literal            ::= "Type" "::<" type ">"
+type_literal            ::= "Type" "::" "<" type ">"
 ```
 
 #### 22.1.2 Parsing
@@ -25244,7 +25304,7 @@ Diagnostics for compile-time capabilities are defined by §22.6.
 #### 22.3.1 Syntax
 
 ```ebnf
-type_literal ::= "Type" "::<" type ">"
+type_literal ::= "Type" "::" "<" type ">"
 ```
 
 #### 22.3.2 Parsing
@@ -25417,7 +25477,7 @@ quote_expr     ::= "quote" "{" quoted_content "}"
 quote_type     ::= "quote" "type" "{" type "}"
 quote_pattern  ::= "quote" "pattern" "{" pattern "}"
 quoted_content ::= expression | statement | top_level_item
-splice_expr    ::= "$(" expression ")"
+splice_expr    ::= "$" "(" expression ")"
 splice_ident   ::= "$" identifier
 
 (* Splice forms parse in any primary-expression position; use outside quoted
@@ -26630,12 +26690,12 @@ Capability-bearing-type violations other than region-local raw-pointer escape ar
 ffi_verification_attr    ::= "#" ffi_verification_mode
 ffi_verification_mode    ::= "static" | "dynamic"
 
-foreign_contract         ::= "|:" "@foreign_assumes" "(" predicate_expr ")"
-                           | "|:" "@foreign_ensures" "(" ensures_predicate ")"
+foreign_contract         ::= "|:" decorated_identifier("@", "foreign_assumes") "(" predicate_expr ")"
+                           | "|:" decorated_identifier("@", "foreign_ensures") "(" ensures_predicate ")"
 foreign_contract_clause_list ::= foreign_contract+
 ensures_predicate        ::= predicate_expr
-                           | "@error" ":" predicate_expr
-                           | "@null_result" ":" predicate_expr
+                           | decorated_identifier("@", "error") ":" predicate_expr
+                           | decorated_identifier("@", "null_result") ":" predicate_expr
 ```
 
 #### 23.6.2 Parsing
@@ -30565,6 +30625,11 @@ char_content ::= (* Unicode scalar except ', \\, or U+000A *)
 bool_literal ::= "true" | "false"
 null_literal ::= "null"
 unit_literal ::= "(" ")"
+
+decorated_identifier(d, s) ::= d identifier
+(* The parameters d and s constrain the decorator token and following
+   identifier lexeme. This notation denotes a token sequence, not a combined
+   lexer token. *)
 ```
 
 ### B.2 Type Grammar
@@ -30666,8 +30731,9 @@ multiplicative_op   ::= "*" | "/" | "%"
 power_expr          ::= cast_expr ("**" power_expr)?
 cast_expr           ::= unary_expr ("as" type)?
 
-unary_expr     ::= unary_operator unary_expr | pipeline_expr
-unary_operator ::= "!" | "-" | "&" | "*" | "move" | "widen"
+unary_expr     ::= new_expr | unary_operator unary_expr | pipeline_expr
+new_expr       ::= "new" unary_expr
+unary_operator ::= "!" | "-" | "&" | "*" | "move" | "copy" | "widen"
 pipeline_expr  ::= postfix_expr ("=>" postfix_expr)*
 
 postfix_expr   ::= primary_expr postfix_suffix*
@@ -30857,11 +30923,14 @@ contract_body      ::= precondition_expr "|=" postcondition_expr
 precondition_expr  ::= predicate_expr
 postcondition_expr ::= predicate_expr
 predicate_expr     ::= logical_or_expr
-contract_intrinsic ::= "@result" | "@entry" "(" expression ")"
+contract_intrinsic ::= decorated_identifier("@", "result")
+                     | decorated_identifier("@", "entry") "(" expression ")"
 
-(* Contract intrinsics parse in any primary-expression position; `@result`
-   outside a postcondition and `@entry` outside a contract predicate are
-   rejected statically (E-SEM-2806, E-CON-0415, E-CON-0416). *)
+(* `decorated_identifier(d, s)` denotes the token sequence Operator(d)
+   followed by Identifier(s), not one lexer token. Contract intrinsics parse
+   in any primary-expression position; `@result` outside a postcondition and
+   `@entry` outside a contract predicate are rejected statically
+   (E-SEM-2806, E-CON-0415, E-CON-0416). *)
 
 type_invariant ::= "|:" "{" predicate_expr "}"
 loop_invariant ::= "|:" "{" predicate_expr "}"
@@ -30925,7 +30994,10 @@ key_index     ::= key_marker? expression
 key_marker    ::= "#"
 
 key_block_stmt ::= key_block_head key_path_list key_options? block_expr
-key_block_head ::= "%read" | "%write" | "%release" key_mode | "%speculative" "write"
+key_block_head ::= decorated_identifier("%", "read")
+                 | decorated_identifier("%", "write")
+                 | decorated_identifier("%", "release") key_mode
+                 | decorated_identifier("%", "speculative") "write"
 key_path_list  ::= key_path_expr ("," key_path_expr)*
 key_options    ::= "[" key_option ("," key_option)* ","? "]"
 key_option     ::= "ordered"
@@ -30997,12 +31069,12 @@ comptime_if             ::= "comptime" "if" expression block_expr ("else" (compt
 comptime_loop           ::= "comptime" "loop" pattern (":" type)? "in" expression block_expr
 comptime_procedure_decl ::= attribute_list? "comptime" visibility? "procedure" identifier generic_params? signature contract_clause? block_expr
 
-type_literal   ::= "Type" "::<" type ">"
+type_literal   ::= "Type" "::" "<" type ">"
 quote_expr     ::= "quote" "{" quoted_content "}"
 quote_type     ::= "quote" "type" "{" type "}"
 quote_pattern  ::= "quote" "pattern" "{" pattern "}"
 quoted_content ::= expression | statement | top_level_item
-splice_expr    ::= "$(" expression ")"
+splice_expr    ::= "$" "(" expression ")"
 splice_ident   ::= "$" identifier
 
 (* Splice forms parse in any primary-expression position; use outside quoted
@@ -31024,9 +31096,11 @@ foreign_procedure            ::= attribute_list? visibility? "procedure" identif
 
 ffi_verification_attr        ::= "#" ffi_verification_mode
 ffi_verification_mode        ::= "static" | "dynamic"
-foreign_contract             ::= "|:" "@foreign_assumes" "(" predicate_expr ")"
-                               | "|:" "@foreign_ensures" "(" ensures_predicate ")"
-ensures_predicate            ::= predicate_expr | "@error" ":" predicate_expr | "@null_result" ":" predicate_expr
+foreign_contract             ::= "|:" decorated_identifier("@", "foreign_assumes") "(" predicate_expr ")"
+                               | "|:" decorated_identifier("@", "foreign_ensures") "(" ensures_predicate ")"
+ensures_predicate            ::= predicate_expr
+                               | decorated_identifier("@", "error") ":" predicate_expr
+                               | decorated_identifier("@", "null_result") ":" predicate_expr
 foreign_contract_clause_list ::= foreign_contract+
 ```
 ### B.14 Region Grammar

@@ -2,7 +2,7 @@
 
 Ultraviolet distinguishes sharply between three kinds of indirection. *Safe pointers* (`Ptr<T>`) carry a statically tracked validity state and panic deterministically on misuse; they are the default tool whenever you need addressable indirection. *Raw pointers* (`*imm T`, `*mut T`) are an `unsafe`-only escape hatch for FFI and low-level work. *Function types* and *closure types* make procedures and closures first-class values you can pass, store, and invoke — the foundation for callbacks, sinks, and higher-order APIs.
 
-This chapter specifies the surface syntax, parsing, static and dynamic semantics, and lowering consequences of each, exactly as defined in §13.8–§13.11 (the type forms) and the expression rules in §16.1, §16.8, and §16.9 that create and consume them. Cross-references to *Arena Allocation & Regions* (`Region@Active~>alloc` and the `region` statement), *Permissions* (`const`, `shared`, `unique`), and *Effectful Expressions* are noted where they bear on a rule.
+This chapter specifies the surface syntax, parsing, static and dynamic semantics, and lowering consequences of each, exactly as defined in §13.8–§13.11 (the type forms) and the expression rules in §16.1, §16.8, and §16.9 that create and consume them. Cross-references to *Arena Allocation & Regions* (`new`, `Region@Active~>alloc`, and the `region` statement), *Permissions* (`const`, `shared`, `unique`), and *Effectful Expressions* are noted where they bear on a rule.
 
 > Terminology note. Throughout this chapter a *place* is an addressable storage location (a binding, field, tuple element, index, or dereference of a place); a *value* is a computed result. Only places have addresses, which is why `&` is restricted to place expressions (§16.8).
 
@@ -90,20 +90,21 @@ The operand must be a place. `AddrOfOk(p)` requires `IsPlace(p)`, and additional
 
 Applying `&` to a non-place is the error `E-TYP-2104`. At runtime (**EvalSigma-AddressOf**, §16.8.5) the result is `Ptr@Valid(addr)` for the place's address.
 
-**Region allocation.** A `unique Region@Active` handle allocates with the modal
-method call `region_handle~>alloc(value)`. The operation stores `value` in that
-region and yields a value of the same type `T`, carrying the region's provenance
-`π_Region(region_handle)`. It does not yield `Ptr<T>@Valid`; bind the allocated
-value, then take `&binding` to get a pointer to that place. Allocation through a
-receiver that is not `unique Region@Active` is rejected by ordinary method-call
-typing. See *Arena Allocation & Regions* for the full lifetime model.
+**Region allocation.** `new value` allocates into the current scoped region.
+`region_handle~>alloc(value)` allocates into the region named by the handle.
+Both forms store `value` in a region and yield a value of the same type `T`,
+carrying that region's provenance. They do not yield `Ptr<T>@Valid`; bind the
+allocated value, then take `&binding` to get a pointer to that place. Explicit
+allocation through a receiver that is not `unique Region@Active` is rejected by
+ordinary method-call typing. See *Arena Allocation & Regions* for the full
+lifetime model.
 
 ```ultraviolet
 /// Sum a value built inside an arena. The arena pointer is created, used, and
 /// dropped entirely within the region, so nothing escapes (no E-MEM-3020).
 procedure scaledSum(value: i32, factor: i32) -> i32 {
     region as scratch {
-        let stored: i32 = scratch~>alloc(value)
+        let stored: i32 = new value
         let node: Ptr<i32>@Valid = &stored
         let scaled: i32 = *node * factor
         return scaled
@@ -454,7 +455,7 @@ Ultraviolet also provides the **pipeline operator** `=>` for left-to-right appli
 pipeline_expr ::= base_postfix_expr ("=>" base_postfix_expr)*
 ```
 
-`e_1 => e_2` desugars to `e_2(e_1)` (§16.9.5). The right-hand side must be a single-argument function or closure (**T-Pipeline**): a non-callable RHS is `E-SEM-2538` (`T-Pipeline-NotCallable-Err`); a type mismatch or wrong arity is `E-SEM-2539` (`T-Pipeline-TypeMismatch-Err`, `T-Pipeline-ArgCount-Err`).
+`e_1 => e_2` is a left-first application form: it evaluates `e_1`, then `e_2`, then applies the resulting function or closure to the left value (§16.9.5). The right-hand side must be a single-argument function or closure (**T-Pipeline**): a non-callable RHS is `E-SEM-2538` (`T-Pipeline-NotCallable-Err`); a type mismatch or wrong arity is `E-SEM-2539` (`T-Pipeline-TypeMismatch-Err`, `T-Pipeline-ArgCount-Err`).
 
 ```ultraviolet
 procedure double(x: i32) -> i32 {
@@ -487,7 +488,7 @@ A non-capturing closure's `env_ptr` is `null`; a capturing closure's environment
 | To pass/return a small value | the value itself | No indirection; cheapest and safest. |
 | Addressable access to a place | `Ptr<T>@Valid` via `&` | State-tracked, panics on misuse, niche-optimizable. |
 | A nullable pointer slot | `Ptr<T>` (or `Ptr<T>@Null`) + `Ptr::null()` | Null is a first-class, checkable state. |
-| Arena-scoped allocation | `Region@Active~>alloc` / `region` + `&` when a pointer is needed | Lifetime tied to the region; pointers auto-`Expired` on exit. |
+| Arena-scoped allocation | `new` or `Region@Active~>alloc` / `region` + `&` when a pointer is needed | Lifetime tied to the region; pointers auto-`Expired` on exit. |
 | A first-class named procedure | `(...) -> R` (function type) | Bare code pointer; no environment. |
 | A callback/sink that captures state | a closure → `TypeClosure` | Captures `const`/`shared` by ref, owned data by `move`. |
 | FFI / foreign memory | `*imm T` / `*mut T` in `unsafe`, behind a safe wrapper | Last resort; document the boundary. |
@@ -521,7 +522,7 @@ The default is always the safe pointer or the plain value. Reach for raw pointer
 | `&` of a `#layout(packed)` field outside `unsafe` | address-of packed-field diagnostic (§16.8.7) | Packed-field address-of needs `unsafe`; or copy the field out first. |
 | Non-`usize` index inside an address-of | address-of non-`usize` index diagnostic (§16.8.7) | The index `i` in `&a[i]` must have type `usize`. |
 | `Ptr::null()` with no expected pointer type | `E-TYP-1530` (`PtrNull-Infer-Err`) | Annotate the binding, or use it where a `Ptr<U>` is expected. |
-| Region allocation without an active region target | `E-MEM-3021` | Allocate through a `unique Region@Active` handle, such as `r~>alloc(value)` inside `region as r { ... }`. |
+| `new` allocation with no active region | `E-MEM-3021` | Open a `region`/`frame` first, or use an explicit `Region@Active` handle such as `r~>alloc(value)`. |
 | Arena pointer escapes its region | `E-MEM-3020` | A shorter-lived provenance reaches a longer-lived location. Return a value, not the pointer. |
 | Closure parameter type cannot be inferred | `E-SEM-2591` (`Infer-Closure-Params-Err`) | Annotate the parameter (`|x: i32| ...`) or supply an expected closure/function type. |
 | Implicit capture of a `unique` binding | `E-CON-0120` (`Capture-Unique-Err`) | Move the binding into the closure (`move`) instead of capturing it by reference. |
@@ -534,4 +535,4 @@ The default is always the safe pointer or the plain value. Reach for raw pointer
 
 Two non-obvious traps worth restating. First, a `Ptr<T>@Valid` is **not** a static guarantee that survives region teardown: the runtime recomputes state from address tags, so a `@Valid`-typed pointer into a dropped arena panics on use rather than reading freed memory — correct, but a panic nonetheless, so manage lifetimes deliberately. Second, the *unrefined* `Ptr<T>` cannot be dereferenced as-is (**T-Deref-Ptr** demands `@Valid`); it exists to model "maybe null/expired", and you must narrow it before reading through it.
 
-Related chapters: *Arena Allocation & Regions* (`Region@Active~>alloc`, `region` statements, and the lifetime model behind `@Expired`), *Permissions* (`const`/`shared`/`unique`, which drive closure capture classification), *Modal Types* (narrowing pointer states with `if ... is`), *Effectful Expressions* (`&`, `*`, `move`, `copy`, `unsafe`), and *Concurrency & Keys* (Chapter 19 — key acquisition for accessing the `shared` captures of escaping closures).
+Related chapters: *Arena Allocation & Regions* (`new`, `Region@Active~>alloc`, `region` statements, and the lifetime model behind `@Expired`), *Permissions* (`const`/`shared`/`unique`, which drive closure capture classification), *Modal Types* (narrowing pointer states with `if ... is`), *Effectful Expressions* (`&`, `*`, `move`, `copy`, `unsafe`), and *Concurrency & Keys* (Chapter 19 — key acquisition for accessing the `shared` captures of escaping closures).

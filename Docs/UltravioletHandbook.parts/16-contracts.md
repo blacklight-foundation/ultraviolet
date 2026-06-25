@@ -2,9 +2,9 @@
 
 Contracts are how Ultraviolet states machine-checkable obligations directly in code. A **contract clause** records what a procedure assumes about its inputs (the **precondition**) and what it guarantees about its result and post-state (the **postcondition**). An **invariant** records a property that a type or a loop must always preserve. The compiler *proves* these obligations statically wherever it can; only inside an explicit `#dynamic` scope does it fall back to inserting a runtime check. The style guide is emphatic on this point: *if a rule about safety, range, state, ownership, lifetime, authority, or valid sequencing can be expressed with contracts or invariants, express it in code* — contracts are mandatory where expressible, and public, cross-module, lifecycle, and FFI surfaces should be especially strict.
 
-This chapter covers the contract grammar (§15.4), preconditions (§15.5), postconditions and the `@result`/`@entry` intrinsics (§15.6), type and loop invariants (§15.7), the verification logic and the static-proof-versus-dynamic-check decision (§15.8), behavioral subtyping obligations for class implementations (§15.9), and the diagnostics that govern all of the above (§15.10). Foreign contracts on `extern` procedures (§23.6) are covered at the end because they reuse the same machinery with a distinct keyword family. For procedure and method declaration mechanics see the Procedures, Methods & Overloading chapter (§15.1–15.2); for refinement types — which share the `|: { ... }` predicate form — see the Refinement Types chapter (§14.8 / B.2 `refinement_clause`); for the `is`/`as` narrowing forms used inside postconditions see the Control Expressions and Pattern Matching chapters.
+This chapter covers the contract grammar (§15.4), preconditions (§15.5), postconditions and the `@result`/`@entry` intrinsics (§15.6), type and loop invariants (§15.7), the verification logic and the static-proof-versus-dynamic-check decision (§15.8), behavioral subtyping obligations for class implementations (§15.9), and the diagnostics that govern all of the above (§15.10). Foreign contracts on `extern` procedures (§23.6) are covered at the end because they reuse the same machinery with a distinct `@` decorator family. For procedure and method declaration mechanics see the Procedures, Methods & Overloading chapter (§15.1–15.2); for refinement types — which share the `|: { ... }` predicate form — see the Refinement Types chapter (§14.8 / B.2 `refinement_clause`); for the `is`/`as` narrowing forms used inside postconditions see the Control Expressions and Pattern Matching chapters.
 
-> **Note on tokens.** Ultraviolet does **not** spell contract clauses with English keywords such as `requires` or `ensures`. The surface tokens are the operators `|:` (open a contract clause, an invariant, or a refinement), `|=` (separate precondition from postcondition), and the intrinsics `@result` / `@entry(...)` (postcondition-only). Use exactly these. The style guide informally writes the dynamic-verification opt-in as `[[dynamic]]`, but the **normative surface syntax is the attribute `#dynamic`** (Appendix B.8 `dynamic_attribute ::= "#" "dynamic"`); the spec is authoritative for syntax, so this chapter uses `#dynamic` throughout.
+> **Note on tokens.** Ultraviolet does **not** spell contract clauses with English keywords such as `requires` or `ensures`. The surface tokens are the operators `|:` (open a contract clause, an invariant, or a refinement), `|=` (separate precondition from postcondition), and the `@` decorator spellings `@result` / `@entry(...)` for postcondition-only contract intrinsics. Use exactly these source spellings. They are token sequences, not combined lexer tokens. The style guide informally writes the dynamic-verification opt-in as `[[dynamic]]`, but the **normative surface syntax is the attribute `#dynamic`** (Appendix B.8 `dynamic_attribute ::= "#" "dynamic"`); the spec is authoritative for syntax, so this chapter uses `#dynamic` throughout.
 
 ### 16.1 The Contract Clause (§15.4)
 
@@ -72,7 +72,7 @@ PureOps = { +, -, *, /, %, **, ==, !=, <, <=, >, >=, &&, ||, &, |, ^, <<, >>, ..
 
 casts (`as`); `if` / `if ... is` / `if ... is { ... }` expressions whose parts are pure; pure blocks, tuples, arrays, and record literals; calls to builtins marked pure (`sizeof`, `alignof`, `type_name`, …); calls to procedures that take **no capability parameters** and are pure procedures; `const`-receiver method calls that are pure and capability-free; and pure `comptime` calls whose argument and result types are valid for compile-time evaluation.
 
-The following are **never** pure and therefore may not appear in a contract predicate (§15.4.4): assignment expressions, mutable method calls, allocation expressions, spawn/dispatch/parallel expressions, yield/wait expressions, procedure calls with capability parameters, and `unsafe` blocks. A contract predicate is a *static verification context*; pure compile-time procedures may be evaluated there, and such calls are absent from runtime item lowering.
+The following are **never** pure and therefore may not appear in a contract predicate (§15.4.4): assignment expressions, mutable method calls, allocation expressions (`new` and `~>alloc`), spawn/dispatch/parallel expressions, yield/wait expressions, procedure calls with capability parameters, and `unsafe` blocks. A contract predicate is a *static verification context*; pure compile-time procedures may be evaluated there, and such calls are absent from runtime item lowering.
 
 The two halves see different evaluation contexts:
 
@@ -154,11 +154,13 @@ The postcondition is the predicate to the **right** of `|=`. Two intrinsics are 
 
 ```ebnf
 postcondition_expr ::= predicate_expr
-contract_intrinsic ::= "@result" | "@entry" "(" expression ")"
+contract_intrinsic ::= decorated_identifier("@", "result")
+                     | decorated_identifier("@", "entry") "(" expression ")"
 
-(* Contract intrinsics parse in any primary-expression position; `@result`
-   outside a postcondition and `@entry` outside a contract predicate are
-   rejected statically (E-SEM-2806, E-CON-0415, E-CON-0416). *)
+(* The @ spellings are decorated identifiers: Operator("@") followed by the
+   named identifier. Contract intrinsics parse in any primary-expression
+   position; `@result` outside a postcondition and `@entry` outside a contract
+   predicate are rejected statically (E-SEM-2806, E-CON-0415, E-CON-0416). *)
 ```
 
 The elided postcondition is computed by `PostconditionOf` (§15.6.3):
@@ -521,17 +523,17 @@ The abstract class method `bump` carries a contract and is terminated with `;` b
 
 ### 16.8 Foreign Contracts on `extern` Procedures (§23.6)
 
-FFI boundaries are exactly where the style guide demands strict contracts and safe wrappers. Foreign procedures use a parallel contract family with `@`-keyword clauses (§23.6.1, Appendix B.13):
+FFI boundaries are exactly where the style guide demands strict contracts and safe wrappers. Foreign procedures use a parallel contract family with `@` decorator clauses (§23.6.1, Appendix B.13):
 
 ```ebnf
 ffi_verification_attr ::= "#" ffi_verification_mode
 ffi_verification_mode ::= "static" | "dynamic"
 
-foreign_contract      ::= "|:" "@foreign_assumes" "(" predicate_expr ")"
-                        | "|:" "@foreign_ensures" "(" ensures_predicate ")"
+foreign_contract      ::= "|:" decorated_identifier("@", "foreign_assumes") "(" predicate_expr ")"
+                        | "|:" decorated_identifier("@", "foreign_ensures") "(" ensures_predicate ")"
 ensures_predicate     ::= predicate_expr
-                        | "@error" ":" predicate_expr
-                        | "@null_result" ":" predicate_expr
+                        | decorated_identifier("@", "error") ":" predicate_expr
+                        | decorated_identifier("@", "null_result") ":" predicate_expr
 foreign_contract_clause_list ::= foreign_contract+
 ```
 
@@ -599,7 +601,7 @@ The contract, entry, and invariant diagnostics owned by §15.10, the `#dynamic`-
 Common mistakes and how to avoid them:
 
 - **Spelling contracts with English keywords.** There is no `requires` / `ensures` / `invariant` keyword. Use `|:`, `|=`, `@result`, `@entry(...)`, and `|: { ... }` for invariants. Foreign procedures use `@foreign_assumes(...)` / `@foreign_ensures(...)`.
-- **Confusing the `|:` forms.** `|: P` is a *contract clause* (precondition `P`); `|: { P }` is an *invariant* (type or loop); `|: @foreign_assumes(P)` is a *foreign* contract; `type T = U |: { P }` is a *refinement type*; and on a type or generic parameter declaration, `|: Bitcopy(T)` / `Clone(T)` / `Drop(T)` / `FfiSafe(T)` is a *predicate clause*. The brace, the leading `@foreign_*` keyword, and the position disambiguate — the parser keys on exactly these.
+- **Confusing the `|:` forms.** `|: P` is a *contract clause* (precondition `P`); `|: { P }` is an *invariant* (type or loop); `|: @foreign_assumes(P)` is a *foreign* contract; `type T = U |: { P }` is a *refinement type*; and on a type or generic parameter declaration, `|: Bitcopy(T)` / `Clone(T)` / `Drop(T)` / `FfiSafe(T)` is a *predicate clause*. The brace, the leading `@foreign_*` decorator spelling, and the position disambiguate — the parser keys on exactly these token sequences.
 - **Misplacing the clause.** A contract clause sits **after** the signature (and, for a free procedure, after any `predicate_clause`) and **before** the body. A type invariant sits **after** the closing brace of the declaration body. A loop invariant sits **between** the condition and the body.
 - **Malformed receivers.** A method receiver is a shorthand — `~` (const), `~!` (unique/mutable), or `~%` (shared) — **or** an explicit `self : Type`; you cannot combine them (`~! self` is not a receiver). Inside the body the receiver is named `self`; a `~!` receiver is required for any method that mutates `self`, including one whose postcondition compares `self.field` against `@entry(self.field)`.
 - **Impure or non-`bool` predicates.** A predicate that calls a capability-taking procedure, mutates, allocates, spawns, or yields is impure (`E-SEM-2802` / `E-SEM-3004`); a predicate that does not have type `bool` is `E-SEM-2808`. Keep predicates to pure comparisons, boolean combinators, field / index access, casts, and pure calls.

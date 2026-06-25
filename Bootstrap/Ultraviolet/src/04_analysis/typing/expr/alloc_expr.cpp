@@ -1,9 +1,9 @@
 // =================================================================
 // File: 04_analysis/typing/expr/alloc_expr.cpp
-// Construct: Internal Allocation Expression Type Checking
+// Construct: Region Allocation Expression Type Checking
 // Spec Section: 16.8.4
-// Spec Rules: T-Internal-Alloc-Explicit, T-Internal-Alloc-Implicit, Alloc-Region-NotFound-Err,
-//             Alloc-Implicit-NoRegion-Err
+// Spec Rules: T-Internal-Alloc-Explicit, T-New-CurrentRegion, Alloc-Region-NotFound-Err,
+//             New-NoActiveRegion-Err
 // =================================================================
 
 #include "04_analysis/typing/expr/alloc_expr.h"
@@ -19,9 +19,9 @@ namespace {
 
 static inline void SpecDefsAlloc() {
   SPEC_DEF("T-Internal-Alloc-Explicit", "16.8.4");
-  SPEC_DEF("T-Internal-Alloc-Implicit", "16.8.4");
+  SPEC_DEF("T-New-CurrentRegion", "16.8.4");
   SPEC_DEF("Alloc-Region-NotFound-Err", "16.8.4");
-  SPEC_DEF("Alloc-Implicit-NoRegion-Err", "16.8.4");
+  SPEC_DEF("New-NoActiveRegion-Err", "16.8.4");
 }
 
 }  // namespace
@@ -68,11 +68,10 @@ ExprTypeResult TypeAllocExprImpl(const ScopeContext& ctx,
     return result;
   }
 
-  // Implicit allocation remains available to internal AST producers.
   const auto region = InnermostActiveRegion(env);
   if (!region.has_value()) {
     SPEC_RULE("diag.16.EffectfulCoreExpressions");
-    SPEC_RULE("Alloc-Implicit-NoRegion-Err");
+    SPEC_RULE("New-NoActiveRegion-Err");
     result.diag_id = "E-MEM-3021";
     return result;
   }
@@ -82,8 +81,8 @@ ExprTypeResult TypeAllocExprImpl(const ScopeContext& ctx,
     result.diag_id = inner.diag_id;
     return result;
   }
-  SPEC_RULE("T-Internal-Alloc-Implicit");
-  SPEC_RULE("rule.16.T-Internal-Alloc-Implicit");
+  SPEC_RULE("T-New-CurrentRegion");
+  SPEC_RULE("rule.16.T-New-CurrentRegion");
   result.ok = true;
   result.type = inner.type;
   return result;

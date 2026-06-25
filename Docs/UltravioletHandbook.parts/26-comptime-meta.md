@@ -24,7 +24,7 @@ comptime_expr           ::= attribute_list? "comptime" "{" expression "}"
 comptime_if             ::= "comptime" "if" expression block_expr ("else" (comptime_if | block_expr))?
 comptime_loop           ::= "comptime" "loop" pattern (":" type)? "in" expression block_expr
 comptime_procedure_decl ::= attribute_list? "comptime" visibility? "procedure" identifier generic_params? signature contract_clause? block_expr
-type_literal            ::= "Type" "::<" type ">"
+type_literal            ::= "Type" "::" "<" type ">"
 ```
 
 Note the precise distinctions:
@@ -33,7 +33,7 @@ Note the precise distinctions:
 - `comptime` followed by `{ expression }` in expression position parses as a **compile-time expression** (`CtExpr`). The brace wraps a single `expression`, not a statement sequence.
 - `comptime if` and `comptime loop` are *expression* forms (they appear in `ParsePrimary`/`ParseExpr`), but only the selected branch / unrolled body survives into the program.
 - `comptime procedure` is a top-level item (`comptime_procedure_decl` is produced by `ParseItem`). The `comptime` keyword precedes the optional `visibility`.
-- `Type::<T>` is a reflection literal; note the exact token sequence `Type` `::<` `type` `>`. It is detailed in §26.3.
+- `Type::<T>` is a reflection literal; note the exact token sequence `Type` `::` `<` `type` `>`. It is detailed in §26.3.
 
 The `comptime if` / `else comptime if` chain is exactly the grammar above: each `else` may continue with another `comptime if` or terminate in a plain `block_expr`.
 
@@ -371,7 +371,7 @@ Reflection introspects types and members at compile time. It is **pure Phase 2 e
 #### 26.3.1 The `Type::<T>` Literal
 
 ```ebnf
-type_literal ::= "Type" "::<" type ">"
+type_literal ::= "Type" "::" "<" type ">"
 ```
 
 ```text
@@ -379,7 +379,7 @@ type_literal ::= "Type" "::<" type ">"
 (CtEval-TypeLiteral) Γ ⊢ T wf   ⟹   CtEval(Ξ, Φ, TypeLiteralExpr(T)) ⇓ (CtType(T), Ξ, Φ)
 ```
 
-`Type::<T>` reifies a well-formed type `T` into a compile-time `Type` value. An ill-formed `T` is `E-CTE-0410`; using `Type::<…>` in a runtime context is `E-CTE-0411`. The exact token sequence is `Type` `::<` `T` `>` — the operator is `::<` (parsed as `::` followed by `<`), not a bare `<`.
+`Type::<T>` reifies a well-formed type `T` into a compile-time `Type` value. An ill-formed `T` is `E-CTE-0410`; using `Type::<…>` in a runtime context is `E-CTE-0411`. The exact token sequence is `Type` `::` `<` `T` `>`; `::<` is a source spelling over `::` followed by `<`, not a single operator token and not a bare `<`.
 
 #### 26.3.2 Categories
 
@@ -450,7 +450,7 @@ quote_expr     ::= "quote" "{" quoted_content "}"
 quote_type     ::= "quote" "type" "{" type "}"
 quote_pattern  ::= "quote" "pattern" "{" pattern "}"
 quoted_content ::= expression | statement | top_level_item
-splice_expr    ::= "$(" expression ")"
+splice_expr    ::= "$" "(" expression ")"
 splice_ident   ::= "$" identifier
 ```
 
@@ -476,7 +476,7 @@ ResolveQuoteKind(QuoteNode(⊥, body, _), T_exp)  = kind   if ExpectedAstKind(T_
 
 #### 26.4.3 Splicing Rules
 
-`$(e)` and `$ident` are valid **only inside a quoted token slice** (`E-CTE-0233` otherwise). The compile-time type of the splice source MUST satisfy `SpliceCompat` for the surrounding quoted position (`E-CTE-0230` otherwise; `E-CTE-0231` if the splice expression is not compile-time evaluable):
+`$(e)` and `$ident` are valid **only inside a quoted token slice** (`E-CTE-0233` otherwise). Both are `$` decorator spellings over ordinary following tokens. The compile-time type of the splice source MUST satisfy `SpliceCompat` for the surrounding quoted position (`E-CTE-0230` otherwise; `E-CTE-0231` if the splice expression is not compile-time evaluable):
 
 ```text
 SpliceCompat(Expr, T)       ⇔ T = Ast ∨ T = Ast::Expr ∨ CtLiteralType(T)

@@ -1457,7 +1457,7 @@ ResExprResult ResolveExpr(ResolveContext& ctx,
           if (node.region_opt.has_value()) {
             SPEC_RULE("ResolveExpr-Internal-Alloc-Explicit");
           } else {
-            SPEC_RULE("ResolveExpr-Internal-Alloc-Implicit");
+            SPEC_RULE("ResolveExpr-New");
           }
           return {true, std::nullopt, std::nullopt,
                   std::make_shared<ast::Expr>(std::move(out))};

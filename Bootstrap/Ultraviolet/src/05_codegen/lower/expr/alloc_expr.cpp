@@ -1,9 +1,10 @@
 // =============================================================================
-// Expression Lowering: Internal AllocExpr
+// Expression Lowering: Region AllocExpr
 // =============================================================================
 //
 // SPEC REFERENCE: Docs/SPECIFICATION.md Section 16.8.6 (Expression Lowering)
-//   - (Lower-Internal-AllocExpr)
+//   - (Lower-New-CurrentRegion)
+//   - (Lower-Internal-Alloc-Explicit)
 //     Gamma |- LowerExpr(e) => <IR_e, v>
 //     Gamma |- LowerExpr(AllocExpr(r_opt, e)) => <SeqIR(IR_e, AllocIR(r_opt, v)), v_alloc>
 //
@@ -79,9 +80,9 @@ std::once_flag g_active_runtime_region_obligation_once;
 }  // namespace
 
 // =============================================================================
-// LowerAllocExpr - Lower an internal allocation expression to IR
+// LowerAllocExpr - Lower a region allocation expression to IR
 // =============================================================================
-// SPEC: (Lower-Internal-AllocExpr)
+// SPEC: (Lower-New-CurrentRegion), (Lower-Internal-Alloc-Explicit)
 //   Gamma |- LowerExpr(e) => <IR_e, v>
 //   Gamma |- LowerExpr(AllocExpr(r_opt, e)) => <SeqIR(IR_e, AllocIR(r_opt, v)), v_alloc>
 //
@@ -100,8 +101,13 @@ std::once_flag g_active_runtime_region_obligation_once;
 LowerResult LowerAllocExpr(const ast::Expr& expr,
                            const ast::AllocExpr& alloc,
                            LowerCtx& ctx) {
-    SPEC_RULE("Lower-Internal-AllocExpr");
-    SPEC_RULE("rule.16.Lower-Internal-AllocExpr");
+    if (alloc.region_opt.has_value()) {
+        SPEC_RULE("Lower-Internal-Alloc-Explicit");
+        SPEC_RULE("rule.16.Lower-Internal-Alloc-Explicit");
+    } else {
+        SPEC_RULE("Lower-New-CurrentRegion");
+        SPEC_RULE("rule.16.Lower-New-CurrentRegion");
+    }
 
     // The allocated value is consumed by AllocIR and stored into the target
     // region. Its top-level value must remain owned by the allocation result.

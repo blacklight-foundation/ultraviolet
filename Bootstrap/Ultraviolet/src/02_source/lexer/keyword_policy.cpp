@@ -55,15 +55,15 @@ bool IsFixedIdentTok(const Token& tok, std::string_view s) {
   return IsIdentTok(tok) && tok.lexeme == s && IsFixedIdentifier(s);
 }
 
-// Contextual keywords: "in", "key", "wait"
+// Contextual keywords: "in", "key", "wait", "new"
 // NOT reserved; identifier in most contexts
 // These are valid identifiers except in specific syntactic positions
 bool IsCtxKeyword(std::string_view s) {
-  return s == "in" || s == "key" || s == "wait";
+  return s == "in" || s == "key" || s == "wait" || s == "new";
 }
 
 // Check token is contextual keyword
-// Token must be Identifier AND lexeme in {in, key, wait}
+// Token must be Identifier AND lexeme in {in, key, wait, new}
 bool Ctx(const Token& tok, std::string_view s) {
   return IsIdentTok(tok) && tok.lexeme == s && IsCtxKeyword(s);
 }
