@@ -340,7 +340,7 @@ std::vector<TypeRef> SortUnionMembers(const std::vector<TypeRef>& members);
 std::vector<TypePath> TypePaths(const Type& type);
 std::vector<TypePath> TypePaths(const TypeRef& type);
 
-// UVX Extension: Async type helpers (§19.1)
+// UVX Extension: Async type helpers (§21.1)
 
 /// Returns true if the type is an async type (Async<...> or a type alias thereof).
 /// This checks for TypePathType or TypeModalState with path ["Async"], or

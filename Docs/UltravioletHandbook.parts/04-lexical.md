@@ -481,7 +481,7 @@ Operators and punctuators are two disjoint token sets (`OperatorSet ∩ Punctuat
 &&   ||   !
 &    |    ^    <<   >>
 =    +=   -=   *=   /=   %=   &=   |:   ^=   <<=  >>=
-:=   <:   ..   ..=  |=
+:=   <:   ..   ..=  |=   =>
 ->   ::   ~    ~>   ~!   ~%
 ?    #    @    $
 ```

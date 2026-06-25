@@ -2155,7 +2155,7 @@ UniverseProtectedPhase = Phase3
 TokenKind ∈ {Identifier, Keyword(k), IntLiteral, FloatLiteral, StringLiteral, CharLiteral, BoolLiteral, NullLiteral, Operator(o), Punctuator(p), Newline, Unknown}
 
 **Operator Set.**
-OperatorSet = {"+", "-", "*", "/", "%", "**", "==", "!=", "<", "<=", ">", ">=", "&&", "||", "!", "&", "|", "^", "<<", ">>", "=", "+=", "-=", "*=", "/=", "%=", "&=", "|:", "^=", "<<=", ">>=", ":=", "<:", "..", "..=", "|=", "->", "::", "~", "~>", "~!", "~%", "?", "#", "@", "$"}
+OperatorSet = {"+", "-", "*", "/", "%", "**", "==", "!=", "<", "<=", ">", ">=", "&&", "||", "!", "&", "|", "^", "<<", ">>", "=", "+=", "-=", "*=", "/=", "%=", "&=", "|:", "^=", "<<=", ">>=", ":=", "<:", "..", "..=", "|=", "=>", "->", "::", "~", "~>", "~!", "~%", "?", "#", "@", "$"}
 
 **Punctuator Set.**
 PunctuatorSet = {"(", ")", "[", "]", "{", "}", ",", ":", ";", "."}
@@ -4224,7 +4224,7 @@ ClassMethodBindCheck(m, Cl, md) ⇓ ok ⇔ md.body_opt = body ∧ BindCheck(m, C
 StateMethodBindCheck(m, M, S, md) ⇓ ok ⇔ md.body = body ∧ BindCheck(m, StateMethodParams(M, S, md), body) ⇓ ok
 TransitionBindCheck(m, M, S, tr) ⇓ ok ⇔ tr.body = body ∧ BindCheck(m, TransitionParams(M, S, tr), body) ⇓ ok
 
-BindDiagRefs = {"8.2", "8.7", "8.10"}
+BindDiagRefs = {"6.6", "8.5", "10.4.7", "15.10"}
 
 This chapter defines only the environments and helper operations. Feature-specific `BJudgment` clauses are owned by the consuming chapters.
 
@@ -11963,7 +11963,7 @@ PtrState(σ, v_ptr) = `Expired`
 Rules **(Size-Ptr)**, **(Align-Ptr)**, **(Layout-Ptr)** are defined once by §24.2.2.
 
 sizeof(`Ptr<T>`) = sizeof(`usize`)    alignof(`Ptr<T>`) = alignof(`usize`)
-PtrDiagRefs = {"8.10"}
+PtrDiagRefs = {"13.8.7", "16.1.7"}
 
 NicheSet(T) = {LEBytes(0, PtrSize)} ⇔ ∃ U. T = TypePtr(U, `Valid`)
 NicheSet(T) = ∅ ⇔ ¬ ∃ U. T = TypePtr(U, `Valid`)
@@ -24943,7 +24943,7 @@ proc = CtProc(attrs_opt, vis, name, gen_params_opt, params, ret_opt, contract_op
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ proc : wf
 
-Compile-time procedure contracts use the ordinary `contract_clause` surface of §14.6. At each compile-time call site, the precondition is evaluated before body execution and the postcondition is evaluated on the returned value. If any evaluated contract predicate is `false`, the call is ill-formed.
+Compile-time procedure contracts use the ordinary `contract_clause` surface of §15.4. At each compile-time call site, the precondition is evaluated before body execution and the postcondition is evaluated on the returned value. If any evaluated contract predicate is `false`, the call is ill-formed.
 
 Compile-time procedures MUST be callable only from compile-time contexts. Runtime expressions and runtime procedure bodies MUST NOT name, take the address of, store, or call a compile-time procedure.
 
@@ -29413,7 +29413,7 @@ A conforming implementation MUST satisfy all of the following:
 
 ReactorJudg = {ReactorRun(v_reactor, f) ⇓ r, ReactorRegister(v_reactor, f) ⇓ h}
 
-`ReactorRun` and `ReactorRegister` are runtime host-primitive relations that interface the async model (§19) with a concrete event loop. The `ReactorRun` relation yields an `Outcome<…>` value: `r` is `Outcome::Value(result)` on normal completion of the driven future and `Outcome::Error(error)` on failure, so `Reactor::run` produces an `Outcome` consistent with `sync`, `race`, and `all`.
+`ReactorRun` and `ReactorRegister` are runtime host-primitive relations that interface the async model (§21) with a concrete event loop. The `ReactorRun` relation yields an `Outcome<…>` value: `r` is `Outcome::Value(result)` on normal completion of the driven future and `Outcome::Error(error)` on failure, so `Reactor::run` produces an `Outcome` consistent with `sync`, `race`, and `all`.
 
 **(Prim-Reactor-Run)**
 Γ ⊢ ReactorRun(v_reactor, f) ⇓ r

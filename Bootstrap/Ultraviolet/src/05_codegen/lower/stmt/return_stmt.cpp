@@ -229,7 +229,7 @@ IRPtr LowerReturnStmt(const ast::ReturnStmt& stmt,
     ctx.RegisterValueType(return_value, value_type);
   }
 
-  // Section 19.1.3 Async procedure return handling
+  // Section 21.1.3 Async procedure return handling
   // If the procedure returns an async type, wrap the return value in @Completed
   const analysis::ScopeContext& scope = ScopeForLowering(ctx);
   if (analysis::AsyncSigOf(scope, ctx.proc_ret_type).has_value()) {

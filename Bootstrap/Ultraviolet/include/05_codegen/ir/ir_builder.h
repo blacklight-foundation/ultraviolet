@@ -363,7 +363,7 @@ inline IRPtr MakeWait(
 }
 
 // =============================================================================
-// Async Operation Builders (§19)
+// Async Operation Builders (§21)
 // =============================================================================
 
 /// Create an IR node for yield expression.

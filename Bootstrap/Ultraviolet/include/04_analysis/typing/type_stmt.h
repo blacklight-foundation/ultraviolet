@@ -453,7 +453,7 @@ ExprTypeResult TypeDispatchExpr(const ScopeContext& ctx,
                                 const IdentTypeFn& type_ident,
                                 const PlaceTypeFn& type_place);
 
-// UVX Extension: Async expressions (§19)
+// UVX Extension: Async expressions (§21)
 ExprTypeResult TypeYieldExpr(const ScopeContext& ctx,
                              const StmtTypeContext& type_ctx,
                              const ast::YieldExpr& expr,

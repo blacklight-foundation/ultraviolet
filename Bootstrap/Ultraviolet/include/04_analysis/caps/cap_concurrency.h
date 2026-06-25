@@ -1,13 +1,13 @@
 #pragma once
 
-// UVX Extension: Concurrency & Async Built-in Types (§18, §19)
+// UVX Extension: Concurrency & Async Built-in Types (§20, §21)
 //
 // This header declares the built-in types for structured concurrency and async:
-// - ExecutionDomain class (§18.2.4)
-// - Spawned<T> modal type (§18.4.2)
-// - CancelToken modal type (§18.6.1)
-// - Tracked<T, E> modal type (§5.4.4)
-// - Async<TOut, TIn, TResult, TError> modal type and aliases (§5.4.5)
+// - ExecutionDomain class (§20.2.4)
+// - Spawned<T> modal type (§20.4.3)
+// - CancelToken modal type (§20.6.3)
+// - Tracked<T, E> modal type (§21.2.5)
+// - Async<TOut, TIn, TResult, TError> modal type and aliases (§21.1)
 
 #include <optional>
 #include <string>
@@ -147,7 +147,7 @@ ast::TypeAliasDecl BuildExchangeAliasDecl();
 // Build ExecutionDomain class declaration
 ast::ClassDecl BuildExecutionDomainClassDecl();
 
-// Reactor capability class (§5.9.2, §19.4)
+// Reactor capability class (§14.9, §24.6.4)
 bool IsReactorClassPath(const ast::ClassPath& path);
 ast::ClassDecl BuildReactorClassDecl();
 
