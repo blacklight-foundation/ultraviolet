@@ -235,60 +235,6 @@ void ObserveImmediateTupleValueBits(
   }
 }
 
-std::string EnumPayloadBitsPayload(std::string_view payload_kind,
-                                   const ast::VariantDecl &variant,
-                                   const analysis::layout::EnumLayout &layout,
-                                   std::size_t member_count)
-{
-  std::string payload = "source=LLVMEmitter.EnumLit";
-  payload += ";payload_kind=";
-  payload += payload_kind;
-  payload += ";pad_bytes=true";
-  payload += ";variant=";
-  payload += variant.name;
-  payload += ";payload_size=";
-  payload += std::to_string(layout.payload_size);
-  payload += ";member_count=";
-  payload += std::to_string(member_count);
-  return payload;
-}
-
-std::string EnumValueBitsPayload(std::string_view payload_kind,
-                                 const ast::VariantDecl &variant,
-                                 std::uint64_t disc,
-                                 const analysis::layout::EnumLayout &layout,
-                                 std::uint64_t disc_size,
-                                 std::size_t member_count)
-{
-  const std::uint64_t payload_offset =
-      AlignUpValueBits(disc_size, layout.payload_align);
-  std::string payload = "source=LLVMEmitter.EnumLit";
-  payload += ";enum_layout=true";
-  payload += ";enum_payload_bits=true";
-  payload += ";tagged_bits=true";
-  payload += ";payload_kind=";
-  payload += payload_kind;
-  payload += ";variant=";
-  payload += variant.name;
-  payload += ";disc=";
-  payload += std::to_string(disc);
-  payload += ";disc_type=";
-  payload += layout.disc_type;
-  payload += ";disc_size=";
-  payload += std::to_string(disc_size);
-  payload += ";payload_size=";
-  payload += std::to_string(layout.payload_size);
-  payload += ";payload_align=";
-  payload += std::to_string(layout.payload_align);
-  payload += ";payload_offset=";
-  payload += std::to_string(payload_offset);
-  payload += ";size=";
-  payload += std::to_string(layout.layout.size);
-  payload += ";member_count=";
-  payload += std::to_string(member_count);
-  return payload;
-}
-
 } // namespace
 
   // Evaluate an IRValue to an llvm::Value*
@@ -3935,29 +3881,17 @@ std::string EnumValueBitsPayload(std::string_view payload_kind,
 
         auto record_enum_value_bits = [&]()
         {
-          if (!enum_payload_complete || !enum_disc_size.has_value() ||
-              !core::Conformance::Enabled())
+          if (!enum_payload_complete || !enum_disc_size.has_value())
           {
             return;
           }
-          core::Conformance::Record(
-              "def.EnumPayloadBits",
-              std::nullopt,
-              EnumPayloadBitsPayload(
-                  enum_payload_kind,
-                  *variant,
-                  *enum_layout,
-                  enum_payload_member_count));
-          core::Conformance::Record(
-              "def.EnumValueBits",
-              std::nullopt,
-              EnumValueBitsPayload(
-                  enum_payload_kind,
-                  *variant,
-                  *disc,
-                  *enum_layout,
-                  *enum_disc_size,
-                  enum_payload_member_count));
+          RecordEnumValueBitsConformance(
+              enum_payload_kind,
+              *variant,
+              *disc,
+              *enum_layout,
+              *enum_disc_size,
+              enum_payload_member_count);
         };
 
         llvm::Type *enum_ty = enum_type ? GetLLVMType(enum_type) : nullptr;

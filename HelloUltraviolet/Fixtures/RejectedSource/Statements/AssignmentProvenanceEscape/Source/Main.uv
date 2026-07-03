@@ -3,7 +3,7 @@
 public procedure assignmentProvenanceEscapeReference() -> i32 {
     var escaped: i32 = 0
     region {
-        escaped = ^1
+        escaped = new 1
     }
     return escaped
 }

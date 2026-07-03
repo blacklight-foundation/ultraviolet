@@ -1823,27 +1823,23 @@ std::string DropGlueSym(const analysis::TypeRef& type, LowerCtx& ctx) {
 IRPtr DropGlueIR(const analysis::TypeRef& type, LowerCtx& ctx) {
   SPEC_RULE("DropGlueIR");
 
-  // The drop glue reads the value from the data pointer and drops it
   IRValue data_ptr;
   data_ptr.kind = IRValue::Kind::Local;
   data_ptr.name = "data";
 
-  // Read the value from the pointer
-  IRReadPtr read;
-  read.ptr = data_ptr;
+  IRValue stored_value = ctx.FreshTempValue("drop_data");
+  ctx.RegisterValueType(stored_value, type);
+  DerivedValueInfo info;
+  info.kind = DerivedValueInfo::Kind::LoadFromAddr;
+  info.base = data_ptr;
+  ctx.RegisterDerivedValue(stored_value, info);
 
-  IRValue loaded_value;
-  loaded_value = ctx.FreshTempValue("loaded");
-  read.result = loaded_value;
-  ctx.RegisterValueType(loaded_value, type);
-
-  // Emit drop for the loaded value
   IRValue panic_out;
   panic_out.kind = IRValue::Kind::Local;
   panic_out.name = std::string(kPanicOutName);
-  IRPtr drop_ir = EmitDropImpl(type, loaded_value, ctx, false, panic_out);
+  IRPtr drop_ir = EmitDropImpl(type, stored_value, ctx, false, panic_out);
 
-  return SeqIR({MakeIR(std::move(read)), drop_ir});
+  return drop_ir;
 }
 
 ProcIR EmitDropGlue(const analysis::TypeRef& type, LowerCtx& ctx) {

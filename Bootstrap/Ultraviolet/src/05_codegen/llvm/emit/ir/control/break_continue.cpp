@@ -21,7 +21,8 @@ void IRInstructionVisitor::operator()(const IRBreak &brk) const
     {
       target_ty = emitter.GetLLVMType(break_result_type);
     }
-    if (target_ty && !target_ty->isVoidTy())
+    if (target_ty && !target_ty->isVoidTy() &&
+        !IsZeroSizedLLVMType(emitter, target_ty))
     {
       analysis::TypeRef source_type = analysis::MakeTypePrim("()");
       llvm::Value *value = nullptr;

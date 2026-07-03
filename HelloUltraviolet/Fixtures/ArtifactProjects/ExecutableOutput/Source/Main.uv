@@ -29,12 +29,12 @@ internal procedure executableOutputFuture(value: i32) -> Future<i32, bool> {
     return value
 }
 
-internal procedure executableOutputFutureValue(value: i32 | bool, expected: i32) -> bool {
+internal procedure executableOutputFutureValue(value: Outcome<i32, bool>, expected: i32) -> bool {
     return if value is {
-        actual: i32 {
+        Outcome::Value(actual) {
             actual == expected
         }
-        failure: bool {
+        Outcome::Error(failure) {
             false
         }
     }
@@ -200,7 +200,7 @@ internal procedure executableOutputDomainRuntimeFailureCode(
 internal procedure executableOutputRuntimeFailureCode(
     context: ExecutableOutputContext,
     current_directory: string@View,
-    reactor_value: i32 | bool,
+    reactor_value: Outcome<i32, bool>,
     resolution: Duration,
     io_ok: bool,
     system_ok: bool,
@@ -259,7 +259,7 @@ public procedure main(context: ExecutableOutputContext) -> i32 {
     let _ = heap
     let monotonic: $MonotonicTime = context.primary.time~>monotonic()
     let resolution: Duration = monotonic~>resolution()
-    let reactor_value: i32 | bool =
+    let reactor_value: Outcome<i32, bool> =
         context.primary.reactor~>run(executableOutputFuture(7))
     let current_directory: string@View = context.primary.sys~>current_directory()
     let io_ok: bool = context.primary.io~>exists(current_directory) &&

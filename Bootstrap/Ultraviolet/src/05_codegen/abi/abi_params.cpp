@@ -58,6 +58,12 @@ std::optional<PassKind> ABIParam(const analysis::ScopeContext& ctx,
     return std::nullopt;
   }
 
+  if (*size == 0) {
+    SPEC_RULE("ABI-Param-ByValue-ZST");
+    SPEC_RULE("rule.24.ABI-Param-ByValue-ZST");
+    return PassKind::ByValue;
+  }
+
   if (policy == ABIParamPolicy::ModeAware) {
     if (!mode.has_value()) {
       SPEC_RULE("ABI-Param-ByRef-Alias");

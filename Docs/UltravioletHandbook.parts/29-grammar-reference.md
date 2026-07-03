@@ -101,7 +101,7 @@ char_type      ::= "char"
 unit_type      ::= "(" ")"
 never_type     ::= "!"
 
-tuple_type       ::= "(" ")" | "(" type ";)" | "(" type ("," type)+ ")"
+tuple_type       ::= "(" ")" | "(" type ";" ")" | "(" type ("," type)+ ")"
 array_type       ::= "[" type ";" expression "]"
 slice_type       ::= "[" type "]"
 union_type       ::= non_union_type ("|" non_union_type)+
@@ -155,7 +155,7 @@ state_name          ::= identifier
 **Semantics and pitfalls of note.**
 
 - A `type` is an optional `permission` (`const`, `unique`, or `shared`), then a non-permission type, then an optional `refinement_clause`. When no permission is written, `const` is the default. Permissions and binding state are covered in Ch. "Permissions and Binding State".
-- **The one-element tuple uses `;)`**: `(T;)` is a single-element tuple type, distinct from `(T)` (a parenthesized type) and `()` (the unit type). The two-or-more form is `(A, B)`, `(A, B, C)`, etc.
+- **The one-element tuple uses a trailing `;` before `)`**: `(T;)` is a single-element tuple type, distinct from `(T)` (a parenthesized type) and `()` (the unit type). The two-or-more form is `(A, B)`, `(A, B, C)`, etc.
 - `array_type` `[T; N]` has a *length expression* `N`; `slice_type` `[T]` is unsized.
 - `never_type` is the single token `!`.
 - `string`/`bytes` carry an optional state tag `@Managed` or `@View`.

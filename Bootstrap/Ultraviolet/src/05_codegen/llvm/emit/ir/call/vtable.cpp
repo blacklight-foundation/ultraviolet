@@ -109,29 +109,10 @@ void IRInstructionVisitor::operator()(const IRCallVTable &call) const
       llvm::ConstantInt::get(i64_ty, vtable_slot_index));
   llvm::Value *fn_ptr = builder.CreateLoad(ptr_ty, slot_ptr);
 
-  // Build call arguments: (data_ptr, ...user_args_including_panic_out)
-  // Note: call.args already includes the panic out-parameter appended by
-  // method_call.cpp, so we must NOT add it again here.
-  std::vector<llvm::Value *> call_args;
-  call_args.push_back(data_ptr);
-  for (const auto &arg : call.args)
-  {
-    if (arg.kind == IRValue::Kind::Local &&
-        arg.name == std::string(kPanicOutName))
-    {
-      if (llvm::Value *panic_slot = emitter.GetLocal(std::string(kPanicOutName)))
-      {
-        call_args.push_back(panic_slot);
-        continue;
-      }
-    }
-    call_args.push_back(EvaluateOrDefault(arg));
-  }
-
   if (debug_vtable_call)
   {
     std::fprintf(stderr, "[vtable-call]   call_args count=%zu\n",
-                 call_args.size());
+                 call.args.size() + 1);
   }
 
   // Build the function type: (ptr, arg_types...) -> ret_ty
@@ -233,22 +214,72 @@ void IRInstructionVisitor::operator()(const IRCallVTable &call) const
                  rty_str.c_str(), call.ret_type ? 1 : 0);
   }
 
-  std::vector<llvm::Type *> param_tys;
-  param_tys.reserve(call_args.size());
-  for (llvm::Value *arg : call_args)
+  auto emit_raw_vtable_call = [&]() -> llvm::Value *
   {
-    param_tys.push_back(arg ? arg->getType() : ptr_ty);
-  }
-  llvm::FunctionType *fn_ty = llvm::FunctionType::get(ret_ty, param_tys, false);
+    std::vector<llvm::Value *> raw_call_args;
+    raw_call_args.push_back(data_ptr);
+    for (const auto &arg : call.args)
+    {
+      if (arg.kind == IRValue::Kind::Local &&
+          arg.name == std::string(kPanicOutName))
+      {
+        if (llvm::Value *panic_slot =
+                emitter.GetLocal(std::string(kPanicOutName)))
+        {
+          raw_call_args.push_back(panic_slot);
+          continue;
+        }
+      }
+      raw_call_args.push_back(EvaluateOrDefault(arg));
+    }
 
-  auto emit_vtable_call = [&]() -> llvm::Value *
-  {
-    llvm::CallInst *result = builder.CreateCall(fn_ty, fn_ptr, call_args);
+    std::vector<llvm::Type *> param_tys;
+    param_tys.reserve(raw_call_args.size());
+    for (llvm::Value *arg : raw_call_args)
+    {
+      param_tys.push_back(arg ? arg->getType() : ptr_ty);
+    }
+    llvm::FunctionType *fn_ty =
+        llvm::FunctionType::get(ret_ty, param_tys, false);
+    llvm::CallInst *result = builder.CreateCall(fn_ty, fn_ptr, raw_call_args);
     if (result && !result->getType()->isVoidTy())
     {
       return result;
     }
     return nullptr;
+  };
+
+  auto emit_vtable_call = [&]() -> llvm::Value *
+  {
+    if (call.ret_type && !call.params.empty())
+    {
+      IRParam receiver_param;
+      receiver_param.name = "__dyn_receiver";
+      receiver_param.stable_name = receiver_param.name;
+      receiver_param.type = analysis::MakeTypeRawPtr(
+          analysis::RawPtrQual::Imm,
+          analysis::MakeTypePrim("u8"));
+
+      std::vector<IRParam> abi_params;
+      abi_params.reserve(call.params.size() + 1);
+      abi_params.push_back(std::move(receiver_param));
+      abi_params.insert(abi_params.end(), call.params.begin(), call.params.end());
+
+      std::vector<llvm::Value *> abi_args(call.args.size() + 1, nullptr);
+      abi_args[0] = data_ptr;
+      return EmitABICall(emitter,
+                         &builder,
+                         fn_ptr,
+                         abi_params,
+                         call.ret_type,
+                         abi_args,
+                         false,
+                         false,
+                         false,
+                         std::nullopt,
+                         &call.args);
+    }
+    return emit_raw_vtable_call();
   };
 
   if (call.check_dynamic_receiver_addr_active)

@@ -674,6 +674,10 @@ bool IsClosureEnvParam(const IRParam& param) {
   return param.name == "__env" && IsRawPtrType(param.type);
 }
 
+bool IsDynamicReceiverParam(const IRParam& param) {
+  return param.name == "__dyn_receiver" && IsRawPtrType(param.type);
+}
+
 ByRefAccessKind ByRefAccess(const analysis::TypeRef& type) {
   return PermOf(type) == analysis::Permission::Unique
              ? ByRefAccessKind::ReadWrite
@@ -1209,13 +1213,6 @@ std::optional<std::vector<llvm::Type*>> ComputeLLVMParamTypes(
       break;
     }
 
-    const auto kind = param_kinds[i];
-    if (kind == PassKind::ByRef) {
-      SPEC_RULE("LLVMArgLower-ByRef");
-      param_types.push_back(emitter.GetOpaquePtr());
-      continue;
-    }
-
     const auto size = ::ultraviolet::analysis::layout::SizeOf(scope, params[i].type);
     if (!size.has_value()) {
       SPEC_RULE("LLVMArgLower-Err");
@@ -1224,6 +1221,13 @@ std::optional<std::vector<llvm::Type*>> ComputeLLVMParamTypes(
 
     if (*size == 0) {
       // Zero-sized types don't need a parameter
+      continue;
+    }
+
+    const auto kind = param_kinds[i];
+    if (kind == PassKind::ByRef) {
+      SPEC_RULE("LLVMArgLower-ByRef");
+      param_types.push_back(emitter.GetOpaquePtr());
       continue;
     }
 
@@ -1649,6 +1653,56 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
     return type;
   };
 
+  constexpr std::size_t kNoSourceArgIndex =
+      static_cast<std::size_t>(-1);
+
+  auto has_source_arg = [&](std::size_t index) -> bool {
+    return source_args && index < source_args->size();
+  };
+
+  auto materialized_arg_value =
+      [&](std::size_t arg_index,
+          std::size_t source_index) -> llvm::Value* {
+    if (arg_index < args.size() && args[arg_index]) {
+      return args[arg_index];
+    }
+    if (has_source_arg(source_index)) {
+      return emitter.EvaluateIRValue((*source_args)[source_index]);
+    }
+    return nullptr;
+  };
+
+  auto derived_source_arg_storage =
+      [&](std::size_t source_index,
+          const analysis::TypeRef& target_type,
+          llvm::Type* target_ll,
+          std::string_view scratch_name,
+          std::size_t param_index) -> llvm::Value* {
+    if (!has_source_arg(source_index) || !target_type || !target_ll) {
+      return nullptr;
+    }
+    LowerCtx* ctx = emitter.GetCurrentCtx();
+    if (!ctx || !ctx->LookupDerivedValue((*source_args)[source_index])) {
+      return nullptr;
+    }
+    const unsigned ordinal = next_scratch_ordinal(target_ll, scratch_name);
+    llvm::AllocaInst* slot =
+        AcquireReusableEntryAlloca(func, target_ll, scratch_name, ordinal);
+    if (!slot) {
+      report_codegen_failure("derived-arg-scratch-allocation", param_index);
+      return nullptr;
+    }
+    if (emit_detail::TryEmitDerivedAggregateToStorage(
+            emitter,
+            builder,
+            slot,
+            (*source_args)[source_index],
+            target_type)) {
+      return slot;
+    }
+    return nullptr;
+  };
+
   auto is_function_value_type = [&](analysis::TypeRef type) -> bool {
     type = analysis::StripPerm(type);
     if (!type) {
@@ -1810,6 +1864,18 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
   // separate source-argument cursor prevents hidden panic-out from shifting any
   // ordinary argument that is passed later in the platform ABI stack area.
   std::size_t source_arg_index = 0;
+  std::size_t source_ir_arg_index = 0;
+
+  auto is_hidden_operand_param =
+      [&](std::size_t param_index, std::size_t arg_index) -> bool {
+    if (!source_args || args.size() <= source_args->size() || arg_index != 0 ||
+        param_index >= params.size()) {
+      return false;
+    }
+    return params[param_index].name == std::string(kHostedEnvParamName) ||
+           params[param_index].name == "__env" ||
+           params[param_index].name == "__dyn_receiver";
+  };
 
   // Map arguments according to ABI
   for (std::size_t i = 0; i < params.size(); ++i) {
@@ -1820,6 +1886,10 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
     }
     if (!abi.param_indices[i].has_value()) {
       if (!is_panic_out_param && source_arg_index < args.size()) {
+        if (!is_hidden_operand_param(i, source_arg_index) &&
+            source_ir_arg_index < (source_args ? source_args->size() : 0)) {
+          ++source_ir_arg_index;
+        }
         ++source_arg_index;
       }
       continue;
@@ -1831,16 +1901,18 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
     }
 
     std::size_t arg_lookup_index = source_arg_index;
+    std::size_t source_lookup_index = kNoSourceArgIndex;
     llvm::Value* arg = nullptr;
     if (is_panic_out_param) {
       arg = implicit_panic_out_arg();
     } else {
       arg = source_arg_index < args.size() ? args[source_arg_index] : nullptr;
       arg_lookup_index = source_arg_index;
+      if (!is_hidden_operand_param(i, source_arg_index) &&
+          source_ir_arg_index < (source_args ? source_args->size() : 0)) {
+        source_lookup_index = source_ir_arg_index++;
+      }
       ++source_arg_index;
-    }
-    if (!arg) {
-      continue;
     }
 
     const ABIArgCarrierKind carrier =
@@ -1848,14 +1920,13 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
                                       : ABIArgCarrierKind::Direct;
 
     if (abi.param_kinds[i] == PassKind::ByRef) {
-      // Need to pass by reference - create temporary if not already a pointer
       llvm::Type* elem_ty = emitter.GetLLVMType(params[i].type);
       bool materialized_slice_storage = false;
       if (analysis::TypeRef slice_arg_type = is_slice_param_type(params[i].type)
                                                 ? params[i].type
-                                                : source_arg_slice_type(arg_lookup_index)) {
+                                                : source_arg_slice_type(source_lookup_index)) {
         if (llvm::Value* slice_storage =
-                materialize_slice_arg(arg_lookup_index,
+                materialize_slice_arg(source_lookup_index,
                                       slice_arg_type,
                                       abi.param_types[idx],
                                       /*prefer_storage=*/true,
@@ -1864,7 +1935,36 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
           materialized_slice_storage = true;
         }
       }
+      if (is_panic_out_param) {
+        if (!arg) {
+          continue;
+        }
+        llvm::Type* target_ty = abi.param_types[idx];
+        if (target_ty && arg->getType() != target_ty) {
+          arg = CoerceValue(builder, arg, target_ty);
+        }
+        call_args[idx] = arg;
+        continue;
+      }
+      if (!materialized_slice_storage && IsRawPtrType(params[i].type) &&
+          elem_ty && elem_ty->isPointerTy() && arg &&
+          arg->getType()->isPointerTy()) {
+        llvm::Value* stripped = arg->stripPointerCasts();
+        if (auto* alloca = llvm::dyn_cast<llvm::AllocaInst>(stripped)) {
+          if (alloca->getAllocatedType() == elem_ty) {
+            llvm::Type* target_ty = abi.param_types[idx];
+            if (target_ty && arg->getType() != target_ty) {
+              arg = CoerceValue(builder, arg, target_ty);
+            }
+            call_args[idx] = arg;
+            continue;
+          }
+        }
+      }
       if (!materialized_slice_storage && is_function_value_type(params[i].type)) {
+        if (!arg) {
+          arg = materialized_arg_value(arg_lookup_index, source_lookup_index);
+        }
         if (llvm::Function* fn = emit_detail::FunctionFromLLVMValue(arg)) {
           const unsigned ordinal =
               next_scratch_ordinal(elem_ty, "function_ref_arg");
@@ -1884,21 +1984,34 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
           continue;
         }
       }
-      if (is_panic_out_param) {
-        llvm::Type* target_ty = abi.param_types[idx];
-        if (target_ty && arg->getType() != target_ty) {
-          arg = CoerceValue(builder, arg, target_ty);
+      if (!materialized_slice_storage) {
+        if (llvm::Value* storage = existing_arg_storage(source_lookup_index, elem_ty)) {
+          call_args[idx] = storage;
+          continue;
         }
-        call_args[idx] = arg;
+        if (llvm::Value* storage =
+                derived_source_arg_storage(source_lookup_index,
+                                           params[i].type,
+                                           elem_ty,
+                                           "byref_arg",
+                                           i)) {
+          call_args[idx] = storage;
+          continue;
+        }
+      }
+      if (!arg) {
+        arg = materialized_arg_value(arg_lookup_index, source_lookup_index);
+      }
+      if (!arg) {
         continue;
       }
       if (!materialized_slice_storage && IsRawPtrType(params[i].type) &&
           elem_ty && elem_ty->isPointerTy()) {
         llvm::Value* raw_ptr_value = nullptr;
         const analysis::TypeRef source_type =
-            source_arg_value_type(arg_lookup_index);
+            source_arg_value_type(source_lookup_index);
         if (IsRawPtrType(source_type)) {
-          if (llvm::Value* storage = existing_arg_storage(arg_lookup_index, elem_ty)) {
+          if (llvm::Value* storage = existing_arg_storage(source_lookup_index, elem_ty)) {
             call_args[idx] = storage;
             continue;
           }
@@ -1927,7 +2040,7 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
         }
       }
       if (!arg->getType()->isPointerTy() || is_null_pointer_arg(arg)) {
-        llvm::Value* storage = existing_arg_storage(arg_lookup_index, elem_ty);
+        llvm::Value* storage = existing_arg_storage(source_lookup_index, elem_ty);
         if (storage) {
           call_args[idx] = storage;
           continue;
@@ -1950,7 +2063,7 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
       }
       if (!materialized_slice_storage) {
         if (llvm::Value* storage =
-                materialize_mismatched_pointer_arg(arg_lookup_index,
+                materialize_mismatched_pointer_arg(source_lookup_index,
                                                    arg,
                                                    elem_ty,
                                                    params[i].type,
@@ -1973,9 +2086,9 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
       bool materialized_slice_storage = false;
       if (analysis::TypeRef slice_arg_type = is_slice_param_type(params[i].type)
                                                 ? params[i].type
-                                                : source_arg_slice_type(arg_lookup_index)) {
+                                                : source_arg_slice_type(source_lookup_index)) {
         if (llvm::Value* slice_storage =
-                materialize_slice_arg(arg_lookup_index,
+                materialize_slice_arg(source_lookup_index,
                                       slice_arg_type,
                                       abi.param_types[idx],
                                       /*prefer_storage=*/true,
@@ -1984,8 +2097,26 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
           materialized_slice_storage = true;
         }
       }
+      if (!materialized_slice_storage) {
+        if (llvm::Value* storage = existing_arg_storage(source_lookup_index, elem_ty)) {
+          ptr_arg = storage;
+        } else if (llvm::Value* storage =
+                       derived_source_arg_storage(source_lookup_index,
+                                                  params[i].type,
+                                                  elem_ty,
+                                                  "indirect_arg",
+                                                  i)) {
+          ptr_arg = storage;
+        }
+      }
+      if (!ptr_arg) {
+        ptr_arg = materialized_arg_value(arg_lookup_index, source_lookup_index);
+      }
+      if (!ptr_arg) {
+        continue;
+      }
       if (!ptr_arg->getType()->isPointerTy() || is_null_pointer_arg(ptr_arg)) {
-        if (llvm::Value* storage = existing_arg_storage(arg_lookup_index, elem_ty)) {
+        if (llvm::Value* storage = existing_arg_storage(source_lookup_index, elem_ty)) {
           ptr_arg = storage;
         } else if (ptr_arg->getType()->isPointerTy()) {
           report_codegen_failure("indirect-null-pointer", i, ptr_arg);
@@ -1995,18 +2126,18 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
           llvm::AllocaInst* slot =
               AcquireReusableEntryAlloca(func, elem_ty, "indirect_arg", ordinal);
           if (slot) {
-            llvm::Value* stored = CoerceValue(builder, arg, elem_ty);
+            llvm::Value* stored = CoerceValue(builder, ptr_arg, elem_ty);
             builder->CreateStore(stored, slot);
             ptr_arg = slot;
           } else {
-            report_codegen_failure("indirect-scratch-allocation", i, arg);
+            report_codegen_failure("indirect-scratch-allocation", i, ptr_arg);
             continue;
           }
         }
       }
       if (!materialized_slice_storage) {
         if (llvm::Value* storage =
-                materialize_mismatched_pointer_arg(arg_lookup_index,
+                materialize_mismatched_pointer_arg(source_lookup_index,
                                                    ptr_arg,
                                                    elem_ty,
                                                    params[i].type,
@@ -2023,15 +2154,21 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
     }
 
     // By value
+    if (!arg) {
+      arg = materialized_arg_value(arg_lookup_index, source_lookup_index);
+    }
+    if (!arg) {
+      continue;
+    }
     llvm::Type* target_ty = abi.param_types[idx];
     analysis::TypeRef slice_arg_type = nullptr;
     if (is_slice_param_type(params[i].type)) {
       slice_arg_type = params[i].type;
     } else {
-      slice_arg_type = source_arg_slice_type(arg_lookup_index);
+      slice_arg_type = source_arg_slice_type(source_lookup_index);
     }
     if (llvm::Value* slice_arg =
-            materialize_slice_arg(arg_lookup_index,
+            materialize_slice_arg(source_lookup_index,
                                   slice_arg_type,
                                   target_ty,
                                   /*prefer_storage=*/false,
@@ -2040,7 +2177,7 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
     }
     if (target_ty && !target_ty->isPointerTy() &&
         arg->getType()->isPointerTy()) {
-      llvm::Value* storage = existing_arg_storage(arg_lookup_index, target_ty);
+      llvm::Value* storage = existing_arg_storage(source_lookup_index, target_ty);
       if (!storage) {
         storage = arg;
       }
@@ -2053,19 +2190,19 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
       }
     }
     const analysis::TypeRef source_value_type =
-        source_arg_value_type(arg_lookup_index);
+        source_arg_value_type(source_lookup_index);
     const bool is_pointer_value_arg =
         (IsRawPtrType(params[i].type) && IsRawPtrType(source_value_type)) ||
         (is_function_value_type(params[i].type) &&
          is_function_value_type(source_value_type));
     if (target_ty && target_ty->isPointerTy() && is_pointer_value_arg &&
         arg->getType()->isPointerTy()) {
-      if (llvm::Value* storage = existing_arg_storage(arg_lookup_index, target_ty)) {
+      if (llvm::Value* storage = existing_arg_storage(source_lookup_index, target_ty)) {
         arg = builder->CreateLoad(target_ty, storage);
       }
     }
     if (IsValidPtrType(params[i].type) && is_null_pointer_arg(arg)) {
-      if (llvm::Value* recovered = recover_pointer_value_arg(arg_lookup_index, target_ty)) {
+      if (llvm::Value* recovered = recover_pointer_value_arg(source_lookup_index, target_ty)) {
         arg = recovered;
       } else {
         report_codegen_failure("valid-pointer-null-value", i, arg);
@@ -2106,14 +2243,31 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
       return;
     }
 
-    const std::size_t released_count =
-        std::min(source_args->size(), params.size());
-    for (std::size_t i = 0; i < released_count; ++i) {
+    std::size_t release_source_index = 0;
+    std::size_t release_arg_index = 0;
+    for (std::size_t i = 0; i < params.size(); ++i) {
+      const bool is_panic_out_param =
+          params[i].name == std::string(kPanicOutName);
+      if (!is_panic_out_param && is_hidden_operand_param(i, release_arg_index)) {
+        ++release_arg_index;
+        continue;
+      }
+      if (!is_panic_out_param) {
+        ++release_arg_index;
+      }
+      if (is_panic_out_param) {
+        continue;
+      }
+      if (release_source_index >= source_args->size()) {
+        break;
+      }
       if (!params[i].mode.has_value()) {
+        ++release_source_index;
         continue;
       }
 
-      emitter.ReleaseMoveConsumedStorage((*source_args)[i]);
+      emitter.ReleaseMoveConsumedStorage((*source_args)[release_source_index]);
+      ++release_source_index;
     }
   };
 
@@ -2589,10 +2743,21 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
     }
 
     auto kind = result.param_kinds[i];
-    if (IsClosureEnvParam(params[i])) {
+    if (IsClosureEnvParam(params[i]) || IsDynamicReceiverParam(params[i])) {
       kind = PassKind::ByValue;
       result.param_kinds[i] = kind;
     }
+
+    const auto size = ::ultraviolet::analysis::layout::SizeOf(scope, params[i].type);
+    if (!size.has_value()) {
+      SPEC_RULE("LLVMArgLower-Err");
+      return invalidate();
+    }
+    if (*size == 0) {
+      result.param_indices[i] = std::nullopt;
+      continue;
+    }
+
     if (kind == PassKind::ByRef) {
       SPEC_RULE("LLVMArgLower-ByRef");
       llvm::Type* llvm_ty = emitter.GetLLVMType(params[i].type);
@@ -2612,16 +2777,6 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
       result.llvm_param_attrs.push_back(std::move(param_attrs));
       result.param_indices[i] = llvm_index++;
       result.param_carriers[i] = ABIArgCarrierKind::Indirect;
-      continue;
-    }
-
-    const auto size = ::ultraviolet::analysis::layout::SizeOf(scope, params[i].type);
-    if (!size.has_value()) {
-      SPEC_RULE("LLVMArgLower-Err");
-      return invalidate();
-    }
-    if (*size == 0) {
-      result.param_indices[i] = std::nullopt;
       continue;
     }
 

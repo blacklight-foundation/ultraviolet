@@ -57,8 +57,8 @@ internal procedure runAsyncCompositionFoldReference() -> bool {
             10,
             |accumulator: i32, value: i32| -> i32 accumulator + value
         )
-    let fold_result: i32 | bool = sync folded
-    return i32BoolUnionIsValue(fold_result, 15)
+    let fold_result: Outcome<i32, bool> = sync folded
+    return i32BoolOutcomeIsValue(fold_result, 15)
 }
 
 internal procedure runAsyncCompositionChainReference() -> bool {
@@ -67,22 +67,22 @@ internal procedure runAsyncCompositionChainReference() -> bool {
             |value: i32| -> Async<(), (), i32, bool>
                 asyncCompositionSharedCompletion(value + 1)
         )
-    let chain_result: i32 | bool = sync chained
-    return i32BoolUnionIsValue(chain_result, 8)
+    let chain_result: Outcome<i32, bool> = sync chained
+    return i32BoolOutcomeIsValue(chain_result, 8)
 }
 
 internal procedure runAsyncCompositionMapCompletionReference() -> bool {
     let mapped: Async<(), (), i32, bool> =
         asyncCompositionCompletes(71)~>map(asyncCompositionKeepUnit)
-    let result: i32 | bool = sync mapped
-    return i32BoolUnionIsValue(result, 71)
+    let result: Outcome<i32, bool> = sync mapped
+    return i32BoolOutcomeIsValue(result, 71)
 }
 
 internal procedure runAsyncCompositionMapFailureReference() -> bool {
     let mapped: Async<(), (), i32, bool> =
         asyncCompositionMayFail(true, 72)~>map(asyncCompositionKeepUnit)
-    let result: i32 | bool = sync mapped
-    return i32BoolUnionIsFailure(result)
+    let result: Outcome<i32, bool> = sync mapped
+    return i32BoolOutcomeIsFailure(result)
 }
 
 internal procedure runAsyncCompositionFilterSkipReference() -> bool {
@@ -143,8 +143,8 @@ internal procedure runAsyncCompositionFoldFailureReference() -> bool {
             10,
             |accumulator: i32, value: i32| -> i32 accumulator + value
         )
-    let result: i32 | bool = sync folded
-    return i32BoolUnionIsFailure(result)
+    let result: Outcome<i32, bool> = sync folded
+    return i32BoolOutcomeIsFailure(result)
 }
 
 internal procedure runAsyncCompositionChainSourceFailureReference() -> bool {
@@ -153,8 +153,8 @@ internal procedure runAsyncCompositionChainSourceFailureReference() -> bool {
             |value: i32| -> Async<(), (), i32, bool>
                 asyncCompositionSharedCompletion(value + 1)
         )
-    let result: i32 | bool = sync chained
-    return i32BoolUnionIsFailure(result)
+    let result: Outcome<i32, bool> = sync chained
+    return i32BoolOutcomeIsFailure(result)
 }
 
 internal procedure runAsyncCompositionChainSuspendedContinuationReference() -> bool {
@@ -163,8 +163,8 @@ internal procedure runAsyncCompositionChainSuspendedContinuationReference() -> b
             |value: i32| -> Async<(), (), i32, bool>
                 asyncCompositionUnitSuspends(value + 1)
         )
-    let result: i32 | bool = sync chained
-    return i32BoolUnionIsValue(result, 89)
+    let result: Outcome<i32, bool> = sync chained
+    return i32BoolOutcomeIsValue(result, 89)
 }
 
 internal procedure runAsyncCompositionCombinatorRuntimeReference() -> bool {

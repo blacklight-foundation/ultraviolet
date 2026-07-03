@@ -185,10 +185,10 @@ A tuple is a fixed-arity, heterogeneous, positionally-indexed product type.
 
 ```ebnf
 tuple_type       ::= "(" ")"
-                   | "(" type ";)"
+                   | "(" type ";" ")"
                    | "(" type ("," type)+ trailing_comma? ")"
 tuple_expr       ::= "(" ")"
-                   | "(" expr ";)"
+                   | "(" expr ";" ")"
                    | "(" expr ("," expr)+ trailing_comma? ")"
 tuple_projection ::= postfix_expr "." int_literal
 ```

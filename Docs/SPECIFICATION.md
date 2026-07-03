@@ -570,7 +570,7 @@ TypeRender(TypePerm(p, T)) = PermLexeme(p) ++ " " ++ TypeRender(T)
 TypeRender(TypeUnion([T_1, …, T_n])) = Join(" | ", [TypeRender(T_1), …, TypeRender(T_n)])
 TypeRender(TypeFunc([⟨m_1, T_1⟩, …, ⟨m_n, T_n⟩], R)) = "(" ++ Join(", ", [ParamRender(⟨m_1, T_1⟩), …, ParamRender(⟨m_n, T_n⟩)]) ++ ") -> " ++ TypeRender(R)
 TypeRender(TypeTuple([])) = "()"
-TypeRender(TypeTuple([T])) = "(" ++ TypeRender(T) ++ ";)"
+TypeRender(TypeTuple([T])) = "(" ++ TypeRender(T) ++ ";" ++ ")"
 TypeRender(TypeTuple([T_1, …, T_n])) = "(" ++ Join(", ", [TypeRender(T_1), …, TypeRender(T_n)]) ++ ")"
 TypeRender(TypeArray(T, e)) = "[" ++ TypeRender(T) ++ "; " ++ ArrayLen(e) ++ "]"
 TypeRender(TypeSlice(T)) = "[" ++ TypeRender(T) ++ "]"
@@ -8982,15 +8982,15 @@ Diagnostics are defined for malformed primitive type syntax and for literal-rang
 
 ```ebnf
 tuple_type       ::= "(" ")"
-                   | "(" type ";)"
+                   | "(" type ";" ")"
                    | "(" type ("," type)+ trailing_comma? ")"
 tuple_expr       ::= "(" ")"
-                   | "(" expr ";)"
+                   | "(" expr ";" ")"
                    | "(" expr ("," expr)+ trailing_comma? ")"
 tuple_projection ::= postfix_expr "." int_literal
 ```
 
-The singleton comma forms `("(" type ",)")` and `("(" expr ",)")` are ill-formed. A trailing comma denotes continuation only and does not create a one-element tuple.
+The singleton comma source forms `(T,)` and `(e,)` are ill-formed. A trailing comma denotes continuation only and does not create a one-element tuple.
 
 #### 12.2.2 Parsing
 
@@ -26118,25 +26118,29 @@ Import-side unwind landing pads are defined in §23.7. This section introduces n
 
 Type-admissibility failures in `FfiSafeType` and by-value FFI use are owned by §23.1.7.
 
-### 23.3 Exported Procedures and Hosted Exports
+### 23.3 Foreign-Callable Procedure Exports
+
+Foreign-callable procedure exports are ordinary procedure declarations made callable from foreign code by an attached export attribute. This parent section routes the two export modes to their normative leaf homes: raw exported procedures are defined by §23.3.1, and hosted exports are defined by §23.3.2. Attribute syntax is owned by §23.4, type admissibility is owned by §23.1, and boundary unwinding is owned by §23.7.
 
 #### 23.3.1 Raw Exported Procedures
 
+##### 23.3.1.1 Syntax
+
 A procedure becomes a raw exported procedure when it carries `#export("abi")`. The attribute syntax is defined in §23.4.1.
 
-#### 23.3.2 Parsing
+##### 23.3.1.2 Parsing
 
 Raw exported procedures are parsed by the ordinary procedure-declaration parser from §15.1.2.
 
 An ordinary `ProcedureDecl` is classified as a raw exported procedure when its attached attribute list contains `#export("abi")` as parsed by §23.4.2.
 
-#### 23.3.3 AST Representation / Form
+##### 23.3.1.3 AST Representation / Form
 
 Raw exported procedures are represented by ordinary `ProcedureDecl(...)` items with `ExportAttr(proc)` defined.
 
 This section introduces no dedicated raw-export AST node beyond `ProcedureDecl` plus the attached `export` attribute.
 
-#### 23.3.4 Static Semantics
+##### 23.3.1.4 Static Semantics
 
 **Raw Exported Procedure.** A Ultraviolet procedure made callable from foreign code via `#export`.
 
@@ -26154,7 +26158,7 @@ proc = ProcedureDecl(_, vis, _, _, _, params, ret_opt, _, _, _, _)    vis = `pub
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ExportSigOk(proc) ⇓ ok
 
-#### 23.3.5 Dynamic Semantics
+##### 23.3.1.5 Dynamic Semantics
 
 Execution of the body follows ordinary procedure semantics. Boundary panic handling is defined by §23.7. When `UnwindMode(proc) = "catch"`, the boundary MUST return `ZeroValue(R)` for the raw exported procedure's return type `R`.
 
@@ -26162,11 +26166,11 @@ For a raw exported procedure `proc` owned by a project `P` satisfying `RawExport
 
 For any shared library project `P`, an ordinary Ultraviolet call that crosses a shared-library link boundary into one externally linked procedure owned by `P` likewise occurs only through one live loaded library image `i` owned by `P`. Before the first such linked call through a newly loaded image, the implementation MUST establish that image by `LibraryImageInitSigma(P, i, σ)` as defined in §24.4.4. Later linked calls through the same live image MUST reuse the same image-owned static state, poison flags, and boundary panic record until unload. On unload of that live image, the implementation MUST execute `LibraryImageDestroySigma(P, i, σ)` exactly once. User-procedure execution for that linked call continues to follow ordinary `ApplyProcSigma` under the image-state interpretation defined by §24.4.4.
 
-#### 23.3.6 Lowering
+##### 23.3.1.6 Lowering
 
 Export-side unwind frames are defined in §23.7. This section introduces no additional lowering rules beyond export ABI selection and external linkage.
 
-#### 23.3.7 Diagnostics
+##### 23.3.1.7 Diagnostics
 
 | Code         | Severity | Detection    | Condition                                        |
 | ------------ | -------- | ------------ | ------------------------------------------------ |
@@ -26175,17 +26179,19 @@ Export-side unwind frames are defined in §23.7. This section introduces no addi
 
 Unsupported export-ABI-string rejection is owned by §23.2.7. Type-admissibility failures in `FfiSafeType` and by-value FFI use are owned by §23.1.7.
 
-#### 23.3.8 Hosted Exports
+#### 23.3.2 Hosted Exports
+
+##### 23.3.2.1 Syntax
 
 A procedure becomes a hosted export when it carries `#host_export("abi")`. A hosted export is not a raw FFI signature: the foreign-visible signature is derived from the source procedure plus an opaque hosted-library session handle.
 
-#### 23.3.9 Parsing
+##### 23.3.2.2 Parsing
 
 Hosted exports are parsed by the ordinary procedure-declaration parser from §15.1.2.
 
 An ordinary `ProcedureDecl` is classified as a hosted export when its attached attribute list contains `#host_export("abi")` as parsed by §23.4.2.
 
-#### 23.3.10 AST Representation / Form
+##### 23.3.2.3 AST Representation / Form
 
 Hosted exports are represented by ordinary `ProcedureDecl(...)` items with `HostExportAttr(proc)` defined.
 
@@ -26207,7 +26213,7 @@ HostThunkSig(proc) = ⟨HostThunkParams(proc), ProcReturn(ret_opt)⟩ ⇔ proc =
 
 `HostedRootCaps(P)` is the maximal capability set that may become visible to Ultraviolet user code through hosted exports of `P`.
 
-#### 23.3.11 Static Semantics
+##### 23.3.2.4 Static Semantics
 
 **Hosted Export.** A Ultraviolet procedure made callable from foreign code through a hosted-library session.
 
@@ -26252,7 +26258,7 @@ proc = ProcedureDecl(_, _, _, _, _, [⟨`move`, _, T_ctx⟩] ++ _, _, _, _, _, _
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ HostExportSigOk(proc) ⇑ c
 
-#### 23.3.12 Dynamic Semantics
+##### 23.3.2.5 Dynamic Semantics
 
 A hosted export call occurs only with a live, idle hosted-library session `h` owned by the library project `P`. Hosted-export foreign-visible session handles use ABI type `usize`; the value `0` MUST be rejected as invalid.
 
@@ -26275,7 +26281,7 @@ If the supplied handle is invalid, not live, or busy, then the hosted-export bou
 
 When `UnwindMode(proc) = "catch"`, any boundary failure that occurs before or during hosted-export invocation MUST return `ZeroValue(R)` for the hosted export's return type `R`.
 
-#### 23.3.13 Lowering
+##### 23.3.2.6 Lowering
 
 Hosted-export lowering MUST preserve the raw-FFI rules of §§23.1–23.5 for the foreign-visible signature while reconstructing the first source parameter internally.
 
@@ -26366,12 +26372,12 @@ For every hosted export `proc`, a conforming implementation MUST emit one foreig
 1. prepends one `usize` session-handle parameter;
 2. omits the first source parameter from the foreign-visible ABI;
 3. reconstructs the first source parameter from the session-owned `Context` value before entering the user procedure;
-4. rejects invalid, non-live, and busy handles according to §23.3.12 before any user code executes;
+4. rejects invalid, non-live, and busy handles according to §23.3.2.5 before any user code executes;
 5. applies the same `#unwind` boundary rules as a raw exported procedure with the derived foreign-visible signature.
 
 These hosted-export thunks are backend-generated boundary declarations. They are not the same declarations as the user-authored source procedures. A conforming backend MUST emit exactly one hosted-export thunk per `proc ∈ HostExports(P)` in the linked image of `P`, and that thunk MUST use `HostThunkLinkName(proc)` as its foreign symbol while calls from Ultraviolet code continue to target the source procedure body symbol `Mangle(proc)`. A conforming implementation MUST NOT expose `Mangle(proc)` itself as the hosted foreign entrypoint for `proc`; foreign code enters only through the generated thunk.
 
-#### 23.3.14 Diagnostics
+##### 23.3.2.7 Diagnostics
 
 | Code         | Severity | Detection    | Condition                                                                            |
 | ------------ | -------- | ------------ | ------------------------------------------------------------------------------------ |
@@ -26499,17 +26505,17 @@ If `UnwindMode(proc) = "catch"`, the ABI at the boundary MUST be `"C-unwind"`:
 3. The ABI string selects the foreign calling convention (see §23.2.4).
 4. `#export` implies external linkage.
 5. Link name selection is defined by `LinkName` (§24.3) and `#mangle(...)`.
-6. Raw export signatures MUST satisfy the FFI safety requirements in §§23.3 and 23.5.
+6. Raw export signatures MUST satisfy the FFI safety requirements in §§23.3.1 and 23.5.
 
 ##### 23.4.4.5 `#host_export`
 
 1. Valid only on procedure declarations.
 2. The procedure MUST be `public`.
 3. The owning assembly MUST be a library assembly.
-4. `#host_export` implies external linkage through the hosted-export thunk defined in §23.3.13. The source procedure body continues to use ordinary visibility-based linkage for Ultraviolet calls; `#host_export` alone does not make the source procedure body symbol the foreign entrypoint.
+4. `#host_export` implies external linkage through the hosted-export thunk defined in §23.3.2.6. The source procedure body continues to use ordinary visibility-based linkage for Ultraviolet calls; `#host_export` alone does not make the source procedure body symbol the foreign entrypoint.
 5. The ABI string selects the foreign calling convention (see §23.2.4).
 6. Link name selection is defined by `LinkName` (§24.3) and `#mangle(...)`.
-7. Hosted-export signatures MUST satisfy the hosted-export rules of §§23.3 and 23.5.
+7. Hosted-export signatures MUST satisfy the hosted-export rules of §§23.3.2 and 23.5.
 8. `#host_export` and `#export` MUST NOT appear in the same assembly.
 
 ##### 23.4.4.6 `#ffi_pass_by_value`
@@ -26535,7 +26541,7 @@ FFI attributes do not directly evaluate to runtime values. `#unwind` selects the
 
 #### 23.4.6 Lowering
 
-`#mangle` selects link names. `#library` contributes library-resolution metadata for extern blocks. `#export` implies external linkage at the raw FFI boundary. `#host_export` selects hosted-library thunk emission and the hosted-session lifecycle exports required by §23.3.13. `#unwind` selects the boundary frame strategy in §23.7. `#ffi_pass_by_value` authorizes by-value ABI lowering for eligible `DropType` + `FfiSafeType` records and enums.
+`#mangle` selects link names. `#library` contributes library-resolution metadata for extern blocks. `#export` implies external linkage at the raw FFI boundary. `#host_export` selects hosted-library thunk emission and the hosted-session lifecycle exports required by §23.3.2.6. `#unwind` selects the boundary frame strategy in §23.7. `#ffi_pass_by_value` authorizes by-value ABI lowering for eligible `DropType` + `FfiSafeType` records and enums.
 
 #### 23.4.7 Diagnostics
 
@@ -26910,8 +26916,8 @@ UnwindMode(proc) ⇑ c
 1. If a Ultraviolet panic or foreign unwind attempts to cross an FFI boundary with `UnwindMode(proc) = abort`, the program MUST abort.
 2. If `UnwindMode(proc) = catch`:
    - imported procedures convert foreign unwinds to Ultraviolet panics;
-   - raw exported procedures return `ZeroValue(R)` as defined by §23.3.5;
-   - hosted exports return `ZeroValue(R)` as defined by §23.3.12.
+   - raw exported procedures return `ZeroValue(R)` as defined by §23.3.1.5;
+   - hosted exports return `ZeroValue(R)` as defined by §23.3.2.5.
 
 General destruction and unwind cleanup semantics remain defined by §24.5.
 
@@ -27733,7 +27739,11 @@ ArchiverToolName(`aarch64-darwin`) = `llvm-ar`
 
 LinkFlagsFor(`x86_64-sysv`, `exe`, out, _) = ["-o", out, "--entry=_start", "--nostdlib", "--dynamic-linker=/lib64/ld-linux-x86-64.so.2"]
 LinkFlagsFor(`x86_64-sysv`, `shared`, out, _) = ["-o", out, "--shared", "--nostdlib"]
-LinkFlagsFor(`x86_64-win64`, `exe`, out, _) = ["/OUT:" ++ out, "/ENTRY:main", "/SUBSYSTEM:CONSOLE", "/NODEFAULTLIB"]
+WindowsExeStackReserveBytes = 16777216
+WindowsExeStackCommitBytes = 65536
+WindowsExeStackFlag(`x86_64-win64`) = "/STACK:16777216,65536"
+
+LinkFlagsFor(`x86_64-win64`, `exe`, out, _) = ["/OUT:" ++ out, "/ENTRY:main", "/SUBSYSTEM:CONSOLE", "/NODEFAULTLIB", WindowsExeStackFlag(`x86_64-win64`)]
 LinkFlagsFor(`x86_64-win64`, `shared`, out, import_lib) = ["/OUT:" ++ out, "/DLL", "/ENTRY:" ++ LibraryEntrySym(`x86_64-win64`), "/NODEFAULTLIB", "/IMPLIB:" ++ import_lib]
 LinkFlagsFor(`aarch64-aapcs64`, `exe`, out, _) = ["-o", out, "--entry=main", "--nostdlib", "--dynamic-linker=/lib/ld-linux-aarch64.so.1"]
 LinkFlagsFor(`aarch64-aapcs64`, `shared`, out, _) = ["-o", out, "--shared", "--nostdlib"]
@@ -27982,13 +27992,18 @@ ForeignABICallJudg = {ForeignABICall}
 
 `ForeignABIParam` and `ForeignABICall` MUST be used for foreign-visible ABI boundaries whose signatures do not carry source parameter-mode information.
 
+**(ABI-Param-ByValue-ZST)**
+Γ ⊢ sizeof(T) = 0
+──────────────────────────────────────────────
+Γ ⊢ ABIParam(mode, T) ⇓ `ByValue`
+
 **(ABI-Param-ByRef-Alias)**
-mode = ⊥    Γ ⊢ sizeof(T) = n
+mode = ⊥    Γ ⊢ sizeof(T) = n    n > 0
 ──────────────────────────────────────────
 Γ ⊢ ABIParam(mode, T) ⇓ `ByRef`
 
 **(ABI-Param-ByRef-Move)**
-mode = `move`    Γ ⊢ sizeof(T) = n
+mode = `move`    Γ ⊢ sizeof(T) = n    n > 0
 ──────────────────────────────────────────
 Γ ⊢ ABIParam(mode, T) ⇓ `ByRef`
 
@@ -28464,7 +28479,7 @@ A conforming implementation MUST ensure that whenever `Γ ⊢ SessionStateInitSi
 
 A conforming implementation MUST ensure that whenever `Γ ⊢ SessionStateDestroySigma(P, h, σ) ⇓ σ'`, the cells previously reachable at `AddrOfSessionSym(h, sym)` for `HostedStateSym(P, sym)` are no longer live.
 
-For `HostedLibrary(P)` as defined by §23.3.10, every user-static storage cell, poison flag, and boundary panic record consumed by Chapters 6, 24.4, and 24.5 MUST be indexed by the live hosted session within the dynamic extent of `HostSessionInitSigma`, `HostedCallSigma`, and `HostSessionDestroySigma`. Within those hosted-session dynamic extents, every occurrence of `AddrOfSym(sym)` in those rules with `HostedStateSym(P, sym)` MUST be interpreted as `AddrOfSessionSym(h, sym)` for the active hosted session `h`, and every boundary panic-record operation MUST be interpreted through `SessionPanicRecordOf(_, h)`. For `HostedLibrary(P) ∧ SharedLibrary(P)`, when execution occurs outside those hosted-session dynamic extents but within one live loaded library image `i`, every occurrence of `AddrOfSym(sym)` in Chapters 6, 24.4, and 24.5 with `HostedStateSym(P, sym)` MUST instead be interpreted as `AddrOfImageSym(i, sym)`, and every boundary panic-record operation MUST be interpreted through `ImagePanicRecordOf(_, i)`. Executables and libraries that are not shared libraries continue to use the process-global interpretation of `AddrOfSym(sym)` and `PanicRecordOf(_)` outside hosted-session dynamic extents.
+For `HostedLibrary(P)` as defined by §23.3.2.3, every user-static storage cell, poison flag, and boundary panic record consumed by Chapters 6, 24.4, and 24.5 MUST be indexed by the live hosted session within the dynamic extent of `HostSessionInitSigma`, `HostedCallSigma`, and `HostSessionDestroySigma`. Within those hosted-session dynamic extents, every occurrence of `AddrOfSym(sym)` in those rules with `HostedStateSym(P, sym)` MUST be interpreted as `AddrOfSessionSym(h, sym)` for the active hosted session `h`, and every boundary panic-record operation MUST be interpreted through `SessionPanicRecordOf(_, h)`. For `HostedLibrary(P) ∧ SharedLibrary(P)`, when execution occurs outside those hosted-session dynamic extents but within one live loaded library image `i`, every occurrence of `AddrOfSym(sym)` in Chapters 6, 24.4, and 24.5 with `HostedStateSym(P, sym)` MUST instead be interpreted as `AddrOfImageSym(i, sym)`, and every boundary panic-record operation MUST be interpreted through `ImagePanicRecordOf(_, i)`. Executables and libraries that are not shared libraries continue to use the process-global interpretation of `AddrOfSym(sym)` and `PanicRecordOf(_)` outside hosted-session dynamic extents.
 
 #### 24.4.2 Initialization Order, Poisoning, and Project Lifecycle
 
@@ -28675,7 +28690,7 @@ DistinctHostedState(σ) ⇔ ∀ h_1, h_2. h_1 ≠ h_2 ∧ SessionLive(h_1, σ) �
 
 A conforming implementation MUST ensure `DistinctHostedState(σ)` for every store `σ`.
 A conforming implementation MUST ensure that every successful `HostSessionInitSigma(P, σ) ⇓ (Val(h), σ')` establishes `SessionLive(h, σ') ∧ ¬ SessionBusy(h, σ') ∧ HostedGrantedCaps(P, h) = HostedRootCaps(P)`, every successful `HostedCallSigma(P, h, d, vs, σ) ⇓ (out, σ')` establishes `SessionLive(h, σ') ∧ ¬ SessionBusy(h, σ')`, and every successful `HostSessionDestroySigma(P, h, σ) ⇓ σ'` establishes `¬ SessionLive(h, σ')`.
-A hosted-library session MUST NOT be entered concurrently or reentrantly. While one hosted call or destroy operation on `h` is in progress, the implementation MUST treat `SessionBusy(h, _)` as true for that operation and MUST reject any second hosted entry on the same session according to §23.3.12.
+A hosted-library session MUST NOT be entered concurrently or reentrantly. While one hosted call or destroy operation on `h` is in progress, the implementation MUST treat `SessionBusy(h, _)` as true for that operation and MUST reject any second hosted entry on the same session according to §23.3.2.5.
 
 **(HostSessionInitSigma)**
 HostedLibrary(P)    Γ ⊢ ContextInitSigma(σ) ⇓ (Val(v_ctx), σ_0)    SessionHandle(h)    HostedSessionOwner(h) = P    SessionContext(h) = v_ctx    HostedGrantedCaps(P, h) = HostedRootCaps(P)    Γ ⊢ SessionStateInitSigma(P, h, σ_0) ⇓ σ_s    SessionPanicRecordInit(σ_s, h)    (∀ d ∈ HostExports(P). HostContextParam(d) = ⟨_, _, T_d⟩ ⇒ HostedGrantVisible(P, h, T_d) ∧ ∃ v_d. ContextBundleBuild(StripPerm(T_d), v_ctx) ⇓ v_d)    Γ ⊢ Init(G_e, σ_s) ⇓ σ_1
@@ -29732,11 +29747,26 @@ SeqLL(⟨I_1, v_1⟩, ⟨I_2, v_2⟩) = ⟨I_1 ++ I_2, v_2⟩
 ──────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ LowerIRInstr(SeqIR(IR_1, IR_2)) ⇓ SeqLL(ll_1, ll_2)
 
-Load(slot, T) = [`load` LLVMTy(T), slot : LLVMPtrTy(T)]
-Store(slot, v, T) = [`store` LLVMTy(T) v, slot : LLVMPtrTy(T)]
+LLVMZSTValue(T) = ⊥    if sizeof(T) = 0
+Load(slot, T) = ε    if sizeof(T) = 0
+Load(slot, T) = [`load` LLVMTy(T), slot : LLVMPtrTy(T)]    if sizeof(T) > 0
+Store(slot, v, T) = ε    if sizeof(T) = 0
+Store(slot, v, T) = Memcpy(slot, src, sizeof(T))    if sizeof(T) > 0 ∧ AddressBackedAggregate(T) ∧ StorageOf(v, T) ⇓ src
+Store(slot, v, T) = [`store` LLVMTy(T) v, slot : LLVMPtrTy(T)]    if sizeof(T) > 0 ∧ ¬(AddressBackedAggregate(T) ∧ StorageOf(v, T) ⇓ _)
 Memcpy(dst, src, n) = [`call` `llvm.memcpy`(dst, src, n)]
 Memset(dst, 0, n) = [`call` `llvm.memset`(dst, 0, n)]
-LoadVal(slot, T) ⇓ ⟨Load(slot, T), v⟩
+LoadVal(slot, T) ⇓ ⟨ε, LLVMZSTValue(T)⟩    if sizeof(T) = 0
+LoadVal(slot, T) ⇓ ⟨Load(slot, T), v⟩    if sizeof(T) > 0
+
+A conforming LLVM backend MUST NOT emit `alloca`, `load`, `store`, or `phi` instructions whose operand or result type is the LLVM lowering of a source type `T` with `sizeof(T) = 0`.
+
+AddressBackedAggregate(T) ⇔ sizeof(T) > 0 ∧ (LLVMTy(T) is an LLVM struct type ∨ LLVMTy(T) is an LLVM array type)
+
+`StorageOf(v, T) ⇓ src` holds when `v` is already backed by addressable storage with layout-compatible type `T`, or when `v` is a derived aggregate literal, field, tuple element, array element, enum payload, modal payload, union payload, call result, if-result, loop-result, or pointer read whose lowering has produced addressable storage for `T`.
+
+For a derived aggregate projection `v = Project(base, member)` whose result type `T` is address-backed, `StorageOf(v, T) ⇓ src` also holds when `base` has produced a first-class aggregate value: the backend MUST materialize `base` into fresh non-escaping temporary storage, compute `src` as the projected member storage of that temporary, and use `src` only within the dynamic extent needed to copy, transfer, bind, pass, or return `v`.
+
+For an address-backed aggregate source with `StorageOf(v, T) ⇓ src`, conforming LLVM lowering MUST use `src` for storage-to-storage copy or transfer and MUST NOT require a first-class aggregate value as an intermediate. When `StorageOf(v, T)` cannot be established but `v` lowers to a first-class value of `LLVMTy(T)`, storing, binding, returning, or merging `v` MUST store that first-class value; it MUST NOT substitute `zeroinitializer`, `ZeroValue(T)`, or any other default value unless `v` itself is that value. Enum and modal discriminant tests over address-backed scrutinees MUST load only the discriminant field needed for the test; payload predicates and pattern-bound payload values MUST address the payload member storage directly when that storage is available. Derived aggregate literals whose result type is address-backed MUST be materializable into temporary storage and reusable through `StorageOf` without first loading the whole literal value.
 
 LEValue(bytes) = ∑_{i=0}^{|bytes|-1} bytes[i] · 256^i
 ByteInt(bytes) = i{8|bytes|} LEValue(bytes)
@@ -29777,10 +29807,9 @@ SigOf(callee) =
 LoweredSigOf(callee) = ⟨params', ret⟩ ⇔ ⟨params, ret⟩ = SigOf(callee) ∧ params' = (NeedsPanicOut(callee) Sigma params ++ [PanicOutParam] : params)
 
 ParamInitIR(sig, params) = ++_{⟨mode, x, T⟩ ∈ params} ParamInit(sig, params, x, mode, T)
-ZeroValue(T) = `zeroinitializer` if sizeof(T) = 0
 ParamInit(sig, params, x, mode, T) =
  Store(BindSlot(x), LLVMParam(sig, params, x), T)    if ABIParam(mode, T) = `ByValue` ∧ sizeof(T) > 0
- Store(BindSlot(x), ZeroValue(T), T)                 if ABIParam(mode, T) = `ByValue` ∧ sizeof(T) = 0
+ ε                                                   if ABIParam(mode, T) = `ByValue` ∧ sizeof(T) = 0
  ε                                                   if ABIParam(mode, T) = `ByRef`
 ParamOrder(params) = [x_i | ⟨mode_i, x_i, T_i⟩ ∈ params ∧ (ABIParam(mode_i, T_i) = `ByRef` ∨ sizeof(T_i) > 0)]
 ParamIndex(params, x) = i ⇔ ParamOrder(params)[i] = x
@@ -29826,14 +29855,14 @@ BuiltinModalSym(`Region::alloc`) ⇓ sym    AllocLowerTarget(Γ, r_ref) = r    T
 Γ ⊢ LowerIRInstr(AllocIR(r_ref, v)) ⇓ ⟨I_a ++ I_s, p⟩
 
 **(Lower-BindVarIR)**
-Γ ⊢ BindSlot(x) ⇓ slot    TypeOf(x) = T_x
+Γ ⊢ BindSlot(x) ⇓ slot    TypeOf(x) = T_x    Store(slot, v, T_x) = I_s
 ─────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(BindVarIR(x, v)) ⇓ ⟨[Store(slot, v, T_x)], ⊥⟩
+Γ ⊢ LowerIRInstr(BindVarIR(x, v)) ⇓ ⟨I_s, ⊥⟩
 
 **(Lower-ReadVarIR)**
-Γ ⊢ BindSlot(x) ⇓ slot    TypeOf(x) = T_x    Γ ⊢ BindValid(x) ⇓ `Valid`
+Γ ⊢ BindSlot(x) ⇓ slot    TypeOf(x) = T_x    Γ ⊢ BindValid(x) ⇓ `Valid`    LoadVal(slot, T_x) ⇓ ⟨I_l, v⟩
 ───────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(ReadVarIR(x)) ⇓ ⟨[Load(slot, T_x)], v⟩
+Γ ⊢ LowerIRInstr(ReadVarIR(x)) ⇓ ⟨I_l, v⟩
 
 **(Lower-ReadVarIR-Err)**
 Γ ⊢ BindValid(x) ⇓ s    s ≠ `Valid`
@@ -29843,14 +29872,14 @@ BuiltinModalSym(`Region::alloc`) ⇓ sym    AllocLowerTarget(Γ, r_ref) = r    T
 ProcSymbol(sym) ⇔ ∃ item. item ∈ {ProcedureDecl, MethodDecl, ClassMethodDecl, StateMethodDecl, TransitionDecl, DefaultImpl} ∧ Γ ⊢ Mangle(item) ⇓ sym
 
 **(Lower-ReadPathIR-Static-User)**
-StaticSymPath(path, name) = sym    ProcModule(sym) = m    T = StaticType(sym)    Γ ⊢ StateRef(sym) ⇓ slot    Γ ⊢ LowerIRInstr(CheckPoison(m)) ⇓ ⟨I_p, ⊥⟩
+StaticSymPath(path, name) = sym    ProcModule(sym) = m    T = StaticType(sym)    Γ ⊢ StateRef(sym) ⇓ slot    Γ ⊢ LowerIRInstr(CheckPoison(m)) ⇓ ⟨I_p, ⊥⟩    LoadVal(slot, T) ⇓ ⟨I_l, v⟩
 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(ReadPathIR(path, name)) ⇓ ⟨I_p ++ [Load(slot, T)], v⟩
+Γ ⊢ LowerIRInstr(ReadPathIR(path, name)) ⇓ ⟨I_p ++ I_l, v⟩
 
 **(Lower-ReadPathIR-Static-Gen)**
-StaticSymPath(path, name) = sym    ProcModule(sym) undefined    T = StaticType(sym)    Γ ⊢ StateRef(sym) ⇓ slot
+StaticSymPath(path, name) = sym    ProcModule(sym) undefined    T = StaticType(sym)    Γ ⊢ StateRef(sym) ⇓ slot    LoadVal(slot, T) ⇓ ⟨I_l, v⟩
 ───────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(ReadPathIR(path, name)) ⇓ ⟨[Load(slot, T)], v⟩
+Γ ⊢ LowerIRInstr(ReadPathIR(path, name)) ⇓ ⟨I_l, v⟩
 
 **(Lower-ReadPathIR-Proc-User)**
 sym = PathSym(path, name)    ProcSymbol(sym)    ProcModule(sym) = m    Γ ⊢ LowerIRInstr(CheckPoison(m)) ⇓ ⟨I_p, ⊥⟩
@@ -29873,14 +29902,14 @@ p = path ++ [name]    RecordDecl(p) = R    ModuleOfPath(p) = m    Γ ⊢ LowerIR
 Γ ⊢ LowerIRInstr(ReadPathIR(path, name)) ⇓ ⟨I_p, RecordCtor(p)⟩
 
 **(Lower-StoreVarIR)**
-Γ ⊢ BindSlot(x) ⇓ slot    TypeOf(x) = T_x    Γ ⊢ DropOnAssign(x, slot) ⇓ IR_d
+Γ ⊢ BindSlot(x) ⇓ slot    TypeOf(x) = T_x    Γ ⊢ DropOnAssign(x, slot) ⇓ IR_d    Store(slot, v, T_x) = I_s
 ────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(StoreVarIR(x, v)) ⇓ ⟨IR_d ++ [Store(slot, v, T_x)], ⊥⟩
+Γ ⊢ LowerIRInstr(StoreVarIR(x, v)) ⇓ ⟨IR_d ++ I_s, ⊥⟩
 
 **(Lower-StoreVarNoDropIR)**
-Γ ⊢ BindSlot(x) ⇓ slot    TypeOf(x) = T_x
+Γ ⊢ BindSlot(x) ⇓ slot    TypeOf(x) = T_x    Store(slot, v, T_x) = I_s
 ──────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(StoreVarNoDropIR(x, v)) ⇓ ⟨[Store(slot, v, T_x)], ⊥⟩
+Γ ⊢ LowerIRInstr(StoreVarNoDropIR(x, v)) ⇓ ⟨I_s, ⊥⟩
 
 **(Lower-MoveStateIR)**
 x = PlaceRoot(p)    Γ ⊢ UpdateValid(x, MoveStateIR(p)) ⇓ v'
@@ -29888,9 +29917,9 @@ x = PlaceRoot(p)    Γ ⊢ UpdateValid(x, MoveStateIR(p)) ⇓ v'
 Γ ⊢ LowerIRInstr(MoveStateIR(p)) ⇓ ⟨ε, ⊥⟩
 
 **(Lower-StoreGlobal)**
-T = StaticType(sym)    Γ ⊢ LLVMTy(T) ⇓ τ    Γ ⊢ StateRef(sym) ⇓ slot
+T = StaticType(sym)    Γ ⊢ LLVMTy(T) ⇓ τ    Γ ⊢ StateRef(sym) ⇓ slot    Store(slot, v, T) = I_s
 ────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(StoreGlobal(sym, v)) ⇓ ⟨[Store(slot, v, T)], ⊥⟩
+Γ ⊢ LowerIRInstr(StoreGlobal(sym, v)) ⇓ ⟨I_s, ⊥⟩
 
 **(Lower-ReadPlaceIR)**
 Γ ⊢ LowerReadPlace(p) ⇓ ⟨IR_p, v⟩    Γ ⊢ LowerIRInstr(IR_p) ⇓ ll
@@ -29905,14 +29934,14 @@ T = StaticType(sym)    Γ ⊢ LLVMTy(T) ⇓ τ    Γ ⊢ StateRef(sym) ⇓ slot
 PtrType(v) = T ⇔ (∃ e, IR. Γ ⊢ LowerExpr(e) ⇓ ⟨IR, v⟩ ∧ T = ExprType(e)) ∨ (∃ p, IR. Γ ⊢ LowerReadPlace(p) ⇓ ⟨IR, v⟩ ∧ T = ExprType(p))
 
 **(Lower-ReadPtrIR)**
-PtrType(v_ptr) = TypePtr(T, `Valid`)
+PtrType(v_ptr) = TypePtr(T, `Valid`)    LoadVal(PtrAddr(v_ptr), T) ⇓ ⟨I_l, v⟩
 ──────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(ReadPtrIR(v_ptr)) ⇓ ⟨[Load(PtrAddr(v_ptr), T)], v⟩
+Γ ⊢ LowerIRInstr(ReadPtrIR(v_ptr)) ⇓ ⟨I_l, v⟩
 
 **(Lower-ReadPtrIR-Raw)**
-PtrType(v_ptr) = TypeRawPtr(q, T)
+PtrType(v_ptr) = TypeRawPtr(q, T)    LoadVal(PtrAddr(v_ptr), T) ⇓ ⟨I_l, v⟩
 ──────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(ReadPtrIR(v_ptr)) ⇓ ⟨[Load(PtrAddr(v_ptr), T)], v⟩
+Γ ⊢ LowerIRInstr(ReadPtrIR(v_ptr)) ⇓ ⟨I_l, v⟩
 
 **(Lower-ReadPtrIR-Null)**
 PtrType(v_ptr) = TypePtr(T, `Null`)    Γ ⊢ LowerIRInstr(LowerPanic(NullDeref)) ⇓ ll
@@ -29925,9 +29954,9 @@ PtrType(v_ptr) = TypePtr(T, `Expired`)    Γ ⊢ LowerIRInstr(LowerPanic(Expired
 Γ ⊢ LowerIRInstr(ReadPtrIR(v_ptr)) ⇓ ll
 
 **(Lower-WritePtrIR)**
-PtrType(v_ptr) = TypePtr(T, `Valid`)
+PtrType(v_ptr) = TypePtr(T, `Valid`)    Store(PtrAddr(v_ptr), v, T) = I_s
 ────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(WritePtrIR(v_ptr, v)) ⇓ ⟨[Store(PtrAddr(v_ptr), v, T)], ⊥⟩
+Γ ⊢ LowerIRInstr(WritePtrIR(v_ptr, v)) ⇓ ⟨I_s, ⊥⟩
 
 **(Lower-WritePtrIR-Null)**
 PtrType(v_ptr) = TypePtr(T, `Null`)    Γ ⊢ LowerIRInstr(LowerPanic(NullDeref)) ⇓ ll
@@ -29940,9 +29969,9 @@ PtrType(v_ptr) = TypePtr(T, `Expired`)    Γ ⊢ LowerIRInstr(LowerPanic(Expired
 Γ ⊢ LowerIRInstr(WritePtrIR(v_ptr, v)) ⇓ ll
 
 **(Lower-WritePtrIR-Raw)**
-PtrType(v_ptr) = TypeRawPtr(`mut`, T)
+PtrType(v_ptr) = TypeRawPtr(`mut`, T)    Store(PtrAddr(v_ptr), v, T) = I_s
 ────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(WritePtrIR(v_ptr, v)) ⇓ ⟨[Store(PtrAddr(v_ptr), v, T)], ⊥⟩
+Γ ⊢ LowerIRInstr(WritePtrIR(v_ptr, v)) ⇓ ⟨I_s, ⊥⟩
 
 **(Lower-WritePtrIR-Raw-Err)**
 PtrType(v_ptr) = TypeRawPtr(`imm`, T)
@@ -29958,11 +29987,30 @@ CallPoison(f) =
  CheckPoison(m)    if ProcModule(f) = m
  ε                 if ProcModule(f) undefined
 
-SRetAlloc(R) ⇓ ⟨[`alloca` LLVMTy(R)], p⟩
+SRetAlloc(R) ⇓ ⟨ε, ⊥⟩    if sizeof(R) = 0
+SRetAlloc(R) ⇓ ⟨[`alloca` LLVMTy(R)], p⟩    if sizeof(R) > 0
+
+CallArgStorage(arg, T) ⇓ ⟨I, p⟩ ⇔
+ sizeof(T) = 0 ∧ I = ε ∧ p = ⊥ ∨
+ AddressableStorage(arg, T) ⇓ ⟨I, p⟩ ∨
+ DerivedAggregateStorage(arg, T) ⇓ ⟨I, p⟩ ∨
+ (LowerVal(arg) ⇓ ⟨I_v, v⟩ ∧ TempAlloc(T) ⇓ ⟨I_t, p⟩ ∧ Store(p, v, T) ⇓ I_s ∧ I = I_t ++ I_v ++ I_s)
+
+CallArgValue(arg, T) ⇓ ⟨I, v⟩ ⇔
+ LowerVal(arg) ⇓ ⟨I, v⟩
+
+CallArgOperand(arg, T, `ByRef`) ⇓ ⟨I, p⟩ ⇔
+ CallArgStorage(arg, T) ⇓ ⟨I, p⟩
+
+CallArgOperand(arg, T, `ByValue`) ⇓ ⟨I, v⟩ ⇔
+ CallArgValue(arg, T) ⇓ ⟨I, v⟩
+
+CallArgList([⟨m_1,T_1⟩,...,⟨m_n,T_n⟩], [k_1,...,k_n], [a_1,...,a_n]) ⇓ ⟨I, vec_o⟩ ⇔
+ ∀ i. CallArgOperand(a_i, T_i, k_i) ⇓ ⟨I_i, o_i⟩ ∧ I = I_1 ++ ... ++ I_n ∧ vec_o = [o_i | 1 ≤ i ≤ n ∧ o_i ≠ ⊥]
 
 CallArgs(sig, params, args, R) ⇓ ⟨I_a, vec_a, p_ret⟩ ⇔
- I_a = ε ∧ vec_a = args ∧ p_ret = ⊥    if sig.sretSigma = false
- ∃ p. SRetAlloc(R) ⇓ ⟨I_s, p⟩ ∧ I_a = I_s ∧ vec_a = [p] ++ args ∧ p_ret = p    if sig.sretSigma = true
+ CallArgList(params, sig.paramKinds, args) ⇓ ⟨I_o, vec_o⟩ ∧ I_a = I_o ∧ vec_a = vec_o ∧ p_ret = ⊥    if sig.sretSigma = false
+ ∃ p. SRetAlloc(R) ⇓ ⟨I_s, p⟩ ∧ CallArgList(params, sig.paramKinds, args) ⇓ ⟨I_o, vec_o⟩ ∧ I_a = I_s ++ I_o ∧ vec_a = [p] ++ vec_o ∧ p_ret = p    if sig.sretSigma = true
 
 CallInstr(sig, f, vec_a) ⇓ ⟨[`call` sig f(vec_a)], v_c⟩ ⇔
  v_c = (sig.llvm_ret = `void` Sigma ⊥ : call_result)
@@ -30010,9 +30058,10 @@ DynType(base) = TypeDynamic(Cl)    v_d = DynData(base)    v_t = DynVTable(base) 
 
 IfPhi(v_t, v_f, l_t, l_f) ⇓ ⟨I_phi, v_phi⟩ ⇔
  I_phi = ε ∧ v_phi = ⊥    if v_t = ⊥ ∨ v_f = ⊥
- ∃ T, τ, inc. ValueType(v_t) = T ∧ ValueType(v_f) = T ∧ Γ ⊢ LLVMTy(T) ⇓ τ ∧ inc = [⟨v_t, l_t⟩, ⟨v_f, l_f⟩] ∧ I_phi = [Phi(τ, inc, v_phi)]    if v_t ≠ ⊥ ∧ v_f ≠ ⊥
+ ∃ T. ValueType(v_t) = T ∧ ValueType(v_f) = T ∧ sizeof(T) = 0 ∧ I_phi = ε ∧ v_phi = ⊥    if v_t ≠ ⊥ ∧ v_f ≠ ⊥
+ ∃ T, τ, inc. ValueType(v_t) = T ∧ ValueType(v_f) = T ∧ sizeof(T) > 0 ∧ Γ ⊢ LLVMTy(T) ⇓ τ ∧ inc = [⟨v_t, l_t⟩, ⟨v_f, l_f⟩] ∧ I_phi = [Phi(τ, inc, v_phi)]    if v_t ≠ ⊥ ∧ v_f ≠ ⊥
 
-IfLowerForm(I, v_c, v_t, v_f, v) ⇔ HasBrCond(I, v_c) ∧ ((v_t = ⊥ ∨ v_f = ⊥) ⇒ v = ⊥) ∧ ((v_t ≠ ⊥ ∧ v_f ≠ ⊥) ⇒ HasPhi(I, v))
+IfLowerForm(I, v_c, v_t, v_f, v) ⇔ HasBrCond(I, v_c) ∧ ((v_t = ⊥ ∨ v_f = ⊥) ⇒ v = ⊥) ∧ ((v_t ≠ ⊥ ∧ v_f ≠ ⊥) ⇒ ∃ T. ValueType(v_t) = T ∧ ValueType(v_f) = T ∧ ((sizeof(T) = 0 ∧ v = ⊥) ∨ (sizeof(T) > 0 ∧ HasPhi(I, v))))
 
 **(Lower-IfIR)**
 IfLabels(Γ) = ⟨l_t, l_f, l_m⟩    Γ ⊢ LowerIRInstr(IR_t) ⇓ ⟨I_t, v_t'⟩    Γ ⊢ LowerIRInstr(IR_f) ⇓ ⟨I_f, v_f'⟩    v_t' = v_t    v_f' = v_f    IfPhi(v_t, v_f, l_t, l_f) ⇓ ⟨I_phi, v⟩    I = [BrCond(v_c, l_t, l_f), Label(l_t)] ++ I_t ++ [Br(l_m), Label(l_f)] ++ I_f ++ [Br(l_m), Label(l_m)] ++ I_phi    IfLowerForm(I, v_c, v_t, v_f, v)
@@ -30056,6 +30105,8 @@ IfCaseIRForm(if_case)    IfCaseLowerForm(I, if_case, v)
 ────────────────────────────────────────────────────────────
 Γ ⊢ LowerIRInstr(if_case) ⇓ ⟨I, v⟩
 
+For `IfCaseIR` whose result type is an address-backed aggregate, conforming lowering MUST allocate one merge result storage slot, store or transfer each falling-through arm result into that slot before arm cleanup executes, and return that slot through `StorageOf`. Each falling-through arm result MUST be materialized from its real source value or source storage before any default aggregate fallback is considered. Clause-result captures are required only for values that must remain first-class after cleanup; an implementation MUST NOT introduce a first-class aggregate capture solely to merge an address-backed aggregate if the arm result can be stored into the merge slot before cleanup.
+
 **(Lower-RegionIR)**
 RegionIRForm(region)    RegionLowerForm(I, region, v)
 ──────────────────────────────────────────────────────
@@ -30077,7 +30128,8 @@ BranchLowerForm(I, v_c, t, f)
 ──────────────────────────────────────────────────────────────
 Γ ⊢ LowerIRInstr(BranchIR(v_c, t, f)) ⇓ ⟨I, ⊥⟩
 
-PhiLowerForm(I, T, inc, v) ⇔ Γ ⊢ LLVMTy(T) ⇓ τ ∧ I = [Phi(τ, inc, v)]
+PhiLowerForm(I, T, inc, v) ⇔ sizeof(T) = 0 ∧ I = ε ∧ v = ⊥
+PhiLowerForm(I, T, inc, v) ⇔ sizeof(T) > 0 ∧ Γ ⊢ LLVMTy(T) ⇓ τ ∧ I = [Phi(τ, inc, v)]
 
 **(Lower-PhiIR)**
 PhiLowerForm(I, T, inc, v)
@@ -30104,7 +30156,8 @@ ProcParams(Γ) = params ⇔ Γ is lowering ProcIR(_, params, _, _)
 ProcRet(Γ) = R ⇔ Γ is lowering ProcIR(_, _, R, _)
 ProcSig(Γ) = sig ⇔ Γ ⊢ LLVMCallSig(ProcParams(Γ), ProcRet(Γ)) ⇓ sig
 ParamEntry(params, x) = ⟨mode, T⟩ ⇔ ⟨mode, x, T⟩ ∈ params
-AllocaSlot(T) = LLVMAlloca(LLVMTy(T))
+AllocaSlot(T) = ⊥    if sizeof(T) = 0
+AllocaSlot(T) = LLVMAlloca(LLVMTy(T))    if sizeof(T) > 0
 RegionSlot(r, T) = CallIR(BuiltinModalSym(`Region::alloc`), [r, IntVal(`usize`, sizeof(T)), IntVal(`usize`, alignof(T))])
 BindState(Γ) = Γ.bind_state
 
@@ -30233,7 +30286,7 @@ DropOnAssign(x, slot) undefined
 
 #### 24.7.10 Call ABI Mapping
 
-LLVMCallJudg = {LLVMCallSig(params, ret) ⇓ sig, LLVMArgLower(x, T, k) ⇓ ll, LLVMRetLower(T, k) ⇓ ll}
+LLVMCallJudg = {LLVMCallSig(params, ret) ⇓ sig, LLVMArgLower(x, T, k) ⇓ ll, LLVMRetLower(T, k) ⇓ ll, CallArgStorage(arg, T) ⇓ ⟨I, p⟩, CallArgValue(arg, T) ⇓ ⟨I, v⟩, CallArgOperand(arg, T, k) ⇓ ⟨I, o⟩, CallArgList(params, kinds, args) ⇓ ⟨I, vec⟩}
 
 SigLLVMParams(sig) = llvm_params
 SigLLVMRet(sig) = llvm_ret
@@ -30251,9 +30304,11 @@ SigSRet(sig) = sretSigma
 Γ ⊢ LLVMArgLower(x, T, `ByValue`) ⇓ ⟨τ, LLVMArgAttrsExt(x, T)⟩
 
 **(LLVMArgLower-ByRef)**
-Γ ⊢ LLVMTy(T) ⇓ τ
+Γ ⊢ LLVMTy(T) ⇓ τ    sizeof(T) > 0
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ LLVMArgLower(x, T, `ByRef`) ⇓ ⟨LLVMPtrTy(TypePtr(TypePerm(`const`, T), `Valid`)), LLVMPtrAttrs(TypePtr(TypePerm(`const`, T), `Valid`)) ∪ LLVMArgAttrsExt(x, T)⟩
+
+For any call argument whose pass kind is `ByRef` and whose type has nonzero size, the emitted operand is the pointer produced by `CallArgStorage(x,T)`. A conforming LLVM backend MUST NOT first materialize `x` as an aggregate SSA value when `AddressableStorage(x,T)` or `DerivedAggregateStorage(x,T)` is defined.
 
 **(LLVMRetLower-ByValue-ZST)**
 sizeof(T) = 0
@@ -30270,17 +30325,17 @@ sizeof(T) = 0
 ──────────────────────────────────────────
 Γ ⊢ LLVMRetLower(T, `SRet`) ⇓ `void`
 
-ArgInclude(k, T) ⇔ (k = `ByRef`) ∨ (k = `ByValue` ∧ sizeof(T) > 0)
+ArgInclude(k, T) ⇔ sizeof(T) > 0 ∧ (k = `ByRef` ∨ k = `ByValue`)
 LLVMArgList([⟨m_1, x_1, T_1⟩, …, ⟨m_n, x_n, T_n⟩], [k_1, …, k_n]) = [τ_i | ArgInclude(k_i, T_i) ∧ Γ ⊢ LLVMArgLower(x_i, T_i, k_i) ⇓ ⟨τ_i, A_i⟩]
 LLVMAttrList([⟨m_1, x_1, T_1⟩, …, ⟨m_n, x_n, T_n⟩], [k_1, …, k_n]) = [A_i | ArgInclude(k_i, T_i) ∧ Γ ⊢ LLVMArgLower(x_i, T_i, k_i) ⇓ ⟨τ_i, A_i⟩]
 
 **(LLVMCall-ByValue)**
-⟨[k_1, …, k_n], k_r, sretSigma⟩ = ABICall([⟨m_1, T_1⟩, …, ⟨m_n, T_n⟩], R)    k_r = `ByValue`    ∀ i, Γ ⊢ LLVMArgLower(x_i, T_i, k_i) ⇓ ⟨τ_i, A_i⟩    Γ ⊢ LLVMRetLower(R, `ByValue`) ⇓ τ_r
+⟨[k_1, …, k_n], k_r, sretSigma⟩ = ABICall([⟨m_1, T_1⟩, …, ⟨m_n, T_n⟩], R)    k_r = `ByValue`    ∀ i. ArgInclude(k_i, T_i) ⇒ Γ ⊢ LLVMArgLower(x_i, T_i, k_i) ⇓ ⟨τ_i, A_i⟩    Γ ⊢ LLVMRetLower(R, `ByValue`) ⇓ τ_r
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ LLVMCallSig([⟨m_1, x_1, T_1⟩, …, ⟨m_n, x_n, T_n⟩], R) ⇓ ⟨LLVMArgList([⟨m_1, x_1, T_1⟩, …, ⟨m_n, x_n, T_n⟩], [k_1, …, k_n]), τ_r, LLVMAttrList([⟨m_1, x_1, T_1⟩, …, ⟨m_n, x_n, T_n⟩], [k_1, …, k_n]), false⟩
 
 **(LLVMCall-SRet)**
-⟨[k_1, …, k_n], k_r, sretSigma⟩ = ABICall([⟨m_1, T_1⟩, …, ⟨m_n, T_n⟩], R)    k_r = `SRet`    sret_param = LLVMPtrTy(TypePtr(TypePerm(`unique`, R), `Valid`))    A_sret = {`sret`, `noalias`} ∪ LLVMPtrAttrs(TypePtr(TypePerm(`unique`, R), `Valid`))    ∀ i, Γ ⊢ LLVMArgLower(x_i, T_i, k_i) ⇓ ⟨τ_i, A_i⟩    Γ ⊢ LLVMRetLower(R, `SRet`) ⇓ `void`
+⟨[k_1, …, k_n], k_r, sretSigma⟩ = ABICall([⟨m_1, T_1⟩, …, ⟨m_n, T_n⟩], R)    k_r = `SRet`    sret_param = LLVMPtrTy(TypePtr(TypePerm(`unique`, R), `Valid`))    A_sret = {`sret`, `noalias`} ∪ LLVMPtrAttrs(TypePtr(TypePerm(`unique`, R), `Valid`))    ∀ i. ArgInclude(k_i, T_i) ⇒ Γ ⊢ LLVMArgLower(x_i, T_i, k_i) ⇓ ⟨τ_i, A_i⟩    Γ ⊢ LLVMRetLower(R, `SRet`) ⇓ `void`
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ LLVMCallSig([⟨m_1, x_1, T_1⟩, …, ⟨m_n, x_n, T_n⟩], R) ⇓ ⟨[sret_param] ++ LLVMArgList([⟨m_1, x_1, T_1⟩, …, ⟨m_n, x_n, T_n⟩], [k_1, …, k_n]), `void`, [A_sret] ++ LLVMAttrList([⟨m_1, x_1, T_1⟩, …, ⟨m_n, x_n, T_n⟩], [k_1, …, k_n]), true⟩
 
@@ -30508,8 +30563,8 @@ Only sections that define named diagnostics are listed below.
 - `§22.6 Compile-Time Diagnostics Supplement`: `E-CTE-0010`, `E-CTE-0011`, `E-CTE-0012`, `E-CTE-0020`, `E-CTE-0021`, `E-CTE-0022`, `E-CTE-0023`, `E-CTE-0030`, `E-CTE-0031`, `E-CTE-0032`, `E-CTE-0033`, `E-CTE-0034`, `E-CTE-0040`, `E-CTE-0041`, `E-CTE-0042`, `E-CTE-0050`, `E-CTE-0051`, `E-CTE-0052`, `E-CTE-0053`, `E-CTE-0060`, `E-CTE-0061`, `E-CTE-0062`, `E-CTE-0063`, `E-CTE-0064`, `E-CTE-0070`, `W-CTE-0071`, `E-CTE-0080`, `E-CTE-0081`, `E-CTE-0082`, `E-CTE-0083`, `E-CTE-0090`, `E-CTE-0210`, `E-CTE-0220`, `E-CTE-0221`, `E-CTE-0230`, `E-CTE-0231`, `E-CTE-0232`, `E-CTE-0233`, `E-CTE-0240`, `E-CTE-0241`, `E-CTE-0250`, `E-CTE-0251`, `E-CTE-0252`, `E-CTE-0253`, `E-CTE-0310`, `E-CTE-0311`, `E-CTE-0312`, `E-CTE-0320`, `E-CTE-0321`, `E-CTE-0322`, `E-CTE-0330`, `E-CTE-0331`, `E-CTE-0340`, `E-CTE-0341`, `E-CTE-0410`, `E-CTE-0411`, `E-CTE-0420`, `E-CTE-0430`, `E-CTE-0440`, `E-CTE-0450`, `E-CTE-0470`
 - `§23.1.7 FfiSafe`: `E-TYP-2623`, `E-TYP-2624`, `E-TYP-2625`, `E-TYP-2626`, `E-TYP-2627`, `E-TYP-2628`, `E-TYP-2629`, `E-TYP-2630`
 - `§23.2.7 Extern Procedures`: `E-TYP-2106`, `E-TYP-2306`
-- `§23.3.7 Exported Procedures and Hosted Exports`: `E-SYS-3353`, `E-TYP-2631`
-- `§23.3.14 Exported Procedures and Hosted Exports`: `E-TYP-2632`, `E-TYP-2633`, `E-TYP-2634`, `E-TYP-2635`, `E-TYP-2636`
+- `§23.3.1.7 Raw Exported Procedures`: `E-SYS-3353`, `E-TYP-2631`
+- `§23.3.2.7 Hosted Exports`: `E-TYP-2632`, `E-TYP-2633`, `E-TYP-2634`, `E-TYP-2635`, `E-TYP-2636`
 - `§23.4.7 FFI Attributes`: `E-FFI-0350`, `E-SYS-3340`, `E-SYS-3341`, `E-SYS-3342`, `E-SYS-3345`, `E-SYS-3346`, `E-SYS-3347`, `E-SYS-3350`, `W-SYS-3350`, `E-SYS-3351`, `E-SYS-3355`, `W-SYS-3355`, `E-SYS-3356`, `E-SYS-3357`, `E-SYS-3358`
 - `§23.5.7 Capability Isolation`: `E-SYS-3360`
 - `§23.6.7 Foreign Contracts`: `E-SEM-2850`, `E-SEM-2851`, `E-SEM-2852`, `E-SEM-2853`, `E-SEM-2854`, `E-SEM-2855`, `E-SEM-2856`, `P-SEM-2860`, `P-SEM-2861`
@@ -30583,7 +30638,7 @@ char_type      ::= "char"
 unit_type      ::= "(" ")"
 never_type     ::= "!"
 
-tuple_type       ::= "(" ")" | "(" type ";)" | "(" type ("," type)+ ")"
+tuple_type       ::= "(" ")" | "(" type ";" ")" | "(" type ("," type)+ ")"
 array_type       ::= "[" type ";" expression "]"
 slice_type       ::= "[" type "]"
 union_type       ::= non_union_type ("|" non_union_type)+

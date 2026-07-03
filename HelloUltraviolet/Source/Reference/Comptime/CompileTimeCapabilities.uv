@@ -47,19 +47,29 @@ internal procedure compileTimeIOReferenceValue() -> usize {
         let manifest_bytes = files~>read_bytes("Ultraviolet.toml")
     }
 
-    var source_root_hits: usize = 0usize
-    #files
-    comptime {
-        if files~>list_dir("Source") is Outcome::Value(entries) {
-            comptime loop entry in entries {
-                source_root_hits = source_root_hits +
-                    comptime if entry == "Main.uv" { 1usize } else { 0usize }
+    let source_dir_ok: bool =
+        #files comptime {
+            if files~>list_dir("Source") is Outcome::Value(entries) {
+                true
+            } else {
+                false
             }
         }
-    }
+    let source_main_ok: bool =
+        #files comptime {
+            if files~>exists("Source/Main.uv") is Outcome::Value(exists) {
+                exists == true
+            } else {
+                false
+            }
+        }
 
-    if project_root_ok && manifest_exists_ok && manifest_text_ok {
-        return source_root_hits
+    if project_root_ok &&
+        manifest_exists_ok &&
+        manifest_text_ok &&
+        source_dir_ok &&
+        source_main_ok {
+        return 1usize
     }
     return 0usize
 }

@@ -382,12 +382,12 @@ public procedure runtimeInterfaceRegionModalProbe() -> bool {
 public procedure runtimeInterfaceRegionFrameProbe() -> bool {
     var score: i32 = 0
     region as runtime_region {
-        let implicit_allocated: i32 = ^71
+        let implicit_allocated: i32 = new 71
         if implicit_allocated == 71 {
             score = score + 1
         }
         runtime_region.frame {
-            let allocated: i32 = runtime_region ^ 73
+            let allocated: i32 = runtime_region~>alloc(73)
             if allocated == 73 {
                 score = score + 1
             }
@@ -454,19 +454,44 @@ internal procedure runtimeInterfaceReactorFailureIs(value: i32 | bool) -> bool {
     }
 }
 
+internal procedure runtimeInterfaceReactorOutcomeValueIs(
+    value: Outcome<i32, bool>,
+    expected: i32
+) -> bool {
+    return if value is {
+        Outcome::Value(actual) {
+            actual == expected
+        }
+        Outcome::Error(_) {
+            false
+        }
+    }
+}
+
+internal procedure runtimeInterfaceReactorOutcomeFailureIs(value: Outcome<i32, bool>) -> bool {
+    return if value is {
+        Outcome::Value(_) {
+            false
+        }
+        Outcome::Error(failed) {
+            failed
+        }
+    }
+}
+
 public procedure runtimeInterfaceReactorProbe(context: RuntimeInterfaceContext) -> bool {
-    let run_completed: i32 | bool =
+    let run_completed: Outcome<i32, bool> =
         context.reactor~>run(runtimeInterfaceReactorCompleted(65))
-    let run_failed: i32 | bool =
+    let run_failed: Outcome<i32, bool> =
         context.reactor~>run(runtimeInterfaceReactorFailed(66))
-    let run_suspended: i32 | bool =
+    let run_suspended: Outcome<i32, bool> =
         context.reactor~>run(runtimeInterfaceReactorSuspended(67))
     let tracked: Tracked<i32, bool> =
         context.reactor~>register(runtimeInterfaceReactorSuspended(68))
     let tracked_result: i32 | bool = wait tracked
-    return runtimeInterfaceReactorValueIs(run_completed, 65) &&
-        runtimeInterfaceReactorFailureIs(run_failed) &&
-        runtimeInterfaceReactorValueIs(run_suspended, 67) &&
+    return runtimeInterfaceReactorOutcomeValueIs(run_completed, 65) &&
+        runtimeInterfaceReactorOutcomeFailureIs(run_failed) &&
+        runtimeInterfaceReactorOutcomeValueIs(run_suspended, 67) &&
         runtimeInterfaceReactorValueIs(tracked_result, 68)
 }
 

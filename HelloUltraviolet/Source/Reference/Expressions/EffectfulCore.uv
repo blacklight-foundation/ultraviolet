@@ -134,7 +134,7 @@ public procedure evalSigmaAllocImplicitReference() -> bool {
     var operand_evaluations: i32 = 0
     var score: i32 = 0
     region {
-        let allocated_value: i32 = ^{
+        let allocated_value: i32 = new {
             operand_evaluations = operand_evaluations + 1
             41
         }
@@ -147,7 +147,7 @@ public procedure evalSigmaAllocImplicitReference() -> bool {
 
 internal procedure evalSigmaAllocImplicitCtrlValue() -> i32 {
     region {
-        let skipped: i32 = ^if true { return 43 } else { 0 }
+        let skipped: i32 = new if true { return 43 } else { 0 }
     }
     return 0
 }
@@ -170,10 +170,11 @@ public procedure evalSigmaAllocExplicitReference() -> bool {
     var operand_evaluations: i32 = 0
     var score: i32 = 0
     region as scratch {
-        let allocated_value: i32 = scratch ^ {
+        let operand_value: i32 = {
             operand_evaluations = operand_evaluations + 1
             47
         }
+        let allocated_value: i32 = scratch~>alloc(operand_value)
         if allocated_value == 47 {
             score = score + 1
         }
@@ -183,7 +184,7 @@ public procedure evalSigmaAllocExplicitReference() -> bool {
 
 internal procedure evalSigmaAllocExplicitCtrlValue() -> i32 {
     region as scratch {
-        let skipped: i32 = scratch ^ if true { return 53 } else { 0 }
+        let skipped: i32 = scratch~>alloc(if true { return 53 } else { 0 })
     }
     return 0
 }

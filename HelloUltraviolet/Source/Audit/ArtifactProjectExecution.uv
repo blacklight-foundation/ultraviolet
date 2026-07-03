@@ -5002,7 +5002,7 @@ internal procedure artifactProjectEmitLlTypeRulesMatch(
         ) &&
         artifactProjectEmitLlIrContains(
             authority,
-            "define void @EmitLlLibrary_x3a_x3aemitLlRangeFullTypeProbe(ptr noundef nonnull align 1 %value"
+            "define void @EmitLlLibrary_x3a_x3aemitLlRangeFullTypeProbe(ptr noundef nonnull align 8 dereferenceable(8) %__panic"
         ) &&
         artifactProjectEmitLlIrContains(
             authority,
@@ -5010,7 +5010,7 @@ internal procedure artifactProjectEmitLlTypeRulesMatch(
         ) &&
         artifactProjectEmitLlIrContains(
             authority,
-            "{ i8, [3 x i8], [8 x i8], [0 x i32] }"
+            "getelementptr i8, ptr %tagged, i64 4"
         ) &&
         artifactProjectEmitLlIrContains(
             authority,
@@ -5466,19 +5466,11 @@ internal procedure artifactProjectEmitLlModalLayoutVariantsMatch(
         ) &&
         artifactProjectEmitLlIrContains(
             authority,
-            artifactProjectTargetText(
-                authority,
-                "load ptr, ptr %13, align 1",
-                "load ptr, ptr %22, align 1"
-            )
+            "load ptr, ptr %pointer, align 8"
         ) &&
         artifactProjectEmitLlIrContains(
             authority,
-            artifactProjectTargetText(
-                authority,
-                "icmp ne ptr %15, null",
-                "icmp ne ptr %24, null"
-            )
+            "br i1 %17, label %check_ok, label %check_fail"
         ) &&
         artifactProjectEmitLlIrContains(
             authority,
@@ -5486,11 +5478,11 @@ internal procedure artifactProjectEmitLlModalLayoutVariantsMatch(
         ) &&
         artifactProjectEmitLlIrContains(
             authority,
-            "load { i8, [7 x i8], [16 x i8], [0 x i64] }, ptr %value, align"
+            "load i8, ptr %value, align 1"
         ) &&
         artifactProjectEmitLlIrContains(
             authority,
-            "extractvalue { i8, [7 x i8], [16 x i8], [0 x i64] }"
+            "getelementptr i8, ptr %value, i64 8"
         ) &&
         artifactProjectEmitLlIrContains(
             authority,
@@ -5498,23 +5490,15 @@ internal procedure artifactProjectEmitLlModalLayoutVariantsMatch(
         ) &&
         artifactProjectEmitLlIrContains(
             authority,
-            artifactProjectTargetText(
-                authority,
-                "icmp eq i8 %18, 1",
-                "icmp eq i8 %27, 1"
-            )
+            "br i1 %18, label %ifcase.case3, label %ifcase.next4"
         ) &&
         artifactProjectEmitLlIrContains(
             authority,
-            artifactProjectTargetText(
-                authority,
-                "icmp eq i8 %31, 2",
-                "icmp eq i8 %46, 2"
-            )
+            "br i1 %27, label %ifcase.case5, label %ifcase.unmatched"
         ) &&
         artifactProjectEmitLlIrContains(
             authority,
-            "getelementptr i8, ptr %3, i64 8"
+            "getelementptr i8, ptr %value, i64 8"
         ) &&
         artifactProjectEmitLlIrContains(
             authority,
@@ -5526,11 +5510,7 @@ internal procedure artifactProjectEmitLlModalLayoutVariantsMatch(
         ) &&
         artifactProjectEmitLlIrContains(
             authority,
-            artifactProjectTargetText(
-                authority,
-                "getelementptr i8, ptr %39, i64 8",
-                "getelementptr i8, ptr %54, i64 8"
-            )
+            "load i32, ptr %right, align 4"
         ) &&
         artifactProjectEmitLlIrContains(
             authority,

@@ -300,12 +300,23 @@ namespace ultraviolet::codegen::emit_detail {
                                           std::uint64_t payload_align)
     ;
 
+    void RecordEnumValueBitsConformance(std::string_view payload_kind,
+                                         const ast::VariantDecl &variant,
+                                         std::uint64_t disc,
+                                         const analysis::layout::EnumLayout &layout,
+                                         std::uint64_t disc_size,
+                                         std::size_t member_count)
+    ;
+
 
 
     bool IsUnitTypeRef(const analysis::TypeRef &type)
     ;
 
     bool IsNeverTypeRef(const analysis::TypeRef &type)
+    ;
+
+    bool IsZeroSizedLLVMType(LLVMEmitter &emitter, llvm::Type *type)
     ;
 
     bool IsRuntimeHandleModalPath(const analysis::TypePath &path)
@@ -431,6 +442,15 @@ namespace ultraviolet::codegen::emit_detail {
                                 const LowerCtx::ProcSigInfo *sig,
                                 llvm::Value *value,
                                 const analysis::TypeRef &source_type)
+    ;
+
+    bool StoreIRValueToStorage(LLVMEmitter &emitter,
+                               llvm::IRBuilder<> *builder,
+                               llvm::Value *dst_storage,
+                               const IRValue &value,
+                               const analysis::TypeRef &target_type,
+                               llvm::Type *target_ll,
+                               std::uint64_t align)
     ;
 
     bool TryEmitBitcopyAggregateStorageCopy(LLVMEmitter &emitter,

@@ -167,6 +167,13 @@ struct IRRange {
   std::optional<IRValue> hi;
 };
 
+struct IRParam {
+  std::optional<analysis::ParamMode> mode;
+  std::string name;
+  std::string stable_name;
+  analysis::TypeRef type;
+};
+
 struct IRSeq {
   std::vector<IRPtr> items;
 };
@@ -181,6 +188,7 @@ struct IRCallVTable {
   IRValue base;
   std::size_t slot = 0;
   std::vector<IRValue> args;
+  std::vector<IRParam> params;
   IRValue result;
   analysis::TypeRef ret_type;  // Return type of the method (for correct LLVM type)
   bool check_dynamic_receiver_addr_active = false;
@@ -742,13 +750,6 @@ struct IR {
                IRAsyncComplete,
                IRAsyncFail>
       node;
-};
-
-struct IRParam {
-  std::optional<analysis::ParamMode> mode;
-  std::string name;
-  std::string stable_name;
-  analysis::TypeRef type;
 };
 
 enum class IRInlineMode {

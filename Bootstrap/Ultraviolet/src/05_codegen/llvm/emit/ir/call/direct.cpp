@@ -133,12 +133,28 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
 
   IRCallStageTimer call_perf(IRCallPerfKind::ArgValues);
 
-  std::vector<llvm::Value *> args;
-  args.reserve(call.args.size());
-  for (const auto &arg : call.args)
+  std::vector<llvm::Value *> args(call.args.size(), nullptr);
+  std::vector<unsigned char> arg_materialized(call.args.size(), 0);
+  auto materialize_arg = [&](std::size_t index) -> llvm::Value *
   {
-    args.push_back(EvaluateOrDefault(arg));
-  }
+    if (index >= args.size())
+    {
+      return nullptr;
+    }
+    if (index < call.args.size() && !arg_materialized[index])
+    {
+      args[index] = EvaluateOrDefault(call.args[index]);
+      arg_materialized[index] = 1;
+    }
+    return args[index];
+  };
+  auto materialize_all_args = [&]()
+  {
+    for (std::size_t index = 0; index < call.args.size(); ++index)
+    {
+      (void)materialize_arg(index);
+    }
+  };
 
   call_perf.switchTo(IRCallPerfKind::PureIntrinsic);
 
@@ -220,12 +236,26 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
 
   auto emit_pure_string_bytes_intrinsic = [&]() -> bool
   {
-    if (call.callee.kind != IRValue::Kind::Symbol || args.empty())
+    if (call.callee.kind != IRValue::Kind::Symbol || call.args.empty())
     {
       return false;
     }
 
     const std::string &symbol = call.callee.name;
+    if (symbol != BuiltinSymStringLength() &&
+        symbol != BuiltinSymBytesLength() &&
+        symbol != BuiltinSymStringIsEmpty() &&
+        symbol != BuiltinSymBytesIsEmpty() &&
+        symbol != BuiltinSymStringAsView() &&
+        symbol != BuiltinSymStringSlice() &&
+        symbol != BuiltinSymBytesAsView() &&
+        symbol != BuiltinSymBytesView() &&
+        symbol != BuiltinSymBytesViewString() &&
+        symbol != BuiltinSymBytesAsSlice())
+    {
+      return false;
+    }
+    materialize_all_args();
     llvm::StructType *string_view_ty = GetStringViewType(emitter.GetContext());
     llvm::StructType *bytes_view_ty = GetBytesViewType(emitter.GetContext());
     llvm::StructType *slice_ty = GetSliceType(emitter.GetContext());
@@ -406,7 +436,23 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
   {
     if (llvm::Value *storage = emitter.GetAddressableStorage(call.args.front()))
     {
-      args.front() = storage;
+      llvm::Function *func =
+          builder.GetInsertBlock() ? builder.GetInsertBlock()->getParent() : nullptr;
+      if (func && storage->getType()->isPointerTy())
+      {
+        llvm::IRBuilder<> entry_builder(
+            &func->getEntryBlock(),
+            func->getEntryBlock().begin());
+        llvm::AllocaInst *slot =
+            entry_builder.CreateAlloca(storage->getType(), nullptr, "drop.arg");
+        builder.CreateStore(storage, slot);
+        args.front() = slot;
+      }
+      else
+      {
+        args.front() = storage;
+      }
+      arg_materialized.front() = 1;
     }
     else if (llvm::Value *value = emitter.EvaluateIRValue(call.args.front()))
     {
@@ -467,6 +513,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
           }
         }
         args.front() = slot;
+        arg_materialized.front() = 1;
       }
     }
   }
@@ -494,6 +541,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     if (comb_kind.has_value())
     {
       call_perf.switchTo(IRCallPerfKind::AsyncEmit);
+      materialize_all_args();
 
       if (args.empty() || call.args.empty())
       {
@@ -1470,7 +1518,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
         }
       }
 
-      llvm::Value *value = args[index];
+      llvm::Value *value = materialize_arg(index);
       if (!value)
       {
         return llvm::ConstantPointerNull::get(opaque_ptr_ptr_ty);
@@ -1526,9 +1574,17 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     };
 
     args[0] = materialize_resume_pointer(0, "suspended");
+    if (!arg_materialized.empty())
+    {
+      arg_materialized[0] = 1;
+    }
     if (args.size() >= 2)
     {
       args[1] = materialize_resume_pointer(1, "input");
+      if (arg_materialized.size() >= 2)
+      {
+        arg_materialized[1] = 1;
+      }
     }
 
     llvm::Value *panic_arg_value =
@@ -1556,10 +1612,12 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     if (args.size() < 3)
     {
       args.resize(3, llvm::ConstantPointerNull::get(opaque_ptr_ptr_ty));
+      arg_materialized.resize(3, 1);
     }
     if (!args[2] || llvm::isa<llvm::ConstantPointerNull>(args[2]))
     {
       args[2] = panic_arg_value;
+      arg_materialized[2] = 1;
     }
   }
   const bool is_foundational_eq_symbol =
@@ -1575,6 +1633,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
       is_foundational_discrete_successor_symbol ||
       is_foundational_discrete_predecessor_symbol)
   {
+    materialize_all_args();
     auto record_foundational_emit = [&](std::string_view method,
                                         std::string_view builtin)
     {
@@ -2171,7 +2230,9 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
       env_arg = llvm::ConstantPointerNull::get(
           llvm::cast<llvm::PointerType>(emitter.GetOpaquePtr()));
     }
+    materialize_all_args();
     args.insert(args.begin(), env_arg);
+    arg_materialized.insert(arg_materialized.begin(), 1);
   }
 
   const bool raw_export_boundary =
@@ -2241,6 +2302,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
           ret_ty = llvm::Type::getVoidTy(emitter.GetContext());
         }
         std::vector<llvm::Type *> arg_tys;
+        materialize_all_args();
         arg_tys.reserve(args.size());
         for (llvm::Value *arg : args)
         {
@@ -2460,7 +2522,9 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     llvm::Value *code_ptr = builder.CreateExtractValue(callee, {1u});
     if (env_ptr && code_ptr)
     {
+      materialize_all_args();
       args.insert(args.begin(), env_ptr);
+      arg_materialized.insert(arg_materialized.begin(), 1);
       callee = code_ptr;
       callee_is_closure_pair = true;
       if (ctx)
@@ -2595,6 +2659,10 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
       sig->params.size() + 1 == args.size())
   {
     args.erase(args.begin());
+    if (!arg_materialized.empty())
+    {
+      arg_materialized.erase(arg_materialized.begin());
+    }
   }
 
   call_perf.switchTo(IRCallPerfKind::EmitCallPrep);
@@ -2656,6 +2724,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     }
     if (fn_ty)
     {
+      materialize_all_args();
       std::vector<llvm::Value *> coerced_args;
       coerced_args.reserve(fn_ty->getNumParams());
       for (unsigned i = 0; i < fn_ty->getNumParams(); ++i)

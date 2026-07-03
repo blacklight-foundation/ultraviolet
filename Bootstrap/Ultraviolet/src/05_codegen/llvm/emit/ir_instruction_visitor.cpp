@@ -131,6 +131,10 @@ bool IRInstructionVisitor::IsAddressBackedAggregateType(llvm::Type *ty) const
   {
     return false;
   }
+  if (IsZeroSizedLLVMType(emitter, ty))
+  {
+    return false;
+  }
   if (ty->isArrayTy())
   {
     return true;

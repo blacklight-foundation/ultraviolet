@@ -73,7 +73,9 @@
 #include "00_core/assert_spec.h"
 #include "04_analysis/composite/classes.h"
 #include "04_analysis/composite/record_methods.h"
+#include "04_analysis/typing/type_lower.h"
 #include "04_analysis/typing/type_predicates.h"
+#include "05_codegen/abi/abi.h"
 #include "05_codegen/checks/checks.h"
 #include "05_codegen/cleanup/cleanup.h"
 #include "05_codegen/dyn_dispatch/vtable_emit.h"
@@ -588,15 +590,50 @@ LowerResult LowerDynCall(const IRValue& base_ptr,
   // Look up the method's return type from the class declaration so the
   // LLVM emitter can generate the correct return type for the indirect call.
   analysis::TypeRef method_ret_type;
+  std::vector<IRParam> method_params;
   for (const auto& item : class_decl.items) {
     if (const auto* method = std::get_if<ast::ClassMethodDecl>(&item)) {
-      if (method->name == method_name && method->return_type_opt && ctx.sigma) {
+      if (method->name == method_name && ctx.sigma) {
         analysis::ScopeContext scope;
         scope.sigma = *ctx.sigma;
         scope.sigma_source = ctx.sigma;
         scope.current_module = ctx.module_path;
-        if (auto lowered = ::ultraviolet::analysis::layout::LowerTypeForLayout(scope, method->return_type_opt)) {
-          method_ret_type = *lowered;
+        if (method->return_type_opt) {
+          if (auto lowered =
+                  ::ultraviolet::analysis::layout::LowerTypeForLayout(
+                      scope, method->return_type_opt)) {
+            method_ret_type = *lowered;
+          }
+        } else {
+          method_ret_type = analysis::MakeTypePrim("()");
+        }
+
+        bool params_complete = true;
+        method_params.reserve(method->params.size() + 1);
+        for (const ast::Param& param : method->params) {
+          IRParam ir_param;
+          ir_param.mode =
+              param.mode.has_value()
+                  ? std::optional<analysis::ParamMode>(analysis::ParamMode::Move)
+                  : std::nullopt;
+          ir_param.name = param.name;
+          ir_param.stable_name = ir_param.name;
+          if (param.type) {
+            const auto lowered = analysis::LowerType(scope, param.type);
+            if (lowered.ok && lowered.type) {
+              ir_param.type = lowered.type;
+            }
+          }
+          if (!ir_param.type) {
+            params_complete = false;
+            break;
+          }
+          method_params.push_back(std::move(ir_param));
+        }
+        if (params_complete) {
+          method_params.push_back(PanicOutParam());
+        } else {
+          method_params.clear();
         }
         break;
       }
@@ -608,6 +645,7 @@ LowerResult LowerDynCall(const IRValue& base_ptr,
   call.base = base_ptr;
   call.slot = slot;
   call.args = args;
+  call.params = std::move(method_params);
   call.ret_type = method_ret_type;
   call.check_dynamic_receiver_addr_active = true;
 

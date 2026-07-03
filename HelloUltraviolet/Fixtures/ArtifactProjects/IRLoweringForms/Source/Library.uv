@@ -35,12 +35,12 @@ public procedure irLoweringBranchPhiProbe(flag: bool) -> i32 {
 public procedure irLoweringRegionFrameProbe() -> i32 {
     var score: i32 = 0
     region as lowering_region {
-        let implicit_allocated: i32 = ^7
+        let implicit_allocated: i32 = new 7
         if implicit_allocated == 7 {
             score = score + 1
         }
         lowering_region.frame {
-            let frame_allocated: i32 = lowering_region ^ 11
+            let frame_allocated: i32 = lowering_region~>alloc(11)
             if frame_allocated == 11 {
                 score = score + 1
             }

@@ -257,15 +257,15 @@ public procedure absoluteValue(value: i32) -> i32 {
 
 Type-admissibility and by-value diagnostics are owned by §27.1.6; unsupported-ABI rejection by §27.2.2 / §23.8.
 
-### 27.3 Exported Procedures and Hosted Exports — Exposing Ultraviolet to Foreign Callers
+### 27.3 Foreign-Callable Procedure Exports — Exposing Ultraviolet to Foreign Callers
 
-Ultraviolet exposes a procedure to foreign callers in one of two modes. A **raw exported procedure** carries `#export("abi")` and presents a literal C-ABI signature. A **hosted export** carries `#host_export("abi")` and presents a derived foreign signature plus an opaque session handle, used by library assemblies that need a managed `Context`. The two modes MUST NOT be mixed in one assembly.
+Ultraviolet exposes a procedure to foreign callers in one of two modes. A **raw exported procedure** carries `#export("abi")` and presents a literal C-ABI signature. A **hosted export** carries `#host_export("abi")` and presents a derived foreign signature plus an opaque session handle, used by library assemblies that need a managed `Context`. The two modes MUST NOT be mixed in one assembly. This mirrors specification §23.3: raw exported procedures are the leaf feature in §23.3.1, and hosted exports are the leaf feature in §23.3.2.
 
 #### 27.3.1 Raw exported procedures
 
-A procedure becomes a raw exported procedure when its attribute list contains `#export("abi")`. It remains an ordinary `procedure_decl` (parsed by the normal procedure parser) with a `ProcedureDecl(...)` AST node; there is no dedicated raw-export node (§23.3.1–§23.3.3). The classification is simply: `ExportAttr(proc)` is defined.
+A procedure becomes a raw exported procedure when its attribute list contains `#export("abi")`. It remains an ordinary `procedure_decl` (parsed by the normal procedure parser) with a `ProcedureDecl(...)` AST node; there is no dedicated raw-export node (§§23.3.1.1–23.3.1.3). The classification is simply: `ExportAttr(proc)` is defined.
 
-The signature obligation is `ExportSig-Ok` (§23.3.4):
+The signature obligation is `ExportSig-Ok` (§23.3.1.4):
 
 ```text
 (ExportSig-Ok)
@@ -312,7 +312,7 @@ public procedure add(left: i32, right: i32) -> i32 {
 
 A **hosted export** carries `#host_export("abi")`. It is *not* a raw FFI signature. Instead the foreign-visible signature is derived from the source procedure: one leading `usize` **session-handle** parameter, followed by every source parameter *except the first*. The first source parameter is a projected `Context` bundle that is reconstructed inside the boundary thunk from session-owned state; it never appears in the foreign ABI.
 
-The classification and obligation is `HostExportSig-Ok` (§23.3.11), with its load-bearing premises shown:
+The classification and obligation is `HostExportSig-Ok` (§23.3.2.4), with its load-bearing premises shown:
 
 ```text
 (HostExportSig-Ok)  [abridged to its load-bearing premises]
@@ -351,7 +351,7 @@ ContextBundleFieldType(`sys`)     = $System        ContextBundleFieldType(`gpu`)
 
 The boundary reconstructs the first argument via `ContextBundleBuild` from session state, so foreign code never supplies capability values. The bundle parameter is *not* part of the foreign-visible ABI, so it does **not** need to be `FfiSafe` (indeed it cannot be — `$Class` dynamic types are prohibited by `FfiSafeType`).
 
-The foreign-visible thunk ABI prepends `HostSessionAbiParam = ⟨move, __ultraviolet_session, usize⟩`, then the visible parameters. The backend additionally emits the hosted-library lifecycle exports `__ultraviolet_host_abi_version : () -> u32`, `__ultraviolet_host_session_create : () -> usize`, and `__ultraviolet_host_session_destroy : (usize) -> u32` once per linked image (§23.3.13). The handle value `0` is always invalid.
+The foreign-visible thunk ABI prepends `HostSessionAbiParam = ⟨move, __ultraviolet_session, usize⟩`, then the visible parameters. The backend additionally emits the hosted-library lifecycle exports `__ultraviolet_host_abi_version : () -> u32`, `__ultraviolet_host_session_create : () -> usize`, and `__ultraviolet_host_session_destroy : (usize) -> u32` once per linked image (§23.3.2.6). The handle value `0` is always invalid.
 
 ##### Worked example — a hosted export
 
@@ -376,7 +376,7 @@ public procedure stepFrame(context: RenderContext, frame: u32) -> u32 {
 }
 ```
 
-#### 27.3.3 Diagnostics (§23.3.7, §23.3.14)
+#### 27.3.3 Diagnostics (§23.3.1.7, §23.3.2.7)
 
 | Code | Condition |
 | :--- | :--- |
@@ -708,7 +708,7 @@ ParseUnwindArg(a) =
    - raw exported procedures **return `ZeroValue(R)`**;
    - hosted exports **return `ZeroValue(R)`**.
 
-Recall the catch-mode preconditions enforced statically: the boundary ABI MUST be `"C-unwind"` (§27.4.4), and for exports/hosted exports the return type `R` MUST be zeroable (§27.3). For hosted exports, a boundary failure that occurs *before or during* invocation — including an invalid, non-live, or busy session handle — likewise returns `ZeroValue(R)` under catch mode, and otherwise terminates the boundary call as `Abort` (§23.3.12).
+Recall the catch-mode preconditions enforced statically: the boundary ABI MUST be `"C-unwind"` (§27.4.4), and for exports/hosted exports the return type `R` MUST be zeroable (§27.3). For hosted exports, a boundary failure that occurs *before or during* invocation — including an invalid, non-live, or busy session handle — likewise returns `ZeroValue(R)` under catch mode, and otherwise terminates the boundary call as `Abort` (§23.3.2.5).
 
 #### 27.8.2 Code generation (§23.7.6)
 

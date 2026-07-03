@@ -177,12 +177,12 @@ public procedure derefPlaceReference(pointer: *mut i32) -> i32 {
 public procedure lowerExprAllocReference() -> i32 {
     var score: i32 = 0
     region as scratch {
-        let implicit_value: i32 = ^41
+        let implicit_value: i32 = new 41
         if implicit_value == 41 {
             score = score + 1
         }
 
-        let explicit_value: i32 = (scratch) ^ 43
+        let explicit_value: i32 = scratch~>alloc(43)
         if explicit_value == 43 {
             score = score + 1
         }
@@ -268,18 +268,18 @@ internal procedure asyncKeyArtifactFails(
     return result
 }
 
-public procedure asyncCompositionSyncArtifactReference() -> i32 | bool {
+public procedure asyncCompositionSyncArtifactReference() -> Outcome<i32, bool> {
     return sync asyncCompositionArtifactUnitSuspends(101)
 }
 
-public procedure asyncCompositionAllArtifactReference() -> (i32, i32) | bool {
+public procedure asyncCompositionAllArtifactReference() -> Outcome<(i32, i32), bool> {
     return all {
         asyncCompositionArtifactMayFail(false, 102),
         asyncCompositionArtifactMayFail(false, 103),
     }
 }
 
-public procedure asyncCompositionRaceReturnArtifactReference() -> i32 | bool {
+public procedure asyncCompositionRaceReturnArtifactReference() -> Outcome<i32, bool> {
     return race {
         asyncCompositionArtifactMayFail(false, 104) -> |value| value + 1,
         asyncCompositionArtifactMayFail(false, 105) -> |value| value + 1
@@ -308,16 +308,16 @@ public procedure asyncCompositionCombinatorArtifactReference() -> bool {
             10,
             |acc: i32, value: i32| -> i32 acc + value
         )
-    let folded_result: i32 | bool = sync folded
+    let folded_result: Outcome<i32, bool> = sync folded
     let chained: Async<(), (), i32, bool> =
         asyncCompositionArtifactCompletes(112)~>chain(
             |value: i32| -> Async<(), (), i32, bool> asyncCompositionArtifactCompletes(value + 1)
         )
-    let chained_result: i32 | bool = sync chained
+    let chained_result: Outcome<i32, bool> = sync chained
     return true
 }
 
-public procedure asyncCompositionUntilArtifactReference() -> i32 {
+public procedure asyncCompositionUntilArtifactReference() -> Outcome<i32, !> {
     var cell: shared AsyncCompositionArtifactCell =
         AsyncCompositionArtifactCell { value: 113 }
     let completed: Async<(), (), i32, !> = cell~>until(

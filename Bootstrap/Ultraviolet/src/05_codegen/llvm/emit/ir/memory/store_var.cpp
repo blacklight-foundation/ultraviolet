@@ -44,6 +44,26 @@ void IRInstructionVisitor::operator()(const IRStoreVar &store) const
     }
   }
   analysis::TypeRef source_type = LookupValueType(store.value);
+  auto erase_zero_sized_store = [&](llvm::Type *value_type) -> bool
+  {
+    if (!value_type || value_type->isVoidTy() ||
+        !IsZeroSizedLLVMType(emitter, value_type))
+    {
+      return false;
+    }
+    emitter.SetLocal(store.name, llvm::Constant::getNullValue(value_type));
+    emitter.SetLocalHomeStorage(store.name, nullptr);
+    if (target_type)
+    {
+      emitter.SetLocalType(store.name, target_type);
+    }
+    emitter.ReleaseTempStorage(store.value);
+    return true;
+  };
+  if (target_type && erase_zero_sized_store(emitter.GetLLVMType(target_type)))
+  {
+    return;
+  }
   if (!slot)
   {
     slot = emitter.GetLocalHomeStorage(store.name);
@@ -75,6 +95,10 @@ void IRInstructionVisitor::operator()(const IRStoreVar &store) const
     {
       slot_ty = llvm::Type::getInt64Ty(emitter.GetContext());
     }
+    if (erase_zero_sized_store(slot_ty))
+    {
+      return;
+    }
 
     llvm::Function *func = builder.GetInsertBlock()->getParent();
     llvm::IRBuilder<> entry_builder(&func->getEntryBlock(),
@@ -86,6 +110,17 @@ void IRInstructionVisitor::operator()(const IRStoreVar &store) const
     if (source_storage)
     {
       if (TryEmitBitcopyAggregateStorageCopy(
+              emitter,
+              &builder,
+              new_slot,
+              source_storage,
+              target_type ? target_type : source_type,
+              source_type))
+      {
+        emitter.ReleaseTempStorage(store.value);
+        return;
+      }
+      if (TryEmitAggregateStorageTransfer(
               emitter,
               &builder,
               new_slot,
@@ -143,6 +178,13 @@ void IRInstructionVisitor::operator()(const IRStoreVar &store) const
     emitter.ReleaseTempStorage(store.value);
     return;
   }
+  if (auto *alloca = llvm::dyn_cast<llvm::AllocaInst>(slot))
+  {
+    if (erase_zero_sized_store(alloca->getAllocatedType()))
+    {
+      return;
+    }
+  }
   if (source_storage)
   {
     if (TryEmitBitcopyAggregateStorageCopy(
@@ -150,7 +192,18 @@ void IRInstructionVisitor::operator()(const IRStoreVar &store) const
             &builder,
             slot,
             source_storage,
-            target_type,
+            target_type ? target_type : source_type,
+            source_type))
+    {
+      emitter.ReleaseTempStorage(store.value);
+      return;
+    }
+    if (TryEmitAggregateStorageTransfer(
+            emitter,
+            &builder,
+            slot,
+            source_storage,
+            target_type ? target_type : source_type,
             source_type))
     {
       emitter.ReleaseTempStorage(store.value);

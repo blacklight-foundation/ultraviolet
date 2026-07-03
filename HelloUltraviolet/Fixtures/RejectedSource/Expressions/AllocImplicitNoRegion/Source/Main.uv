@@ -1,5 +1,5 @@
 //! Rejected expression specimen for implicit allocation without an active region.
 
 public procedure allocImplicitNoRegionReference() -> i32 {
-    return ^1
+    return new 1
 }

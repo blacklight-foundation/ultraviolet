@@ -111,14 +111,12 @@ LowerResult LowerIndexAccess(const ast::IndexAccessExpr& expr, LowerCtx& ctx) {
     access_expr.span = expr.base ? expr.base->span : core::Span{};
     IRPtr key_ir = LowerImplicitKeyAccess(access_expr, ast::KeyMode::Read, ctx);
 
-    // Lower the base expression
-    auto base_result = LowerExpr(*expr.base, ctx);
-
     // Check if index is a range expression
     if (std::holds_alternative<ast::RangeExpr>(expr.index->node)) {
         SPEC_RULE("Lower-Expr-Index-Range");
         SPEC_RULE("req.16.IndexAccessRuntimeFailuresAndControlPropagation");
 
+        auto base_result = LowerExpr(*expr.base, ctx);
         const auto& range_node = std::get<ast::RangeExpr>(expr.index->node);
         auto range_result = LowerRangeExpr(range_node, ctx);
 
@@ -150,6 +148,7 @@ LowerResult LowerIndexAccess(const ast::IndexAccessExpr& expr, LowerCtx& ctx) {
         SPEC_RULE("Lower-Expr-Index-Range");
         SPEC_RULE("req.16.IndexAccessRuntimeFailuresAndControlPropagation");
 
+        auto base_result = LowerExpr(*expr.base, ctx);
         auto range_result = LowerExpr(*expr.index, ctx);
         const auto range_kind = RangeIndexKindOf(*expr.index, ctx);
 
@@ -230,6 +229,7 @@ LowerResult LowerIndexAccess(const ast::IndexAccessExpr& expr, LowerCtx& ctx) {
         return LowerResult{SeqIR(std::move(seq)), elem_value};
     }
 
+    auto base_result = LowerExpr(*expr.base, ctx);
     auto index_result = LowerExpr(*expr.index, ctx);
 
     // Determine if bounds check is needed
