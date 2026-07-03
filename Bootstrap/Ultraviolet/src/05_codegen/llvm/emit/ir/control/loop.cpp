@@ -93,8 +93,11 @@ void IRInstructionVisitor::operator()(const IRLoop &loop) const
     loop_result_ty = emitter.GetLLVMType(loop_result_type);
   }
 
+  const bool materialize_loop_result =
+      loop_result_ty && !loop_result_ty->isVoidTy() &&
+      !IsZeroSizedLLVMType(emitter, loop_result_ty);
   llvm::AllocaInst *loop_result_slot = nullptr;
-  if (loop_result_ty && !loop_result_ty->isVoidTy())
+  if (materialize_loop_result)
   {
     loop_result_slot =
         CreateEntryAlloca(func, loop_result_ty, "loop.result.slot");
@@ -863,7 +866,12 @@ void IRInstructionVisitor::operator()(const IRLoop &loop) const
         {
           if (loop.iter_value.has_value() && active_ctx)
           {
-            llvm::Value *iter_value = EvaluateOrDefault(*loop.iter_value);
+            llvm::Value *iter_value =
+                emitter.GetAddressableStorage(*loop.iter_value);
+            if (!iter_value)
+            {
+              iter_value = EvaluateOrDefault(*loop.iter_value);
+            }
             analysis::TypeRef iter_type =
                 active_ctx->LookupValueType(*loop.iter_value);
             if (!iter_type &&
@@ -1170,7 +1178,7 @@ void IRInstructionVisitor::operator()(const IRLoop &loop) const
   }
 
   builder.SetInsertPoint(loop_end);
-  if (loop_result_slot && loop_result_ty && !loop_result_ty->isVoidTy())
+  if (loop_result_slot && materialize_loop_result)
   {
     if (loop.result.kind == IRValue::Kind::Opaque &&
         IsAddressBackedAggregateType(loop_result_ty))

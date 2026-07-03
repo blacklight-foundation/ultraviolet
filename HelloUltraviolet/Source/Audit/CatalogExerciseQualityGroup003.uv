@@ -4,1728 +4,6 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup003() -> usize {
     var count: usize = 0usize
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.LexSensitivePos",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.LexSecureSensitivePositions",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Decode-Ok",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Decode-Err",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.StripLeadBOM",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "StripBOM-Empty",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "StripBOM-None",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "StripBOM-Start",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "StripBOM-Embedded",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.LineEndingConstants",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Norm-Empty",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Norm-CRLF",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Norm-CR",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Norm-LF",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Norm-Other",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.Utf8Offsets",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.LineStarts",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLogicalLinesReference",
-            "Source/Reference/SourceText/LogicalLines.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.LineCount",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLogicalLinesReference",
-            "Source/Reference/SourceText/LogicalLines.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.LocateLineColumn",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLogicalLinesReference",
-            "Source/Reference/SourceText/LogicalLines.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.ProhibitedCodePoints",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.LiteralSpan",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "WF-Prohibited",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.NFC",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.CaseFold",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.IdentifierKeys",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.ModulePathKeys",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.NFCAndCaseFoldTotality",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.NestingDepth",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLogicalLinesReference",
-            "Source/Reference/SourceText/LogicalLines.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.PrevNextNonNewlineTokens",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLogicalLinesReference",
-            "Source/Reference/SourceText/LogicalLines.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.NewlineContinuationTokenSets",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLogicalLinesReference",
-            "Source/Reference/SourceText/LogicalLines.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.Continue",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLogicalLinesReference",
-            "Source/Reference/SourceText/LogicalLines.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.FilterContinuedNewlines",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLogicalLinesReference",
-            "Source/Reference/SourceText/LogicalLines.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.StatementTerminatorPredicates",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLogicalLinesReference",
-            "Source/Reference/SourceText/LogicalLines.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.RangeContinuationAcrossNewline",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLogicalLinesReference",
-            "Source/Reference/SourceText/LogicalLines.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.ElseContinuationAcrossNewline",
-            "HelloUltraviolet::Reference::Expressions",
-            "runExpressionsIfControlReference",
-            "Source/Reference/Expressions/Control.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.BraceNewlineContinuation",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLogicalLinesReference",
-            "Source/Reference/SourceText/LogicalLines.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.CommaStatementTermination",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLogicalLinesReference",
-            "Source/Reference/SourceText/LogicalLines.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.SourceLoadState",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.SourceLoadStateComponentDomains",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Step-Size",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Step-Decode",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Step-Decode-Err",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Step-BOM",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Step-Norm",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Step-EmbeddedBOM-Err",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Step-LineMap",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLogicalLinesReference",
-            "Source/Reference/SourceText/LogicalLines.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Step-Prohibited",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Step-Prohibited-Err",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "LoadSource-Ok",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "LoadSource-Err",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.SourceLoadTemporarySource",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.SourceLoadDiagnosticOffsets",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.SpanAtIndex",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextUnicodeNormalizationReference",
-            "Source/Reference/SourceText/UnicodeNormalization.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.SpanAtLineStart",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLogicalLinesReference",
-            "Source/Reference/SourceText/LogicalLines.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.LexerInput",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.LexerOutput",
-            "HelloUltraviolet::Audit",
-            "artifactProjectLexerTokenizerOutputExercise",
-            "Fixtures/ArtifactProjects/LexerTokenizerOutput/Source/Library.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.TokenEOF",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.LexemeBinding",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.DocCommentRecord",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.DocCommentBody",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.NewlineTokens",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.CommentTokenExclusion",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.LexerIndicesAndLexemes",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.CharacterClassInput",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.Whitespace",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.LineFeed",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.IdentifierCharacters",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.XIDVersion",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.NonCharacter",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.DigitCharacters",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.SensitiveCharacters",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.ReservedKeywords",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.FutureReserved",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.KeywordPredicate",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.ReservedNamespaces",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.UniverseProtectedBindings",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.ReservedPredicateNames",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.TokenKinds",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.OperatorSet",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.PunctuatorSet",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.OperatorPunctuatorDisjoint",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.CommentScanInput",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Scan-Line-Comment",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.DocCommentClassification",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Doc-Comment",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.LineCommentSkipping",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.BlockCommentState",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Block-Start",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Block-End",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Block-Done",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Block-Step",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.LiteralLexingInput",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "grammar.LiteralLexing",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "conformance.FloatSuffixDefaulting",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.SimpleEscape",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.ByteEscapeValidity",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.UnicodeEscapeValidity",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.StringCharacterValidity",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.CharacterLiteralContentValidity",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.QuotedLiteralCharacterUnits",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.NumericSuffixSets",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.StringHelpers",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.HexDigitValue",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.DecimalDigitValue",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.OctalDigitValue",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.BinaryDigitValue",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.NumericValues",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.NumericUnderscorePredicates",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.NumericDigitRuns",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.SuffixMatch",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.ExponentScan",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.DecCoreEnd",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "req.DecimalRangeNoFloatCore",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.NumericCoreEnd",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.NumericScanEnd",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.NumericFloatCorePredicates",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.NumericKind",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Lex-Int",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Lex-Float",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.NumericLexemeValidation",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.DecimalLeadingZeros",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.EscapeSequences",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Lex-String",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
             "def.BackslashCount",
             "HelloUltraviolet::Reference::SourceText",
             "runSourceTextLiteralsReference",
@@ -1754,35 +32,7 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup003() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.LineFeedOrEOFBeforeClose",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
             "def.EscapeMatch",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.BadEscapeAt",
             "HelloUltraviolet::Reference::SourceText",
             "runSourceTextLiteralsReference",
             "Source/Reference/SourceText/Literals.uv",
@@ -1852,49 +102,7 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup003() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "def.CharacterLiteralInvalid",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
             "def.CharacterScalarCount",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Lex-Char-Unterminated",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Lex-Char-Invalid",
             "HelloUltraviolet::Reference::SourceText",
             "runSourceTextLiteralsReference",
             "Source/Reference/SourceText/Literals.uv",
@@ -2146,175 +354,7 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup003() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Max-Munch-Err",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
             "def.GenericCloseException",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.LexicalSecurityInputs",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.LiteralAndCommentRanges",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.SensitivePositionsInSpan",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.UnsafeTokenSpans",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.LexicalSecurityCheck",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "LexSecure-Err",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "LexSecure-Warn",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.ConfusableIdentifierChecks",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Confusable-Err",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "MixedScript-Err",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.LexicalSecurityDiagnosticSpans",
             "HelloUltraviolet::Reference::SourceText",
             "runSourceTextLiteralsReference",
             "Source/Reference/SourceText/Literals.uv",
@@ -2440,62 +480,6 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup003() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Lex-String-Unterminated-Recover",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Lex-Char-Unterminated-Recover",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Lex-Sensitive",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "def.SensitiveTokenPositions",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
             "conformance.TupleProjectionLexicalDisambiguation",
             "HelloUltraviolet::Reference::SourceText",
             "runSourceTextLiteralsReference",
@@ -2524,49 +508,7 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup003() -> usize {
     }
     if catalogExerciseQualityEntryPasses(
         catalogExerciseQualityEntry(
-            "Lex-Token-Err",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
             "Tokenize-Ok",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Tokenize-Secure-Err",
-            "HelloUltraviolet::Reference::SourceText",
-            "runSourceTextLiteralsReference",
-            "Source/Reference/SourceText/Literals.uv",
-            false,
-            true,
-            false,
-            false
-        )
-    ) {
-        count = count + 1usize
-    }
-    if catalogExerciseQualityEntryPasses(
-        catalogExerciseQualityEntry(
-            "Tokenize-Err",
             "HelloUltraviolet::Reference::SourceText",
             "runSourceTextLiteralsReference",
             "Source/Reference/SourceText/Literals.uv",
@@ -2794,6 +736,2064 @@ internal procedure validatedCatalogAcceptedExerciseQualityGroup003() -> usize {
             "HelloUltraviolet::Reference::Authority",
             "attenuationDelegationSubsetRoutingReference",
             "Source/Reference/Authority/CapabilityFormalModel.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ObservableEffect",
+            "HelloUltraviolet::Reference::Authority",
+            "observableEffectVariantsReference",
+            "Source/Reference/Authority/CapabilityFormalModel.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ObservableEvent",
+            "HelloUltraviolet::Reference::Authority",
+            "observableEventDefinitionReference",
+            "Source/Reference/Authority/CapabilityFormalModel.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.ObservableBehavior",
+            "HelloUltraviolet::Reference::Authority",
+            "observableBehaviorDefinitionReference",
+            "Source/Reference/Authority/CapabilityFormalModel.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "req.AsIfObservablePreservation",
+            "HelloUltraviolet::Reference::Authority",
+            "asIfObservablePreservationReference",
+            "Source/Reference/Authority/CapabilityFormalModel.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "req.AsIfForbiddenObservableChanges",
+            "HelloUltraviolet::Reference::Authority",
+            "asIfForbiddenObservableChangesReference",
+            "Source/Reference/Authority/CapabilityFormalModel.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.SequencePoint",
+            "HelloUltraviolet::Reference::Authority",
+            "sequencePointDefinitionReference",
+            "Source/Reference/Authority/CapabilityFormalModel.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.CanonicalSequencePoints",
+            "HelloUltraviolet::Reference::Authority",
+            "canonicalSequencePointsReference",
+            "Source/Reference/Authority/CapabilityFormalModel.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "req.SequencePointLTRPreservation",
+            "HelloUltraviolet::Reference::Authority",
+            "sequencePointLTRPreservationReference",
+            "Source/Reference/Authority/CapabilityFormalModel.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.IOHostPrimitiveSets",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOHostPrimitiveSetsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.OtherHostPrimitiveSets",
+            "HelloUltraviolet::Audit",
+            "artifactProjectRuntimeInterfaceSymbolsExercise",
+            "Source/Audit/RuntimeInterfaceArtifactExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.HostPrimitiveUniverse",
+            "HelloUltraviolet::Reference::Authority",
+            "hostPrimitiveUniverseReference",
+            "Source/Reference/Authority/HostPrimitives.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.DiagnosticHostPrimitives",
+            "HelloUltraviolet::Reference::Authority",
+            "diagnosticHostPrimitivesReference",
+            "Source/Reference/Authority/HostPrimitives.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RuntimeHostPrimitives",
+            "HelloUltraviolet::Audit",
+            "artifactProjectRuntimeInterfaceSymbolsExercise",
+            "Source/Audit/RuntimeInterfaceArtifactExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "conformance.IOPrimitiveOwnership",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveSemanticModelReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.IOPrimitiveJudgments",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveSemanticModelReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.IOPrimitiveResultTypes",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveSemanticModelReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.IOStateTypes",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveSemanticModelReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.IOStateProjections",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveSemanticModelReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.IOEntryQueries",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveSemanticModelReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.FileHandleQueries",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOFileHandleSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.DirectoryIteratorQueries",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIODirectoryIteratorSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.FileFlushedQuery",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOFileHandleSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.IOExplicitStateJudgments",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveSemanticModelReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.IOStateElidedEquivalences",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveSemanticModelReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RestrictPathSuccess",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIORestrictionAndPathSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.RestrictPathFailure",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIORestrictionAndPathSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.IOPathOperationSet",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveSemanticModelReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IORestrict-Delegate",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIORestrictionAndPathSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IORestrict-InvalidPath",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIORestrictionAndPathSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IORestrict-ExistsInvalidFalse",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIORestrictionAndPathSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.IOPathErrorOperationSets",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPathErrorOperationSetsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.IOPathErrorPredicates",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPathErrorPredicatesReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IOPath-InvalidPath-NoData",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPathErrorOperationSetsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IOPath-InvalidPath-Data",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPathErrorOperationSetsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IOPath-NotFound",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIORestrictionAndPathSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IOPath-PermissionDenied",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIORestrictionAndPathSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IOPath-CreateWriteAlreadyExists",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIORestrictionAndPathSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IOPath-CreateDirAlreadyExistsNonDir",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIORestrictionAndPathSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IOPath-OpenDirInvalidNonDir",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIORestrictionAndPathSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IOPath-Busy",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIORestrictionAndPathSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.IORemoveSemantics",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIORemoveSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IORemove-RemoveFile",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIORemoveSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IORemove-RemoveOtherEntry",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIORemoveSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IORemove-RemoveEmptyDir",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIORemoveSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IORemove-DirectoryNotEmpty",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIORemoveSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IOReadFile-InvalidUtf8",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOFileHandleSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "FileReadAll-InvalidUtf8",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOFileHandleSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IOExists-True",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIORestrictionAndPathSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IOExists-False",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIORestrictionAndPathSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.FileHandleStateAndMode",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOFileHandleSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.FileLengthAndByteLength",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOFileHandleSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.DirectoryEntryOrdering",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIODirectoryIteratorSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IOOpenRead-HandleState",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOFileHandleSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IOOpenWrite-HandleState",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOFileHandleSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IOOpenAppend-HandleState",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOFileHandleSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IOCreateWrite-HandleState",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOFileHandleSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IOReadFile-DelegatesThroughHandle",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOFileHandleSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IOReadBytes-DelegatesThroughHandle",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOFileHandleSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "FileReadAll-ClosedFailure",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOFileHandleSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "FileReadAllBytes-ClosedFailure",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOFileHandleSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "FileWrite-ClosedFailure",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOFileHandleSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "FileFlush-ClosedFailure",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOFileHandleSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "FileReadAll-AdvancesToEnd",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOFileHandleSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "FileReadAllBytes-AdvancesToEnd",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOFileHandleSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "FileWrite-PositionUpdate",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOFileHandleSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "FileWrite-LengthUpdate",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOFileHandleSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "FileFlush-RecordsFlushed",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOFileHandleSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "FileClose-ClosesHandle",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOFileHandleSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "IOOpenDir-IteratorState",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIODirectoryIteratorSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "DirNext-ClosedFailure",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIODirectoryIteratorSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "DirNext-Exhausted",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIODirectoryIteratorSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "DirNext-YieldsEntry",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIODirectoryIteratorSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "DirClose-ClosesIterator",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIODirectoryIteratorSemanticsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.SystemState",
+            "HelloUltraviolet::Reference::Authority",
+            "authoritySystemStateReference",
+            "Source/Reference/Authority/System.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.SystemPrimitiveJudgments",
+            "HelloUltraviolet::Reference::Authority",
+            "authoritySystemPrimitiveJudgmentsReference",
+            "Source/Reference/Authority/System.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.SystemPrimitiveStateElidedEquivalences",
+            "HelloUltraviolet::Reference::Authority",
+            "authoritySystemStateElidedEquivalencesReference",
+            "Source/Reference/Authority/System.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.EmptyStringVal",
+            "HelloUltraviolet::Reference::Authority",
+            "authoritySystemEnvironmentPrimitiveReference",
+            "Source/Reference/Authority/System.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "System-GetEnv-Ok",
+            "HelloUltraviolet::Reference::Authority",
+            "authoritySystemEnvironmentPrimitiveReference",
+            "Source/Reference/Authority/System.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "System-GetEnv-None",
+            "HelloUltraviolet::Reference::Authority",
+            "authoritySystemEnvironmentPrimitiveReference",
+            "Source/Reference/Authority/System.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "System-Exit",
+            "HelloUltraviolet::Audit",
+            "artifactProjectFixturesBuildAndExerciseOutputObligations",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "System-Run",
+            "HelloUltraviolet::Reference::Authority",
+            "authoritySystemRunPrimitiveReference",
+            "Source/Reference/Authority/System.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.TimePrimitiveJudgments",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityTimePrimitiveCallsReference",
+            "Source/Reference/Authority/Time.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.TimePrimitiveValueConstructors",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityTimePrimitiveCallsReference",
+            "Source/Reference/Authority/Time.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "req.TimePrimitiveAttenuationSemantics",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityTimePrimitiveCallsReference",
+            "Source/Reference/Authority/Time.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "req.MonotonicTimePrimitiveSemantics",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityTimePrimitiveCallsReference",
+            "Source/Reference/Authority/Time.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "req.WallTimePrimitiveSemantics",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityTimePrimitiveCallsReference",
+            "Source/Reference/Authority/Time.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.NetworkPrimitiveJudgments",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityNetworkPrimitiveCallsReference",
+            "Source/Reference/Authority/Network.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "req.NetRestrictHostRequiredSemantics",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityNetworkRestrictionRuntimeStateReference",
+            "Source/Reference/Authority/Network.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "req.NetRestrictHostSubsetAuthority",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityNetworkRestrictionRuntimeStateReference",
+            "Source/Reference/Authority/Network.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "req.NetRestrictNoUnrelatedMutation",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityNetworkRestrictionRuntimeStateReference",
+            "Source/Reference/Authority/Network.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.PrimitiveReceiverHandleHelpers",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityFileDirPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.PrimitiveMethodNameAndOwner",
+            "HelloUltraviolet::Audit",
+            "artifactProjectRuntimeInterfaceSymbolsExercise",
+            "Source/Audit/RuntimeInterfaceArtifactExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.PrimCallJudgment",
+            "HelloUltraviolet::Audit",
+            "artifactProjectRuntimeInterfaceSymbolsExercise",
+            "Source/Audit/RuntimeInterfaceArtifactExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-IO-OpenRead",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-IO-OpenWrite",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-IO-OpenAppend",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-IO-CreateWrite",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-IO-ReadFile",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-IO-ReadBytes",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-IO-WriteFile",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-IO-WriteStdout",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-IO-WriteStderr",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-IO-Exists",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-IO-Remove",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-IO-OpenDir",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-IO-CreateDir",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-IO-EnsureDir",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-IO-Kind",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-IO-Restrict",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityIOPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-File-ReadAll",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityFileDirPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-File-ReadAllBytes",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityFileDirPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-File-Write",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityFileDirPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-File-Flush",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityFileDirPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-File-Write-Append",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityFileDirPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-File-Flush-Append",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityFileDirPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-File-Close-Read",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityFileDirPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-File-Close-Write",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityFileDirPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-File-Close-Append",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityFileDirPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-Dir-Next",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityFileDirPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-Dir-Close",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityFileDirPrimitiveCallsReference",
+            "Source/Reference/Authority/IO.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-System-GetEnv",
+            "HelloUltraviolet::Reference::Authority",
+            "authoritySystemPrimitiveCallsReference",
+            "Source/Reference/Authority/System.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-System-ExecutablePath",
+            "HelloUltraviolet::Reference::Authority",
+            "authoritySystemPrimitiveCallsReference",
+            "Source/Reference/Authority/System.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-System-ArgumentCount",
+            "HelloUltraviolet::Reference::Authority",
+            "authoritySystemPrimitiveCallsReference",
+            "Source/Reference/Authority/System.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-System-Argument",
+            "HelloUltraviolet::Reference::Authority",
+            "authoritySystemPrimitiveCallsReference",
+            "Source/Reference/Authority/System.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-System-CurrentDirectory",
+            "HelloUltraviolet::Reference::Authority",
+            "authoritySystemPrimitiveCallsReference",
+            "Source/Reference/Authority/System.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-System-Exit",
+            "HelloUltraviolet::Audit",
+            "artifactProjectFixturesBuildAndExerciseOutputObligations",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-System-Run",
+            "HelloUltraviolet::Audit",
+            "artifactProjectFixturesBuildAndExerciseOutputObligations",
+            "Source/Audit/ArtifactProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-Time-Monotonic",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityTimePrimitiveCallsReference",
+            "Source/Reference/Authority/Time.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-Time-Wall",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityTimePrimitiveCallsReference",
+            "Source/Reference/Authority/Time.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-MonotonicTime-Now",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityTimePrimitiveCallsReference",
+            "Source/Reference/Authority/Time.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-MonotonicTime-Resolution",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityTimePrimitiveCallsReference",
+            "Source/Reference/Authority/Time.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-MonotonicTime-Elapsed",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityTimePrimitiveCallsReference",
+            "Source/Reference/Authority/Time.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-MonotonicTime-Coarsen",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityTimePrimitiveCallsReference",
+            "Source/Reference/Authority/Time.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-WallTime-NowUtc",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityTimePrimitiveCallsReference",
+            "Source/Reference/Authority/Time.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-WallTime-Resolution",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityTimePrimitiveCallsReference",
+            "Source/Reference/Authority/Time.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-WallTime-Coarsen",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityTimePrimitiveCallsReference",
+            "Source/Reference/Authority/Time.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "Prim-Network-RestrictHost",
+            "HelloUltraviolet::Reference::Authority",
+            "authorityNetworkPrimitiveCallsReference",
+            "Source/Reference/Authority/Network.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.BindingStateDomain",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.BindInfo",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.BindingEnvironment",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.BindingScopeStackOps",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.BindingLookup",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.BindingUpdate",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.BindingIntro",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.PermissionOfType",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.PermissionActivityDomain",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityBindingRuntimeStateReference",
+            "Source/Reference/Authority/BindingRuntimeState.uv",
+            false,
+            true,
+            false,
+            false
+        )
+    ) {
+        count = count + 1usize
+    }
+    if catalogExerciseQualityEntryPasses(
+        catalogExerciseQualityEntry(
+            "def.PermissionEnvironment",
+            "HelloUltraviolet::Audit",
+            "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
+            "Source/Audit/AcceptedProjectExecution.uv",
             false,
             true,
             false,

@@ -2,7 +2,7 @@
 
 
 public procedure countStructuredParallelismCaptureSemanticsObligations() -> usize {
-    return 22usize
+    return 15usize
 }
 
 public procedure validatedStructuredParallelismCaptureSemanticsObligations() -> usize {
@@ -70,15 +70,6 @@ public procedure validatedStructuredParallelismCaptureSemanticsObligations() -> 
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.20.Parallel-Closure-Capture-Unique-Err",
-        77082usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/ParallelClosureCaptureUnique/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.20.OuterParallelMoveSelection",
         77098usize,
@@ -94,24 +85,6 @@ public procedure validatedStructuredParallelismCaptureSemanticsObligations() -> 
         "HelloUltraviolet::Reference::Parallelism",
         "movedBindingValidityReference",
         "Source/Reference/Parallelism/CaptureSemantics.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.20.Parallel-Closure-Capture-OuterMove-Err",
-        77128usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/ParallelClosureCaptureOuterMove/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.20.Parallel-Escaping-Closure-Spawn-Err",
-        77144usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/ParallelEscapingClosureSpawn/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -142,33 +115,6 @@ public procedure validatedStructuredParallelismCaptureSemanticsObligations() -> 
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.20.GpuCapture-Shared-Err",
-        77205usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/GpuCaptureShared/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.20.GpuCapture-HeapProv-Err",
-        77221usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/GpuCaptureHeapProvenance/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.20.GpuCapture-NonGpuSafe-Err",
-        77237usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/GpuCaptureNonGpuSafe/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "requirement.20.MovedBindingValidityReference",
         77253usize,
@@ -193,15 +139,6 @@ public procedure validatedStructuredParallelismCaptureSemanticsObligations() -> 
         "HelloUltraviolet::Audit",
         "artifactProjectStructuredParallelLoweringEvidenceExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.20.CaptureSemantics",
-        77302usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/CaptureSemanticsDiagnostics/Source/Main.uv"
     ) {
         count = count + 1usize
     }

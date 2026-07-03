@@ -2,7 +2,7 @@
 
 
 public procedure countAsynchronousOperationsCompositionFormsObligations() -> usize {
-    return 133usize
+    return 116usize
 }
 
 public procedure validatedAsynchronousOperationsCompositionFormsObligations() -> usize {
@@ -196,24 +196,6 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     ) {
         count = count + 1usize
     }
-    if acceptedProjectObligationEntryMatches(
-        "rule.21.T-Loop-Iter-Async",
-        80729usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.Loop-Async-Err",
-        80751usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/LoopAsyncEnclosingReturn/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "requirement.21.ManualSteppingRequirement",
         80769usize,
@@ -232,57 +214,12 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.Sync-Yield-Err",
-        80800usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/SyncContainsYield/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.Sync-YieldFrom-Err",
-        80818usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/SyncContainsYieldFrom/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.21.T-Sync",
         80836usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.Sync-Async-Context-Err",
-        80854usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/SyncInsideAsync/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.Sync-Out-Err",
-        80872usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/SyncOperandYields/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.Sync-In-Err",
-        80891usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/SyncOperandRequiresInput/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -313,93 +250,12 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.Race-Arity-Err",
-        80971usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/RaceTooFewArms/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.Race-Handler-Mix-Err",
-        80989usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/RaceHandlerMix/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.Race-Operand-Out-Err",
-        81007usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/RaceOperandYields/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.Race-Operand-Err",
-        81026usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/RaceOperandNonAsync/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.Race-Stream-Operand-Err",
-        81045usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/RaceStreamOperandNeedsInput/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.Race-Handler-Type-Err",
-        81064usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/RaceHandlerTypeMismatch/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.Race-Stream-Handler-Type-Err",
-        81085usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/RaceStreamHandlerTypeMismatch/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.21.T-All",
         81108usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.All-Out-Err",
-        81127usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/AllOperandYields/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.All-In-Err",
-        81145usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/AllOperandRequiresInput/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -893,8 +749,8 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
         "rule.21.EvalSigma-Map-Resume-Complete",
         82156usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncCompositionMapReference",
-        "Source/Reference/Async/CompositionForms.uv"
+        "runAsyncCompositionMapCompletionReference",
+        "Source/Reference/Async/CombinatorRuntimeForms.uv"
     ) {
         count = count + 1usize
     }
@@ -902,8 +758,8 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
         "rule.21.EvalSigma-Map-Resume-Failed",
         82174usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncCompositionMapReference",
-        "Source/Reference/Async/CompositionForms.uv"
+        "runAsyncCompositionMapFailureReference",
+        "Source/Reference/Async/CombinatorRuntimeForms.uv"
     ) {
         count = count + 1usize
     }
@@ -1010,8 +866,8 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
         "rule.21.EvalSigma-Fold-Resume-Failed",
         82391usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncCompositionFoldReference",
-        "Source/Reference/Async/CompositionForms.uv"
+        "runAsyncCompositionFoldFailureReference",
+        "Source/Reference/Async/CombinatorRuntimeForms.uv"
     ) {
         count = count + 1usize
     }
@@ -1046,8 +902,8 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
         "rule.21.EvalSigma-Chain-Resume-Source-Failed",
         82463usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncCompositionChainReference",
-        "Source/Reference/Async/CompositionForms.uv"
+        "runAsyncCompositionChainSourceFailureReference",
+        "Source/Reference/Async/CombinatorRuntimeForms.uv"
     ) {
         count = count + 1usize
     }
@@ -1192,15 +1048,6 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionCombinatorsReference",
         "Source/Reference/Async/CompositionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.21.AsyncCompositionDiagnostics",
-        82729usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/AsyncCompositionDiagnosticsTable/Source/Main.uv"
     ) {
         count = count + 1usize
     }

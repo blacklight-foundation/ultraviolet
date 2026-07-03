@@ -171,11 +171,14 @@
 
 namespace ultraviolet::ast {
 
+using ultraviolet::lexer::Ctx;
+
 // Forward declarations from expr_common.cpp
 ExprPtr MakeExpr(const core::Span& span, ExprNode node);
 core::Span SpanCover(const core::Span& start, const core::Span& end);
 bool IsOp(const Parser& parser, std::string_view op);
 bool IsKw(const Parser& parser, std::string_view kw);
+bool IsExprStart(const Token& tok);
 bool IsPlace(const ExprPtr& expr);
 
 // Forward declarations from other modules
@@ -299,6 +302,25 @@ ParseElemResult<ExprPtr> ParseUnary(Parser parser, bool allow_brace,
     SPEC_RULE("def.16.EffectfulCoreExprAst");
     return {rhs.parser,
             MakeExpr(SpanCover(TokSpan(parser), rhs.elem->span), copy)};
+  }
+
+  const Token* tok = Tok(parser);
+  if (tok && Ctx(*tok, "new")) {
+    Parser next = parser;
+    Advance(next);
+    const Token* operand_tok = Tok(next);
+    if (operand_tok && IsExprStart(*operand_tok)) {
+      SPEC_RULE("Parse-New-Expr");
+      SPEC_RULE("rule.16.Parse-New-Expr");
+      SPEC_RULE("grammar.16.EffectfulCoreExpressions");
+      ParseElemResult<ExprPtr> rhs =
+          ParseUnary(next, allow_brace, allow_bracket);
+      AllocExpr alloc;
+      alloc.value = rhs.elem;
+      SPEC_RULE("def.16.EffectfulCoreExprAst");
+      return {rhs.parser,
+              MakeExpr(SpanCover(TokSpan(parser), rhs.elem->span), alloc)};
+    }
   }
 
   // Widen keyword

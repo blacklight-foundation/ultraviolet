@@ -165,11 +165,22 @@ internal procedure capabilityUnionI32Is(value: i32 | bool, expected: i32) -> boo
     }
 }
 
+internal procedure capabilityOutcomeI32Is(value: Outcome<i32, bool>, expected: i32) -> bool {
+    return if value is {
+        Outcome::Value(actual) {
+            actual == expected
+        }
+        Outcome::Error(failure) {
+            false
+        }
+    }
+}
+
 internal procedure capabilityReactorRuns(reactor: $Reactor) -> bool {
-    let run_value: i32 | bool = reactor~>run(capabilityFutureValue(37))
+    let run_value: Outcome<i32, bool> = reactor~>run(capabilityFutureValue(37))
     let tracked: Tracked<i32, bool> = reactor~>register(capabilityFutureValue(41))
     let tracked_value: i32 | bool = wait tracked
-    return capabilityUnionI32Is(run_value, 37) &&
+    return capabilityOutcomeI32Is(run_value, 37) &&
         capabilityUnionI32Is(tracked_value, 41)
 }
 

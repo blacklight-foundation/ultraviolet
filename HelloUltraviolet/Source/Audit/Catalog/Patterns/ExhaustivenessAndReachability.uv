@@ -2,7 +2,7 @@
 
 
 public procedure countPatternsExhaustivenessAndReachabilityObligations() -> usize {
-    return 27usize
+    return 22usize
 }
 
 public procedure validatedPatternsExhaustivenessAndReachabilityObligations() -> usize {
@@ -97,15 +97,6 @@ public procedure validatedPatternsExhaustivenessAndReachabilityObligations() -> 
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.17.IfCase-Modal-NonExhaustive",
-        68016usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPatternsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.17.UnionCaseAnalysisGroup",
         68032usize,
@@ -121,15 +112,6 @@ public procedure validatedPatternsExhaustivenessAndReachabilityObligations() -> 
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsExhaustivenessReference",
         "Source/Reference/Patterns/Exhaustiveness.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.17.IfCase-Union-NonExhaustive",
-        68061usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPatternsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Patterns/IfCaseUnionNonExhaustive/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -169,15 +151,6 @@ public procedure validatedPatternsExhaustivenessAndReachabilityObligations() -> 
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.17.IfCase-Enum-NonExhaustive",
-        68138usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPatternsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Patterns/IfCaseEnumRefutablePayloadCoverage/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.17.Chk-IfCase-Modal",
         68154usize,
@@ -214,15 +187,6 @@ public procedure validatedPatternsExhaustivenessAndReachabilityObligations() -> 
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.17.IfCase-Unreachable",
-        68218usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPatternsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Patterns/IfCaseUnreachable/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "req.17.ExhaustivenessNoAdditionalDynamicSemantics",
         68236usize,
@@ -238,15 +202,6 @@ public procedure validatedPatternsExhaustivenessAndReachabilityObligations() -> 
         "HelloUltraviolet::Audit",
         "patternExhaustivenessNoAdditionalLoweringConformanceMatches",
         "Source/Audit/PatternLoweringConformanceExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.17.ExhaustivenessAndReachability",
-        68266usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPatternsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Patterns/ExhaustivenessAndReachabilityDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

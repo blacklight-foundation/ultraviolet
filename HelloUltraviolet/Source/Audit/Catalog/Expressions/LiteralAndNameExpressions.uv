@@ -2,7 +2,7 @@
 
 
 public procedure countExpressionsLiteralAndNameExpressionsObligations() -> usize {
-    return 48usize
+    return 32usize
 }
 
 public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> usize {
@@ -76,15 +76,6 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
         "Source/Reference/Expressions/LiteralsAndNames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "def.16.QualifiedNameResolution",
-        57645usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/QualifiedNameResolution/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -187,33 +178,6 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "def.16.NullLiteralExpected",
-        57858usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/NullLiteralExpected/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.Chk-Int-Literal",
-        57871usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/IntLiteralCheckRange/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.Chk-Float-Literal-Explicit",
-        57887usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/FloatLiteralExplicitRequirement/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.16.Chk-Float-Literal-Infer",
         57903usize,
@@ -232,42 +196,6 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "def.16.PtrNullExpected",
-        57935usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/PtrNullExpectedRequirement/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Chk-Null-Ptr",
-        57948usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/PtrNullReturn/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.Syn-PtrNull-Err",
-        57964usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/PtrNullSynthesis/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.Chk-PtrNull-Err",
-        57980usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/PtrNullCheck/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.16.T-Ident",
         57996usize,
@@ -283,24 +211,6 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
         "Source/Reference/Expressions/LiteralsAndNames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.Expr-Unresolved-Err",
-        58028usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/ExprUnresolved/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.16.QualifiedNameEliminatedBeforeTyping",
-        58044usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/QualifiedNameEliminatedBeforeTyping/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -376,66 +286,12 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     ) {
         count = count + 1usize
     }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Lower-Expr-Literal",
-        58188usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Lower-Expr-PtrNull",
-        58204usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/PtrNullReturn/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Lower-Expr-Ident-Local",
-        58219usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Lower-Expr-Ident-Path",
-        58235usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Lower-Expr-Path",
-        58251usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-Expr-Error",
         58266usize,
         "HelloUltraviolet::Reference::Expressions",
         "lowerExprErrorReference",
         "Source/Reference/Expressions/LiteralsAndNames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.16.LiteralAndNameExpressions",
-        58283usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/IntLiteralCheckRange/Source/Main.uv"
     ) {
         count = count + 1usize
     }

@@ -89,10 +89,10 @@ internal procedure capabilityMonotonicCanAttenuate(clock: $MonotonicTime) -> boo
         let coarsened: Outcome<$MonotonicTime, TimeError> =
             clock~>coarsen(resolution)
         if coarsened is {
-            @Value {
+            Outcome::Value(_) {
                 true
             }
-            @Error {
+            Outcome::Error(_) {
                 false
             }
         }
@@ -107,20 +107,20 @@ internal procedure capabilityWallCanAttenuate(
     let child_observed: bool = {
         let coarsened: Outcome<$WallTime, TimeError> = clock~>coarsen(resolution)
         if coarsened is {
-            @Value {
+            Outcome::Value(_) {
                 true
             }
-            @Error {
+            Outcome::Error(_) {
                 false
             }
         }
     }
     return child_observed &&
         if clock~>resolution() is {
-            @Value { value } {
+            Outcome::Value(value) {
                 value.nanoseconds > 0u128
             }
-            @Error {
+            Outcome::Error(_) {
                 false
             }
         }
@@ -133,10 +133,10 @@ internal procedure capabilityTimeCanAttenuate(time: $Time) -> bool {
     return capabilityMonotonicCanAttenuate(monotonic) &&
         capabilityWallCanAttenuate(wall, resolution) &&
         if wall~>resolution() is {
-            @Value { value } {
+            Outcome::Value(value) {
                 value.nanoseconds > 0u128
             }
-            @Error {
+            Outcome::Error(_) {
                 false
             }
         }
@@ -367,10 +367,10 @@ internal procedure capabilityDirectCallRequirementsSatisfied(context: Context) -
 
 internal procedure capabilityIoUnitSucceeded(result: Outcome<(), IoError>) -> bool {
     return if result is {
-        @Value {
+        Outcome::Value(_) {
             true
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -381,10 +381,10 @@ internal procedure capabilityIoTextEquals(
     expected: string@View
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             auditTextEquals(string::as_view(value), expected)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -397,7 +397,7 @@ internal procedure capabilityAppendObservableStep(
 ) -> bool {
     let opened: Outcome<unique File@Append, IoError> = io~>open_append(path)
     return if move opened is {
-        @Value { value } {
+        Outcome::Value(value) {
             let write_result: Outcome<(), IoError> =
                 value~>write(bytes::view_string(text))
             let flush_result: Outcome<(), IoError> = value~>flush()
@@ -406,7 +406,7 @@ internal procedure capabilityAppendObservableStep(
             capabilityIoUnitSucceeded(write_result) &&
                 capabilityIoUnitSucceeded(flush_result)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }

@@ -258,9 +258,10 @@ inline void SyncModalStateRefFromFields(ModalStateRef& ref) {
 // Receiver Types (shared by method declarations)
 // ===========================================================================
 
-// ReceiverShorthand represents ~, ~!, or ~% receiver syntax.
+// ReceiverShorthand represents ~, ~!, ~%, or a moved shorthand receiver.
 struct ReceiverShorthand {
   ReceiverPerm perm;
+  std::optional<ParamMode> mode_opt = std::nullopt;
 };
 
 // ReceiverExplicit represents an explicit receiver with optional mode and type.

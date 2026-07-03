@@ -59,10 +59,6 @@ namespace ultraviolet::analysis {
 ScopeList BindTypeParams(
     const ScopeContext& ctx,
     const std::optional<ast::GenericParams>& params_opt);
-ScopeList BindTypeParams(
-    const ScopeContext& ctx,
-    const std::optional<ast::GenericParams>& params_opt,
-    const std::optional<ast::PredicateClause>& predicate_clause_opt);
 
 namespace {
 
@@ -2065,23 +2061,7 @@ ProcedureDeclResult TypeProcedureDecl(
   }
   ScopeContext proc_ctx = ctx;
   proc_ctx.sigma_source = ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
-  proc_ctx.scopes =
-      BindTypeParams(ctx, decl.generic_params, decl.predicate_clause_opt);
-
-  // Process where clauses
-  std::vector<std::string> type_param_names;
-  for (const auto& gp : gen_params.params) {
-    type_param_names.push_back(gp.name);
-  }
-  if (decl.predicate_clause_opt.has_value()) {
-    const auto where_result = ProcessWhereClause(
-        proc_ctx, *decl.predicate_clause_opt, type_param_names);
-    if (!where_result.ok) {
-      result.ok = false;
-      result.diag_id = where_result.diag_id;
-      return result;
-    }
-  }
+  proc_ctx.scopes = BindTypeParams(ctx, decl.generic_params);
 
   // Build procedure signature
   const auto sig =
@@ -2507,8 +2487,7 @@ ProcedureDeclResult TypeProcedureDeclSignature(
   }
   ScopeContext proc_ctx = ctx;
   proc_ctx.sigma_source = ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
-  proc_ctx.scopes =
-      BindTypeParams(ctx, decl.generic_params, decl.predicate_clause_opt);
+  proc_ctx.scopes = BindTypeParams(ctx, decl.generic_params);
 
   // Build signature
   const auto sig =
@@ -2550,8 +2529,7 @@ ProcedureDeclResult TypeProcedureDeclBody(
 
   ScopeContext proc_ctx = ctx;
   proc_ctx.sigma_source = ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
-  proc_ctx.scopes =
-      BindTypeParams(ctx, decl.generic_params, decl.predicate_clause_opt);
+  proc_ctx.scopes = BindTypeParams(ctx, decl.generic_params);
 
   // Rebuild parameter environment
   TypeEnv env;

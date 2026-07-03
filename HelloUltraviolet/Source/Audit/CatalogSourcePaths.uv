@@ -29,23 +29,23 @@ internal procedure sourcePathManifestLineBreakCount(text: string@View) -> usize 
 }
 
 public procedure expectedCatalogSourcePathCount() -> usize {
-    return 639usize
+    return 160usize
 }
 
 public procedure catalogSourcePathCount() -> usize {
-    return 639usize
+    return 160usize
 }
 
 public procedure expectedCatalogSourcePathManifestByteCount() -> usize {
-    return 53184usize
+    return 9971usize
 }
 
 public procedure expectedCatalogSourcePathManifestLineBreakCount() -> usize {
-    return 639usize
+    return 160usize
 }
 
 public procedure expectedCatalogSourcePathManifestDigest() -> usize {
-    return 575823437usize
+    return 878915614usize
 }
 
 internal procedure sourcePathManifestShapeMatches(text: string@View) -> bool {
@@ -62,10 +62,10 @@ internal procedure catalogSourcePathExists(context: Context, source_path: string
 internal procedure writeCatalogSourcePathMessage(context: Context, text: string@View) -> bool {
     let output: Outcome<(), IoError> = context.io~>write_stderr(text)
     return if output is {
-        @Value {
+        Outcome::Value(_) {
             true
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -163,11 +163,11 @@ public procedure catalogSourcePathsExist(context: Context) -> bool {
         "HelloUltraviolet/Audit/CatalogSourcePaths.txt"
     )
     return if move read_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let manifest_text: string@View = string::as_view(value)
             sourcePathManifestAuditPasses(context, manifest_text)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }

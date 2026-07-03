@@ -2,7 +2,7 @@
 
 
 public procedure countConcreteDataTypesUnionTypesObligations() -> usize {
-    return 34usize
+    return 33usize
 }
 
 public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
@@ -112,15 +112,6 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "Union-DirectAccess-Err",
-        40965usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/UnionDirectAccess/Source/Main.uv"
     ) {
         count = count + 1usize
     }

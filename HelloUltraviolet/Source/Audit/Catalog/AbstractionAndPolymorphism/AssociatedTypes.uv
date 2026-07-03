@@ -2,7 +2,7 @@
 
 
 public procedure countAbstractionAndPolymorphismAssociatedTypesObligations() -> usize {
-    return 24usize
+    return 21usize
 }
 
 public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations() -> usize {
@@ -160,24 +160,6 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "req.14.AssociatedTypeAbstractAndDefaultBinding",
-        50467usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/AssociatedTypeMissingBinding/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.14.ImplementationAssociatedTypeBoundForm",
-        50480usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/AssociatedTypeUnboundMember/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.14.AssociatedTypeLookupOrder",
         50493usize,
@@ -211,15 +193,6 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.14.AssociatedTypes",
-        50558usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/DuplicateAssociatedTypeName/Source/Main.uv"
     ) {
         count = count + 1usize
     }

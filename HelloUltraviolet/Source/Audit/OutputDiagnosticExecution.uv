@@ -81,11 +81,11 @@ internal procedure outputDiagnosticExpectedDirectiveCountFromReadResult(
     move read_result: Outcome<unique string@Managed, IoError>
 ) -> usize {
     return if move read_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let expected_text: string@View = string::as_view(value)
             outputDiagnosticExpectedDirectiveCount(expected_text)
         }
-        @Error {
+        Outcome::Error(_) {
             0usize
         }
     }
@@ -98,7 +98,7 @@ internal procedure outputDiagnosticExpectedDirectiveCountFromFile(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from("", authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticAppendProjectPath(value, authority, expected_path) {
                 0usize
             } else {
@@ -108,7 +108,7 @@ internal procedure outputDiagnosticExpectedDirectiveCountFromFile(
                 outputDiagnosticExpectedDirectiveCountFromReadResult(move read_result)
             }
         }
-        @Error {
+        Outcome::Error(_) {
             0usize
         }
     }
@@ -120,7 +120,7 @@ internal procedure outputDiagnosticActualTextMatchesExpected(
     move actual_result: Outcome<unique string@Managed, IoError>
 ) -> usize {
     return if move actual_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let actual_text: string@View = string::as_view(value)
             if diagnosticExpectedCodesMatch(authority, expected_text, actual_text) {
                 1usize
@@ -128,7 +128,7 @@ internal procedure outputDiagnosticActualTextMatchesExpected(
                 0usize
             }
         }
-        @Error {
+        Outcome::Error(_) {
             0usize
         }
     }
@@ -141,7 +141,7 @@ internal procedure outputDiagnosticExpectedReadMatchesActual(
     move actual_result: Outcome<unique string@Managed, IoError>
 ) -> usize {
     return if move expected_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let expected_text: string@View = string::as_view(value)
             if outputDiagnosticActualTextMatchesExpected(
                 authority,
@@ -153,7 +153,7 @@ internal procedure outputDiagnosticExpectedReadMatchesActual(
                 0usize
             }
         }
-        @Error {
+        Outcome::Error(_) {
             0usize
         }
     }
@@ -173,7 +173,7 @@ internal procedure outputDiagnosticActualMatchesExpected(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from("", authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticAppendProjectPath(value, authority, expected_path) {
                 0usize
             } else {
@@ -190,7 +190,7 @@ internal procedure outputDiagnosticActualMatchesExpected(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             0usize
         }
     }
@@ -241,11 +241,11 @@ internal procedure outputDiagnosticActualTextEquals(
     move actual_result: Outcome<unique string@Managed, IoError>
 ) -> bool {
     return if move actual_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let actual_text: string@View = string::as_view(value)
             outputDiagnosticTextEqualsWithHostLineEndings(expected_text, actual_text)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -256,11 +256,11 @@ internal procedure outputDiagnosticTextFilesEqual(
     move actual_result: Outcome<unique string@Managed, IoError>
 ) -> bool {
     return if move expected_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let expected_text: string@View = string::as_view(value)
             outputDiagnosticActualTextEquals(expected_text, move actual_result)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -274,11 +274,11 @@ internal procedure outputDiagnosticFileContains(
     let read_result: Outcome<unique string@Managed, IoError> =
         authority.io~>read_file(path)
     return if move read_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let text: string@View = string::as_view(value)
             auditTextContains(text, required_text)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -292,11 +292,11 @@ internal procedure outputDiagnosticFileExcludes(
     let read_result: Outcome<unique string@Managed, IoError> =
         authority.io~>read_file(path)
     return if move read_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let text: string@View = string::as_view(value)
             !auditTextContains(text, forbidden_text)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -404,7 +404,7 @@ internal procedure outputDiagnosticAppendRuntimeIncompatibleRuntimeLibOverride(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from("", authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !outputDiagnosticAppendRuntimeIncompatibleRuntimeLibPath(
                 value,
                 authority,
@@ -417,7 +417,7 @@ internal procedure outputDiagnosticAppendRuntimeIncompatibleRuntimeLibOverride(
                     diagnosticAppendQuoted(text, runtime_lib_path, authority.heap)
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -463,7 +463,7 @@ internal procedure outputDiagnosticRunBuildCommand(
     let created: Outcome<unique string@Managed, AllocationError> =
         string::from("", authority.heap)
     return if move created is {
-        @Value { value } {
+        Outcome::Value(value) {
             var command_ready: bool =
                 outputDiagnosticAppendCommandStart(value, authority)
             command_ready =
@@ -519,7 +519,7 @@ internal procedure outputDiagnosticRunBuildCommand(
                 -1
             }
         }
-        @Error {
+        Outcome::Error(_) {
             -1
         }
     }
@@ -532,7 +532,7 @@ internal procedure outputDiagnosticRuntimeIncompatibleRuntimeLibExists(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from("", authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !outputDiagnosticAppendRuntimeIncompatibleRuntimeLibPath(
                 value,
                 authority,
@@ -544,7 +544,7 @@ internal procedure outputDiagnosticRuntimeIncompatibleRuntimeLibExists(
                 authority.io~>exists(runtime_lib_path)
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -602,7 +602,7 @@ internal procedure outputDiagnosticPrepareRuntimeIncompatibleRuntimeLibWithOutpu
     let error_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move error_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(
                 value,
                 "OutputDiagnosticRuntimeIncompatiblePrebuild.err",
@@ -619,7 +619,7 @@ internal procedure outputDiagnosticPrepareRuntimeIncompatibleRuntimeLibWithOutpu
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -633,7 +633,7 @@ internal procedure outputDiagnosticPrepareRuntimeIncompatibleRuntimeLib(
     let output_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move output_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(
                 value,
                 "OutputDiagnosticRuntimeIncompatiblePrebuild.out",
@@ -649,7 +649,7 @@ internal procedure outputDiagnosticPrepareRuntimeIncompatibleRuntimeLib(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -679,7 +679,7 @@ internal procedure outputDiagnosticRunUnknownCommand(
     let created: Outcome<unique string@Managed, AllocationError> =
         string::from("", authority.heap)
     return if move created is {
-        @Value { value } {
+        Outcome::Value(value) {
             let command_ready: bool =
                 outputDiagnosticAppendCommandStart(value, authority) &&
                 diagnosticAppendText(
@@ -698,7 +698,7 @@ internal procedure outputDiagnosticRunUnknownCommand(
                 -1
             }
         }
-        @Error {
+        Outcome::Error(_) {
             -1
         }
     }
@@ -1191,7 +1191,7 @@ internal procedure outputDiagnosticLlvmToolConformanceMatches(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(out_dir_path, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if diagnosticBuildPath(value, "Logs", authority.heap) &&
                 diagnosticBuildPath(value, "Conformance", authority.heap) &&
                 diagnosticBuildPath(
@@ -1205,7 +1205,7 @@ internal procedure outputDiagnosticLlvmToolConformanceMatches(
                 false
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -1218,7 +1218,7 @@ internal procedure outputDiagnosticEmitLLVMConformanceMatches(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(out_dir_path, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if diagnosticBuildPath(value, "Logs", authority.heap) &&
                 diagnosticBuildPath(value, "Conformance", authority.heap) &&
                 diagnosticBuildPath(
@@ -1232,7 +1232,7 @@ internal procedure outputDiagnosticEmitLLVMConformanceMatches(
                 false
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -1245,7 +1245,7 @@ internal procedure outputDiagnosticLlvmTypeMappingConformanceMatches(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(out_dir_path, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if diagnosticBuildPath(value, "Logs", authority.heap) &&
                 diagnosticBuildPath(value, "Conformance", authority.heap) &&
                 diagnosticBuildPath(
@@ -1262,7 +1262,7 @@ internal procedure outputDiagnosticLlvmTypeMappingConformanceMatches(
                 false
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -1275,7 +1275,7 @@ internal procedure outputDiagnosticLinkerToolConformanceMatches(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(out_dir_path, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if diagnosticBuildPath(value, "Logs", authority.heap) &&
                 diagnosticBuildPath(value, "Conformance", authority.heap) &&
                 diagnosticBuildPath(
@@ -1289,7 +1289,7 @@ internal procedure outputDiagnosticLinkerToolConformanceMatches(
                 false
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -1302,7 +1302,7 @@ internal procedure outputDiagnosticArchiverToolConformanceMatches(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(out_dir_path, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if diagnosticBuildPath(value, "Logs", authority.heap) &&
                 diagnosticBuildPath(value, "Conformance", authority.heap) &&
                 diagnosticBuildPath(
@@ -1316,7 +1316,7 @@ internal procedure outputDiagnosticArchiverToolConformanceMatches(
                 false
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -1329,7 +1329,7 @@ internal procedure outputDiagnosticLinkFailureConformanceMatches(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(out_dir_path, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if diagnosticBuildPath(value, "Logs", authority.heap) &&
                 diagnosticBuildPath(value, "Conformance", authority.heap) &&
                 diagnosticBuildPath(
@@ -1343,7 +1343,7 @@ internal procedure outputDiagnosticLinkFailureConformanceMatches(
                 false
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -1356,7 +1356,7 @@ internal procedure outputDiagnosticArchiveFailureConformanceMatches(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(out_dir_path, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if diagnosticBuildPath(value, "Logs", authority.heap) &&
                 diagnosticBuildPath(value, "Conformance", authority.heap) &&
                 diagnosticBuildPath(
@@ -1370,7 +1370,7 @@ internal procedure outputDiagnosticArchiveFailureConformanceMatches(
                 false
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -1383,7 +1383,7 @@ internal procedure outputDiagnosticRuntimeMissingConformanceMatches(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(out_dir_path, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if diagnosticBuildPath(value, "Logs", authority.heap) &&
                 diagnosticBuildPath(value, "Conformance", authority.heap) &&
                 diagnosticBuildPath(
@@ -1400,7 +1400,7 @@ internal procedure outputDiagnosticRuntimeMissingConformanceMatches(
                 false
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -1413,7 +1413,7 @@ internal procedure outputDiagnosticRuntimeIncompatibleConformanceMatches(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(out_dir_path, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if diagnosticBuildPath(value, "Logs", authority.heap) &&
                 diagnosticBuildPath(value, "Conformance", authority.heap) &&
                 diagnosticBuildPath(
@@ -1430,7 +1430,7 @@ internal procedure outputDiagnosticRuntimeIncompatibleConformanceMatches(
                 false
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -1443,7 +1443,7 @@ internal procedure outputDiagnosticDirectoryPreparationConformanceMatches(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(out_dir_path, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if diagnosticBuildPath(value, "Logs", authority.heap) &&
                 diagnosticBuildPath(value, "Conformance", authority.heap) &&
                 diagnosticBuildPath(
@@ -1460,7 +1460,7 @@ internal procedure outputDiagnosticDirectoryPreparationConformanceMatches(
                 false
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -1473,7 +1473,7 @@ internal procedure outputDiagnosticObjectWriteConformanceMatches(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(out_dir_path, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if diagnosticBuildPath(value, "Logs", authority.heap) &&
                 diagnosticBuildPath(value, "Conformance", authority.heap) &&
                 diagnosticBuildPath(
@@ -1490,7 +1490,7 @@ internal procedure outputDiagnosticObjectWriteConformanceMatches(
                 false
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -1503,7 +1503,7 @@ internal procedure outputDiagnosticIRWriteConformanceMatches(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(out_dir_path, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if diagnosticBuildPath(value, "Logs", authority.heap) &&
                 diagnosticBuildPath(value, "Conformance", authority.heap) &&
                 diagnosticBuildPath(
@@ -1520,7 +1520,7 @@ internal procedure outputDiagnosticIRWriteConformanceMatches(
                 false
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -1600,7 +1600,7 @@ internal procedure outputDiagnosticNamedConformanceMatches(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(out_dir_path, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if diagnosticBuildPath(value, "Logs", authority.heap) &&
                 diagnosticBuildPath(value, "Conformance", authority.heap) &&
                 diagnosticBuildPath(value, log_name, authority.heap) {
@@ -1614,7 +1614,7 @@ internal procedure outputDiagnosticNamedConformanceMatches(
                 false
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -1779,7 +1779,7 @@ internal procedure outputDiagnosticPrepareDirectoryFailure(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(out_dir_path, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, "Intermediate", authority.heap) {
                 false
             } else {
@@ -1792,7 +1792,7 @@ internal procedure outputDiagnosticPrepareDirectoryFailure(
                 diagnosticIoSucceeded(write_result)
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -1814,7 +1814,7 @@ internal procedure outputDiagnosticPrepareObjectWriteFailure(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(out_dir_path, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, "Intermediate", authority.heap) ||
                 !outputDiagnosticEnsureManagedPath(authority, value) ||
                 !diagnosticBuildPath(value, "Obj", authority.heap) ||
@@ -1844,7 +1844,7 @@ internal procedure outputDiagnosticPrepareObjectWriteFailure(
                 diagnosticIoSucceeded(write_result)
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -1857,7 +1857,7 @@ internal procedure outputDiagnosticPrepareIRWriteFailure(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(out_dir_path, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, "Intermediate", authority.heap) ||
                 !outputDiagnosticEnsureManagedPath(authority, value) ||
                 !diagnosticBuildPath(value, "IR", authority.heap) ||
@@ -1882,7 +1882,7 @@ internal procedure outputDiagnosticPrepareIRWriteFailure(
                 diagnosticIoSucceeded(write_result)
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -1900,7 +1900,7 @@ internal procedure outputDiagnosticRunIcacls(
     let created: Outcome<unique string@Managed, AllocationError> =
         string::from("cmd.exe /C icacls ", authority.heap)
     return if move created is {
-        @Value { value } {
+        Outcome::Value(value) {
             let command_ready: bool =
                 diagnosticAppendQuoted(value, path, authority.heap) &&
                 diagnosticAppendText(value, acl_operation, authority.heap) &&
@@ -1912,7 +1912,7 @@ internal procedure outputDiagnosticRunIcacls(
                 authority.sys~>run(command_text) == 0
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -1930,7 +1930,7 @@ internal procedure outputDiagnosticRunChmod(
     let created: Outcome<unique string@Managed, AllocationError> =
         string::from("chmod ", authority.heap)
     return if move created is {
-        @Value { value } {
+        Outcome::Value(value) {
             let command_ready: bool =
                 diagnosticAppendText(value, mode, authority.heap) &&
                 diagnosticAppendText(value, " ", authority.heap) &&
@@ -1943,7 +1943,7 @@ internal procedure outputDiagnosticRunChmod(
                 authority.sys~>run(command_text) == 0
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -1996,7 +1996,7 @@ internal procedure outputDiagnosticWriteDirSeqManifest(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(project_root, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, "Ultraviolet.toml", authority.heap) {
                 false
             } else {
@@ -2008,7 +2008,7 @@ internal procedure outputDiagnosticWriteDirSeqManifest(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -2021,7 +2021,7 @@ internal procedure outputDiagnosticWriteDirSeqSource(
     let path_result: Outcome<unique string@Managed, AllocationError> =
         string::from(source_root, authority.heap)
     return if move path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, "Main.uv", authority.heap) {
                 false
             } else {
@@ -2033,7 +2033,7 @@ internal procedure outputDiagnosticWriteDirSeqSource(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -2055,7 +2055,7 @@ internal procedure outputDiagnosticStageDirSeqReadFailureProject(
     let source_result: Outcome<unique string@Managed, AllocationError> =
         string::from(project_root, authority.heap)
     return if move source_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, "Source", authority.heap) {
                 false
             } else {
@@ -2080,7 +2080,7 @@ internal procedure outputDiagnosticStageDirSeqReadFailureProject(
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -2203,7 +2203,7 @@ internal procedure outputDiagnosticBuildCaseWithErrorPath(
     let out_dir_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move out_dir_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, out_dir_suffix, authority.heap) {
                 diagnosticFixtureExecutionResult(false, 0usize)
             } else {
@@ -2220,7 +2220,7 @@ internal procedure outputDiagnosticBuildCaseWithErrorPath(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             diagnosticFixtureExecutionResult(false, 0usize)
         }
     }
@@ -2240,7 +2240,7 @@ internal procedure outputDiagnosticBuildCaseWithOutputPath(
     let error_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move error_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, error_suffix, authority.heap) {
                 diagnosticFixtureExecutionResult(false, 0usize)
             } else {
@@ -2257,7 +2257,7 @@ internal procedure outputDiagnosticBuildCaseWithOutputPath(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             diagnosticFixtureExecutionResult(false, 0usize)
         }
     }
@@ -2277,7 +2277,7 @@ internal procedure outputDiagnosticBuildCase(
     let output_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move output_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, output_suffix, authority.heap) {
                 diagnosticFixtureExecutionResult(false, 0usize)
             } else {
@@ -2294,7 +2294,7 @@ internal procedure outputDiagnosticBuildCase(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             diagnosticFixtureExecutionResult(false, 0usize)
         }
     }
@@ -2316,7 +2316,7 @@ internal procedure outputDiagnosticUnknownCommandWithPaths(
     let expected_path_result: Outcome<unique string@Managed, AllocationError> =
         string::from("", authority.heap)
     let output_matches: bool = if move expected_path_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticAppendProjectPath(
                 value,
                 authority,
@@ -2332,7 +2332,7 @@ internal procedure outputDiagnosticUnknownCommandWithPaths(
                 outputDiagnosticTextFilesEqual(move expected_result, move actual_result)
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -2357,7 +2357,7 @@ internal procedure outputDiagnosticUnknownCommandWithOutputPath(
     let error_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move error_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(
                 value,
                 "OutputDiagnosticUnknownCommand.err",
@@ -2374,7 +2374,7 @@ internal procedure outputDiagnosticUnknownCommandWithOutputPath(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             diagnosticFixtureExecutionResult(false, 0usize)
         }
     }
@@ -2386,7 +2386,7 @@ internal procedure outputDiagnosticUnknownCommand(
     let output_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move output_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(
                 value,
                 "OutputDiagnosticUnknownCommand.out",
@@ -2397,7 +2397,7 @@ internal procedure outputDiagnosticUnknownCommand(
                 outputDiagnosticUnknownCommandWithOutputPath(authority, value)
             }
         }
-        @Error {
+        Outcome::Error(_) {
             diagnosticFixtureExecutionResult(false, 0usize)
         }
     }
@@ -2425,7 +2425,7 @@ internal procedure outputDiagnosticManifestMissingExercise(
     let project_root_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move project_root_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(
                 value,
                 "OutputDiagnosticManifestMissingProject_5B8F3A91",
@@ -2453,7 +2453,7 @@ internal procedure outputDiagnosticManifestMissingExercise(
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             diagnosticFixtureExecutionResult(false, 0usize)
         }
     }
@@ -2535,7 +2535,7 @@ internal procedure outputDiagnosticDirSeqReadFailureWithProjectPath(
     let blocked_created: Outcome<unique string@Managed, AllocationError> =
         string::from(project_root, authority.heap)
     return if move blocked_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, "Source", authority.heap) ||
                 !diagnosticBuildPath(value, "Blocked", authority.heap) {
                 diagnosticFixtureExecutionResult(false, 0usize)
@@ -2551,7 +2551,7 @@ internal procedure outputDiagnosticDirSeqReadFailureWithProjectPath(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             diagnosticFixtureExecutionResult(false, 0usize)
         }
     }
@@ -2583,7 +2583,7 @@ internal procedure outputDiagnosticDirSeqReadFailureWithErrorPath(
     let out_dir_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move out_dir_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(
                 value,
                 "OutputDiagnosticDirSeqReadFailureBuild",
@@ -2601,7 +2601,7 @@ internal procedure outputDiagnosticDirSeqReadFailureWithErrorPath(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             diagnosticFixtureExecutionResult(false, 0usize)
         }
     }
@@ -2615,7 +2615,7 @@ internal procedure outputDiagnosticDirSeqReadFailureWithOutputPath(
     let error_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move error_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(
                 value,
                 "OutputDiagnosticDirSeqReadFailure.err",
@@ -2632,7 +2632,7 @@ internal procedure outputDiagnosticDirSeqReadFailureWithOutputPath(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             diagnosticFixtureExecutionResult(false, 0usize)
         }
     }
@@ -2645,7 +2645,7 @@ internal procedure outputDiagnosticDirSeqReadFailureWithProjectRootPath(
     let output_created: Outcome<unique string@Managed, AllocationError> =
         string::from(authority.temporary_directory, authority.heap)
     return if move output_created is {
-        @Value { value: output_path } {
+        Outcome::Value(output_path) {
             if !diagnosticBuildPath(
                 output_path,
                 "OutputDiagnosticDirSeqReadFailure.out",
@@ -2660,7 +2660,7 @@ internal procedure outputDiagnosticDirSeqReadFailureWithProjectRootPath(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             diagnosticFixtureExecutionResult(false, 0usize)
         }
     }
@@ -2721,7 +2721,7 @@ internal procedure outputDiagnosticDirSeqReadFailureProbeProjectWithRootPath(
     let project_created: Outcome<unique string@Managed, AllocationError> =
         string::from(root_path, authority.heap)
     return if move project_created is {
-        @Value { value: project_path } {
+        Outcome::Value(project_path) {
             if !diagnosticBuildPath(project_path, project_suffix, authority.heap) {
                 false
             } else {
@@ -2729,7 +2729,7 @@ internal procedure outputDiagnosticDirSeqReadFailureProbeProjectWithRootPath(
                 outputDiagnosticDirSeqReadFailureProbeProject(authority, project_root)
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -2742,7 +2742,7 @@ internal procedure outputDiagnosticDirSeqReadFailureProbeProject(
     let blocked_created: Outcome<unique string@Managed, AllocationError> =
         string::from(project_root, authority.heap)
     return if move blocked_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(value, "Source", authority.heap) ||
                 !diagnosticBuildPath(value, "Blocked", authority.heap) {
                 false
@@ -2755,7 +2755,7 @@ internal procedure outputDiagnosticDirSeqReadFailureProbeProject(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -2769,7 +2769,7 @@ internal procedure outputDiagnosticDirSeqReadFailureWithRootAndProjectSuffix(
     let project_created: Outcome<unique string@Managed, AllocationError> =
         string::from(root_path, authority.heap)
     return if move project_created is {
-        @Value { value } {
+        Outcome::Value(value) {
             if !diagnosticBuildPath(
                 value,
                 project_suffix,
@@ -2784,7 +2784,7 @@ internal procedure outputDiagnosticDirSeqReadFailureWithRootAndProjectSuffix(
                 )
             }
         }
-        @Error {
+        Outcome::Error(_) {
             diagnosticFixtureExecutionResult(false, 0usize)
         }
     }

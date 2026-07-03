@@ -35,12 +35,11 @@
 //   GENERIC ARGUMENT VALIDATION:
 //   - Count matches parameter count
 //   - Each argument satisfies corresponding bound
-//   - Where clause predicates satisfied
+//   - Each class bound is satisfied
 //
 //   TYPE BOUNDS:
 //   - Class bounds: T <: ClassName
-//   - Predicate bounds: Bitcopy(T), Clone(T), Drop(T), FfiSafe(T)
-//   - Combined bounds: all must be satisfied
+//   - Foundational classes: Bitcopy, Clone, Drop, FfiSafe, GpuSafe
 //
 //   RECURSIVE TYPES:
 //   - Must be guarded by indirection (Ptr, function type)
@@ -197,7 +196,8 @@ static bool ReceiverIsConst(const ScopeContext& ctx,
                             const ast::ClassMethodDecl& method) {
   if (const auto* shorthand =
           std::get_if<ast::ReceiverShorthand>(&method.receiver)) {
-    return shorthand->perm == ast::ReceiverPerm::Const;
+    return shorthand->perm == ast::ReceiverPerm::Const &&
+           !shorthand->mode_opt.has_value();
   }
 
   if (const auto* explicit_recv =

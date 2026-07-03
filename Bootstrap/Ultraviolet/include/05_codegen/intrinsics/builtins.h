@@ -141,14 +141,14 @@ std::string BuiltinSymCancelTokenActiveChild();
 std::string BuiltinSymCancelTokenActiveWaitCancelled();
 
 // =============================================================================
-// Section 19 Reactor builtin symbols
+// Section 24.6 Reactor builtin symbols
 // =============================================================================
 
 std::string BuiltinSymReactorRun();
 std::string BuiltinSymReactorRegister();
 
 // =============================================================================
-// Section 19 Async builtin symbols
+// Section 21 Async builtin symbols
 // =============================================================================
 
 std::string BuiltinSymAsyncResume();

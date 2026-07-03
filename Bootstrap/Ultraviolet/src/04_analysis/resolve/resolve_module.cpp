@@ -107,7 +107,6 @@ ast::ClassDecl BuildBuiltinCapabilityClassDecl(std::string_view name) {
   decl.modal = false;
   decl.generic_params = std::nullopt;
   decl.supers = {};
-  decl.predicate_clause_opt = std::nullopt;
   decl.items = {};
   decl.span = core::Span{};
   decl.doc = {};
@@ -576,6 +575,16 @@ void PopulateSigma(ScopeContext& ctx) {
   }
   {
     ast::Path path;
+    path.emplace_back("GpuSafe");
+    ast::ClassDecl decl{};
+    decl.vis = ast::Visibility::Public;
+    decl.name = "GpuSafe";
+    decl.supers = {};
+    decl.items = {};
+    ctx.sigma.classes[PathKeyOf(path)] = decl;
+  }
+  {
+    ast::Path path;
     path.emplace_back("Iterator");
     ast::ClassDecl decl{};
     decl.vis = ast::Visibility::Public;
@@ -814,7 +823,7 @@ void PopulateSigma(ScopeContext& ctx) {
   {
     ast::Path path;
     path.emplace_back("Outcome");
-    ctx.sigma.types[PathKeyOf(path)] = BuildOutcomeModalDecl();
+    ctx.sigma.types[PathKeyOf(path)] = BuildOutcomeEnumDecl();
   }
   {
     ast::Path path;

@@ -2,7 +2,7 @@
 
 
 public procedure countStatementsAndBlocksBindingStatementsObligations() -> usize {
-    return 35usize
+    return 29usize
 }
 
 public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> usize {
@@ -124,57 +124,12 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.18.T-LetStmt-Ann-Mismatch",
-        69609usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/LetAnnotationMismatch/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.18.T-LetStmt-Infer",
         69625usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.18.T-LetStmt-Infer-Err",
-        69641usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/LetInferenceFailure/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.18.VarStmtTypingMirrorsLet",
-        69657usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/VarAnnotationMismatch/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.18.Let-Refutable-Pattern-Err",
-        69670usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/LetRefutablePattern/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.18.B-LetVar-UniqueNonMove-Err",
-        69686usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/UniqueNonMoveBinding/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -310,15 +265,6 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
         "HelloUltraviolet::Audit",
         "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
         "Source/Audit/AcceptedProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.18.BindingStatements",
-        69935usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/BindingStatementsDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

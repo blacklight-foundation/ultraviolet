@@ -45,6 +45,7 @@
 #include "04_analysis/typing/type_predicates.h"
 #include "04_analysis/typing/deprecation_warnings.h"
 #include "04_analysis/typing/typecheck.h"
+#include "04_analysis/typing/outcome.h"
 
 namespace ultraviolet::analysis::expr {
 
@@ -302,7 +303,6 @@ static ast::ProcedureDecl AsProcedureDecl(const ast::ComptimeProcedureDecl& decl
   proc.generic_params = decl.generic_params;
   proc.params = decl.params;
   proc.return_type_opt = decl.return_type_opt;
-  proc.predicate_clause_opt = std::nullopt;
   proc.contract = decl.contract;
   proc.body = decl.body;
   proc.span = decl.span;
@@ -1704,33 +1704,6 @@ static bool ExpandTypeArgsWithDefaults(
   return true;
 }
 
-static bool IsPredicateReqName(std::string_view name) {
-  return IdEq(name, "Bitcopy") || IdEq(name, "Clone") ||
-         IdEq(name, "Drop") || IdEq(name, "FfiSafe") ||
-         IdEq(name, "GpuSafe");
-}
-
-static bool PredicateReqSatisfied(const ScopeContext& ctx,
-                                  std::string_view pred,
-                                  const TypeRef& type) {
-  if (IdEq(pred, "Bitcopy")) {
-    return BitcopyType(ctx, type);
-  }
-  if (IdEq(pred, "Clone")) {
-    return CloneType(ctx, type);
-  }
-  if (IdEq(pred, "Drop")) {
-    return DropType(ctx, type);
-  }
-  if (IdEq(pred, "FfiSafe")) {
-    return FfiSafeType(ctx, type);
-  }
-  if (IdEq(pred, "GpuSafe")) {
-    return !GpuSafeDiagForType(ctx, type).has_value();
-  }
-  return false;
-}
-
 static bool ClassBoundPathExists(const ScopeContext& ctx,
                                  const ast::ClassPath& path) {
   if (IsCapabilityClassPath(path)) {
@@ -1761,24 +1734,6 @@ static std::optional<std::string_view> ValidateProcedureTypeArgConstraints(
       if (!TypeImplementsClass(ctx, arg_it->second, bound.class_path)) {
         return std::optional<std::string_view>{"E-TYP-2302"};
       }
-    }
-  }
-
-  if (!proc.predicate_clause_opt.has_value()) {
-    return std::nullopt;
-  }
-
-  for (const auto& wp : *proc.predicate_clause_opt) {
-    if (!IsPredicateReqName(wp.pred)) {
-      return std::optional<std::string_view>{"E-TYP-2302"};
-    }
-    const auto lowered = LowerType(ctx, wp.type);
-    if (!lowered.ok) {
-      return lowered.diag_id;
-    }
-    const auto instantiated = InstantiateType(lowered.type, subst);
-    if (!PredicateReqSatisfied(ctx, wp.pred, instantiated)) {
-      return std::optional<std::string_view>{"E-TYP-2302"};
     }
   }
 
@@ -3669,6 +3624,23 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
                               const TypeRef& expected) -> ArgCheckResult {
     const auto checked =
         CheckExprAgainst(ctx, arg_ctx_for(expected), inner, expected, env);
+    if (!checked.ok && expected) {
+      // (T-Outcome-Intro-Value/Error) §13.1.4: a bare argument introduces into
+      // an Outcome parameter. Accept the unambiguous case (the candidate stays
+      // viable); reject the ambiguous case with E-TYP-2261.
+      if (const auto typed = TypeExpr(ctx, arg_ctx_for(expected), inner, env);
+          typed.ok) {
+        const auto intro = ClassifyOutcomeIntro(ctx, typed.type, expected);
+        if (intro == OutcomeIntro::Ambiguous) {
+          return ArgCheckResult{false,
+                                std::optional<std::string_view>{"E-TYP-2261"},
+                                {}, std::nullopt};
+        }
+        if (intro == OutcomeIntro::Value || intro == OutcomeIntro::Error) {
+          return ArgCheckResult{true, std::nullopt, {}, std::nullopt};
+        }
+      }
+    }
     return ArgCheckResult{checked.ok, checked.diag_id, checked.diag_detail,
                           checked.diag_span};
   };

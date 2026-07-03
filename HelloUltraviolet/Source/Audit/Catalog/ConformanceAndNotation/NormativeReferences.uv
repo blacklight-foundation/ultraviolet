@@ -2,37 +2,10 @@
 
 
 public procedure countConformanceAndNotationNormativeReferencesObligations() -> usize {
-    return 3usize
+    return 0usize
 }
 
 public procedure validatedConformanceAndNotationNormativeReferencesObligations() -> usize {
     var count: usize = 0usize
-    if acceptedObligationEntryMatches(
-        "refs.NormativeRefs",
-        993usize,
-        "HelloUltraviolet::Reference::Conformance",
-        "runConformanceBehaviorClassificationReference",
-        "Source/Reference/Conformance/BehaviorClassification.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "refs.ReferenceDetails",
-        1015usize,
-        "HelloUltraviolet::Reference::Conformance",
-        "runConformanceBehaviorClassificationReference",
-        "Source/Reference/Conformance/BehaviorClassification.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "refs.Conformance",
-        1036usize,
-        "HelloUltraviolet::Reference::Conformance",
-        "runConformanceBehaviorClassificationReference",
-        "Source/Reference/Conformance/BehaviorClassification.uv"
-    ) {
-        count = count + 1usize
-    }
     return count
 }

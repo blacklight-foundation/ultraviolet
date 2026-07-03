@@ -2458,23 +2458,6 @@ static CheckResult CheckQuoteGenericParamsSplices(
   return OkCheckResult();
 }
 
-static CheckResult CheckQuoteWhereClauseSplices(
-    const ScopeContext& ctx,
-    const StmtTypeContext& type_ctx,
-    const std::optional<ast::PredicateClause>& clause_opt,
-    const TypeEnv& env) {
-  if (!clause_opt.has_value()) {
-    return OkCheckResult();
-  }
-  for (const auto& predicate : *clause_opt) {
-    auto checked = CheckQuoteTypeSplices(ctx, type_ctx, predicate.type, env);
-    if (!checked.ok) {
-      return checked;
-    }
-  }
-  return OkCheckResult();
-}
-
 static CheckResult CheckQuoteContractClauseSplices(
     const ScopeContext& ctx,
     const StmtTypeContext& type_ctx,
@@ -2806,11 +2789,6 @@ static CheckResult CheckQuoteItemSplices(const ScopeContext& ctx,
               if (!checked.ok) {
                 return checked;
               }
-              checked = CheckQuoteWhereClauseSplices(
-                  ctx, type_ctx, proc->where_clause, env);
-              if (!checked.ok) {
-                return checked;
-              }
               for (const auto& param : proc->params) {
                 checked = CheckQuoteParamSplices(ctx, type_ctx, param, env);
                 if (!checked.ok) {
@@ -2871,12 +2849,6 @@ static CheckResult CheckQuoteItemSplices(const ScopeContext& ctx,
             return checked;
           }
           checked =
-              CheckQuoteWhereClauseSplices(
-                  ctx, type_ctx, node.predicate_clause_opt, env);
-          if (!checked.ok) {
-            return checked;
-          }
-          checked =
               CheckQuoteContractClauseSplices(ctx, type_ctx, node.contract, env);
           if (!checked.ok) {
             return checked;
@@ -2912,12 +2884,6 @@ static CheckResult CheckQuoteItemSplices(const ScopeContext& ctx,
             return checked;
           }
           checked =
-              CheckQuoteWhereClauseSplices(
-                  ctx, type_ctx, node.predicate_clause_opt, env);
-          if (!checked.ok) {
-            return checked;
-          }
-          checked =
               CheckQuoteTypeInvariantSplices(
                   ctx, type_ctx, node.invariant_opt, env);
           if (!checked.ok) {
@@ -2933,12 +2899,6 @@ static CheckResult CheckQuoteItemSplices(const ScopeContext& ctx,
         } else if constexpr (std::is_same_v<T, ast::EnumDecl>) {
           auto checked =
               CheckQuoteGenericParamsSplices(ctx, type_ctx, node.generic_params, env);
-          if (!checked.ok) {
-            return checked;
-          }
-          checked =
-              CheckQuoteWhereClauseSplices(
-                  ctx, type_ctx, node.predicate_clause_opt, env);
           if (!checked.ok) {
             return checked;
           }
@@ -2987,12 +2947,6 @@ static CheckResult CheckQuoteItemSplices(const ScopeContext& ctx,
             return checked;
           }
           checked =
-              CheckQuoteWhereClauseSplices(ctx, type_ctx,
-                                           node.predicate_clause_opt, env);
-          if (!checked.ok) {
-            return checked;
-          }
-          checked =
               CheckQuoteTypeInvariantSplices(ctx, type_ctx,
                                              node.invariant_opt, env);
           if (!checked.ok) {
@@ -3013,12 +2967,6 @@ static CheckResult CheckQuoteItemSplices(const ScopeContext& ctx,
           if (!checked.ok) {
             return checked;
           }
-          checked =
-              CheckQuoteWhereClauseSplices(
-                  ctx, type_ctx, node.predicate_clause_opt, env);
-          if (!checked.ok) {
-            return checked;
-          }
           for (const auto& class_item : node.items) {
             checked = CheckQuoteClassItemSplices(ctx, type_ctx, class_item, env);
             if (!checked.ok) {
@@ -3036,8 +2984,7 @@ static CheckResult CheckQuoteItemSplices(const ScopeContext& ctx,
           if (!checked.ok) {
             return checked;
           }
-          return CheckQuoteWhereClauseSplices(ctx, type_ctx,
-                                              node.predicate_clause_opt, env);
+          return OkCheckResult();
         } else if constexpr (std::is_same_v<T, ast::DeriveTargetDecl>) {
           return CheckQuoteBlockSplices(ctx, type_ctx, *node.body, env);
         } else {

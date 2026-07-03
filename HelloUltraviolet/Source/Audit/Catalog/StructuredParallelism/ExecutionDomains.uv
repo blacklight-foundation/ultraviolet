@@ -2,7 +2,7 @@
 
 
 public procedure countStructuredParallelismExecutionDomainsObligations() -> usize {
-    return 54usize
+    return 43usize
 }
 
 public procedure validatedStructuredParallelismExecutionDomainsObligations() -> usize {
@@ -223,66 +223,12 @@ public procedure validatedStructuredParallelismExecutionDomainsObligations() -> 
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.20.GpuSafeType-Err",
-        76474usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/GpuSafeTypeDiagnostic/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.20.GpuSafe-Record-Field-Err",
-        76490usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/GpuSafeRecordFieldDiagnostic/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.20.GpuSafe-Generic-Unbounded-Err",
-        76506usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/GpuSafeGenericUnbounded/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.20.T-GpuIntrinsic",
         76522usize,
         "HelloUltraviolet::Audit",
         "artifactProjectGpuRuntimeEvidenceExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.20.Barrier-Outside-Err",
-        76538usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/BarrierOutsideGpuContext/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.20.GpuIntrinsic-Outside-Err",
-        76554usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/GpuIntrinsicOutside/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.20.GpuPtr-AddrSpace-Err",
-        76570usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/GpuPtrAddrSpace/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -337,15 +283,6 @@ public procedure validatedStructuredParallelismExecutionDomainsObligations() -> 
         "HelloUltraviolet::Audit",
         "artifactProjectGpuRuntimeEvidenceExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.20.GpuPtr-Deref-Err",
-        76677usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/GpuPtrDerefHostMemory/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -412,33 +349,6 @@ public procedure validatedStructuredParallelismExecutionDomainsObligations() -> 
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.20.Barrier-Divergence-Err",
-        76808usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/BarrierDivergence/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.20.KeyBlock-GPU-Err",
-        76824usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/KeyBlockGpuContext/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.20.WorkgroupSize-Err",
-        76840usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/ParallelWorkgroupSize/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.20.Lower-Domain-CPU",
         76858usize,
@@ -481,15 +391,6 @@ public procedure validatedStructuredParallelismExecutionDomainsObligations() -> 
         "HelloUltraviolet::Audit",
         "artifactProjectGpuRuntimeEvidenceExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.20.ExecutionDomains",
-        76936usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/ExecutionDomainsDiagnostics/Source/Main.uv"
     ) {
         count = count + 1usize
     }

@@ -4,10 +4,10 @@ internal procedure attributeAuthorityIoUnitSucceeded(
     result: Outcome<(), IoError>
 ) -> bool {
     return if result is {
-        @Value {
+        Outcome::Value(_) {
             true
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -17,10 +17,10 @@ internal procedure attributeAuthorityDurationSucceeded(
     result: Outcome<Duration, TimeError>
 ) -> bool {
     return if result is {
-        @Value { value } {
+        Outcome::Value(value) {
             value.nanoseconds >= 0u128
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -61,10 +61,10 @@ internal procedure attributeAuthorityReadTextEquals(
     expected: string@View
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             attributeAuthorityTextEquals(string::as_view(value), expected)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }

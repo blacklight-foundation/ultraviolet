@@ -64,7 +64,10 @@ ExprTypeResult TypeRangeExprImpl(const ScopeContext& ctx,
     rhs_type = rhs.type;
   }
 
-  // For two-sided ranges, bounds must have equivalent types.
+  // Two-sided range bounds must have the same type. If they differ, an integer
+  // literal bound takes the other bound's type via checking-mode coercion (as
+  // `let`/assignment do), so `0..len` with `len: usize` types the literal `0` as
+  // usize rather than defaulting it to i32.
   if (lhs_type && rhs_type) {
     const auto eq = TypeEquiv(lhs_type, rhs_type);
     if (!eq.ok) {
@@ -72,8 +75,14 @@ ExprTypeResult TypeRangeExprImpl(const ScopeContext& ctx,
       return result;
     }
     if (!eq.equiv) {
-      result.diag_id = "E-SEM-3133";
-      return result;
+      if (CheckExprAgainst(ctx, type_ctx, expr.lhs, rhs_type, env).ok) {
+        lhs_type = rhs_type;
+      } else if (CheckExprAgainst(ctx, type_ctx, expr.rhs, lhs_type, env).ok) {
+        rhs_type = lhs_type;
+      } else {
+        result.diag_id = "E-SEM-3133";
+        return result;
+      }
     }
   }
 

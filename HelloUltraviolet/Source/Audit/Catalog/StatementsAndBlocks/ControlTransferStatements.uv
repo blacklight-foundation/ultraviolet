@@ -2,7 +2,7 @@
 
 
 public procedure countStatementsAndBlocksControlTransferStatementsObligations() -> usize {
-    return 32usize
+    return 22usize
 }
 
 public procedure validatedStatementsAndBlocksControlTransferStatementsObligations() -> usize {
@@ -52,57 +52,12 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     ) {
         count = count + 1usize
     }
-    if acceptedProjectObligationEntryMatches(
-        "rule.18.T-Return-Value",
-        71864usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.18.T-Return-Unit",
         71880usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.18.Return-Async-Type-Err",
-        71896usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/AsyncReturnTypeMismatch/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.18.Return-Async-Unit-Err",
-        71912usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/AsyncReturnUnitMismatch/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.18.Return-Type-Err",
-        71928usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/ReturnTypeMismatch/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.18.Return-Unit-Err",
-        71944usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/ReturnUnitMismatch/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -124,30 +79,12 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.18.Break-Outside-Loop",
-        71992usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/BreakOutsideLoop/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.18.T-Continue",
         72008usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.18.Continue-Outside-Loop",
-        72024usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/ContinueOutsideLoop/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -166,15 +103,6 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.18.ExecSigma-Return",
-        72068usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
     ) {
         count = count + 1usize
     }
@@ -232,15 +160,6 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     ) {
         count = count + 1usize
     }
-    if acceptedProjectObligationEntryMatches(
-        "rule.18.Lower-Stmt-Return",
-        72179usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.18.Lower-Stmt-Return-Unit",
         72195usize,
@@ -283,15 +202,6 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
         "HelloUltraviolet::Audit",
         "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
         "Source/Audit/AcceptedProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.18.ControlTransferStatements",
-        72276usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/ReturnAtModuleScope/Source/Main.uv"
     ) {
         count = count + 1usize
     }

@@ -18,6 +18,18 @@ struct IRInstructionVisitor
 
   llvm::Value *EvaluateOrDefault(const IRValue &value) const;
 
+  // Builds an `Outcome::<variant>(payload)` enum value at the current insert
+  // point, reusing the shared EnumLit materialization path. `outcome_type` must
+  // be the registered `Outcome<…>` type of the result and `variant` is "Value"
+  // or "Error". `payload` is the already-materialized payload value (may be null
+  // for a unit/never payload). Returns nullptr when no lowering ctx is available
+  // or `outcome_type` is not an Outcome, so the caller can fall back.
+  llvm::Value *BuildOutcomeEnumValue(const analysis::TypeRef &outcome_type,
+                                     const char *variant,
+                                     llvm::Value *payload,
+                                     const analysis::TypeRef &payload_type,
+                                     const std::string &name_hint) const;
+
   bool IsAddressBackedAggregateType(llvm::Type *ty) const;
 
   llvm::Value *ForwardedAggregateStorage(const IRValue &value) const;

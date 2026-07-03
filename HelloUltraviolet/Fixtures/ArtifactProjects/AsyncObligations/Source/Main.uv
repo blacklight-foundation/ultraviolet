@@ -120,6 +120,31 @@ internal procedure asyncArtifactFailureIs(value: i32 | bool) -> bool {
     }
 }
 
+internal procedure asyncArtifactOutcomeValueIs(
+    value: Outcome<i32, bool>,
+    expected: i32
+) -> bool {
+    return if value is {
+        Outcome::Value(actual) {
+            actual == expected
+        }
+        Outcome::Error(failed) {
+            false
+        }
+    }
+}
+
+internal procedure asyncArtifactOutcomeFailureIs(value: Outcome<i32, bool>) -> bool {
+    return if value is {
+        Outcome::Value(actual) {
+            false
+        }
+        Outcome::Error(failed) {
+            failed
+        }
+    }
+}
+
 internal procedure asyncArtifactManualResume(value: i32) -> bool {
     let suspended: unique AsyncArtifactComputation = asyncArtifactYield(value)
     return if suspended is {
@@ -395,15 +420,15 @@ internal procedure asyncArtifactSharedClosureYieldRelease(value: i32) -> bool {
 
 /// Runs the async obligation artifact checks in a real executable.
 public procedure main(context: Context) -> i32 {
-    let completed: i32 | bool =
+    let completed: Outcome<i32, bool> =
         context.reactor~>run(asyncArtifactCompleted(67))
-    let failed: i32 | bool =
+    let failed: Outcome<i32, bool> =
         context.reactor~>run(asyncArtifactFailed(71))
-    let suspended: i32 | bool =
+    let suspended: Outcome<i32, bool> =
         context.reactor~>run(asyncArtifactSuspended(73))
-    if asyncArtifactValueIs(completed, 67) &&
-        asyncArtifactFailureIs(failed) &&
-        asyncArtifactValueIs(suspended, 73) &&
+    if asyncArtifactOutcomeValueIs(completed, 67) &&
+        asyncArtifactOutcomeFailureIs(failed) &&
+        asyncArtifactOutcomeValueIs(suspended, 73) &&
         asyncArtifactManualResume(79) &&
         asyncArtifactManualReleaseResume(83) &&
         asyncArtifactManualYieldFromResume(89) &&

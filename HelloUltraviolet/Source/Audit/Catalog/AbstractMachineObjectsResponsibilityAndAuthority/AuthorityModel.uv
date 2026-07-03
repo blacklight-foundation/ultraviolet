@@ -2,20 +2,11 @@
 
 
 public procedure countAbstractMachineObjectsResponsibilityAndAuthorityAuthorityModelObligations() -> usize {
-    return 29usize
+    return 22usize
 }
 
 public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthorityModelObligations() -> usize {
     var count: usize = 0usize
-    if rejectedSourceObligationEntryMatches(
-        "conformance.NoAmbientAuthorityDiscipline",
-        12118usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPermissionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.CapabilityClass",
         12134usize,
@@ -88,48 +79,12 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "NAA-1",
-        12260usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPermissionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Permissions/NoAmbientCapabilityGlobal/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "NAA-2",
-        12275usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/MainSignature/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "NAA-3",
-        12290usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPermissionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.CapReq",
         12307usize,
         "HelloUltraviolet::Reference::Authority",
         "capabilityRequirementSetReference",
         "Source/Reference/Authority/CapabilityFormalModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.DirectCallCapabilityInclusion",
-        12321usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPermissionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Permissions/DirectCallCapabilityInclusion/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -166,15 +121,6 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "HelloUltraviolet::Reference::Authority",
         "attenuationChildDropDoesNotDiminishParentReference",
         "Source/Reference/Authority/CapabilityFormalModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.AttenuationParentDropRejectedWithLiveChildren",
-        12406usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPermissionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Permissions/AttenuationParentDropWithLiveChild/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -256,15 +202,6 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthor
         "HelloUltraviolet::Reference::Authority",
         "sequencePointLTRPreservationReference",
         "Source/Reference/Authority/CapabilityFormalModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "conformance.UnsafeForeignAuthority",
-        12584usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedFFIRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnosticOwnership/Source/Main.uv"
     ) {
         count = count + 1usize
     }

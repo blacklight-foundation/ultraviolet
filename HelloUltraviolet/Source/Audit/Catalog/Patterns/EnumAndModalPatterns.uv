@@ -2,7 +2,7 @@
 
 
 public procedure countPatternsEnumAndModalPatternsObligations() -> usize {
-    return 34usize
+    return 33usize
 }
 
 public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
@@ -301,15 +301,6 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
         "HelloUltraviolet::Audit",
         "patternEnumModalPatternLoweringSharedConformanceMatches",
         "Source/Audit/PatternLoweringConformanceExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.17.EnumModalPatterns",
-        66889usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPatternsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Patterns/EnumModalPatternsDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

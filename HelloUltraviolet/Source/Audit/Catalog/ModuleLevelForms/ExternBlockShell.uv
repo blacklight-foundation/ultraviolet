@@ -2,7 +2,7 @@
 
 
 public procedure countModuleLevelFormsExternBlockShellObligations() -> usize {
-    return 17usize
+    return 15usize
 }
 
 public procedure validatedModuleLevelFormsExternBlockShellObligations() -> usize {
@@ -115,15 +115,6 @@ public procedure validatedModuleLevelFormsExternBlockShellObligations() -> usize
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "ExternAbi-Unknown-Err",
-        31742usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedFFIRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/FFI/UnsupportedExternABI/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "ResolveItem-ExternBlock",
         31760usize,
@@ -148,15 +139,6 @@ public procedure validatedModuleLevelFormsExternBlockShellObligations() -> usize
         "HelloUltraviolet::Audit",
         "moduleSourceProjectExternAbiFormsExecute",
         "Source/Audit/ModuleSourceProjectInfrastructureExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.ExternBlockDiagnosticOwnership",
-        31810usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesExternBlocksReference",
-        "Source/Reference/Modules/ExternBlocks.uv"
     ) {
         count = count + 1usize
     }

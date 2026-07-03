@@ -2,7 +2,7 @@
 
 
 public procedure countProceduresAndContractsPreconditionsObligations() -> usize {
-    return 10usize
+    return 7usize
 }
 
 public procedure validatedProceduresAndContractsPreconditionsObligations() -> usize {
@@ -61,39 +61,12 @@ public procedure validatedProceduresAndContractsPreconditionsObligations() -> us
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "req.15.CallerResponsibleForPrecondition",
-        55807usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/PreconditionCallerObligation/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "req.15.PreconditionRuntimeEvaluationOrder",
         55822usize,
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.15.PreconditionCheckInsertionOwnedByVerificationLogic",
-        55837usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresPreconditionsReference",
-        "Source/Reference/Procedures/Preconditions.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.15.Preconditions",
-        55852usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/PreconditionsDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

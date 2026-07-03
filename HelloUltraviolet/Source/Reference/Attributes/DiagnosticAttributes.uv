@@ -57,7 +57,13 @@ internal procedure diagnosticStaleOkAttributeValue() -> i32 {
 
 internal procedure diagnosticCompileTimeAttributeValue() -> bool {
     let files_ok: bool =
-        #files comptime { files~>exists("Ultraviolet.toml").value == true }
+        #files comptime {
+            if files~>exists("Ultraviolet.toml") is Outcome::Value(exists) {
+                exists == true
+            } else {
+                false
+            }
+        }
     let emit_ok: bool = #emit comptime { true }
     return files_ok && emit_ok
 }

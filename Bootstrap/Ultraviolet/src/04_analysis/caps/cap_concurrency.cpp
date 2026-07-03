@@ -707,7 +707,6 @@ ast::ClassDecl BuildAsyncClassDecl() {
       MakeTypeParam("TError", nullptr),
   });
   decl.supers = {};
-  decl.predicate_clause_opt = std::nullopt;
   decl.items = {};
   decl.span = core::Span{};
   decl.doc = {};
@@ -823,7 +822,6 @@ ast::ClassDecl BuildExecutionDomainClassDecl() {
   decl.modal = false;
   decl.generic_params = std::nullopt;
   decl.supers = {};
-  decl.predicate_clause_opt = std::nullopt;
   decl.items = {
       MakeClassMethod("name",
                       std::nullopt,
@@ -854,7 +852,6 @@ ast::ClassDecl BuildReactorClassDecl() {
   decl.modal = false;
   decl.generic_params = std::nullopt;
   decl.supers = {};
-  decl.predicate_clause_opt = std::nullopt;
   auto make_reactor_generics = []() {
     return MakeGenericParams({
         MakeTypeParam("T", nullptr),
@@ -866,14 +863,16 @@ ast::ClassDecl BuildReactorClassDecl() {
   const auto type_e = MakeTypePathAst({"E"});
   const auto future_ty = MakeTypeApplyAst("Future", {type_t, type_e});
   const auto tracked_ty = MakeTypeApplyAst("Tracked", {type_t, type_e});
-  const auto result_union = MakeTypeUnionAst({type_t, type_e});
+  // Reactor::run yields Outcome<T, E> (the ReactorRun host relation produces an
+  // Outcome value), consistent with sync/race/all. §22 (Prim-Reactor-Run).
+  const auto result_outcome = MakeTypeApplyAst("Outcome", {type_t, type_e});
 
   ast::ClassMethodDecl run_method = MakeClassMethod(
       "run",
       make_reactor_generics(),
       ast::ReceiverShorthand{ast::ReceiverPerm::Const},
       {MakeParam("future", future_ty)},
-      result_union);
+      result_outcome);
 
   ast::ClassMethodDecl register_method = MakeClassMethod(
       "register",

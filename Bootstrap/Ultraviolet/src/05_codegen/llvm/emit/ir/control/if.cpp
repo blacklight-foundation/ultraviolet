@@ -87,6 +87,111 @@ void IRInstructionVisitor::operator()(const IRIf &node) const
   };
 
   std::vector<IncomingValue> incoming;
+  bool has_fallthrough_arm = false;
+  analysis::TypeRef result_type = LookupValueType(node.result);
+  llvm::Type *result_ty = ExpectedLLVMType(node.result);
+  if (!result_ty && result_type)
+  {
+    result_ty = emitter.GetLLVMType(result_type);
+  }
+  const bool aggregate_result =
+      result_ty && !result_ty->isVoidTy() &&
+      IsAddressBackedAggregateType(result_ty);
+  llvm::Value *merged_storage = nullptr;
+  if (aggregate_result)
+  {
+    merged_storage =
+        emitter.AcquireReusableAggregateStorage(func, result_ty, "if.result");
+    llvm::Type *expected_ptr_ty = llvm::PointerType::get(result_ty, 0);
+    if (merged_storage && merged_storage->getType() != expected_ptr_ty)
+    {
+      merged_storage = builder.CreateBitCast(merged_storage, expected_ptr_ty);
+    }
+  }
+
+  auto store_aggregate_result = [&](const IRValue &source_ir,
+                                    llvm::Value *source_storage,
+                                    llvm::Value *source_value) -> bool
+  {
+    if (!merged_storage || !result_ty)
+    {
+      return false;
+    }
+    analysis::TypeRef source_type = LookupValueType(source_ir);
+    analysis::TypeRef target_type = result_type ? result_type : source_type;
+    if (source_storage && source_storage->getType()->isPointerTy())
+    {
+      if (TryEmitBitcopyAggregateStorageCopy(
+              emitter,
+              &builder,
+              merged_storage,
+              source_storage,
+              target_type,
+              source_type))
+      {
+        return true;
+      }
+      if (TryEmitAggregateStorageTransfer(
+              emitter,
+              &builder,
+              merged_storage,
+              source_storage,
+              target_type,
+              source_type))
+      {
+        return true;
+      }
+    }
+    if (target_type &&
+        StoreIRValueToStorage(
+            emitter,
+            &builder,
+            merged_storage,
+            source_ir,
+            target_type,
+            result_ty,
+            1))
+    {
+      return true;
+    }
+    if (target_type &&
+        TryEmitDerivedAggregateToStorage(
+            emitter,
+            &builder,
+            merged_storage,
+            source_ir,
+            target_type))
+    {
+      return true;
+    }
+    if (!source_value)
+    {
+      return false;
+    }
+    llvm::Value *candidate = source_value;
+    if (!candidate)
+    {
+      return false;
+    }
+    llvm::Value *coerced = CoerceToTyped(
+        emitter,
+        &builder,
+        candidate,
+        result_ty,
+        source_type,
+        result_type);
+    if (!coerced)
+    {
+      coerced = CoerceTo(&builder, candidate, result_ty);
+    }
+    if (!coerced)
+    {
+      coerced = llvm::Constant::getNullValue(result_ty);
+    }
+    builder.CreateStore(coerced, merged_storage);
+    return true;
+  };
+
   auto emit_merge_branch = [&]()
   {
     IRBranch merge_branch;
@@ -101,9 +206,25 @@ void IRInstructionVisitor::operator()(const IRIf &node) const
   if (!then_end->getTerminator())
   {
     llvm::Value *then_storage = emitter.GetAddressableStorage(node.then_value);
-    llvm::Value *then_val = EvaluateOrDefault(node.then_value);
+    llvm::Value *then_val = nullptr;
+    if (aggregate_result && merged_storage)
+    {
+      if (!store_aggregate_result(node.then_value, then_storage, nullptr))
+      {
+        then_val = EvaluateOrDefault(node.then_value);
+        (void)store_aggregate_result(node.then_value, then_storage, then_val);
+      }
+    }
+    else
+    {
+      then_val = EvaluateOrDefault(node.then_value);
+    }
+    has_fallthrough_arm = true;
     emit_merge_branch();
-    incoming.push_back({then_end, then_val, then_storage, node.then_value});
+    if (!aggregate_result || !merged_storage)
+    {
+      incoming.push_back({then_end, then_val, then_storage, node.then_value});
+    }
   }
 
   builder.SetInsertPoint(else_bb);
@@ -113,14 +234,30 @@ void IRInstructionVisitor::operator()(const IRIf &node) const
   if (!else_end->getTerminator())
   {
     llvm::Value *else_storage = emitter.GetAddressableStorage(node.else_value);
-    llvm::Value *else_val = EvaluateOrDefault(node.else_value);
+    llvm::Value *else_val = nullptr;
+    if (aggregate_result && merged_storage)
+    {
+      if (!store_aggregate_result(node.else_value, else_storage, nullptr))
+      {
+        else_val = EvaluateOrDefault(node.else_value);
+        (void)store_aggregate_result(node.else_value, else_storage, else_val);
+      }
+    }
+    else
+    {
+      else_val = EvaluateOrDefault(node.else_value);
+    }
+    has_fallthrough_arm = true;
     emit_merge_branch();
-    incoming.push_back({else_end, else_val, else_storage, node.else_value});
+    if (!aggregate_result || !merged_storage)
+    {
+      incoming.push_back({else_end, else_val, else_storage, node.else_value});
+    }
   }
 
   builder.SetInsertPoint(merge_bb);
   emitter.RestoreFlowState(branch_state);
-  if (incoming.empty())
+  if (!has_fallthrough_arm)
   {
     if (!merge_bb->getTerminator())
     {
@@ -129,71 +266,33 @@ void IRInstructionVisitor::operator()(const IRIf &node) const
     return;
   }
 
-  analysis::TypeRef result_type = LookupValueType(node.result);
-  llvm::Type *result_ty = ExpectedLLVMType(node.result);
   if (!result_ty)
   {
     result_ty = incoming.front().value
                     ? incoming.front().value->getType()
                     : llvm::Type::getInt64Ty(emitter.GetContext());
   }
-  if (!result_ty || result_ty->isVoidTy())
+  if (!result_ty || result_ty->isVoidTy() ||
+      IsZeroSizedLLVMType(emitter, result_ty))
   {
+    emitter.SetTempValue(node.result, DefaultFor(node.result));
     return;
   }
 
-  const bool aggregate_result = IsAddressBackedAggregateType(result_ty);
-
-  if (aggregate_result)
+  if (aggregate_result && merged_storage)
   {
-    llvm::Value *merged_storage =
-        emitter.AcquireReusableAggregateStorage(func, result_ty, "if.result");
-    llvm::Type *expected_ptr_ty = llvm::PointerType::get(result_ty, 0);
-    if (merged_storage && merged_storage->getType() != expected_ptr_ty)
-    {
-      merged_storage = builder.CreateBitCast(merged_storage, expected_ptr_ty);
-    }
-    if (merged_storage)
-    {
-      for (const auto &entry : incoming)
-      {
-        llvm::IRBuilder<> pred_builder(entry.pred->getTerminator());
-        llvm::Value *candidate = nullptr;
-        if (entry.storage && entry.storage->getType()->isPointerTy())
-        {
-          llvm::Value *typed_storage = entry.storage;
-          if (typed_storage->getType() != expected_ptr_ty)
-          {
-            typed_storage = pred_builder.CreateBitCast(typed_storage, expected_ptr_ty);
-          }
-          candidate = pred_builder.CreateLoad(result_ty, typed_storage);
-        }
-        if (!candidate)
-        {
-          candidate = entry.value ? entry.value : llvm::Constant::getNullValue(result_ty);
-        }
-        llvm::Value *coerced = CoerceToTyped(
-            emitter,
-            &pred_builder,
-            candidate,
-            result_ty,
-            nullptr,
-            result_type);
-        if (!coerced)
-        {
-          coerced = CoerceTo(&pred_builder, candidate, result_ty);
-        }
-        if (!coerced)
-        {
-          coerced = llvm::Constant::getNullValue(result_ty);
-        }
-        pred_builder.CreateStore(coerced, merged_storage);
-      }
+    emitter.ForgetTempStorage(node.result);
+    emitter.SetTempStorage(node.result, merged_storage);
+    return;
+  }
 
-      emitter.ForgetTempStorage(node.result);
-      emitter.SetTempStorage(node.result, merged_storage);
-      return;
+  if (incoming.empty())
+  {
+    if (!merge_bb->getTerminator())
+    {
+      builder.CreateUnreachable();
     }
+    return;
   }
 
   llvm::Value *merged = nullptr;

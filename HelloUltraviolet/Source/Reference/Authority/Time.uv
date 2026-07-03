@@ -6,10 +6,10 @@ internal procedure durationReferenceIsPositive(duration: Duration) -> bool {
 
 internal procedure elapsedReferenceSucceeded(result: Outcome<Duration, TimeError>) -> bool {
     return if result is {
-        @Value { value } {
+        Outcome::Value(value) {
             value.nanoseconds >= 0u128
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -19,10 +19,10 @@ internal procedure monotonicCoarsenReferenceSucceeded(
     result: Outcome<$MonotonicTime, TimeError>
 ) -> bool {
     return if result is {
-        @Value {
+        Outcome::Value(_) {
             true
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -92,10 +92,10 @@ internal procedure timeOutcomeErrorIsInvalidResolution<TValue>(
     result: Outcome<TValue, TimeError>
 ) -> bool {
     return if result is {
-        @Value {
+        Outcome::Value(_) {
             false
         }
-        @Error { error } {
+        Outcome::Error(error) {
             timeErrorIsInvalidResolution(error)
         }
     }
@@ -103,10 +103,10 @@ internal procedure timeOutcomeErrorIsInvalidResolution<TValue>(
 
 internal procedure wallInstantReferenceObserved(result: Outcome<UtcInstant, TimeError>) -> bool {
     return if result is {
-        @Value {
+        Outcome::Value(_) {
             true
         }
-        @Error { error } {
+        Outcome::Error(error) {
             timeErrorIsWallInstantPermitted(error)
         }
     }
@@ -114,10 +114,10 @@ internal procedure wallInstantReferenceObserved(result: Outcome<UtcInstant, Time
 
 internal procedure wallResolutionReferenceObserved(result: Outcome<Duration, TimeError>) -> bool {
     return if result is {
-        @Value { value } {
+        Outcome::Value(value) {
             durationReferenceIsPositive(value)
         }
-        @Error { error } {
+        Outcome::Error(error) {
             timeErrorIsClockUnavailable(error)
         }
     }
@@ -125,10 +125,10 @@ internal procedure wallResolutionReferenceObserved(result: Outcome<Duration, Tim
 
 internal procedure wallCoarsenReferenceSucceeded(result: Outcome<$WallTime, TimeError>) -> bool {
     return if result is {
-        @Value {
+        Outcome::Value(_) {
             true
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }

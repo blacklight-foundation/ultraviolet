@@ -201,38 +201,69 @@ internal procedure compileTimeCapabilityAndReflectionChecks() -> bool {
         files~>read_bytes("Ultraviolet.toml")
         files~>list_dir("Source")
         let invalid_listing_is_invalid_path: bool = if invalid_listing is {
-            @Value { value } {
+            Outcome::Value(value) {
                 false
             }
-            @Error { error } {
+            Outcome::Error(error) {
                 if error is {
-                    @NotFound {
+                    IoError::NotFound {
                         false
                     }
-                    @PermissionDenied {
+                    IoError::PermissionDenied {
                         false
                     }
-                    @AlreadyExists {
+                    IoError::AlreadyExists {
                         false
                     }
-                    @InvalidPath {
+                    IoError::InvalidPath {
                         true
                     }
-                    @Busy {
+                    IoError::Busy {
                         false
                     }
-                    @IoFailure {
+                    IoError::IoFailure {
+                        false
+                    }
+                    IoError::DirectoryNotEmpty {
                         false
                     }
                 }
             }
         }
         requireComptimeConformance(files~>project_root() != "")
-        requireComptimeConformance(files~>exists("Ultraviolet.toml").value == true)
+        requireComptimeConformance(
+            if files~>exists("Ultraviolet.toml") is Outcome::Value(exists) {
+                exists == true
+            } else {
+                false
+            }
+        )
         requireComptimeConformance(invalid_listing_is_invalid_path)
-        requireComptimeConformance(manifest_text.value != "")
-        requireComptimeConformance(manifest_text_again.value != "")
-        requireComptimeConformance(manifest_text.value == manifest_text_again.value)
+        requireComptimeConformance(
+            if manifest_text is Outcome::Value(text) {
+                text != ""
+            } else {
+                false
+            }
+        )
+        requireComptimeConformance(
+            if manifest_text_again is Outcome::Value(text) {
+                text != ""
+            } else {
+                false
+            }
+        )
+        requireComptimeConformance(
+            if manifest_text is Outcome::Value(first_text) {
+                if manifest_text_again is Outcome::Value(second_text) {
+                    first_text == second_text
+                } else {
+                    false
+                }
+            } else {
+                false
+            }
+        )
     }
 
     var reflected_field_count: usize = 0usize

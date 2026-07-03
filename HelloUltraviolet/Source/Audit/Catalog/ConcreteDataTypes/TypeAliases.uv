@@ -2,7 +2,7 @@
 
 
 public procedure countConcreteDataTypesTypeAliasesObligations() -> usize {
-    return 22usize
+    return 18usize
 }
 
 public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
@@ -115,30 +115,12 @@ public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "def.AliasCycle",
-        41618usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedDataTypesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "TypeAlias-Ok",
         41632usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTypeAliasesReference",
         "Source/Reference/DataTypes/TypeAliases.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "TypeAlias-Recursive-Err",
-        41649usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedDataTypesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -184,24 +166,6 @@ public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTypeAliasesReference",
         "Source/Reference/DataTypes/TypeAliases.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.TypeAliasDiagnosticOwnership",
-        41752usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedDataTypesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.DataTypesSupplement",
-        41769usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/UnionDirectAccess/Source/Main.uv"
     ) {
         count = count + 1usize
     }

@@ -1,7 +1,7 @@
 //! Rejected FFI specimen for generic record applications with substituted non-FfiSafe fields.
 
 #layout(C)
-public record GenericFfiRecord<TValue> |: FfiSafe(TValue)
+public record GenericFfiRecord<TValue <: FfiSafe>
 {
     public value: TValue
 }
@@ -9,4 +9,3 @@ public record GenericFfiRecord<TValue> |: FfiSafe(TValue)
 extern "C" {
     public procedure importedRecord(value: GenericFfiRecord<bool>) -> i32
 }
-

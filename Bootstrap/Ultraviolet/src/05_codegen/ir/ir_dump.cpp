@@ -46,7 +46,7 @@
 //      - Parallelism: IRParallel, IRSpawn, IRWait, IRCancelCreate,
 //        IRCancelRequest, IRCancelWait, IRCancelCheck, IRCancelSuppress,
 //        IRGpuBarrier, IRDispatch (Section 20)
-//      - Async: IRYield, IRYieldFrom, IRSync, IRRaceReturn, IRRaceYield, IRAll (Section 19.2-19.3)
+//      - Async: IRYield, IRYieldFrom, IRSync, IRRaceReturn, IRRaceYield, IRAll (Section 21.2-21.3)
 //   3. Smart formatting for common patterns (addr_of + bind, call + bind)
 //   4. Indentation-aware output for nested structures
 //   5. Display map for opaque value renaming
@@ -968,7 +968,7 @@ struct Dumper {
     Indent(); oss << "}";
   }
 
-  // Section 19.2.2 Yield expression
+  // Section 21.2.2 Yield expression
   void DumpNode(const IRYield& yield) {
     oss << "yield";
     if (yield.release) oss << " release";
@@ -979,7 +979,7 @@ struct Dumper {
     Dump(yield.result);
   }
 
-  // Section 19.2.3 Yield-from expression
+  // Section 21.2.3 Yield-from expression
   void DumpNode(const IRYieldFrom& yf) {
     oss << "yield";
     if (yf.release) oss << " release";
@@ -1048,7 +1048,7 @@ struct Dumper {
     Indent(); oss << "}";
   }
 
-  // Section 19.3.3 Sync expression
+  // Section 21.3.3 Sync expression
   void DumpNode(const IRSync& sync) {
     oss << "sync ";
     Dump(sync.async_value);
@@ -1063,7 +1063,7 @@ struct Dumper {
     Dump(sync.result);
   }
 
-  // Section 19.3.4 Race expression (first-completion)
+  // Section 21.3.4 Race expression (first-completion)
   void DumpNode(const IRRaceReturn& race) {
     oss << "race {\n";
     indent_level++;
@@ -1083,7 +1083,7 @@ struct Dumper {
     Indent(); oss << "}";
   }
 
-  // Section 19.3.4 Race expression (streaming)
+  // Section 21.3.4 Race expression (streaming)
   void DumpNode(const IRRaceYield& race) {
     oss << "race_yield {\n";
     indent_level++;
@@ -1102,7 +1102,7 @@ struct Dumper {
     Indent(); oss << "}";
   }
 
-  // Section 19.3.5 All expression
+  // Section 21.3.5 All expression
   void DumpNode(const IRAll& all) {
     oss << "all {\n";
     indent_level++;

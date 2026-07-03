@@ -25,7 +25,7 @@ namespace ultraviolet::project {
 
 namespace {
 
-constexpr std::uint64_t kWindowsExeStackReserveBytes = 1ull << 20;
+constexpr std::uint64_t kWindowsExeStackReserveBytes = 16ull << 20;
 constexpr std::uint64_t kWindowsExeStackCommitBytes = 64ull << 10;
 constexpr std::string_view kLinuxIcuI18nSidecar = "libicui18n.so.72";
 constexpr std::string_view kLinuxIcuUcSidecar = "libicuuc.so.72";

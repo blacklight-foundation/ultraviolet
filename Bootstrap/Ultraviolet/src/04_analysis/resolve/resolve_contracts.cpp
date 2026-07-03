@@ -264,7 +264,7 @@ ResolveForeignContractsOpt(
 // Resolves an @entry(expr) intrinsic.
 // Implements (Resolve-Entry-Capture):
 //   Gamma |- ResolveExpr(expr) => ok /\
-//   (Bitcopy(typeof(expr)) \/ Clone(typeof(expr)))
+//   (typeof(expr) <: Bitcopy \/ typeof(expr) <: Clone)
 //   -> Gamma |- ResolveEntryCapture(@entry(expr)) => ok
 //
 // Note: The Bitcopy/Clone check is deferred to type checking.

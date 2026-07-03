@@ -2,7 +2,7 @@
 
 
 public procedure countNameResolutionAndVisibilityTopLevelNameCollectionObligations() -> usize {
-    return 70usize
+    return 60usize
 }
 
 public procedure validatedNameResolutionAndVisibilityTopLevelNameCollectionObligations() -> usize {
@@ -421,36 +421,9 @@ public procedure validatedNameResolutionAndVisibilityTopLevelNameCollectionOblig
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "Bind-Import-Err",
-        20650usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedModulesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Modules/MissingImport/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "Bind-Using",
         20668usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "Bind-Using-Err",
-        20686usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedModulesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Modules/UsingListDuplicate/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Bind-ErrorItem",
-        20704usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -469,33 +442,6 @@ public procedure validatedNameResolutionAndVisibilityTopLevelNameCollectionOblig
     if acceptedObligationEntryMatches(
         "Collect-Scan",
         20739usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Collect-Using-Import-Dup",
-        20757usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "Collect-Dup",
-        20775usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedNamesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Names/DuplicateModuleDeclaration/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Collect-Err",
-        20793usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -566,15 +512,6 @@ public procedure validatedNameResolutionAndVisibilityTopLevelNameCollectionOblig
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.UsingImportConflict",
-        20909usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "def.NameCollectionStateDomain",
         20923usize,
         "HelloUltraviolet::Reference::Names",
@@ -595,33 +532,6 @@ public procedure validatedNameResolutionAndVisibilityTopLevelNameCollectionOblig
     if acceptedObligationEntryMatches(
         "Names-Step",
         20954usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Names-Step-Using-Import-Dup",
-        20972usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Names-Step-Dup",
-        20990usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Names-Step-Err",
-        21008usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"

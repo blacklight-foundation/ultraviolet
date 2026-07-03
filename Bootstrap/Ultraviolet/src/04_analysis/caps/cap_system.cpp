@@ -272,7 +272,6 @@ ast::RecordDecl BuildContextRecordDecl() {
   record.name = ast::Identifier{"Context"};
   record.generic_params = std::nullopt;
   record.implements = {ast::ClassPath{"Bitcopy"}};
-  record.predicate_clause_opt = std::nullopt;
   record.invariant_opt = std::nullopt;
   record.members = {
       MakeField("io", MakeTypeDynamicAst({"IO"})),
@@ -295,7 +294,6 @@ ast::RecordDecl BuildTestAuthorityRecordDecl() {
   record.name = ast::Identifier{"TestAuthority"};
   record.generic_params = std::nullopt;
   record.implements = {};
-  record.predicate_clause_opt = std::nullopt;
   record.invariant_opt = std::nullopt;
   record.members = {
       MakeField("io", MakeTypeDynamicAst({"IO"})),
@@ -320,7 +318,6 @@ ast::RecordDecl BuildPanicRecordDecl() {
   record.name = ast::Identifier{"PanicRecord"};
   record.generic_params = std::nullopt;
   record.implements = {ast::ClassPath{"Bitcopy"}};
-  record.predicate_clause_opt = std::nullopt;
   record.invariant_opt = std::nullopt;
   record.members = {
       MakeField("panic", MakeTypePrimAst("bool")),
@@ -339,7 +336,6 @@ ast::RecordDecl BuildRegionOptionsRecordDecl() {
   record.name = ast::Identifier{"RegionOptions"};
   record.generic_params = std::nullopt;
   record.implements = {};
-  record.predicate_clause_opt = std::nullopt;
   record.invariant_opt = std::nullopt;
   record.members = {
       MakeFieldWithInit("stack_size",
@@ -362,7 +358,6 @@ ast::ClassDecl BuildSystemClassDecl() {
   decl.modal = false;
   decl.generic_params = std::nullopt;
   decl.supers = {};
-  decl.predicate_clause_opt = std::nullopt;
   decl.items = {
       MakeClassMethod("exit", {MakeParam("code", MakeTypePrimAst("i32"))},
                       MakeTypePrimAst("!")),

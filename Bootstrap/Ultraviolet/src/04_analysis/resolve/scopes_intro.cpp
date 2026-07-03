@@ -51,9 +51,9 @@ bool IsCapabilityClassReservedKey(const IdKey& key) {
 bool IsFoundationalClassReservedKey(const IdKey& key) {
   return key == IdKeyOf("Bitcopy") || key == IdKeyOf("Clone") ||
          key == IdKeyOf("Drop") || key == IdKeyOf("FfiSafe") ||
-         key == IdKeyOf("Eq") || key == IdKeyOf("Hasher") ||
-         key == IdKeyOf("Hash") || key == IdKeyOf("Iterator") ||
-         key == IdKeyOf("Discrete");
+         key == IdKeyOf("GpuSafe") || key == IdKeyOf("Eq") ||
+         key == IdKeyOf("Hasher") || key == IdKeyOf("Hash") ||
+         key == IdKeyOf("Iterator") || key == IdKeyOf("Discrete");
 }
 
 std::optional<core::Span> SpanForKey(

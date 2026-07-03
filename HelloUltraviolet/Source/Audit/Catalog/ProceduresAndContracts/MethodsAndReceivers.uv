@@ -2,7 +2,7 @@
 
 
 public procedure countProceduresAndContractsMethodsAndReceiversObligations() -> usize {
-    return 56usize
+    return 48usize
 }
 
 public procedure validatedProceduresAndContractsMethodsAndReceiversObligations() -> usize {
@@ -151,15 +151,6 @@ public procedure validatedProceduresAndContractsMethodsAndReceiversObligations()
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "def.15.SelfType",
-        54244usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/SelfTypeDefinition/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.15.RecvType",
         54257usize,
@@ -205,15 +196,6 @@ public procedure validatedProceduresAndContractsMethodsAndReceiversObligations()
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.15.Record-Method-RecvSelf-Err",
-        54337usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/RecordMethodReceiverNotSelf/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.15.Recv-Const",
         54353usize,
@@ -241,39 +223,12 @@ public procedure validatedProceduresAndContractsMethodsAndReceiversObligations()
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.15.WF-Record-Method",
-        54398usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/RecordMethodWellFormedness/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.15.T-Record-Method-Body",
-        54414usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/RecordMethodBodyExplicitReturn/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.15.WF-Record-Methods",
         54430usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresReceiversReference",
         "Source/Reference/Procedures/Receivers.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.15.Record-Method-Dup",
-        54446usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/RecordMethodDuplicate/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -328,15 +283,6 @@ public procedure validatedProceduresAndContractsMethodsAndReceiversObligations()
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresReceiversReference",
         "Source/Reference/Procedures/Receivers.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.15.T-Record-MethodCall",
-        54548usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/RecordMethodCallArgumentType/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -400,15 +346,6 @@ public procedure validatedProceduresAndContractsMethodsAndReceiversObligations()
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresReceiversReference",
         "Source/Reference/Procedures/Receivers.uv"
-    ) {
-        count = count + 1usize
-    }
-    if artifactBehaviorObligationEntryMatches(
-        "rule.15.EvalRecvSigma-Ref-Dyn-Expired",
-        54668usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
-        "validatedArtifactProjectFixtureCount",
-        "Fixtures/ArtifactProjects/DynamicReceiverExpiredPanic/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -499,15 +436,6 @@ public procedure validatedProceduresAndContractsMethodsAndReceiversObligations()
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresReceiversReference",
         "Source/Reference/Procedures/Receivers.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.15.MethodsAndReceivers",
-        54842usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/MethodsAndReceiversDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

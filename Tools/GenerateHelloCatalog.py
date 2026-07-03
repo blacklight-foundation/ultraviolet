@@ -29,7 +29,863 @@ EXERCISE_QUALITY_GROUP_SIZE = 200
 CHECK_MODE = False
 CHECK_FAILURES: list[str] = []
 EXPECTED_GENERATED_PATHS: set[pathlib.Path] = set()
-BLOCKED_OBLIGATIONS: dict[str, str] = {}
+BLOCKED_OBLIGATIONS: dict[str, str] = {
+    "Reject-IllFormed": (
+        "conformance reference does not exercise project rejection"
+    ),
+    "def.RuleDiagnosticIdentity": (
+        "conformance reference does not exercise diagnostic identity mapping"
+    ),
+    "def.DiagnosticCodeComponents": (
+        "conformance reference does not exercise diagnostic code components"
+    ),
+    "def.DiagnosticCodeFormat": (
+        "conformance reference does not exercise diagnostic code format"
+    ),
+    "def.DiagnosticCodeDigitParts": (
+        "conformance reference does not exercise diagnostic code digit partitions"
+    ),
+    "def.Conforming": "conformance reference does not exercise project conformance",
+    "def.WF": "conformance reference does not exercise well-formed projects",
+    "def.ReqJudgments": (
+        "conformance reference does not exercise required judgment sequencing"
+    ),
+    "def.TypeAndStatementNodes": (
+        "conformance reference does not exercise AST node collection"
+    ),
+    "def.ItemKind": "conformance reference does not exercise item classification",
+    "def.TopDeclConstructs": (
+        "conformance reference does not exercise top-level declaration constructs"
+    ),
+    "def.TypeCtor": "conformance reference does not exercise type constructors",
+    "def.TypeConstructs": (
+        "conformance reference does not exercise type construct aggregation"
+    ),
+    "def.PermissionConstructs": (
+        "conformance reference does not exercise permission construct aggregation"
+    ),
+    "def.ExprKind": "conformance reference does not exercise expression classification",
+    "def.StmtKind": "conformance reference does not exercise statement classification",
+    "def.ExprStmtConstructs": (
+        "conformance reference does not exercise expression/statement constructs"
+    ),
+    "def.CapConstructs": (
+        "conformance reference does not exercise capability construct aggregation"
+    ),
+    "def.Constructs": "conformance reference does not exercise construct aggregation",
+    "def.StaticJudgmentSet": (
+        "conformance reference does not exercise static judgment set"
+    ),
+    "def.StaticRuleSet": "conformance reference does not exercise static rule set",
+    "def.RuleShape": "conformance reference does not exercise formal rule shape",
+    "def.RuleSubstitutions": (
+        "conformance reference does not exercise formal rule substitutions"
+    ),
+    "def.RuleApplies": (
+        "conformance reference does not exercise formal rule applicability"
+    ),
+    "def.PremisesHold": (
+        "conformance reference does not exercise premise satisfaction"
+    ),
+    "def.IllFormed": "conformance reference does not exercise ill-formedness",
+    "def.StaticUndefined": (
+        "conformance reference does not exercise static undefinedness"
+    ),
+    "def.RuleSectionIndex": (
+        "conformance reference does not exercise formal rule section index"
+    ),
+    "Static-Undefined": (
+        "conformance reference does not exercise static undefined diagnostic emission"
+    ),
+    "Static-Undefined-NoCode": (
+        "conformance reference does not exercise uncoded static undefined emission"
+    ),
+    "def.OutsideConformance": (
+        "conformance reference does not exercise outside-conformance boundary"
+    ),
+    "def.CheckKind": "conformance reference does not exercise check kind set",
+    "def.StaticCheck": "conformance reference does not exercise static check set",
+    "req.ResourceExhaustionOutsideConformance": (
+        "conformance reference does not exercise resource exhaustion boundary"
+    ),
+    "def.LexRecovery": "conformance reference does not exercise lexical recovery",
+    "def.ParseRecovery": "conformance reference does not exercise parse recovery",
+    "def.TypeRecovery": "conformance reference does not exercise type recovery",
+    "def.MaxErrorCount": (
+        "conformance reference does not exercise maximum error count"
+    ),
+    "def.SuggestedMaxErrorCount": (
+        "conformance reference does not exercise suggested maximum error count"
+    ),
+    "def.AbortOnErrorCount": (
+        "conformance reference does not exercise abort-on-error threshold"
+    ),
+    "def.NormativeKeywords": (
+        "conformance reference does not exercise normative keyword set"
+    ),
+    "conformance.RFC2119": (
+        "conformance reference does not exercise RFC 2119 interpretation"
+    ),
+    "refs.NormativeRefs": (
+        "conformance reference does not exercise normative references"
+    ),
+    "refs.ReferenceDetails": (
+        "conformance reference does not exercise normative reference details"
+    ),
+    "refs.Conformance": (
+        "conformance reference does not exercise reference conformance precedence"
+    ),
+    "def.DiagnosticStream": (
+        "diagnostic records reference does not exercise diagnostic streams"
+    ),
+    "Emit-Append": "diagnostic records reference does not exercise stream append",
+    "def.DiagnosticTableColumns": (
+        "diagnostic records reference does not exercise diagnostic table columns"
+    ),
+    "def.EmitImplicit": (
+        "diagnostic records reference does not exercise implicit diagnostic emission"
+    ),
+    "def.EmitList": (
+        "diagnostic records reference does not exercise diagnostic list emission"
+    ),
+    "def.DiagnosticMessageLookup": (
+        "diagnostic records reference does not exercise message lookup"
+    ),
+    "def.CompileStatus": (
+        "diagnostic records reference does not exercise compile status"
+    ),
+    "def.SpecCode": (
+        "diagnostic records reference does not exercise spec-code lookup"
+    ),
+    "conformance.AppendixADiagnosticIndex": (
+        "diagnostic records reference does not exercise Appendix A index"
+    ),
+    "DiagId-Code": (
+        "diagnostic records reference does not exercise diagnostic ID to code mapping"
+    ),
+    "def.DiagIdCodeMapping": (
+        "diagnostic records reference does not exercise diagnostic ID/code mapping"
+    ),
+    "def.DiagnosticRenderRich": (
+        "diagnostic rendering reference does not exercise rich rendering"
+    ),
+    "def.DiagnosticRenderRichHeader": (
+        "diagnostic rendering reference does not exercise rich headers"
+    ),
+    "def.DiagnosticSourceRendering": (
+        "diagnostic rendering reference does not exercise source excerpts"
+    ),
+    "def.TypeRenderLexemes": (
+        "diagnostic rendering reference does not exercise type lexemes"
+    ),
+    "def.TypeRenderStateSuffixes": (
+        "diagnostic rendering reference does not exercise state suffixes"
+    ),
+    "def.ParamRender": (
+        "diagnostic rendering reference does not exercise parameter rendering"
+    ),
+    "def.TypeRender": (
+        "diagnostic rendering reference does not exercise type rendering"
+    ),
+    "def.ModalRefRender": (
+        "diagnostic rendering reference does not exercise modal reference rendering"
+    ),
+    "rule.17.PatternRejectNarrow-Union": (
+        "pattern reference does not exercise rejected union narrowing"
+    ),
+    "rule.18.T-ErrorStmt": (
+        "statement reference does not exercise error statement typing"
+    ),
+    "rule.18.ExecSigma-Error": (
+        "statement reference does not exercise error statement execution"
+    ),
+    "rule.19.K-Dynamic-Index-Conflict": (
+        "key conflict reference does not exercise dynamic index conflict"
+    ),
+    "rule.19.K-Read-Write-Reject": (
+        "key conflict reference does not exercise read/write rejection"
+    ),
+    "rule.19.Spec-Commit-Fail-Retry": (
+        "speculative execution reference does not exercise commit-failure retry"
+    ),
+    "rule.19.Spec-Commit-Fail-Fallback": (
+        "speculative execution reference does not exercise commit-failure fallback"
+    ),
+    "rule.19.Spec-Retry": (
+        "speculative execution reference does not exercise retry semantics"
+    ),
+    "rule.19.Spec-Fallback": (
+        "speculative execution reference does not exercise fallback semantics"
+    ),
+    "requirement.19.SpeculativeAbstractSemanticsAndFallback": (
+        "speculative execution reference does not exercise fallback semantics"
+    ),
+    "rule.21.EvalSigma-YieldFrom-Completed": (
+        "async artifact evidence does not exercise yield-from completed source"
+    ),
+    "rule.21.EvalYieldFromContinue-Suspended": (
+        "async artifact evidence does not exercise yield-from continuation suspension"
+    ),
+    "rule.21.EvalYieldFromContinue-Failed": (
+        "async artifact evidence does not exercise yield-from continuation failure"
+    ),
+    "requirement.21.YieldFromEnterLoweringLoop": (
+        "async artifact evidence does not exercise yield-from completed loop entry"
+    ),
+    "rule.22.CtBuiltin-Read-InvalidPath": (
+        "compile-time capability reference does not exercise read invalid path"
+    ),
+    "rule.22.CtBuiltin-ReadBytes-InvalidPath": (
+        "compile-time capability reference does not exercise read_bytes invalid path"
+    ),
+    "rule.22.CtBuiltin-Exists-InvalidPath": (
+        "compile-time capability reference does not exercise exists invalid path"
+    ),
+    "def.23.ProhibitedFfiType": (
+        "FFI safety reference does not exercise prohibited FFI type"
+    ),
+    "rule.23.Parse-EnsuresPredicate-Error": (
+        "foreign contract reference does not exercise invalid ensures predicate"
+    ),
+    "def.HostPrimitiveMappingAndFailure": (
+        "host primitive reference does not exercise primitive mapping failure"
+    ),
+    "req.UnmappedHostPrimitiveFailureIllFormed": (
+        "host primitive reference does not exercise unmapped primitive rejection"
+    ),
+    "IOPath-OtherFailure": (
+        "IO reference does not exercise operation returning IoFailure"
+    ),
+    "req.NetRestrictHostEqualityEnforcement": (
+        "network reference does not exercise rejected host mismatch"
+    ),
+    "req.NetRestrictRejectBeforeObservableEffect": (
+        "network reference does not exercise pre-effect rejection"
+    ),
+    "Trans-Moved-NoAccess": (
+        "binding state reference does not exercise moved-value access diagnostic"
+    ),
+    "Trans-Partial-NoAccess": (
+        "binding state reference does not exercise partial-move access diagnostic"
+    ),
+    "Trans-Let-NoReassign": (
+        "binding state reference does not exercise let reassignment diagnostic"
+    ),
+    "P-Closure-Escape-Err": (
+        "region reference does not exercise escaping closure diagnostic"
+    ),
+    "req.MalformedAttributeSyntaxIllFormed": (
+        "attribute reference does not exercise malformed attribute rejection"
+    ),
+    "AttrList-Target-Err": (
+        "attribute reference does not exercise invalid attribute target"
+    ),
+    "req.DynamicTargetRestrictions": (
+        "diagnostic attribute reference does not exercise dynamic target rejection"
+    ),
+    "req.EmptyDynamicScopeWarning": (
+        "diagnostic attribute reference does not exercise empty dynamic scope warning"
+    ),
+    "req.15.PreconditionCheckInsertionOwnedByVerificationLogic": (
+        "precondition reference does not exercise inserted precondition check"
+    ),
+    "rule.15.Contract-Dynamic-Check": (
+        "verification reference does not exercise dynamic contract check"
+    ),
+    "rule.15.Check-False": (
+        "verification reference does not exercise false check"
+    ),
+    "rule.15.Check-Fail": (
+        "verification reference does not exercise failed check"
+    ),
+    "rule.15.Insert-Precondition-Check": (
+        "verification reference does not exercise precondition check insertion"
+    ),
+    "rule.15.Insert-Postcondition-Check": (
+        "verification reference does not exercise postcondition check insertion"
+    ),
+    "rule.15.Insert-TypeInv-Construction-Check": (
+        "verification reference does not exercise construction invariant insertion"
+    ),
+    "rule.15.Insert-TypeInv-PreCall-Check": (
+        "verification reference does not exercise pre-call invariant insertion"
+    ),
+    "rule.15.Insert-TypeInv-PostCall-Check": (
+        "verification reference does not exercise post-call invariant insertion"
+    ),
+    "rule.15.Insert-LoopInv-Init-Check": (
+        "verification reference does not exercise loop invariant init insertion"
+    ),
+    "rule.15.Insert-LoopInv-Maintenance-Check": (
+        "verification reference does not exercise loop invariant maintenance insertion"
+    ),
+    "rule.15.Insert-Refinement-Check": (
+        "verification reference does not exercise refinement check insertion"
+    ),
+    "WF-Assembly-Name-Dup-Err": (
+        "manifest reference asserts duplicate-name code, not duplicate-name error branch"
+    ),
+    "Step-Validate-Err": (
+        "manifest reference does not exercise validation loader error transition"
+    ),
+    "FileOrder-Rel-Fail": (
+        "module discovery reference does not exercise file-order relativization failure"
+    ),
+    "WF-Source-Root-Err": (
+        "module discovery reference does not exercise invalid source root"
+    ),
+    "CompilationUnit-Rel-Fail": (
+        "module discovery reference does not exercise compilation-unit relativization failure"
+    ),
+    "req.ImportDeclarationDiagnosticOwnership": (
+        "imports reference does not exercise import diagnostics"
+    ),
+    "Using-Item-Public-Err": (
+        "usings reference does not exercise public using item error"
+    ),
+    "Using-List-Public-Err": (
+        "usings reference does not exercise public using list error"
+    ),
+    "req.UsingDeclarationDiagnosticOwnership": (
+        "usings reference does not exercise using declaration diagnostics"
+    ),
+    "StaticVisOk-Err": (
+        "statics reference does not exercise invalid static visibility"
+    ),
+    "req.StaticDeclarationDiagnosticOwnership": (
+        "statics reference does not exercise static diagnostics"
+    ),
+    "req.ExternBlockDiagnosticOwnership": (
+        "extern blocks reference does not exercise extern diagnostics"
+    ),
+    "grammar.TestAttribute": "source-native test marker is not obligation evidence",
+    "parse.TestAttributeByOrdinaryAttributeParser": (
+        "source-native test marker is not obligation evidence"
+    ),
+    "ast.TestProcedureClassification": (
+        "source-native test marker is not obligation evidence"
+    ),
+    "def.TestName": "source-native test marker is not obligation evidence",
+    "def.TestCoverage": "source-native test marker is not obligation evidence",
+    "def.TestAttributeArgsOk": (
+        "source-native test marker is not obligation evidence"
+    ),
+    "def.15.ReturnAnnOk": "rejected fixture exercises missing return annotation",
+    "def.16.PtrNullExpected": "rejected fixture exercises incompatible expected type",
+    "def.16.CastValidity": "rejected fixture exercises invalid cast",
+    "Unify-Occurs-Fail": "inference reference does not exercise failure path",
+    "Unify-Tuple-Fail": "inference reference does not exercise failure path",
+    "Unify-Array": "inference reference does not exercise array unification",
+    "Unify-Array-Len-Fail": "inference reference does not exercise failure path",
+    "Unify-Slice": "inference reference does not exercise slice unification",
+    "Unify-Perm": "inference reference does not exercise permission unification",
+    "Unify-Perm-Fail": "inference reference does not exercise failure path",
+    "Unify-Func": "inference reference does not exercise function type unification",
+    "Unify-Func-Fail": "inference reference does not exercise failure path",
+    "Unify-Closure": "inference reference does not exercise closure type unification",
+    "Unify-Closure-Fail": "inference reference does not exercise failure path",
+    "Unify-Ptr": "inference reference does not exercise pointer unification",
+    "Unify-Ptr-State-Fail": "inference reference does not exercise failure path",
+    "Unify-RawPtr": "inference reference does not exercise raw pointer unification",
+    "Unify-RawPtr-Qual-Fail": "inference reference does not exercise failure path",
+    "Unify-Apply": "inference reference does not exercise generic type application",
+    "Unify-Apply-Fail": "inference reference does not exercise failure path",
+    "Unify-Range": "inference reference does not exercise range unification",
+    "Unify-RangeInclusive": "inference reference does not exercise inclusive range unification",
+    "Unify-RangeFrom": "inference reference does not exercise range-from unification",
+    "Unify-RangeTo": "inference reference does not exercise range-to unification",
+    "Unify-RangeToInclusive": (
+        "inference reference does not exercise range-to-inclusive unification"
+    ),
+    "Unify-Refine": "inference reference does not exercise refinement unification",
+    "Unify-Refine-Pred-Fail": "inference reference does not exercise failure path",
+    "Unify-Rigid-Fail": "inference reference does not exercise failure path",
+    "Unify-Ctor-Mismatch": (
+        "inference reference does not exercise constructor mismatch path"
+    ),
+    "Unify-Err": "inference reference does not exercise error path",
+    "Solve-Fail": "inference reference does not exercise failure path",
+    "Syn-Call-Err": "inference reference does not exercise error path",
+    "Syn-Unit": "inference reference does not exercise unit synthesis",
+    "Chk-Subsumption-Modal-NonNiche": (
+        "inference reference does not exercise modal subsumption error path"
+    ),
+    "Chk-Null-Ptr": "inference reference does not exercise null pointer checking",
+    "def.PtrNullExpectedType": (
+        "inference reference does not exercise pointer-null expected type"
+    ),
+    "Syn-PtrNull-Err": "inference reference does not exercise null synthesis error",
+    "Chk-PtrNull-Err": "inference reference does not exercise null checking error",
+    "Decode-Err": "unicode reference does not exercise invalid UTF-8 input",
+    "Step-Decode-Err": "unicode reference does not exercise invalid UTF-8 input",
+    "Step-EmbeddedBOM-Err": "unicode reference does not exercise embedded BOM failure",
+    "Step-Prohibited-Err": "unicode reference does not exercise prohibited code point",
+    "LoadSource-Err": "unicode reference does not exercise source load failure",
+    "def.SourceLoadDiagnosticOffsets": (
+        "unicode reference does not exercise diagnostic offset mapping"
+    ),
+    "def.NonCharacter": "literal reference does not exercise non-character input",
+    "def.CharacterLiteralInvalid": (
+        "literal reference does not exercise invalid character literal"
+    ),
+    "Lex-Char-Invalid": "literal reference does not exercise invalid character literal",
+    "Max-Munch-Err": "literal reference does not exercise token candidate failure",
+    "LexSecure-Err": "literal reference does not exercise lexical security error",
+    "Confusable-Err": "literal reference does not exercise confusable identifier error",
+    "MixedScript-Err": "literal reference does not exercise mixed-script identifier error",
+    "def.LexicalSecurityDiagnosticSpans": (
+        "literal reference does not exercise lexical security diagnostics"
+    ),
+    "def.SensitiveCharacters": "literal reference does not exercise sensitive characters",
+    "def.LineFeedOrEOFBeforeClose": (
+        "literal reference does not exercise unterminated literal"
+    ),
+    "def.BadEscapeAt": "literal reference does not exercise invalid escape",
+    "Lex-Char-Unterminated": (
+        "literal reference does not exercise unterminated character literal"
+    ),
+    "def.LexicalSecurityInputs": (
+        "literal reference does not exercise lexical security inputs"
+    ),
+    "def.LiteralAndCommentRanges": (
+        "literal reference does not exercise lexical security range exclusion"
+    ),
+    "def.SensitivePositionsInSpan": (
+        "literal reference does not exercise sensitive Unicode positions"
+    ),
+    "def.UnsafeTokenSpans": "literal reference does not exercise unsafe token spans",
+    "def.LexicalSecurityCheck": (
+        "literal reference does not exercise lexical security check"
+    ),
+    "LexSecure-Warn": "literal reference does not exercise lexical security warning",
+    "def.ConfusableIdentifierChecks": (
+        "literal reference does not exercise confusable identifier checks"
+    ),
+    "Lex-String-Unterminated-Recover": (
+        "literal reference does not exercise unterminated string recovery"
+    ),
+    "Lex-Char-Unterminated-Recover": (
+        "literal reference does not exercise unterminated character recovery"
+    ),
+    "Lex-Sensitive": "literal reference does not exercise sensitive tokenization",
+    "def.SensitiveTokenPositions": (
+        "literal reference does not exercise sensitive token positions"
+    ),
+    "Lex-Token-Err": "literal reference does not exercise tokenization error",
+    "Tokenize-Secure-Err": "literal reference does not exercise lexical security error",
+    "Tokenize-Err": "literal reference does not exercise tokenization error",
+    "Module-Path-Rel-Fail": "module aggregation reference does not exercise path failure",
+    "WF-Module-Path-Ident-Err": (
+        "module aggregation reference does not exercise invalid module path"
+    ),
+    "ReadBytes-Err": "module aggregation reference does not exercise read failure",
+    "ParseModule-Err-Read": "module aggregation reference does not exercise read failure",
+    "ParseModule-Err-Load": "module aggregation reference does not exercise load failure",
+    "ParseModule-Err-Unit": "module aggregation reference does not exercise unit failure",
+    "ParseModule-Err-Parse": "module aggregation reference does not exercise parse failure",
+    "def.HasErrorDiagnostics": (
+        "module aggregation reference does not exercise diagnostic-bearing parse result"
+    ),
+    "Mod-Start-Err-Unit": "module aggregation reference does not exercise unit failure",
+    "Mod-Scan-Err-Read": "module aggregation reference does not exercise read failure",
+    "Mod-Scan-Err-Load": "module aggregation reference does not exercise load failure",
+    "Mod-Scan-Err-Parse": "module aggregation reference does not exercise parse failure",
+    "ParseModules-Err": "module aggregation reference does not exercise module parse failure",
+    "WF-Module-Path-Collision": (
+        "module aggregation reference does not exercise module path collision"
+    ),
+    "Disc-Collision": "module aggregation reference does not exercise discovery collision",
+    "Disc-Rel-Fail": "module aggregation reference does not exercise discovery failure",
+    "ModulePrefix-None": (
+        "module aggregation reference does not exercise unresolved module prefix"
+    ),
+    "ResolveModulePath-Err": (
+        "module aggregation reference does not exercise module resolution failure"
+    ),
+    "ItemOfPath-None": "module aggregation reference does not exercise missing item lookup",
+    "Import-Ok-Err": "module aggregation reference does not exercise import failure",
+    "Resolve-Using-Err": "module aggregation reference does not exercise using failure",
+    "WF-Assembly-Name-Err": "manifest reference does not exercise invalid assembly name",
+    "WF-Assembly-Kind-Err": "manifest reference does not exercise invalid assembly kind",
+    "WF-Assembly-Root-Path-Err": (
+        "manifest reference does not exercise invalid assembly root path"
+    ),
+    "WF-Assembly-Table-Err": "manifest reference does not exercise invalid assembly table",
+    "WF-Assembly-Count-Err": "manifest reference does not exercise zero assembly count",
+    "WF-Assembly-Keys-Err": "manifest reference does not exercise invalid assembly keys",
+    "WF-Build-Err": "manifest reference does not exercise invalid build table",
+    "Resolve-Canonical-Err": "manifest reference does not exercise canonicalization failure",
+    "WF-RelPath-Err": "manifest reference does not exercise invalid relative path",
+    "Step-Asm-Err": "manifest reference does not exercise assembly load failure",
+    "Step-Asm-Own-Err": "manifest reference does not exercise assembly ownership failure",
+    "Step-Asm-Done-Err": (
+        "manifest reference does not exercise final assembly selection failure"
+    ),
+    "Select-Err": "assembly model reference does not exercise assembly selection error",
+    "BuildAssembly-Err-Resolve": (
+        "assembly model reference does not exercise assembly resolve failure"
+    ),
+    "BuildAssembly-Err-Root": (
+        "assembly model reference does not exercise assembly root failure"
+    ),
+    "WF-Assembly-Root-Owner-Ambiguous": (
+        "assembly model reference does not exercise ambiguous root owner"
+    ),
+    "Intro-Dup": "qualified resolution reference does not exercise duplicate introduction",
+    "Intro-Outer-Err": (
+        "qualified resolution reference does not exercise outer-scope introduction error"
+    ),
+    "Intro-Reserved-Gen-Err": (
+        "qualified resolution reference does not exercise reserved-name error"
+    ),
+    "Intro-Reserved-Ultraviolet-Err": (
+        "qualified resolution reference does not exercise reserved-name error"
+    ),
+    "Validate-Module-Keyword-Err": (
+        "qualified resolution reference does not exercise keyword module path error"
+    ),
+    "Lookup-Unqualified-None": (
+        "qualified resolution reference does not exercise missing unqualified lookup"
+    ),
+    "Bind-ErrorItem": "qualified resolution reference does not exercise error item binding",
+    "Collect-Using-Import-Dup": (
+        "qualified resolution reference does not exercise using/import duplication"
+    ),
+    "Collect-Err": "qualified resolution reference does not exercise collection error",
+    "def.UsingImportConflict": (
+        "qualified resolution reference does not exercise using/import conflict"
+    ),
+    "Names-Step-Using-Import-Dup": (
+        "qualified resolution reference does not exercise using/import duplication"
+    ),
+    "Names-Step-Dup": "qualified resolution reference does not exercise duplicate name step",
+    "Names-Step-Err": "qualified resolution reference does not exercise name step error",
+    "ResolveExpr-Ident-Err": (
+        "qualified resolution reference does not exercise identifier resolution error"
+    ),
+    "ResolveKeyPathExpr-Err": (
+        "qualified resolution reference does not exercise key path resolution error"
+    ),
+    "Validate-ModulePath-Reserved-Err": (
+        "qualified resolution reference does not exercise reserved module path error"
+    ),
+    "ResolveModules-Err-Parse": (
+        "qualified resolution reference does not exercise module parse error"
+    ),
+    "ResolveModules-Err-Resolve": (
+        "qualified resolution reference does not exercise module resolution error"
+    ),
+    "rule.13.WF-ModalState-ArgCount-Err": (
+        "modal declaration reference does not exercise invalid state argument count"
+    ),
+    "rule.13.StateMemberVisOk-Err": (
+        "modal declaration reference does not exercise state member visibility error"
+    ),
+    "rule.13.Modal-NoStates-Err": (
+        "modal declaration reference does not exercise modal with no states"
+    ),
+    "rule.13.Modal-DupState-Err": (
+        "modal declaration reference does not exercise duplicate modal state"
+    ),
+    "rule.13.Modal-StateName-Err": (
+        "modal declaration reference does not exercise invalid modal state name"
+    ),
+    "rule.13.Region-Unchecked-Unsafe-Err": (
+        "modal declaration reference does not exercise unsafe region error"
+    ),
+    "rule.13.StateMember-Name-Conflict": (
+        "modal transition reference does not exercise member name conflict"
+    ),
+    "rule.13.Transition-Target-Err": (
+        "modal transition reference does not exercise invalid transition target"
+    ),
+    "rule.13.Transition-Source-Err": (
+        "modal transition reference does not exercise invalid transition source"
+    ),
+    "rule.13.Transition-Body-Err": (
+        "modal transition reference does not exercise invalid transition body"
+    ),
+    "rule.13.BytesWithCapacity-Err": (
+        "bytes reference does not exercise allocation failure"
+    ),
+    "rule.13.BytesFromSlice-Err": (
+        "bytes reference does not exercise allocation failure"
+    ),
+    "rule.13.BytesToManaged-Err": (
+        "bytes reference does not exercise allocation failure"
+    ),
+    "rule.13.BytesAppend-Err": "bytes reference does not exercise append failure",
+    "rule.13.StringFrom-Err": (
+        "string reference does not exercise allocation failure"
+    ),
+    "rule.13.StringToManaged-Err": (
+        "string reference does not exercise allocation failure"
+    ),
+    "rule.13.StringCloneWith-Err": (
+        "string reference does not exercise allocation failure"
+    ),
+    "rule.13.StringAppend-Err": "string reference does not exercise append failure",
+    "rule.24.Lower-ReadVarIR-Err": (
+        "backend reference does not exercise variable read lowering error"
+    ),
+    "rule.24.Lower-ReadPathIR-Static-User": (
+        "backend reference does not exercise user static path lowering"
+    ),
+    "rule.24.Lower-ReadPathIR-Static-Gen": (
+        "backend reference does not exercise generated static path lowering"
+    ),
+    "rule.24.Lower-ReadPathIR-Proc-Gen": (
+        "backend reference does not exercise generated procedure path lowering"
+    ),
+    "rule.24.Lower-ReadPathIR-Runtime": (
+        "backend reference does not exercise runtime path lowering"
+    ),
+    "rule.24.Lower-MoveStateIR": (
+        "backend reference does not exercise modal state movement"
+    ),
+    "rule.24.Lower-StoreGlobal": (
+        "backend reference does not exercise global storage lowering"
+    ),
+    "def.24.PtrType": "backend reference does not exercise pointer types",
+    "rule.24.Lower-ReadPtrIR": "backend reference does not exercise pointer reads",
+    "rule.24.Lower-ReadPtrIR-Raw": (
+        "backend reference does not exercise raw pointer reads"
+    ),
+    "rule.24.Lower-ReadPtrIR-Null": (
+        "backend reference does not exercise null pointer reads"
+    ),
+    "rule.24.Lower-ReadPtrIR-Expired": (
+        "backend reference does not exercise expired pointer reads"
+    ),
+    "rule.24.Lower-WritePtrIR": "backend reference does not exercise pointer writes",
+    "rule.24.Lower-WritePtrIR-Null": (
+        "backend reference does not exercise null pointer writes"
+    ),
+    "rule.24.Lower-WritePtrIR-Expired": (
+        "backend reference does not exercise expired pointer writes"
+    ),
+    "rule.24.Lower-WritePtrIR-Raw": (
+        "backend reference does not exercise raw pointer writes"
+    ),
+    "rule.24.Lower-WritePtrIR-Raw-Err": (
+        "backend reference does not exercise raw pointer write error"
+    ),
+    "rule.24.Lower-AddrOfIR": (
+        "backend reference does not exercise address-of lowering"
+    ),
+    "def.24.DynamicDispatchHelpers": (
+        "backend reference does not exercise dynamic dispatch helpers"
+    ),
+    "rule.24.Lower-CallVTable": (
+        "backend reference does not exercise vtable call lowering"
+    ),
+    "rule.24.LowerIRInstr-ClearPanic": (
+        "backend reference does not exercise panic flag clearing"
+    ),
+    "rule.24.LowerIRInstr-PanicCheck": (
+        "backend reference does not exercise panic checking"
+    ),
+    "rule.24.LowerIRInstr-CheckPoison": (
+        "backend reference does not exercise poison checking"
+    ),
+    "rule.24.LowerIRInstr-LowerPanic": (
+        "backend reference does not exercise panic lowering"
+    ),
+    "rule.24.LowerIRDecl-Err": (
+        "backend reference does not exercise declaration lowering error"
+    ),
+    "rule.24.LowerIRInstr-Err": (
+        "backend reference does not exercise instruction lowering error"
+    ),
+    "def.24.BindRegionTarget": (
+        "backend reference does not exercise binding region targets"
+    ),
+    "req.24.ResolveTargetNearestLiveAlias": (
+        "backend reference does not exercise live-alias target resolution"
+    ),
+    "rule.24.BindSlot-Param-ByRef": (
+        "backend reference does not exercise by-reference parameter binding"
+    ),
+    "rule.24.BindSlot-Region": (
+        "backend reference does not exercise region binding"
+    ),
+    "rule.24.BindSlot-Static": (
+        "backend reference does not exercise static binding"
+    ),
+    "rule.24.UpdateValid-PartialMove-Init": (
+        "backend reference does not exercise partial move initialization"
+    ),
+    "rule.24.UpdateValid-PartialMove-Step": (
+        "backend reference does not exercise partial move validity update"
+    ),
+    "def.24.DropOnAssignHelpers": (
+        "backend reference does not exercise drop-on-assign helpers"
+    ),
+    "rule.24.DropOnAssign-Record-Valid": (
+        "backend reference does not exercise valid-record drop-on-assign"
+    ),
+    "rule.24.DropOnAssign-Record-Partial": (
+        "backend reference does not exercise partial-record drop-on-assign"
+    ),
+    "rule.24.DropOnAssign-Record-Moved": (
+        "backend reference does not exercise moved-record drop-on-assign"
+    ),
+    "rule.24.DropOnAssign-Aggregate-Ok": (
+        "backend reference does not exercise aggregate drop-on-assign"
+    ),
+    "rule.24.DropOnAssign-Aggregate-Moved": (
+        "backend reference does not exercise moved-aggregate drop-on-assign"
+    ),
+    "rule.24.BindSlot-Err": (
+        "backend reference does not exercise binding slot error"
+    ),
+    "rule.24.BindValid-Err": (
+        "backend reference does not exercise binding validity error"
+    ),
+    "rule.24.UpdateValid-Err": (
+        "backend reference does not exercise validity update error"
+    ),
+    "rule.24.DropOnAssign-Err": (
+        "backend reference does not exercise drop-on-assign error"
+    ),
+    "rule.24.EmitLiteral-Err": (
+        "backend reference does not exercise literal emission error"
+    ),
+    "rule.24.PoisonFlag-Err": (
+        "backend reference does not exercise poison flag error"
+    ),
+    "rule.24.CheckPoison-Err": (
+        "backend reference does not exercise poison check error"
+    ),
+    "rule.24.SetPoison-Err": (
+        "backend reference does not exercise poison set error"
+    ),
+    "rule.24.Topo-Cycle": (
+        "emit-LL artifact evidence does not exercise init graph cycle"
+    ),
+    "rule.24.EmitInitPlan-Err": (
+        "emit-LL artifact evidence does not exercise init plan error"
+    ),
+    "rule.24.EmitDeinitPlan-Err": (
+        "emit-LL artifact evidence does not exercise deinit plan error"
+    ),
+    "rule.24.Init-Panic": (
+        "emit-LL artifact evidence does not exercise static initializer panic"
+    ),
+    "rule.24.Init-Fail": (
+        "emit-LL artifact evidence does not exercise static initializer failure"
+    ),
+    "rule.24.Deinit-Panic": (
+        "emit-LL artifact evidence does not exercise static deinitializer panic"
+    ),
+    "rule.24.EntrySym-Err": (
+        "emit-LL artifact evidence does not exercise entry symbol error"
+    ),
+    "rule.24.EntryStub-Err": (
+        "emit-LL artifact evidence does not exercise entry stub error"
+    ),
+    "rule.24.Interpret-Project-Init-Panic": (
+        "emit-LL artifact evidence does not exercise project init panic interpretation"
+    ),
+    "rule.24.Interpret-Project-Deinit-Panic": (
+        "emit-LL artifact evidence does not exercise project deinit panic interpretation"
+    ),
+    "rule.24.DropValueOut-DropPanic": (
+        "emit-LL artifact evidence does not exercise direct drop panic"
+    ),
+    "rule.24.DropValueOut-ChildPanic": (
+        "emit-LL artifact evidence does not exercise child drop panic"
+    ),
+    "rule.24.Cleanup-Step-Drop-Panic": (
+        "emit-LL artifact evidence does not exercise drop cleanup panic"
+    ),
+    "rule.24.Cleanup-Step-DropStatic-Panic": (
+        "emit-LL artifact evidence does not exercise static drop cleanup panic"
+    ),
+    "rule.24.Cleanup-Step-Defer-Panic": (
+        "emit-LL artifact evidence does not exercise defer cleanup panic"
+    ),
+    "rule.24.Cleanup-Cons-Drop-Panic": (
+        "emit-LL artifact evidence does not exercise drop cleanup panic construction"
+    ),
+    "rule.24.Cleanup-Cons-DropStatic-Panic": (
+        "emit-LL artifact evidence does not exercise static cleanup panic construction"
+    ),
+    "rule.24.Cleanup-Cons-Defer-Panic": (
+        "emit-LL artifact evidence does not exercise defer cleanup panic construction"
+    ),
+    "def.24.LLVMToolchain": (
+        "emit-LL artifact evidence only checks logged LLVM payload"
+    ),
+    "req.24.HostedCompilerLLVMVersion": (
+        "emit-LL artifact evidence only checks logged LLVM version payload"
+    ),
+    "rule.24.LLVMArgLower-Err": (
+        "emit-LL artifact evidence does not exercise invalid argument lowering"
+    ),
+    "rule.24.LLVMRetLower-Err": (
+        "emit-LL artifact evidence does not exercise invalid return lowering"
+    ),
+    "rule.24.EmitVTable-Err": (
+        "emit-LL artifact evidence does not exercise invalid vtable emission"
+    ),
+    "rule.24.SetPoison-OnInitFail": (
+        "emit-LL artifact evidence does not exercise poison set on init failure"
+    ),
+    "req.TestProcedureShape": "source-native test marker is not obligation evidence",
+    "req.TestAuthority": "source-native test marker is not obligation evidence",
+    "conformance.TestAttributeDynamicSemantics": (
+        "source-native test marker is not obligation evidence"
+    ),
+    "def.TestDiscoveryOrder": "source-native test marker is not obligation evidence",
+    "diagnostics.TestAttributes": (
+        "source-native test marker is not obligation evidence"
+    ),
+}
+STALE_FIXTURE_TARGET_OBLIGATIONS: set[str] = {
+    "Sub-Generic-Contravariant-Err",
+    "Sub-Generic-Covariant-Err",
+    "Sub-Generic-Invariant-Err",
+    "conformance.UnsafeForeignAuthority",
+    "diag-table.14.RefinementPolymorphismDiagnostics",
+    "diag-table.15.ProcedureContractEntryDiagnostics",
+    "diag.14.RefinementPolymorphismDiagnosticsOwnership",
+    "diag.15.ProcedureContractEntryDiagnosticsOwnership",
+    "diag.16.ExpressionDiagnosticsSupplement",
+    "diag.17.PatternDiagnosticsSupplement",
+    "diag.18.StatementDiagnosticsSupplement",
+    "diagnostics.20.StructuredParallelismSupplement",
+    "diagnostics.21.AsyncDiagnosticsSupplement",
+    "diagnostics.22.CompileTimeDiagnosticsSupplement",
+    "diagnostics.23.FfiDiagnosticsSupplement",
+    "diagnostics.CommandLineDiagnostics",
+    "diagnostics.CoreTypeDiagnostics",
+    "diagnostics.NameResolutionAndReservedNames",
+    "diagnostics.ParsingDiagnostics",
+    "diagnostics.RuntimeStateAndMemoryDiagnostics",
+    "diagnostics.SourceLexicalDiagnostics",
+    "lowering.TestHarnessGeneration",
+    "req.18.AssignmentConstPermissionDiagnostic",
+    "req.TestAttributeProcedureTarget",
+    "requirement.20.StructuredParallelismRuntimePanicOwnership",
+    "requirement.22.UserDiagnosticBuiltinEmission",
+    "rule.13.P-Deref-Raw-Imm",
+    "rule.13.P-Deref-Raw-Mut",
+    "rule.13.T-Deref-Raw",
+    "rule.16.DerefPlaceTypingFamily",
+    "rule.16.RangeTypingFamily",
+    "rule.16.T-Arith",
+    "rule.16.T-Bitwise",
+    "rule.16.T-Compare-Eq",
+    "rule.16.T-Compare-Ord",
+    "rule.16.T-Deref-Raw",
+    "rule.16.T-Logical",
+    "rule.16.T-Neg",
+    "rule.16.T-Not-Bool",
+    "rule.16.T-Not-Int",
+    "rule.16.T-Range-Lift",
+    "rule.16.T-Shift",
+}
 
 
 def display_path(path: pathlib.Path) -> str:
@@ -91,12 +947,15 @@ def key_digest(keys: list[tuple[str, int]]) -> int:
     return text_digest(canonical)
 
 
-def is_blocked_obligation(row: "CsvRow") -> bool:
-    return row.obligation_id in BLOCKED_OBLIGATIONS
+def is_blocked_obligation(row: "CsvRow", blocked_ids: set[str]) -> bool:
+    return row.obligation_id in blocked_ids
 
 
-def blocked_obligation_rows(rows: list["CsvRow"]) -> list["CsvRow"]:
-    return [row for row in rows if is_blocked_obligation(row)]
+def blocked_obligation_rows(
+    rows: list["CsvRow"],
+    blocked_ids: set[str],
+) -> list["CsvRow"]:
+    return [row for row in rows if is_blocked_obligation(row, blocked_ids)]
 
 
 def target_digest(targets: list[tuple[str, str, str]]) -> int:
@@ -147,6 +1006,11 @@ VALIDATED_RE = re.compile(
 )
 FIXTURE_EXPECTED_RE = re.compile(
     r'expectedDiagnostic(?:Absent)?\(\s*"[^"]*",\s*"([^"]+)"\s*\)',
+    re.S,
+)
+FIXTURE_ENTRY_OBLIGATION_RE = re.compile(
+    r'\b[A-Za-z0-9]+(?:EntryCount|EntryMatches|SpecimenMatches)\('
+    r'\s*(?:"[^"]*",\s*)+"([^"]+)"\s*\)',
     re.S,
 )
 REJECTED_SOURCE_SPECIMEN_EXPECTATION_RE = re.compile(
@@ -285,6 +1149,57 @@ class ExerciseQualityEntry:
     uses_appendix_b_composite_target: bool
 
 
+def is_fixture_catalog_location(module_path: str, symbol: str) -> bool:
+    return (
+        module_path.startswith(f"{FIXTURE_CATALOG_MODULE}::") and
+        symbol.startswith("validated") and
+        symbol.endswith("FixtureCount")
+    )
+
+
+def is_fixture_catalog_reference_target(target: ReferenceTarget) -> bool:
+    return is_fixture_catalog_location(target.module_path, target.symbol)
+
+
+def is_fixture_catalog_fixture_target(target: FixtureTarget) -> bool:
+    return is_fixture_catalog_location(target.module_path, target.symbol)
+
+
+def explicit_non_fixture_target_obligation_ids(rows: list[CsvRow]) -> set[str]:
+    obligation_ids: set[str] = set()
+    for row in rows:
+        try:
+            target = missing_target(row)
+        except RuntimeError:
+            continue
+        if not is_fixture_catalog_reference_target(target):
+            obligation_ids.add(row.obligation_id)
+    return obligation_ids
+
+
+def fixture_marker_obligation_ids(rows: list[CsvRow]) -> set[str]:
+    fixture_ids = {
+        obligation_id
+        for obligation_id, target in fixture_obligation_targets().items()
+        if is_fixture_catalog_fixture_target(target)
+    }
+    for path in sorted(FIXTURE_CATALOG_ROOT.rglob("*.uv")):
+        text = path.read_text(encoding="utf-8")
+        fixture_ids.update(FIXTURE_EXPECTED_RE.findall(text))
+        fixture_ids.update(ACCEPTED_PROJECT_EXPECTATION_RE.findall(text))
+        fixture_ids.update(ARTIFACT_EXPECTATION_RE.findall(text))
+        fixture_ids.update(FIXTURE_ENTRY_OBLIGATION_RE.findall(text))
+    return fixture_ids - explicit_non_fixture_target_obligation_ids(rows)
+
+
+def blocked_obligation_ids(rows: list[CsvRow]) -> set[str]:
+    return (
+        set(BLOCKED_OBLIGATIONS) |
+        STALE_FIXTURE_TARGET_OBLIGATIONS |
+        fixture_marker_obligation_ids(rows)
+    )
+
+
 def normalized_existing_target(
     catalog_path: pathlib.Path,
     target: ReferenceTarget,
@@ -313,6 +1228,18 @@ def async_composition_target(existing_path: pathlib.Path, symbol: str) -> Refere
         module_path="HelloUltraviolet::Reference::Async",
         symbol=symbol,
         source_path="Source/Reference/Async/CompositionForms.uv",
+    )
+
+
+def async_composition_runtime_target(
+    existing_path: pathlib.Path,
+    symbol: str,
+) -> ReferenceTarget:
+    return ReferenceTarget(
+        path=existing_path,
+        module_path="HelloUltraviolet::Reference::Async",
+        symbol=symbol,
+        source_path="Source/Reference/Async/CombinatorRuntimeForms.uv",
     )
 
 
@@ -682,6 +1609,26 @@ def normalized_row_target(row: CsvRow, target: ReferenceTarget) -> ReferenceTarg
     if target.symbol in parsing_metadata_symbols:
         return parsing_reference_model_target(target.path)
 
+    if row.obligation_id == "rule.21.EvalSigma-Map-Resume-Complete":
+        return async_composition_runtime_target(
+            target.path,
+            "runAsyncCompositionMapCompletionReference",
+        )
+    if row.obligation_id == "rule.21.EvalSigma-Map-Resume-Failed":
+        return async_composition_runtime_target(
+            target.path,
+            "runAsyncCompositionMapFailureReference",
+        )
+    if row.obligation_id == "rule.21.EvalSigma-Fold-Resume-Failed":
+        return async_composition_runtime_target(
+            target.path,
+            "runAsyncCompositionFoldFailureReference",
+        )
+    if row.obligation_id == "rule.21.EvalSigma-Chain-Resume-Source-Failed":
+        return async_composition_runtime_target(
+            target.path,
+            "runAsyncCompositionChainSourceFailureReference",
+        )
     if row.obligation_id in map_rows:
         return async_composition_target(target.path, "runAsyncCompositionMapReference")
     if row.obligation_id in filter_rows:
@@ -790,6 +1737,8 @@ def current_catalog_entries() -> list[tuple[str, int, ReferenceTarget]]:
                 symbol=match.group(5),
                 source_path=match.group(6),
             )
+            if is_fixture_catalog_reference_target(target):
+                continue
             entries.append(
                 (
                     match.group(2),
@@ -1140,7 +2089,7 @@ def apply_fixture_target(
     if row.obligation_id == "diagnostics.TestAttributes":
         return target, ACCEPTED_HELPER
     fixture = fixture_targets.get(row.obligation_id)
-    if fixture is None:
+    if fixture is None or is_fixture_catalog_fixture_target(fixture):
         return target, ACCEPTED_HELPER
     return (
         ReferenceTarget(
@@ -1515,12 +2464,15 @@ def missing_target(row: CsvRow) -> ReferenceTarget:
     raise RuntimeError(f"no catalog target for new obligation {row.obligation_id}")
 
 
-def build_catalog_entries(rows: list[CsvRow]) -> list[CatalogEntry]:
+def build_catalog_entries(
+    rows: list[CsvRow],
+    blocked_ids: set[str],
+) -> list[CatalogEntry]:
     assigned = match_existing_targets(rows, current_catalog_entries())
     fixture_targets = fixture_obligation_targets()
     entries: list[CatalogEntry] = []
     for row in rows:
-        if is_blocked_obligation(row):
+        if is_blocked_obligation(row, blocked_ids):
             continue
         key = (row.obligation_id, row.internal_spec_line, row.index)
         target = assigned.get(key)
@@ -1582,9 +2534,12 @@ def write_topic_files(entries: list[CatalogEntry]) -> None:
     for entry in entries:
         by_file[entry.target.path].append(entry)
 
-    for path, path_entries in sorted(by_file.items()):
+    for path in sorted(by_file):
         if path not in names:
             raise RuntimeError(f"missing generated function names for {path}")
+
+    for path in sorted(names):
+        path_entries = by_file.get(path, [])
         count_name, validated_name = names[path]
         path_entries.sort(key=lambda entry: entry.row.index)
         old_text = path.read_text(encoding="utf-8")
@@ -1724,11 +2679,11 @@ def write_membership(
         '        "Docs/Internal/UltravioletObligations.csv"',
         "    )",
         "    return if move read_result is {",
-        "        @Value { value } {",
+        "        Outcome::Value(value) {",
         "            let csv_text: string@View = string::as_view(value)",
         "            csvFileShapeMatches(csv_text) && generatedCatalogKeysMatchCsv()",
         "        }",
-        "        @Error {",
+        "        Outcome::Error(_) {",
         "            false",
         "        }",
         "    }",
@@ -1846,10 +2801,10 @@ def write_source_paths(entries: list[CatalogEntry]) -> None:
         "internal procedure writeCatalogSourcePathMessage(context: Context, text: string@View) -> bool {",
         "    let output: Outcome<(), IoError> = context.io~>write_stderr(text)",
         "    return if output is {",
-        "        @Value {",
+        "        Outcome::Value(_) {",
         "            true",
         "        }",
-        "        @Error {",
+        "        Outcome::Error(_) {",
         "            false",
         "        }",
         "    }",
@@ -1947,11 +2902,11 @@ def write_source_paths(entries: list[CatalogEntry]) -> None:
         '        "HelloUltraviolet/Audit/CatalogSourcePaths.txt"',
         "    )",
         "    return if move read_result is {",
-        "        @Value { value } {",
+        "        Outcome::Value(value) {",
         "            let manifest_text: string@View = string::as_view(value)",
         "            sourcePathManifestAuditPasses(context, manifest_text)",
         "        }",
-        "        @Error {",
+        "        Outcome::Error(_) {",
         "            false",
         "        }",
         "    }",
@@ -2024,10 +2979,10 @@ def write_symbols(entries: list[CatalogEntry]) -> None:
         "internal procedure writeCatalogSymbolMessage(context: Context, text: string@View) -> bool {",
         "    let output: Outcome<(), IoError> = context.io~>write_stderr(text)",
         "    return if output is {",
-        "        @Value {",
+        "        Outcome::Value(_) {",
         "            true",
         "        }",
-        "        @Error {",
+        "        Outcome::Error(_) {",
         "            false",
         "        }",
         "    }",
@@ -2667,13 +3622,13 @@ def write_exercise_quality(entries: list[CatalogEntry]) -> None:
             '            "HelloUltraviolet/Audit/ExerciseQualityManifest.csv"',
             "        )",
             "    return if move read_result is {",
-            "        @Value { value } {",
+            "        Outcome::Value(value) {",
             "            let manifest_text: string@View = string::as_view(value)",
             "            catalogAcceptedExerciseQualityManifestShapeMatches(",
             "                manifest_text",
             "            )",
             "        }",
-            "        @Error {",
+            "        Outcome::Error(_) {",
             "            false",
             "        }",
             "    }",
@@ -2702,8 +3657,9 @@ def main(argv: list[str] | None = None) -> int:
     CHECK_MODE = args.check
 
     rows = load_csv_rows()
-    blocked_rows = blocked_obligation_rows(rows)
-    entries = build_catalog_entries(rows)
+    blocked_ids = blocked_obligation_ids(rows)
+    blocked_rows = blocked_obligation_rows(rows, blocked_ids)
+    entries = build_catalog_entries(rows, blocked_ids)
     write_catalog_root(len(entries), len(blocked_rows))
     write_catalog_imports(entries)
     write_topic_files(entries)

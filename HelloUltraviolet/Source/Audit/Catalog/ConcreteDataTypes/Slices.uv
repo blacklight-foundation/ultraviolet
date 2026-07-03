@@ -2,7 +2,7 @@
 
 
 public procedure countConcreteDataTypesSlicesObligations() -> usize {
-    return 34usize
+    return 30usize
 }
 
 public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
@@ -205,15 +205,6 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "Index-NonIndexable",
-        37371usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/IndexNonIndexable/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.SliceValueType",
         37389usize,
@@ -238,15 +229,6 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
         "HelloUltraviolet::Reference::DataTypes",
         "evalSigmaIndexRangeReference",
         "Source/Reference/DataTypes/Slices.uv"
-    ) {
-        count = count + 1usize
-    }
-    if artifactBehaviorObligationEntryMatches(
-        "EvalSigma-Index-Range-OOB",
-        37438usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
-        "validatedArtifactProjectFixtureCount",
-        "Fixtures/ArtifactProjects/SliceRangeOOBPanic/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -292,24 +274,6 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
         "HelloUltraviolet::Reference::DataTypes",
         "sliceIndexUpdateReference",
         "Source/Reference/DataTypes/Slices.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "Index-Slice-NonUsize",
-        37539usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/SliceIndexNonUsize/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.SliceDiagnosticOwnership",
-        37557usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/SliceIndexNonUsize/Source/Main.uv"
     ) {
         count = count + 1usize
     }

@@ -1,7 +1,7 @@
 //! Rejected contract specimen for side-effecting operations inside @entry.
 
 public procedure contractEntrySideEffectReference(value: i32) -> bool
-|: |= @entry(^value) == @entry(^value)
+|: |= @entry(new value) == @entry(new value)
 {
     return true
 }

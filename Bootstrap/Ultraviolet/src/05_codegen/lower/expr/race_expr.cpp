@@ -19,6 +19,7 @@
 #include "05_codegen/cleanup/cleanup.h"
 #include "04_analysis/typing/type_equiv.h"
 #include "04_analysis/typing/types.h"
+#include "04_analysis/typing/outcome.h"
 #include "00_core/assert_spec.h"
 #include <utility>
 
@@ -273,23 +274,17 @@ LowerResult LowerRaceExpr(const ast::RaceExpr& expr, LowerCtx& ctx) {
         }
 
         IRValue result = race.result;
-        std::vector<analysis::TypeRef> union_members;
-        AppendDistinctType(union_members, race.result_type);
-        for (const auto& err : error_types) {
-            AppendDistinctType(union_members, err);
+        // Return-mode race yields Outcome<handler type, union of arm errors>.
+        analysis::TypeRef error_union = analysis::MakeTypePrim("!");
+        if (!error_types.empty()) {
+            error_union = error_types.size() == 1
+                              ? error_types.front()
+                              : analysis::MakeTypeUnion(error_types);
         }
-
-        analysis::TypeRef race_value_type = nullptr;
-        if (union_members.empty()) {
-            race_value_type = race.result_type;
-        } else if (union_members.size() == 1) {
-            race_value_type = union_members.front();
-        } else {
-            race_value_type = analysis::MakeTypeUnion(std::move(union_members));
-        }
-        if (!race_value_type) {
-            race_value_type = analysis::MakeTypePrim("()");
-        }
+        analysis::TypeRef value_type =
+            race.result_type ? race.result_type : analysis::MakeTypePrim("()");
+        analysis::TypeRef race_value_type =
+            analysis::MakeOutcomeType(value_type, error_union);
         ctx.RegisterValueType(result, race_value_type);
         return LowerResult{MakeIR(std::move(race)), result};
     }

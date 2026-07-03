@@ -498,21 +498,6 @@ RecordDeclResult TypeRecordDecl(
     return result;
   }
 
-  // Process where clauses
-  std::vector<std::string> type_param_names;
-  for (const auto& gp : gen_params.params) {
-    type_param_names.push_back(gp.name);
-  }
-  if (decl.predicate_clause_opt.has_value()) {
-    const auto where_result = ProcessWhereClause(
-        ctx, *decl.predicate_clause_opt, type_param_names);
-    if (!where_result.ok) {
-      result.ok = false;
-      result.diag_id = where_result.diag_id;
-      return result;
-    }
-  }
-
   // Check class implementations are distinct
   if (!DistinctClassPaths(decl.implements)) {
     SPEC_RULE("Impl-Duplicate-Err");
@@ -999,10 +984,11 @@ RecordDeclResult TypeRecordDecl(
         recv_perm = Permission::Shared;
       } else {
         recv_perm = Permission::Const;
-        const_receiver = true;
+        const_receiver = !shorthand->mode_opt.has_value();
       }
     }
-    std::optional<BindSelfParam> self_param = BindSelfParam{result.self_type, std::nullopt, recv_perm};
+    std::optional<BindSelfParam> self_param =
+        BindSelfParam{result.self_type, RecvModeOf(method->receiver), recv_perm};
 
     // Build method signature
     const auto sig = BuildMethodSignature(

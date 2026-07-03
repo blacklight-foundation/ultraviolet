@@ -139,11 +139,6 @@ ScopeList BindTypeParams(
     const ScopeContext& ctx,
     const std::optional<ast::GenericParams>& params_opt);
 
-ScopeList BindTypeParams(
-    const ScopeContext& ctx,
-    const std::optional<ast::GenericParams>& params_opt,
-    const std::optional<ast::PredicateClause>& predicate_clause_opt);
-
 // =============================================================================
 // Helper Functions
 // =============================================================================

@@ -2,7 +2,7 @@
 
 
 public procedure countModalAndSpecialTypesStringTypesObligations() -> usize {
-    return 47usize
+    return 43usize
 }
 
 public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize {
@@ -197,15 +197,6 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.StringFrom-Err",
-        44779usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesStringsReference",
-        "Source/Reference/ModalTypes/Strings.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "rule.13.StringAsView-Ok",
         44795usize,
         "HelloUltraviolet::Reference::ModalTypes",
@@ -233,15 +224,6 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.StringToManaged-Err",
-        44843usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesStringsReference",
-        "Source/Reference/ModalTypes/Strings.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "rule.13.StringCloneWith-Ok",
         44859usize,
         "HelloUltraviolet::Reference::ModalTypes",
@@ -251,26 +233,8 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.StringCloneWith-Err",
-        44875usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesStringsReference",
-        "Source/Reference/ModalTypes/Strings.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "rule.13.StringAppend-Ok",
         44891usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesStringsReference",
-        "Source/Reference/ModalTypes/Strings.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.StringAppend-Err",
-        44907usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
         "Source/Reference/ModalTypes/Strings.uv"

@@ -169,7 +169,8 @@ static bool HasReservedSelfParam(const std::vector<ast::Param>& params) {
 
 static bool ReceiverIsConst(const ast::Receiver& receiver) {
   if (const auto* shorthand = std::get_if<ast::ReceiverShorthand>(&receiver)) {
-    return shorthand->perm == ast::ReceiverPerm::Const;
+    return shorthand->perm == ast::ReceiverPerm::Const &&
+           !shorthand->mode_opt.has_value();
   }
   return false;
 }
@@ -528,22 +529,6 @@ ModalDeclResult TypeModalDecl(
   const auto self_generic_args = ModalSelfGenericArgs(gen_params);
   result.self_type = MakeTypePath(type_path, self_generic_args);
 
-  // Process where clauses
-  std::vector<std::string> type_param_names;
-  for (const auto& gp : gen_params.params) {
-    type_param_names.push_back(gp.name);
-  }
-  if (decl.predicate_clause_opt.has_value() &&
-      !decl.predicate_clause_opt->empty()) {
-    const auto where_result = ProcessWhereClause(
-        ctx, *decl.predicate_clause_opt, type_param_names);
-    if (!where_result.ok) {
-      result.ok = false;
-      result.diag_id = where_result.diag_id;
-      return result;
-    }
-  }
-
   // Check class implementations are distinct
   if (!DistinctClassPaths(decl.implements)) {
     SPEC_RULE("Impl-Duplicate-Err");
@@ -773,7 +758,7 @@ ModalDeclResult TypeModalDecl(
           }
         }
         const std::optional<BindSelfParam> self_param =
-            BindSelfParam{state_type, std::nullopt, recv_perm};
+            BindSelfParam{state_type, RecvModeOf(method.receiver), recv_perm};
         const auto bind_result = BindCheckBody(
             ctx, module_path, method.params, method.body, self_param);
         if (!bind_result.ok) {

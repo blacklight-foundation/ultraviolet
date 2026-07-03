@@ -53,13 +53,13 @@ internal procedure frameAllocationValue() -> i32 {
     var value: i32 = 0
     region as scratch {
         frame {
-            let implicit_value: i32 = ^29
+            let implicit_value: i32 = new 29
             if implicit_value == 29 {
                 value = value + 1
             }
         }
         scratch.frame {
-            let explicit_value: i32 = scratch ^ 31
+            let explicit_value: i32 = scratch~>alloc(31)
             if explicit_value == 31 {
                 value = value + 2
             }

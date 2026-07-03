@@ -30,7 +30,7 @@ void RecordGlobalStateRef(const char *operation)
   core::Conformance::Record("rule.24.StateRef-Global", std::nullopt, payload);
 }
 
-void RecordGlobalStoreMemoryHelper()
+void RecordGlobalStoreMemoryHelper(const char *lower_form)
 {
   SPEC_RULE("def.24.MemoryInstructionHelpers");
   if (!core::Conformance::Enabled())
@@ -41,7 +41,8 @@ void RecordGlobalStoreMemoryHelper()
   core::Conformance::Record(
       "def.24.MemoryInstructionHelpers",
       std::nullopt,
-      "source=IRStoreGlobal;helper=Store;lower_form=llvm.store");
+      std::string("source=IRStoreGlobal;helper=Store;lower_form=") +
+          (lower_form ? lower_form : "llvm.store"));
 }
 
 void RecordLowerStoreGlobal(bool has_static_type, bool has_hosted_state_slot)
@@ -89,7 +90,7 @@ void IRInstructionVisitor::operator()(const IRStoreGlobal &store) const
     return;
   }
 
-  llvm::Value *value = EvaluateOrDefault(store.value);
+  llvm::Value *value = nullptr;
   llvm::Value *target_ptr = nullptr;
   llvm::Type *target_ty = nullptr;
   analysis::TypeRef source_type =
@@ -115,17 +116,6 @@ void IRInstructionVisitor::operator()(const IRStoreGlobal &store) const
         target_ptr = builder.CreateBitCast(
             global_var, llvm::PointerType::get(typed_target_ty, 0));
       }
-      llvm::Value *coerced = CoerceToTyped(
-          emitter,
-          &builder,
-          value,
-          typed_target_ty,
-          source_type,
-          target_type);
-      if (coerced)
-      {
-        value = coerced;
-      }
     }
   }
 
@@ -138,6 +128,86 @@ void IRInstructionVisitor::operator()(const IRStoreGlobal &store) const
 
     target_ptr = global_var;
     target_ty = global_var->getValueType();
+  }
+  if (target_ty && IsZeroSizedLLVMType(emitter, target_ty))
+  {
+    emitter.ReleaseTempStorage(store.value);
+    return;
+  }
+
+  if (target_ptr && target_type)
+  {
+    if (llvm::Value *source_storage = emitter.GetAddressableStorage(store.value))
+    {
+      analysis::TypeRef copy_source_type =
+          source_type ? source_type : target_type;
+      if (TryEmitBitcopyAggregateStorageCopy(
+              emitter,
+              &builder,
+              target_ptr,
+              source_storage,
+              target_type,
+              copy_source_type))
+      {
+        if (!has_hosted_state_slot)
+        {
+          RecordGlobalStateRef("store");
+        }
+        RecordGlobalStoreMemoryHelper("llvm.memcpy");
+        RecordLowerStoreGlobal(target_type != nullptr, has_hosted_state_slot);
+        emitter.ReleaseTempStorage(store.value);
+        return;
+      }
+      if (TryEmitAggregateStorageTransfer(
+              emitter,
+              &builder,
+              target_ptr,
+              source_storage,
+              target_type,
+              copy_source_type))
+      {
+        if (!has_hosted_state_slot)
+        {
+          RecordGlobalStateRef("store");
+        }
+        RecordGlobalStoreMemoryHelper("llvm.memcpy");
+        RecordLowerStoreGlobal(target_type != nullptr, has_hosted_state_slot);
+        emitter.ReleaseTempStorage(store.value);
+        return;
+      }
+    }
+    if (TryEmitDerivedAggregateToStorage(
+            emitter,
+            &builder,
+            target_ptr,
+            store.value,
+            target_type))
+    {
+      if (!has_hosted_state_slot)
+      {
+        RecordGlobalStateRef("store");
+      }
+      RecordGlobalStoreMemoryHelper("aggregate-storage");
+      RecordLowerStoreGlobal(target_type != nullptr, has_hosted_state_slot);
+      emitter.ReleaseTempStorage(store.value);
+      return;
+    }
+  }
+
+  value = EvaluateOrDefault(store.value);
+  if (target_type && target_ty)
+  {
+    llvm::Value *coerced = CoerceToTyped(
+        emitter,
+        &builder,
+        value,
+        target_ty,
+        source_type,
+        target_type);
+    if (coerced)
+    {
+      value = coerced;
+    }
   }
 
   if (value && value->getType() != target_ty)
@@ -157,7 +227,7 @@ void IRInstructionVisitor::operator()(const IRStoreGlobal &store) const
   {
     RecordGlobalStateRef("store");
   }
-  RecordGlobalStoreMemoryHelper();
+  RecordGlobalStoreMemoryHelper("llvm.store");
   llvm::StoreInst *stored = builder.CreateStore(value, target_ptr);
   RecordLowerStoreGlobal(target_type != nullptr, has_hosted_state_slot);
   llvm::Align store_align =

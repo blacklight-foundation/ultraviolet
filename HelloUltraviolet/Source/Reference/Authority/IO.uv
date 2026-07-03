@@ -30,10 +30,10 @@ internal procedure ioAuthorityCanObserveHost(
 
 internal procedure ioUnitSucceeded(result: Outcome<(), IoError>) -> bool {
     return if result is {
-        @Value {
+        Outcome::Value(_) {
             true
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -280,10 +280,10 @@ internal procedure ioOutcomeErrorIsInvalidPath<TValue>(
     move outcome: Outcome<TValue, IoError>
 ) -> bool {
     return if move outcome is {
-        @Value {
+        Outcome::Value(_) {
             false
         }
-        @Error { error } {
+        Outcome::Error(error) {
             ioErrorIsInvalidPath(error)
         }
     }
@@ -293,10 +293,10 @@ internal procedure ioOutcomeErrorIsNotFound<TValue>(
     move outcome: Outcome<TValue, IoError>
 ) -> bool {
     return if move outcome is {
-        @Value {
+        Outcome::Value(_) {
             false
         }
-        @Error { error } {
+        Outcome::Error(error) {
             ioErrorIsNotFound(error)
         }
     }
@@ -306,10 +306,10 @@ internal procedure ioOutcomeErrorIsPermissionDenied<TValue>(
     move outcome: Outcome<TValue, IoError>
 ) -> bool {
     return if move outcome is {
-        @Value {
+        Outcome::Value(_) {
             false
         }
-        @Error { error } {
+        Outcome::Error(error) {
             ioErrorIsPermissionDenied(error)
         }
     }
@@ -319,10 +319,10 @@ internal procedure ioOutcomeErrorIsAlreadyExists<TValue>(
     move outcome: Outcome<TValue, IoError>
 ) -> bool {
     return if move outcome is {
-        @Value {
+        Outcome::Value(_) {
             false
         }
-        @Error { error } {
+        Outcome::Error(error) {
             ioErrorIsAlreadyExists(error)
         }
     }
@@ -332,10 +332,10 @@ internal procedure ioOutcomeErrorIsBusy<TValue>(
     move outcome: Outcome<TValue, IoError>
 ) -> bool {
     return if move outcome is {
-        @Value {
+        Outcome::Value(_) {
             false
         }
-        @Error { error } {
+        Outcome::Error(error) {
             ioErrorIsBusy(error)
         }
     }
@@ -345,10 +345,10 @@ internal procedure ioOutcomeErrorIsDirectoryNotEmpty<TValue>(
     move outcome: Outcome<TValue, IoError>
 ) -> bool {
     return if move outcome is {
-        @Value {
+        Outcome::Value(_) {
             false
         }
-        @Error { error } {
+        Outcome::Error(error) {
             ioErrorIsDirectoryNotEmpty(error)
         }
     }
@@ -358,10 +358,10 @@ internal procedure ioOutcomeErrorIsIoFailure<TValue>(
     move outcome: Outcome<TValue, IoError>
 ) -> bool {
     return if move outcome is {
-        @Value {
+        Outcome::Value(_) {
             false
         }
-        @Error { error } {
+        Outcome::Error(error) {
             ioErrorIsIoFailure(error)
         }
     }
@@ -372,11 +372,11 @@ internal procedure ioTextEquals(
     expected: string@View
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let text: string@View = string::as_view(value)
             auditTextEquals(text, expected)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -387,11 +387,11 @@ internal procedure ioBytesLengthEquals(
     expected: usize
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let view: bytes@View = bytes::as_view(value)
             bytes::length(view) == expected
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -399,7 +399,7 @@ internal procedure ioBytesLengthEquals(
 
 internal procedure ioFileKindIsFile(result: Outcome<FileKind, IoError>) -> bool {
     return if result is {
-        @Value { value } {
+        Outcome::Value(value) {
             return if value is {
                 FileKind::File {
                     true
@@ -412,7 +412,7 @@ internal procedure ioFileKindIsFile(result: Outcome<FileKind, IoError>) -> bool 
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -420,7 +420,7 @@ internal procedure ioFileKindIsFile(result: Outcome<FileKind, IoError>) -> bool 
 
 internal procedure ioFileKindIsDir(result: Outcome<FileKind, IoError>) -> bool {
     return if result is {
-        @Value { value } {
+        Outcome::Value(value) {
             return if value is {
                 FileKind::File {
                     false
@@ -433,7 +433,7 @@ internal procedure ioFileKindIsDir(result: Outcome<FileKind, IoError>) -> bool {
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -441,7 +441,7 @@ internal procedure ioFileKindIsDir(result: Outcome<FileKind, IoError>) -> bool {
 
 internal procedure ioFileKindIsOther(result: Outcome<FileKind, IoError>) -> bool {
     return if result is {
-        @Value { value } {
+        Outcome::Value(value) {
             return if value is {
                 FileKind::File {
                     false
@@ -454,7 +454,7 @@ internal procedure ioFileKindIsOther(result: Outcome<FileKind, IoError>) -> bool
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -465,13 +465,13 @@ internal procedure ioReadHandleTextEquals(
     expected: string@View
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let read_result: Outcome<unique string@Managed, IoError> = value~>read_all()
             let closed: File@Closed = value~>close()
             let _ = closed
             ioTextEquals(move read_result, expected)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -481,13 +481,13 @@ internal procedure ioReadHandleTextFailsWithIoFailure(
     move result: Outcome<unique File@Read, IoError>
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let read_result: Outcome<unique string@Managed, IoError> = value~>read_all()
             let closed: File@Closed = value~>close()
             let _ = closed
             ioOutcomeErrorIsIoFailure(move read_result)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -497,7 +497,7 @@ internal procedure ioReadHandleClosedTextFailsWithIoFailure(
     move result: Outcome<unique File@Read, IoError>
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let handle: usize =
                 unsafe { transmute<unique File@Read, usize>(move value) }
             // Unsafe harness only: the handle came from this file value, is closed
@@ -513,7 +513,7 @@ internal procedure ioReadHandleClosedTextFailsWithIoFailure(
                 stale~>read_all()
             ioOutcomeErrorIsIoFailure(move read_result)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -524,14 +524,14 @@ internal procedure ioReadHandleBytesLengthEquals(
     expected: usize
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let read_result: Outcome<unique bytes@Managed, IoError> =
                 value~>read_all_bytes()
             let closed: File@Closed = value~>close()
             let _ = closed
             ioBytesLengthEquals(move read_result, expected)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -542,7 +542,7 @@ internal procedure ioReadHandleTextAdvancesToEnd(
     expected: string@View
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let first_result: Outcome<unique string@Managed, IoError> =
                 value~>read_all()
             let second_result: Outcome<unique string@Managed, IoError> =
@@ -552,7 +552,7 @@ internal procedure ioReadHandleTextAdvancesToEnd(
             ioTextEquals(move first_result, expected) &&
                 ioTextEquals(move second_result, "")
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -563,7 +563,7 @@ internal procedure ioReadHandleBytesAdvancesToEnd(
     expected: usize
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let first_result: Outcome<unique bytes@Managed, IoError> =
                 value~>read_all_bytes()
             let second_result: Outcome<unique bytes@Managed, IoError> =
@@ -573,7 +573,7 @@ internal procedure ioReadHandleBytesAdvancesToEnd(
             ioBytesLengthEquals(move first_result, expected) &&
                 ioBytesLengthEquals(move second_result, 0usize)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -583,7 +583,7 @@ internal procedure ioReadHandleClosedBytesFailsWithIoFailure(
     move result: Outcome<unique File@Read, IoError>
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let handle: usize =
                 unsafe { transmute<unique File@Read, usize>(move value) }
             // Unsafe harness only: the handle came from this file value, is closed
@@ -599,7 +599,7 @@ internal procedure ioReadHandleClosedBytesFailsWithIoFailure(
                 stale~>read_all_bytes()
             ioOutcomeErrorIsIoFailure(move read_result)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -610,7 +610,7 @@ internal procedure ioWriteHandleAcceptsPayload(
     payload: string@View
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let payload_view: bytes@View = bytes::view_string(payload)
             let write_result: Outcome<(), IoError> = value~>write(payload_view)
             let flush_result: Outcome<(), IoError> = value~>flush()
@@ -618,7 +618,7 @@ internal procedure ioWriteHandleAcceptsPayload(
             let _ = closed
             ioUnitSucceeded(write_result) && ioUnitSucceeded(flush_result)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -628,7 +628,7 @@ internal procedure ioWriteHandleClosedOperationsFailWithIoFailure(
     move result: Outcome<unique File@Write, IoError>
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let handle: usize =
                 unsafe { transmute<unique File@Write, usize>(move value) }
             // Unsafe harness only: the handle came from this file value, is closed
@@ -646,7 +646,7 @@ internal procedure ioWriteHandleClosedOperationsFailWithIoFailure(
             ioOutcomeErrorIsIoFailure(move write_result) &&
                 ioOutcomeErrorIsIoFailure(move flush_result)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -658,13 +658,13 @@ internal procedure ioWriteHandleBusyWhileOpen(
 ) -> bool {
     let created: Outcome<unique File@Write, IoError> = io~>create_write(path)
     return if move created is {
-        @Value { value } {
+        Outcome::Value(value) {
             let blocked: Outcome<unique File@Write, IoError> = io~>open_write(path)
             let closed: File@Closed = value~>close()
             let _ = closed
             ioOutcomeErrorIsBusy(move blocked)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -676,7 +676,7 @@ internal procedure ioWriteHandlePositionAndLengthReference(
 ) -> bool {
     let created: Outcome<unique File@Write, IoError> = io~>create_write(path)
     return if move created is {
-        @Value { value } {
+        Outcome::Value(value) {
             let first_payload: bytes@View = bytes::view_string("abc")
             let second_payload: bytes@View = bytes::view_string("def")
             let first_write: Outcome<(), IoError> = value~>write(first_payload)
@@ -690,7 +690,7 @@ internal procedure ioWriteHandlePositionAndLengthReference(
                 ioTextEquals(io~>read_file(path), "abcdef") &&
                 ioBytesLengthEquals(io~>read_bytes(path), 6usize)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -741,7 +741,7 @@ internal procedure ioAppendHandleAcceptsPayload(
     payload: string@View
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let payload_view: bytes@View = bytes::view_string(payload)
             let write_result: Outcome<(), IoError> = value~>write(payload_view)
             let flush_result: Outcome<(), IoError> = value~>flush()
@@ -749,7 +749,7 @@ internal procedure ioAppendHandleAcceptsPayload(
             let _ = closed
             ioUnitSucceeded(write_result) && ioUnitSucceeded(flush_result)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -759,7 +759,7 @@ internal procedure ioAppendHandleClosedOperationsFailWithIoFailure(
     move result: Outcome<unique File@Append, IoError>
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let handle: usize =
                 unsafe { transmute<unique File@Append, usize>(move value) }
             // Unsafe harness only: the handle came from this file value, is closed
@@ -777,7 +777,7 @@ internal procedure ioAppendHandleClosedOperationsFailWithIoFailure(
             ioOutcomeErrorIsIoFailure(move write_result) &&
                 ioOutcomeErrorIsIoFailure(move flush_result)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -788,7 +788,7 @@ internal procedure ioDirEntryNameEquals(
     expected: string@View
 ) -> bool {
     return if result is {
-        @Value { value } {
+        Outcome::Value(value) {
             return if value is {
                 entry: DirEntry {
                     let name: string@View = string::as_view(entry.name)
@@ -799,7 +799,7 @@ internal procedure ioDirEntryNameEquals(
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -807,7 +807,7 @@ internal procedure ioDirEntryNameEquals(
 
 internal procedure ioDirEntryIsEnd(result: Outcome<DirEntry | (), IoError>) -> bool {
     return if result is {
-        @Value { value } {
+        Outcome::Value(value) {
             return if value is {
                 entry: DirEntry {
                     false
@@ -817,7 +817,7 @@ internal procedure ioDirEntryIsEnd(result: Outcome<DirEntry | (), IoError>) -> b
                 }
             }
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -827,7 +827,7 @@ internal procedure ioDirIterClosedNextFailsWithIoFailure(
     move result: Outcome<unique DirIter@Open, IoError>
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let handle: usize =
                 unsafe { transmute<unique DirIter@Open, usize>(move value) }
             // Unsafe harness only: the handle came from this iterator value, is
@@ -842,7 +842,7 @@ internal procedure ioDirIterClosedNextFailsWithIoFailure(
             let next_result: Outcome<DirEntry | (), IoError> = stale~>next()
             ioOutcomeErrorIsIoFailure(move next_result)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -852,7 +852,7 @@ internal procedure ioDirectoryIterationReference(
     move result: Outcome<unique DirIter@Open, IoError>
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let first: Outcome<DirEntry | (), IoError> = value~>next()
             let second: Outcome<DirEntry | (), IoError> = value~>next()
             let third: Outcome<DirEntry | (), IoError> = value~>next()
@@ -864,7 +864,7 @@ internal procedure ioDirectoryIterationReference(
                 ioDirEntryNameEquals(third, "IOC.txt") &&
                 ioDirEntryIsEnd(end)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -874,7 +874,7 @@ internal procedure ioDirectoryOrderingReference(
     move result: Outcome<unique DirIter@Open, IoError>
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let first: Outcome<DirEntry | (), IoError> = value~>next()
             let second: Outcome<DirEntry | (), IoError> = value~>next()
             let third: Outcome<DirEntry | (), IoError> = value~>next()
@@ -886,7 +886,7 @@ internal procedure ioDirectoryOrderingReference(
                 ioDirEntryNameEquals(third, "OrderC.txt") &&
                 ioDirEntryIsEnd(end)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -901,7 +901,7 @@ internal procedure ioDirectorySnapshotAfterRemovalReference(
     let removed: Outcome<(), IoError> = io~>remove(snapshot_path)
 
     return if move opened is {
-        @Value { value } {
+        Outcome::Value(value) {
             let first: Outcome<DirEntry | (), IoError> = value~>next()
             let end: Outcome<DirEntry | (), IoError> = value~>next()
             let closed: DirIter@Closed = value~>close()
@@ -910,7 +910,7 @@ internal procedure ioDirectorySnapshotAfterRemovalReference(
                 ioDirEntryNameEquals(first, "Snapshot.txt") &&
                 ioDirEntryIsEnd(end)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -920,13 +920,13 @@ internal procedure ioPrimitiveOpenDirReachesEnd(
     move result: Outcome<unique DirIter@Open, IoError>
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let first: Outcome<DirEntry | (), IoError> = value~>next()
             let closed: DirIter@Closed = value~>close()
             let _ = closed
             ioDirEntryIsEnd(first)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -937,7 +937,7 @@ internal procedure ioPrimitiveOpenDirReadsSingleEntry(
     expected_name: string@View
 ) -> bool {
     return if move result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let first: Outcome<DirEntry | (), IoError> = value~>next()
             let end: Outcome<DirEntry | (), IoError> = value~>next()
             let closed: DirIter@Closed = value~>close()
@@ -945,7 +945,7 @@ internal procedure ioPrimitiveOpenDirReadsSingleEntry(
             ioDirEntryNameEquals(first, expected_name) &&
                 ioDirEntryIsEnd(end)
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }

@@ -143,11 +143,12 @@ const std::vector<std::string_view>& UniverseProtectedNames() {
       "u16",    "u32",    "u64",    "u128",   "f16",    "f32",
       "f64",    "bool",   "char",   "usize",  "isize",  "Self",
       "Drop", "Bitcopy", "Clone", "Eq", "Hash", "Hasher", "Iterator", "Discrete",
-      "FfiSafe", "string", "bytes",  "Modal",  "Region", "RegionOptions",
+      "FfiSafe", "GpuSafe", "string", "bytes",  "Modal",  "Region", "RegionOptions",
       "CancelToken", "Context", "TestAuthority", "System", "IO",
       "HeapAllocator", "ExecutionDomain", "Reactor", "Network", "Time",
       "MonotonicTime", "WallTime", "Duration", "MonotonicInstant",
-      "UtcInstant", "TimeError", "CpuSet", "Priority", "Async", "Future",
+      "UtcInstant", "TimeError", "Outcome", "CpuSet", "Priority", "Async",
+      "Future",
       "Sequence", "Stream", "Pipe", "Exchange", "Tracked", "Spawned"};
   return names;
 }
@@ -246,7 +247,7 @@ const std::vector<std::string_view>& SpecialTypeNames() {
       "RegionOptions", "CancelToken", "Context", "TestAuthority", "System",
       "IO", "HeapAllocator", "ExecutionDomain", "CpuSet", "Priority",
       "Reactor", "Network", "Time", "MonotonicTime", "WallTime",
-      "Duration", "MonotonicInstant", "UtcInstant", "TimeError"};
+      "Duration", "MonotonicInstant", "UtcInstant", "TimeError", "Outcome"};
   return names;
 }
 

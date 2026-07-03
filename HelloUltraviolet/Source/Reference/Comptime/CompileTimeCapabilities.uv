@@ -27,23 +27,49 @@ internal procedure compileTimeIOReferenceValue() -> usize {
     let project_root_ok: bool =
         #files comptime { files~>project_root() != "" }
     let manifest_exists_ok: bool =
-        #files comptime { files~>exists("Ultraviolet.toml").value == true }
+        #files comptime {
+            if files~>exists("Ultraviolet.toml") is Outcome::Value(exists) {
+                exists == true
+            } else {
+                false
+            }
+        }
     let manifest_text_ok: bool =
-        #files comptime { files~>read("Ultraviolet.toml").value != "" }
+        #files comptime {
+            if files~>read("Ultraviolet.toml") is Outcome::Value(text) {
+                text != ""
+            } else {
+                false
+            }
+        }
     #files
     comptime {
         let manifest_bytes = files~>read_bytes("Ultraviolet.toml")
     }
 
-    var source_root_hits: usize = 0usize
-    #files
-    comptime loop entry in files~>list_dir("Source").value {
-        source_root_hits = source_root_hits +
-            comptime if entry == "Main.uv" { 1usize } else { 0usize }
-    }
+    let source_dir_ok: bool =
+        #files comptime {
+            if files~>list_dir("Source") is Outcome::Value(entries) {
+                true
+            } else {
+                false
+            }
+        }
+    let source_main_ok: bool =
+        #files comptime {
+            if files~>exists("Source/Main.uv") is Outcome::Value(exists) {
+                exists == true
+            } else {
+                false
+            }
+        }
 
-    if project_root_ok && manifest_exists_ok && manifest_text_ok {
-        return source_root_hits
+    if project_root_ok &&
+        manifest_exists_ok &&
+        manifest_text_ok &&
+        source_dir_ok &&
+        source_main_ok {
+        return 1usize
     }
     return 0usize
 }
@@ -75,35 +101,32 @@ internal procedure compileTimeListDirInvalidPathReferenceValue() -> bool {
     return #files comptime {
         {
             let result = files~>list_dir("../outside-project")
-            if result is {
-                @Value { value } {
-                    false
-                }
-                @Error { error } {
-                    if error is {
-                        IoError::NotFound {
-                            false
-                        }
-                        IoError::PermissionDenied {
-                            false
-                        }
-                        IoError::AlreadyExists {
-                            false
-                        }
-                        IoError::InvalidPath {
-                            true
-                        }
-                        IoError::Busy {
-                            false
-                        }
-                        IoError::IoFailure {
-                            false
-                        }
-                        IoError::DirectoryNotEmpty {
-                            false
-                        }
+            if result is Outcome::Error(error) {
+                if error is {
+                    IoError::NotFound {
+                        false
+                    }
+                    IoError::PermissionDenied {
+                        false
+                    }
+                    IoError::AlreadyExists {
+                        false
+                    }
+                    IoError::InvalidPath {
+                        true
+                    }
+                    IoError::Busy {
+                        false
+                    }
+                    IoError::IoFailure {
+                        false
+                    }
+                    IoError::DirectoryNotEmpty {
+                        false
                     }
                 }
+            } else {
+                false
             }
         }
     }
@@ -178,12 +201,20 @@ public procedure compileTimeCapabilitiesSyntaxSurfaceReference() -> bool {
 
 /// Exercises compile-time capability method-call parsing through ordinary calls.
 public procedure ctCapMethodCallParsingReference() -> bool {
+    let manifest_exists_ok: bool =
+        #files comptime {
+            if files~>exists("Ultraviolet.toml") is Outcome::Value(exists) {
+                exists == true
+            } else {
+                false
+            }
+        }
     return comptime { diagnostics~>current_module() != "" } &&
         comptime {
             introspect~>category(Type::<ComptimeCapabilityReflectedRecord>) ==
                 TypeCategory::Record
         } &&
-        #files comptime { files~>exists("Ultraviolet.toml").value == true } &&
+        manifest_exists_ok &&
         typeEmitterAvailabilityReference()
 }
 

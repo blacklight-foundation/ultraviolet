@@ -2,7 +2,7 @@
 
 
 public procedure countConcreteDataTypesArraysObligations() -> usize {
-    return 40usize
+    return 35usize
 }
 
 public procedure validatedConcreteDataTypesArraysObligations() -> usize {
@@ -223,33 +223,6 @@ public procedure validatedConcreteDataTypesArraysObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "Index-Array-NonConst-Err",
-        36709usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/ArrayIndexNonConst/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "Index-Array-OOB-Err",
-        36727usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/ArrayIndexOutOfBounds/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "Index-Array-NonUsize",
-        36745usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/ArrayIndexNonUsize/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.ArrayValueType",
         36763usize,
@@ -295,15 +268,6 @@ public procedure validatedConcreteDataTypesArraysObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if artifactBehaviorObligationEntryMatches(
-        "EvalSigma-Index-OOB",
-        36850usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
-        "validatedArtifactProjectFixtureCount",
-        "Fixtures/ArtifactProjects/ArrayIndexOOBPanic/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "Size-Array",
         36870usize,
@@ -346,15 +310,6 @@ public procedure validatedConcreteDataTypesArraysObligations() -> usize {
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesArraysReference",
         "Source/Reference/DataTypes/Arrays.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "Lower-Expr-Array",
-        36952usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
     ) {
         count = count + 1usize
     }

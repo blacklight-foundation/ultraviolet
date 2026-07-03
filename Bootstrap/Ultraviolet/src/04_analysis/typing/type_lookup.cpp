@@ -30,7 +30,6 @@ static inline void SpecDefsTypeLookup() {
   SPEC_DEF("LookupRecordDecl", "5.2.12");
   SPEC_DEF("LookupEnumDecl", "5.2.12");
   SPEC_DEF("TypeParamsOf", "14.1.3");
-  SPEC_DEF("TypePredicateClauseOf", "14.1.3");
 }
 
 TypePath EntityQualifiedPath(const Entity& entity,
@@ -184,22 +183,6 @@ const std::optional<ast::GenericParams>* TypeParamsOf(const ScopeContext& ctx,
   return std::visit(
       [](const auto& decl) -> const std::optional<ast::GenericParams>* {
         return &decl.generic_params;
-      },
-      *decl);
-}
-
-const std::optional<ast::PredicateClause>* TypePredicateClauseOf(
-    const ScopeContext& ctx,
-    const TypePath& path) {
-  SpecDefsTypeLookup();
-  const TypeDecl* decl = LookupTypeDecl(ctx, path);
-  if (!decl) {
-    return nullptr;
-  }
-
-  return std::visit(
-      [](const auto& decl) -> const std::optional<ast::PredicateClause>* {
-        return &decl.predicate_clause_opt;
       },
       *decl);
 }

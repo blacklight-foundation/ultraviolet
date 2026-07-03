@@ -167,6 +167,13 @@ struct IRRange {
   std::optional<IRValue> hi;
 };
 
+struct IRParam {
+  std::optional<analysis::ParamMode> mode;
+  std::string name;
+  std::string stable_name;
+  analysis::TypeRef type;
+};
+
 struct IRSeq {
   std::vector<IRPtr> items;
 };
@@ -181,6 +188,7 @@ struct IRCallVTable {
   IRValue base;
   std::size_t slot = 0;
   std::vector<IRValue> args;
+  std::vector<IRParam> params;
   IRValue result;
   analysis::TypeRef ret_type;  // Return type of the method (for correct LLVM type)
   bool check_dynamic_receiver_addr_active = false;
@@ -548,9 +556,9 @@ struct IRDispatch {
   IRValue workgroup_size;               // GPU workgroup topology
 };
 
-// UVX Extension: Asynchronous Operations IR nodes (§19)
+// UVX Extension: Asynchronous Operations IR nodes (§21)
 
-// §19.2.2 Yield expression IR
+// §21.2.2 Yield expression IR
 struct IRYield {
   bool release = false;                 // `yield release` flag
   IRValue value;                        // Expression to yield (Out type)
@@ -559,7 +567,7 @@ struct IRYield {
   std::size_t state_index = 0;          // State machine resumption point
 };
 
-// §19.2.3 Yield-from expression IR
+// §21.2.3 Yield-from expression IR
 struct IRYieldFrom {
   bool release = false;                 // `yield release from` flag
   IRValue source;                       // Source async value
@@ -604,7 +612,7 @@ struct IRSpecLoop {
   IRValue result;
 };
 
-// §19.3.3 Sync expression IR
+// §21.3.3 Sync expression IR
 struct IRSync {
   IRValue async_value;                  // Async<(), (), Result, E> to synchronously execute
   IRValue result;                       // Result | E union
@@ -615,7 +623,7 @@ struct IRSync {
   std::optional<IRValue> runtime_receiver;
 };
 
-// §19.3.4 Race expression IR (first-completion mode)
+// §21.3.4 Race expression IR (first-completion mode)
 struct IRRaceArm {
   IRPtr async_ir;                       // IR to produce async value
   IRValue async_value;                  // The async value
@@ -630,14 +638,14 @@ struct IRRaceReturn {
   analysis::TypeRef result_type;        // Result type of handlers
 };
 
-// §19.3.4 Race expression IR (streaming mode)
+// §21.3.4 Race expression IR (streaming mode)
 struct IRRaceYield {
   std::vector<IRRaceArm> arms;
   IRValue result;                       // Stream<U, E_union>
   analysis::TypeRef stream_type;        // Type of resulting stream
 };
 
-// §19.3.5 All expression IR
+// §21.3.5 All expression IR
 struct IRAll {
   std::vector<IRPtr> async_irs;          // IR to produce each async
   std::vector<IRValue> async_values;     // The async values
@@ -646,7 +654,7 @@ struct IRAll {
   std::vector<analysis::TypeRef> error_types;  // Error types for union
 };
 
-// §19.1.3 Create Async@Completed value (for async procedure returns)
+// §21.1.3 Create Async@Completed value (for async procedure returns)
 // Wraps a result value in Async@Completed{value: result}
 struct IRAsyncComplete {
   IRValue value;                        // The result value to wrap
@@ -655,7 +663,7 @@ struct IRAsyncComplete {
   analysis::TypeRef result_type;        // Type of the result value
 };
 
-// §19.1.3 Create Async@Failed value (for async error propagation paths)
+// §21.1.3 Create Async@Failed value (for async error propagation paths)
 // Wraps an error value in Async@Failed{error: value}
 struct IRAsyncFail {
   IRValue value;                        // The error value to wrap
@@ -726,7 +734,7 @@ struct IR {
                IRCancelCheck,
                IRGpuBarrier,
                IRDispatch,
-               // UVX Extension: Asynchronous Operations (§19)
+               // UVX Extension: Asynchronous Operations (§21)
                IRYield,
                IRYieldFrom,
                IRSpecSnapshot,
@@ -742,13 +750,6 @@ struct IR {
                IRAsyncComplete,
                IRAsyncFail>
       node;
-};
-
-struct IRParam {
-  std::optional<analysis::ParamMode> mode;
-  std::string name;
-  std::string stable_name;
-  analysis::TypeRef type;
 };
 
 enum class IRInlineMode {

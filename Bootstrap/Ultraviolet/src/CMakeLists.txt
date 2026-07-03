@@ -7,6 +7,8 @@ if(MSVC)
   set(CMAKE_MSVC_RUNTIME_LIBRARY "${UV_MSVC_RUNTIME}" CACHE STRING "" FORCE)
 endif()
 
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
+
 add_library(uv_core STATIC
   00_core/diagnostic_codes.cpp
   00_core/diagnostic_messages.cpp
@@ -90,6 +92,15 @@ if(NOT EXISTS "${UV_DIAG_SPEC_PATH}")
   message(FATAL_ERROR "Resolved language spec path does not exist: ${UV_DIAG_SPEC_PATH}")
 endif()
 
+file(GLOB_RECURSE UV_COMPILER_VALIDATION_INPUTS CONFIGURE_DEPENDS
+  "${CMAKE_SOURCE_DIR}/include/*.h"
+  "${CMAKE_SOURCE_DIR}/src/*.cpp"
+  "${CMAKE_SOURCE_DIR}/src/*.h"
+  "${CMAKE_SOURCE_DIR}/src/*.inc"
+)
+
+set(UV_VALIDATION_STAMP_DIR "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/validation")
+
 add_custom_target(generate_static_rule_registry
   COMMAND ${CMAKE_COMMAND} -E make_directory "${UV_BUILD_DIR}/logs/conformance"
   COMMAND ${Python3_EXECUTABLE}
@@ -113,8 +124,13 @@ add_custom_target(generate_static_rule_registry
   VERBATIM
 )
 
-add_custom_target(validate_static_rule_registry_sync
+set(UV_VALIDATE_STATIC_RULE_REGISTRY_SYNC_STAMP
+  "${UV_VALIDATION_STAMP_DIR}/validate_static_rule_registry_sync.stamp"
+)
+add_custom_command(
+  OUTPUT "${UV_VALIDATE_STATIC_RULE_REGISTRY_SYNC_STAMP}"
   COMMAND ${CMAKE_COMMAND} -E make_directory "${UV_BUILD_DIR}/logs/conformance"
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${UV_VALIDATION_STAMP_DIR}"
   COMMAND ${Python3_EXECUTABLE}
           "${UV_TOOLS_DIR}/generate_static_rule_registry.py"
           --self-test
@@ -128,13 +144,19 @@ add_custom_target(validate_static_rule_registry_sync
           --report-path "${UV_STATIC_RULE_REGISTRY_REPORT}"
           --strict
           --check
+  COMMAND ${CMAKE_COMMAND} -E touch "${UV_VALIDATE_STATIC_RULE_REGISTRY_SYNC_STAMP}"
   DEPENDS
           "${UV_TOOLS_DIR}/generate_static_rule_registry.py"
           "${UV_TOOLS_DIR}/resolve_spec_path.py"
           "${UV_STATIC_RULE_MAPPING}"
           "${UV_DIAG_SPEC_PATH}"
+          "${UV_STATIC_RULE_REGISTRY_INC}"
+          ${UV_COMPILER_VALIDATION_INPUTS}
   COMMENT "Validating static rule registry sync against canonical language spec"
   VERBATIM
+)
+add_custom_target(validate_static_rule_registry_sync
+  DEPENDS "${UV_VALIDATE_STATIC_RULE_REGISTRY_SYNC_STAMP}"
 )
 
 add_custom_target(generate_diagnostic_registry
@@ -156,7 +178,12 @@ add_custom_target(generate_diagnostic_registry
   VERBATIM
 )
 
-add_custom_target(validate_diagnostic_spec_sync
+set(UV_VALIDATE_DIAGNOSTIC_SPEC_SYNC_STAMP
+  "${UV_VALIDATION_STAMP_DIR}/validate_diagnostic_spec_sync.stamp"
+)
+add_custom_command(
+  OUTPUT "${UV_VALIDATE_DIAGNOSTIC_SPEC_SYNC_STAMP}"
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${UV_VALIDATION_STAMP_DIR}"
   COMMAND ${Python3_EXECUTABLE}
           "${UV_TOOLS_DIR}/generate_diagnostic_registry.py"
           --repo-root "${UV_REPO_ROOT}"
@@ -171,29 +198,52 @@ add_custom_target(validate_diagnostic_spec_sync
           --source-root "${CMAKE_SOURCE_DIR}/src"
           --spec-path "${UV_DIAG_SPEC_PATH}"
           --registry-path "${UV_DIAG_REGISTRY_INC}"
+  COMMAND ${CMAKE_COMMAND} -E touch "${UV_VALIDATE_DIAGNOSTIC_SPEC_SYNC_STAMP}"
   DEPENDS
           "${UV_TOOLS_DIR}/generate_diagnostic_registry.py"
           "${UV_TOOLS_DIR}/validate_diagnostic_spec_sync.py"
           "${UV_TOOLS_DIR}/resolve_spec_path.py"
           "${UV_DIAG_SPEC_PATH}"
+          "${UV_DIAG_REGISTRY_INC}"
+          "${UV_TYPECHECK_DIAG_MAP_INC}"
+          ${UV_COMPILER_VALIDATION_INPUTS}
   COMMENT "Validating diagnostic spec sync against canonical language spec"
   VERBATIM
 )
+add_custom_target(validate_diagnostic_spec_sync
+  DEPENDS "${UV_VALIDATE_DIAGNOSTIC_SPEC_SYNC_STAMP}"
+)
 
-add_custom_target(validate_phase_includes
+set(UV_VALIDATE_PHASE_INCLUDES_STAMP
+  "${UV_VALIDATION_STAMP_DIR}/validate_phase_includes.stamp"
+)
+add_custom_command(
+  OUTPUT "${UV_VALIDATE_PHASE_INCLUDES_STAMP}"
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${UV_VALIDATION_STAMP_DIR}"
   COMMAND ${Python3_EXECUTABLE}
           "${UV_TOOLS_DIR}/validate_phase_includes.py"
           --source-root "${CMAKE_SOURCE_DIR}"
+  COMMAND ${CMAKE_COMMAND} -E touch "${UV_VALIDATE_PHASE_INCLUDES_STAMP}"
   DEPENDS
           "${UV_TOOLS_DIR}/validate_phase_includes.py"
+          ${UV_COMPILER_VALIDATION_INPUTS}
   COMMENT "Validating compiler phase include direction"
   VERBATIM
 )
+add_custom_target(validate_phase_includes
+  DEPENDS "${UV_VALIDATE_PHASE_INCLUDES_STAMP}"
+)
 
-add_custom_target(validate_ast_phase_coverage
+set(UV_VALIDATE_AST_PHASE_COVERAGE_STAMP
+  "${UV_VALIDATION_STAMP_DIR}/validate_ast_phase_coverage.stamp"
+)
+add_custom_command(
+  OUTPUT "${UV_VALIDATE_AST_PHASE_COVERAGE_STAMP}"
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${UV_VALIDATION_STAMP_DIR}"
   COMMAND ${Python3_EXECUTABLE}
           "${UV_TOOLS_DIR}/validate_ast_phase_coverage.py"
           --source-root "${CMAKE_SOURCE_DIR}"
+  COMMAND ${CMAKE_COMMAND} -E touch "${UV_VALIDATE_AST_PHASE_COVERAGE_STAMP}"
   DEPENDS
           "${UV_TOOLS_DIR}/validate_ast_phase_coverage.py"
           "${CMAKE_SOURCE_DIR}/include/02_source/ast/nodes/ast_exprs.h"
@@ -201,6 +251,9 @@ add_custom_target(validate_ast_phase_coverage
           "${CMAKE_SOURCE_DIR}/src/05_codegen/lower/expr/expr_common.cpp"
   COMMENT "Validating AST expression phase coverage"
   VERBATIM
+)
+add_custom_target(validate_ast_phase_coverage
+  DEPENDS "${UV_VALIDATE_AST_PHASE_COVERAGE_STAMP}"
 )
 
 add_dependencies(uv_core
@@ -322,7 +375,6 @@ add_library(uv_source STATIC
   02_source/lexer/token.cpp
   02_source/lexer/tokenize.cpp
   02_source/parser/expr/all_expr.cpp
-  02_source/parser/expr/alloc_expr.cpp
   02_source/parser/expr/array_literal.cpp
   02_source/parser/expr/addr_of.cpp
   02_source/parser/expr/binary.cpp
@@ -393,7 +445,6 @@ add_library(uv_source STATIC
   02_source/parser/item/type_alias_decl.cpp
   02_source/parser/item/using_decl.cpp
   02_source/parser/item/visibility.cpp
-  02_source/parser/item/where_clause.cpp
   02_source/parser/parse_modules.cpp
   02_source/parser/parser.cpp
   02_source/parser/parser_angle.cpp
@@ -649,7 +700,6 @@ add_library(uv_analysis STATIC
   04_analysis/typing/item/type_alias_decl.cpp
   04_analysis/typing/item/using_decl.cpp
   04_analysis/typing/item/visibility.cpp
-  04_analysis/typing/item/where_clause.cpp
   04_analysis/typing/literals.cpp
   04_analysis/typing/outcome.cpp
   04_analysis/typing/if_case_check.cpp

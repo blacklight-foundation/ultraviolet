@@ -2,7 +2,7 @@
 
 
 public procedure countProjectAndCompilationModelOutputArtifactsAndLinkingObligations() -> usize {
-    return 130usize
+    return 111usize
 }
 
 public procedure validatedProjectAndCompilationModelOutputArtifactsAndLinkingObligations() -> usize {
@@ -80,15 +80,6 @@ public procedure validatedProjectAndCompilationModelOutputArtifactsAndLinkingObl
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.HostedLibraryImportsLinkedLibrary",
-        4640usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticHostedImportGraphExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "Assembly-Graph-Ok",
         4654usize,
         "HelloUltraviolet::Reference::Projects",
@@ -103,15 +94,6 @@ public procedure validatedProjectAndCompilationModelOutputArtifactsAndLinkingObl
         "HelloUltraviolet::Reference::Projects",
         "runProjectsAssemblyModelReference",
         "Source/Reference/Projects/AssemblyModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Assembly-Graph-HostedImport-Err",
-        4690usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticHostedImportGraphExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -187,21 +169,21 @@ public procedure validatedProjectAndCompilationModelOutputArtifactsAndLinkingObl
     ) {
         count = count + 1usize
     }
-    if artifactBehaviorObligationEntryMatches(
+    if acceptedObligationEntryMatches(
         "def.IRSet",
         4825usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
-        "validatedArtifactProjectFixtureCount",
-        "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv"
+        "HelloUltraviolet::Audit",
+        "artifactProjectAssemblyAndLinkKindsExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
-    if artifactBehaviorObligationEntryMatches(
+    if acceptedObligationEntryMatches(
         "def.PrimaryArtifactSet",
         4841usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
-        "validatedArtifactProjectFixtureCount",
-        "Fixtures/ArtifactProjects/MacOSExecutableOutput/Source/Main.uv"
+        "HelloUltraviolet::Audit",
+        "artifactProjectAssemblyAndLinkKindsExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -583,15 +565,6 @@ public procedure validatedProjectAndCompilationModelOutputArtifactsAndLinkingObl
     ) {
         count = count + 1usize
     }
-    if artifactBehaviorObligationEntryMatches(
-        "Emit-Objects-Empty",
-        5514usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
-        "validatedArtifactProjectFixtureCount",
-        "Fixtures/ArtifactProjects/EmptyDependencyObject/Source/.keep"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "Emit-Objects-Cons",
         5531usize,
@@ -629,26 +602,8 @@ public procedure validatedProjectAndCompilationModelOutputArtifactsAndLinkingObl
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.EmitIRFailLL",
-        5605usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticIRWriteFailureExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "def.EmitIRFailBC",
         5619usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticEmitLLVMRenderFailureExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Emit-IR-Err",
-        5637usize,
         "HelloUltraviolet::Audit",
         "outputDiagnosticEmitLLVMRenderFailureExercise",
         "Source/Audit/OutputDiagnosticExecution.uv"
@@ -724,15 +679,6 @@ public procedure validatedProjectAndCompilationModelOutputArtifactsAndLinkingObl
         "HelloUltraviolet::Audit",
         "artifactProjectAssemblyAndLinkKindsExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveRuntimeLib-Err",
-        5778usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticRuntimeLibMissingExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -862,75 +808,21 @@ public procedure validatedProjectAndCompilationModelOutputArtifactsAndLinkingObl
     ) {
         count = count + 1usize
     }
-    if acceptedProjectObligationEntryMatches(
+    if acceptedObligationEntryMatches(
         "Link-Ok",
         6013usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExecutableMain/Source/Main.uv"
+        "HelloUltraviolet::Audit",
+        "artifactProjectLibraryArtifactInputsExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Link-NotFound",
-        6031usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticLinkerToolResolveFailureExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Link-Runtime-Missing",
-        6049usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticRuntimeLibMissingExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Link-Runtime-Incompatible",
-        6067usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticRuntimeIncompatibleExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Link-Fail",
-        6085usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticLinkerInvocationFailureExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
         "Archive-Ok",
         6103usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/StaticLibrary/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Archive-NotFound",
-        6121usize,
         "HelloUltraviolet::Audit",
-        "outputDiagnosticArchiverToolResolveFailureExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Archive-Fail",
-        6139usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticArchiverInvocationFailureExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
+        "artifactProjectStaticLibraryExercise",
+        "Source/Audit/ArtifactProjectExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -979,15 +871,6 @@ public procedure validatedProjectAndCompilationModelOutputArtifactsAndLinkingObl
     ) {
         count = count + 1usize
     }
-    if artifactBehaviorObligationEntryMatches(
-        "Output-Pipeline-Err",
-        6246usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics",
-        "validatedOutputLoweringDiagnosticFixtureCount",
-        "Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.OutputPipelineState",
         6264usize,
@@ -1025,15 +908,6 @@ public procedure validatedProjectAndCompilationModelOutputArtifactsAndLinkingObl
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Out-Dirs-Err",
-        6330usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticDirectoryPreparationFailureExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "Out-Obj-Collision",
         6348usize,
         "HelloUltraviolet::Reference::Projects",
@@ -1048,15 +922,6 @@ public procedure validatedProjectAndCompilationModelOutputArtifactsAndLinkingObl
         "HelloUltraviolet::Reference::Projects",
         "runProjectsOutputArtifactsReference",
         "Source/Reference/Projects/OutputArtifacts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if artifactBehaviorObligationEntryMatches(
-        "Out-Obj-Err",
-        6384usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics",
-        "validatedOutputLoweringDiagnosticFixtureCount",
-        "Fixtures/OutputDiagnostics/Lowering/LlvmTypeMappingFailure/Source/Library.uv"
     ) {
         count = count + 1usize
     }
@@ -1115,29 +980,11 @@ public procedure validatedProjectAndCompilationModelOutputArtifactsAndLinkingObl
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Out-IR-Err",
-        6509usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticFixturesExecuteAndEmitExpectedDiagnostics",
-        "Source/Audit/OutputDiagnosticExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "Out-IR-Done-Finalize",
         6528usize,
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if artifactBehaviorObligationEntryMatches(
-        "Out-IR-Done-NoFinalize",
-        6546usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
-        "validatedArtifactProjectFixtureCount",
-        "Fixtures/ArtifactProjects/EmitLlDependency/Source/Library.uv"
     ) {
         count = count + 1usize
     }
@@ -1151,29 +998,11 @@ public procedure validatedProjectAndCompilationModelOutputArtifactsAndLinkingObl
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Out-Final-Link-Err",
-        6582usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticLinkerToolResolveFailureExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "Out-Final-Archive-Ok",
         6600usize,
         "HelloUltraviolet::Audit",
         "artifactProjectStaticLibraryExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Out-Final-Archive-Err",
-        6618usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticArchiverToolResolveFailureExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
     ) {
         count = count + 1usize
     }

@@ -16338,7 +16338,7 @@ applies-to: semantic-analysis, diagnostics, oracle.reference-model, oracle.cover
 summary: Defines the feature sections that own binding diagnostics.
 -->
 
-BindDiagRefs = {"8.2", "8.7", "8.10"}
+BindDiagRefs = {"6.6", "8.5", "10.4.7", "15.10"}
 
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
@@ -46345,7 +46345,7 @@ owner: spec.modal-special
 applies-to: compiler.diagnostics, oracle.coverage
 summary: Defines cross-reference ownership for pointer diagnostics.
 -->
-PtrDiagRefs = {"8.10"}
+PtrDiagRefs = {"13.8.7", "16.1.7"}
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
 <!-- ULTRAVIOLET-SPEC-UNIT
@@ -64958,10 +64958,10 @@ phase: runtime
 strength: required
 owner: spec.expressions
 applies-to: runtime.evaluator, compiler.lowering, oracle.reference-model, oracle.coverage
-summary: Defines pipeline expressions as application of the right-hand side to the left-hand side.
+summary: Defines pipeline expressions as left-first application through the right-hand callable.
 labels: pipeline_expr
 -->
-Pipeline expressions desugar to function or closure application: `e_1 => e_2 ≡ e_2(e_1)`.
+Pipeline expressions are a distinct left-first application form. `PipelineExpr(e_1, e_2)` evaluates `e_1` before `e_2`; after both produce values, the resulting function or closure value from `e_2` is applied to `[v_1]`. This is call-like lowering, not a source-level equivalence to `e_2(e_1)`.
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
 <!-- ULTRAVIOLET-SPEC-UNIT
@@ -84016,7 +84016,7 @@ applies-to: compiler.comptime, compiler.typecheck, compiler.diagnostics, oracle.
 summary: Requires compile-time procedure contracts to use ordinary contract_clause syntax and evaluate preconditions and postconditions at each compile-time call site.
 labels: compile-time-procedure-contracts, contract_clause
 -->
-Compile-time procedure contracts use the ordinary `contract_clause` surface of §14.6. At each compile-time call site, the precondition is evaluated before body execution and the postcondition is evaluated on the returned value. If any evaluated contract predicate is `false`, the call is ill-formed.
+Compile-time procedure contracts use the ordinary `contract_clause` surface of §15.4. At each compile-time call site, the precondition is evaluated before body execution and the postcondition is evaluated on the returned value. If any evaluated contract predicate is `false`, the call is ill-formed.
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
 <!-- ULTRAVIOLET-SPEC-UNIT
@@ -97310,7 +97310,7 @@ applies-to: compiler.runtime, oracle.reference-model, oracle.coverage
 summary: Requires ReactorRun and ReactorRegister to interface the async model with a concrete event loop.
 labels: ReactorRun, ReactorRegister, async model
 -->
-`ReactorRun` and `ReactorRegister` are runtime host-primitive relations that interface the async model (§19) with a concrete event loop.
+`ReactorRun` and `ReactorRegister` are runtime host-primitive relations that interface the async model (§21) with a concrete event loop.
 <!-- /ULTRAVIOLET-SPEC-UNIT -->
 
 <!-- ULTRAVIOLET-SPEC-UNIT

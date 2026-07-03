@@ -2,7 +2,7 @@
 
 
 public procedure countExpressionsClosureAndPipelineExpressionsObligations() -> usize {
-    return 81usize
+    return 71usize
 }
 
 public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() -> usize {
@@ -286,15 +286,6 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.Capture-Unique-Err",
-        64467usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/ClosureCaptureUnique/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.16.T-ClosureCall",
         64483usize,
@@ -310,15 +301,6 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.Infer-Closure-Params-Err",
-        64515usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/ClosureParamInference/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -367,33 +349,6 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.B-Closure-MoveCapture-Moved-Err",
-        64619usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/ClosureMoveCaptureMoved/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.B-Closure-MoveCapture-Immovable-Err",
-        64636usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/ClosureMoveCaptureImmovable/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.B-Closure-RefCapture-Moved-Err",
-        64653usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/ClosureRefCaptureMoved/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.16.T-Pipeline",
         64670usize,
@@ -403,48 +358,12 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.T-Pipeline-NotCallable-Err",
-        64688usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/PipelineNotCallable/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.T-Pipeline-TypeMismatch-Err",
-        64705usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/PipelineTypeMismatch/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.T-Pipeline-ArgCount-Err",
-        64723usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/PipelineArgCount/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.16.B-Pipeline",
         64740usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.16.ClosureParamInferenceFailure",
-        64756usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/ClosureParamInferenceRequirement/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -724,15 +643,6 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.16.ClosureAndPipelineExpressions",
-        65298usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/ClosureAndPipelineExpressionsDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

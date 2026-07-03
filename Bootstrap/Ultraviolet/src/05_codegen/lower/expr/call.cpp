@@ -1461,9 +1461,21 @@ LowerResult LowerRefArgExprWithTemp(const ast::ExprPtr& expr,
     temp_type = analysis::MakeTypePrim("()");
   }
 
+  // (T-Outcome-Intro) §13.1.4: a bare argument introduces into an Outcome
+  // parameter as Outcome::Value/Error. No-op when the parameter is not an
+  // Outcome or the argument is already one.
+  IRValue arg_value = value_result.value;
+  {
+    analysis::TypeRef arg_type = ctx.LookupValueType(arg_value);
+    if (!arg_type && ctx.expr_type) {
+      arg_type = ctx.expr_type(*expr);
+    }
+    arg_value = MaybeWrapImplicitOutcome(arg_value, arg_type, temp_type, ctx);
+  }
+
   IRBindVar bind;
   bind.name = temp_name;
-  bind.value = value_result.value;
+  bind.value = arg_value;
   bind.type = temp_type;
   bind.prov = analysis::ProvenanceKind::Stack;
 
@@ -1528,9 +1540,21 @@ LowerResult LowerMoveArgExprWithTemp(const ast::Arg& arg,
     temp_type = analysis::MakeTypePrim("()");
   }
 
+  // (T-Outcome-Intro) §13.1.4: a bare argument introduces into an Outcome
+  // parameter as Outcome::Value/Error. No-op when the parameter is not an
+  // Outcome or the argument is already one.
+  IRValue arg_value = value_result.value;
+  {
+    analysis::TypeRef arg_type = ctx.LookupValueType(arg_value);
+    if (!arg_type && ctx.expr_type) {
+      arg_type = ctx.expr_type(*(arg_expr ? arg_expr : arg.value));
+    }
+    arg_value = MaybeWrapImplicitOutcome(arg_value, arg_type, temp_type, ctx);
+  }
+
   IRBindVar bind;
   bind.name = temp_name;
-  bind.value = value_result.value;
+  bind.value = arg_value;
   bind.type = temp_type;
   bind.prov = analysis::ProvenanceKind::Stack;
 

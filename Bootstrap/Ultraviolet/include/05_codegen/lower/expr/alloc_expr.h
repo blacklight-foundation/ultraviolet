@@ -1,8 +1,9 @@
 #pragma once
 
 // =============================================================================
-// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
-//   - Lines 16146-16149: (Lower-Expr-Alloc)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 16.8.6 (Expression Lowering)
+//   - (Lower-New-CurrentRegion)
+//   - (Lower-Internal-Alloc-Explicit)
 //     Gamma |- LowerExpr(value) => <IR_v, v>
 //     Gamma |- LookupRegion(region_opt) => r
 //     Gamma |- Alloc(r, v) => ptr
@@ -17,11 +18,10 @@
 
 namespace ultraviolet::codegen {
 
-// Lower an allocation expression to IR.
-// Implements the (Lower-Expr-Alloc) rule from the spec.
+// Lower a region allocation expression to IR.
+// Implements the allocation lowering rules from the spec.
 //
-// Allocation expressions (^value or region^value) allocate a value in a region.
-// The result is a pointer (Ptr<T>@Valid) to the allocated value.
+// Allocation expressions allocate a value in a region and return the stored value.
 //
 // Parameters:
 //   expr  - The full expression (for type lookup)
@@ -30,7 +30,7 @@ namespace ultraviolet::codegen {
 //
 // Returns:
 //   LowerResult with IR for evaluating the value and allocating it,
-//   and an IRValue representing the pointer to the allocated memory.
+//   and an IRValue representing the stored allocation result.
 LowerResult LowerAllocExpr(const ast::Expr& expr,
                            const ast::AllocExpr& alloc,
                            LowerCtx& ctx);

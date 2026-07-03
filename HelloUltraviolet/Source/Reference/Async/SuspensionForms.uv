@@ -52,15 +52,15 @@ internal procedure asyncWaitSpawnedPendingReference(context: Context) -> i32 {
 }
 
 internal procedure asyncReactorRunReference(context: Context) -> bool {
-    let completed: i32 | bool =
+    let completed: Outcome<i32, bool> =
         context.reactor~>run(asyncTrackedFutureReference(25))
-    let failed: i32 | bool =
+    let failed: Outcome<i32, bool> =
         context.reactor~>run(asyncTrackedFutureFailureReference(26))
-    let suspended: i32 | bool =
+    let suspended: Outcome<i32, bool> =
         context.reactor~>run(asyncTrackedFutureSuspendsReference(27))
-    return i32BoolUnionIsValue(completed, 25) &&
-        i32BoolUnionIsFailure(failed) &&
-        i32BoolUnionIsValue(suspended, 27)
+    return i32BoolOutcomeIsValue(completed, 25) &&
+        i32BoolOutcomeIsFailure(failed) &&
+        i32BoolOutcomeIsValue(suspended, 27)
 }
 
 internal procedure asyncWaitTrackedReference(context: Context) -> bool {

@@ -2,7 +2,7 @@
 
 
 public procedure countProjectAndCompilationModelProjectRootAndManifestObligations() -> usize {
-    return 79usize
+    return 58usize
 }
 
 public procedure validatedProjectAndCompilationModelProjectRootAndManifestObligations() -> usize {
@@ -22,24 +22,6 @@ public procedure validatedProjectAndCompilationModelProjectRootAndManifestObliga
         "HelloUltraviolet::Reference::Projects",
         "runProjectsManifestModelReference",
         "Source/Reference/Projects/ManifestModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Parse-Manifest-Missing",
-        2224usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsManifestModelReference",
-        "Source/Reference/Projects/ManifestModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Parse-Manifest-Err",
-        2242usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics",
-        "validatedOutputProjectDiagnosticFixtureCount",
-        "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml"
     ) {
         count = count + 1usize
     }
@@ -125,26 +107,8 @@ public procedure validatedProjectAndCompilationModelProjectRootAndManifestObliga
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "WF-Assembly-Name-Err",
-        2399usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsManifestModelReference",
-        "Source/Reference/Projects/ManifestModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "WF-Assembly-Kind",
         2417usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsManifestModelReference",
-        "Source/Reference/Projects/ManifestModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "WF-Assembly-Kind-Err",
-        2435usize,
         "HelloUltraviolet::Reference::Projects",
         "runProjectsManifestModelReference",
         "Source/Reference/Projects/ManifestModel.uv"
@@ -161,15 +125,6 @@ public procedure validatedProjectAndCompilationModelProjectRootAndManifestObliga
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "WF-Assembly-Root-Path-Err",
-        2471usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsManifestModelReference",
-        "Source/Reference/Projects/ManifestModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "WF-Assembly-OutDir-Path",
         2489usize,
         "HelloUltraviolet::Audit",
@@ -179,28 +134,10 @@ public procedure validatedProjectAndCompilationModelProjectRootAndManifestObliga
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "WF-Assembly-OutDir-Path-Err",
-        2507usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticManifestOutDirPathInvalidExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "WF-Assembly-EmitIR",
         2525usize,
         "HelloUltraviolet::Audit",
         "outputDiagnosticRuntimeLibMissingExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "WF-Assembly-EmitIR-Err",
-        2543usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticManifestEmitIRInvalidExercise",
         "Source/Audit/OutputDiagnosticExecution.uv"
     ) {
         count = count + 1usize
@@ -260,15 +197,6 @@ public procedure validatedProjectAndCompilationModelProjectRootAndManifestObliga
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "WF-Assembly-Table-Err",
-        2666usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsManifestModelReference",
-        "Source/Reference/Projects/ManifestModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "WF-Assembly-Count",
         2684usize,
         "HelloUltraviolet::Reference::Projects",
@@ -278,26 +206,8 @@ public procedure validatedProjectAndCompilationModelProjectRootAndManifestObliga
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "WF-Assembly-Count-Err",
-        2702usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsManifestModelReference",
-        "Source/Reference/Projects/ManifestModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "WF-Assembly-Name-Dup",
         2720usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsManifestModelReference",
-        "Source/Reference/Projects/ManifestModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "WF-Assembly-Name-Dup-Err",
-        2738usize,
         "HelloUltraviolet::Reference::Projects",
         "runProjectsManifestModelReference",
         "Source/Reference/Projects/ManifestModel.uv"
@@ -323,28 +233,10 @@ public procedure validatedProjectAndCompilationModelProjectRootAndManifestObliga
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "WF-Assembly-Keys-Err",
-        2789usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsManifestModelReference",
-        "Source/Reference/Projects/ManifestModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "WF-Assembly-Required-Types",
         2807usize,
         "HelloUltraviolet::Audit",
         "outputDiagnosticRuntimeLibMissingExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "WF-Assembly-Required-Types-Err",
-        2825usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticManifestRequiredTypesInvalidExercise",
         "Source/Audit/OutputDiagnosticExecution.uv"
     ) {
         count = count + 1usize
@@ -359,28 +251,10 @@ public procedure validatedProjectAndCompilationModelProjectRootAndManifestObliga
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "WF-Assembly-OutDirType-Err",
-        2861usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticManifestOutDirTypeInvalidExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "WF-Assembly-EmitIRType",
         2879usize,
         "HelloUltraviolet::Audit",
         "outputDiagnosticRuntimeLibMissingExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "WF-Assembly-EmitIRType-Err",
-        2896usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticManifestEmitIRTypeInvalidExercise",
         "Source/Audit/OutputDiagnosticExecution.uv"
     ) {
         count = count + 1usize
@@ -395,37 +269,10 @@ public procedure validatedProjectAndCompilationModelProjectRootAndManifestObliga
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "WF-Assembly-LinkKindType-Err",
-        2931usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticManifestLinkKindTypeInvalidExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "WF-Assembly-LinkKind",
         2949usize,
         "HelloUltraviolet::Audit",
         "outputDiagnosticRuntimeLibMissingExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "WF-Assembly-LinkKind-Err",
-        2967usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticManifestLinkKindInvalidExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "WF-Assembly-LinkKind-Use-Err",
-        2985usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticManifestLinkKindUseInvalidExercise",
         "Source/Audit/OutputDiagnosticExecution.uv"
     ) {
         count = count + 1usize
@@ -453,15 +300,6 @@ public procedure validatedProjectAndCompilationModelProjectRootAndManifestObliga
         3032usize,
         "HelloUltraviolet::Audit",
         "outputDiagnosticRuntimeLibMissingExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "WF-Toolchain-Err",
-        3050usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticManifestToolchainInvalidExercise",
         "Source/Audit/OutputDiagnosticExecution.uv"
     ) {
         count = count + 1usize
@@ -496,15 +334,6 @@ public procedure validatedProjectAndCompilationModelProjectRootAndManifestObliga
     if acceptedObligationEntryMatches(
         "WF-Build",
         3116usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsManifestModelReference",
-        "Source/Reference/Projects/ManifestModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "WF-Build-Err",
-        3134usize,
         "HelloUltraviolet::Reference::Projects",
         "runProjectsManifestModelReference",
         "Source/Reference/Projects/ManifestModel.uv"
@@ -674,26 +503,8 @@ public procedure validatedProjectAndCompilationModelProjectRootAndManifestObliga
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Resolve-Canonical-Err",
-        3446usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsManifestModelReference",
-        "Source/Reference/Projects/ManifestModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "WF-RelPath",
         3464usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsManifestModelReference",
-        "Source/Reference/Projects/ManifestModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "WF-RelPath-Err",
-        3482usize,
         "HelloUltraviolet::Reference::Projects",
         "runProjectsManifestModelReference",
         "Source/Reference/Projects/ManifestModel.uv"

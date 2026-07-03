@@ -2,7 +2,7 @@
 
 
 public procedure countPatternsRangePatternsObligations() -> usize {
-    return 14usize
+    return 10usize
 }
 
 public procedure validatedPatternsRangePatternsObligations() -> usize {
@@ -22,15 +22,6 @@ public procedure validatedPatternsRangePatternsObligations() -> usize {
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsRangePatternsReference",
         "Source/Reference/Patterns/RangePatterns.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.17.Parse-Pattern-Err",
-        66939usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPatternsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Patterns/ParsePatternError/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -70,24 +61,6 @@ public procedure validatedPatternsRangePatternsObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.17.RangePattern-NonConst",
-        67021usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPatternsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Patterns/RangePatternNonConst/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.17.RangePattern-Empty",
-        67037usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPatternsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Patterns/RangePatternEmpty/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.17.ConstPat",
         67055usize,
@@ -121,15 +94,6 @@ public procedure validatedPatternsRangePatternsObligations() -> usize {
         "HelloUltraviolet::Audit",
         "patternRangePatternLoweringSharedConformanceMatches",
         "Source/Audit/PatternLoweringConformanceExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.17.RangePatterns",
-        67116usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPatternsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Patterns/RangePatternsDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

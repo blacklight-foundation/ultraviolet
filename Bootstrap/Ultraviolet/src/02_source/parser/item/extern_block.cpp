@@ -35,7 +35,6 @@ using ultraviolet::lexer::IsIdentTok;
 
 // Forward declarations for helper functions
 bool IsKw(const Parser& parser, std::string_view kw);
-bool IsOp(const Parser& parser, std::string_view op);
 bool IsPunc(const Parser& parser, std::string_view p);
 void ConsumeTerminatorReq(Parser& parser);
 
@@ -50,8 +49,6 @@ SignatureResult ParseSignature(Parser parser);
 ParseElemResult<AttrOpt> ParseAttributeListOpt(Parser parser);
 ParseElemResult<std::optional<GenericParams>> ParseGenericParamsOpt(
     Parser parser);
-ParseElemResult<std::optional<PredicateClause>> ParsePredicateClauseOpt(
-    Parser parser);
 ParseElemResult<std::optional<ContractClause>> ParseContractClauseOpt(
     Parser parser);
 ParseElemResult<std::optional<std::vector<ForeignContractClause>>>
@@ -63,27 +60,6 @@ struct ExternItemListResult {
 };
 
 ExternItemListResult ParseExternItemList(Parser parser);
-
-bool StartsWherePredicateClause(Parser parser) {
-  if (!IsOp(parser, "|:")) {
-    return false;
-  }
-  Parser probe = parser;
-  Advance(probe);  // consume |:
-  while (Tok(probe) && Tok(probe)->kind == TokenKind::Newline) {
-    Advance(probe);
-  }
-  const Token* pred_tok = Tok(probe);
-  if (!pred_tok || pred_tok->kind != TokenKind::Identifier) {
-    return false;
-  }
-  Parser after_pred = probe;
-  Advance(after_pred);
-  while (Tok(after_pred) && Tok(after_pred)->kind == TokenKind::Newline) {
-    Advance(after_pred);
-  }
-  return IsPunc(after_pred, "(");
-}
 
 // =============================================================================
 // ParseExternAbiOpt - Parse optional ABI specifier
@@ -165,15 +141,6 @@ ParseElemResult<ExternProcDecl> ParseExternProcDecl(Parser parser) {
   SignatureResult sig = ParseSignature(parser);
   parser = sig.parser;
 
-  // Parse optional generic constraint clause.
-  std::optional<PredicateClause> where_clause_opt = std::nullopt;
-  if (StartsWherePredicateClause(parser)) {
-    ParseElemResult<std::optional<PredicateClause>> where_clause =
-        ParsePredicateClauseOpt(parser);
-    parser = where_clause.parser;
-    where_clause_opt = where_clause.elem;
-  }
-
   // Parse optional contract clause
   ParseElemResult<std::optional<ContractClause>> contract =
       ParseContractClauseOpt(parser);
@@ -189,7 +156,6 @@ ParseElemResult<ExternProcDecl> ParseExternProcDecl(Parser parser) {
   proc.vis = vis.elem;
   proc.name = name.elem;
   proc.generic_params = gen_params.elem;
-  proc.where_clause = where_clause_opt;
   proc.params = sig.params;
   proc.return_type_opt = sig.return_type_opt;
   proc.contract = contract.elem;

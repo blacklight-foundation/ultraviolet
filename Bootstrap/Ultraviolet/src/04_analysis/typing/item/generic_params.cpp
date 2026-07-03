@@ -6,7 +6,6 @@
 //   Section 9: Generics
 //   - Generic parameter syntax: <T; U>
 //   - Type bounds: T <: ClassName
-//   - Predicate bounds: where Bitcopy(T)
 //   - Default type parameters
 //
 // SOURCE: ultraviolet-bootstrap/src/03_analysis/types/generics.cpp

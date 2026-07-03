@@ -2,7 +2,7 @@
 
 
 public procedure countAttributesAndMetadataDiagnosticsAndMetadataAttributesObligations() -> usize {
-    return 30usize
+    return 27usize
 }
 
 public procedure validatedAttributesAndMetadataDiagnosticsAndMetadataAttributesObligations() -> usize {
@@ -179,24 +179,6 @@ public procedure validatedAttributesAndMetadataDiagnosticsAndMetadataAttributesO
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "req.DynamicTargetRestrictions",
-        28547usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesDiagnosticAttributesReference",
-        "Source/Reference/Attributes/DiagnosticAttributes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.EmptyDynamicScopeWarning",
-        28564usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesDiagnosticAttributesReference",
-        "Source/Reference/Attributes/DiagnosticAttributes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "req.StaleOkAttributeSemantics",
         28578usize,
         "HelloUltraviolet::Reference::Attributes",
@@ -265,15 +247,6 @@ public procedure validatedAttributesAndMetadataDiagnosticsAndMetadataAttributesO
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesDiagnosticAttributesReference",
         "Source/Reference/Attributes/DiagnosticAttributes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.DiagnosticsMetadataAttributes",
-        28698usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/ContractDynamicAttribute/Source/Main.uv"
     ) {
         count = count + 1usize
     }

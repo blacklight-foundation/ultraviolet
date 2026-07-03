@@ -249,15 +249,6 @@ struct GenericArgsCheckResult {
 };
 
 // =============================================================================
-// WHERE CLAUSE RESULT TYPES
-// =============================================================================
-
-struct WhereClauseResult {
-  bool ok = false;
-  std::optional<std::string_view> diag_id;
-};
-
-// =============================================================================
 // FUNCTION DECLARATIONS
 // =============================================================================
 
@@ -431,12 +422,6 @@ TypeAliasDeclResult TypeTypeAliasDeclSignature(
     const ScopeContext& ctx,
     const ast::TypeAliasDecl& decl,
     const ast::ModulePath& module_path);
-
-// Where clause processing
-WhereClauseResult ProcessWhereClause(
-    const ScopeContext& ctx,
-    const std::vector<ast::PredicateReq>& predicates,
-    const std::vector<std::string>& type_param_names);
 
 // =============================================================================
 // USING DECLARATION RESULT TYPES (using_decl.cpp)

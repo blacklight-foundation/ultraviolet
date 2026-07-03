@@ -30,8 +30,20 @@ IRPtr LowerAssignStmt(const ast::AssignStmt& stmt, LowerCtx& ctx) {
   // Lower the RHS value
   auto rhs_result = LowerExpr(*stmt.value, ctx);
 
+  // (T-Outcome-Intro) §13.1.4: a bare RHS assigned to an Outcome place
+  // introduces implicitly as Outcome::Value/Error. No-op otherwise.
+  IRValue rhs_value = rhs_result.value;
+  if (ctx.expr_type && stmt.value && stmt.place) {
+    analysis::TypeRef value_type = ctx.LookupValueType(rhs_value);
+    if (!value_type) {
+      value_type = ctx.expr_type(*stmt.value);
+    }
+    const analysis::TypeRef place_type = ctx.expr_type(*stmt.place);
+    rhs_value = MaybeWrapImplicitOutcome(rhs_value, value_type, place_type, ctx);
+  }
+
   // Write to the place
-  IRPtr write_ir = LowerWritePlace(*stmt.place, rhs_result.value, ctx);
+  IRPtr write_ir = LowerWritePlace(*stmt.place, rhs_value, ctx);
 
   core::Conformance::Record(
       "rule.18.Lower-Stmt-Assign",

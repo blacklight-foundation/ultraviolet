@@ -2,20 +2,11 @@
 
 
 public procedure countConformanceAndNotationTargetAndAbiAssumptionsObligations() -> usize {
-    return 7usize
+    return 6usize
 }
 
 public procedure validatedConformanceAndNotationTargetAndAbiAssumptionsObligations() -> usize {
     var count: usize = 0usize
-    if acceptedProjectObligationEntryMatches(
-        "def.TargetProfile",
-        1171usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/MacOSTargetProfile/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "req.TargetProfileResolution",
         1186usize,

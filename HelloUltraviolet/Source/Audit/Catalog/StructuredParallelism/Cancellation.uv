@@ -2,7 +2,7 @@
 
 
 public procedure countStructuredParallelismCancellationObligations() -> usize {
-    return 20usize
+    return 19usize
 }
 
 public procedure validatedStructuredParallelismCancellationObligations() -> usize {
@@ -175,15 +175,6 @@ public procedure validatedStructuredParallelismCancellationObligations() -> usiz
         "HelloUltraviolet::Audit",
         "artifactProjectStructuredParallelLoweringEvidenceExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if diagnosticSourceObligationEntryMatches(
-        "diagnostics.20.Cancellation",
-        78495usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
-        "validatedParallelismDiagnosticSourceFixtureCount",
-        "Fixtures/DiagnosticSource/Parallelism/CancellationNoAdditionalDiagnostics/Source/Main.uv"
     ) {
         count = count + 1usize
     }

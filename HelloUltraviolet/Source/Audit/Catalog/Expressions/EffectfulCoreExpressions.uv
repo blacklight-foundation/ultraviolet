@@ -2,251 +2,26 @@
 
 
 public procedure countExpressionsEffectfulCoreExpressionsObligations() -> usize {
-    return 61usize
+    return 27usize
 }
 
 public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> usize {
     var count: usize = 0usize
-    if acceptedProjectObligationEntryMatches(
-        "grammar.16.EffectfulCoreExpressions",
-        62974usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "req.16.RegionAliasAllocRewrite",
-        62995usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Parse-Unary-Deref",
-        63010usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Parse-Unary-AddressOf",
-        63026usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Parse-Unary-Move",
-        63042usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
+    if acceptedObligationEntryMatches(
         "rule.16.Parse-Unary-Copy",
         63058usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Postfix-Propagate",
-        63074usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Parse-Alloc-Implicit",
-        63090usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Parse-Unsafe-Expr",
-        63106usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "def.16.EffectfulCoreExprAst",
-        63124usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.ResolveExpr-Alloc-Explicit-ByAlias",
-        63137usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "def.16.AddressOfStaticHelpers",
-        63156usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/AddressOfStaticHelpers/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.T-Unsafe-Expr",
-        63171usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Chk-Unsafe-Expr",
-        63187usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.T-AddrOf",
-        63203usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/AddressOfIndexTyping/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.T-Deref-Ptr",
-        63219usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.16.T-Deref-Raw",
-        63235usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.DerefPlaceTypingFamily",
-        63251usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.T-Move",
-        63264usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
         "rule.16.T-Copy",
         63280usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/CallCopyNonBitcopy/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.T-Alloc-Explicit",
-        63296usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.T-Alloc-Implicit",
-        63312usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "def.16.SuccessMember",
-        63328usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.T-Propagate",
-        63341usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "def.16.SuccessMemberAsync",
-        63357usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.T-Async-Try",
-        63370usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.Async-Try-Infallible-Err",
-        63386usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/AsyncTryInfallible/Source/Main.uv"
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
     ) {
         count = count + 1usize
     }
@@ -466,93 +241,12 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     ) {
         count = count + 1usize
     }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Lower-Expr-UnsafeBlock",
-        63795usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Lower-Expr-Move",
-        63811usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
+    if acceptedObligationEntryMatches(
         "rule.16.Lower-Expr-Copy",
         63827usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Lower-Expr-AddressOf",
-        63843usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Lower-Expr-Deref",
-        63859usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Lower-Expr-Alloc",
-        63875usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Lower-Expr-Propagate-Success",
-        63891usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Lower-Expr-Propagate-Return",
-        63907usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "req.16.EffectfulCoreLoweringMechanics",
-        63923usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.16.EffectfulCoreExpressions",
-        63938usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily/Source/Main.uv"
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
     ) {
         count = count + 1usize
     }

@@ -336,7 +336,13 @@ void IRInstructionVisitor::operator()(const IRAll &all) const
     builder.SetInsertPoint(failed_hit[i]);
     llvm::Value *error_payload =
         extract_async_payload(eval.async_slot, eval.async_struct, eval.error_type);
-    llvm::Value *out = coerce_to_result(error_payload, eval.error_type);
+    // `all` produces Outcome::Error(error) on the first failure (AllLoop-Failed).
+    llvm::Value *out = BuildOutcomeEnumValue(
+        target_type, "Error", error_payload, eval.error_type, all.result.name);
+    if (!out)
+    {
+      out = coerce_to_result(error_payload, eval.error_type);
+    }
     builder.CreateStore(out, result_slot);
     builder.CreateBr(merge_bb);
   }
@@ -453,7 +459,13 @@ void IRInstructionVisitor::operator()(const IRAll &all) const
     tuple_value = agg;
   }
 
-  llvm::Value *success_out = coerce_to_result(tuple_value, all.tuple_type);
+  // `all` produces Outcome::Value(tuple) when every operand completes (AllLoop-AllCompleted).
+  llvm::Value *success_out = BuildOutcomeEnumValue(
+      target_type, "Value", tuple_value, all.tuple_type, all.result.name);
+  if (!success_out)
+  {
+    success_out = coerce_to_result(tuple_value, all.tuple_type);
+  }
   builder.CreateStore(success_out, result_slot);
   builder.CreateBr(merge_bb);
 

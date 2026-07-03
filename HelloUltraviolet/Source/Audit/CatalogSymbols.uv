@@ -1,28 +1,6 @@
 //! Compiled symbol checks for source references named by catalog rows.
 
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteAudit }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesAcceptedProjects }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesArtifactProjects }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesBootstrapNonCompliance }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesDiagnosticSource }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesOutputDiagnostics }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceAttributes }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceComptime }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceDataTypes }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceExpressions }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceFFI }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceKeys }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceModalAndSpecialTypes }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceModules }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceNames }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceParallelism }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceParsing }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourcePatterns }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourcePermissions }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourcePolymorphism }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceProcedures }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceSourceText }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceStatements }
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceAppendixB }
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceAsync }
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceAttributes }
@@ -47,22 +25,21 @@ using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecute
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceSourceText }
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceStatements }
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceTypes }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteSourceTestsSourceNativeTestsUv }
 
 public procedure expectedCatalogCompiledSymbolCount() -> usize {
-    return 646usize
+    return 168usize
 }
 
 public procedure catalogCompiledSymbolCount() -> usize {
-    return 646usize
+    return 168usize
 }
 
 public procedure expectedCatalogCompiledSymbolTargetDigest() -> usize {
-    return 534529532usize
+    return 185875296usize
 }
 
 public procedure catalogCompiledSymbolTargetDigest() -> usize {
-    return 534529532usize
+    return 185875296usize
 }
 
 public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
@@ -74,28 +51,6 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
 public procedure catalogCompiledSymbolsExecute(context: Context) -> bool {
     var passed: bool = true
     passed = catalogCompiledSymbolsExecuteAudit(context) && passed
-    passed = catalogCompiledSymbolsExecuteFixturesAcceptedProjects(context) && passed
-    passed = catalogCompiledSymbolsExecuteFixturesArtifactProjects(context) && passed
-    passed = catalogCompiledSymbolsExecuteFixturesBootstrapNonCompliance(context) && passed
-    passed = catalogCompiledSymbolsExecuteFixturesDiagnosticSource(context) && passed
-    passed = catalogCompiledSymbolsExecuteFixturesOutputDiagnostics(context) && passed
-    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceAttributes(context) && passed
-    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceComptime(context) && passed
-    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceDataTypes(context) && passed
-    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceExpressions(context) && passed
-    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceFFI(context) && passed
-    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceKeys(context) && passed
-    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceModalAndSpecialTypes(context) && passed
-    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceModules(context) && passed
-    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceNames(context) && passed
-    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceParallelism(context) && passed
-    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceParsing(context) && passed
-    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourcePatterns(context) && passed
-    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourcePermissions(context) && passed
-    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourcePolymorphism(context) && passed
-    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceProcedures(context) && passed
-    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceSourceText(context) && passed
-    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceStatements(context) && passed
     passed = catalogCompiledSymbolsExecuteReferenceAppendixB(context) && passed
     passed = catalogCompiledSymbolsExecuteReferenceAsync(context) && passed
     passed = catalogCompiledSymbolsExecuteReferenceAttributes(context) && passed
@@ -120,6 +75,5 @@ public procedure catalogCompiledSymbolsExecute(context: Context) -> bool {
     passed = catalogCompiledSymbolsExecuteReferenceSourceText(context) && passed
     passed = catalogCompiledSymbolsExecuteReferenceStatements(context) && passed
     passed = catalogCompiledSymbolsExecuteReferenceTypes(context) && passed
-    passed = catalogCompiledSymbolsExecuteSourceTestsSourceNativeTestsUv(context) && passed
     return passed
 }

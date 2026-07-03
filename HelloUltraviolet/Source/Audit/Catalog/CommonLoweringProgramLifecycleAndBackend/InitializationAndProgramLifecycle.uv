@@ -2,7 +2,7 @@
 
 
 public procedure countCommonLoweringProgramLifecycleAndBackendInitializationAndProgramLifecycleObligations() -> usize {
-    return 104usize
+    return 94usize
 }
 
 public procedure validatedCommonLoweringProgramLifecycleAndBackendInitializationAndProgramLifecycleObligations() -> usize {
@@ -431,15 +431,6 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.Topo-Cycle",
-        94378usize,
-        "HelloUltraviolet::Audit",
-        "artifactProjectEmitLlExercise",
-        "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "def.24.ProjectInitializationItems",
         94394usize,
         "HelloUltraviolet::Audit",
@@ -476,26 +467,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.EmitInitPlan-Err",
-        94462usize,
-        "HelloUltraviolet::Audit",
-        "artifactProjectEmitLlExercise",
-        "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "rule.24.EmitDeinitPlan",
         94478usize,
-        "HelloUltraviolet::Audit",
-        "artifactProjectEmitLlExercise",
-        "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.EmitDeinitPlan-Err",
-        94494usize,
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
@@ -539,15 +512,6 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.Init-Panic",
-        94572usize,
-        "HelloUltraviolet::Audit",
-        "artifactProjectEmitLlExercise",
-        "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "rule.24.Init-Done",
         94588usize,
         "HelloUltraviolet::Audit",
@@ -566,26 +530,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.Init-Fail",
-        94620usize,
-        "HelloUltraviolet::Audit",
-        "artifactProjectEmitLlExercise",
-        "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "rule.24.Deinit-Ok",
         94636usize,
-        "HelloUltraviolet::Audit",
-        "artifactProjectEmitLlExercise",
-        "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Deinit-Panic",
-        94652usize,
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
@@ -658,24 +604,6 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     if acceptedObligationEntryMatches(
         "rule.24.EntryStub-Decl",
         94779usize,
-        "HelloUltraviolet::Audit",
-        "artifactProjectEmitLlExercise",
-        "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.EntrySym-Err",
-        94795usize,
-        "HelloUltraviolet::Audit",
-        "artifactProjectEmitLlExercise",
-        "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.EntryStub-Err",
-        94811usize,
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
@@ -917,26 +845,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.Interpret-Project-Init-Panic",
-        95209usize,
-        "HelloUltraviolet::Audit",
-        "artifactProjectEmitLlExercise",
-        "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "rule.24.Interpret-Project-Main-Ctrl",
         95225usize,
-        "HelloUltraviolet::Audit",
-        "artifactProjectEmitLlExercise",
-        "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Interpret-Project-Deinit-Panic",
-        95241usize,
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Source/Audit/ArtifactProjectExecution.uv"

@@ -239,7 +239,7 @@ enum class BinaryPrecedence : int {
 BinaryPrecedence GetBinaryPrecedence(std::string_view op) {
   if (op == "||") return BinaryPrecedence::LOGICAL_OR;
   if (op == "&&") return BinaryPrecedence::LOGICAL_AND;
-  if (op == "==" || op == "!=" || op == "<" ||
+  if (op == "==" || op == "!=" || op == "<" || op == "<:" ||
       op == "<=" || op == ">" || op == ">=") {
     return BinaryPrecedence::COMPARISON;
   }

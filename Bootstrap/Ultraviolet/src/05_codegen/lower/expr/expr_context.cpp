@@ -13,6 +13,7 @@
 #include "00_core/assert_spec.h"
 #include "00_core/diagnostic_messages.h"
 #include "04_analysis/layout/layout.h"
+#include "04_analysis/typing/outcome.h"
 #include "04_analysis/resolve/scopes.h"
 #include "04_analysis/resolve/resolve_items.h"
 #include "05_codegen/abi/abi.h"
@@ -368,6 +369,44 @@ const analysis::ScopeContext& ScopeForLowering(const LowerCtx* ctx) {
     return kEmptyScope;
   }
   return ScopeForLowering(*ctx);
+}
+
+IRValue MaybeWrapImplicitOutcome(const IRValue& value,
+                                 const analysis::TypeRef& value_type,
+                                 const analysis::TypeRef& expected_type,
+                                 LowerCtx& ctx,
+                                 bool* did_wrap) {
+  if (did_wrap) {
+    *did_wrap = false;
+  }
+  if (!value_type || !expected_type) {
+    return value;
+  }
+  const analysis::OutcomeIntro intro = analysis::ClassifyOutcomeIntro(
+      ScopeForLowering(ctx), value_type, expected_type);
+  const char* variant = nullptr;
+  if (intro == analysis::OutcomeIntro::Value) {
+    variant = "Value";
+  } else if (intro == analysis::OutcomeIntro::Error) {
+    variant = "Error";
+  } else {
+    // None, or Ambiguous (rejected with E-TYP-2261 during type checking).
+    return value;
+  }
+  // Wrap the bare value as Outcome::Value/Error via the enum-literal lowering,
+  // mirroring the `?`-operator error-return construction.
+  IRValue wrapped = ctx.FreshTempValue("implicit_outcome");
+  DerivedValueInfo info;
+  info.kind = DerivedValueInfo::Kind::EnumLit;
+  info.variant = variant;
+  info.static_path = {"Outcome"};
+  info.payload_elems = {value};
+  ctx.RegisterDerivedValue(wrapped, std::move(info));
+  ctx.RegisterValueType(wrapped, expected_type);
+  if (did_wrap) {
+    *did_wrap = true;
+  }
+  return wrapped;
 }
 
 IRValue USizeConstValue(std::uint64_t value) {

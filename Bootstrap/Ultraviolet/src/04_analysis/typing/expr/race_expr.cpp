@@ -13,6 +13,7 @@
 #include "04_analysis/typing/type_infer.h"
 #include "04_analysis/typing/type_pattern.h"
 #include "04_analysis/typing/type_stmt.h"
+#include "04_analysis/typing/outcome.h"
 #include "04_analysis/caps/cap_concurrency.h"
 #include "02_source/ast/ast.h"
 
@@ -228,25 +229,13 @@ ExprTypeResult TypeRaceExpr(const ScopeContext& ctx,
 
   if (!yield_mode) {
     // T-Race: Return mode
-    // Result type is handler type | all error types
+    // Result type is Outcome<handler type, union of all error types>.
     SPEC_RULE("T-Race");
     SPEC_RULE("rule.21.T-Race");
-    std::vector<TypeRef> members;
-    members.reserve(1 + error_types.size());
-    members.push_back(handler_types.front());
-    members.insert(members.end(), error_types.begin(), error_types.end());
-    const auto union_type = MakeTypeUnion(std::move(members));
     result.ok = true;
-    if (union_type && std::holds_alternative<TypeUnion>(union_type->node)) {
-      const auto intro = TypeUnionIntro(ctx, handler_types.front(), union_type);
-      if (!intro.ok) {
-        result.diag_id = intro.diag_id;
-        return result;
-      }
-      result.type = intro.type;
-    } else {
-      result.type = union_type;
-    }
+    const TypeRef error_union =
+        error_types.empty() ? MakeTypePrim("!") : MakeTypeUnion(error_types);
+    result.type = MakeOutcomeType(handler_types.front(), error_union);
     return result;
   }
 

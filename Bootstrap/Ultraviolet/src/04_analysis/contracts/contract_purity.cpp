@@ -29,7 +29,7 @@
  *   - Capability method calls (ctx.io~>read_file, ctx.heap~>alloc, etc.)
  *   - Assignment and mutation
  *   - I/O operations
- *   - Memory allocation (^)
+ *   - Memory allocation
  *   - Procedures with side effects
  *   - Async operations (yield, spawn, wait, etc.)
  *
@@ -767,4 +767,3 @@ bool CheckMutationFree(const ast::ExprPtr& expr) {
 }
 
 }  // namespace ultraviolet::analysis
-

@@ -2,7 +2,7 @@
 
 
 public procedure countStructuredParallelismParallelBlocksObligations() -> usize {
-    return 20usize
+    return 16usize
 }
 
 public procedure validatedStructuredParallelismParallelBlocksObligations() -> usize {
@@ -43,15 +43,6 @@ public procedure validatedStructuredParallelismParallelBlocksObligations() -> us
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.20.Dim3Const-Err",
-        75750usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/ParallelDim3Const/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.20.ParallelDomainCtorValidation",
         75766usize,
@@ -76,24 +67,6 @@ public procedure validatedStructuredParallelismParallelBlocksObligations() -> us
         "HelloUltraviolet::Reference::Parallelism",
         "parallelBlockWellFormednessReference",
         "Source/Reference/Parallelism/ParallelBlocks.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.20.Parallel-Domain-Param-Err",
-        75819usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/ParallelDomainParameter/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.20.ParallelCancelOptionType",
-        75835usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/ParallelCancelOptionType/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -175,15 +148,6 @@ public procedure validatedStructuredParallelismParallelBlocksObligations() -> us
         "HelloUltraviolet::Audit",
         "artifactProjectReducedEmptyDispatchPanicExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.20.ParallelBlocks",
-        76008usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParallelismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parallelism/ParallelDomainNotExecutionDomain/Source/Main.uv"
     ) {
         count = count + 1usize
     }

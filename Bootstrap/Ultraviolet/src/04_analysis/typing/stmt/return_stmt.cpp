@@ -33,6 +33,7 @@
 #include "04_analysis/typing/type_pattern.h"
 #include "04_analysis/typing/type_perf.h"
 #include "04_analysis/typing/type_predicates.h"
+#include "04_analysis/typing/outcome.h"
 
 namespace ultraviolet::analysis {
 
@@ -1344,6 +1345,20 @@ StmtTypeResult TypeReturnStmt(const ScopeContext& ctx,
                               env);
     }();
     if (!check.ok) {
+      // (T-Outcome-Intro-Value/Error) §13.1.4: a bare return value introduces
+      // into an Outcome return type. Accept the unambiguous case; reject the
+      // ambiguous case (success and error types coincide) with E-TYP-2261.
+      if (const auto typed_ret = type_expr_current(return_expr); typed_ret.ok) {
+        const auto intro =
+            ClassifyOutcomeIntro(ctx, typed_ret.type, type_ctx.return_type);
+        if (intro == OutcomeIntro::Ambiguous) {
+          return {false, "E-TYP-2261", {}, {}, {}, check.diag_span};
+        }
+        if (intro == OutcomeIntro::Value || intro == OutcomeIntro::Error) {
+          SPEC_RULE("T-Return-Value");
+          return {true, std::nullopt, env, {}};
+        }
+      }
       if (!check.diag_id.has_value() || *check.diag_id == "E-SEM-2526") {
         SPEC_RULE("Return-Type-Err");
         SPEC_RULE("rule.18.Return-Type-Err");

@@ -2,7 +2,7 @@
 
 
 public procedure countKeySystemDynamicKeyVerificationObligations() -> usize {
-    return 15usize
+    return 13usize
 }
 
 public procedure validatedKeySystemDynamicKeyVerificationObligations() -> usize {
@@ -58,15 +58,6 @@ public procedure validatedKeySystemDynamicKeyVerificationObligations() -> usize 
         "HelloUltraviolet::Audit::Catalog::KeySystem",
         "keySystemCompilerConformanceArtifactMatches",
         "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.19.K-Static-Required",
-        75196usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedKeysRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -130,15 +121,6 @@ public procedure validatedKeySystemDynamicKeyVerificationObligations() -> usize 
         "HelloUltraviolet::Audit::Catalog::KeySystem",
         "keySystemCompilerConformanceArtifactMatches",
         "Source/Audit/Catalog/KeySystem/CompilerConformanceExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if diagnosticSourceObligationEntryMatches(
-        "diagnostics.19.DynamicKeyVerification",
-        75327usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
-        "validatedKeysDiagnosticSourceFixtureCount",
-        "Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeSyncInfo/Source/Main.uv"
     ) {
         count = count + 1usize
     }

@@ -920,19 +920,6 @@ bool BuildGenericParamsInPlace(std::optional<ast::GenericParams>& params_opt,
   return true;
 }
 
-bool BuildWhereClauseInPlace(std::optional<ast::PredicateClause>& clause_opt,
-                             CtEnv& env) {
-  if (!clause_opt.has_value()) {
-    return true;
-  }
-  for (auto& predicate : *clause_opt) {
-    if (!BuildTypeInPlace(predicate.type, env)) {
-      return false;
-    }
-  }
-  return true;
-}
-
 bool BuildContractClauseInPlace(std::optional<ast::ContractClause>& clause_opt,
                                 CtEnv& env) {
   if (!clause_opt.has_value()) {
@@ -1105,8 +1092,7 @@ std::optional<ASTItem> BuildItem(const ASTItem& item, CtEnv& env) {
           auto out = node;
           for (auto& extern_item : out.items) {
             if (auto* proc = std::get_if<ast::ExternProcDecl>(&extern_item)) {
-              if (!BuildGenericParamsInPlace(proc->generic_params, env) ||
-                  !BuildWhereClauseInPlace(proc->where_clause, env)) {
+              if (!BuildGenericParamsInPlace(proc->generic_params, env)) {
                 return std::nullopt;
               }
               for (auto& param : proc->params) {
@@ -1149,7 +1135,6 @@ std::optional<ASTItem> BuildItem(const ASTItem& item, CtEnv& env) {
             }
           }
           if (!BuildTypeInPlace(out.return_type_opt, env) ||
-              !BuildWhereClauseInPlace(out.predicate_clause_opt, env) ||
               !BuildContractClauseInPlace(out.contract, env)) {
             return std::nullopt;
           }
@@ -1182,7 +1167,6 @@ std::optional<ASTItem> BuildItem(const ASTItem& item, CtEnv& env) {
         } else if constexpr (std::is_same_v<T, ast::RecordDecl>) {
           auto out = node;
           if (!BuildGenericParamsInPlace(out.generic_params, env) ||
-              !BuildWhereClauseInPlace(out.predicate_clause_opt, env) ||
               !BuildTypeInvariantInPlace(out.invariant_opt, env)) {
             return std::nullopt;
           }
@@ -1195,7 +1179,6 @@ std::optional<ASTItem> BuildItem(const ASTItem& item, CtEnv& env) {
         } else if constexpr (std::is_same_v<T, ast::EnumDecl>) {
           auto out = node;
           if (!BuildGenericParamsInPlace(out.generic_params, env) ||
-              !BuildWhereClauseInPlace(out.predicate_clause_opt, env) ||
               !BuildTypeInvariantInPlace(out.invariant_opt, env)) {
             return std::nullopt;
           }
@@ -1230,7 +1213,6 @@ std::optional<ASTItem> BuildItem(const ASTItem& item, CtEnv& env) {
         } else if constexpr (std::is_same_v<T, ast::ModalDecl>) {
           auto out = node;
           if (!BuildGenericParamsInPlace(out.generic_params, env) ||
-              !BuildWhereClauseInPlace(out.predicate_clause_opt, env) ||
               !BuildTypeInvariantInPlace(out.invariant_opt, env)) {
             return std::nullopt;
           }
@@ -1244,8 +1226,7 @@ std::optional<ASTItem> BuildItem(const ASTItem& item, CtEnv& env) {
           return ASTItem{std::move(out)};
         } else if constexpr (std::is_same_v<T, ast::ClassDecl>) {
           auto out = node;
-          if (!BuildGenericParamsInPlace(out.generic_params, env) ||
-              !BuildWhereClauseInPlace(out.predicate_clause_opt, env)) {
+          if (!BuildGenericParamsInPlace(out.generic_params, env)) {
             return std::nullopt;
           }
           for (auto& class_item : out.items) {
@@ -1257,8 +1238,7 @@ std::optional<ASTItem> BuildItem(const ASTItem& item, CtEnv& env) {
         } else if constexpr (std::is_same_v<T, ast::TypeAliasDecl>) {
           auto out = node;
           if (!BuildGenericParamsInPlace(out.generic_params, env) ||
-              !BuildTypeInPlace(out.type, env) ||
-              !BuildWhereClauseInPlace(out.predicate_clause_opt, env)) {
+              !BuildTypeInPlace(out.type, env)) {
             return std::nullopt;
           }
           return ASTItem{std::move(out)};

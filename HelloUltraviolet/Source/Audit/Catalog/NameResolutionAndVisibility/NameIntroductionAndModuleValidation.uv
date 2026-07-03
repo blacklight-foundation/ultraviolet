@@ -2,7 +2,7 @@
 
 
 public procedure countNameResolutionAndVisibilityNameIntroductionAndModuleValidationObligations() -> usize {
-    return 20usize
+    return 15usize
 }
 
 public procedure validatedNameResolutionAndVisibilityNameIntroductionAndModuleValidationObligations() -> usize {
@@ -46,42 +46,6 @@ public procedure validatedNameResolutionAndVisibilityNameIntroductionAndModuleVa
     if acceptedObligationEntryMatches(
         "Intro-Ok",
         19146usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Intro-Dup",
-        19164usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Intro-Outer-Err",
-        19182usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Intro-Reserved-Gen-Err",
-        19200usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Intro-Reserved-Ultraviolet-Err",
-        19218usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -163,15 +127,6 @@ public procedure validatedNameResolutionAndVisibilityNameIntroductionAndModuleVa
     if acceptedObligationEntryMatches(
         "Validate-Module-Ok",
         19368usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Validate-Module-Keyword-Err",
-        19386usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"

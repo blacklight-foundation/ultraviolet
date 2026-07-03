@@ -728,6 +728,19 @@ IRValue USizeConstValue(std::uint64_t value);
 const analysis::ScopeContext& ScopeForLowering(const LowerCtx& ctx);
 const analysis::ScopeContext& ScopeForLowering(const LowerCtx* ctx);
 
+// Implicit Outcome introduction (§13.1.4 T-Outcome-Intro-Value/Error): when
+// `value` has natural type `value_type` and the materialization site expects
+// `expected_type == Outcome<T_s, E_s>`, wrap `value` as `Outcome::Value(value)`
+// / `Outcome::Error(value)` (reusing the enum-literal lowering). Returns the
+// wrapped value (typed `expected_type`) and sets `*did_wrap` when introduction
+// applies; otherwise returns `value` unchanged. Ambiguous introductions are
+// rejected during type checking and never reach here.
+IRValue MaybeWrapImplicitOutcome(const IRValue& value,
+                                 const analysis::TypeRef& value_type,
+                                 const analysis::TypeRef& expected_type,
+                                 LowerCtx& ctx,
+                                 bool* did_wrap = nullptr);
+
 // Emit runtime scope activation for a scope id.
 IRPtr EmitRuntimeScopeEnter(std::uint64_t scope_id, LowerCtx& ctx);
 

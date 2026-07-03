@@ -15,6 +15,7 @@
 #include "05_codegen/lower/expr/all_expr.h"
 #include "04_analysis/typing/type_expr.h"
 #include "04_analysis/typing/type_equiv.h"
+#include "04_analysis/typing/outcome.h"
 #include "00_core/assert_spec.h"
 
 namespace ultraviolet::codegen {
@@ -103,19 +104,23 @@ LowerResult LowerAllExpr(const ast::AllExpr& expr, LowerCtx& ctx) {
     }
     all.error_types = std::move(error_types);
 
-    analysis::TypeRef result_type = tuple_type;
-    if (tuple_type && !all.error_types.empty()) {
-        std::vector<analysis::TypeRef> members;
-        members.reserve(1 + all.error_types.size());
-        AppendDistinctType(members, tuple_type);
+    // `all` yields Outcome<tuple of results, union of arm errors>.
+    analysis::TypeRef result_type = nullptr;
+    if (tuple_type) {
+        std::vector<analysis::TypeRef> error_members;
+        error_members.reserve(all.error_types.size());
         for (const auto& err : all.error_types) {
-            AppendDistinctType(members, err);
+            AppendDistinctType(error_members, err);
         }
-        if (members.size() == 1) {
-            result_type = members.front();
+        analysis::TypeRef error_union;
+        if (error_members.empty()) {
+            error_union = analysis::MakeTypePrim("!");
+        } else if (error_members.size() == 1) {
+            error_union = error_members.front();
         } else {
-            result_type = analysis::MakeTypeUnion(std::move(members));
+            error_union = analysis::MakeTypeUnion(std::move(error_members));
         }
+        result_type = analysis::MakeOutcomeType(tuple_type, error_union);
     }
     if (!result_type) {
         result_type = analysis::MakeTypePrim("()");

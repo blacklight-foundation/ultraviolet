@@ -189,57 +189,47 @@ std::optional<std::size_t> FindMemberIndex(const std::vector<analysis::TypeRef>&
     return std::nullopt;
 }
 
-IRPatternPtr OutcomeStatePattern(std::string state) {
+IRPatternPtr OutcomeEnumPattern(std::string variant) {
     auto pattern = std::make_shared<IRPattern>();
-    pattern->node = IRModalPattern{std::move(state), std::nullopt};
+    IREnumPattern enum_pattern;
+    enum_pattern.path = {"Outcome"};
+    enum_pattern.name = std::move(variant);
+    pattern->node = std::move(enum_pattern);
     return pattern;
 }
 
-IRValue RegisterOutcomeFieldValue(const IRValue& base,
-                                  std::string state,
-                                  std::string field,
-                                  analysis::TypeRef field_type,
-                                  LowerCtx& ctx) {
-    IRValue value = ctx.FreshTempValue("outcome_" + field);
+IRValue RegisterOutcomePayloadValue(const IRValue& base,
+                                    std::string variant,
+                                    analysis::TypeRef payload_type,
+                                    LowerCtx& ctx) {
+    IRValue value = ctx.FreshTempValue("outcome_payload");
     DerivedValueInfo info;
-    info.kind = DerivedValueInfo::Kind::ModalField;
+    info.kind = DerivedValueInfo::Kind::EnumPayloadIndex;
     info.base = base;
-    info.modal_state = std::move(state);
-    info.field = std::move(field);
+    info.static_path = {"Outcome"};
+    info.variant = std::move(variant);
+    info.tuple_index = 0;
     ctx.RegisterDerivedValue(value, std::move(info));
-    if (field_type) {
-        ctx.RegisterValueType(value, field_type);
+    if (payload_type) {
+        ctx.RegisterValueType(value, payload_type);
     }
     return value;
 }
 
 IRValue RegisterOutcomeErrorReturnValue(const IRValue& error_value,
-                                        const analysis::OutcomeSig& return_sig,
                                         const analysis::TypeRef& return_type,
-                                        LowerCtx& ctx,
-                                        std::vector<IRPtr>& ir_parts) {
-    analysis::TypeRef state_type = analysis::MakeOutcomeStateType(
-        return_sig.value,
-        return_sig.error,
-        "Error");
-
-    IRValue state_value = ctx.FreshTempValue("propagate_error_outcome");
-    DerivedValueInfo record_info;
-    record_info.kind = DerivedValueInfo::Kind::RecordLit;
-    record_info.fields = {{"error", error_value}};
-    ctx.RegisterDerivedValue(state_value, std::move(record_info));
-    ctx.RegisterValueType(state_value, state_type);
-
-    IRValue widened = ctx.FreshTempValue("propagate_error_return");
-    IRUnaryOp widen;
-    widen.op = "widen";
-    widen.operand = state_value;
-    widen.result = widened;
-    widen.operand_type = state_type;
-    widen.result_type = return_type;
-    ctx.RegisterValueType(widened, return_type);
-    ir_parts.push_back(MakeIR(std::move(widen)));
-    return widened;
+                                        LowerCtx& ctx) {
+    IRValue outcome_value = ctx.FreshTempValue("propagate_error_outcome");
+    DerivedValueInfo info;
+    info.kind = DerivedValueInfo::Kind::EnumLit;
+    info.variant = "Error";
+    info.static_path = {"Outcome"};
+    info.payload_elems = {error_value};
+    ctx.RegisterDerivedValue(outcome_value, std::move(info));
+    if (return_type) {
+        ctx.RegisterValueType(outcome_value, return_type);
+    }
+    return outcome_value;
 }
 
 }  // namespace
@@ -319,21 +309,19 @@ LowerResult LowerPropagateExpr(const ast::PropagateExpr& expr, LowerCtx& ctx) {
         ctx.RegisterValueType(result_value, outcome_sig->value);
 
         IRIfCaseClause value_arm;
-        value_arm.pattern = OutcomeStatePattern("Value");
+        value_arm.pattern = OutcomeEnumPattern("Value");
         value_arm.body = EmptyIR();
         SPEC_RULE("rule.16.Lower-Expr-Propagate-Success");
-        value_arm.value = RegisterOutcomeFieldValue(
+        value_arm.value = RegisterOutcomePayloadValue(
             inner_result.value,
             "Value",
-            "value",
             outcome_sig->value,
             ctx);
         if_case_ir.arms.push_back(std::move(value_arm));
 
-        IRValue error_value = RegisterOutcomeFieldValue(
+        IRValue error_value = RegisterOutcomePayloadValue(
             inner_result.value,
             "Error",
-            "error",
             outcome_sig->error,
             ctx);
 
@@ -341,7 +329,7 @@ LowerResult LowerPropagateExpr(const ast::PropagateExpr& expr, LowerCtx& ctx) {
         IRPtr cleanup_ir = EmitCleanup(cleanup_plan, ctx);
 
         IRIfCaseClause error_arm;
-        error_arm.pattern = OutcomeStatePattern("Error");
+        error_arm.pattern = OutcomeEnumPattern("Error");
         SPEC_RULE("rule.16.Lower-Expr-Propagate-Return");
         if (async_sig.has_value()) {
             SPEC_RULE("requirement.21.AsyncErrorPropagationTypingReference");
@@ -383,10 +371,8 @@ LowerResult LowerPropagateExpr(const ast::PropagateExpr& expr, LowerCtx& ctx) {
             return_parts.push_back(cleanup_ir);
             IRValue return_value = RegisterOutcomeErrorReturnValue(
                 error_value,
-                *return_outcome_sig,
-                ctx.proc_ret_type,
-                ctx,
-                return_parts);
+                return_type,
+                ctx);
             IRReturn ret;
             ret.value = return_value;
             return_parts.push_back(MakeIR(std::move(ret)));

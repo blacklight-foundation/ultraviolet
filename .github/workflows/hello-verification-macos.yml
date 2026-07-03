@@ -63,17 +63,40 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p artifacts
+          print_source_native_diagnostics() {
+            transcript_path="$1"
+            echo "==== Source-native diagnostics files ====" | tee -a "$transcript_path"
+            found_diagnostics=0
+            while IFS= read -r diagnostics_file; do
+              found_diagnostics=1
+              {
+                echo "===== $diagnostics_file ====="
+                cat "$diagnostics_file"
+              } | tee -a "$transcript_path"
+            done < <(find Build HelloUltraviolet/Build -type f -name source-native-test-diagnostics.log 2>/dev/null | sort)
+            if [ "$found_diagnostics" -eq 0 ]; then
+              echo "No source-native test diagnostics log found." | tee -a "$transcript_path"
+            fi
+          }
           release_configure_args=()
           if [ -n "${UV_RELEASE_VERSION:-}" ]; then
             release_configure_args+=("--cmake-configure-arg=-DUV_COMPILER_VERSION_OVERRIDE:STRING=${UV_RELEASE_VERSION}")
           fi
+          set +e
           python3 Tools/RunHelloVerification.py \
             --target-profile aarch64-darwin \
             --cmake "$UV_CMAKE_EXE" \
             --pr "${GITHUB_REF_NAME}" \
             --nonce "github-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
             "${release_configure_args[@]}" \
+            2>&1 \
             | tee artifacts/hello-verification-macos.txt
+          verification_status=${PIPESTATUS[0]}
+          set -e
+          if [ "$verification_status" -ne 0 ]; then
+            print_source_native_diagnostics artifacts/hello-verification-macos.txt
+          fi
+          exit "$verification_status"
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()

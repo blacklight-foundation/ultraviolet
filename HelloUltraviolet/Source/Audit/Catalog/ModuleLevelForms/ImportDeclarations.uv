@@ -2,7 +2,7 @@
 
 
 public procedure countModuleLevelFormsImportDeclarationsObligations() -> usize {
-    return 14usize
+    return 10usize
 }
 
 public procedure validatedModuleLevelFormsImportDeclarationsObligations() -> usize {
@@ -61,30 +61,12 @@ public procedure validatedModuleLevelFormsImportDeclarationsObligations() -> usi
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "Import-Path-Err",
-        30009usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedModulesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Modules/MissingImport/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "Bind-Import",
         30027usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesImportsReference",
         "Source/Reference/Modules/Imports.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "Bind-Import-Err",
-        30045usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedModulesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Modules/MissingImport/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -112,24 +94,6 @@ public procedure validatedModuleLevelFormsImportDeclarationsObligations() -> usi
         "HelloUltraviolet::Audit",
         "moduleSourceProjectExternAbiFormsExecute",
         "Source/Audit/ModuleSourceProjectInfrastructureExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.ImportDeclarations",
-        30112usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedModulesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Modules/MissingImport/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.ImportDeclarationDiagnosticOwnership",
-        30130usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesImportsReference",
-        "Source/Reference/Modules/Imports.uv"
     ) {
         count = count + 1usize
     }

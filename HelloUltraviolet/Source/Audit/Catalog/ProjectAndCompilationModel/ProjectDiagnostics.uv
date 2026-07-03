@@ -2,19 +2,10 @@
 
 
 public procedure countProjectAndCompilationModelProjectDiagnosticsObligations() -> usize {
-    return 1usize
+    return 0usize
 }
 
 public procedure validatedProjectAndCompilationModelProjectDiagnosticsObligations() -> usize {
     var count: usize = 0usize
-    if acceptedObligationEntryMatches(
-        "diagnostics.ProjectDiagnostics",
-        6796usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticManifestParseErrorExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
-    ) {
-        count = count + 1usize
-    }
     return count
 }

@@ -43,10 +43,10 @@ internal procedure sharedLifecycleAllocationSucceeded(
     result: Outcome<(), AllocationError>
 ) -> bool {
     return if result is {
-        @Value {
+        Outcome::Value(_) {
             true
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }
@@ -75,7 +75,7 @@ internal procedure sharedLifecycleCString(
     let managed_result: Outcome<unique bytes@Managed, AllocationError> =
         bytes::to_managed(bytes_view, heap)
     return if move managed_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let terminator_bytes: [u8; 1] = [0u8]
             let terminator_slice: const [u8] = terminator_bytes[..]
             let terminator_view: bytes@View = bytes::view(terminator_slice)
@@ -90,7 +90,7 @@ internal procedure sharedLifecycleCString(
                 pointer: pointer
             }
         }
-        @Error {
+        Outcome::Error(_) {
             SHARED_LIFECYCLE_CSTRING_ALLOC_FAILED
         }
     }

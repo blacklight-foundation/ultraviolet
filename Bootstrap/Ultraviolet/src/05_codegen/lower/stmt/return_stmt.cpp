@@ -209,6 +209,19 @@ IRPtr LowerReturnStmt(const ast::ReturnStmt& stmt,
     value_type = analysis::MakeTypePrim("()");
   }
 
+  // (T-Outcome-Intro) §13.1.4: a bare value returned where Outcome<T_s, E_s> is
+  // expected introduces implicitly as Outcome::Value/Error. No-op when the
+  // return type is not an Outcome (e.g. async-returning procedures below).
+  if (stmt.value_opt && value_type && ctx.proc_ret_type) {
+    bool wrapped = false;
+    IRValue introduced = MaybeWrapImplicitOutcome(
+        return_value, value_type, ctx.proc_ret_type, ctx, &wrapped);
+    if (wrapped) {
+      return_value = introduced;
+      value_type = ctx.proc_ret_type;
+    }
+  }
+
   // Preserve return expression typing for ABI return coercion.
   // Without this, codegen can lose the source member type for union returns
   // and pack the wrong variant at runtime.
@@ -216,7 +229,7 @@ IRPtr LowerReturnStmt(const ast::ReturnStmt& stmt,
     ctx.RegisterValueType(return_value, value_type);
   }
 
-  // Section 19.1.3 Async procedure return handling
+  // Section 21.1.3 Async procedure return handling
   // If the procedure returns an async type, wrap the return value in @Completed
   const analysis::ScopeContext& scope = ScopeForLowering(ctx);
   if (analysis::AsyncSigOf(scope, ctx.proc_ret_type).has_value()) {

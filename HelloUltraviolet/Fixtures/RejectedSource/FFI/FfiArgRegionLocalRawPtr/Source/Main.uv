@@ -7,7 +7,7 @@ extern "C" {
 public procedure ffiArgRegionLocalRawPtrReference() -> i32 {
     region as scratch {
         let raw: *mut i32 = null
-        let pointer: *mut i32 = scratch ^ raw
+        let pointer: *mut i32 = scratch~>alloc(raw)
         unsafe {
             return importedPointer(pointer)
         }

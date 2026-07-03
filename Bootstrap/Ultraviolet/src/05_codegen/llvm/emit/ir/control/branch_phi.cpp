@@ -344,6 +344,11 @@ void IRInstructionVisitor::operator()(const IRPhi &phi) const
     ReportBranchPhiCodegenFailure(emitter);
     return;
   }
+  if (IsZeroSizedLLVMType(emitter, phi_type))
+  {
+    emitter.SetTempValue(phi.value, llvm::Constant::getNullValue(phi_type));
+    return;
+  }
 
   llvm::PHINode *node = CreatePhiAtBlockHeader(
       emitter,

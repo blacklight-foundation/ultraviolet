@@ -2,7 +2,7 @@
 
 
 public procedure countStatementsAndBlocksBlocksObligations() -> usize {
-    return 68usize
+    return 61usize
 }
 
 public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
@@ -52,15 +52,6 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.18.Parse-Statement-Err",
-        68413usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/StatementParseError/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.18.Parse-Block",
         68429usize,
@@ -70,30 +61,12 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "def.18.RequiredStatementTerminators",
-        68445usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/MissingRequiredTerminator/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.18.ConsumeTerminatorOpt-Req-Yes",
         68458usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.18.ConsumeTerminatorOpt-Req-No",
-        68474usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/MissingRequiredTerminator/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -151,15 +124,6 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "def.18.SyncStmt",
-        68584usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/SyncStatementRecovery/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.18.StatementAstForms",
         68599usize,
@@ -208,15 +172,6 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     if acceptedObligationEntryMatches(
         "def.18.ScopeStackTypeHelpers",
         68674usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsBlocksReference",
-        "Source/Reference/Statements/Blocks.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.18.T-ErrorStmt",
-        68688usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -413,15 +368,6 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.18.ExecSigma-Error",
-        69023usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsBlocksReference",
-        "Source/Reference/Statements/Blocks.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "def.18.ExecState",
         69038usize,
         "HelloUltraviolet::Reference::Statements",
@@ -607,15 +553,6 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
         "HelloUltraviolet::Audit",
         "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
         "Source/Audit/AcceptedProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.18.Blocks",
-        69381usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/BlocksDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

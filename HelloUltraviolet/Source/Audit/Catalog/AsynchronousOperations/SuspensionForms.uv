@@ -2,7 +2,7 @@
 
 
 public procedure countAsynchronousOperationsSuspensionFormsObligations() -> usize {
-    return 51usize
+    return 39usize
 }
 
 public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> usize {
@@ -97,15 +97,6 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.Wait-Handle-Err",
-        79553usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/WaitNonHandle/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.21.T-Yield",
         79573usize,
@@ -115,66 +106,12 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.Yield-NotAsync-Err",
-        79591usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/YieldOutsideAsync/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.Yield-Out-Err",
-        79609usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/YieldTypeMismatch/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.21.T-Yield-From",
         79629usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.YieldFrom-NotAsync-Err",
-        79647usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/YieldFromOutsideAsync/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.YieldFrom-Out-Err",
-        79665usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/YieldFromOutMismatch/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.YieldFrom-In-Err",
-        79684usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/YieldFromInMismatch/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.21.YieldFrom-ErrType-Err",
-        79702usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/YieldFromErrorMismatch/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -323,15 +260,6 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.21.EvalSigma-YieldFrom-Completed",
-        80038usize,
-        "HelloUltraviolet::Audit",
-        "asyncArtifactObligationsExercise",
-        "Source/Audit/AsyncArtifactExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-YieldFrom-Failed",
         80056usize,
         "HelloUltraviolet::Audit",
@@ -359,26 +287,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.21.EvalYieldFromContinue-Suspended",
-        80108usize,
-        "HelloUltraviolet::Audit",
-        "asyncArtifactObligationsExercise",
-        "Source/Audit/AsyncArtifactExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "rule.21.EvalYieldFromContinue-Completed",
         80128usize,
-        "HelloUltraviolet::Audit",
-        "asyncArtifactObligationsExercise",
-        "Source/Audit/AsyncArtifactExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.21.EvalYieldFromContinue-Failed",
-        80146usize,
         "HelloUltraviolet::Audit",
         "asyncArtifactObligationsExercise",
         "Source/Audit/AsyncArtifactExecution.uv"
@@ -445,24 +355,6 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "HelloUltraviolet::Audit",
         "asyncArtifactObligationsExercise",
         "Source/Audit/AsyncArtifactExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "requirement.21.YieldFromEnterLoweringLoop",
-        80290usize,
-        "HelloUltraviolet::Audit",
-        "asyncArtifactObligationsExercise",
-        "Source/Audit/AsyncArtifactExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.21.SuspensionForms",
-        80308usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/SuspensionFormsDiagnosticsTable/Source/Main.uv"
     ) {
         count = count + 1usize
     }

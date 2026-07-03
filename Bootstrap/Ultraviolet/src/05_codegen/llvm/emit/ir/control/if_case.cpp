@@ -5,8 +5,12 @@
 #include "../../ir_instruction_visitor.h"
 
 #include "00_core/assert_spec.h"
+#include "05_codegen/llvm/llvm_ub_safe.h"
 
+#include <cctype>
+#include <functional>
 #include <string>
+#include <unordered_set>
 
 namespace ultraviolet::codegen::emit_detail {
 
@@ -50,8 +54,26 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
     return;
   }
 
-  llvm::Value *scrutinee = EvaluateOrDefault(if_case.scrutinee);
-  if (!scrutinee || if_case.arms.empty())
+  const LowerCtx *ctx = emitter.GetCurrentCtx();
+  const analysis::ScopeContext &scope = BuildScope(ctx);
+
+  analysis::TypeRef root_scrutinee_type = if_case.scrutinee_type;
+  if (!root_scrutinee_type && ctx)
+  {
+    root_scrutinee_type = ctx->LookupValueType(if_case.scrutinee);
+  }
+
+  llvm::Type *root_scrutinee_ll_ty =
+      root_scrutinee_type ? emitter.GetLLVMType(root_scrutinee_type) : nullptr;
+  llvm::Value *scrutinee_storage = emitter.GetAddressableStorage(if_case.scrutinee);
+  const bool scrutinee_from_storage =
+      scrutinee_storage && root_scrutinee_ll_ty &&
+      IsAddressBackedAggregateType(root_scrutinee_ll_ty);
+  llvm::Value *scrutinee =
+      scrutinee_from_storage ? nullptr : EvaluateOrDefault(if_case.scrutinee);
+  llvm::Value *match_subject =
+      scrutinee_from_storage ? scrutinee_storage : scrutinee;
+  if (!match_subject || if_case.arms.empty())
   {
     emitter.SetTempValue(if_case.result, DefaultFor(if_case.result));
     return;
@@ -86,9 +108,6 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
       return std::nullopt;
     }
   };
-
-  const LowerCtx *ctx = emitter.GetCurrentCtx();
-  const analysis::ScopeContext &scope = BuildScope(ctx);
 
   auto normalize_match_type = [&](analysis::TypeRef ty) -> analysis::TypeRef
   {
@@ -248,11 +267,212 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
     return out;
   };
 
-  auto enum_disc_value = [&](llvm::Value *enum_value) -> llvm::Value *
+  std::unordered_set<llvm::Value *> storage_subjects;
+  auto storage_subject_key = [](llvm::Value *value) -> llvm::Value *
+  {
+    return value ? value->stripPointerCasts() : nullptr;
+  };
+  auto remember_storage_subject = [&](llvm::Value *value) -> void
+  {
+    if (llvm::Value *key = storage_subject_key(value))
+    {
+      storage_subjects.insert(key);
+    }
+  };
+  auto is_storage_subject = [&](llvm::Value *value) -> bool
+  {
+    llvm::Value *key = storage_subject_key(value);
+    return key && storage_subjects.find(key) != storage_subjects.end();
+  };
+  if (scrutinee_from_storage)
+  {
+    remember_storage_subject(match_subject);
+  }
+
+  auto bitcast_storage_ptr = [&](llvm::Value *storage,
+                                 llvm::Type *pointee_ty) -> llvm::Value *
+  {
+    if (!storage || !pointee_ty || !storage->getType()->isPointerTy() ||
+        pointee_ty->isVoidTy())
+    {
+      return nullptr;
+    }
+    llvm::Type *ptr_ty = llvm::PointerType::get(pointee_ty, 0);
+    return storage->getType() == ptr_ty ? storage
+                                        : builder.CreateBitCast(storage, ptr_ty);
+  };
+
+  auto load_storage_value = [&](llvm::Value *storage,
+                                llvm::Type *value_ty) -> llvm::Value *
+  {
+    llvm::Value *ptr = bitcast_storage_ptr(storage, value_ty);
+    if (!ptr)
+    {
+      return nullptr;
+    }
+    llvm::LoadInst *load = builder.CreateLoad(value_ty, ptr);
+    load->setAlignment(llvm::Align(1));
+    return load;
+  };
+
+  auto value_or_storage_from_ptr = [&](llvm::Value *storage,
+                                       llvm::Type *storage_ty,
+                                       llvm::Type *value_ty,
+                                       bool recursive_indirect) -> llvm::Value *
+  {
+    if (!storage || !storage_ty || !value_ty)
+    {
+      return nullptr;
+    }
+    llvm::Value *typed_ptr = bitcast_storage_ptr(storage, storage_ty);
+    if (!typed_ptr)
+    {
+      return nullptr;
+    }
+    if (recursive_indirect)
+    {
+      llvm::Value *target_ptr = builder.CreateLoad(storage_ty, typed_ptr);
+      if (!target_ptr || !target_ptr->getType()->isPointerTy())
+      {
+        return nullptr;
+      }
+      target_ptr = builder.CreateBitCast(
+          target_ptr,
+          llvm::PointerType::get(value_ty, 0));
+      if (IsAddressBackedAggregateType(value_ty))
+      {
+        remember_storage_subject(target_ptr);
+        return target_ptr;
+      }
+      llvm::LoadInst *target_load = builder.CreateLoad(value_ty, target_ptr);
+      target_load->setAlignment(llvm::Align(1));
+      return target_load;
+    }
+    if (IsAddressBackedAggregateType(value_ty))
+    {
+      remember_storage_subject(typed_ptr);
+      return typed_ptr;
+    }
+    llvm::LoadInst *load = builder.CreateLoad(storage_ty, typed_ptr);
+    load->setAlignment(llvm::Align(1));
+    if (load->getType() == value_ty)
+    {
+      return load;
+    }
+    if (llvm::Value *coerced = CoerceTo(&builder, load, value_ty))
+    {
+      return coerced;
+    }
+    return load;
+  };
+
+  auto load_tag_from_storage = [&](llvm::Value *storage,
+                                   analysis::TypeRef value_type) -> llvm::Value *
+  {
+    if (!storage)
+    {
+      return nullptr;
+    }
+    llvm::Type *llvm_ty = value_type ? emitter.GetLLVMType(value_type) : nullptr;
+    if (!llvm_ty || llvm_ty->isVoidTy())
+    {
+      return nullptr;
+    }
+    if (llvm_ty->isIntegerTy() || llvm_ty->isPointerTy())
+    {
+      return load_storage_value(storage, llvm_ty);
+    }
+    auto *struct_ty = llvm::dyn_cast<llvm::StructType>(llvm_ty);
+    if (!struct_ty || struct_ty->getNumElements() == 0)
+    {
+      return nullptr;
+    }
+    llvm::Type *disc_ty = struct_ty->getElementType(0);
+    llvm::Value *typed_storage = bitcast_storage_ptr(storage, struct_ty);
+    if (!typed_storage)
+    {
+      return nullptr;
+    }
+    llvm::Value *disc_value =
+        EmitLoadAtOffset(emitter, &builder, typed_storage, 0, disc_ty);
+    if (auto *disc = llvm::dyn_cast_or_null<llvm::LoadInst>(disc_value))
+    {
+      disc->setAlignment(llvm::Align(1));
+    }
+    return disc_value;
+  };
+
+  auto payload_member_from_storage = [&](llvm::Value *base_storage,
+                                         llvm::StructType *tagged_ty,
+                                         std::uint64_t payload_align,
+                                         std::uint64_t member_offset,
+                                         llvm::Type *storage_ty,
+                                         llvm::Type *value_ty,
+                                         bool recursive_indirect) -> llvm::Value *
+  {
+    if (!base_storage || !tagged_ty || !storage_ty || !value_ty)
+    {
+      return nullptr;
+    }
+    llvm::Value *payload_i8 = CreateTaggedPayloadI8Ptr(
+        emitter,
+        &builder,
+        tagged_ty,
+        base_storage,
+        payload_align);
+    if (!payload_i8)
+    {
+      return nullptr;
+    }
+    llvm::Type *i8_ty = llvm::Type::getInt8Ty(emitter.GetContext());
+    llvm::Type *i64_ty = llvm::Type::getInt64Ty(emitter.GetContext());
+    llvm::Value *field_i8 = builder.CreateGEP(
+        i8_ty,
+        payload_i8,
+        llvm::ConstantInt::get(i64_ty, member_offset));
+    return value_or_storage_from_ptr(
+        field_i8,
+        storage_ty,
+        value_ty,
+        recursive_indirect);
+  };
+
+  auto field_from_storage_offset = [&](llvm::Value *base_storage,
+                                       std::uint64_t offset,
+                                       llvm::Type *storage_ty,
+                                       llvm::Type *value_ty,
+                                       bool recursive_indirect) -> llvm::Value *
+  {
+    if (!base_storage || !storage_ty || !value_ty)
+    {
+      return nullptr;
+    }
+    llvm::Type *i8_ty = llvm::Type::getInt8Ty(emitter.GetContext());
+    llvm::Type *i64_ty = llvm::Type::getInt64Ty(emitter.GetContext());
+    llvm::Value *base_i8 = builder.CreateBitCast(
+        base_storage,
+        llvm::PointerType::get(i8_ty, 0));
+    llvm::Value *field_i8 = builder.CreateGEP(
+        i8_ty,
+        base_i8,
+        llvm::ConstantInt::get(i64_ty, offset));
+    return value_or_storage_from_ptr(
+        field_i8,
+        storage_ty,
+        value_ty,
+        recursive_indirect);
+  };
+
+  auto enum_disc_value = [&](llvm::Value *enum_value,
+                             analysis::TypeRef enum_type) -> llvm::Value *
   {
     if (!enum_value)
     {
       return nullptr;
+    }
+    if (is_storage_subject(enum_value))
+    {
+      return load_tag_from_storage(enum_value, enum_type);
     }
     if (enum_value->getType()->isIntegerTy())
     {
@@ -267,6 +487,7 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
   };
 
   auto load_enum_payload_member = [&](llvm::Value *enum_value,
+                                      analysis::TypeRef enum_type,
                                       const EnumPayloadMemberInfo &member) -> llvm::Value *
   {
     if (!enum_value || !member.ok || !member.type)
@@ -277,7 +498,35 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
     auto *enum_ty = llvm::dyn_cast<llvm::StructType>(enum_value->getType());
     if (!member_ty || !enum_ty || enum_ty->getNumElements() < 2)
     {
+      if (is_storage_subject(enum_value))
+      {
+        llvm::Type *enum_ll = enum_type ? emitter.GetLLVMType(enum_type) : nullptr;
+        enum_ty = llvm::dyn_cast_or_null<llvm::StructType>(enum_ll);
+        if (!enum_ty || enum_ty->getNumElements() < 2)
+        {
+          return nullptr;
+        }
+        return payload_member_from_storage(
+            enum_value,
+            enum_ty,
+            member.payload_align,
+            member.offset,
+            member_ty,
+            member_ty,
+            false);
+      }
       return nullptr;
+    }
+    if (is_storage_subject(enum_value))
+    {
+      return payload_member_from_storage(
+          enum_value,
+          enum_ty,
+          member.payload_align,
+          member.offset,
+          member_ty,
+          member_ty,
+          false);
     }
     llvm::Function *current_fn =
         builder.GetInsertBlock() ? builder.GetInsertBlock()->getParent() : nullptr;
@@ -308,12 +557,11 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
         i8_ty,
         payload_i8,
         llvm::ConstantInt::get(i64_ty, member.offset));
-    llvm::Value *field_ptr = builder.CreateBitCast(
+    return value_or_storage_from_ptr(
         field_i8,
-        llvm::PointerType::get(member_ty, 0));
-    llvm::LoadInst *load = builder.CreateLoad(member_ty, field_ptr);
-    load->setAlignment(llvm::Align(1));
-    return load;
+        member_ty,
+        member_ty,
+        false);
   };
 
   auto lookup_modal_decl = [&](analysis::TypeRef type,
@@ -469,11 +717,16 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
     return out;
   };
 
-  auto modal_disc_value = [&](llvm::Value *modal_value) -> llvm::Value *
+  auto modal_disc_value = [&](llvm::Value *modal_value,
+                              analysis::TypeRef modal_type) -> llvm::Value *
   {
     if (!modal_value)
     {
       return nullptr;
+    }
+    if (is_storage_subject(modal_value))
+    {
+      return load_tag_from_storage(modal_value, modal_type);
     }
     if (modal_value->getType()->isIntegerTy())
     {
@@ -491,6 +744,7 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
   };
 
   auto load_modal_payload_member = [&](llvm::Value *modal_value,
+                                       analysis::TypeRef modal_type,
                                        const ModalPayloadMemberInfo &member) -> llvm::Value *
   {
     if (!modal_value || !member.ok || !member.type)
@@ -503,18 +757,22 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
     {
       return nullptr;
     }
-    llvm::Function *current_fn =
-        builder.GetInsertBlock() ? builder.GetInsertBlock()->getParent() : nullptr;
-    if (!current_fn)
+    llvm::Value *modal_slot = modal_value;
+    if (!is_storage_subject(modal_value))
     {
-      return nullptr;
-    }
+      llvm::Function *current_fn =
+          builder.GetInsertBlock() ? builder.GetInsertBlock()->getParent() : nullptr;
+      if (!current_fn)
+      {
+        return nullptr;
+      }
 
-    llvm::IRBuilder<> entry_builder(
-        &current_fn->getEntryBlock(),
-        current_fn->getEntryBlock().begin());
-    llvm::AllocaInst *modal_slot = entry_builder.CreateAlloca(modal_value->getType());
-    builder.CreateStore(modal_value, modal_slot);
+      llvm::IRBuilder<> entry_builder(
+          &current_fn->getEntryBlock(),
+          current_fn->getEntryBlock().begin());
+      modal_slot = entry_builder.CreateAlloca(modal_value->getType());
+      builder.CreateStore(modal_value, modal_slot);
+    }
 
     llvm::Type *i8_ty = llvm::Type::getInt8Ty(emitter.GetContext());
     llvm::Type *i64_ty = llvm::Type::getInt64Ty(emitter.GetContext());
@@ -522,6 +780,11 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
     if (member.tagged)
     {
       auto *modal_ty = llvm::dyn_cast<llvm::StructType>(modal_value->getType());
+      if (!modal_ty && is_storage_subject(modal_value))
+      {
+        modal_ty = llvm::dyn_cast_or_null<llvm::StructType>(
+            modal_type ? emitter.GetLLVMType(modal_type) : nullptr);
+      }
       if (!modal_ty || modal_ty->getNumElements() < 2)
       {
         const auto member_size = ::ultraviolet::analysis::layout::SizeOf(scope, member.type);
@@ -553,28 +816,23 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
         i8_ty,
         payload_i8,
         llvm::ConstantInt::get(i64_ty, member.offset));
-    llvm::Value *field_ptr = builder.CreateBitCast(
+    return value_or_storage_from_ptr(
         field_i8,
-        llvm::PointerType::get(storage_ty, 0));
-    llvm::LoadInst *load = builder.CreateLoad(storage_ty, field_ptr);
-    load->setAlignment(llvm::Align(1));
-    if (member.recursive_indirect)
-    {
-      llvm::Value *target_ptr =
-          builder.CreateBitCast(load, llvm::PointerType::get(member_ty, 0));
-      llvm::LoadInst *target_load =
-          builder.CreateLoad(member_ty, target_ptr);
-      target_load->setAlignment(llvm::Align(1));
-      return target_load;
-    }
-    return load;
+        storage_ty,
+        member_ty,
+        member.recursive_indirect);
   };
 
-  auto union_disc_value = [&](llvm::Value *union_value) -> llvm::Value *
+  auto union_disc_value = [&](llvm::Value *union_value,
+                              analysis::TypeRef union_type) -> llvm::Value *
   {
     if (!union_value)
     {
       return nullptr;
+    }
+    if (is_storage_subject(union_value))
+    {
+      return load_tag_from_storage(union_value, union_type);
     }
     if (union_value->getType()->isIntegerTy() || union_value->getType()->isPointerTy())
     {
@@ -590,6 +848,7 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
 
   auto load_union_payload_member =
       [&](llvm::Value *union_value,
+          analysis::TypeRef union_type,
           const ::ultraviolet::analysis::layout::UnionLayout &union_layout,
           std::size_t member_index) -> llvm::Value *
   {
@@ -611,13 +870,41 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
 
     if (union_layout.niche)
     {
+      if (is_storage_subject(union_value))
+      {
+        llvm::Type *union_ty = union_type ? emitter.GetLLVMType(union_type) : nullptr;
+        if (union_ty && !union_ty->isVoidTy())
+        {
+          if (llvm::Value *loaded = load_storage_value(union_value, union_ty))
+          {
+            return CoerceTo(&builder, loaded, member_ty);
+          }
+        }
+      }
       return CoerceTo(&builder, union_value, member_ty);
     }
 
     auto *union_ty = llvm::dyn_cast<llvm::StructType>(union_value->getType());
+    if (!union_ty && is_storage_subject(union_value))
+    {
+      union_ty = llvm::dyn_cast_or_null<llvm::StructType>(
+          union_type ? emitter.GetLLVMType(union_type) : nullptr);
+    }
     if (!union_ty || union_ty->getNumElements() < 2)
     {
       return llvm::Constant::getNullValue(member_ty);
+    }
+
+    if (is_storage_subject(union_value))
+    {
+      return payload_member_from_storage(
+          union_value,
+          union_ty,
+          union_layout.payload_align,
+          0,
+          member_ty,
+          member_ty,
+          false);
     }
 
     llvm::Function *current_fn =
@@ -649,6 +936,11 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
         llvm::PointerType::get(member_ty, 0));
     llvm::LoadInst *load = builder.CreateLoad(member_ty, member_ptr);
     load->setAlignment(llvm::Align(1));
+    if (IsAddressBackedAggregateType(member_ty))
+    {
+      remember_storage_subject(member_ptr);
+      return member_ptr;
+    }
     return load;
   };
 
@@ -739,7 +1031,7 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
                 }
                 const auto expected_disc =
                     modal_state_disc(*modal_decl, target_modal_state->state);
-                llvm::Value *disc = modal_disc_value(subject);
+                llvm::Value *disc = modal_disc_value(subject, subject_type);
                 if (!expected_disc.has_value() || !disc ||
                     !disc->getType()->isIntegerTy())
                 {
@@ -874,20 +1166,32 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
                 return llvm::ConstantInt::getFalse(emitter.GetContext());
               }
 
-              llvm::Constant *niche_zero = llvm::Constant::getNullValue(subject->getType());
+              llvm::Value *disc = union_disc_value(subject, subject_type);
+              if (!disc || !disc->getType()->isPointerTy())
+              {
+                return llvm::ConstantInt::getFalse(emitter.GetContext());
+              }
+              llvm::Constant *niche_zero = llvm::Constant::getNullValue(disc->getType());
               if (*member_index == *payload_index)
               {
-                return builder.CreateICmpNE(subject, niche_zero);
+                return builder.CreateICmpNE(disc, niche_zero);
               }
-              return builder.CreateICmpEQ(subject, niche_zero);
+              return builder.CreateICmpEQ(disc, niche_zero);
             }
 
-            auto *subject_struct = llvm::dyn_cast<llvm::StructType>(subject->getType());
-            if (!subject_struct || subject_struct->getNumElements() < 1)
+            llvm::Value *disc = is_storage_subject(subject)
+                                     ? union_disc_value(subject, subject_type)
+                                     : nullptr;
+            if (!disc)
             {
-              return llvm::ConstantInt::getFalse(emitter.GetContext());
+              auto *subject_struct =
+                  llvm::dyn_cast<llvm::StructType>(subject->getType());
+              if (!subject_struct || subject_struct->getNumElements() < 1)
+              {
+                return llvm::ConstantInt::getFalse(emitter.GetContext());
+              }
+              disc = builder.CreateExtractValue(subject, {0u});
             }
-            llvm::Value *disc = builder.CreateExtractValue(subject, {0u});
             if (!disc || !disc->getType()->isIntegerTy())
             {
               return llvm::ConstantInt::getFalse(emitter.GetContext());
@@ -1031,18 +1335,48 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
             {
               return llvm::ConstantInt::getFalse(emitter.GetContext());
             }
+            if (tuple_type->elements.size() < pat.elements.size())
+            {
+              return llvm::ConstantInt::getFalse(emitter.GetContext());
+            }
             auto *tuple_struct = llvm::dyn_cast<llvm::StructType>(subject->getType());
-            if (!tuple_struct ||
-                tuple_struct->getNumElements() < pat.elements.size() ||
-                tuple_type->elements.size() < pat.elements.size())
+            std::optional<::ultraviolet::analysis::layout::RecordLayout> tuple_layout;
+            if (is_storage_subject(subject))
+            {
+              tuple_layout =
+                  ::ultraviolet::analysis::layout::TupleLayoutOf(
+                      scope,
+                      tuple_type->elements);
+              if (!tuple_layout.has_value() ||
+                  tuple_layout->offsets.size() < pat.elements.size())
+              {
+                return llvm::ConstantInt::getFalse(emitter.GetContext());
+              }
+            }
+            else if (!tuple_struct ||
+                     tuple_struct->getNumElements() < pat.elements.size())
             {
               return llvm::ConstantInt::getFalse(emitter.GetContext());
             }
             llvm::Value *tuple_ok = llvm::ConstantInt::getTrue(emitter.GetContext());
             for (std::size_t i = 0; i < pat.elements.size(); ++i)
             {
-              llvm::Value *elem_value =
-                  builder.CreateExtractValue(subject, {static_cast<unsigned>(i)});
+              llvm::Value *elem_value = nullptr;
+              if (is_storage_subject(subject))
+              {
+                llvm::Type *elem_ty = emitter.GetLLVMType(tuple_type->elements[i]);
+                elem_value = field_from_storage_offset(
+                    subject,
+                    tuple_layout->offsets[i],
+                    elem_ty,
+                    elem_ty,
+                    false);
+              }
+              else
+              {
+                elem_value =
+                    builder.CreateExtractValue(subject, {static_cast<unsigned>(i)});
+              }
               llvm::Value *elem_ok = emit_pattern_cond_for_value(
                   pat.elements[i], elem_value, tuple_type->elements[i]);
               tuple_ok = builder.CreateAnd(
@@ -1088,7 +1422,7 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
               return llvm::ConstantInt::getFalse(emitter.GetContext());
             }
             auto *record_struct = llvm::dyn_cast<llvm::StructType>(subject->getType());
-            if (!record_struct)
+            if (!record_struct && !is_storage_subject(subject))
             {
               return llvm::ConstantInt::getFalse(emitter.GetContext());
             }
@@ -1102,12 +1436,45 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
               const auto field_meta =
                   ResolveFieldAccessMeta(scope, stripped_subject, field.name);
               if (!field_meta.has_value() ||
-                  field_meta->index >= record_struct->getNumElements())
+                  (!is_storage_subject(subject) &&
+                   field_meta->index >= record_struct->getNumElements()))
               {
                 return llvm::ConstantInt::getFalse(emitter.GetContext());
               }
-              llvm::Value *field_value = builder.CreateExtractValue(
-                  subject, {static_cast<unsigned>(field_meta->index)});
+              llvm::Value *field_value = nullptr;
+              if (is_storage_subject(subject))
+              {
+                const auto layout = ComputeLayoutLLVMRecord(
+                    emitter,
+                    scope,
+                    field_meta->aggregate_type,
+                    field_meta->aggregate_fields,
+                    field_meta->layout_options);
+                if (!layout.has_value() ||
+                    field_meta->index >= layout->fields.size())
+                {
+                  return llvm::ConstantInt::getFalse(emitter.GetContext());
+                }
+                const LayoutLLVMField &layout_field =
+                    layout->fields[field_meta->index];
+                llvm::Type *field_ty = emitter.GetLLVMType(field_meta->field_type);
+                if (!field_ty || field_ty->isVoidTy())
+                {
+                  field_ty = layout_field.llvm_type;
+                }
+                field_value = field_from_storage_offset(
+                    subject,
+                    layout_field.offset,
+                    layout_field.llvm_type ? layout_field.llvm_type : field_ty,
+                    field_ty,
+                    layout_field.recursive_indirect);
+              }
+              else
+              {
+                field_value = builder.CreateExtractValue(
+                    subject,
+                    {static_cast<unsigned>(field_meta->index)});
+              }
               llvm::Value *field_ok = emit_pattern_cond_for_value(
                   field.pattern, field_value, field_meta->field_type);
               record_ok = builder.CreateAnd(
@@ -1149,7 +1516,7 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
             const std::vector<analysis::TypeRef> subject_enum_args =
                 enum_generic_args_for_type(subject_type);
             const auto expected_disc = variant_disc(*enum_decl, pat.name);
-            llvm::Value *actual_disc = enum_disc_value(subject);
+            llvm::Value *actual_disc = enum_disc_value(subject, subject_type);
             if (!expected_disc.has_value() || !actual_disc)
             {
               return llvm::ConstantInt::getFalse(emitter.GetContext());
@@ -1181,7 +1548,8 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
                           *variant,
                           subject_enum_args,
                           i);
-                      llvm::Value *member_val = load_enum_payload_member(subject, member);
+                      llvm::Value *member_val =
+                          load_enum_payload_member(subject, subject_type, member);
                       llvm::Value *member_ok = emit_pattern_cond_for_value(
                           payload_pattern.elements[i],
                           member_val,
@@ -1205,7 +1573,8 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
                               *variant,
                               subject_enum_args,
                               field.name);
-                      llvm::Value *member_val = load_enum_payload_member(subject, member);
+                      llvm::Value *member_val =
+                          load_enum_payload_member(subject, subject_type, member);
                       llvm::Value *member_ok = emit_pattern_cond_for_value(
                           field.pattern,
                           member_val,
@@ -1277,7 +1646,7 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
                 }
                 if (payload_index.has_value())
                 {
-                  llvm::Value *disc = union_disc_value(subject);
+                  llvm::Value *disc = union_disc_value(subject, subject_type);
                   if (disc && disc->getType()->isPointerTy())
                   {
                     llvm::Value *null_ptr = llvm::ConstantPointerNull::get(
@@ -1290,7 +1659,7 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
               }
               else
               {
-                llvm::Value *disc = union_disc_value(subject);
+                llvm::Value *disc = union_disc_value(subject, subject_type);
                 if (!disc || !disc->getType()->isIntegerTy())
                 {
                   return llvm::ConstantInt::getFalse(emitter.GetContext());
@@ -1312,7 +1681,11 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
                   return llvm::ConstantInt::getFalse(emitter.GetContext());
                 }
                 llvm::Value *modal_member_value =
-                    load_union_payload_member(subject, *union_layout, *modal_member_index);
+                    load_union_payload_member(
+                        subject,
+                        subject_type,
+                        *union_layout,
+                        *modal_member_index);
                 for (const auto &field : pat.fields->fields)
                 {
                   if (!field.pattern)
@@ -1327,7 +1700,15 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
                                                     field.name);
                   member.tagged = false;
                   llvm::Value *member_val =
-                      load_modal_payload_member(modal_member_value, member);
+                      load_modal_payload_member(
+                          modal_member_value,
+                          modal_member_state->path.empty()
+                              ? nullptr
+                              : analysis::MakeTypeModalState(
+                                    modal_member_state->path,
+                                    pat.state,
+                                    modal_member_state->generic_args),
+                          member);
                   llvm::Value *member_ok =
                       emit_pattern_cond_for_value(field.pattern, member_val, member.type);
                   payload_ok = builder.CreateAnd(
@@ -1371,7 +1752,7 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
             const bool subject_is_modal_state = (subject_modal_state != nullptr);
             const bool subject_is_async_modal_state =
                 subject_modal_state && analysis::IsAsyncType(stripped_subject);
-            llvm::Value *runtime_disc = modal_disc_value(subject);
+            llvm::Value *runtime_disc = modal_disc_value(subject, subject_type);
 
             llvm::Value *state_ok = llvm::ConstantInt::getTrue(emitter.GetContext());
             if (subject_modal_state)
@@ -1423,7 +1804,8 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
                 {
                   member.tagged = false;
                 }
-                llvm::Value *member_val = load_modal_payload_member(subject, member);
+                llvm::Value *member_val =
+                    load_modal_payload_member(subject, subject_type, member);
                 llvm::Value *member_ok = emit_pattern_cond_for_value(
                     field.pattern,
                     member_val,
@@ -1454,7 +1836,7 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
     {
       scrut_type = ctx->LookupValueType(if_case.scrutinee);
     }
-    return emit_pattern_cond_for_value(pattern, scrutinee, scrut_type);
+    return emit_pattern_cond_for_value(pattern, match_subject, scrut_type);
   };
 
   llvm::BasicBlock *merge_bb =
@@ -1503,33 +1885,69 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
     }
   }
 
-  auto store_aggregate_result = [&](llvm::Value *arm_storage,
+  auto store_aggregate_result = [&](const IRValue &arm_ir,
+                                    llvm::Value *arm_storage,
                                     llvm::Value *arm_value,
-                                    const analysis::TypeRef &arm_type)
+                                    const analysis::TypeRef &arm_type) -> bool
   {
     if (!merged_storage || !result_ty)
     {
-      return;
+      return false;
     }
-    llvm::Value *candidate = nullptr;
+    analysis::TypeRef target_type = result_type ? result_type : arm_type;
     if (arm_storage && arm_storage->getType()->isPointerTy())
     {
-      llvm::Type *load_ty = arm_type ? emitter.GetLLVMType(arm_type) : nullptr;
-      if (!load_ty)
+      if (TryEmitBitcopyAggregateStorageCopy(
+              emitter,
+              &builder,
+              merged_storage,
+              arm_storage,
+              target_type,
+              arm_type))
       {
-        load_ty = result_ty;
+        return true;
       }
-      llvm::Value *typed_storage = arm_storage;
-      llvm::Type *load_ptr_ty = llvm::PointerType::get(load_ty, 0);
-      if (typed_storage->getType() != load_ptr_ty)
+      if (TryEmitAggregateStorageTransfer(
+              emitter,
+              &builder,
+              merged_storage,
+              arm_storage,
+              target_type,
+              arm_type))
       {
-        typed_storage = builder.CreateBitCast(typed_storage, load_ptr_ty);
+        return true;
       }
-      candidate = builder.CreateLoad(load_ty, typed_storage);
     }
+    if (target_type &&
+        StoreIRValueToStorage(
+            emitter,
+            &builder,
+            merged_storage,
+            arm_ir,
+            target_type,
+            result_ty,
+            1))
+    {
+      return true;
+    }
+    if (target_type &&
+        TryEmitDerivedAggregateToStorage(
+            emitter,
+            &builder,
+            merged_storage,
+            arm_ir,
+            target_type))
+    {
+      return true;
+    }
+    if (!arm_value)
+    {
+      return false;
+    }
+    llvm::Value *candidate = arm_value;
     if (!candidate)
     {
-      candidate = arm_value ? arm_value : llvm::Constant::getNullValue(result_ty);
+      return false;
     }
     llvm::Value *coerced = CoerceToTyped(
         emitter,
@@ -1547,6 +1965,7 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
       coerced = llvm::Constant::getNullValue(result_ty);
     }
     builder.CreateStore(coerced, merged_storage);
+    return true;
   };
 
   for (std::size_t i = 0; i < if_case.arms.size(); ++i)
@@ -1589,12 +2008,24 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
     if (!value_bb->getTerminator())
     {
       llvm::Value *arm_storage = emitter.GetAddressableStorage(arm.value);
-      llvm::Value *arm_value = EvaluateOrDefault(arm.value);
+      llvm::Value *arm_value = nullptr;
       analysis::TypeRef arm_type =
           arm.value_type ? arm.value_type : LookupValueType(arm.value);
       if (aggregate_result && merged_storage)
       {
-        store_aggregate_result(arm_storage, arm_value, arm_type);
+        if (!store_aggregate_result(arm.value, arm_storage, nullptr, arm_type))
+        {
+          arm_value = EvaluateOrDefault(arm.value);
+          (void)store_aggregate_result(
+              arm.value,
+              arm_storage,
+              arm_value,
+              arm_type);
+        }
+      }
+      else
+      {
+        arm_value = EvaluateOrDefault(arm.value);
       }
       if (arm.cleanup_ir)
       {
@@ -1639,8 +2070,10 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
     }
     return;
   }
-  if (!result_ty || result_ty->isVoidTy())
+  if (!result_ty || result_ty->isVoidTy() ||
+      IsZeroSizedLLVMType(emitter, result_ty))
   {
+    emitter.SetTempValue(if_case.result, DefaultFor(if_case.result));
     return;
   }
 

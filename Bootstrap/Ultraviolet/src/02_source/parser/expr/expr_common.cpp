@@ -479,8 +479,8 @@ bool IsExprStart(const Token& tok) {
            tok.lexeme == "yield" || tok.lexeme == "sync" ||
            tok.lexeme == "race" || tok.lexeme == "all";
   }
-  // UVX Extension: "wait" is a contextual keyword
-  if (Ctx(tok, "wait")) {
+  // UVX Extension: "wait" and "new" are contextual keywords
+  if (Ctx(tok, "wait") || Ctx(tok, "new")) {
     return true;
   }
   return false;

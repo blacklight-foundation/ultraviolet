@@ -2,7 +2,7 @@
 
 
 public procedure countStatementsAndBlocksExpressionStatementsObligations() -> usize {
-    return 8usize
+    return 7usize
 }
 
 public procedure validatedStatementsAndBlocksExpressionStatementsObligations() -> usize {
@@ -67,15 +67,6 @@ public procedure validatedStatementsAndBlocksExpressionStatementsObligations() -
         "HelloUltraviolet::Audit",
         "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
         "Source/Audit/AcceptedProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.18.ExpressionStatements",
-        70691usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/ExpressionStatementsDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

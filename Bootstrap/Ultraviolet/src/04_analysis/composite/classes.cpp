@@ -623,6 +623,7 @@ static Permission LowerReceiverPerm(ast::ReceiverPerm perm) {
 struct MethodSig {
   bool ok = false;
   TypeRef recv_type;
+  std::optional<ParamMode> recv_mode;
   std::vector<TypeFuncParam> params;
   TypeRef ret;
 };
@@ -635,6 +636,7 @@ static MethodSig MethodSigSelf(const ScopeContext& ctx,
   if (const auto* shorthand =
           std::get_if<ast::ReceiverShorthand>(&method.receiver)) {
     sig.recv_type = MakeTypePerm(LowerReceiverPerm(shorthand->perm), self);
+    sig.recv_mode = LowerParamMode(shorthand->mode_opt);
   } else if (const auto* explicit_recv =
                  std::get_if<ast::ReceiverExplicit>(&method.receiver)) {
     const auto lowered = LowerType(ctx, explicit_recv->type);
@@ -642,6 +644,7 @@ static MethodSig MethodSigSelf(const ScopeContext& ctx,
       return sig;
     }
     sig.recv_type = SubstSelfType(self, lowered.type);
+    sig.recv_mode = LowerParamMode(explicit_recv->mode_opt);
   }
 
   for (const auto& param : method.params) {
@@ -664,6 +667,9 @@ static MethodSig MethodSigSelf(const ScopeContext& ctx,
 
 static bool SigEqual(const MethodSig& lhs, const MethodSig& rhs) {
   if (!lhs.ok || !rhs.ok) {
+    return false;
+  }
+  if (lhs.recv_mode != rhs.recv_mode) {
     return false;
   }
   const auto recv_eq = TypeEquiv(lhs.recv_type, rhs.recv_type);
@@ -691,6 +697,7 @@ static bool SigEqual(const MethodSig& lhs, const MethodSig& rhs) {
 
 static void AppendMethodSig(std::string& out, const MethodSig& sig) {
   out += "recv:";
+  out += sig.recv_mode.has_value() ? "move " : "ref ";
   out += TypeToString(sig.recv_type);
   out += ";params:[";
   for (std::size_t i = 0; i < sig.params.size(); ++i) {
@@ -1027,6 +1034,36 @@ bool ClassSubtypes(const ScopeContext& ctx,
   return false;
 }
 
+static bool TypeParameterBoundSatisfiesClass(const ScopeContext& ctx,
+                                             const TypePath& type_path,
+                                             const ast::ClassPath& path) {
+  if (type_path.size() != 1) {
+    return false;
+  }
+
+  const auto key = IdKeyOf(type_path[0]);
+  for (const auto& scope : ctx.scopes) {
+    const auto it = scope.find(key);
+    if (it == scope.end()) {
+      continue;
+    }
+    const Entity& entity = it->second;
+    if (entity.kind != EntityKind::Type ||
+        (entity.target_opt.has_value() && !IdEq(*entity.target_opt, type_path[0]))) {
+      continue;
+    }
+    for (const auto& bound : entity.type_param_class_bounds) {
+      if (PathEq(bound.class_path, path) ||
+          ClassSubtypes(ctx, bound.class_path, path)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  return false;
+}
+
 bool TypeImplementsClass(const ScopeContext& ctx,
                          const TypeRef& type,
                          const ast::ClassPath& path) {
@@ -1053,6 +1090,9 @@ bool TypeImplementsClass(const ScopeContext& ctx,
     if (IdEq(name, "FfiSafe")) {
       return FfiSafeType(ctx, stripped);
     }
+    if (IdEq(name, "GpuSafe")) {
+      return !GpuSafeDiagForType(ctx, stripped).has_value();
+    }
     if (IdEq(name, "Eq")) {
       if (EqType(ctx, stripped)) {
         return true;
@@ -1072,6 +1112,11 @@ bool TypeImplementsClass(const ScopeContext& ctx,
   const auto* path_type = std::get_if<TypePathType>(&stripped->node);
   if (!path_type) {
     return false;
+  }
+
+  if (path_type->generic_args.empty() &&
+      TypeParameterBoundSatisfiesClass(ctx, path_type->path, path)) {
+    return true;
   }
 
   ast::Path syntax_path;

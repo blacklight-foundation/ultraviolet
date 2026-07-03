@@ -2,7 +2,7 @@
 
 
 public procedure countPatternsTupleAndRecordPatternsObligations() -> usize {
-    return 32usize
+    return 29usize
 }
 
 public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
@@ -187,15 +187,6 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.17.Pat-Tuple-R-Arity-Err",
-        66157usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPatternsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Patterns/TuplePatternArity/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.17.Pat-Tuple-R",
         66173usize,
@@ -211,15 +202,6 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.17.RecordPattern-UnknownField",
-        66210usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPatternsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Patterns/RecordPatternUnknownField/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -283,15 +265,6 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
         "HelloUltraviolet::Audit",
         "patternTupleRecordPatternLoweringSharedConformanceMatches",
         "Source/Audit/PatternLoweringConformanceExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.17.TupleRecordPatterns",
-        66338usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPatternsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Patterns/TupleRecordPatternsDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

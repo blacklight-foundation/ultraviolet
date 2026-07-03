@@ -93,11 +93,13 @@ inline IRPtr MakeCallVTable(
     const IRValue& base,
     std::size_t slot,
     std::vector<IRValue> args,
-    const IRValue& result) {
+    const IRValue& result,
+    std::vector<IRParam> params = {}) {
   IRCallVTable call;
   call.base = base;
   call.slot = slot;
   call.args = std::move(args);
+  call.params = std::move(params);
   call.result = result;
   return MakeIR(std::move(call));
 }
@@ -363,7 +365,7 @@ inline IRPtr MakeWait(
 }
 
 // =============================================================================
-// Async Operation Builders (§19)
+// Async Operation Builders (§21)
 // =============================================================================
 
 /// Create an IR node for yield expression.

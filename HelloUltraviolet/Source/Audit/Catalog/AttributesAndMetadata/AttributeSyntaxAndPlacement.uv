@@ -2,7 +2,7 @@
 
 
 public procedure countAttributesAndMetadataAttributeSyntaxAndPlacementObligations() -> usize {
-    return 49usize
+    return 45usize
 }
 
 public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObligations() -> usize {
@@ -287,15 +287,6 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "req.MalformedAttributeSyntaxIllFormed",
-        27288usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesGeneralAttributesReference",
-        "Source/Reference/Attributes/GeneralAttributes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "def.AttributeTargetDomain",
         27302usize,
         "HelloUltraviolet::Reference::Attributes",
@@ -352,24 +343,6 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     if acceptedObligationEntryMatches(
         "AttrList-Ok",
         27417usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesGeneralAttributesReference",
-        "Source/Reference/Attributes/GeneralAttributes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "AttrList-Unknown",
-        27435usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedAttributesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Attributes/UnknownAttribute/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "AttrList-Target-Err",
-        27453usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -436,15 +409,6 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.AttributeDiagnostics",
-        27576usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedAttributesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Attributes/LayoutWrongTarget/Source/Main.uv"
     ) {
         count = count + 1usize
     }

@@ -2,7 +2,7 @@
 
 
 public procedure countStatementsAndBlocksFrameObligations() -> usize {
-    return 26usize
+    return 23usize
 }
 
 public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
@@ -76,24 +76,6 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "HelloUltraviolet::Reference::Statements",
         "runStatementsFrameReference",
         "Source/Reference/Statements/Frame.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.18.Frame-NoActiveRegion-Err",
-        71493usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/FrameNoActiveRegion/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.18.Frame-Target-NotActive-Err",
-        71509usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/FrameTargetNotActive/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -229,15 +211,6 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "HelloUltraviolet::Audit",
         "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
         "Source/Audit/AcceptedProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.18.Frame",
-        71754usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/FrameDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

@@ -2,7 +2,7 @@
 
 
 public procedure countCompileTimeExecutionAndMetaprogrammingReflectionObligations() -> usize {
-    return 26usize
+    return 24usize
 }
 
 public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObligations() -> usize {
@@ -115,15 +115,6 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.22.IntrospectMemberValidity",
-        85340usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/IntrospectFieldsNonRecord/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "requirement.22.ReflectionCanonicalOrder",
         85355usize,
@@ -229,15 +220,6 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming",
         "comptimeRuntimeErasureArtifactEvidenceMatches",
         "Source/Audit/Catalog/CompileTimeExecutionAndMetaprogramming/LoweringErasureArtifactExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.22.ReflectionDiagnosticsReference",
-        85544usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/IntrospectFieldsNonRecord/Source/Main.uv"
     ) {
         count = count + 1usize
     }

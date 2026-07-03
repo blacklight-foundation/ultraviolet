@@ -629,17 +629,30 @@ static ProvExprResult ProvExpr(const ScopeContext& ctx,
     return inner;
   }
 
-  // Allocation expression - creates pointer with region provenance
   if (const auto* alloc = std::get_if<ast::AllocExpr>(&expr->node)) {
     auto inner = ProvExpr(ctx, alloc->value, env, gamma);
     if (!inner.ok) return inner;
     const auto tag = AllocTag(env, alloc->region_opt);
-    SPEC_RULE("P-Alloc");
-    result.ok = true;
     if (tag.has_value()) {
+      if (alloc->region_opt.has_value()) {
+        SPEC_RULE("P-Internal-Alloc-Explicit");
+      } else {
+        SPEC_RULE("P-New-CurrentRegion");
+      }
+      result.ok = true;
       result.prov = RegionTag(*tag);
       return result;
     }
+    if (!alloc->region_opt.has_value()) {
+      SPEC_RULE("New-NoActiveRegion-Err");
+      result.ok = false;
+      result.diag_id = "E-MEM-3021";
+      result.span = expr->span;
+      result.prov = BottomTag();
+      return result;
+    }
+    SPEC_RULE("P-Internal-Alloc-InvalidRegion");
+    result.ok = true;
     result.prov = BottomTag();
     return result;
   }
@@ -903,27 +916,23 @@ ProvenanceKind AllocProvenance(const std::optional<std::string>& region_name,
                                 const TypeEnv& gamma) {
   SpecDefsExprProv();
 
-  // If region specified, check if it's active
   if (region_name.has_value()) {
     const auto binding = BindOf(gamma, *region_name);
     if (binding.has_value() && RegionActiveType(binding->type)) {
-      SPEC_RULE("P-Alloc-Named-Region");
+      SPEC_RULE("P-Internal-Alloc-Explicit");
       return ProvenanceKind::Region;
     }
-    // Named region not found or not active
-    SPEC_RULE("P-Alloc-Invalid-Region");
+    SPEC_RULE("P-Internal-Alloc-InvalidRegion");
     return ProvenanceKind::Bottom;
   }
 
-  // No region specified - check for innermost active region
   const auto innermost = InnermostActiveRegion(gamma);
   if (innermost.has_value()) {
-    SPEC_RULE("P-Alloc-Innermost-Region");
+    SPEC_RULE("P-New-CurrentRegion");
     return ProvenanceKind::Region;
   }
 
-  // No active region - allocation fails
-  SPEC_RULE("P-Alloc-No-Region");
+  SPEC_RULE("New-NoActiveRegion-Err");
   return ProvenanceKind::Bottom;
 }
 

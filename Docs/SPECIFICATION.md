@@ -195,7 +195,6 @@ ExprKind(MoveExpr(_)) = `move`
 ExprKind(Unary(`"widen"`, _)) = `widen`
 ExprKind(TransmuteExpr(_, _, _)) = `transmute`
 ExprKind(UnsafeBlockExpr(_)) = `unsafe`
-ExprKind(AllocExpr(_, _)) = `region_alloc`
 ExprKind(MethodCall(_, _, _)) = `method_call`
 ExprKind(Propagate(_)) = `union_propagate`
 ExprKind(ParallelExpr(_, _, _)) = `parallel`
@@ -571,7 +570,7 @@ TypeRender(TypePerm(p, T)) = PermLexeme(p) ++ " " ++ TypeRender(T)
 TypeRender(TypeUnion([T_1, …, T_n])) = Join(" | ", [TypeRender(T_1), …, TypeRender(T_n)])
 TypeRender(TypeFunc([⟨m_1, T_1⟩, …, ⟨m_n, T_n⟩], R)) = "(" ++ Join(", ", [ParamRender(⟨m_1, T_1⟩), …, ParamRender(⟨m_n, T_n⟩)]) ++ ") -> " ++ TypeRender(R)
 TypeRender(TypeTuple([])) = "()"
-TypeRender(TypeTuple([T])) = "(" ++ TypeRender(T) ++ ";)"
+TypeRender(TypeTuple([T])) = "(" ++ TypeRender(T) ++ ";" ++ ")"
 TypeRender(TypeTuple([T_1, …, T_n])) = "(" ++ Join(", ", [TypeRender(T_1), …, TypeRender(T_n)]) ++ ")"
 TypeRender(TypeArray(T, e)) = "[" ++ TypeRender(T) ++ "; " ++ ArrayLen(e) ++ "]"
 TypeRender(TypeSlice(T)) = "[" ++ TypeRender(T) ++ "]"
@@ -1915,7 +1914,7 @@ Next(K, i) = K[j] ⇔ j = min{ j | j > i ∧ K[j].kind ≠ newline }
 
 Ambig = {"+", "-", "*", "&", "|"}
 RangeCont = {"..", "..="}
-BeginsOperand(t) ⇔ t.kind ∈ {Identifier, IntLiteral, FloatLiteral, StringLiteral, CharLiteral, BoolLiteral, NullLiteral} ∨ (t.kind = Punctuator ∧ t.lexeme ∈ {"(", "[", "{"}) ∨ (t.kind = Operator ∧ t.lexeme ∈ {"!", "-", "&", "*", "^"}) ∨ (t.kind = Keyword ∧ t.lexeme ∈ {"if", "loop", "unsafe", "comptime", "quote", "move", "transmute", "widen", "parallel", "spawn", "dispatch", "yield", "sync", "race", "all"})
+BeginsOperand(t) ⇔ t.kind ∈ {Identifier, IntLiteral, FloatLiteral, StringLiteral, CharLiteral, BoolLiteral, NullLiteral} ∨ (t.kind = Punctuator ∧ t.lexeme ∈ {"(", "[", "{"}) ∨ (t.kind = Operator ∧ t.lexeme ∈ {"!", "-", "&", "*"}) ∨ (t.kind = Keyword ∧ t.lexeme ∈ {"if", "loop", "unsafe", "comptime", "quote", "move", "transmute", "widen", "parallel", "spawn", "dispatch", "yield", "sync", "race", "all"})
 UnaryOnly = {"!", "~", "?"}
 Adjacent(t_1, t_2) ⇔ t_1.span.end_offset = t_2.span.start_offset
 AttrBefore(K, i) ⇔ ∃ j. j < i ∧ K[j].kind = Operator ∧ K[j].lexeme = "#" ∧ Prev(K, i) is the final token of the attribute specification parsed from K[j]
@@ -2146,22 +2145,39 @@ ReservedIdentPrefix = {`gen_`}
 ReservedNamespacePhase = Phase3
 
 **Universe-Protected Bindings.**
-UniverseProtected = {`i8`, `i16`, `i32`, `i64`, `i128`, `u8`, `u16`, `u32`, `u64`, `u128`, `f16`, `f32`, `f64`, `bool`, `char`, `usize`, `isize`, `Self`, `Drop`, `Bitcopy`, `Clone`, `Eq`, `Hash`, `Hasher`, `Iterator`, `Discrete`, `FfiSafe`, `string`, `bytes`, `Modal`, `Region`, `RegionOptions`, `CancelToken`, `Context`, `TestAuthority`, `System`, `IO`, `HeapAllocator`, `Network`, `ExecutionDomain`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`, `Duration`, `MonotonicInstant`, `UtcInstant`, `TimeError`, `CpuSet`, `Priority`, `Async`, `Future`, `Sequence`, `Stream`, `Pipe`, `Exchange`, `Tracked`, `Spawned`}
+UniverseProtected = {`i8`, `i16`, `i32`, `i64`, `i128`, `u8`, `u16`, `u32`, `u64`, `u128`, `f16`, `f32`, `f64`, `bool`, `char`, `usize`, `isize`, `Self`, `Drop`, `Bitcopy`, `Clone`, `Eq`, `Hash`, `Hasher`, `Iterator`, `Discrete`, `FfiSafe`, `GpuSafe`, `string`, `bytes`, `Modal`, `Region`, `RegionOptions`, `CancelToken`, `Context`, `TestAuthority`, `System`, `IO`, `HeapAllocator`, `Network`, `ExecutionDomain`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`, `Duration`, `MonotonicInstant`, `UtcInstant`, `TimeError`, `Outcome`, `CpuSet`, `Priority`, `Async`, `Future`, `Sequence`, `Stream`, `Pipe`, `Exchange`, `Tracked`, `Spawned`}
 UniverseProtectedPhase = Phase3
 
-`Drop`, `Bitcopy`, `Clone`, and `FfiSafe` are reserved predicate names. They MUST NOT be declared as classes or used as user-defined type/value bindings.
+`Drop`, `Bitcopy`, `Clone`, `FfiSafe`, and `GpuSafe` are reserved foundational class names. They MUST NOT be declared as classes or used as user-defined type/value bindings.
 
 #### 4.2.4 Token Kinds
 
 TokenKind ∈ {Identifier, Keyword(k), IntLiteral, FloatLiteral, StringLiteral, CharLiteral, BoolLiteral, NullLiteral, Operator(o), Punctuator(p), Newline, Unknown}
 
 **Operator Set.**
-OperatorSet = {"+", "-", "*", "/", "%", "**", "==", "!=", "<", "<=", ">", ">=", "&&", "||", "!", "&", "|", "^", "<<", ">>", "=", "+=", "-=", "*=", "/=", "%=", "&=", "|:", "^=", "<<=", ">>=", ":=", "<:", "..", "..=", "|=", "->", "::", "~", "~>", "~!", "~%", "?", "#", "@", "$"}
+OperatorSet = {"+", "-", "*", "/", "%", "**", "==", "!=", "<", "<=", ">", ">=", "&&", "||", "!", "&", "|", "^", "<<", ">>", "=", "+=", "-=", "*=", "/=", "%=", "&=", "|:", "^=", "<<=", ">>=", ":=", "<:", "..", "..=", "|=", "=>", "->", "::", "~", "~>", "~!", "~%", "?", "#", "@", "$"}
 
 **Punctuator Set.**
 PunctuatorSet = {"(", ")", "[", "]", "{", "}", ",", ":", ";", "."}
 
 The attribute delimiter is the operator `#`. It prefixes exactly one attribute specification; repeated adjacent attributes form an attribute list.
+
+**Decorator Tokens.**
+DecoratorToken = {"#", "%", "@", "$"}
+
+A decorator is an existing `Operator` token used as a syntactic prefix for a
+following token or token sequence. Decorated source spellings such as `%read`,
+`@result`, `$(`, and `#dynamic` are not lexer tokens. They are source spellings
+for token sequences over `OperatorSet`, `PunctuatorSet`, and identifiers.
+Compound source spellings can also span multiple operator tokens. The source
+spelling `Type::<T>` has the token sequence `Identifier("Type")`,
+`Operator("::")`, `Operator("<")`, type, `Operator(">")`.
+
+DecorIdent(P, d, s) ⇔ IsOp(Tok(P), d) ∧ IsIdent(Tok(Advance(P))) ∧ Lexeme(Tok(Advance(P))) = s
+DecorPunc(P, d, p) ⇔ IsOp(Tok(P), d) ∧ IsPunc(Tok(Advance(P)), p)
+DecorOp(P, d, o) ⇔ IsOp(Tok(P), d) ∧ IsOp(Tok(Advance(P)), o)
+Adjacent(t_1, t_2) ⇔ t_1.span.file = t_2.span.file ∧ t_1.span.end_offset = t_2.span.start_offset
+DecorIdentAdj(P, d, s) ⇔ DecorIdent(P, d, s) ∧ Adjacent(Tok(P), Tok(Advance(P)))
 
 OperatorSet ∩ PunctuatorSet = ∅
 
@@ -2822,7 +2838,7 @@ IsPunc(t, s) ⇔ t.kind = Punctuator(s)
 Lexeme(t) = t.lexeme
 
 **Contextual Keywords.**
-CtxKeyword = {"in", "key", "wait"}
+CtxKeyword = {"in", "key", "wait", "new"}
 Ctx(t, s) ⇔ IsIdent(t) ∧ Lexeme(t) = s ∧ s ∈ CtxKeyword
 ¬ Ctx(t, "as") ∧ ¬ Ctx(t, "move")
 
@@ -3374,11 +3390,11 @@ IOResType(DirNext) = `Outcome<DirEntry | (), IoError>`
 IOResType(DirClose) = `ok`
 
 When `IOResType(Op) = Outcome<T, E>`, a primitive relation in this section that
-returns a successful payload `v` denotes `Outcome<T, E>@Value{value: v}`.
+returns a successful payload `v` denotes `Outcome::Value(v)`.
 A primitive relation that returns an `IoError` value `e` denotes
-`Outcome<T, IoError>@Error{error: e}`. For `DirNext`, the successful payload
+`Outcome::Error(e)`. For `DirNext`, the successful payload
 type is `DirEntry | ()`, so exhausted iteration returns the `()` member inside
-`Outcome<DirEntry | (), IoError>@Value`.
+`Outcome::Value(...)`.
 
 Handle = ℕ
 Entry ::= FileEntry(bytes) | DirEntry(names) | OtherEntry
@@ -3597,8 +3613,8 @@ DurationVal(n) = RecordValue(TypePath(["Duration"]), [⟨`nanoseconds`, IntVal("
 MonotonicInstantVal(domain, ticks) = RecordValue(TypePath(["MonotonicInstant"]), [⟨`domain`, IntVal("usize", domain)⟩, ⟨`ticks`, IntVal("u128", ticks)⟩])
 UtcInstantVal(n) = RecordValue(TypePath(["UtcInstant"]), [⟨`unix_nanoseconds`, IntVal("i128", n)⟩])
 TimeErrorVal(name) = EnumValue(["TimeError", name], ⊥)
-TimeOk(T, v) = `Outcome<T, TimeError>@Value`{`value`: v}
-TimeErr(T, name) = `Outcome<T, TimeError>@Error`{`error`: TimeErrorVal(name)}
+TimeOk(T, v) = EnumValue(["Outcome", `Value`], TuplePayload([v]))
+TimeErr(T, name) = EnumValue(["Outcome", `Error`], TuplePayload([TimeErrorVal(name)]))
 
 `TimeMonotonic` and `TimeWall` are attenuation relations from the process time root. `MonotonicTimeCoarsen` and `WallTimeCoarsen` are attenuation relations from an existing clock capability.
 
@@ -4208,7 +4224,7 @@ ClassMethodBindCheck(m, Cl, md) ⇓ ok ⇔ md.body_opt = body ∧ BindCheck(m, C
 StateMethodBindCheck(m, M, S, md) ⇓ ok ⇔ md.body = body ∧ BindCheck(m, StateMethodParams(M, S, md), body) ⇓ ok
 TransitionBindCheck(m, M, S, tr) ⇓ ok ⇔ tr.body = body ∧ BindCheck(m, TransitionParams(M, S, tr), body) ⇓ ok
 
-BindDiagRefs = {"8.2", "8.7", "8.10"}
+BindDiagRefs = {"6.6", "8.5", "10.4.7", "15.10"}
 
 This chapter defines only the environments and helper operations. Feature-specific `BJudgment` clauses are owned by the consuming chapters.
 
@@ -4339,6 +4355,21 @@ CaseElseProv(b, Ω) = [π] ⇔ CaseBodyProv(b, Ω) = π
 Γ; Ω ⊢ recv ⇓ π_Region(tag)    Γ; Ω ⊢ arg_i ⇓ π_i    for every argument
 ──────────────────────────────────────────────────────────────────────────────
 Γ; Ω ⊢ MethodCall(recv, `alloc`, args) ⇓ π_Region(tag)
+
+**(P-New-CurrentRegion)**
+Γ; Ω ⊢ e ⇓ π_e    AllocTag(Ω, ⊥) = tag
+────────────────────────────────────────────────────────────────────────────────
+Γ; Ω ⊢ AllocExpr(⊥, e) ⇓ π_Region(tag)
+
+**(P-Internal-Alloc-Explicit)**
+Γ; Ω ⊢ e ⇓ π_e    AllocTag(Ω, r) = tag
+────────────────────────────────────────────────────────────────────────────────
+Γ; Ω ⊢ AllocExpr(r, e) ⇓ π_Region(tag)
+
+**(P-Internal-Alloc-InvalidRegion)**
+Γ; Ω ⊢ e ⇓ π_e    AllocTag(Ω, r) = ⊥
+────────────────────────────────────────────────────────────────────────────────
+Γ; Ω ⊢ AllocExpr(r, e) ⇓ ⊥
 
 **(P-If-Is)**
 CaseProv(⟨pat, then_block⟩) = π_t    CaseElseProv(else_opt, Ω) = π_else    JoinAllProv([π_t] ++ π_else) = π
@@ -4746,7 +4777,7 @@ This section owns binding-state, region/frame, provenance, and unsafe-runtime di
 | `E-MEM-3006` | Error    | Compile-time | Attempt to move from immovable binding (`:=`) (`Trans-Let-NoReassign`, `B-Closure-MoveCapture-Immovable-Err`) |
 | `E-MEM-3007` | Error    | Compile-time | `unique` binding from place expression requires explicit `move` (`B-LetVar-UniqueNonMove-Err`) |
 | `E-MEM-3020` | Error    | Compile-time | Value with shorter-lived provenance escapes to longer-lived location |
-| `E-MEM-3021` | Error    | Compile-time | Region allocation `^` outside region scope                           |
+| `E-MEM-3021` | Error    | Compile-time | `new` allocation used with no active region in scope (`New-NoActiveRegion-Err`) |
 | `E-MEM-3030` | Error    | Compile-time | Unsafe operation outside block (`AllocRaw-Unsafe-Err`, `DeallocRaw-Unsafe-Err`, `Region-Unchecked-Unsafe-Err`, `Transmute-Unsafe-Err`) |
 
 ## 7. Name Resolution and Visibility
@@ -4794,10 +4825,10 @@ ReservedModulePath(path) ⇔ (|path| ≥ 1 ∧ IdEq(path[0], `ultraviolet`)) ∨
 
 
 PrimTypeNames = {`i8`, `i16`, `i32`, `i64`, `i128`, `u8`, `u16`, `u32`, `u64`, `u128`, `f16`, `f32`, `f64`, `bool`, `char`, `usize`, `isize`}
-SpecialTypeNames = {`Self`, `Drop`, `Bitcopy`, `Clone`, `Eq`, `Hash`, `Hasher`, `Iterator`, `Discrete`, `FfiSafe`, `string`, `bytes`, `Modal`, `Region`, `RegionOptions`, `CancelToken`, `Context`, `TestAuthority`, `System`, `IO`, `HeapAllocator`, `Network`, `ExecutionDomain`, `CpuSet`, `Priority`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`, `Duration`, `MonotonicInstant`, `UtcInstant`, `TimeError`}
+SpecialTypeNames = {`Self`, `Drop`, `Bitcopy`, `Clone`, `Eq`, `Hash`, `Hasher`, `Iterator`, `Discrete`, `FfiSafe`, `GpuSafe`, `string`, `bytes`, `Modal`, `Region`, `RegionOptions`, `CancelToken`, `Context`, `TestAuthority`, `System`, `IO`, `HeapAllocator`, `Network`, `ExecutionDomain`, `CpuSet`, `Priority`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`, `Duration`, `MonotonicInstant`, `UtcInstant`, `TimeError`, `Outcome`}
 AsyncTypeNames = {`Async`, `Future`, `Sequence`, `Stream`, `Pipe`, `Exchange`, `Tracked`}
 
-`Drop`, `Bitcopy`, `Clone`, and `FfiSafe` are reserved predicate names and are included in `SpecialTypeNames`. Reuse of these names at any scope is an error via `(Intro-Outer-Err)` (§7.2), since `UniverseBindings` is the outermost scope and contains these names.
+`Drop`, `Bitcopy`, `Clone`, `FfiSafe`, and `GpuSafe` are reserved foundational class names and are included in `SpecialTypeNames`. Reuse of these names at any scope is an error via `(Intro-Outer-Err)` (§7.2), since `UniverseBindings` is the outermost scope and contains these names.
 
 PrimTypeKeys = {IdKey(x) | x ∈ PrimTypeNames}
 SpecialTypeKeys = {IdKey(x) | x ∈ SpecialTypeNames}
@@ -5278,7 +5309,7 @@ TypeParamBindings(params) = { IdKey(p.name) ↦ ⟨Type, ⊥, ⊥, Decl⟩ | p �
 TypeParamBindings(⊥) = {}
 
 Γ ⊢ ResolveGenericParamsOpt(⊥) ⇓ ⊥
-Γ ⊢ ResolvePredicateClauseOpt(⊥) ⇓ ⊥
+
 Γ ⊢ ResolveContractClauseOpt(⊥) ⇓ ⊥
 Γ ⊢ ResolveInvariantOpt(⊥) ⇓ ⊥
 Γ ⊢ ResolveTypeOpt(⊥) ⇓ ⊥
@@ -5302,23 +5333,6 @@ ResolveExprOpt(e) = e' ⇔ Γ ⊢ ResolveExpr(e) ⇓ e'
 Γ ⊢ ResolveTypeParam(p) ⇓ p'    Γ ⊢ ResolveTypeParamList(ps) ⇓ ps'
 ────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ResolveTypeParamList(p :: ps) ⇓ p' :: ps'
-
-**(ResolvePredicateClauseOpt-Yes)**
-Γ ⊢ ResolvePredicateReqList(preds) ⇓ preds'
-──────────────────────────────────────────────
-Γ ⊢ ResolvePredicateClauseOpt(preds) ⇓ preds'
-
-Γ ⊢ ResolvePredicateReqList([]) ⇓ []
-
-**(ResolvePredicateReq-Predicate)**
-Γ ⊢ ResolveType(ty) ⇓ ty'
-──────────────────────────────────────────────────────────────
-Γ ⊢ ResolvePredicateReq(PredicateReq(pred, ty)) ⇓ PredicateReq(pred, ty')
-
-**(ResolvePredicateReqList-Cons)**
-Γ ⊢ ResolvePredicateReq(p) ⇓ p'    Γ ⊢ ResolvePredicateReqList(ps) ⇓ ps'
-────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ResolvePredicateReqList(p :: ps) ⇓ p' :: ps'
 
 **(ResolveContractClauseOpt-Yes)**
 Γ ⊢ ResolveExprOpt(pre) ⇓ pre'    Γ ⊢ ResolveExprOpt(post) ⇓ post'
@@ -5825,12 +5839,7 @@ key_clause_opt = ⟨path, mode⟩    Γ ⊢ ResolveKeyPathExpr(path) ⇓ path'
 ──────────────────────────────────────────────
 Γ ⊢ ResolveExpr(AllExpr(es)) ⇓ AllExpr(es')
 
-**(ResolveExpr-Alloc-Explicit-ByAlias)**
-Γ ⊢ ResolveValueName(r) ⇓ ent    RegionAlias(ent)    Γ ⊢ ResolveExpr(e) ⇓ e'
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ResolveExpr(Binary("^", Identifier(r), e)) ⇓ AllocExpr(r, e')
-
-ResolveExprRules = {ResolveExpr-Ident, ResolveExpr-Qualified, ResolveExpr-Call, ResolveExpr-Call-TypeArgs, ResolveExpr-RecordExpr, ResolveExpr-EnumLiteral, ResolveExpr-IfCase, ResolveExpr-LoopIter, ResolveExpr-Parallel, ResolveExpr-Spawn, ResolveExpr-Wait, ResolveExpr-Dispatch, ResolveExpr-Yield, ResolveExpr-YieldFrom, ResolveExpr-Sync, ResolveExpr-Race, ResolveExpr-All, ResolveExpr-Alloc-Explicit-ByAlias, ResolveExpr-Hom, ResolveExpr-Alloc-Implicit, ResolveExpr-Alloc-Explicit, ResolveExpr-Block}
+ResolveExprRules = {ResolveExpr-Ident, ResolveExpr-Qualified, ResolveExpr-Call, ResolveExpr-Call-TypeArgs, ResolveExpr-RecordExpr, ResolveExpr-EnumLiteral, ResolveExpr-IfCase, ResolveExpr-LoopIter, ResolveExpr-Parallel, ResolveExpr-Spawn, ResolveExpr-Wait, ResolveExpr-Dispatch, ResolveExpr-Yield, ResolveExpr-YieldFrom, ResolveExpr-Sync, ResolveExpr-Race, ResolveExpr-All, ResolveExpr-Hom, ResolveExpr-New, ResolveExpr-Internal-Alloc-Explicit, ResolveExpr-Block}
 
 NoSpecificResolveExpr(e) ⇔ ¬ ∃ r ∈ ResolveExprRules \ {ResolveExpr-Hom}. PremisesHold(r, e)
 
@@ -5839,12 +5848,12 @@ NoSpecificResolveExpr(C(e_1, …, e_n))    ∀ i, Γ ⊢ ResolveExpr(e_i) ⇓ e_
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ResolveExpr(C(e_1, …, e_n)) ⇓ C(e_1', …, e_n')
 
-**(ResolveExpr-Alloc-Implicit)**
+**(ResolveExpr-New)**
 Γ ⊢ ResolveExpr(e) ⇓ e'
 ────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ResolveExpr(AllocExpr(⊥, e)) ⇓ AllocExpr(⊥, e')
 
-**(ResolveExpr-Alloc-Explicit)**
+**(ResolveExpr-Internal-Alloc-Explicit)**
 Γ ⊢ ResolveValueName(r) ⇓ ent    Γ ⊢ ResolveExpr(e) ⇓ e'
 ────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ResolveExpr(AllocExpr(r, e)) ⇓ AllocExpr(r, e')
@@ -8799,25 +8808,25 @@ ClassMethodRetTypes(items) = { t | ∃ attrs, vis, name, gen_params, recv, param
 ClassItemTypeSet(items) = ClassFieldTypeSet(items) ∪ ClassMethodRecvTypes(items) ∪ ClassMethodParamTypes(items) ∪ ClassMethodRetTypes(items)
 
 TypePos_Static(P, m) = { t | ∃ attrs_opt, vis, mut, bind, span, doc. StaticDecl(attrs_opt, vis, mut, bind, span, doc) ∈ ASTModule(P, m).items ∧ bind.type_opt = t ∧ t ≠ ⊥ }
-TypePos_Proc(P, m) = { t | ∃ attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, params, return_type_opt, contract_opt, body, span, doc. ProcedureDecl(attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, params, return_type_opt, contract_opt, body, span, doc) ∈ ASTModule(P, m).items ∧ t ∈ (ParamTypeSet(params) ∪ TypeOptSet(return_type_opt)) }
-TypePos_Record(P, m) = { t | ∃ attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, impls, members, invariant_opt, span, doc. RecordDecl(attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, impls, members, invariant_opt, span, doc) ∈ ASTModule(P, m).items ∧ t ∈ (ClassPathTypeSet(impls) ∪ RecordMemberTypeSet(members)) }
-TypePos_Enum(P, m) = { t | ∃ attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, impls, variants, invariant_opt, span, doc. EnumDecl(attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, impls, variants, invariant_opt, span, doc) ∈ ASTModule(P, m).items ∧ t ∈ (ClassPathTypeSet(impls) ∪ EnumVariantTypeSet(variants)) }
-TypePos_Modal(P, m) = { t | ∃ attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, impls, states, invariant_opt, span, doc. ModalDecl(attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, impls, states, invariant_opt, span, doc) ∈ ASTModule(P, m).items ∧ t ∈ ClassPathTypeSet(impls) }
-TypePos_Class(P, m) = { t | ∃ attrs_opt, vis, modal, name, gen_params_opt, predicate_clause_opt, supers, items, span, doc. ClassDecl(attrs_opt, vis, modal, name, gen_params_opt, predicate_clause_opt, supers, items, span, doc) ∈ ASTModule(P, m).items ∧ t ∈ (ClassPathTypeSet(supers) ∪ ClassItemTypeSet(items)) }
-TypePos_Alias(P, m) = { t | ∃ attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, ty, span, doc. TypeAliasDecl(attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, ty, span, doc) ∈ ASTModule(P, m).items ∧ t = ty }
+TypePos_Proc(P, m) = { t | ∃ attrs_opt, vis, name, gen_params_opt, params, return_type_opt, contract_opt, body, span, doc. ProcedureDecl(attrs_opt, vis, name, gen_params_opt, params, return_type_opt, contract_opt, body, span, doc) ∈ ASTModule(P, m).items ∧ t ∈ (ParamTypeSet(params) ∪ TypeOptSet(return_type_opt)) }
+TypePos_Record(P, m) = { t | ∃ attrs_opt, vis, name, gen_params_opt, impls, members, invariant_opt, span, doc. RecordDecl(attrs_opt, vis, name, gen_params_opt, impls, members, invariant_opt, span, doc) ∈ ASTModule(P, m).items ∧ t ∈ (ClassPathTypeSet(impls) ∪ RecordMemberTypeSet(members)) }
+TypePos_Enum(P, m) = { t | ∃ attrs_opt, vis, name, gen_params_opt, impls, variants, invariant_opt, span, doc. EnumDecl(attrs_opt, vis, name, gen_params_opt, impls, variants, invariant_opt, span, doc) ∈ ASTModule(P, m).items ∧ t ∈ (ClassPathTypeSet(impls) ∪ EnumVariantTypeSet(variants)) }
+TypePos_Modal(P, m) = { t | ∃ attrs_opt, vis, name, gen_params_opt, impls, states, invariant_opt, span, doc. ModalDecl(attrs_opt, vis, name, gen_params_opt, impls, states, invariant_opt, span, doc) ∈ ASTModule(P, m).items ∧ t ∈ ClassPathTypeSet(impls) }
+TypePos_Class(P, m) = { t | ∃ attrs_opt, vis, modal, name, gen_params_opt, supers, items, span, doc. ClassDecl(attrs_opt, vis, modal, name, gen_params_opt, supers, items, span, doc) ∈ ASTModule(P, m).items ∧ t ∈ (ClassPathTypeSet(supers) ∪ ClassItemTypeSet(items)) }
+TypePos_Alias(P, m) = { t | ∃ attrs_opt, vis, name, gen_params_opt, ty, span, doc. TypeAliasDecl(attrs_opt, vis, name, gen_params_opt, ty, span, doc) ∈ ASTModule(P, m).items ∧ t = ty }
 TypePositions(P, m) = TypePos_Static(P, m) ∪ TypePos_Proc(P, m) ∪ TypePos_Record(P, m) ∪ TypePos_Enum(P, m) ∪ TypePos_Modal(P, m) ∪ TypePos_Class(P, m) ∪ TypePos_Alias(P, m)
 
 ArraySizeExprs(P, m) = { e | ∃ elem. TypeArray(elem, e) ∈ TypePositions(P, m) }
-EnumDiscriminantExprs(P, m) = { e | ∃ attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, impls, variants, invariant_opt, span, doc. EnumDecl(attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, impls, variants, invariant_opt, span, doc) ∈ ASTModule(P, m).items ∧ ∃ v. v = VariantDecl(_, _, e, _, _) ∈ variants ∧ e ≠ ⊥ }
+EnumDiscriminantExprs(P, m) = { e | ∃ attrs_opt, vis, name, gen_params_opt, impls, variants, invariant_opt, span, doc. EnumDecl(attrs_opt, vis, name, gen_params_opt, impls, variants, invariant_opt, span, doc) ∈ ASTModule(P, m).items ∧ ∃ v. v = VariantDecl(_, _, e, _, _) ∈ variants ∧ e ≠ ⊥ }
 TypePosExprs(P, m) = ArraySizeExprs(P, m) ∪ EnumDiscriminantExprs(P, m)
 
 TypeDeps(P, m) = { n | ∃ t ∈ TypePositions(P, m). Γ ⊢ TypeRefsTy(t, env_m) ⇓ T ∧ n ∈ T } ∪ { n | ∃ p ∈ PatNodes(P, m). Γ ⊢ TypeRefsPat(p, env_m) ⇓ T ∧ n ∈ T } ∪ { n | ∃ e ∈ (ExprNodes(P, m) ∪ TypePosExprs(P, m)). Γ ⊢ TypeRefsExpr(e, env_m) ⇓ T ∧ n ∈ T }
 
 StaticInitExprs(P, m) = { init | ∃ attrs, vis, mut, bind, span, doc. StaticDecl(attrs, vis, mut, bind, span, doc) ∈ ASTModule(P, m).items ∧ bind.init = init }
-RecordFieldInitExprs(P, m) = { init | ∃ attrs, vis, name, gen_params_opt, predicate_clause_opt, impls, members, invariant_opt, span, doc. RecordDecl(attrs, vis, name, gen_params_opt, predicate_clause_opt, impls, members, invariant_opt, span, doc) ∈ ASTModule(P, m).items ∧ ∃ f. f = FieldDecl(_, _, _, _, _, init, _, _) ∈ members ∧ init ≠ ⊥ }
-ProcBodies(P, m) = { body | ∃ attrs, vis, name, gen_params_opt, predicate_clause_opt, params, ret_opt, contract_opt, body, span, doc. ProcedureDecl(attrs, vis, name, gen_params_opt, predicate_clause_opt, params, ret_opt, contract_opt, body, span, doc) ∈ ASTModule(P, m).items }
-RecordMethodBodies(P, m) = { body | ∃ attrs, vis, name, gen_params_opt, predicate_clause_opt, impls, members, invariant_opt, span, doc. RecordDecl(attrs, vis, name, gen_params_opt, predicate_clause_opt, impls, members, invariant_opt, span, doc) ∈ ASTModule(P, m).items ∧ ∃ md. md = MethodDecl(_, _, _, _, _, _, _, _, _, body, _, _) ∈ members }
-ClassMethodBodies(P, m) = { body | ∃ attrs, vis, modal, name, gen_params_opt, predicate_clause_opt, supers, items, span, doc. ClassDecl(attrs, vis, modal, name, gen_params_opt, predicate_clause_opt, supers, items, span, doc) ∈ ASTModule(P, m).items ∧ ∃ md. md = ClassMethodDecl(_, _, _, _, _, _, _, _, body, _, _) ∈ items ∧ body ≠ ⊥ }
+RecordFieldInitExprs(P, m) = { init | ∃ attrs, vis, name, gen_params_opt, impls, members, invariant_opt, span, doc. RecordDecl(attrs, vis, name, gen_params_opt, impls, members, invariant_opt, span, doc) ∈ ASTModule(P, m).items ∧ ∃ f. f = FieldDecl(_, _, _, _, _, init, _, _) ∈ members ∧ init ≠ ⊥ }
+ProcBodies(P, m) = { body | ∃ attrs, vis, name, gen_params_opt, params, ret_opt, contract_opt, body, span, doc. ProcedureDecl(attrs, vis, name, gen_params_opt, params, ret_opt, contract_opt, body, span, doc) ∈ ASTModule(P, m).items }
+RecordMethodBodies(P, m) = { body | ∃ attrs, vis, name, gen_params_opt, impls, members, invariant_opt, span, doc. RecordDecl(attrs, vis, name, gen_params_opt, impls, members, invariant_opt, span, doc) ∈ ASTModule(P, m).items ∧ ∃ md. md = MethodDecl(_, _, _, _, _, _, _, _, _, body, _, _) ∈ members }
+ClassMethodBodies(P, m) = { body | ∃ attrs, vis, modal, name, gen_params_opt, supers, items, span, doc. ClassDecl(attrs, vis, modal, name, gen_params_opt, supers, items, span, doc) ∈ ASTModule(P, m).items ∧ ∃ md. md = ClassMethodDecl(_, _, _, _, _, _, _, _, body, _, _) ∈ items ∧ body ≠ ⊥ }
 
 ValueDepsEager(P, m) = { n | ∃ e ∈ StaticInitExprs(P, m). Γ ⊢ ValueRefs(e, env_m) ⇓ V ∧ n ∈ V }
 ValueDepsLazy(P, m) = { n | ∃ e ∈ RecordFieldInitExprs(P, m) ∪ ⋃_{b ∈ (ProcBodies(P, m) ∪ RecordMethodBodies(P, m) ∪ ClassMethodBodies(P, m))} ExprNodesOf(b). Γ ⊢ ValueRefs(e, env_m) ⇓ V ∧ n ∈ V }
@@ -8973,15 +8982,15 @@ Diagnostics are defined for malformed primitive type syntax and for literal-rang
 
 ```ebnf
 tuple_type       ::= "(" ")"
-                   | "(" type ";)"
+                   | "(" type ";" ")"
                    | "(" type ("," type)+ trailing_comma? ")"
 tuple_expr       ::= "(" ")"
-                   | "(" expr ";)"
+                   | "(" expr ";" ")"
                    | "(" expr ("," expr)+ trailing_comma? ")"
 tuple_projection ::= postfix_expr "." int_literal
 ```
 
-The singleton comma forms `("(" type ",)")` and `("(" expr ",)")` are ill-formed. A trailing comma denotes continuation only and does not create a one-element tuple.
+The singleton comma source forms `(T,)` and `(e,)` are ill-formed. A trailing comma denotes continuation only and does not create a one-element tuple.
 
 #### 12.2.2 Parsing
 
@@ -9714,7 +9723,7 @@ Diagnostics are defined for non-constant and empty range patterns in §17.4. Sli
 #### 12.6.1 Syntax
 
 ```ebnf
-record_decl     ::= attribute_list? visibility? "record" identifier generic_params? implements_clause? predicate_clause? record_body type_invariant?
+record_decl     ::= attribute_list? visibility? "record" identifier generic_params? implements_clause? record_body type_invariant?
 record_body     ::= "{" record_member* "}"
 record_field    ::= attribute_list? visibility? key_boundary? identifier ":" type record_field_init_opt
 key_boundary    ::= "#"
@@ -9725,9 +9734,9 @@ default_record  ::= identifier "(" ")"
 #### 12.6.2 Parsing
 
 **(Parse-Record)**
-Γ ⊢ ParseAttrListOpt(P) ⇓ (P_0, attrs_opt)    Γ ⊢ ParseVis(P_0) ⇓ (P_1, vis)    IsKw(Tok(P_1), `record`)    Γ ⊢ ParseIdent(Advance(P_1)) ⇓ (P_2, name)    Γ ⊢ ParseGenericParamsOpt(P_2) ⇓ (P_3, gen_params_opt)    Γ ⊢ ParseImplementsOpt(P_3) ⇓ (P_4, impls)    Γ ⊢ ParsePredicateClauseOpt(P_4) ⇓ (P_5, predicate_clause_opt)    Γ ⊢ ParseRecordBody(P_5) ⇓ (P_6, members)    Γ ⊢ ParseInvariantOpt(P_6) ⇓ (P_7, invariant_opt)
+Γ ⊢ ParseAttrListOpt(P) ⇓ (P_0, attrs_opt)    Γ ⊢ ParseVis(P_0) ⇓ (P_1, vis)    IsKw(Tok(P_1), `record`)    Γ ⊢ ParseIdent(Advance(P_1)) ⇓ (P_2, name)    Γ ⊢ ParseGenericParamsOpt(P_2) ⇓ (P_3, gen_params_opt)    Γ ⊢ ParseImplementsOpt(P_3) ⇓ (P_4, impls)    Γ ⊢ ParseRecordBody(P_4) ⇓ (P_5, members)    Γ ⊢ ParseInvariantOpt(P_5) ⇓ (P_6, invariant_opt)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ParseItem(P) ⇓ (P_7, ⟨RecordDecl, attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, impls, members, invariant_opt, SpanBetween(P, P_7), []⟩)
+Γ ⊢ ParseItem(P) ⇓ (P_7, ⟨RecordDecl, attrs_opt, vis, name, gen_params_opt, impls, members, invariant_opt, SpanBetween(P, P_7), []⟩)
 
 **(Parse-RecordBody)**
 IsPunc(Tok(P), "{")    Γ ⊢ ParseRecordMemberList(Advance(P)) ⇓ (P_1, members)    IsPunc(Tok(P_1), "}")
@@ -9775,7 +9784,7 @@ Rule **(Parse-Record-Literal)** is defined once by §16.6.2.
 
 #### 12.6.3 AST Representation / Form
 
-RecordDecl = ⟨attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, implements, members, invariant_opt, span, doc⟩
+RecordDecl = ⟨attrs_opt, vis, name, gen_params_opt, implements, members, invariant_opt, span, doc⟩
 RecordDecl.implements ∈ [ClassPath]
 
 RecordMember ∈ {
@@ -9805,9 +9814,9 @@ Rules **(Resolve-RecordPath)**, **(ResolveQual-Name-Record)** are defined once b
 Γ ⊢ ResolveQualifiedForm(QualifiedApply(path, name, Brace(fields))) ⇓ RecordExpr(TypePath(p), fields')
 
 **(ResolveItem-Record)**
-R = RecordDecl(attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, impls, members, invariant_opt, span, doc)    S_gen = TypeParamBindings(gen_params_opt)    Γ_g = [S_gen, S_module, S_universe]    Γ_g ⊢ ResolveGenericParamsOpt(gen_params_opt) ⇓ gen_params_opt'    Γ_g ⊢ ResolvePredicateClauseOpt(predicate_clause_opt) ⇓ predicate_clause_opt'    Γ_g ⊢ ResolveClassPathList(impls) ⇓ impls'    Γ_g ⊢ ResolveRecordMemberList(R, members) ⇓ members'    Γ_g ⊢ ResolveInvariantOpt(invariant_opt) ⇓ invariant_opt'
+R = RecordDecl(attrs_opt, vis, name, gen_params_opt, impls, members, invariant_opt, span, doc)    S_gen = TypeParamBindings(gen_params_opt)    Γ_g = [S_gen, S_module, S_universe]    Γ_g ⊢ ResolveGenericParamsOpt(gen_params_opt) ⇓ gen_params_opt'    Γ_g ⊢ ResolveClassPathList(impls) ⇓ impls'    Γ_g ⊢ ResolveRecordMemberList(R, members) ⇓ members'    Γ_g ⊢ ResolveInvariantOpt(invariant_opt) ⇓ invariant_opt'
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ResolveItem(R) ⇓ RecordDecl(attrs_opt, vis, name, gen_params_opt', predicate_clause_opt', impls', members', invariant_opt', span, doc)
+Γ ⊢ ResolveItem(R) ⇓ RecordDecl(attrs_opt, vis, name, gen_params_opt'', impls', members', invariant_opt', span, doc)
 
 InitOk(f) ⇔ f = FieldDecl(attrs_opt, vis, boundary, name, T_f, init_opt, span, doc) ∧ (init_opt = ⊥) ∨ (init_opt = e ∧ Γ; ⊥; ⊥ ⊢ e : T ∧ Γ ⊢ T <: T_f)
 VisRank(`public`) = 3    VisRank(`internal`) = 2    VisRank(`private`) = 1
@@ -9824,7 +9833,7 @@ FieldVisOk(R) ⇔ ∀ f ∈ Fields(R). VisRank(f.vis) ≤ VisRank(R.vis)
 Γ ⊢ R record wf ⇑ c
 
 **(WF-RecordDecl)**
-R = RecordDecl(_, _, _, gen_params_opt, predicate_clause_opt, _, _, _, _, _)    params_gen = TypeParamsOpt(gen_params_opt)    params_gen = [P_1, …, P_n]    Γ ⊢ ⟨P_1; …; P_n⟩ wf    Γ_g = BindTypeParams(Γ, params_gen)    Γ_g; params_gen ⊢ predicate_clause_opt wf    ∀ f ∈ Fields(R), Γ_g ⊢ f.type wf    FieldVisOk(R)    Γ_g ⊢ R record wf    Γ_g ⊢ Methods(R) : ok    Γ_g ⊢ TypePath(RecordPath(R)) : ImplementsOk
+R = RecordDecl(_, _, _, gen_params_opt, _, _, _, _, _)    params_gen = TypeParamsOpt(gen_params_opt)    params_gen = [P_1, …, P_n]    Γ ⊢ ⟨P_1; …; P_n⟩ wf    Γ_g = BindTypeParams(Γ, params_gen)    ∀ f ∈ Fields(R), Γ_g ⊢ f.type wf    FieldVisOk(R)    Γ_g ⊢ R record wf    Γ_g ⊢ Methods(R) : ok    Γ_g ⊢ TypePath(RecordPath(R)) : ImplementsOk
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ R record : ok
 
@@ -9941,7 +9950,7 @@ Rules **(LowerFieldInits-Empty)**, **(LowerFieldInits-Cons)**, **(Lower-Expr-Rec
 #### 12.7.1 Syntax
 
 ```ebnf
-enum_decl        ::= attribute_list? visibility? "enum" identifier generic_params? implements_clause? predicate_clause? enum_body type_invariant?
+enum_decl        ::= attribute_list? visibility? "enum" identifier generic_params? implements_clause? enum_body type_invariant?
 enum_body        ::= "{" variant_members? "}"
 variant_members  ::= variant (terminator variant)* terminator?
 variant          ::= identifier variant_payload_opt variant_discriminant_opt
@@ -9954,9 +9963,9 @@ Top-level enum cases are item-separated members. Between top-level enum cases, t
 #### 12.7.2 Parsing
 
 **(Parse-Enum)**
-Γ ⊢ ParseAttrListOpt(P) ⇓ (P_0, attrs_opt)    Γ ⊢ ParseVis(P_0) ⇓ (P_1, vis)    IsKw(Tok(P_1), `enum`)    Γ ⊢ ParseIdent(Advance(P_1)) ⇓ (P_2, name)    Γ ⊢ ParseGenericParamsOpt(P_2) ⇓ (P_3, gen_params_opt)    Γ ⊢ ParseImplementsOpt(P_3) ⇓ (P_4, impls)    Γ ⊢ ParsePredicateClauseOpt(P_4) ⇓ (P_5, predicate_clause_opt)    Γ ⊢ ParseEnumBody(P_5) ⇓ (P_6, variants)    Γ ⊢ ParseInvariantOpt(P_6) ⇓ (P_7, invariant_opt)
+Γ ⊢ ParseAttrListOpt(P) ⇓ (P_0, attrs_opt)    Γ ⊢ ParseVis(P_0) ⇓ (P_1, vis)    IsKw(Tok(P_1), `enum`)    Γ ⊢ ParseIdent(Advance(P_1)) ⇓ (P_2, name)    Γ ⊢ ParseGenericParamsOpt(P_2) ⇓ (P_3, gen_params_opt)    Γ ⊢ ParseImplementsOpt(P_3) ⇓ (P_4, impls)    Γ ⊢ ParseEnumBody(P_4) ⇓ (P_5, variants)    Γ ⊢ ParseInvariantOpt(P_5) ⇓ (P_6, invariant_opt)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ParseItem(P) ⇓ (P_7, ⟨EnumDecl, attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, impls, variants, invariant_opt, SpanBetween(P, P_7), []⟩)
+Γ ⊢ ParseItem(P) ⇓ (P_7, ⟨EnumDecl, attrs_opt, vis, name, gen_params_opt, impls, variants, invariant_opt, SpanBetween(P, P_7), []⟩)
 
 **(Parse-EnumBody)**
 IsPunc(Tok(P), "{")    Γ ⊢ ParseVariantMembers(Advance(P)) ⇓ (P_1, vars)    IsPunc(Tok(P_1), "}")
@@ -10019,7 +10028,7 @@ Enum literal surface forms are parsed first as qualified names or qualified appl
 
 #### 12.7.3 AST Representation / Form
 
-EnumDecl = ⟨attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, implements, variants, invariant_opt, span, doc⟩
+EnumDecl = ⟨attrs_opt, vis, name, gen_params_opt, implements, variants, invariant_opt, span, doc⟩
 EnumDecl.implements ∈ [ClassPath]
 
 VariantDecl = ⟨name, payload_opt, discriminant_opt, span, doc_opt⟩
@@ -10027,7 +10036,7 @@ VariantPayload ∈ {TuplePayload = [Type], RecordPayload = [FieldDecl]}
 ∀ f ∈ RecordPayload. f.init_opt = ⊥
 
 Variants(E) = E.variants
-BuiltinEnum = {`FileKind`, `IoError`, `AllocationError`, `Priority`}
+BuiltinEnum = {`FileKind`, `IoError`, `AllocationError`, `Priority`, `Outcome`}
 EnumPathOf(E) = [E.name]    if E.name ∈ BuiltinEnum
 EnumPathOf(E) = FullPath(ModuleOf(E), E.name)    otherwise
 EnumPath(path) = p ⇔ SplitLast(path) = (p, n)
@@ -10063,9 +10072,9 @@ Rule **(ResolveQual-Name-Enum)** is defined once by §7.6.
 Γ ⊢ ResolveQualifiedForm(QualifiedApply(path, name, Brace(fields))) ⇓ EnumLiteral(FullPath(p, name), Brace(fields'))
 
 **(ResolveItem-Enum)**
-S_gen = TypeParamBindings(gen_params_opt)    Γ_g = [S_gen, S_module, S_universe]    Γ_g ⊢ ResolveGenericParamsOpt(gen_params_opt) ⇓ gen_params_opt'    Γ_g ⊢ ResolvePredicateClauseOpt(predicate_clause_opt) ⇓ predicate_clause_opt'    Γ_g ⊢ ResolveClassPathList(impls) ⇓ impls'    Γ_g ⊢ ResolveVariantList(vars) ⇓ vars'    Γ_g ⊢ ResolveInvariantOpt(invariant_opt) ⇓ invariant_opt'
+S_gen = TypeParamBindings(gen_params_opt)    Γ_g = [S_gen, S_module, S_universe]    Γ_g ⊢ ResolveGenericParamsOpt(gen_params_opt) ⇓ gen_params_opt'    Γ_g ⊢ ResolveClassPathList(impls) ⇓ impls'    Γ_g ⊢ ResolveVariantList(vars) ⇓ vars'    Γ_g ⊢ ResolveInvariantOpt(invariant_opt) ⇓ invariant_opt'
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ResolveItem(EnumDecl(attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, impls, vars, invariant_opt, span, doc)) ⇓ EnumDecl(attrs_opt, vis, name, gen_params_opt', predicate_clause_opt', impls', vars', invariant_opt', span, doc)
+Γ ⊢ ResolveItem(EnumDecl(attrs_opt, vis, name, gen_params_opt, impls, vars, invariant_opt, span, doc)) ⇓ EnumDecl(attrs_opt, vis, name, gen_params_opt'', impls', vars', invariant_opt', span, doc)
 
 DiscOf(v, n) =
  n    if disc_opt(v) = ⊥
@@ -10122,7 +10131,7 @@ DiscType(E) =
  `u64`   otherwise
 
 **(WF-EnumDecl)**
-E = EnumDecl(_, _, _, gen_params_opt, predicate_clause_opt, _, variants, _, _, _)    params_gen = TypeParamsOpt(gen_params_opt)    params_gen = [P_1, …, P_n]    Γ ⊢ ⟨P_1; …; P_n⟩ wf    Γ_g = BindTypeParams(Γ, params_gen)    Γ_g; params_gen ⊢ predicate_clause_opt wf    variants ≠ []    Distinct([v.name | v ∈ variants])    ∀ v ∈ variants, Γ_g ⊢ v.payload_opt wf    EnumDiscriminants(E) ⇓ _    Γ_g ⊢ TypePath(EnumPathOf(E)) : ImplementsOk
+E = EnumDecl(_, _, _, gen_params_opt, _, variants, _, _, _)    params_gen = TypeParamsOpt(gen_params_opt)    params_gen = [P_1, …, P_n]    Γ ⊢ ⟨P_1; …; P_n⟩ wf    Γ_g = BindTypeParams(Γ, params_gen)    variants ≠ []    Distinct([v.name | v ∈ variants])    ∀ v ∈ variants, Γ_g ⊢ v.payload_opt wf    EnumDiscriminants(E) ⇓ _    Γ_g ⊢ TypePath(EnumPathOf(E)) : ImplementsOk
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ E enum : ok
 
@@ -10314,6 +10323,13 @@ Rules **(Sub-Member-Union)**, **(Sub-Union-Width)** are defined once by §8.2.
 ──────────────────────────────────────────────
 Γ ⊢ e : U
 
+The fallible/error channel of an API is expressed with the `Outcome<T, E>` enum,
+not with a union. `Outcome` discriminates success from error by a tag that is
+independent of the payload types, so it works even when `T` and `E` coincide or
+overlap and is the form required for error-generic code. A union is the general
+structural sum, appropriate when the alternatives are distinct existing types
+that should not be re-wrapped (for example `DirEntry | ()`).
+
 Rule **(Union-DirectAccess-Err)** is defined once by §16.2.4.
 
 Union matching and propagation are defined by §§16.8 and 17.5.
@@ -10451,32 +10467,31 @@ Diagnostics are defined for unions with fewer than two member types and for dire
 #### 12.9.1 Syntax
 
 ```ebnf
-type_alias_decl ::= attribute_list? visibility? "type" identifier generic_params? predicate_clause? "=" type
+type_alias_decl ::= attribute_list? visibility? "type" identifier generic_params? "=" type
 ```
 
 #### 12.9.2 Parsing
 
 **(Parse-Type-Alias)**
-Γ ⊢ ParseAttrListOpt(P) ⇓ (P_0, attrs_opt)    Γ ⊢ ParseVis(P_0) ⇓ (P_1, vis)    IsKw(Tok(P_1), `type`)    Γ ⊢ ParseIdent(Advance(P_1)) ⇓ (P_2, name)    Γ ⊢ ParseGenericParamsOpt(P_2) ⇓ (P_3, gen_params_opt)    Γ ⊢ ParsePredicateClauseOpt(P_3) ⇓ (P_4, predicate_clause_opt)    IsOp(Tok(P_4), "=")    Γ ⊢ ParseType(Advance(P_4)) ⇓ (P_5, ty)
+Γ ⊢ ParseAttrListOpt(P) ⇓ (P_0, attrs_opt)    Γ ⊢ ParseVis(P_0) ⇓ (P_1, vis)    IsKw(Tok(P_1), `type`)    Γ ⊢ ParseIdent(Advance(P_1)) ⇓ (P_2, name)    Γ ⊢ ParseGenericParamsOpt(P_2) ⇓ (P_3, gen_params_opt)    IsOp(Tok(P_3), "=")    Γ ⊢ ParseType(Advance(P_3)) ⇓ (P_4, ty)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ParseItem(P) ⇓ (P_5, ⟨TypeAliasDecl, attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, ty, SpanBetween(P, P_5), []⟩)
+Γ ⊢ ParseItem(P) ⇓ (P_5, ⟨TypeAliasDecl, attrs_opt, vis, name, gen_params_opt, ty, SpanBetween(P, P_5), []⟩)
 
 #### 12.9.3 AST Representation / Form
 
-TypeAliasDecl = ⟨attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, type, span, doc⟩
+TypeAliasDecl = ⟨attrs_opt, vis, name, gen_params_opt, type, span, doc⟩
 
-AliasBody(p) = ty ⇔ Σ.Types[p] = TypeAliasDecl(attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, ty, span, doc)
+AliasBody(p) = ty ⇔ Σ.Types[p] = TypeAliasDecl(attrs_opt, vis, name, gen_params_opt, ty, span, doc)
 AliasParams(p) = gen_params_opt ⇔ Σ.Types[p] = TypeAliasDecl(_, _, _, gen_params_opt, _, _, _, _)
-AliasPredicateClause(p) = predicate_clause_opt ⇔ Σ.Types[p] = TypeAliasDecl(_, _, _, _, predicate_clause_opt, _, _, _)
 
 #### 12.9.4 Static Semantics
 
 Rule **(Bind-TypeAlias)** is defined once by §7.5.
 
 **(ResolveItem-TypeAlias)**
-S_gen = TypeParamBindings(gen_params_opt)    Γ_g = [S_gen, S_module, S_universe]    Γ_g ⊢ ResolveGenericParamsOpt(gen_params_opt) ⇓ gen_params_opt'    Γ_g ⊢ ResolvePredicateClauseOpt(predicate_clause_opt) ⇓ predicate_clause_opt'    Γ_g ⊢ ResolveType(ty) ⇓ ty'
+S_gen = TypeParamBindings(gen_params_opt)    Γ_g = [S_gen, S_module, S_universe]    Γ_g ⊢ ResolveGenericParamsOpt(gen_params_opt) ⇓ gen_params_opt'    Γ_g ⊢ ResolveType(ty) ⇓ ty'
 ──────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ResolveItem(TypeAliasDecl(attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, ty, span, doc)) ⇓ TypeAliasDecl(attrs_opt, vis, name, gen_params_opt', predicate_clause_opt', ty', span, doc)
+Γ ⊢ ResolveItem(TypeAliasDecl(attrs_opt, vis, name, gen_params_opt, ty, span, doc)) ⇓ TypeAliasDecl(attrs_opt, vis, name, gen_params_opt'', ty', span, doc)
 
 AliasStep(TypePath(p)) = AliasBody(p) if defined; otherwise TypePath(p)
 AliasStep(T) = T if T ∉ {TypePath(p)}
@@ -10535,7 +10550,7 @@ TypePathsOfModalRef(TypeApply(p, args)) = {p} ∪ (⋃_{t ∈ args} TypePaths(t)
 
 AliasCycle(p) ⇔ p ∈ Reach^+(AliasGraph, p)
 
-Σ.Types[p] = TypeAliasDecl(_, _, _, gen_params_opt, predicate_clause_opt, ty, _, _)    params_gen = TypeParamsOpt(gen_params_opt)    params_gen = [P_1, …, P_n]    Γ ⊢ ⟨P_1; …; P_n⟩ wf    Γ_g = BindTypeParams(Γ, params_gen)    Γ_g; params_gen ⊢ predicate_clause_opt wf    Γ_g ⊢ ty wf    ¬ AliasCycle(p)
+Σ.Types[p] = TypeAliasDecl(_, _, _, gen_params_opt, ty, _, _)    params_gen = TypeParamsOpt(gen_params_opt)    params_gen = [P_1, …, P_n]    Γ ⊢ ⟨P_1; …; P_n⟩ wf    Γ_g = BindTypeParams(Γ, params_gen)    Γ_g ⊢ ty wf    ¬ AliasCycle(p)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ p : TypeAliasOk
 
@@ -10581,6 +10596,7 @@ This section owns diagnostics for array, slice, and union data-type rules that a
 | `E-TYP-1820` | Error    | Compile-time | Slice index expression has non-`usize` type (`Index-Slice-NonUsize`) |
 | `E-TYP-2201` | Error    | Compile-time | Union type has fewer than two member types (`WF-Union-TooFew`) |
 | `E-TYP-2202` | Error    | Compile-time | Direct access on union value without pattern matching (`Union-DirectAccess-Err`) |
+| `E-TYP-2261` | Error    | Compile-time | Ambiguous implicit `Outcome` introduction: success and error types coincide |
 
 ## 13. Modal and Special Types
 
@@ -10589,7 +10605,7 @@ This section owns diagnostics for array, slice, and union data-type rules that a
 #### 13.1.1 Syntax
 
 ```ebnf
-modal_decl        ::= attribute_list? visibility? "modal" identifier generic_params? implements_clause? predicate_clause? modal_body type_invariant?
+modal_decl        ::= attribute_list? visibility? "modal" identifier generic_params? implements_clause? modal_body type_invariant?
 modal_body        ::= "{" state_block* "}"
 state_block       ::= "@" identifier "{" state_member* "}"
 state_member      ::= state_field_decl | state_method_def | transition_def
@@ -10601,9 +10617,9 @@ modal_state_expr  ::= modal_type_ref "@" identifier "{" field_init_list? "}"
 #### 13.1.2 Parsing
 
 **(Parse-Modal)**
-Γ ⊢ ParseAttrListOpt(P) ⇓ (P_0, attrs_opt)    Γ ⊢ ParseVis(P_0) ⇓ (P_1, vis)    IsKw(Tok(P_1), `modal`)    Γ ⊢ ParseIdent(Advance(P_1)) ⇓ (P_2, name)    Γ ⊢ ParseGenericParamsOpt(P_2) ⇓ (P_3, gen_params_opt)    Γ ⊢ ParseImplementsOpt(P_3) ⇓ (P_4, impls)    Γ ⊢ ParsePredicateClauseOpt(P_4) ⇓ (P_5, predicate_clause_opt)    Γ ⊢ ParseModalBody(P_5) ⇓ (P_6, states)    Γ ⊢ ParseInvariantOpt(P_6) ⇓ (P_7, invariant_opt)
+Γ ⊢ ParseAttrListOpt(P) ⇓ (P_0, attrs_opt)    Γ ⊢ ParseVis(P_0) ⇓ (P_1, vis)    IsKw(Tok(P_1), `modal`)    Γ ⊢ ParseIdent(Advance(P_1)) ⇓ (P_2, name)    Γ ⊢ ParseGenericParamsOpt(P_2) ⇓ (P_3, gen_params_opt)    Γ ⊢ ParseImplementsOpt(P_3) ⇓ (P_4, impls)    Γ ⊢ ParseModalBody(P_4) ⇓ (P_5, states)    Γ ⊢ ParseInvariantOpt(P_5) ⇓ (P_6, invariant_opt)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ParseItem(P) ⇓ (P_7, ⟨ModalDecl, attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, impls, states, invariant_opt, SpanBetween(P, P_7), []⟩)
+Γ ⊢ ParseItem(P) ⇓ (P_7, ⟨ModalDecl, attrs_opt, vis, name, gen_params_opt, impls, states, invariant_opt, SpanBetween(P, P_7), []⟩)
 
 **(Parse-ModalBody)**
 IsPunc(Tok(P), "{")    Γ ⊢ ParseStateBlockList(Advance(P)) ⇓ (P_1, states)    IsPunc(Tok(P_1), "}")
@@ -10630,7 +10646,7 @@ Rule **(Parse-Record-Literal-ModalState)** is defined once by §16.6.2.
 
 #### 13.1.3 AST Representation / Form
 
-ModalDecl = ⟨attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, implements, states, invariant_opt, span, doc⟩
+ModalDecl = ⟨attrs_opt, vis, name, gen_params_opt, implements, states, invariant_opt, span, doc⟩
 ModalDecl.implements ∈ [ClassPath]
 
 StateBlock = ⟨name, members, span, doc⟩
@@ -10653,7 +10669,7 @@ StateMembers(M, S) = b.members ⇔ StateBlockOf(M, S) = b
 
 Payload(M, S) = [⟨f, T⟩ | StateFieldDecl(_, _, _, f, T, _, _) ∈ StateMembers(M, S)]
 
-BuiltinModal = {`Region`, `File`, `DirIter`, `CancelToken`, `Spawned`, `Tracked`, `Async`, `Outcome`}
+BuiltinModal = {`Region`, `File`, `DirIter`, `CancelToken`, `Spawned`, `Tracked`, `Async`}
 ModalPath(M) = [M.name]    if M.name ∈ BuiltinModal
 ModalPath(M) = FullPath(ModuleOf(M), M.name)    otherwise
 
@@ -10698,7 +10714,7 @@ ModalPayloadMap(modal_ref, S) =
 Γ ⊢ Payload(M, S) wf ⇑ c
 
 **(WF-ModalState)**
-T = TypeModalState(modal_ref, S)    ModalDeclOf(modal_ref) = M    S ∈ States(M)    params_gen = TypeParamsOpt(M.gen_params_opt)    DefaultArgs(params_gen, ModalRefArgs(modal_ref)) = args'    θ = [args'_i / params_gen[i].name]    ∀ i, Γ ⊢ args'_i wf    ∀ i, Γ ⊢ args'_i satisfies Bounds(params_gen[i])    Γ ⊢ M.predicate_clause_opt[θ] ok
+T = TypeModalState(modal_ref, S)    ModalDeclOf(modal_ref) = M    S ∈ States(M)    params_gen = TypeParamsOpt(M.gen_params_opt)    DefaultArgs(params_gen, ModalRefArgs(modal_ref)) = args'    θ = [args'_i / params_gen[i].name]    ∀ i, Γ ⊢ args'_i wf    ∀ i, Γ ⊢ args'_i satisfies Bounds(params_gen[i])
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ T wf
 
@@ -10710,7 +10726,7 @@ T = TypeModalState(modal_ref, S)    ModalDeclOf(modal_ref) = M    params_gen = T
 StateMemberVisOk(M) ⇔ ∀ S ∈ States(M), ∀ m ∈ Payload(M, S) ∪ Methods(M, S) ∪ Transitions(M, S). VisRank(m.vis) ≤ VisRank(M.vis)
 
 **(WF-ModalDecl)**
-M = ModalDecl(_, _, _, gen_params_opt, predicate_clause_opt, _, _, _, _, _)    params_gen = TypeParamsOpt(gen_params_opt)    params_gen = [P_1, …, P_n]    Γ ⊢ ⟨P_1; …; P_n⟩ wf    Γ_g = BindTypeParams(Γ, params_gen)    Γ_g; params_gen ⊢ predicate_clause_opt wf    p = ModalPath(M)    Γ_g ⊢ `modal` M wf    StateMemberVisOk(M)    Γ_g ⊢ TypePath(p) : ImplementsOk    ∀ S ∈ States(M), ∀ md ∈ Methods(M, S), Γ_g ⊢ md : StateMethodOK(M, S)    Γ_g ⊢ md : StateMethodBodyOK(p, S)    ∀ tr ∈ Transitions(M, S), Γ_g ⊢ tr : TransitionOK(M, S)    Γ_g ⊢ tr : TransitionBodyOK(p, S)
+M = ModalDecl(_, _, _, gen_params_opt, _, _, _, _, _)    params_gen = TypeParamsOpt(gen_params_opt)    params_gen = [P_1, …, P_n]    Γ ⊢ ⟨P_1; …; P_n⟩ wf    Γ_g = BindTypeParams(Γ, params_gen)    p = ModalPath(M)    Γ_g ⊢ `modal` M wf    StateMemberVisOk(M)    Γ_g ⊢ TypePath(p) : ImplementsOk    ∀ S ∈ States(M), ∀ md ∈ Methods(M, S), Γ_g ⊢ md : StateMethodOK(M, S)    Γ_g ⊢ md : StateMethodBodyOK(p, S)    ∀ tr ∈ Transitions(M, S), Γ_g ⊢ tr : TransitionOK(M, S)    Γ_g ⊢ tr : TransitionBodyOK(p, S)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ M modal : ok
 
@@ -10858,31 +10874,40 @@ TrackedDecl = ModalDecl(⊥, `public`, `Tracked`, TrackedParams, ⊥, [], Tracke
 Σ.Types["Tracked"] = `modal` TrackedDecl
 
 ["Outcome"] ∈ dom(Σ.Types)
-States(`Outcome`) = { `@Value`, `@Error` }
+
+Outcome is a two-variant enum (not a modal). Its variant `Value` carries a
+single `TValue` payload and `Error` carries a single `TError` payload.
 
 OutcomeParams = [⟨`TValue`, [], ⊥, ⊥⟩, ⟨`TError`, [], ⊥, ⊥⟩]
-OutcomeValueFields = [⟨`value`, TypePath(["TValue"])⟩]
-OutcomeErrorFields = [⟨`error`, TypePath(["TError"])⟩]
 
-Payload(`Outcome`, `@Value`) = OutcomeValueFields
-Payload(`Outcome`, `@Error`) = OutcomeErrorFields
+OutcomeVariants = [
+  VariantDecl(`Value`, TuplePayload([TypePath(["TValue"])]), ⊥, ⊥, ⊥),
+  VariantDecl(`Error`, TuplePayload([TypePath(["TError"])]), ⊥, ⊥, ⊥)
+]
+OutcomeDecl = EnumDecl(⊥, `public`, `Outcome`, OutcomeParams, ⊥, [], OutcomeVariants, ⊥, ⊥, ⊥)
 
-OutcomeValueMembers = [
-  StateFieldDecl(⊥, `public`, false, `value`, TypePath(["TValue"]), ⊥, ⊥)
-]
-OutcomeErrorMembers = [
-  StateFieldDecl(⊥, `public`, false, `error`, TypePath(["TError"]), ⊥, ⊥)
-]
-OutcomeStates = [
-  StateBlock(`@Value`, OutcomeValueMembers, ⊥, ⊥),
-  StateBlock(`@Error`, OutcomeErrorMembers, ⊥, ⊥)
-]
-OutcomeDecl = ModalDecl(⊥, `public`, `Outcome`, OutcomeParams, ⊥, [], OutcomeStates, ⊥, ⊥, ⊥)
-
-Σ.Types["Outcome"] = `modal` OutcomeDecl
+Σ.Types["Outcome"] = `enum` OutcomeDecl
 
 OutcomeSig(T) = ⟨TValue, TError⟩ ⇔ AliasNorm(T) = TypeApply(["Outcome"], [TValue, TError])
 OutcomeSig(T) = ⊥ otherwise
+
+**(T-Outcome-Intro-Value)**
+Γ; R; L ⊢ e : T    OutcomeSig(U) = ⟨T_s, E_s⟩    Γ ⊢ T <: T_s    ¬(Γ ⊢ T <: E_s)
+──────────────────────────────────────────────────
+Γ; R; L ⊢ e : U
+
+**(T-Outcome-Intro-Error)**
+Γ; R; L ⊢ e : T    OutcomeSig(U) = ⟨T_s, E_s⟩    Γ ⊢ T <: E_s    ¬(Γ ⊢ T <: T_s)
+───────────────────────────────────────────────────
+Γ; R; L ⊢ e : U
+
+In a context expecting `Outcome<T_s, E_s>`, a value of type `T` introduces
+implicitly as `Outcome::Value(e)` when `T <: T_s` (and not `T <: E_s`), and as
+`Outcome::Error(e)` when `T <: E_s` (and not `T <: T_s`). When `T` is admissible
+to both slots (in particular when `T_s ≡ E_s`), implicit introduction is
+ambiguous and is rejected with `E-TYP-2261` ("ambiguous Outcome introduction:
+success and error types coincide"); use the explicit `Outcome::Value(e)` /
+`Outcome::Error(e)` form there. The explicit forms are always available.
 
 DirIterOpenMembers = [
   StateFieldDecl(⊥, `public`, false, `handle`, TypePrim("usize"), ⊥, ⊥),
@@ -11920,7 +11945,7 @@ PtrState(σ, v_ptr) = `Expired`
 Rules **(Size-Ptr)**, **(Align-Ptr)**, **(Layout-Ptr)** are defined once by §24.2.2.
 
 sizeof(`Ptr<T>`) = sizeof(`usize`)    alignof(`Ptr<T>`) = alignof(`usize`)
-PtrDiagRefs = {"8.10"}
+PtrDiagRefs = {"13.8.7", "16.1.7"}
 
 NicheSet(T) = {LEBytes(0, PtrSize)} ⇔ ∃ U. T = TypePtr(U, `Valid`)
 NicheSet(T) = ∅ ⇔ ¬ ∃ U. T = TypePtr(U, `Valid`)
@@ -12290,13 +12315,14 @@ This section owns diagnostics for modal-state usage, modal widening, and pointer
 generic_params       ::= "<" generic_param (";" generic_param)* ">"
 generic_param        ::= identifier ("<:" class_bound ("," class_bound)*)? ("=" type)?
 generic_args         ::= "<" type ("," type)* ","? ">"
-predicate_clause     ::= "|:" predicate_req (terminator predicate_req)* terminator?
-predicate_req        ::= ("Bitcopy" | "Clone" | "Drop" | "FfiSafe") "(" type ")"
 ```
 
 Trailing commas in `generic_args` are permitted only when `TrailingCommaAllowed` (§5.5). A trailing comma does not denote an additional type argument.
 
-Inline bounds introduced by `<:` are class bounds only. Predicate requirements belong to `predicate_clause`.
+All generic constraints are class bounds introduced by `<:` on the constrained
+generic parameter. `Bitcopy`, `Clone`, `Drop`, `FfiSafe`, and `GpuSafe` are
+built-in classes and are used in bounds with the same syntax as user-defined
+classes.
 
 #### 14.1.2 Parsing
 
@@ -12385,48 +12411,6 @@ IsOp(Tok(P), "=")    Γ ⊢ ParseType(Advance(P)) ⇓ (P_1, ty)
 ────────────────────────────────────────────────────────────────
 Γ ⊢ ParseTypeDefaultOpt(P) ⇓ (P_1, ty)
 
-**(Parse-PredicateClauseOpt-None)**
-¬ IsOp(Tok(P), "|:") ∨ IsPunc(Tok(Advance(P)), "{")
-──────────────────────────────────────────────
-Γ ⊢ ParsePredicateClauseOpt(P) ⇓ (P, ⊥)
-
-**(Parse-PredicateClauseOpt-Yes)**
-IsOp(Tok(P), "|:")    ¬ IsPunc(Tok(Advance(P)), "{")    Γ ⊢ ParsePredicateReqList(Advance(P)) ⇓ (P_1, preds)
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ParsePredicateClauseOpt(P) ⇓ (P_1, preds)
-
-**(Parse-PredicateReqList-Cons)**
-Γ ⊢ ParsePredicateReq(P) ⇓ (P_1, p)    Γ ⊢ ParsePredicateReqListTail(P_1, [p]) ⇓ (P_2, ps)
-────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ParsePredicateReqList(P) ⇓ (P_2, ps)
-
-**(Parse-PredicateReqListTail-End)**
-¬ IsTerminator(Tok(P))
-──────────────────────────────────────────────
-Γ ⊢ ParsePredicateReqListTail(P, ps) ⇓ (P, ps)
-
-**(Parse-PredicateReqListTail-TrailingTerminator)**
-IsTerminator(Tok(P))    ¬ IsIdent(Tok(Advance(P)))
-────────────────────────────────────────────────────
-Γ ⊢ ParsePredicateReqListTail(P, ps) ⇓ (Advance(P), ps)
-
-**(Parse-PredicateReqListTail-Cons)**
-IsTerminator(Tok(P))    Γ ⊢ ParsePredicateReq(Advance(P)) ⇓ (P_1, p)    Γ ⊢ ParsePredicateReqListTail(P_1, ps ++ [p]) ⇓ (P_2, ps')
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ParsePredicateReqListTail(P, ps) ⇓ (P_2, ps')
-
-IsPredName(name) ⇔ name ∈ {`Bitcopy`, `Clone`, `Drop`, `FfiSafe`}
-
-**(Parse-PredicateReq-Predicate)**
-Γ ⊢ ParseIdent(P) ⇓ (P_1, name)    IsPredName(name)    IsPunc(Tok(P_1), "(")    Γ ⊢ ParseType(Advance(P_1)) ⇓ (P_2, ty)    IsPunc(Tok(P_2), ")")
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ParsePredicateReq(P) ⇓ (Advance(P_2), PredicateReq(name, ty))
-
-**(Parse-PredicateReq-Err)**
-Γ ⊢ ParseIdent(P) ⇓ (P_1, name)    ¬ (IsPredName(name) ∧ IsPunc(Tok(P_1), "("))
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ParsePredicateReq(P) ⇓ (P_1, PredicateReq(name, TypePrim("!")))
-
 #### 14.1.3 AST Representation / Form
 
 Variance = {Covariant, Contravariant, Invariant, Bivariant}
@@ -12438,16 +12422,23 @@ User-declared generic parameters default to invariant variance. Built-in types w
 dedicated subtyping rules, including `Async`, define their variance through those
 rules rather than through user-visible variance syntax.
 
-PredicateName = {`Bitcopy`, `Clone`, `Drop`, `FfiSafe`}
-PredicateReq = ⟨pred, type⟩
-PredicateClause = [PredicateReq]
+FoundationalClass = {`Bitcopy`, `Clone`, `Drop`, `FfiSafe`, `GpuSafe`}
 
-TypeParamsOpt(⊥) = []
+TypeParamsOpt(?) = []
 TypeParamsOpt(ps) = ps
-PredicateReqs(⊥) = []
-PredicateReqs(W) = W
 TypeParamNames(params) = [p.name | p ∈ params]
 BindTypeParams(Γ, params) = Γ, T_1 : P_1, …, T_n : P_n    iff params = [P_1, …, P_n] ∧ ∀ i. T_i = P_i.name
+
+The foundational classes are reserved built-in classes in `?.Classes`. They are
+ordinary class paths for generic bounds, class-satisfaction expressions, and
+class-subtyping judgments; their satisfaction relation is supplied by the
+compiler's built-in structural predicates:
+
+Γ ⊢ T <: `Bitcopy` ⇔ BitcopyType(T)
+Γ ⊢ T <: `Clone` ⇔ CloneType(T)
+Γ ⊢ T <: `Drop` ⇔ DropType(T)
+Γ ⊢ T <: `FfiSafe` ⇔ Γ ⊢ FfiSafeType(T) ⇓ ok
+Γ ⊢ T <: `GpuSafe` ⇔ Γ ⊢ GpuSafeType(T) ⇓ ok
 
 #### 14.1.4 Static Semantics
 
@@ -12457,45 +12448,33 @@ DefaultWF(Γ, params) ⇔ ∀ i. params[i].default_opt = T_i ⇒ (Γ_i ⊢ T_i w
 
 **(WF-Generic-Param)**
 ∀ i ≠ j, name_i ≠ name_j    ∀ i, ∀ B ∈ Bounds_i, Γ ⊢ B : ClassPath    DefaultSuffix([P_1, …, P_n])    DefaultRefsOk([P_1, …, P_n])    DefaultWF(Γ, [P_1, …, P_n])
-──────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────
 Γ ⊢ ⟨P_1; …; P_n⟩ wf
 
 DefaultArgs(params, args) = args' ⇔ params = [P_1, …, P_n] ∧ args = [A_1, …, A_k] ∧ k ≤ n ∧
   (∀ i ≤ k. A_i' = A_i) ∧
   (∀ i ∈ k+1..n. P_i.default_opt = T_i ∧ A_i' = TypeSubst([A_1'/P_1.name, …, A_{i-1}'/P_{i-1}.name], T_i)) ∧
-  args' = [A_1', …, A_n']
+  args' = [A_1', ?, A_n']
 
 DefaultArgs(params, args) = ⊥ ⇔ ¬∃ args'. DefaultArgs(params, args) = args'
 
-**(PredicateReq-WF-Predicate)**
-wp = PredicateReq(pred, ty)    pred ∈ PredicateName    Γ' = BindTypeParams(Γ, params)    Γ' ⊢ ty wf
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ; params ⊢ wp wf
-
-Γ; params ⊢ W wf ⇔ ∀ wp ∈ PredicateReqs(W). Γ; params ⊢ wp wf
-
-PredOk(`Bitcopy`, T) ⇔ BitcopyType(T)
-PredOk(`Clone`, T) ⇔ CloneType(T)
-PredOk(`Drop`, T) ⇔ DropType(T)
-PredOk(`FfiSafe`, T) ⇔ Γ ⊢ FfiSafeType(T) ⇓ ok
-
 **(T-Constraint-Sat)**
 ∀ B ∈ Bounds, Γ ⊢ A <: B
-─────────────────────────────────────
+────────────────────────────────────
 Γ ⊢ A satisfies Bounds
 
-**(PredicateReq-Predicate)**
-wp = ⟨pred, ty⟩    PredOk(pred, ty[θ])
-──────────────────────────────────────
-Γ ⊢ wp[θ] ok
+SuperclassClosure(C) = {C} ∪ ⋃{SuperclassClosure(B) | ClassDecl(C) = D ∧ B ∈ SuperclassPaths(D)}
+ClassBoundImplies(Γ, B, C) ⇔ C ∈ SuperclassClosure(B)
+GenericParamBoundedBy(Γ, params, x, C) ⇔ ∃ p ∈ params. p.name = x ∧ ∃ B ∈ Bounds(p). ClassBoundImplies(Γ, B, C)
+GenericParamsBoundedBy(Γ, params, Xs, C) ⇔ ∀ x ∈ Xs. GenericParamBoundedBy(Γ, params, x, C)
 
-Γ ⊢ W[θ] ok ⇔ ∀ wp ∈ PredicateReqs(W). Γ ⊢ wp[θ] ok
-
-Inline bounds and predicate-clause requirements are conjunctive. An instantiation satisfies the parameter only when it satisfies both.
+When `B` is a user-defined class, satisfaction is the class-implementation
+relation of §14.3. When `B` is a foundational class, satisfaction is the
+corresponding built-in relation above.
 
 #### 14.1.5 Dynamic Semantics
 
-Generic parameter declarations, generic argument lists, class-bound lists, and predicate clauses have no runtime semantics. They are eliminated before abstract-machine evaluation.
+Generic parameter declarations, generic argument lists, and class-bound lists have no runtime semantics. They are eliminated before abstract-machine evaluation.
 
 #### 14.1.6 Lowering
 
@@ -12503,23 +12482,23 @@ These forms do not lower directly. Lowering consumes their elaborated substituti
 
 #### 14.1.7 Diagnostics
 
-Diagnostics are defined for duplicate type-parameter names, malformed predicate requirements, invalid class bounds, defaults that refer to later parameters, non-suffix defaults, missing default arguments during instantiation, and type arguments that fail required class or predicate constraints.
+Diagnostics are defined for duplicate type-parameter names, invalid class bounds, defaults that refer to later parameters, non-suffix defaults, missing default arguments during instantiation, and type arguments that fail required class constraints.
 
 ### 14.2 Generic Procedures and Types
 
 #### 14.2.1 Syntax
 
 ```ebnf
-generic_procedure ::= "procedure" identifier generic_params? signature predicate_clause? contract_clause? block
+generic_procedure ::= "procedure" identifier generic_params? signature contract_clause? block
 generic_call      ::= callee generic_args "(" arg_list? ")"
 generic_type_use  ::= type_path generic_args
 ```
 
-Generic parameters and predicate clauses also appear on nominal type declarations and type aliases in their owning chapters.
+Generic parameters also appear on nominal type declarations and type aliases in their owning chapters.
 
 #### 14.2.2 Parsing
 
-Generic declaration parsing is delegated to the owning declaration forms, each of which invokes `ParseGenericParamsOpt` and `ParsePredicateClauseOpt` before its body-specific parser.
+Generic declaration parsing is delegated to the owning declaration forms, each of which invokes `ParseGenericParamsOpt` before its body-specific parser.
 
 CallTypeArgsStart(P) ⇔ TypeArgsStartTok(Tok(P)) ∧ (Γ ⊢ ParseGenericArgs(P) ⇓ (P_1, args)) ∧ IsPunc(Tok(P_1), "(")
 
@@ -12527,20 +12506,18 @@ Rule **(Postfix-Call-TypeArgs)** is defined once by §16.3.2.
 
 #### 14.2.3 AST Representation / Form
 
-ProcedureDecl = ⟨attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, params, return_type_opt, contract_opt, body, span, doc⟩
-RecordDecl = ⟨attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, implements, members, invariant_opt, span, doc⟩
-EnumDecl = ⟨attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, implements, variants, invariant_opt, span, doc⟩
-ModalDecl = ⟨attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, implements, states, invariant_opt, span, doc⟩
-ClassDecl = ⟨attrs_opt, vis, modal, name, gen_params_opt, predicate_clause_opt, supers, items, span, doc⟩
-TypeAliasDecl = ⟨attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, type, span, doc⟩
+ProcedureDecl = ⟨attrs_opt, vis, name, gen_params_opt, params, return_type_opt, contract_opt, body, span, doc⟩
+RecordDecl = ⟨attrs_opt, vis, name, gen_params_opt, implements, members, invariant_opt, span, doc⟩
+EnumDecl = ⟨attrs_opt, vis, name, gen_params_opt, implements, variants, invariant_opt, span, doc⟩
+ModalDecl = ⟨attrs_opt, vis, name, gen_params_opt, implements, states, invariant_opt, span, doc⟩
+ClassDecl = ⟨attrs_opt, vis, modal, name, gen_params_opt, supers, items, span, doc⟩
+TypeAliasDecl = ⟨attrs_opt, vis, name, gen_params_opt, type, span, doc⟩
 
 Type = TypeApply(path, args) | …
 TypeApply = ⟨path, args⟩
 Expr = CallTypeArgs(callee, type_args, args) | …
 
 TypeParamsOf(p) = params_gen
-TypePredicateClauseOf(p) = predicate_clause_opt
-
 #### 14.2.4 Static Semantics
 
 **(WF-Generic-Proc)**
@@ -12564,7 +12541,7 @@ InferTypeArgs(params_gen, raw_args) = args' ⇔ params_gen = [P_1, …, P_n] ∧
 InferTypeArgs(params_gen, raw_args) = ⊥ ⇔ ¬ ∃ args'. InferTypeArgs(params_gen, raw_args) = args'
 
 **(GenericCallInference)**
-GenericCalleeProc(callee) = ProcedureDecl(_, _, _, gen_params_opt, predicate_clause_opt, params, ret_opt, _, _, _, _)
+GenericCalleeProc(callee) = ProcedureDecl(_, _, _, gen_params_opt, params, ret_opt, _, _, _, _)
 params_gen = TypeParamsOpt(gen_params_opt)    params_gen = [P_1, …, P_n]
 FreshTypeArgs(params_gen) = [X_1, …, X_n]
 θ_var = [X_1/P_1.name, …, X_n/P_n.name]
@@ -12579,18 +12556,18 @@ raw_args = [θ_s(X_1), …, θ_s(X_n)]
 InferTypeArgs(params_gen, raw_args) = [A_1, …, A_n]
 θ = [A_1/P_1.name, …, A_n/P_n.name]
 ∀ i ∈ 1..n. Γ ⊢ A_i satisfies Bounds(P_i)
-Γ ⊢ predicate_clause_opt[θ] ok
+
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ GenericCallInference(callee, args, T_exp_opt) ⇓ [A_1, …, A_n]
 
 **(T-Generic-Call)**
-GenericCalleeProc(callee) = ProcedureDecl(_, _, _, gen_params_opt, predicate_clause_opt, params, ret_opt, _, _, _, _)
+GenericCalleeProc(callee) = ProcedureDecl(_, _, _, gen_params_opt, params, ret_opt, _, _, _, _)
 params_gen = TypeParamsOpt(gen_params_opt)    params_gen = [P_1, …, P_n]
 DefaultArgs(params_gen, [A_1, …, A_k]) = [A_1', …, A_n']
 θ = [A_1'/P_1.name, …, A_n'/P_n.name]
 params_θ = [⟨mode_j, TypeSubst(θ, T_j)⟩ | ⟨mode_j, x_j, T_j⟩ ∈ params]
 ∀ i ∈ 1..n. Γ ⊢ A_i' satisfies Bounds(P_i)
-Γ ⊢ predicate_clause_opt[θ] ok
+
 Γ; R; L ⊢ ArgsOk_T(params_θ, args)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ CallTypeArgs(callee, [A_1, …, A_k], args) : ProcReturn(ret_opt)[θ]
@@ -12606,7 +12583,7 @@ T = TypePath(p)    p ∈ dom(Σ.Types)    TypeParamsOf(p) ≠ []
 Γ ⊢ T wf ⇑
 
 **(WF-Apply)**
-T = TypeApply(p, args)    p ∈ dom(Σ.Types)    params_gen = TypeParamsOf(p)    DefaultArgs(params_gen, args) = args'    θ = [args'_i / params_gen[i].name]    ∀ i, Γ ⊢ args'_i wf    ∀ i, Γ ⊢ args'_i satisfies Bounds(params_gen[i])    Γ ⊢ TypePredicateClauseOf(p)[θ] ok
+T = TypeApply(p, args)    p ∈ dom(Σ.Types)    params_gen = TypeParamsOf(p)    DefaultArgs(params_gen, args) = args'    θ = [args'_i / params_gen[i].name]    ∀ i, Γ ⊢ args'_i wf    ∀ i, Γ ⊢ args'_i satisfies Bounds(params_gen[i])
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ T wf
 
@@ -12648,14 +12625,14 @@ For instantiated nominal types, `sizeof` and `alignof` are those of the substitu
 
 #### 14.2.7 Diagnostics
 
-Diagnostics are defined for missing or excess type arguments, omitted-type-argument inference failures, use of a generic nominal declaration without required arguments, generic-call substitution failures, unsatisfied bounds or predicate clauses after substitution, and infinite monomorphization recursion.
+Diagnostics are defined for missing or excess type arguments, omitted-type-argument inference failures, use of a generic nominal declaration without required arguments, generic-call substitution failures, unsatisfied bounds after substitution, and infinite monomorphization recursion.
 
 ### 14.3 Classes
 
 #### 14.3.1 Syntax
 
 ```ebnf
-class_decl   ::= attribute_list? visibility? "modal"? "class" identifier generic_params? ("<:" superclass_bounds)? predicate_clause? "{" class_body? "}"
+class_decl   ::= attribute_list? visibility? "modal"? "class" identifier generic_params? ("<:" superclass_bounds)? "{" class_body? "}"
 class_item   ::= class_method | associated_type | abstract_field | abstract_state
 abstract_state ::= "@" identifier "{" abstract_field* "}"
 abstract_field ::= attribute_list? visibility? key_boundary? identifier ":" type
@@ -12666,9 +12643,9 @@ Associated type item syntax is defined canonically in §14.5.
 #### 14.3.2 Parsing
 
 **(Parse-Class)**
-Γ ⊢ ParseAttrListOpt(P) ⇓ (P_0, attrs_opt)    Γ ⊢ ParseVis(P_0) ⇓ (P_1, vis)    Γ ⊢ ParseModalOpt(P_1) ⇓ (P_2, modal)    IsKw(Tok(P_2), `class`)    Γ ⊢ ParseIdent(Advance(P_2)) ⇓ (P_3, name)    Γ ⊢ ParseGenericParamsOpt(P_3) ⇓ (P_4, gen_params_opt)    Γ ⊢ ParseSuperclassOpt(P_4) ⇓ (P_5, supers)    Γ ⊢ ParsePredicateClauseOpt(P_5) ⇓ (P_6, predicate_clause_opt)    Γ ⊢ ParseClassBody(P_6) ⇓ (P_7, items)
+Γ ⊢ ParseAttrListOpt(P) ⇓ (P_0, attrs_opt)    Γ ⊢ ParseVis(P_0) ⇓ (P_1, vis)    Γ ⊢ ParseModalOpt(P_1) ⇓ (P_2, modal)    IsKw(Tok(P_2), `class`)    Γ ⊢ ParseIdent(Advance(P_2)) ⇓ (P_3, name)    Γ ⊢ ParseGenericParamsOpt(P_3) ⇓ (P_4, gen_params_opt)    Γ ⊢ ParseSuperclassOpt(P_4) ⇓ (P_5, supers)    Γ ⊢ ParseClassBody(P_5) ⇓ (P_6, items)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ParseItem(P) ⇓ (P_7, ⟨ClassDecl, attrs_opt, vis, modal, name, gen_params_opt, predicate_clause_opt, supers, items, SpanBetween(P, P_7), []⟩)
+Γ ⊢ ParseItem(P) ⇓ (P_7, ⟨ClassDecl, attrs_opt, vis, modal, name, gen_params_opt, supers, items, SpanBetween(P, P_7), []⟩)
 
 **(Parse-Superclass-None)**
 ¬ IsOp(Tok(P), "<:")
@@ -12737,7 +12714,7 @@ IsPunc(Tok(P), "{")    Γ ⊢ ParseBlock(P) ⇓ (P_1, body)
 
 #### 14.3.3 AST Representation / Form
 
-ClassDecl = ⟨attrs_opt, vis, modal, name, gen_params_opt, predicate_clause_opt, supers, items, span, doc⟩
+ClassDecl = ⟨attrs_opt, vis, modal, name, gen_params_opt, supers, items, span, doc⟩
 ClassDecl.supers ∈ [ClassPath]
 
 ClassItem ∈ {
@@ -13529,10 +13506,10 @@ CapType(Cl) = TypeDynamic(Cl)
 
 IOInterface =
 {
- ⟨"open_read", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeUnion([TypeModalState(["File"], `@Read`), TypePath(["IoError"])])⟩,
- ⟨"open_write", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeUnion([TypeModalState(["File"], `@Write`), TypePath(["IoError"])])⟩,
- ⟨"open_append", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeUnion([TypeModalState(["File"], `@Append`), TypePath(["IoError"])])⟩,
- ⟨"create_write", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeUnion([TypeModalState(["File"], `@Write`), TypePath(["IoError"])])⟩,
+ ⟨"open_read", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypeModalState(["File"], `@Read`), TypePath(["IoError"])])⟩,
+ ⟨"open_write", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypeModalState(["File"], `@Write`), TypePath(["IoError"])])⟩,
+ ⟨"open_append", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypeModalState(["File"], `@Append`), TypePath(["IoError"])])⟩,
+ ⟨"create_write", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypeModalState(["File"], `@Write`), TypePath(["IoError"])])⟩,
  ⟨"read_file", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypePerm(`unique`, TypeString(`@Managed`)), TypePath(["IoError"])])⟩,
  ⟨"read_bytes", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypePerm(`unique`, TypeBytes(`@Managed`)), TypePath(["IoError"])])⟩,
  ⟨"write_file", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩, ⟨⊥, `data`, TypeBytes(`@View`)⟩], TypeApply(["Outcome"], [TypePrim("()"), TypePath(["IoError"])])⟩,
@@ -13540,10 +13517,10 @@ IOInterface =
  ⟨"write_stderr", `const`, [⟨⊥, `data`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypePrim("()"), TypePath(["IoError"])])⟩,
  ⟨"exists", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypePrim("bool")⟩,
  ⟨"remove", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypePrim("()"), TypePath(["IoError"])])⟩,
- ⟨"open_dir", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeUnion([TypeModalState(["DirIter"], `@Open`), TypePath(["IoError"])])⟩,
+ ⟨"open_dir", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypeModalState(["DirIter"], `@Open`), TypePath(["IoError"])])⟩,
  ⟨"create_dir", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypePrim("()"), TypePath(["IoError"])])⟩,
  ⟨"ensure_dir", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypePrim("()"), TypePath(["IoError"])])⟩,
- ⟨"kind", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeUnion([TypePath(["FileKind"]), TypePath(["IoError"])])⟩,
+ ⟨"kind", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeApply(["Outcome"], [TypePath(["FileKind"]), TypePath(["IoError"])])⟩,
  ⟨"restrict", `const`, [⟨⊥, `path`, TypeString(`@View`)⟩], TypeDynamic(`IO`)⟩
 }
 
@@ -13683,7 +13660,7 @@ PriorityDecl = EnumDecl(⊥, `public`, `Priority`, ⊥, ⊥, [], PriorityVariant
 
 ReactorMethodParams = [⟨`T`, [], ⊥, ⊥⟩, ⟨`E`, [], ⊥, ⊥⟩]
 ReactorMethods = [
-  ClassMethodDecl(⊥, `public`, "run", ReactorMethodParams, ReceiverShorthand(`const`), [⟨⊥, `future`, TypeApply(["Future"], [TypePath(["T"]), TypePath(["E"])])⟩], TypeUnion([TypePath(["T"]), TypePath(["E"])]), ⊥, ⊥, ⊥, ⊥),
+  ClassMethodDecl(⊥, `public`, "run", ReactorMethodParams, ReceiverShorthand(`const`), [⟨⊥, `future`, TypeApply(["Future"], [TypePath(["T"]), TypePath(["E"])])⟩], TypeApply(["Outcome"], [TypePath(["T"]), TypePath(["E"])]), ⊥, ⊥, ⊥, ⊥),
   ClassMethodDecl(⊥, `public`, "register", ReactorMethodParams, ReceiverShorthand(`const`), [⟨⊥, `future`, TypeApply(["Future"], [TypePath(["T"]), TypePath(["E"])])⟩], TypeApply(["Tracked"], [TypePath(["T"]), TypePath(["E"])]), ⊥, ⊥, ⊥, ⊥)
 ]
 ReactorMethodNames = { m.name | m ∈ ReactorMethods }
@@ -13805,19 +13782,19 @@ Calls on dynamic receivers of builtin capability classes `IO`, `Network`, `HeapA
 
 Diagnostics are defined for capability operations that require `unsafe`, including raw allocation and deallocation through `HeapAllocator`.
 
-### 14.10 Foundational Classes and Predicates
+### 14.10 Foundational Classes
 
 #### 14.10.1 Syntax
 
-Foundational classes use ordinary class syntax from §14.3. The foundational names `Bitcopy`, `Clone`, `Drop`, `FfiSafe`, `Eq`, `Hasher`, `Hash`, `Iterator`, and `Discrete` are reserved.
+Foundational classes use ordinary class syntax from §14.3. The foundational names `Bitcopy`, `Clone`, `Drop`, `FfiSafe`, `GpuSafe`, `Eq`, `Hasher`, `Hash`, `Iterator`, and `Discrete` are reserved.
 
 #### 14.10.2 Parsing
 
-Foundational classes and predicates have no feature-specific parse form beyond ordinary class parsing and predicate-requirement parsing from §14.1.
+Foundational classes have no feature-specific parse form beyond ordinary class parsing and generic class-bound parsing from §14.1.
 
 #### 14.10.3 AST Representation / Form
 
-FoundationalClassName = {`Bitcopy`, `Clone`, `Drop`, `FfiSafe`, `Eq`, `Hasher`, `Hash`, `Iterator`, `Discrete`}
+FoundationalClassName = {`Bitcopy`, `Clone`, `Drop`, `FfiSafe`, `GpuSafe`, `Eq`, `Hasher`, `Hash`, `Iterator`, `Discrete`}
 
 BitcopyDropJudg = {Γ ⊢ T : BitcopyDropOk}
 BitcopyJudg = {BitcopyType}
@@ -13929,7 +13906,7 @@ Diagnostics are defined for types that simultaneously satisfy `BitcopyType` and 
 
 ### 14.11 Refinement and Polymorphism Diagnostics Supplement
 
-This section owns diagnostics for refinement types, generic instantiation, class implementation, dynamic objects, and foundational predicate requirements.
+This section owns diagnostics for refinement types, generic instantiation, class implementation, dynamic objects, and foundational class requirements.
 
 | Code         | Severity | Detection    | Condition                                                                           |
 | ------------ | -------- | ------------ | ----------------------------------------------------------------------------------- |
@@ -13987,7 +13964,7 @@ This section owns diagnostics for refinement types, generic instantiation, class
 #### 15.1.1 Syntax
 
 ```ebnf
-procedure_decl ::= attribute_list? visibility? "procedure" identifier generic_params? signature predicate_clause? contract_clause? block_expr
+procedure_decl ::= attribute_list? visibility? "procedure" identifier generic_params? signature contract_clause? block_expr
 signature      ::= "(" param_list? ")" ("->" type)?
 param_list      ::= param ("," param)*
 param           ::= "move"? identifier ":" type
@@ -13998,9 +13975,9 @@ param           ::= "move"? identifier ":" type
 #### 15.1.2 Parsing
 
 **(Parse-Procedure)**
-Γ ⊢ ParseAttrListOpt(P) ⇓ (P_0, attrs_opt)    Γ ⊢ ParseVis(P_0) ⇓ (P_1, vis)    IsKw(Tok(P_1), `procedure`)    Γ ⊢ ParseIdent(Advance(P_1)) ⇓ (P_2, name)    Γ ⊢ ParseGenericParamsOpt(P_2) ⇓ (P_3, gen_params_opt)    Γ ⊢ ParseSignature(P_3) ⇓ (P_4, params, ret_opt)    Γ ⊢ ParsePredicateClauseOpt(P_4) ⇓ (P_5, predicate_clause_opt)    Γ ⊢ ParseContractClauseOpt(P_5) ⇓ (P_6, contract_opt)    Γ ⊢ ParseBlock(P_6) ⇓ (P_7, body)
+Γ ⊢ ParseAttrListOpt(P) ⇓ (P_0, attrs_opt)    Γ ⊢ ParseVis(P_0) ⇓ (P_1, vis)    IsKw(Tok(P_1), `procedure`)    Γ ⊢ ParseIdent(Advance(P_1)) ⇓ (P_2, name)    Γ ⊢ ParseGenericParamsOpt(P_2) ⇓ (P_3, gen_params_opt)    Γ ⊢ ParseSignature(P_3) ⇓ (P_4, params, ret_opt)    Γ ⊢ ParseContractClauseOpt(P_4) ⇓ (P_5, contract_opt)    Γ ⊢ ParseBlock(P_5) ⇓ (P_6, body)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ParseItem(P) ⇓ (P_7, ⟨ProcedureDecl, attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, params, ret_opt, contract_opt, body, SpanBetween(P, P_7), []⟩)
+Γ ⊢ ParseItem(P) ⇓ (P_7, ⟨ProcedureDecl, attrs_opt, vis, name, gen_params_opt, params, ret_opt, contract_opt, body, SpanBetween(P, P_7), []⟩)
 
 **(Parse-Signature)**
 IsPunc(Tok(P), "(")    Γ ⊢ ParseParamList(Advance(P)) ⇓ (P_1, params)    IsPunc(Tok(P_1), ")")    Γ ⊢ ParseReturnOpt(Advance(P_1)) ⇓ (P_2, ret_opt)
@@ -14059,7 +14036,7 @@ IsOp(Tok(P), "->")    Γ ⊢ ParseType(Advance(P)) ⇓ (P_1, ty)
 
 #### 15.1.3 AST Representation / Form
 
-ProcedureDecl = ⟨attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, params, return_type_opt, contract_opt, body, span, doc⟩
+ProcedureDecl = ⟨attrs_opt, vis, name, gen_params_opt, params, return_type_opt, contract_opt, body, span, doc⟩
 Param = ⟨mode, name, type⟩
 
 ParamNames(params) = [x | ⟨_, x, _⟩ ∈ params]
@@ -14080,7 +14057,7 @@ ExplicitReturn(BlockExpr(stmts, tail_opt)) ⇔ tail_opt = ⊥ ∧ stmts ≠ [] �
 ReturnAnnOk(ret_opt) ⇔ ret_opt ≠ ⊥
 
 **(WF-ProcedureDecl)**
-item = ProcedureDecl(_, vis, _, gen_params_opt, predicate_clause_opt, params, ret_opt, _, body, _, _)    params_gen = TypeParamsOpt(gen_params_opt)    params_gen = [P_1, …, P_n]    Γ ⊢ ⟨P_1; …; P_n⟩ wf    Γ_g = BindTypeParams(Γ, params_gen)    Γ_g; params_gen ⊢ predicate_clause_opt wf    Distinct(ParamNames(params))    ReturnAnnOk(ret_opt)    R = ProcReturn(ret_opt)    R_b = BodyReturnType(R)    ∀ ⟨_, x_i, T_i⟩ ∈ params, Γ_g ⊢ T_i wf    Γ_0 = PushScope(Γ_g)    IntroAll(Γ_0, ParamBinds(params)) ⇓ Γ_1    Γ_1; R; ⊥ ⊢ body : T_b    Γ_g ⊢ T_b <: R_b    (R_b ≠ TypePrim("()") ⇒ ExplicitReturn(body))
+item = ProcedureDecl(_, vis, _, gen_params_opt, params, ret_opt, _, body, _, _)    params_gen = TypeParamsOpt(gen_params_opt)    params_gen = [P_1, …, P_n]    Γ ⊢ ⟨P_1; …; P_n⟩ wf    Γ_g = BindTypeParams(Γ, params_gen)    Distinct(ParamNames(params))    ReturnAnnOk(ret_opt)    R = ProcReturn(ret_opt)    R_b = BodyReturnType(R)    ∀ ⟨_, x_i, T_i⟩ ∈ params, Γ_g ⊢ T_i wf    Γ_0 = PushScope(Γ_g)    IntroAll(Γ_0, ParamBinds(params)) ⇓ Γ_1    Γ_1; R; ⊥ ⊢ body : T_b    Γ_g ⊢ T_b <: R_b    (R_b ≠ TypePrim("()") ⇒ ExplicitReturn(body))
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 DeclJudg = {Γ ⊢ ProcedureDecl : ok, Γ ⊢ ExternProcDecl : ok, Γ ⊢ ExternBlock : ok, Γ ⊢ StaticDecl : ok, Γ ⊢ RecordDecl : ok, Γ ⊢ EnumDecl : ok, Γ ⊢ ModalDecl : ok, Γ ⊢ ClassDecl : ok}
 
@@ -14281,7 +14258,7 @@ Rule **(EvalSigma-Call-Proc)** is defined once by §16.3.5.
 #### 15.1.6 Lowering
 
 **(CG-Item-Procedure)**
-item = ProcedureDecl(attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, params, ret_opt, contract_opt, body, span, doc)    R = ProcReturn(ret_opt)    Γ ⊢ LowerBlock(body) ⇓ ⟨IR, v⟩    Γ ⊢ Mangle(item) ⇓ sym    params' = CodegenParams(params)
+item = ProcedureDecl(attrs_opt, vis, name, gen_params_opt, params, ret_opt, contract_opt, body, span, doc)    R = ProcReturn(ret_opt)    Γ ⊢ LowerBlock(body) ⇓ ⟨IR, v⟩    Γ ⊢ Mangle(item) ⇓ sym    params' = CodegenParams(params)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ CodegenItem(item) ⇓ [ProcIR(sym, params', R, IR)]
 
@@ -14564,7 +14541,7 @@ For a free call whose callee names an overload set `O`:
 2. Type filtering: eliminate candidates for which any argument is incompatible with the corresponding parameter under the call-argument compatibility rules of §16.3.4.
 3. Exact-match preference: if multiple candidates remain, retain those with the maximal number of exact argument-type matches.
 4. Genericity preference: if both generic and non-generic candidates remain, retain only the non-generic candidates.
-5. Constraint specificity: if multiple generic candidates remain, retain only those whose bounds and predicate requirements are pointwise at least as specific as every remaining alternative, with at least one strict improvement.
+5. Constraint specificity: if multiple generic candidates remain, retain only those whose bounds are pointwise at least as specific as every remaining alternative, with at least one strict improvement.
 6. If exactly one candidate remains, that candidate is selected.
 7. If no candidate remains, the call is ill-formed with `E-SEM-3031`.
 8. If multiple candidates remain after all preference stages, the call is ill-formed with `E-SEM-3030`.
@@ -14848,22 +14825,25 @@ Diagnostics for unsatisfied preconditions are attached to the call site.
 
 ```ebnf
 postcondition_expr ::= predicate_expr
-contract_intrinsic ::= "@result" | "@entry" "(" expression ")"
+contract_intrinsic ::= decorated_identifier("@", "result")
+                     | decorated_identifier("@", "entry") "(" expression ")"
 
-(* Contract intrinsics parse in any primary-expression position; `@result`
-   outside a postcondition and `@entry` outside a contract predicate are
-   rejected statically (E-SEM-2806, E-CON-0415, E-CON-0416). *)
+(* `decorated_identifier(d, s)` denotes the token sequence Operator(d)
+   followed by Identifier(s), not one lexer token. Contract intrinsics parse
+   in any primary-expression position; `@result` outside a postcondition and
+   `@entry` outside a contract predicate are rejected statically
+   (E-SEM-2806, E-CON-0415, E-CON-0416). *)
 ```
 
 #### 15.6.2 Parsing
 
 **(Parse-Contract-Result)**
-IsOp(Tok(P), "@")    IsIdent(Tok(Advance(P)))    Lexeme(Tok(Advance(P))) = `result`
+DecorIdent(P, "@", "result")
 ──────────────────────────────────────────────────────────────
 Γ ⊢ ParsePrimary(P) ⇓ (Advance(Advance(P)), ContractResult)
 
 **(Parse-Contract-Entry)**
-IsOp(Tok(P), "@")    IsIdent(Tok(Advance(P)))    Lexeme(Tok(Advance(P))) = `entry`    IsPunc(Tok(Advance(Advance(P))), "(")    Γ ⊢ ParseExpr(Advance(Advance(Advance(P)))) ⇓ (P_1, e)    IsPunc(Tok(P_1), ")")
+DecorIdent(P, "@", "entry")    IsPunc(Tok(Advance(Advance(P))), "(")    Γ ⊢ ParseExpr(Advance(Advance(Advance(P)))) ⇓ (P_1, e)    IsPunc(Tok(P_1), ")")
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ParsePrimary(P) ⇓ (Advance(P_1), ContractEntry(e))
 
@@ -15011,9 +14991,9 @@ ParseLoopInvariantOpt(P) ⇓ (P_1, inv_opt) ⇔ Γ ⊢ ParseInvariantOpt(P) ⇓ 
 Invariant = Expr
 invariant_opt ∈ {⊥} ∪ Invariant
 
-RecordDecl = ⟨attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, implements, members, invariant_opt, span, doc⟩
-EnumDecl = ⟨attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, implements, variants, invariant_opt, span, doc⟩
-ModalDecl = ⟨attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, implements, states, invariant_opt, span, doc⟩
+RecordDecl = ⟨attrs_opt, vis, name, gen_params_opt, implements, members, invariant_opt, span, doc⟩
+EnumDecl = ⟨attrs_opt, vis, name, gen_params_opt, implements, variants, invariant_opt, span, doc⟩
+ModalDecl = ⟨attrs_opt, vis, name, gen_params_opt, implements, states, invariant_opt, span, doc⟩
 
 Loop forms preserve `inv_opt` in their AST representation.
 
@@ -17177,11 +17157,16 @@ address_of_expr ::= "&" place_expr
 move_expr       ::= "move" place_expr
 copy_expr       ::= "copy" unary_expr
 deref_expr      ::= "*" unary_expr
-alloc_expr      ::= "^" expression
+new_expr        ::= "new" unary_expr
 propagate_expr  ::= postfix_expr "?"
 ```
 
-After name resolution, `Binary("^", Identifier(r), e)` MAY be rewritten to `AllocExpr(r, e)` when `r` is a region alias.
+Region allocation has two source forms. `new value` allocates `value` in the
+innermost active scoped region. `receiver~>alloc(value)` allocates `value` in
+the region named by `receiver`, where the receiver has type
+`unique Region@Active`; it uses the method-call syntax from §16.3 and the
+`Region::alloc` signature from §13.1.4. `new` is contextual source syntax, not
+a reserved identifier and not a constructor form.
 
 #### 16.8.2 Parsing
 
@@ -17205,15 +17190,15 @@ IsKw(Tok(P), `copy`)    Γ ⊢ ParseUnary(Advance(P)) ⇓ (P_1, e)
 ────────────────────────────────────────────────────────────────
 Γ ⊢ ParseUnary(P) ⇓ (P_1, CopyExpr(e))
 
+**(Parse-New-Expr)**
+Ctx(Tok(P), `new`)    Γ ⊢ ParseUnary(Advance(P)) ⇓ (P_1, e)
+────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParseUnary(P) ⇓ (P_1, AllocExpr(⊥, e))
+
 **(Postfix-Propagate)**
 IsOp(Tok(P), "?")
 ──────────────────────────────────────────────────────────────
 Γ ⊢ PostfixStep(P, e) ⇓ (Advance(P), Propagate(e))
-
-**(Parse-Alloc-Implicit)**
-IsOp(Tok(P), "^")    Γ ⊢ ParseExpr(Advance(P)) ⇓ (P_1, e)
-────────────────────────────────────────────────────────────────
-Γ ⊢ ParsePrimary(P) ⇓ (P_1, AllocExpr(⊥, e))
 
 **(Parse-Unsafe-Expr)**
 IsKw(Tok(P), `unsafe`)    Γ ⊢ ParseBlock(Advance(P)) ⇓ (P_1, b)
@@ -17224,11 +17209,10 @@ IsKw(Tok(P), `unsafe`)    Γ ⊢ ParseBlock(Advance(P)) ⇓ (P_1, b)
 
 Expr = UnsafeBlockExpr(body) | MoveExpr(place) | CopyExpr(expr) | AddressOf(place) | Deref(expr) | AllocExpr(region_opt, expr) | Propagate(expr) | …
 
-ResolveExpr-Alloc-Explicit-ByAlias rewrites:
-
-Γ ⊢ ResolveValueName(r) ⇓ ent    RegionAlias(ent)    Γ ⊢ ResolveExpr(e) ⇓ e'
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ResolveExpr(Binary("^", Identifier(r), e)) ⇓ AllocExpr(r, e')
+`AllocExpr(⊥, expr)` is the source AST representation for `new expr`.
+`AllocExpr(region, expr)` is reserved for internal elaboration and compile-time
+AST construction after an explicit target has already selected a region
+allocation operation.
 
 #### 16.8.4 Static Semantics
 
@@ -17273,15 +17257,30 @@ UnsafeSpan(span(Deref(e)))    Γ; R; L ⊢ e : TypeRawPtr(q, T)    BitcopyType(T
 ──────────────────────────────────────────────
 Γ; R; L ⊢ CopyExpr(e) : T
 
-**(T-Alloc-Explicit)**
+**(T-Region-Alloc-Method)**
+Γ; R; L ⊢ recv : TypePerm(`unique`, TypeModalState(["Region"], `@Active`))    Γ; R; L ⊢ value : T
+────────────────────────────────────────────────────────────────────────────────────────────────
+Γ; R; L ⊢ MethodCall(recv, `alloc`, [⟨⊥, value, _⟩]) : T_{π_Region(recv)}
+
+An implicit `AllocExpr(⊥, e)` originates from source `new e` and requires an
+active scoped region. An explicit `AllocExpr(r, e)` is an internal form used
+after elaboration or compile-time AST construction has already selected an
+explicit region allocation operation.
+
+**(T-Internal-Alloc-Explicit)**
 Γ; R; L ⊢ e : T    Γ; R; L ⊢ Identifier(r) : T_r    RegionActiveType(T_r)
 ────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ AllocExpr(r, e) : T
 
-**(T-Alloc-Implicit)**
+**(T-New-CurrentRegion)**
 InnermostActiveRegion(Γ) = r    Γ; R; L ⊢ e : T
 ────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ AllocExpr(⊥, e) : T
+
+**(New-NoActiveRegion-Err)**
+InnermostActiveRegion(Γ) = ⊥
+────────────────────────────────────────────────────────────────────────────────
+Γ; R; L ⊢ AllocExpr(⊥, e) ⇑ `E-MEM-3021`
 
 SuccessMember(R, U) = T_s ⇔ U = TypeUnion([T_1, …, T_n]) ∧ ¬(Γ ⊢ T_s <: R) ∧ ∀ i ≠ s. Γ ⊢ T_i <: R
 
@@ -17344,45 +17343,35 @@ AsyncSig(R) = ⟨Out, In, Result, E⟩    E = TypePrim("!")    Γ; R; L ⊢ e : 
 ──────────────────────────────────────────────────────
 Γ ⊢ EvalSigma(CopyExpr(e), σ) ⇓ (Ctrl(κ), σ_1)
 
-**(EvalSigma-Alloc-Implicit)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    ActiveTarget(σ_1) = r    RegionAlloc(σ_1, r, v) ⇓ (σ_2, v')
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalSigma(AllocExpr(⊥, e), σ) ⇓ (Val(v'), σ_2)
+**(EvalSigma-MethodCall-RegionAlloc)**
+Γ ⊢ EvalRecvSigma(recv, `unique`, σ) ⇓ (Val(⟨v_r, v_arg⟩), σ_1)    Γ ⊢ EvalSigma(value, σ_1) ⇓ (Val(v), σ_2)    RegionAllocProc(σ_2, v_r, v) ⇓ (σ_3, v')
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ EvalSigma(MethodCall(recv, `alloc`, [⟨⊥, value, _⟩]), σ) ⇓ (Val(v'), σ_3)
 
-**(EvalSigma-Alloc-Implicit-Ctrl)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Ctrl(κ), σ_1)
-──────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalSigma(AllocExpr(⊥, e), σ) ⇓ (Ctrl(κ), σ_1)
-
-**(EvalSigma-Alloc-Explicit)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    LookupVal(σ_1, r) = v_r    RegionHandleOf(v_r) = h    ResolveTarget(σ_1, h) = r_t    RegionAlloc(σ_1, r_t, v) ⇓ (σ_2, v')
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalSigma(AllocExpr(r, e), σ) ⇓ (Val(v'), σ_2)
-
-**(EvalSigma-Alloc-Explicit-Ctrl)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Ctrl(κ), σ_1)
-────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalSigma(AllocExpr(r, e), σ) ⇓ (Ctrl(κ), σ_1)
+**(EvalSigma-MethodCall-RegionAlloc-Ctrl)**
+Γ ⊢ EvalRecvSigma(recv, `unique`, σ) ⇓ (Val(⟨v_r, v_arg⟩), σ_1)    Γ ⊢ EvalSigma(value, σ_1) ⇓ (Ctrl(κ), σ_2)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ EvalSigma(MethodCall(recv, `alloc`, [⟨⊥, value, _⟩]), σ) ⇓ (Ctrl(κ), σ_2)
 
 **(EvalSigma-Propagate-Success-Outcome)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    U = ExprType(e)    AsyncSig(RetType(Γ)) = ⊥    OutcomeSig(U) = ⟨T_s, E_s⟩    OutcomeSig(RetType(Γ)) = ⟨T_r, E_r⟩    ModalCase(v) = ⟨`@Value`, v_s⟩
+Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    U = ExprType(e)    AsyncSig(RetType(Γ)) = ⊥    OutcomeSig(U) = ⟨T_s, E_s⟩    OutcomeSig(RetType(Γ)) = ⟨T_r, E_r⟩    v = EnumValue(["Outcome", `Value`], TuplePayload([v_s]))
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalSigma(Propagate(e), σ) ⇓ (Val(FieldValue(v_s, `value`)), σ_1)
+Γ ⊢ EvalSigma(Propagate(e), σ) ⇓ (Val(v_s), σ_1)
 
 **(EvalSigma-Propagate-Success-Async-Outcome)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    U = ExprType(e)    AsyncSig(RetType(Γ)) = ⟨Out, In, Result, E⟩    OutcomeSig(U) = ⟨T_s, E_s⟩    ModalCase(v) = ⟨`@Value`, v_s⟩
+Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    U = ExprType(e)    AsyncSig(RetType(Γ)) = ⟨Out, In, Result, E⟩    OutcomeSig(U) = ⟨T_s, E_s⟩    v = EnumValue(["Outcome", `Value`], TuplePayload([v_s]))
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalSigma(Propagate(e), σ) ⇓ (Val(FieldValue(v_s, `value`)), σ_1)
+Γ ⊢ EvalSigma(Propagate(e), σ) ⇓ (Val(v_s), σ_1)
 
 **(EvalSigma-Propagate-Error-Outcome)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    U = ExprType(e)    AsyncSig(RetType(Γ)) = ⊥    OutcomeSig(U) = ⟨T_s, E_s⟩    OutcomeSig(RetType(Γ)) = ⟨T_r, E_r⟩    ModalCase(v) = ⟨`@Error`, v_e⟩
-out = `Outcome`<T_r, E_r>`@Error`{`error`: FieldValue(v_e, `error`)}
+Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    U = ExprType(e)    AsyncSig(RetType(Γ)) = ⊥    OutcomeSig(U) = ⟨T_s, E_s⟩    OutcomeSig(RetType(Γ)) = ⟨T_r, E_r⟩    v = EnumValue(["Outcome", `Error`], TuplePayload([v_e]))
+out = EnumValue(["Outcome", `Error`], TuplePayload([v_e]))
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ EvalSigma(Propagate(e), σ) ⇓ (Ctrl(Return(out)), σ_1)
 
 **(EvalSigma-Propagate-Error-Async-Outcome)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    U = ExprType(e)    AsyncSig(RetType(Γ)) = ⟨Out, In, Result, E⟩    E ≠ TypePrim("!")    OutcomeSig(U) = ⟨T_s, E_s⟩    ModalCase(v) = ⟨`@Error`, v_e⟩
-async_failed = RecordValue(ModalStateRef([`Async`], `@Failed`), [⟨`error`, FieldValue(v_e, `error`)⟩])
+Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    U = ExprType(e)    AsyncSig(RetType(Γ)) = ⟨Out, In, Result, E⟩    E ≠ TypePrim("!")    OutcomeSig(U) = ⟨T_s, E_s⟩    v = EnumValue(["Outcome", `Error`], TuplePayload([v_e]))
+async_failed = RecordValue(ModalStateRef([`Async`], `@Failed`), [⟨`error`, v_e⟩])
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ EvalSigma(Propagate(e), σ) ⇓ (Ctrl(Fail(async_failed)), σ_1)
 
@@ -17421,25 +17410,10 @@ TerminalExpr(⟨Ctrl(κ), σ⟩)
 ────────────────────────────────
 ⟨e, σ⟩ → ⟨e', σ⟩
 
-**(StepSigma-Alloc-Implicit)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    ActiveTarget(σ_1) = r    RegionAlloc(σ_1, r, v) ⇓ (σ_2, v')
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-⟨AllocExpr(⊥, e), σ⟩ → ⟨Val(v'), σ_2⟩
-
-**(StepSigma-Alloc-Implicit-Ctrl)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Ctrl(κ), σ_1)
-────────────────────────────────────────────────────────────
-⟨AllocExpr(⊥, e), σ⟩ → ⟨Ctrl(κ), σ_1⟩
-
-**(StepSigma-Alloc-Explicit)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    LookupVal(σ_1, r) = v_r    RegionHandleOf(v_r) = h    ResolveTarget(σ_1, h) = r_t    RegionAlloc(σ_1, r_t, v) ⇓ (σ_2, v')
-────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-⟨AllocExpr(r, e), σ⟩ → ⟨Val(v'), σ_2⟩
-
-**(StepSigma-Alloc-Explicit-Ctrl)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Ctrl(κ), σ_1)
-──────────────────────────────────────────────
-⟨AllocExpr(r, e), σ⟩ → ⟨Ctrl(κ), σ_1⟩
+**(StepSigma-MethodCall-RegionAlloc)**
+Γ ⊢ EvalSigma(MethodCall(recv, `alloc`, [⟨⊥, value, _⟩]), σ) ⇓ (out, σ')
+────────────────────────────────────────────────────────────────────────────────────────────────
+⟨MethodCall(recv, `alloc`, [⟨⊥, value, _⟩]), σ⟩ → ⟨out, σ'⟩
 
 **(StepSigma-Block)**
 Γ ⊢ EvalBlockSigma(BlockExpr(stmts, tail_opt), σ) ⇓ (out, σ')
@@ -17457,7 +17431,7 @@ TerminalExpr(⟨Ctrl(κ), σ⟩)
 ⟨ℓ, σ⟩ → ⟨out, σ'⟩
 
 **(StepSigma-Stateful-Other)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (out, σ')    e ∉ {AllocExpr(_, _), BlockExpr(_, _), UnsafeBlockExpr(_), LoopInfinite(_, _), LoopConditional(_, _, _), LoopIter(_, _, _, _, _)}
+Γ ⊢ EvalSigma(e, σ) ⇓ (out, σ')    e ∉ {BlockExpr(_, _), UnsafeBlockExpr(_), LoopInfinite(_, _), LoopConditional(_, _, _), LoopIter(_, _, _, _, _)}
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ⟨e, σ⟩ → ⟨out, σ'⟩
 
@@ -17488,20 +17462,30 @@ TerminalExpr(⟨Ctrl(κ), σ⟩)
 ──────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ LowerExpr(Deref(e)) ⇓ ⟨SeqIR(IR_e, IR_d), v⟩
 
-**(Lower-Expr-Alloc)**
+**(Lower-MethodCall-Region-Alloc)**
+Γ ⊢ LowerExpr(recv) ⇓ ⟨IR_r, v_r⟩    Γ ⊢ LowerExpr(value) ⇓ ⟨IR_v, v⟩
+────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ LowerExpr(MethodCall(recv, `alloc`, [⟨⊥, value, _⟩])) ⇓ ⟨SeqIR(IR_r, IR_v, AllocIR(v_r, v)), v_alloc⟩
+
+**(Lower-New-CurrentRegion)**
 Γ ⊢ LowerExpr(e) ⇓ ⟨IR_e, v⟩
 ────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerExpr(AllocExpr(r_opt, e)) ⇓ ⟨SeqIR(IR_e, AllocIR(r_opt, v)), v_alloc⟩
+Γ ⊢ LowerExpr(AllocExpr(⊥, e)) ⇓ ⟨SeqIR(IR_e, AllocIR(CurrentRegion(Γ), v)), v_alloc⟩
+
+**(Lower-Internal-Alloc-Explicit)**
+Γ ⊢ LowerExpr(e) ⇓ ⟨IR_e, v⟩
+────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ LowerExpr(AllocExpr(r_ref, e)) ⇓ ⟨SeqIR(IR_e, AllocIR(r_ref, v)), v_alloc⟩
 
 **(Lower-Expr-Propagate-Success-Outcome)**
-Γ ⊢ LowerExpr(e) ⇓ ⟨IR_e, v⟩    U = ExprType(e)    OutcomeSig(U) = ⟨T_s, E_s⟩    OutcomeState(v) = `@Value`    OutcomeField(v, `value`) = v_s
+Γ ⊢ LowerExpr(e) ⇓ ⟨IR_e, v⟩    U = ExprType(e)    OutcomeSig(U) = ⟨T_s, E_s⟩    v = EnumValue(["Outcome", `Value`], TuplePayload([v_s]))
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ LowerExpr(Propagate(e)) ⇓ ⟨IR_e, v_s⟩
 
 **(Lower-Expr-Propagate-Return-Outcome)**
-Γ ⊢ LowerExpr(e) ⇓ ⟨IR_e, v⟩    U = ExprType(e)    OutcomeSig(U) = ⟨T_s, E_s⟩    OutcomeState(v) = `@Error`    OutcomeField(v, `error`) = v_e
+Γ ⊢ LowerExpr(e) ⇓ ⟨IR_e, v⟩    U = ExprType(e)    OutcomeSig(U) = ⟨T_s, E_s⟩    v = EnumValue(["Outcome", `Error`], TuplePayload([v_e]))
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerExpr(Propagate(e)) ⇓ ⟨SeqIR(IR_e, ReturnIR(`Outcome@Error`{`error`: v_e})), v_unreach⟩
+Γ ⊢ LowerExpr(Propagate(e)) ⇓ ⟨SeqIR(IR_e, ReturnIR(EnumValue(["Outcome", `Error`], TuplePayload([v_e])))), v_unreach⟩
 
 **(Lower-Expr-Propagate-Success-Union)**
 Γ ⊢ LowerExpr(e) ⇓ ⟨IR_e, v⟩    U = ExprType(e)    SuccessMember(RetType(Γ), U) = T_s    UnionCase(v) = ⟨T_s, v_s⟩
@@ -17517,7 +17501,7 @@ TerminalExpr(⟨Ctrl(κ), σ⟩)
 
 #### 16.8.7 Diagnostics
 
-Diagnostics are defined for address-of on non-places, address-of of packed fields outside `unsafe`, non-`usize` indexing in address-of contexts, dereference of null or expired safe pointers, raw-pointer dereference outside `unsafe`, explicit allocation through a non-region binding, implicit allocation without an active region, and propagation inside async procedures whose error type is `!`.
+Diagnostics are defined for address-of on non-places, address-of of packed fields outside `unsafe`, non-`usize` indexing in address-of contexts, dereference of null or expired safe pointers, raw-pointer dereference outside `unsafe`, region allocation through a receiver that is not `unique Region@Active`, `new` allocation with no active scoped region, and propagation inside async procedures whose error type is `!`.
 
 ### 16.9 Closure and Pipeline Expressions
 
@@ -17873,7 +17857,7 @@ ApplyClosureSigma(env_ptr, code_ptr, vec_v, σ) = (out, σ') ⇔
 
 `ClosureCall(e_c, args)` is the resolved internal call form for an ordinary source call `Call(callee, args)` whose callee has closure type. §16.3.5 bridges the source call form to this internal dynamic-semantic form.
 
-Pipeline expressions desugar to function or closure application: `e_1 => e_2 ≡ e_2(e_1)`.
+Pipeline expressions are a distinct left-first application form. `PipelineExpr(e_1, e_2)` evaluates `e_1` before `e_2`; after both produce values, the resulting function or closure value from `e_2` is applied to `[v_1]`. This is call-like lowering, not a source-level equivalence to `e_2(e_1)`.
 
 **(EvalSigma-Pipeline-Func)**
 Γ ⊢ EvalSigma(e_1, σ) ⇓ (Val(v_1), σ_1)    Γ ⊢ EvalSigma(e_2, σ_1) ⇓ (Val(FuncVal(sym)), σ_2)
@@ -20436,15 +20420,21 @@ KeyPath(e) = P
 
 ```ebnf
 key_block_stmt ::= key_block_head key_path_list key_options? block_expr
-key_block_head ::= "%read"
-                 | "%write"
-                 | "%release" key_mode
-                 | "%speculative" "write"
+key_block_head ::= decorated_identifier("%", "read")
+                 | decorated_identifier("%", "write")
+                 | decorated_identifier("%", "release") key_mode
+                 | decorated_identifier("%", "speculative") "write"
 key_mode       ::= "read" | "write"
 key_path_list  ::= key_path_expr ("," key_path_expr)*
 key_options    ::= "[" key_option ("," key_option)* ","? "]"
 key_option     ::= "ordered"
 ```
+
+The key-block head spellings `%read`, `%write`, `%release`, and `%speculative`
+are decorated identifiers: each is tokenized as `Operator("%")` followed by an
+identifier token. The `%` decorator and the head identifier MUST be adjacent in
+source text. The `write` token after `%speculative` is the ordinary key mode
+identifier and need not be adjacent to `speculative`.
 
 The `ordered` option requests the same-base indexed-path checking defined in §19.3.4. It modifies acquisition over the whole parsed path set, not an individual path and not the head mode. Canonical path order remains the deterministic acquisition and conflict-resolution order for key blocks under §§19.2.5 and 19.3.5.
 
@@ -20468,22 +20458,22 @@ IsCtxIdent(Tok(P), "write")
 Γ ⊢ ParseKeyMode(P) ⇑ c
 
 **(Parse-KeyBlockHead-Read)**
-IsOp(Tok(P), "%")    IsCtxIdent(Tok(Advance(P)), "read")
+DecorIdentAdj(P, "%", "read")
 ────────────────────────────────────────────────────────────
 Γ ⊢ ParseKeyBlockHead(P) ⇓ (Advance(Advance(P)), ⟨Read, ⊥⟩)
 
 **(Parse-KeyBlockHead-Write)**
-IsOp(Tok(P), "%")    IsCtxIdent(Tok(Advance(P)), "write")
+DecorIdentAdj(P, "%", "write")
 ────────────────────────────────────────────────────────────
 Γ ⊢ ParseKeyBlockHead(P) ⇓ (Advance(Advance(P)), ⟨Write, ⊥⟩)
 
 **(Parse-KeyBlockHead-Release)**
-IsOp(Tok(P), "%")    IsCtxIdent(Tok(Advance(P)), "release")    Γ ⊢ ParseKeyMode(Advance(Advance(P))) ⇓ (P_1, mode)
+DecorIdentAdj(P, "%", "release")    Γ ⊢ ParseKeyMode(Advance(Advance(P))) ⇓ (P_1, mode)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ParseKeyBlockHead(P) ⇓ (P_1, ⟨Release, mode⟩)
 
 **(Parse-KeyBlockHead-SpeculativeWrite)**
-IsOp(Tok(P), "%")    IsCtxIdent(Tok(Advance(P)), "speculative")    IsCtxIdent(Tok(Advance(Advance(P))), "write")
+DecorIdentAdj(P, "%", "speculative")    IsCtxIdent(Tok(Advance(Advance(P))), "write")
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ParseKeyBlockHead(P) ⇓ (Advance(Advance(Advance(P))), ⟨SpeculativeWrite, ⊥⟩)
 
@@ -20523,7 +20513,7 @@ IsPunc(Tok(P), "[")    Γ ⊢ ParseOptList(ParseKeyOption, Advance(P)) ⇓ (P_1,
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ParseStmt(P) ⇓ (P_4, KeyBlockStmt(⊥, kind, paths, mode, options, body, sp))
 
-`SpanOfTokens(P, P')` is the span from the start of `Tok(P)` to the end of the last token consumed before `P'`. `ParseStmt` dispatches to `Parse-KeyBlock-Stmt` when `IsOp(Tok(P), "%")`. `attrs_opt` is populated by the shared attributed-statement mechanism of Chapter 9; `Parse-KeyBlock-Stmt` itself produces `⊥`. The option-list rules instantiate the shared schema of §5.5 with `El = ParseKeyOption`. `Parse-KeyOption-Ordered` consumes `ordered` only inside the bracketed option list following the complete path list. `Parse-KeyBlockHead-Release` consumes `%release` followed by the required target mode. `Parse-KeyBlockHead-SpeculativeWrite` consumes `%speculative write`; any other token after `%speculative` is a syntax error.
+`SpanOfTokens(P, P')` is the span from the start of `Tok(P)` to the end of the last token consumed before `P'`. `ParseStmt` dispatches to `Parse-KeyBlock-Stmt` when `IsOp(Tok(P), "%")`. `attrs_opt` is populated by the shared attributed-statement mechanism of Chapter 9; `Parse-KeyBlock-Stmt` itself produces `⊥`. The option-list rules instantiate the shared schema of §5.5 with `El = ParseKeyOption`. `Parse-KeyOption-Ordered` consumes `ordered` only inside the bracketed option list following the complete path list. `Parse-KeyBlockHead-Release` consumes the `%` decorator adjacent to `release`, followed by the required target mode. `Parse-KeyBlockHead-SpeculativeWrite` consumes the `%` decorator adjacent to `speculative`, followed by `write`; any other token after the decorated `speculative` head is a syntax error.
 
 #### 19.2.3 AST Representation / Form
 
@@ -21096,7 +21086,7 @@ IR_reacquire_outer = SeqIRList([AcquireKey(PathOf(k), KeyModeOf(k), KeyScopeOf(k
 #### 19.5.1 Syntax
 
 ```ebnf
-speculative_block ::= "%speculative" "write" key_path_list block_expr
+speculative_block ::= decorated_identifier("%", "speculative") "write" key_path_list block_expr
 ```
 
 #### 19.5.2 Parsing
@@ -21848,9 +21838,9 @@ ProhibitedGpuType(T) ⇔
 
 GpuSafeComponents(T) ⇔ BitcopyType(T) ∧ (CompoundType(T) ⇒ ∀ elem ∈ Elements(T). GpuSafeType(elem))
 
-HasGpuSafeReq(W, x) ⇔ ∃ wp ∈ PredicateReqs(W). wp = PredicateReq(`GpuSafe`, TypePath([x]))
-
-GpuSafePredicateClauseOk(params, W) ⇔ ∀ p ∈ params. (p.name ∈ TypeParamsUsed ⇒ HasGpuSafeReq(W, p.name))
+GpuSafeGenericBoundsOk(Γ, params, Xs) ⇔ GenericParamsBoundedBy(Γ, params, Xs, [`GpuSafe`])
+GpuSafePayloadTypeParams(R, params) = TypeParamsInFields(Fields(R), params)
+GpuSafePayloadTypeParams(E, params) = TypeParamsInPayloads(Variants(E), params)
 
 **(GpuSafe-Prim)**
 T = TypePrim(t)    t ∈ GpuSafePrimTypes
@@ -21908,7 +21898,7 @@ T = TypePath(p)    RecordDecl(p) = R    ∃ f : T_f ∈ Fields(R). Γ ⊢ GpuSaf
 Γ ⊢ GpuSafeType(T) ⇑ c
 
 **(GpuSafe-Generic-Unbounded-Err)**
-T = TypePath(p)    (RecordDecl(p) = R ∨ EnumDecl(p) = E)    params_gen = TypeParamsOpt(_.gen_params_opt)    params_gen ≠ []    ¬ GpuSafePredicateClauseOk(params_gen, _.predicate_clause_opt)    c = Code(GpuSafe-Generic-Unbounded-Err)
+T = TypePath(p)    (RecordDecl(p) = D ∨ EnumDecl(p) = D)    params_gen = TypeParamsOpt(D.gen_params_opt)    params_gen ≠ []    Xs = GpuSafePayloadTypeParams(D, params_gen)    ¬ GpuSafeGenericBoundsOk(Γ, params_gen, Xs)    c = Code(GpuSafe-Generic-Unbounded-Err)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ GpuSafeType(T) ⇑ c
 
@@ -21934,7 +21924,7 @@ GpuContext(Γ)    ⟨name, [], ret⟩ ∈ GpuIntrinsicTable
 
 `ExecutionDomain` is a dispatchable class used for heterogeneous domain handling.
 
-Any type parameter that appears in a field or variant payload of a type satisfying `GpuSafeType` MUST be bounded by `GpuSafe(X)` in the declaration predicate clause.
+Any type parameter that appears in a field or variant payload of a type satisfying `GpuSafeType` MUST be declared with a class bound that implies `GpuSafe`, such as `<T <: GpuSafe>`.
 
 The key system is not available within GPU execution contexts.
 
@@ -22794,7 +22784,7 @@ Capture rules apply independently at each nesting level.
 
 Work items MAY capture `ctx.heap` and invoke allocation methods.
 
-Work items executing within a `region` block MAY allocate from that region using `^`.
+Work items executing within a `region` block MAY allocate from that region using `new value`, or using a `Region@Active` handle's `~>alloc` operation when the source names the allocation target explicitly.
 
 TaskId(w) = n assigns each created work item a stable creation identifier.
 CompletionSeq(w) = n assigns each settled work item a global monotonically increasing completion identifier.
@@ -23684,7 +23674,7 @@ YieldFromInExpr(e)
 ```text
 AsyncSig(R) = ⊥    Γ; R; L ⊢ e : T_e    AsyncSig(T_e) = ⟨Out, In, Result, E⟩    Out = TypePrim("()")    In = TypePrim("()")
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ; R; L ⊢ SyncExpr(e) : TypeUnion([Result, E])
+Γ; R; L ⊢ SyncExpr(e) : TypeApply(["Outcome"], [Result, E])
 ```
 
 **(Sync-Async-Context-Err)**
@@ -23725,7 +23715,7 @@ n = |arms|    n ≥ 2    RaceMode(arms) = `return`
 Out_i = TypePrim("()")    In_i = TypePrim("()")    Γ ⊢ pat_i ⇐ Result_i ⊣ B_i    Distinct(PatNames(pat_i))
 Γ_i = IntroAll(Γ, B_i)    Γ_i; R; L ⊢ r_i : T_i^r    AllEq_Γ([T_1^r, …, T_n^r])    T_r = T_1^r
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ; R; L ⊢ RaceExpr(arms) : TypeUnion([T_r, E_1, …, E_n])
+Γ; R; L ⊢ RaceExpr(arms) : TypeApply(["Outcome"], [T_r, TypeUnion([E_1, …, E_n])])
 ```
 
 **(T-Race-Stream)**
@@ -23803,7 +23793,7 @@ In_i = TypePrim("()")    Γ ⊢ pat_i ⇐ Out_i ⊣ B_i    Distinct(PatNames(pat
 n = |exprs|    ∀ i, Γ; R; L ⊢ e_i : T_i    AsyncSig(T_i) = ⟨Out_i, In_i, Result_i, E_i⟩
 Out_i = TypePrim("()")    In_i = TypePrim("()")    T_tuple = TypeTuple([Result_1, …, Result_n])
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ; R; L ⊢ AllExpr([e_1, …, e_n]) : TypeUnion([T_tuple, E_1, …, E_n])
+Γ; R; L ⊢ AllExpr([e_1, …, e_n]) : TypeApply(["Outcome"], [T_tuple, TypeUnion([E_1, …, E_n])])
 ```
 
 **(All-Out-Err)**
@@ -23890,8 +23880,8 @@ Manual stepping advances an async value by inspecting its modal state and invoki
 
 1. Evaluate `e` to `a`.
 2. While `a` is `@Suspended { output = () }`, set `a := a~>resume(())`.
-3. If `a` is `@Completed { value }`, produce `value`.
-4. If `a` is `@Failed { error }`, produce the union error value.
+3. If `a` is `@Completed { value }`, produce `Outcome::Value(value)`.
+4. If `a` is `@Failed { error }`, produce `Outcome::Error(error)`.
 
 Formal `sync` rules:
 
@@ -23918,14 +23908,14 @@ ModalState(a) = @Suspended    a.output = ()    Γ ⊢ EvalSigma(Resume(a, ()), �
 ```text
 Γ ⊢ EvalSigma(e, σ) ⇓ (Val(a), σ_1)    ModalState(a) = @Completed    a.value = v
 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalSigma(SyncExpr(e), σ) ⇓ (Val(v), σ_1)
+Γ ⊢ EvalSigma(SyncExpr(e), σ) ⇓ (Val(EnumValue(["Outcome", `Value`], TuplePayload([v]))), σ_1)
 ```
 
 **(EvalSigma-Sync-Failed)**
 ```text
 Γ ⊢ EvalSigma(e, σ) ⇓ (Val(a), σ_1)    ModalState(a) = @Failed    a.error = err
 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalSigma(SyncExpr(e), σ) ⇓ (Val(err), σ_1)
+Γ ⊢ EvalSigma(SyncExpr(e), σ) ⇓ (Val(EnumValue(["Outcome", `Error`], TuplePayload([err]))), σ_1)
 ```
 
 `race` return-mode evaluation is:
@@ -23933,7 +23923,7 @@ ModalState(a) = @Suspended    a.output = ()    Γ ⊢ EvalSigma(Resume(a, ()), �
 1. Initiate all async expressions concurrently.
 2. When any arm completes or fails, handle that arm.
 3. Cancel all remaining arms.
-4. Produce the selected handler result or propagated error value.
+4. Produce `Outcome::Value(`selected handler result`)` or `Outcome::Error(`propagated error`)`.
 
 `race` streaming-mode evaluation is:
 
@@ -23982,7 +23972,7 @@ RaceStepReturn : RaceState × [RaceArm] × State → EvalOut × State
 arm_i = arms[i]    Γ ⊢ BindPattern(arm_i.pat, v) ⇓ Γ_1    Γ_1 ⊢ EvalSigma(arm_i.handler.expr, σ) ⇓ (Val(r), σ_1)
 CancelAll(race_state.active ∖ {a_i}, σ_1) ⇓ σ_2
 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ RaceStepReturn(race_state, arms, σ) ⇓ (Val(r), σ_2)
+Γ ⊢ RaceStepReturn(race_state, arms, σ) ⇓ (Val(EnumValue(["Outcome", `Value`], TuplePayload([r]))), σ_2)
 ```
 
 **(RaceStepReturn-Failed)**
@@ -23990,7 +23980,7 @@ CancelAll(race_state.active ∖ {a_i}, σ_1) ⇓ σ_2
 ∃ i. ModalState(race_state.active[i]) = @Failed    a_i = race_state.active[i]    a_i.error = e
 CancelAll(race_state.active ∖ {a_i}, σ) ⇓ σ_1
 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ RaceStepReturn(race_state, arms, σ) ⇓ (Val(e), σ_1)
+Γ ⊢ RaceStepReturn(race_state, arms, σ) ⇓ (Val(EnumValue(["Outcome", `Error`], TuplePayload([e]))), σ_1)
 ```
 
 **(RaceStepReturn-Continue)**
@@ -24153,14 +24143,14 @@ AllLoop : AllState × State → EvalOut × State
 ```text
 ∀ i. all_state.results[i] ≠ ⊥    all_state.failed = ⊥    tuple = (all_state.results[1], …, all_state.results[n])
 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ AllLoop(all_state, σ) ⇓ (Val(tuple), σ)
+Γ ⊢ AllLoop(all_state, σ) ⇓ (Val(EnumValue(["Outcome", `Value`], TuplePayload([tuple]))), σ)
 ```
 
 **(AllLoop-Failed)**
 ```text
 all_state.failed = e    e ≠ ⊥
 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ AllLoop(all_state, σ) ⇓ (Val(e), σ)
+Γ ⊢ AllLoop(all_state, σ) ⇓ (Val(EnumValue(["Outcome", `Error`], TuplePayload([e]))), σ)
 ```
 
 **(AllLoop-Continue)**
@@ -24348,7 +24338,7 @@ AsyncComposeIR = {SyncLoopIR, RaceInitIR, RaceSelectIR, RaceResumeIR, AllInitIR,
 Γ ⊢ LowerExpr(SyncExpr(e)) ⇓ ⟨SeqIR(IR_e, SyncLoopIR(v_e)), SyncResult(v_e)⟩
 ```
 
-`SyncLoopIR(v)` MUST loop on the modal state of `v`, resuming `@Suspended` with input `()`, returning `@Completed.value`, and returning the union error value from `@Failed.error`.
+`SyncLoopIR(v)` MUST loop on the modal state of `v`, resuming `@Suspended` with input `()`, returning `Outcome::Value(@Completed.value)`, and returning `Outcome::Error(@Failed.error)`.
 
 **(Lower-Expr-Race-Return)**
 ```text
@@ -24376,7 +24366,7 @@ For `RaceInitIR(arms, mode)`, lowering MUST:
 Γ ⊢ LowerExpr(AllExpr(exprs)) ⇓ ⟨AllInitIR(exprs), AllJoinIR(exprs)⟩
 ```
 
-`AllJoinIR` MUST preserve expression order in the result tuple and MUST cancel unfinished operands on the first failure.
+`AllJoinIR` MUST preserve expression order in the result tuple and MUST cancel unfinished operands on the first failure. It MUST yield `Outcome::Value(tuple)` on success and `Outcome::Error(error)` on the first failure.
 
 Async combinators lower to wrapper async state machines around their source operand:
 
@@ -24728,7 +24718,7 @@ comptime_expr           ::= attribute_list? "comptime" "{" expression "}"
 comptime_if             ::= "comptime" "if" expression block_expr ("else" (comptime_if | block_expr))?
 comptime_loop           ::= "comptime" "loop" pattern (":" type)? "in" expression block_expr
 comptime_procedure_decl ::= attribute_list? "comptime" visibility? "procedure" identifier generic_params? signature contract_clause? block_expr
-type_literal            ::= "Type" "::<" type ">"
+type_literal            ::= "Type" "::" "<" type ">"
 ```
 
 #### 22.1.2 Parsing
@@ -24887,7 +24877,7 @@ proc = CtProc(attrs_opt, vis, name, gen_params_opt, params, ret_opt, contract_op
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ proc : wf
 
-Compile-time procedure contracts use the ordinary `contract_clause` surface of §14.6. At each compile-time call site, the precondition is evaluated before body execution and the postcondition is evaluated on the returned value. If any evaluated contract predicate is `false`, the call is ill-formed.
+Compile-time procedure contracts use the ordinary `contract_clause` surface of §15.4. At each compile-time call site, the precondition is evaluated before body execution and the postcondition is evaluated on the returned value. If any evaluated contract predicate is `false`, the call is ill-formed.
 
 Compile-time procedures MUST be callable only from compile-time contexts. Runtime expressions and runtime procedure bodies MUST NOT name, take the address of, store, or call a compile-time procedure.
 
@@ -25071,8 +25061,8 @@ VariantInfoFields = [⟨`name`, TypeString(`@Managed`)⟩, ⟨`payload_kind`, Ty
 StateInfoFields = [⟨`name`, TypeString(`@Managed`)⟩, ⟨`field_names`, TypeSlice(TypeString(`@Managed`))⟩, ⟨`method_names`, TypeSlice(TypeString(`@Managed`))⟩, ⟨`transition_names`, TypeSlice(TypeString(`@Managed`))⟩, ⟨`span`, TypePath(["SourceSpan"])⟩]
 
 ModulePathText(path) = StringOfPath(path)
-CtOutcomeValue(T, v) = CtModalState(TypeApply(["Outcome"], [T, TypePath(["IoError"])]), `@Value`, [⟨`value`, v⟩])
-CtOutcomeError(T, e) = CtModalState(TypeApply(["Outcome"], [T, TypePath(["IoError"])]), `@Error`, [⟨`error`, CtEnum([`IoError`], IoErrorVariant(e), ⊥)⟩])
+CtOutcomeValue(T, v) = CtEnum([`Outcome`], `Value`, CtTuplePayload([v]))
+CtOutcomeError(T, e) = CtEnum([`Outcome`], `Error`, CtTuplePayload([CtEnum([`IoError`], IoErrorVariant(e), ⊥)]))
 CtFileResult(r, T) = CtOutcomeValue(T, CtString(r))    if r ∈ String
 CtFileResult(r, T) = CtOutcomeValue(T, CtBytes(r))    if r ∈ Bytes
 CtFileResult(r, T) = CtOutcomeValue(T, CtPrim(r))    if r ∈ Bool
@@ -25248,7 +25238,7 @@ Diagnostics for compile-time capabilities are defined by §22.6.
 #### 22.3.1 Syntax
 
 ```ebnf
-type_literal ::= "Type" "::<" type ">"
+type_literal ::= "Type" "::" "<" type ">"
 ```
 
 #### 22.3.2 Parsing
@@ -25421,7 +25411,7 @@ quote_expr     ::= "quote" "{" quoted_content "}"
 quote_type     ::= "quote" "type" "{" type "}"
 quote_pattern  ::= "quote" "pattern" "{" pattern "}"
 quoted_content ::= expression | statement | top_level_item
-splice_expr    ::= "$(" expression ")"
+splice_expr    ::= "$" "(" expression ")"
 splice_ident   ::= "$" identifier
 
 (* Splice forms parse in any primary-expression position; use outside quoted
@@ -25805,7 +25795,6 @@ PayloadTypes(v) = [T_f | ⟨_, f, T_f, _, _, _⟩ ∈ fields]    if v.payload_op
 TypeParamSet(params) = Set(TypeParamNames(params))
 
 AliasParams(p) = gen_params_opt ⇔ Σ.Types[p] = TypeAliasDecl(_, _, _, gen_params_opt, _, _, _, _)
-AliasPredicateClause(p) = predicate_clause_opt ⇔ Σ.Types[p] = TypeAliasDecl(_, _, _, _, predicate_clause_opt, _, _, _)
 
 TypeSubst(θ, TypePath([x])) = θ(x)    if x ∈ dom(θ)
 TypeSubst(θ, TypePath(p)) = TypePath(p)    if p ≠ [x] ∨ x ∉ dom(θ)
@@ -25863,8 +25852,7 @@ TypeParamsIn(TypeRangeFull, params) = ∅
 TypeParamsInFields(fields, params) = ⋃_{f ∈ fields} TypeParamsIn(f.type, params)
 TypeParamsInPayloads(vars, params) = ⋃_{v ∈ vars} ⋃_{T_f ∈ PayloadTypes(v)} TypeParamsIn(T_f, params)
 
-HasFfiSafeReq(W, x) ⇔ ∃ wp ∈ PredicateReqs(W). wp = PredicateReq(`FfiSafe`, TypePath([x]))
-FfiSafePredicateClauseOk(params, W, Xs) ⇔ ∀ x ∈ Xs. HasFfiSafeReq(W, x)
+FfiSafeGenericBoundsOk(Γ, params, Xs) ⇔ GenericParamsBoundedBy(Γ, params, Xs, [`FfiSafe`])
 
 ProhibitedFfiType(T) ⇔
  T = TypePrim("bool") ∨
@@ -25921,27 +25909,27 @@ T = TypePath(p)    AliasBody(p) = ty    Γ ⊢ FfiSafeType(ty) ⇓ ok
 Γ ⊢ FfiSafeType(T) ⇓ ok
 
 **(FfiSafe-Alias-Apply)**
-T = TypeApply(p, args)    AliasBody(p) = ty    params_gen = TypeParamsOpt(AliasParams(p))    DefaultArgs(params_gen, args) = args'    θ = [args'_i / params_gen[i].name]    Γ ⊢ AliasPredicateClause(p)[θ] ok    Γ ⊢ FfiSafeType(TypeSubst(θ, ty)) ⇓ ok
+T = TypeApply(p, args)    AliasDecl(p) = A    params_gen = TypeParamsOpt(A.gen_params_opt)    DefaultArgs(params_gen, args) = args'    θ = [args'_i / params_gen[i].name]    AliasBody(p) = ty    Γ ⊢ FfiSafeType(TypeSubst(θ, ty)) ⇓ ok
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ FfiSafeType(T) ⇓ ok
 
 **(FfiSafe-Record)**
-T = TypePath(p)    RecordDecl(p) = R    HasLayoutC(R)    TypeParamsOpt(R.gen_params_opt) = []    Γ ⊢ layout(T) ⇓ _    ∀ f : T_f ∈ Fields(R). Γ ⊢ FfiSafeType(T_f) ⇓ ok    FfiSafePredicateClauseOk([], R.predicate_clause_opt, ∅)
+T = TypePath(p)    RecordDecl(p) = R    HasLayoutC(R)    TypeParamsOpt(R.gen_params_opt) = []    Γ ⊢ layout(T) ⇓ _    ∀ f : T_f ∈ Fields(R). Γ ⊢ FfiSafeType(T_f) ⇓ ok
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ FfiSafeType(T) ⇓ ok
 
 **(FfiSafe-Record-Apply)**
-T = TypeApply(p, args)    RecordDecl(p) = R    params_gen = TypeParamsOpt(R.gen_params_opt)    DefaultArgs(params_gen, args) = args'    θ = [args'_i / params_gen[i].name]    HasLayoutC(R)    Γ ⊢ layout(T) ⇓ _    Γ ⊢ R.predicate_clause_opt[θ] ok    FfiSafePredicateClauseOk(params_gen, R.predicate_clause_opt, TypeParamsInFields(Fields(R), params_gen))    ∀ f : T_f ∈ Fields(R). Γ ⊢ FfiSafeType(TypeSubst(θ, T_f)) ⇓ ok
+T = TypeApply(p, args)    RecordDecl(p) = R    params_gen = TypeParamsOpt(R.gen_params_opt)    DefaultArgs(params_gen, args) = args'    θ = [args'_i / params_gen[i].name]    HasLayoutC(R)    Γ ⊢ layout(T) ⇓ _    FfiSafeGenericBoundsOk(Γ, params_gen, TypeParamsInFields(Fields(R), params_gen))    ∀ f : T_f ∈ Fields(R). Γ ⊢ FfiSafeType(TypeSubst(θ, T_f)) ⇓ ok
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ FfiSafeType(T) ⇓ ok
 
 **(FfiSafe-Enum)**
-T = TypePath(p)    EnumDecl(p) = E    HasLayoutC(E)    TypeParamsOpt(E.gen_params_opt) = []    Γ ⊢ layout(T) ⇓ _    ∀ v ∈ Variants(E). ∀ T_f ∈ PayloadTypes(v). Γ ⊢ FfiSafeType(T_f) ⇓ ok    FfiSafePredicateClauseOk([], E.predicate_clause_opt, ∅)
+T = TypePath(p)    EnumDecl(p) = E    HasLayoutC(E)    TypeParamsOpt(E.gen_params_opt) = []    Γ ⊢ layout(T) ⇓ _    ∀ v ∈ Variants(E). ∀ T_f ∈ PayloadTypes(v). Γ ⊢ FfiSafeType(T_f) ⇓ ok
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ FfiSafeType(T) ⇓ ok
 
 **(FfiSafe-Enum-Apply)**
-T = TypeApply(p, args)    EnumDecl(p) = E    params_gen = TypeParamsOpt(E.gen_params_opt)    DefaultArgs(params_gen, args) = args'    θ = [args'_i / params_gen[i].name]    HasLayoutC(E)    Γ ⊢ layout(T) ⇓ _    Γ ⊢ E.predicate_clause_opt[θ] ok    FfiSafePredicateClauseOk(params_gen, E.predicate_clause_opt, TypeParamsInPayloads(Variants(E), params_gen))    ∀ v ∈ Variants(E). ∀ T_f ∈ PayloadTypes(v). Γ ⊢ FfiSafeType(TypeSubst(θ, T_f)) ⇓ ok
+T = TypeApply(p, args)    EnumDecl(p) = E    params_gen = TypeParamsOpt(E.gen_params_opt)    DefaultArgs(params_gen, args) = args'    θ = [args'_i / params_gen[i].name]    HasLayoutC(E)    Γ ⊢ layout(T) ⇓ _    FfiSafeGenericBoundsOk(Γ, params_gen, TypeParamsInPayloads(Variants(E), params_gen))    ∀ v ∈ Variants(E). ∀ T_f ∈ PayloadTypes(v). Γ ⊢ FfiSafeType(TypeSubst(θ, T_f)) ⇓ ok
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ FfiSafeType(T) ⇓ ok
 
@@ -25986,22 +25974,22 @@ T = TypeApply(p, args)    EnumDecl(p) = E    params_gen = TypeParamsOpt(E.gen_pa
 Γ ⊢ FfiSafeType(T) ⇑ c
 
 **(FfiSafe-Record-Generic-Unbounded-Err)**
-T = TypePath(p)    RecordDecl(p) = R    params_gen = TypeParamsOpt(R.gen_params_opt)    params_gen ≠ []    ¬ FfiSafePredicateClauseOk(params_gen, R.predicate_clause_opt, TypeParamsInFields(Fields(R), params_gen))    c = Code(FfiSafe-Generic-Unbounded-Err)
+T = TypePath(p)    RecordDecl(p) = R    params_gen = TypeParamsOpt(R.gen_params_opt)    params_gen ≠ []    ¬ FfiSafeGenericBoundsOk(Γ, params_gen, TypeParamsInFields(Fields(R), params_gen))    c = Code(FfiSafe-Generic-Unbounded-Err)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ FfiSafeType(T) ⇑ c
 
 **(FfiSafe-Enum-Generic-Unbounded-Err)**
-T = TypePath(p)    EnumDecl(p) = E    params_gen = TypeParamsOpt(E.gen_params_opt)    params_gen ≠ []    ¬ FfiSafePredicateClauseOk(params_gen, E.predicate_clause_opt, TypeParamsInPayloads(Variants(E), params_gen))    c = Code(FfiSafe-Generic-Unbounded-Err)
+T = TypePath(p)    EnumDecl(p) = E    params_gen = TypeParamsOpt(E.gen_params_opt)    params_gen ≠ []    ¬ FfiSafeGenericBoundsOk(Γ, params_gen, TypeParamsInPayloads(Variants(E), params_gen))    c = Code(FfiSafe-Generic-Unbounded-Err)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ FfiSafeType(T) ⇑ c
 
 **(FfiSafe-Record-Apply-Generic-Unbounded-Err)**
-T = TypeApply(p, args)    RecordDecl(p) = R    params_gen = TypeParamsOpt(R.gen_params_opt)    params_gen ≠ []    ¬ FfiSafePredicateClauseOk(params_gen, R.predicate_clause_opt, TypeParamsInFields(Fields(R), params_gen))    c = Code(FfiSafe-Generic-Unbounded-Err)
+T = TypeApply(p, args)    RecordDecl(p) = R    params_gen = TypeParamsOpt(R.gen_params_opt)    params_gen ≠ []    ¬ FfiSafeGenericBoundsOk(Γ, params_gen, TypeParamsInFields(Fields(R), params_gen))    c = Code(FfiSafe-Generic-Unbounded-Err)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ FfiSafeType(T) ⇑ c
 
 **(FfiSafe-Enum-Apply-Generic-Unbounded-Err)**
-T = TypeApply(p, args)    EnumDecl(p) = E    params_gen = TypeParamsOpt(E.gen_params_opt)    params_gen ≠ []    ¬ FfiSafePredicateClauseOk(params_gen, E.predicate_clause_opt, TypeParamsInPayloads(Variants(E), params_gen))    c = Code(FfiSafe-Generic-Unbounded-Err)
+T = TypeApply(p, args)    EnumDecl(p) = E    params_gen = TypeParamsOpt(E.gen_params_opt)    params_gen ≠ []    ¬ FfiSafeGenericBoundsOk(Γ, params_gen, TypeParamsInPayloads(Variants(E), params_gen))    c = Code(FfiSafe-Generic-Unbounded-Err)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ FfiSafeType(T) ⇑ c
 
@@ -26023,7 +26011,7 @@ The following type categories MUST NOT satisfy `FfiSafeType`:
 
 **RAII by-value rule.** If a type satisfies both `DropType` and `FfiSafeType`, then any by-value appearance of that type in an FFI signature requires the defining type to carry `#ffi_pass_by_value`.
 
-**Generic Bounds.** Any type parameter that appears in a field type or variant payload of a type satisfying `FfiSafeType` MUST be bounded by a predicate requirement of the form `FfiSafe(X)` in the declaration's `|:` clause.
+**Generic Bounds.** Any type parameter that appears in a field type or variant payload of a type satisfying `FfiSafeType` MUST be declared with a class bound that implies `FfiSafe`, such as `<T <: FfiSafe>`.
 
 #### 23.1.5 Dynamic Semantics
 
@@ -26051,22 +26039,22 @@ This section introduces no additional runtime mechanism. Dynamic boundary behavi
 #### 23.2.1 Syntax
 
 ```ebnf
-extern_procedure_decl ::= attribute_list? visibility? "procedure" identifier generic_params? signature predicate_clause? contract_clause? foreign_contract_clause_list? terminator
+extern_procedure_decl ::= attribute_list? visibility? "procedure" identifier generic_params? signature contract_clause? foreign_contract_clause_list? terminator
 ```
 
 #### 23.2.2 Parsing
 
 **(Parse-ExternProcDecl)**
-Γ ⊢ ParseAttrListOpt(P) ⇓ (P_0, attrs_opt)    Γ ⊢ ParseVis(P_0) ⇓ (P_1, vis)    IsKw(Tok(P_1), `procedure`)    Γ ⊢ ParseIdent(Advance(P_1)) ⇓ (P_2, name)    Γ ⊢ ParseGenericParamsOpt(P_2) ⇓ (P_3, gen_params_opt)    Γ ⊢ ParseSignature(P_3) ⇓ (P_4, params, ret_opt)    Γ ⊢ ParsePredicateClauseOpt(P_4) ⇓ (P_5, predicate_clause_opt)    Γ ⊢ ParseContractClauseOpt(P_5) ⇓ (P_6, contract_opt)    Γ ⊢ ParseForeignContractClauseListOpt(P_6) ⇓ (P_7, foreign_contracts_opt)    Γ ⊢ ConsumeTerminatorReq(P_7) ⇓ P_8
+Γ ⊢ ParseAttrListOpt(P) ⇓ (P_0, attrs_opt)    Γ ⊢ ParseVis(P_0) ⇓ (P_1, vis)    IsKw(Tok(P_1), `procedure`)    Γ ⊢ ParseIdent(Advance(P_1)) ⇓ (P_2, name)    Γ ⊢ ParseGenericParamsOpt(P_2) ⇓ (P_3, gen_params_opt)    Γ ⊢ ParseSignature(P_3) ⇓ (P_4, params, ret_opt)    Γ ⊢ ParseContractClauseOpt(P_4) ⇓ (P_5, contract_opt)    Γ ⊢ ParseForeignContractClauseListOpt(P_5) ⇓ (P_6, foreign_contracts_opt)    Γ ⊢ ConsumeTerminatorReq(P_6) ⇓ P_7
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ParseExternProcDecl(P) ⇓ (P_8, ExternProcDecl(attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, params, ret_opt, contract_opt, foreign_contracts_opt, SpanBetween(P, P_8), []))
+Γ ⊢ ParseExternProcDecl(P) ⇓ (P_8, ExternProcDecl(attrs_opt, vis, name, gen_params_opt, params, ret_opt, contract_opt, foreign_contracts_opt, SpanBetween(P, P_8), []))
 
 #### 23.2.3 AST Representation / Form
 
 Extern procedure declarations are represented by:
 
 ```text
-ExternProcDecl = ⟨attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, params, return_type_opt, contract_opt, foreign_contracts_opt, span, doc⟩
+ExternProcDecl = ⟨attrs_opt, vis, name, gen_params_opt, params, return_type_opt, contract_opt, foreign_contracts_opt, span, doc⟩
 ```
 
 Extern procedure declarations also admit the derived forms:
@@ -26130,25 +26118,29 @@ Import-side unwind landing pads are defined in §23.7. This section introduces n
 
 Type-admissibility failures in `FfiSafeType` and by-value FFI use are owned by §23.1.7.
 
-### 23.3 Exported Procedures and Hosted Exports
+### 23.3 Foreign-Callable Procedure Exports
+
+Foreign-callable procedure exports are ordinary procedure declarations made callable from foreign code by an attached export attribute. This parent section routes the two export modes to their normative leaf homes: raw exported procedures are defined by §23.3.1, and hosted exports are defined by §23.3.2. Attribute syntax is owned by §23.4, type admissibility is owned by §23.1, and boundary unwinding is owned by §23.7.
 
 #### 23.3.1 Raw Exported Procedures
 
+##### 23.3.1.1 Syntax
+
 A procedure becomes a raw exported procedure when it carries `#export("abi")`. The attribute syntax is defined in §23.4.1.
 
-#### 23.3.2 Parsing
+##### 23.3.1.2 Parsing
 
 Raw exported procedures are parsed by the ordinary procedure-declaration parser from §15.1.2.
 
 An ordinary `ProcedureDecl` is classified as a raw exported procedure when its attached attribute list contains `#export("abi")` as parsed by §23.4.2.
 
-#### 23.3.3 AST Representation / Form
+##### 23.3.1.3 AST Representation / Form
 
 Raw exported procedures are represented by ordinary `ProcedureDecl(...)` items with `ExportAttr(proc)` defined.
 
 This section introduces no dedicated raw-export AST node beyond `ProcedureDecl` plus the attached `export` attribute.
 
-#### 23.3.4 Static Semantics
+##### 23.3.1.4 Static Semantics
 
 **Raw Exported Procedure.** A Ultraviolet procedure made callable from foreign code via `#export`.
 
@@ -26166,7 +26158,7 @@ proc = ProcedureDecl(_, vis, _, _, _, params, ret_opt, _, _, _, _)    vis = `pub
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ExportSigOk(proc) ⇓ ok
 
-#### 23.3.5 Dynamic Semantics
+##### 23.3.1.5 Dynamic Semantics
 
 Execution of the body follows ordinary procedure semantics. Boundary panic handling is defined by §23.7. When `UnwindMode(proc) = "catch"`, the boundary MUST return `ZeroValue(R)` for the raw exported procedure's return type `R`.
 
@@ -26174,11 +26166,11 @@ For a raw exported procedure `proc` owned by a project `P` satisfying `RawExport
 
 For any shared library project `P`, an ordinary Ultraviolet call that crosses a shared-library link boundary into one externally linked procedure owned by `P` likewise occurs only through one live loaded library image `i` owned by `P`. Before the first such linked call through a newly loaded image, the implementation MUST establish that image by `LibraryImageInitSigma(P, i, σ)` as defined in §24.4.4. Later linked calls through the same live image MUST reuse the same image-owned static state, poison flags, and boundary panic record until unload. On unload of that live image, the implementation MUST execute `LibraryImageDestroySigma(P, i, σ)` exactly once. User-procedure execution for that linked call continues to follow ordinary `ApplyProcSigma` under the image-state interpretation defined by §24.4.4.
 
-#### 23.3.6 Lowering
+##### 23.3.1.6 Lowering
 
 Export-side unwind frames are defined in §23.7. This section introduces no additional lowering rules beyond export ABI selection and external linkage.
 
-#### 23.3.7 Diagnostics
+##### 23.3.1.7 Diagnostics
 
 | Code         | Severity | Detection    | Condition                                        |
 | ------------ | -------- | ------------ | ------------------------------------------------ |
@@ -26187,17 +26179,19 @@ Export-side unwind frames are defined in §23.7. This section introduces no addi
 
 Unsupported export-ABI-string rejection is owned by §23.2.7. Type-admissibility failures in `FfiSafeType` and by-value FFI use are owned by §23.1.7.
 
-#### 23.3.8 Hosted Exports
+#### 23.3.2 Hosted Exports
+
+##### 23.3.2.1 Syntax
 
 A procedure becomes a hosted export when it carries `#host_export("abi")`. A hosted export is not a raw FFI signature: the foreign-visible signature is derived from the source procedure plus an opaque hosted-library session handle.
 
-#### 23.3.9 Parsing
+##### 23.3.2.2 Parsing
 
 Hosted exports are parsed by the ordinary procedure-declaration parser from §15.1.2.
 
 An ordinary `ProcedureDecl` is classified as a hosted export when its attached attribute list contains `#host_export("abi")` as parsed by §23.4.2.
 
-#### 23.3.10 AST Representation / Form
+##### 23.3.2.3 AST Representation / Form
 
 Hosted exports are represented by ordinary `ProcedureDecl(...)` items with `HostExportAttr(proc)` defined.
 
@@ -26219,7 +26213,7 @@ HostThunkSig(proc) = ⟨HostThunkParams(proc), ProcReturn(ret_opt)⟩ ⇔ proc =
 
 `HostedRootCaps(P)` is the maximal capability set that may become visible to Ultraviolet user code through hosted exports of `P`.
 
-#### 23.3.11 Static Semantics
+##### 23.3.2.4 Static Semantics
 
 **Hosted Export.** A Ultraviolet procedure made callable from foreign code through a hosted-library session.
 
@@ -26264,7 +26258,7 @@ proc = ProcedureDecl(_, _, _, _, _, [⟨`move`, _, T_ctx⟩] ++ _, _, _, _, _, _
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ HostExportSigOk(proc) ⇑ c
 
-#### 23.3.12 Dynamic Semantics
+##### 23.3.2.5 Dynamic Semantics
 
 A hosted export call occurs only with a live, idle hosted-library session `h` owned by the library project `P`. Hosted-export foreign-visible session handles use ABI type `usize`; the value `0` MUST be rejected as invalid.
 
@@ -26287,7 +26281,7 @@ If the supplied handle is invalid, not live, or busy, then the hosted-export bou
 
 When `UnwindMode(proc) = "catch"`, any boundary failure that occurs before or during hosted-export invocation MUST return `ZeroValue(R)` for the hosted export's return type `R`.
 
-#### 23.3.13 Lowering
+##### 23.3.2.6 Lowering
 
 Hosted-export lowering MUST preserve the raw-FFI rules of §§23.1–23.5 for the foreign-visible signature while reconstructing the first source parameter internally.
 
@@ -26378,12 +26372,12 @@ For every hosted export `proc`, a conforming implementation MUST emit one foreig
 1. prepends one `usize` session-handle parameter;
 2. omits the first source parameter from the foreign-visible ABI;
 3. reconstructs the first source parameter from the session-owned `Context` value before entering the user procedure;
-4. rejects invalid, non-live, and busy handles according to §23.3.12 before any user code executes;
+4. rejects invalid, non-live, and busy handles according to §23.3.2.5 before any user code executes;
 5. applies the same `#unwind` boundary rules as a raw exported procedure with the derived foreign-visible signature.
 
 These hosted-export thunks are backend-generated boundary declarations. They are not the same declarations as the user-authored source procedures. A conforming backend MUST emit exactly one hosted-export thunk per `proc ∈ HostExports(P)` in the linked image of `P`, and that thunk MUST use `HostThunkLinkName(proc)` as its foreign symbol while calls from Ultraviolet code continue to target the source procedure body symbol `Mangle(proc)`. A conforming implementation MUST NOT expose `Mangle(proc)` itself as the hosted foreign entrypoint for `proc`; foreign code enters only through the generated thunk.
 
-#### 23.3.14 Diagnostics
+##### 23.3.2.7 Diagnostics
 
 | Code         | Severity | Detection    | Condition                                                                            |
 | ------------ | -------- | ------------ | ------------------------------------------------------------------------------------ |
@@ -26511,17 +26505,17 @@ If `UnwindMode(proc) = "catch"`, the ABI at the boundary MUST be `"C-unwind"`:
 3. The ABI string selects the foreign calling convention (see §23.2.4).
 4. `#export` implies external linkage.
 5. Link name selection is defined by `LinkName` (§24.3) and `#mangle(...)`.
-6. Raw export signatures MUST satisfy the FFI safety requirements in §§23.3 and 23.5.
+6. Raw export signatures MUST satisfy the FFI safety requirements in §§23.3.1 and 23.5.
 
 ##### 23.4.4.5 `#host_export`
 
 1. Valid only on procedure declarations.
 2. The procedure MUST be `public`.
 3. The owning assembly MUST be a library assembly.
-4. `#host_export` implies external linkage through the hosted-export thunk defined in §23.3.13. The source procedure body continues to use ordinary visibility-based linkage for Ultraviolet calls; `#host_export` alone does not make the source procedure body symbol the foreign entrypoint.
+4. `#host_export` implies external linkage through the hosted-export thunk defined in §23.3.2.6. The source procedure body continues to use ordinary visibility-based linkage for Ultraviolet calls; `#host_export` alone does not make the source procedure body symbol the foreign entrypoint.
 5. The ABI string selects the foreign calling convention (see §23.2.4).
 6. Link name selection is defined by `LinkName` (§24.3) and `#mangle(...)`.
-7. Hosted-export signatures MUST satisfy the hosted-export rules of §§23.3 and 23.5.
+7. Hosted-export signatures MUST satisfy the hosted-export rules of §§23.3.2 and 23.5.
 8. `#host_export` and `#export` MUST NOT appear in the same assembly.
 
 ##### 23.4.4.6 `#ffi_pass_by_value`
@@ -26547,7 +26541,7 @@ FFI attributes do not directly evaluate to runtime values. `#unwind` selects the
 
 #### 23.4.6 Lowering
 
-`#mangle` selects link names. `#library` contributes library-resolution metadata for extern blocks. `#export` implies external linkage at the raw FFI boundary. `#host_export` selects hosted-library thunk emission and the hosted-session lifecycle exports required by §23.3.13. `#unwind` selects the boundary frame strategy in §23.7. `#ffi_pass_by_value` authorizes by-value ABI lowering for eligible `DropType` + `FfiSafeType` records and enums.
+`#mangle` selects link names. `#library` contributes library-resolution metadata for extern blocks. `#export` implies external linkage at the raw FFI boundary. `#host_export` selects hosted-library thunk emission and the hosted-session lifecycle exports required by §23.3.2.6. `#unwind` selects the boundary frame strategy in §23.7. `#ffi_pass_by_value` authorizes by-value ABI lowering for eligible `DropType` + `FfiSafeType` records and enums.
 
 #### 23.4.7 Diagnostics
 
@@ -26634,12 +26628,12 @@ Capability-bearing-type violations other than region-local raw-pointer escape ar
 ffi_verification_attr    ::= "#" ffi_verification_mode
 ffi_verification_mode    ::= "static" | "dynamic"
 
-foreign_contract         ::= "|:" "@foreign_assumes" "(" predicate_expr ")"
-                           | "|:" "@foreign_ensures" "(" ensures_predicate ")"
+foreign_contract         ::= "|:" decorated_identifier("@", "foreign_assumes") "(" predicate_expr ")"
+                           | "|:" decorated_identifier("@", "foreign_ensures") "(" ensures_predicate ")"
 foreign_contract_clause_list ::= foreign_contract+
 ensures_predicate        ::= predicate_expr
-                           | "@error" ":" predicate_expr
-                           | "@null_result" ":" predicate_expr
+                           | decorated_identifier("@", "error") ":" predicate_expr
+                           | decorated_identifier("@", "null_result") ":" predicate_expr
 ```
 
 #### 23.6.2 Parsing
@@ -26922,8 +26916,8 @@ UnwindMode(proc) ⇑ c
 1. If a Ultraviolet panic or foreign unwind attempts to cross an FFI boundary with `UnwindMode(proc) = abort`, the program MUST abort.
 2. If `UnwindMode(proc) = catch`:
    - imported procedures convert foreign unwinds to Ultraviolet panics;
-   - raw exported procedures return `ZeroValue(R)` as defined by §23.3.5;
-   - hosted exports return `ZeroValue(R)` as defined by §23.3.12.
+   - raw exported procedures return `ZeroValue(R)` as defined by §23.3.1.5;
+   - hosted exports return `ZeroValue(R)` as defined by §23.3.2.5.
 
 General destruction and unwind cleanup semantics remain defined by §24.5.
 
@@ -27160,12 +27154,13 @@ ExecIRSigma(ReadPtrIR(v_ptr), σ) ⇓ (out, σ')
 ExecIRSigma(WritePtrIR(v_ptr, v), σ) ⇓ (sout, σ')
 
 AllocTarget(σ, ⊥) = ActiveTarget(σ)
+AllocTarget(σ, v_r) = r ⇔ RegionHandleOf(v_r) = h ∧ ResolveTarget(σ, h) = r
 AllocTarget(σ, r) = ResolveTarget(σ, r)
 
 **(ExecIR-Alloc)**
-AllocTarget(σ, r_opt) = r    RegionAlloc(σ, r, v) ⇓ (σ', v')
+AllocTarget(σ, r_ref) = r    RegionAlloc(σ, r, v) ⇓ (σ', v')
 ──────────────────────────────────────────────────────────────────────────────
-ExecIRSigma(AllocIR(r_opt, v), σ) ⇓ (Val(v'), σ')
+ExecIRSigma(AllocIR(r_ref, v), σ) ⇓ (Val(v'), σ')
 
 **(MoveState-Root)**
 PlaceRoot(p) = x    FieldHead(p) = ⊥    LookupBind(σ, x) = b    SetState(σ, b, Moved) ⇓ σ'
@@ -27744,7 +27739,11 @@ ArchiverToolName(`aarch64-darwin`) = `llvm-ar`
 
 LinkFlagsFor(`x86_64-sysv`, `exe`, out, _) = ["-o", out, "--entry=_start", "--nostdlib", "--dynamic-linker=/lib64/ld-linux-x86-64.so.2"]
 LinkFlagsFor(`x86_64-sysv`, `shared`, out, _) = ["-o", out, "--shared", "--nostdlib"]
-LinkFlagsFor(`x86_64-win64`, `exe`, out, _) = ["/OUT:" ++ out, "/ENTRY:main", "/SUBSYSTEM:CONSOLE", "/NODEFAULTLIB"]
+WindowsExeStackReserveBytes = 16777216
+WindowsExeStackCommitBytes = 65536
+WindowsExeStackFlag(`x86_64-win64`) = "/STACK:16777216,65536"
+
+LinkFlagsFor(`x86_64-win64`, `exe`, out, _) = ["/OUT:" ++ out, "/ENTRY:main", "/SUBSYSTEM:CONSOLE", "/NODEFAULTLIB", WindowsExeStackFlag(`x86_64-win64`)]
 LinkFlagsFor(`x86_64-win64`, `shared`, out, import_lib) = ["/OUT:" ++ out, "/DLL", "/ENTRY:" ++ LibraryEntrySym(`x86_64-win64`), "/NODEFAULTLIB", "/IMPLIB:" ++ import_lib]
 LinkFlagsFor(`aarch64-aapcs64`, `exe`, out, _) = ["-o", out, "--entry=main", "--nostdlib", "--dynamic-linker=/lib/ld-linux-aarch64.so.1"]
 LinkFlagsFor(`aarch64-aapcs64`, `shared`, out, _) = ["-o", out, "--shared", "--nostdlib"]
@@ -27993,13 +27992,18 @@ ForeignABICallJudg = {ForeignABICall}
 
 `ForeignABIParam` and `ForeignABICall` MUST be used for foreign-visible ABI boundaries whose signatures do not carry source parameter-mode information.
 
+**(ABI-Param-ByValue-ZST)**
+Γ ⊢ sizeof(T) = 0
+──────────────────────────────────────────────
+Γ ⊢ ABIParam(mode, T) ⇓ `ByValue`
+
 **(ABI-Param-ByRef-Alias)**
-mode = ⊥    Γ ⊢ sizeof(T) = n
+mode = ⊥    Γ ⊢ sizeof(T) = n    n > 0
 ──────────────────────────────────────────
 Γ ⊢ ABIParam(mode, T) ⇓ `ByRef`
 
 **(ABI-Param-ByRef-Move)**
-mode = `move`    Γ ⊢ sizeof(T) = n
+mode = `move`    Γ ⊢ sizeof(T) = n    n > 0
 ──────────────────────────────────────────
 Γ ⊢ ABIParam(mode, T) ⇓ `ByRef`
 
@@ -28126,22 +28130,22 @@ ItemName(item) = name ⇔ item = ExternProcDecl(_, _, name, _, _, _, _, _, _, _,
 ItemName(item) = name ⇔ item = StaticDecl(_, _, _, ⟨IdentifierPattern(name), _, _, _, _⟩, _, _)
 
 **(Mangle-HostExport-Proc)**
-item = ProcedureDecl(attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, params, ret_opt, contract_opt, body, span, doc)    name ≠ "main"    HostExportAttr(item) defined    HostBodySym(item) = sym
+item = ProcedureDecl(attrs_opt, vis, name, gen_params_opt, params, ret_opt, contract_opt, body, span, doc)    name ≠ "main"    HostExportAttr(item) defined    HostBodySym(item) = sym
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ Mangle(item) ⇓ sym
 
 **(Mangle-Proc)**
-item = ProcedureDecl(attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, params, ret_opt, contract_opt, body, span, doc)    name ≠ "main"    HostExportAttr(item) undefined    LinkName(item) = sym
+item = ProcedureDecl(attrs_opt, vis, name, gen_params_opt, params, ret_opt, contract_opt, body, span, doc)    name ≠ "main"    HostExportAttr(item) undefined    LinkName(item) = sym
 ─────────────────────────────────────────────────────────────────────────────
 Γ ⊢ Mangle(item) ⇓ sym
 
 **(Mangle-ExternProc)**
-item = ExternProcDecl(attrs_opt, vis, name, gen_params_opt, predicate_clause_opt, params, ret_opt, contract_opt, foreign_contracts_opt, span, doc)    LinkName(item) = sym
+item = ExternProcDecl(attrs_opt, vis, name, gen_params_opt, params, ret_opt, contract_opt, foreign_contracts_opt, span, doc)    LinkName(item) = sym
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ Mangle(item) ⇓ sym
 
 **(Mangle-Main)**
-item = ProcedureDecl(attrs_opt, vis, "main", gen_params_opt, predicate_clause_opt, params, ret_opt, contract_opt, body, span, doc)    MainSigOk(item)    LinkName(item) = sym
+item = ProcedureDecl(attrs_opt, vis, "main", gen_params_opt, params, ret_opt, contract_opt, body, span, doc)    MainSigOk(item)    LinkName(item) = sym
 ──────────────────────────────────────────────────────────────────────────────
 Γ ⊢ Mangle(item) ⇓ sym
 
@@ -28475,7 +28479,7 @@ A conforming implementation MUST ensure that whenever `Γ ⊢ SessionStateInitSi
 
 A conforming implementation MUST ensure that whenever `Γ ⊢ SessionStateDestroySigma(P, h, σ) ⇓ σ'`, the cells previously reachable at `AddrOfSessionSym(h, sym)` for `HostedStateSym(P, sym)` are no longer live.
 
-For `HostedLibrary(P)` as defined by §23.3.10, every user-static storage cell, poison flag, and boundary panic record consumed by Chapters 6, 24.4, and 24.5 MUST be indexed by the live hosted session within the dynamic extent of `HostSessionInitSigma`, `HostedCallSigma`, and `HostSessionDestroySigma`. Within those hosted-session dynamic extents, every occurrence of `AddrOfSym(sym)` in those rules with `HostedStateSym(P, sym)` MUST be interpreted as `AddrOfSessionSym(h, sym)` for the active hosted session `h`, and every boundary panic-record operation MUST be interpreted through `SessionPanicRecordOf(_, h)`. For `HostedLibrary(P) ∧ SharedLibrary(P)`, when execution occurs outside those hosted-session dynamic extents but within one live loaded library image `i`, every occurrence of `AddrOfSym(sym)` in Chapters 6, 24.4, and 24.5 with `HostedStateSym(P, sym)` MUST instead be interpreted as `AddrOfImageSym(i, sym)`, and every boundary panic-record operation MUST be interpreted through `ImagePanicRecordOf(_, i)`. Executables and libraries that are not shared libraries continue to use the process-global interpretation of `AddrOfSym(sym)` and `PanicRecordOf(_)` outside hosted-session dynamic extents.
+For `HostedLibrary(P)` as defined by §23.3.2.3, every user-static storage cell, poison flag, and boundary panic record consumed by Chapters 6, 24.4, and 24.5 MUST be indexed by the live hosted session within the dynamic extent of `HostSessionInitSigma`, `HostedCallSigma`, and `HostSessionDestroySigma`. Within those hosted-session dynamic extents, every occurrence of `AddrOfSym(sym)` in those rules with `HostedStateSym(P, sym)` MUST be interpreted as `AddrOfSessionSym(h, sym)` for the active hosted session `h`, and every boundary panic-record operation MUST be interpreted through `SessionPanicRecordOf(_, h)`. For `HostedLibrary(P) ∧ SharedLibrary(P)`, when execution occurs outside those hosted-session dynamic extents but within one live loaded library image `i`, every occurrence of `AddrOfSym(sym)` in Chapters 6, 24.4, and 24.5 with `HostedStateSym(P, sym)` MUST instead be interpreted as `AddrOfImageSym(i, sym)`, and every boundary panic-record operation MUST be interpreted through `ImagePanicRecordOf(_, i)`. Executables and libraries that are not shared libraries continue to use the process-global interpretation of `AddrOfSym(sym)` and `PanicRecordOf(_)` outside hosted-session dynamic extents.
 
 #### 24.4.2 Initialization Order, Poisoning, and Project Lifecycle
 
@@ -28686,7 +28690,7 @@ DistinctHostedState(σ) ⇔ ∀ h_1, h_2. h_1 ≠ h_2 ∧ SessionLive(h_1, σ) �
 
 A conforming implementation MUST ensure `DistinctHostedState(σ)` for every store `σ`.
 A conforming implementation MUST ensure that every successful `HostSessionInitSigma(P, σ) ⇓ (Val(h), σ')` establishes `SessionLive(h, σ') ∧ ¬ SessionBusy(h, σ') ∧ HostedGrantedCaps(P, h) = HostedRootCaps(P)`, every successful `HostedCallSigma(P, h, d, vs, σ) ⇓ (out, σ')` establishes `SessionLive(h, σ') ∧ ¬ SessionBusy(h, σ')`, and every successful `HostSessionDestroySigma(P, h, σ) ⇓ σ'` establishes `¬ SessionLive(h, σ')`.
-A hosted-library session MUST NOT be entered concurrently or reentrantly. While one hosted call or destroy operation on `h` is in progress, the implementation MUST treat `SessionBusy(h, _)` as true for that operation and MUST reject any second hosted entry on the same session according to §23.3.12.
+A hosted-library session MUST NOT be entered concurrently or reentrantly. While one hosted call or destroy operation on `h` is in progress, the implementation MUST treat `SessionBusy(h, _)` as true for that operation and MUST reject any second hosted entry on the same session according to §23.3.2.5.
 
 **(HostSessionInitSigma)**
 HostedLibrary(P)    Γ ⊢ ContextInitSigma(σ) ⇓ (Val(v_ctx), σ_0)    SessionHandle(h)    HostedSessionOwner(h) = P    SessionContext(h) = v_ctx    HostedGrantedCaps(P, h) = HostedRootCaps(P)    Γ ⊢ SessionStateInitSigma(P, h, σ_0) ⇓ σ_s    SessionPanicRecordInit(σ_s, h)    (∀ d ∈ HostExports(P). HostContextParam(d) = ⟨_, _, T_d⟩ ⇒ HostedGrantVisible(P, h, T_d) ∧ ∃ v_d. ContextBundleBuild(StripPerm(T_d), v_ctx) ⇓ v_d)    Γ ⊢ Init(G_e, σ_s) ⇓ σ_1
@@ -29356,7 +29360,7 @@ A conforming implementation MUST satisfy all of the following:
 
 ReactorJudg = {ReactorRun(v_reactor, f) ⇓ r, ReactorRegister(v_reactor, f) ⇓ h}
 
-`ReactorRun` and `ReactorRegister` are runtime host-primitive relations that interface the async model (§19) with a concrete event loop.
+`ReactorRun` and `ReactorRegister` are runtime host-primitive relations that interface the async model (§21) with a concrete event loop. The `ReactorRun` relation yields an `Outcome<…>` value: `r` is `Outcome::Value(result)` on normal completion of the driven future and `Outcome::Error(error)` on failure, so `Reactor::run` produces an `Outcome` consistent with `sync`, `race`, and `all`.
 
 **(Prim-Reactor-Run)**
 Γ ⊢ ReactorRun(v_reactor, f) ⇓ r
@@ -29743,11 +29747,26 @@ SeqLL(⟨I_1, v_1⟩, ⟨I_2, v_2⟩) = ⟨I_1 ++ I_2, v_2⟩
 ──────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ LowerIRInstr(SeqIR(IR_1, IR_2)) ⇓ SeqLL(ll_1, ll_2)
 
-Load(slot, T) = [`load` LLVMTy(T), slot : LLVMPtrTy(T)]
-Store(slot, v, T) = [`store` LLVMTy(T) v, slot : LLVMPtrTy(T)]
+LLVMZSTValue(T) = ⊥    if sizeof(T) = 0
+Load(slot, T) = ε    if sizeof(T) = 0
+Load(slot, T) = [`load` LLVMTy(T), slot : LLVMPtrTy(T)]    if sizeof(T) > 0
+Store(slot, v, T) = ε    if sizeof(T) = 0
+Store(slot, v, T) = Memcpy(slot, src, sizeof(T))    if sizeof(T) > 0 ∧ AddressBackedAggregate(T) ∧ StorageOf(v, T) ⇓ src
+Store(slot, v, T) = [`store` LLVMTy(T) v, slot : LLVMPtrTy(T)]    if sizeof(T) > 0 ∧ ¬(AddressBackedAggregate(T) ∧ StorageOf(v, T) ⇓ _)
 Memcpy(dst, src, n) = [`call` `llvm.memcpy`(dst, src, n)]
 Memset(dst, 0, n) = [`call` `llvm.memset`(dst, 0, n)]
-LoadVal(slot, T) ⇓ ⟨Load(slot, T), v⟩
+LoadVal(slot, T) ⇓ ⟨ε, LLVMZSTValue(T)⟩    if sizeof(T) = 0
+LoadVal(slot, T) ⇓ ⟨Load(slot, T), v⟩    if sizeof(T) > 0
+
+A conforming LLVM backend MUST NOT emit `alloca`, `load`, `store`, or `phi` instructions whose operand or result type is the LLVM lowering of a source type `T` with `sizeof(T) = 0`.
+
+AddressBackedAggregate(T) ⇔ sizeof(T) > 0 ∧ (LLVMTy(T) is an LLVM struct type ∨ LLVMTy(T) is an LLVM array type)
+
+`StorageOf(v, T) ⇓ src` holds when `v` is already backed by addressable storage with layout-compatible type `T`, or when `v` is a derived aggregate literal, field, tuple element, array element, enum payload, modal payload, union payload, call result, if-result, loop-result, or pointer read whose lowering has produced addressable storage for `T`.
+
+For a derived aggregate projection `v = Project(base, member)` whose result type `T` is address-backed, `StorageOf(v, T) ⇓ src` also holds when `base` has produced a first-class aggregate value: the backend MUST materialize `base` into fresh non-escaping temporary storage, compute `src` as the projected member storage of that temporary, and use `src` only within the dynamic extent needed to copy, transfer, bind, pass, or return `v`.
+
+For an address-backed aggregate source with `StorageOf(v, T) ⇓ src`, conforming LLVM lowering MUST use `src` for storage-to-storage copy or transfer and MUST NOT require a first-class aggregate value as an intermediate. When `StorageOf(v, T)` cannot be established but `v` lowers to a first-class value of `LLVMTy(T)`, storing, binding, returning, or merging `v` MUST store that first-class value; it MUST NOT substitute `zeroinitializer`, `ZeroValue(T)`, or any other default value unless `v` itself is that value. Enum and modal discriminant tests over address-backed scrutinees MUST load only the discriminant field needed for the test; payload predicates and pattern-bound payload values MUST address the payload member storage directly when that storage is available. Derived aggregate literals whose result type is address-backed MUST be materializable into temporary storage and reusable through `StorageOf` without first loading the whole literal value.
 
 LEValue(bytes) = ∑_{i=0}^{|bytes|-1} bytes[i] · 256^i
 ByteInt(bytes) = i{8|bytes|} LEValue(bytes)
@@ -29788,10 +29807,9 @@ SigOf(callee) =
 LoweredSigOf(callee) = ⟨params', ret⟩ ⇔ ⟨params, ret⟩ = SigOf(callee) ∧ params' = (NeedsPanicOut(callee) Sigma params ++ [PanicOutParam] : params)
 
 ParamInitIR(sig, params) = ++_{⟨mode, x, T⟩ ∈ params} ParamInit(sig, params, x, mode, T)
-ZeroValue(T) = `zeroinitializer` if sizeof(T) = 0
 ParamInit(sig, params, x, mode, T) =
  Store(BindSlot(x), LLVMParam(sig, params, x), T)    if ABIParam(mode, T) = `ByValue` ∧ sizeof(T) > 0
- Store(BindSlot(x), ZeroValue(T), T)                 if ABIParam(mode, T) = `ByValue` ∧ sizeof(T) = 0
+ ε                                                   if ABIParam(mode, T) = `ByValue` ∧ sizeof(T) = 0
  ε                                                   if ABIParam(mode, T) = `ByRef`
 ParamOrder(params) = [x_i | ⟨mode_i, x_i, T_i⟩ ∈ params ∧ (ABIParam(mode_i, T_i) = `ByRef` ∨ sizeof(T_i) > 0)]
 ParamIndex(params, x) = i ⇔ ParamOrder(params)[i] = x
@@ -29827,20 +29845,24 @@ GlobalVTable(sym, header, slots) = d
 ──────────────────────────────────────────────────────────────
 Γ ⊢ LowerIRDecl(d) ⇓ LLVMGlobalVTable(sym, header, slots)
 
+AllocLowerTarget(Γ, ⊥) = InnermostActiveRegion(Γ)
+AllocLowerTarget(Γ, v_r) = h ⇔ RegionHandleOf(v_r) = h
+AllocLowerTarget(Γ, r) = r
+
 **(Lower-AllocIR)**
-BuiltinModalSym(`Region::alloc`) ⇓ sym    r = InnermostActiveRegion(Γ) if r_opt = ⊥, otherwise r_opt    TypeOf(v) = T    sizeof(T) = n    alignof(T) = a    Γ ⊢ LowerIRInstr(CallIR(sym, [r, IntVal(`usize`, n), IntVal(`usize`, a)])) ⇓ ⟨I_a, p⟩    Store(p, v, T) = I_s
+BuiltinModalSym(`Region::alloc`) ⇓ sym    AllocLowerTarget(Γ, r_ref) = r    TypeOf(v) = T    sizeof(T) = n    alignof(T) = a    Γ ⊢ LowerIRInstr(CallIR(sym, [r, IntVal(`usize`, n), IntVal(`usize`, a)])) ⇓ ⟨I_a, p⟩    Store(p, v, T) = I_s
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(AllocIR(r_opt, v)) ⇓ ⟨I_a ++ I_s, p⟩
+Γ ⊢ LowerIRInstr(AllocIR(r_ref, v)) ⇓ ⟨I_a ++ I_s, p⟩
 
 **(Lower-BindVarIR)**
-Γ ⊢ BindSlot(x) ⇓ slot    TypeOf(x) = T_x
+Γ ⊢ BindSlot(x) ⇓ slot    TypeOf(x) = T_x    Store(slot, v, T_x) = I_s
 ─────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(BindVarIR(x, v)) ⇓ ⟨[Store(slot, v, T_x)], ⊥⟩
+Γ ⊢ LowerIRInstr(BindVarIR(x, v)) ⇓ ⟨I_s, ⊥⟩
 
 **(Lower-ReadVarIR)**
-Γ ⊢ BindSlot(x) ⇓ slot    TypeOf(x) = T_x    Γ ⊢ BindValid(x) ⇓ `Valid`
+Γ ⊢ BindSlot(x) ⇓ slot    TypeOf(x) = T_x    Γ ⊢ BindValid(x) ⇓ `Valid`    LoadVal(slot, T_x) ⇓ ⟨I_l, v⟩
 ───────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(ReadVarIR(x)) ⇓ ⟨[Load(slot, T_x)], v⟩
+Γ ⊢ LowerIRInstr(ReadVarIR(x)) ⇓ ⟨I_l, v⟩
 
 **(Lower-ReadVarIR-Err)**
 Γ ⊢ BindValid(x) ⇓ s    s ≠ `Valid`
@@ -29850,14 +29872,14 @@ BuiltinModalSym(`Region::alloc`) ⇓ sym    r = InnermostActiveRegion(Γ) if r_o
 ProcSymbol(sym) ⇔ ∃ item. item ∈ {ProcedureDecl, MethodDecl, ClassMethodDecl, StateMethodDecl, TransitionDecl, DefaultImpl} ∧ Γ ⊢ Mangle(item) ⇓ sym
 
 **(Lower-ReadPathIR-Static-User)**
-StaticSymPath(path, name) = sym    ProcModule(sym) = m    T = StaticType(sym)    Γ ⊢ StateRef(sym) ⇓ slot    Γ ⊢ LowerIRInstr(CheckPoison(m)) ⇓ ⟨I_p, ⊥⟩
+StaticSymPath(path, name) = sym    ProcModule(sym) = m    T = StaticType(sym)    Γ ⊢ StateRef(sym) ⇓ slot    Γ ⊢ LowerIRInstr(CheckPoison(m)) ⇓ ⟨I_p, ⊥⟩    LoadVal(slot, T) ⇓ ⟨I_l, v⟩
 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(ReadPathIR(path, name)) ⇓ ⟨I_p ++ [Load(slot, T)], v⟩
+Γ ⊢ LowerIRInstr(ReadPathIR(path, name)) ⇓ ⟨I_p ++ I_l, v⟩
 
 **(Lower-ReadPathIR-Static-Gen)**
-StaticSymPath(path, name) = sym    ProcModule(sym) undefined    T = StaticType(sym)    Γ ⊢ StateRef(sym) ⇓ slot
+StaticSymPath(path, name) = sym    ProcModule(sym) undefined    T = StaticType(sym)    Γ ⊢ StateRef(sym) ⇓ slot    LoadVal(slot, T) ⇓ ⟨I_l, v⟩
 ───────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(ReadPathIR(path, name)) ⇓ ⟨[Load(slot, T)], v⟩
+Γ ⊢ LowerIRInstr(ReadPathIR(path, name)) ⇓ ⟨I_l, v⟩
 
 **(Lower-ReadPathIR-Proc-User)**
 sym = PathSym(path, name)    ProcSymbol(sym)    ProcModule(sym) = m    Γ ⊢ LowerIRInstr(CheckPoison(m)) ⇓ ⟨I_p, ⊥⟩
@@ -29880,14 +29902,14 @@ p = path ++ [name]    RecordDecl(p) = R    ModuleOfPath(p) = m    Γ ⊢ LowerIR
 Γ ⊢ LowerIRInstr(ReadPathIR(path, name)) ⇓ ⟨I_p, RecordCtor(p)⟩
 
 **(Lower-StoreVarIR)**
-Γ ⊢ BindSlot(x) ⇓ slot    TypeOf(x) = T_x    Γ ⊢ DropOnAssign(x, slot) ⇓ IR_d
+Γ ⊢ BindSlot(x) ⇓ slot    TypeOf(x) = T_x    Γ ⊢ DropOnAssign(x, slot) ⇓ IR_d    Store(slot, v, T_x) = I_s
 ────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(StoreVarIR(x, v)) ⇓ ⟨IR_d ++ [Store(slot, v, T_x)], ⊥⟩
+Γ ⊢ LowerIRInstr(StoreVarIR(x, v)) ⇓ ⟨IR_d ++ I_s, ⊥⟩
 
 **(Lower-StoreVarNoDropIR)**
-Γ ⊢ BindSlot(x) ⇓ slot    TypeOf(x) = T_x
+Γ ⊢ BindSlot(x) ⇓ slot    TypeOf(x) = T_x    Store(slot, v, T_x) = I_s
 ──────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(StoreVarNoDropIR(x, v)) ⇓ ⟨[Store(slot, v, T_x)], ⊥⟩
+Γ ⊢ LowerIRInstr(StoreVarNoDropIR(x, v)) ⇓ ⟨I_s, ⊥⟩
 
 **(Lower-MoveStateIR)**
 x = PlaceRoot(p)    Γ ⊢ UpdateValid(x, MoveStateIR(p)) ⇓ v'
@@ -29895,9 +29917,9 @@ x = PlaceRoot(p)    Γ ⊢ UpdateValid(x, MoveStateIR(p)) ⇓ v'
 Γ ⊢ LowerIRInstr(MoveStateIR(p)) ⇓ ⟨ε, ⊥⟩
 
 **(Lower-StoreGlobal)**
-T = StaticType(sym)    Γ ⊢ LLVMTy(T) ⇓ τ    Γ ⊢ StateRef(sym) ⇓ slot
+T = StaticType(sym)    Γ ⊢ LLVMTy(T) ⇓ τ    Γ ⊢ StateRef(sym) ⇓ slot    Store(slot, v, T) = I_s
 ────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(StoreGlobal(sym, v)) ⇓ ⟨[Store(slot, v, T)], ⊥⟩
+Γ ⊢ LowerIRInstr(StoreGlobal(sym, v)) ⇓ ⟨I_s, ⊥⟩
 
 **(Lower-ReadPlaceIR)**
 Γ ⊢ LowerReadPlace(p) ⇓ ⟨IR_p, v⟩    Γ ⊢ LowerIRInstr(IR_p) ⇓ ll
@@ -29912,14 +29934,14 @@ T = StaticType(sym)    Γ ⊢ LLVMTy(T) ⇓ τ    Γ ⊢ StateRef(sym) ⇓ slot
 PtrType(v) = T ⇔ (∃ e, IR. Γ ⊢ LowerExpr(e) ⇓ ⟨IR, v⟩ ∧ T = ExprType(e)) ∨ (∃ p, IR. Γ ⊢ LowerReadPlace(p) ⇓ ⟨IR, v⟩ ∧ T = ExprType(p))
 
 **(Lower-ReadPtrIR)**
-PtrType(v_ptr) = TypePtr(T, `Valid`)
+PtrType(v_ptr) = TypePtr(T, `Valid`)    LoadVal(PtrAddr(v_ptr), T) ⇓ ⟨I_l, v⟩
 ──────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(ReadPtrIR(v_ptr)) ⇓ ⟨[Load(PtrAddr(v_ptr), T)], v⟩
+Γ ⊢ LowerIRInstr(ReadPtrIR(v_ptr)) ⇓ ⟨I_l, v⟩
 
 **(Lower-ReadPtrIR-Raw)**
-PtrType(v_ptr) = TypeRawPtr(q, T)
+PtrType(v_ptr) = TypeRawPtr(q, T)    LoadVal(PtrAddr(v_ptr), T) ⇓ ⟨I_l, v⟩
 ──────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(ReadPtrIR(v_ptr)) ⇓ ⟨[Load(PtrAddr(v_ptr), T)], v⟩
+Γ ⊢ LowerIRInstr(ReadPtrIR(v_ptr)) ⇓ ⟨I_l, v⟩
 
 **(Lower-ReadPtrIR-Null)**
 PtrType(v_ptr) = TypePtr(T, `Null`)    Γ ⊢ LowerIRInstr(LowerPanic(NullDeref)) ⇓ ll
@@ -29932,9 +29954,9 @@ PtrType(v_ptr) = TypePtr(T, `Expired`)    Γ ⊢ LowerIRInstr(LowerPanic(Expired
 Γ ⊢ LowerIRInstr(ReadPtrIR(v_ptr)) ⇓ ll
 
 **(Lower-WritePtrIR)**
-PtrType(v_ptr) = TypePtr(T, `Valid`)
+PtrType(v_ptr) = TypePtr(T, `Valid`)    Store(PtrAddr(v_ptr), v, T) = I_s
 ────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(WritePtrIR(v_ptr, v)) ⇓ ⟨[Store(PtrAddr(v_ptr), v, T)], ⊥⟩
+Γ ⊢ LowerIRInstr(WritePtrIR(v_ptr, v)) ⇓ ⟨I_s, ⊥⟩
 
 **(Lower-WritePtrIR-Null)**
 PtrType(v_ptr) = TypePtr(T, `Null`)    Γ ⊢ LowerIRInstr(LowerPanic(NullDeref)) ⇓ ll
@@ -29947,9 +29969,9 @@ PtrType(v_ptr) = TypePtr(T, `Expired`)    Γ ⊢ LowerIRInstr(LowerPanic(Expired
 Γ ⊢ LowerIRInstr(WritePtrIR(v_ptr, v)) ⇓ ll
 
 **(Lower-WritePtrIR-Raw)**
-PtrType(v_ptr) = TypeRawPtr(`mut`, T)
+PtrType(v_ptr) = TypeRawPtr(`mut`, T)    Store(PtrAddr(v_ptr), v, T) = I_s
 ────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerIRInstr(WritePtrIR(v_ptr, v)) ⇓ ⟨[Store(PtrAddr(v_ptr), v, T)], ⊥⟩
+Γ ⊢ LowerIRInstr(WritePtrIR(v_ptr, v)) ⇓ ⟨I_s, ⊥⟩
 
 **(Lower-WritePtrIR-Raw-Err)**
 PtrType(v_ptr) = TypeRawPtr(`imm`, T)
@@ -29965,11 +29987,30 @@ CallPoison(f) =
  CheckPoison(m)    if ProcModule(f) = m
  ε                 if ProcModule(f) undefined
 
-SRetAlloc(R) ⇓ ⟨[`alloca` LLVMTy(R)], p⟩
+SRetAlloc(R) ⇓ ⟨ε, ⊥⟩    if sizeof(R) = 0
+SRetAlloc(R) ⇓ ⟨[`alloca` LLVMTy(R)], p⟩    if sizeof(R) > 0
+
+CallArgStorage(arg, T) ⇓ ⟨I, p⟩ ⇔
+ sizeof(T) = 0 ∧ I = ε ∧ p = ⊥ ∨
+ AddressableStorage(arg, T) ⇓ ⟨I, p⟩ ∨
+ DerivedAggregateStorage(arg, T) ⇓ ⟨I, p⟩ ∨
+ (LowerVal(arg) ⇓ ⟨I_v, v⟩ ∧ TempAlloc(T) ⇓ ⟨I_t, p⟩ ∧ Store(p, v, T) ⇓ I_s ∧ I = I_t ++ I_v ++ I_s)
+
+CallArgValue(arg, T) ⇓ ⟨I, v⟩ ⇔
+ LowerVal(arg) ⇓ ⟨I, v⟩
+
+CallArgOperand(arg, T, `ByRef`) ⇓ ⟨I, p⟩ ⇔
+ CallArgStorage(arg, T) ⇓ ⟨I, p⟩
+
+CallArgOperand(arg, T, `ByValue`) ⇓ ⟨I, v⟩ ⇔
+ CallArgValue(arg, T) ⇓ ⟨I, v⟩
+
+CallArgList([⟨m_1,T_1⟩,...,⟨m_n,T_n⟩], [k_1,...,k_n], [a_1,...,a_n]) ⇓ ⟨I, vec_o⟩ ⇔
+ ∀ i. CallArgOperand(a_i, T_i, k_i) ⇓ ⟨I_i, o_i⟩ ∧ I = I_1 ++ ... ++ I_n ∧ vec_o = [o_i | 1 ≤ i ≤ n ∧ o_i ≠ ⊥]
 
 CallArgs(sig, params, args, R) ⇓ ⟨I_a, vec_a, p_ret⟩ ⇔
- I_a = ε ∧ vec_a = args ∧ p_ret = ⊥    if sig.sretSigma = false
- ∃ p. SRetAlloc(R) ⇓ ⟨I_s, p⟩ ∧ I_a = I_s ∧ vec_a = [p] ++ args ∧ p_ret = p    if sig.sretSigma = true
+ CallArgList(params, sig.paramKinds, args) ⇓ ⟨I_o, vec_o⟩ ∧ I_a = I_o ∧ vec_a = vec_o ∧ p_ret = ⊥    if sig.sretSigma = false
+ ∃ p. SRetAlloc(R) ⇓ ⟨I_s, p⟩ ∧ CallArgList(params, sig.paramKinds, args) ⇓ ⟨I_o, vec_o⟩ ∧ I_a = I_s ++ I_o ∧ vec_a = [p] ++ vec_o ∧ p_ret = p    if sig.sretSigma = true
 
 CallInstr(sig, f, vec_a) ⇓ ⟨[`call` sig f(vec_a)], v_c⟩ ⇔
  v_c = (sig.llvm_ret = `void` Sigma ⊥ : call_result)
@@ -30017,9 +30058,10 @@ DynType(base) = TypeDynamic(Cl)    v_d = DynData(base)    v_t = DynVTable(base) 
 
 IfPhi(v_t, v_f, l_t, l_f) ⇓ ⟨I_phi, v_phi⟩ ⇔
  I_phi = ε ∧ v_phi = ⊥    if v_t = ⊥ ∨ v_f = ⊥
- ∃ T, τ, inc. ValueType(v_t) = T ∧ ValueType(v_f) = T ∧ Γ ⊢ LLVMTy(T) ⇓ τ ∧ inc = [⟨v_t, l_t⟩, ⟨v_f, l_f⟩] ∧ I_phi = [Phi(τ, inc, v_phi)]    if v_t ≠ ⊥ ∧ v_f ≠ ⊥
+ ∃ T. ValueType(v_t) = T ∧ ValueType(v_f) = T ∧ sizeof(T) = 0 ∧ I_phi = ε ∧ v_phi = ⊥    if v_t ≠ ⊥ ∧ v_f ≠ ⊥
+ ∃ T, τ, inc. ValueType(v_t) = T ∧ ValueType(v_f) = T ∧ sizeof(T) > 0 ∧ Γ ⊢ LLVMTy(T) ⇓ τ ∧ inc = [⟨v_t, l_t⟩, ⟨v_f, l_f⟩] ∧ I_phi = [Phi(τ, inc, v_phi)]    if v_t ≠ ⊥ ∧ v_f ≠ ⊥
 
-IfLowerForm(I, v_c, v_t, v_f, v) ⇔ HasBrCond(I, v_c) ∧ ((v_t = ⊥ ∨ v_f = ⊥) ⇒ v = ⊥) ∧ ((v_t ≠ ⊥ ∧ v_f ≠ ⊥) ⇒ HasPhi(I, v))
+IfLowerForm(I, v_c, v_t, v_f, v) ⇔ HasBrCond(I, v_c) ∧ ((v_t = ⊥ ∨ v_f = ⊥) ⇒ v = ⊥) ∧ ((v_t ≠ ⊥ ∧ v_f ≠ ⊥) ⇒ ∃ T. ValueType(v_t) = T ∧ ValueType(v_f) = T ∧ ((sizeof(T) = 0 ∧ v = ⊥) ∨ (sizeof(T) > 0 ∧ HasPhi(I, v))))
 
 **(Lower-IfIR)**
 IfLabels(Γ) = ⟨l_t, l_f, l_m⟩    Γ ⊢ LowerIRInstr(IR_t) ⇓ ⟨I_t, v_t'⟩    Γ ⊢ LowerIRInstr(IR_f) ⇓ ⟨I_f, v_f'⟩    v_t' = v_t    v_f' = v_f    IfPhi(v_t, v_f, l_t, l_f) ⇓ ⟨I_phi, v⟩    I = [BrCond(v_c, l_t, l_f), Label(l_t)] ++ I_t ++ [Br(l_m), Label(l_f)] ++ I_f ++ [Br(l_m), Label(l_m)] ++ I_phi    IfLowerForm(I, v_c, v_t, v_f, v)
@@ -30063,6 +30105,8 @@ IfCaseIRForm(if_case)    IfCaseLowerForm(I, if_case, v)
 ────────────────────────────────────────────────────────────
 Γ ⊢ LowerIRInstr(if_case) ⇓ ⟨I, v⟩
 
+For `IfCaseIR` whose result type is an address-backed aggregate, conforming lowering MUST allocate one merge result storage slot, store or transfer each falling-through arm result into that slot before arm cleanup executes, and return that slot through `StorageOf`. Each falling-through arm result MUST be materialized from its real source value or source storage before any default aggregate fallback is considered. Clause-result captures are required only for values that must remain first-class after cleanup; an implementation MUST NOT introduce a first-class aggregate capture solely to merge an address-backed aggregate if the arm result can be stored into the merge slot before cleanup.
+
 **(Lower-RegionIR)**
 RegionIRForm(region)    RegionLowerForm(I, region, v)
 ──────────────────────────────────────────────────────
@@ -30084,7 +30128,8 @@ BranchLowerForm(I, v_c, t, f)
 ──────────────────────────────────────────────────────────────
 Γ ⊢ LowerIRInstr(BranchIR(v_c, t, f)) ⇓ ⟨I, ⊥⟩
 
-PhiLowerForm(I, T, inc, v) ⇔ Γ ⊢ LLVMTy(T) ⇓ τ ∧ I = [Phi(τ, inc, v)]
+PhiLowerForm(I, T, inc, v) ⇔ sizeof(T) = 0 ∧ I = ε ∧ v = ⊥
+PhiLowerForm(I, T, inc, v) ⇔ sizeof(T) > 0 ∧ Γ ⊢ LLVMTy(T) ⇓ τ ∧ I = [Phi(τ, inc, v)]
 
 **(Lower-PhiIR)**
 PhiLowerForm(I, T, inc, v)
@@ -30111,7 +30156,8 @@ ProcParams(Γ) = params ⇔ Γ is lowering ProcIR(_, params, _, _)
 ProcRet(Γ) = R ⇔ Γ is lowering ProcIR(_, _, R, _)
 ProcSig(Γ) = sig ⇔ Γ ⊢ LLVMCallSig(ProcParams(Γ), ProcRet(Γ)) ⇓ sig
 ParamEntry(params, x) = ⟨mode, T⟩ ⇔ ⟨mode, x, T⟩ ∈ params
-AllocaSlot(T) = LLVMAlloca(LLVMTy(T))
+AllocaSlot(T) = ⊥    if sizeof(T) = 0
+AllocaSlot(T) = LLVMAlloca(LLVMTy(T))    if sizeof(T) > 0
 RegionSlot(r, T) = CallIR(BuiltinModalSym(`Region::alloc`), [r, IntVal(`usize`, sizeof(T)), IntVal(`usize`, alignof(T))])
 BindState(Γ) = Γ.bind_state
 
@@ -30240,7 +30286,7 @@ DropOnAssign(x, slot) undefined
 
 #### 24.7.10 Call ABI Mapping
 
-LLVMCallJudg = {LLVMCallSig(params, ret) ⇓ sig, LLVMArgLower(x, T, k) ⇓ ll, LLVMRetLower(T, k) ⇓ ll}
+LLVMCallJudg = {LLVMCallSig(params, ret) ⇓ sig, LLVMArgLower(x, T, k) ⇓ ll, LLVMRetLower(T, k) ⇓ ll, CallArgStorage(arg, T) ⇓ ⟨I, p⟩, CallArgValue(arg, T) ⇓ ⟨I, v⟩, CallArgOperand(arg, T, k) ⇓ ⟨I, o⟩, CallArgList(params, kinds, args) ⇓ ⟨I, vec⟩}
 
 SigLLVMParams(sig) = llvm_params
 SigLLVMRet(sig) = llvm_ret
@@ -30258,9 +30304,11 @@ SigSRet(sig) = sretSigma
 Γ ⊢ LLVMArgLower(x, T, `ByValue`) ⇓ ⟨τ, LLVMArgAttrsExt(x, T)⟩
 
 **(LLVMArgLower-ByRef)**
-Γ ⊢ LLVMTy(T) ⇓ τ
+Γ ⊢ LLVMTy(T) ⇓ τ    sizeof(T) > 0
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ LLVMArgLower(x, T, `ByRef`) ⇓ ⟨LLVMPtrTy(TypePtr(TypePerm(`const`, T), `Valid`)), LLVMPtrAttrs(TypePtr(TypePerm(`const`, T), `Valid`)) ∪ LLVMArgAttrsExt(x, T)⟩
+
+For any call argument whose pass kind is `ByRef` and whose type has nonzero size, the emitted operand is the pointer produced by `CallArgStorage(x,T)`. A conforming LLVM backend MUST NOT first materialize `x` as an aggregate SSA value when `AddressableStorage(x,T)` or `DerivedAggregateStorage(x,T)` is defined.
 
 **(LLVMRetLower-ByValue-ZST)**
 sizeof(T) = 0
@@ -30277,17 +30325,17 @@ sizeof(T) = 0
 ──────────────────────────────────────────
 Γ ⊢ LLVMRetLower(T, `SRet`) ⇓ `void`
 
-ArgInclude(k, T) ⇔ (k = `ByRef`) ∨ (k = `ByValue` ∧ sizeof(T) > 0)
+ArgInclude(k, T) ⇔ sizeof(T) > 0 ∧ (k = `ByRef` ∨ k = `ByValue`)
 LLVMArgList([⟨m_1, x_1, T_1⟩, …, ⟨m_n, x_n, T_n⟩], [k_1, …, k_n]) = [τ_i | ArgInclude(k_i, T_i) ∧ Γ ⊢ LLVMArgLower(x_i, T_i, k_i) ⇓ ⟨τ_i, A_i⟩]
 LLVMAttrList([⟨m_1, x_1, T_1⟩, …, ⟨m_n, x_n, T_n⟩], [k_1, …, k_n]) = [A_i | ArgInclude(k_i, T_i) ∧ Γ ⊢ LLVMArgLower(x_i, T_i, k_i) ⇓ ⟨τ_i, A_i⟩]
 
 **(LLVMCall-ByValue)**
-⟨[k_1, …, k_n], k_r, sretSigma⟩ = ABICall([⟨m_1, T_1⟩, …, ⟨m_n, T_n⟩], R)    k_r = `ByValue`    ∀ i, Γ ⊢ LLVMArgLower(x_i, T_i, k_i) ⇓ ⟨τ_i, A_i⟩    Γ ⊢ LLVMRetLower(R, `ByValue`) ⇓ τ_r
+⟨[k_1, …, k_n], k_r, sretSigma⟩ = ABICall([⟨m_1, T_1⟩, …, ⟨m_n, T_n⟩], R)    k_r = `ByValue`    ∀ i. ArgInclude(k_i, T_i) ⇒ Γ ⊢ LLVMArgLower(x_i, T_i, k_i) ⇓ ⟨τ_i, A_i⟩    Γ ⊢ LLVMRetLower(R, `ByValue`) ⇓ τ_r
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ LLVMCallSig([⟨m_1, x_1, T_1⟩, …, ⟨m_n, x_n, T_n⟩], R) ⇓ ⟨LLVMArgList([⟨m_1, x_1, T_1⟩, …, ⟨m_n, x_n, T_n⟩], [k_1, …, k_n]), τ_r, LLVMAttrList([⟨m_1, x_1, T_1⟩, …, ⟨m_n, x_n, T_n⟩], [k_1, …, k_n]), false⟩
 
 **(LLVMCall-SRet)**
-⟨[k_1, …, k_n], k_r, sretSigma⟩ = ABICall([⟨m_1, T_1⟩, …, ⟨m_n, T_n⟩], R)    k_r = `SRet`    sret_param = LLVMPtrTy(TypePtr(TypePerm(`unique`, R), `Valid`))    A_sret = {`sret`, `noalias`} ∪ LLVMPtrAttrs(TypePtr(TypePerm(`unique`, R), `Valid`))    ∀ i, Γ ⊢ LLVMArgLower(x_i, T_i, k_i) ⇓ ⟨τ_i, A_i⟩    Γ ⊢ LLVMRetLower(R, `SRet`) ⇓ `void`
+⟨[k_1, …, k_n], k_r, sretSigma⟩ = ABICall([⟨m_1, T_1⟩, …, ⟨m_n, T_n⟩], R)    k_r = `SRet`    sret_param = LLVMPtrTy(TypePtr(TypePerm(`unique`, R), `Valid`))    A_sret = {`sret`, `noalias`} ∪ LLVMPtrAttrs(TypePtr(TypePerm(`unique`, R), `Valid`))    ∀ i. ArgInclude(k_i, T_i) ⇒ Γ ⊢ LLVMArgLower(x_i, T_i, k_i) ⇓ ⟨τ_i, A_i⟩    Γ ⊢ LLVMRetLower(R, `SRet`) ⇓ `void`
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ LLVMCallSig([⟨m_1, x_1, T_1⟩, …, ⟨m_n, x_n, T_n⟩], R) ⇓ ⟨[sret_param] ++ LLVMArgList([⟨m_1, x_1, T_1⟩, …, ⟨m_n, x_n, T_n⟩], [k_1, …, k_n]), `void`, [A_sret] ++ LLVMAttrList([⟨m_1, x_1, T_1⟩, …, ⟨m_n, x_n, T_n⟩], [k_1, …, k_n]), true⟩
 
@@ -30515,8 +30563,8 @@ Only sections that define named diagnostics are listed below.
 - `§22.6 Compile-Time Diagnostics Supplement`: `E-CTE-0010`, `E-CTE-0011`, `E-CTE-0012`, `E-CTE-0020`, `E-CTE-0021`, `E-CTE-0022`, `E-CTE-0023`, `E-CTE-0030`, `E-CTE-0031`, `E-CTE-0032`, `E-CTE-0033`, `E-CTE-0034`, `E-CTE-0040`, `E-CTE-0041`, `E-CTE-0042`, `E-CTE-0050`, `E-CTE-0051`, `E-CTE-0052`, `E-CTE-0053`, `E-CTE-0060`, `E-CTE-0061`, `E-CTE-0062`, `E-CTE-0063`, `E-CTE-0064`, `E-CTE-0070`, `W-CTE-0071`, `E-CTE-0080`, `E-CTE-0081`, `E-CTE-0082`, `E-CTE-0083`, `E-CTE-0090`, `E-CTE-0210`, `E-CTE-0220`, `E-CTE-0221`, `E-CTE-0230`, `E-CTE-0231`, `E-CTE-0232`, `E-CTE-0233`, `E-CTE-0240`, `E-CTE-0241`, `E-CTE-0250`, `E-CTE-0251`, `E-CTE-0252`, `E-CTE-0253`, `E-CTE-0310`, `E-CTE-0311`, `E-CTE-0312`, `E-CTE-0320`, `E-CTE-0321`, `E-CTE-0322`, `E-CTE-0330`, `E-CTE-0331`, `E-CTE-0340`, `E-CTE-0341`, `E-CTE-0410`, `E-CTE-0411`, `E-CTE-0420`, `E-CTE-0430`, `E-CTE-0440`, `E-CTE-0450`, `E-CTE-0470`
 - `§23.1.7 FfiSafe`: `E-TYP-2623`, `E-TYP-2624`, `E-TYP-2625`, `E-TYP-2626`, `E-TYP-2627`, `E-TYP-2628`, `E-TYP-2629`, `E-TYP-2630`
 - `§23.2.7 Extern Procedures`: `E-TYP-2106`, `E-TYP-2306`
-- `§23.3.7 Exported Procedures and Hosted Exports`: `E-SYS-3353`, `E-TYP-2631`
-- `§23.3.14 Exported Procedures and Hosted Exports`: `E-TYP-2632`, `E-TYP-2633`, `E-TYP-2634`, `E-TYP-2635`, `E-TYP-2636`
+- `§23.3.1.7 Raw Exported Procedures`: `E-SYS-3353`, `E-TYP-2631`
+- `§23.3.2.7 Hosted Exports`: `E-TYP-2632`, `E-TYP-2633`, `E-TYP-2634`, `E-TYP-2635`, `E-TYP-2636`
 - `§23.4.7 FFI Attributes`: `E-FFI-0350`, `E-SYS-3340`, `E-SYS-3341`, `E-SYS-3342`, `E-SYS-3345`, `E-SYS-3346`, `E-SYS-3347`, `E-SYS-3350`, `W-SYS-3350`, `E-SYS-3351`, `E-SYS-3355`, `W-SYS-3355`, `E-SYS-3356`, `E-SYS-3357`, `E-SYS-3358`
 - `§23.5.7 Capability Isolation`: `E-SYS-3360`
 - `§23.6.7 Foreign Contracts`: `E-SEM-2850`, `E-SEM-2851`, `E-SEM-2852`, `E-SEM-2853`, `E-SEM-2854`, `E-SEM-2855`, `E-SEM-2856`, `P-SEM-2860`, `P-SEM-2861`
@@ -30564,6 +30612,11 @@ char_content ::= (* Unicode scalar except ', \\, or U+000A *)
 bool_literal ::= "true" | "false"
 null_literal ::= "null"
 unit_literal ::= "(" ")"
+
+decorated_identifier(d, s) ::= d identifier
+(* The parameters d and s constrain the decorator token and following
+   identifier lexeme. This notation denotes a token sequence, not a combined
+   lexer token. *)
 ```
 
 ### B.2 Type Grammar
@@ -30585,7 +30638,7 @@ char_type      ::= "char"
 unit_type      ::= "(" ")"
 never_type     ::= "!"
 
-tuple_type       ::= "(" ")" | "(" type ";)" | "(" type ("," type)+ ")"
+tuple_type       ::= "(" ")" | "(" type ";" ")" | "(" type ("," type)+ ")"
 array_type       ::= "[" type ";" expression "]"
 slice_type       ::= "[" type "]"
 union_type       ::= non_union_type ("|" non_union_type)+
@@ -30665,14 +30718,15 @@ multiplicative_op   ::= "*" | "/" | "%"
 power_expr          ::= cast_expr ("**" power_expr)?
 cast_expr           ::= unary_expr ("as" type)?
 
-unary_expr     ::= unary_operator unary_expr | pipeline_expr
-unary_operator ::= "!" | "-" | "&" | "*" | "^" | "move" | "widen"
+unary_expr     ::= new_expr | unary_operator unary_expr | pipeline_expr
+new_expr       ::= "new" unary_expr
+unary_operator ::= "!" | "-" | "&" | "*" | "move" | "copy" | "widen"
 pipeline_expr  ::= postfix_expr ("=>" postfix_expr)*
 
 postfix_expr   ::= primary_expr postfix_suffix*
 postfix_suffix ::= "." identifier | "." decimal_integer | "[" expression "]" | "~>" identifier "(" argument_list? ")" | "(" argument_list? ")" | "?"
 
-primary_expr ::= literal | identifier_expr | path_expr | tuple_literal | array_literal | record_literal | enum_literal | closure_expr | if_expr | loop_expr | block_expr | move_expr | copy_expr | widen_expr | address_of_expr | null_ptr_expr | transmute_expr | alloc_expr | sync_expr | race_expr | all_expr | wait_expr | yield_expr | yield_from_expr | spawn_expr | parallel_block | dispatch_expr | fence_expr | comptime_expr | comptime_if | comptime_loop | quote_expr | quote_type | quote_pattern | type_literal | splice_expr | splice_ident | contract_intrinsic
+primary_expr ::= literal | identifier_expr | path_expr | tuple_literal | array_literal | record_literal | enum_literal | closure_expr | if_expr | loop_expr | block_expr | move_expr | copy_expr | widen_expr | address_of_expr | null_ptr_expr | transmute_expr | sync_expr | race_expr | all_expr | wait_expr | yield_expr | yield_from_expr | spawn_expr | parallel_block | dispatch_expr | fence_expr | comptime_expr | comptime_if | comptime_loop | quote_expr | quote_type | quote_pattern | type_literal | splice_expr | splice_ident | contract_intrinsic
 
 literal ::= integer_literal | float_literal | string_literal | char_literal | bool_literal | null_literal | unit_literal
 
@@ -30787,7 +30841,7 @@ binding_decl ::= pattern (":" type)? binding_op expression
 
 visibility ::= "public" | "internal" | "private"
 
-procedure_decl ::= attribute_list? visibility? "procedure" identifier generic_params? signature predicate_clause? contract_clause? block_expr
+procedure_decl ::= attribute_list? visibility? "procedure" identifier generic_params? signature contract_clause? block_expr
 signature      ::= "(" param_list? ")" ("->" return_type)?
 param_list     ::= param ("," param)* ","?
 param          ::= param_mode? identifier ":" type
@@ -30800,7 +30854,7 @@ receiver           ::= receiver_shorthand | explicit_receiver
 receiver_shorthand ::= "~" | "~!" | "~%"
 explicit_receiver  ::= param_mode? "self" ":" type
 
-record_decl       ::= attribute_list? visibility? "record" identifier generic_params? implements_clause? predicate_clause? "{" record_body "}" type_invariant?
+record_decl       ::= attribute_list? visibility? "record" identifier generic_params? implements_clause? "{" record_body "}" type_invariant?
 record_body       ::= record_member*
 record_member     ::= record_field_decl | method_def
 record_field_decl ::= attribute_list? visibility? identifier ":" type record_field_init?
@@ -30809,25 +30863,23 @@ field_decl        ::= visibility? identifier ":" type
 implements_clause ::= "<:" class_list
 class_list        ::= type_path ("," type_path)*
 
-enum_decl       ::= attribute_list? visibility? "enum" identifier generic_params? implements_clause? predicate_clause? "{" variant_members? "}" type_invariant?
+enum_decl       ::= attribute_list? visibility? "enum" identifier generic_params? implements_clause? "{" variant_members? "}" type_invariant?
 variant_members ::= variant (terminator variant)* terminator?
 variant         ::= identifier variant_payload? ("=" integer_literal)?
 variant_payload ::= "(" type_list ")" | "{" field_decl_list "}"
 type_list       ::= type ("," type)* ","?
 field_decl_list ::= field_decl ("," field_decl)* ","?
 
-modal_decl        ::= attribute_list? visibility? "modal" identifier generic_params? implements_clause? predicate_clause? "{" state_block+ "}" type_invariant?
+modal_decl        ::= attribute_list? visibility? "modal" identifier generic_params? implements_clause? "{" state_block+ "}" type_invariant?
 state_block       ::= "@" state_name "{" state_member* "}"
 state_member      ::= state_field_decl | state_method_def | transition_def
 state_field_decl  ::= attribute_list? visibility? identifier ":" type
 state_method_def       ::= attribute_list? visibility? "procedure" identifier generic_params? state_method_signature contract_clause? block_expr
 state_method_signature ::= "(" receiver ("," param_list)? ")" ("->" type)?
-predicate_clause       ::= "|:" predicate_req (terminator predicate_req)* terminator?
-predicate_req          ::= ("Bitcopy" | "Clone" | "Drop" | "FfiSafe") "(" type ")"
 transition_def    ::= attribute_list? visibility? "transition" identifier "(" param_list ")" "->" "@" target_state block_expr
 target_state      ::= identifier
 
-class_declaration   ::= attribute_list? visibility? "modal"? "class" identifier generic_params? ("<:" superclass_bounds)? predicate_clause? "{" class_item* "}"
+class_declaration   ::= attribute_list? visibility? "modal"? "class" identifier generic_params? ("<:" superclass_bounds)? "{" class_item* "}"
 superclass_bounds   ::= class_bound ("+" class_bound)*
 class_item          ::= abstract_procedure | concrete_procedure | abstract_field | abstract_state | associated_type
 abstract_procedure  ::= "procedure" identifier signature contract_clause?
@@ -30838,12 +30890,12 @@ abstract_state      ::= "@" identifier "{" field_list? "}"
 field_list          ::= abstract_field ("," abstract_field)* ","?
 associated_type     ::= "type" identifier ("=" type)?
 
-type_alias_decl ::= attribute_list? visibility? "type" identifier generic_params? predicate_clause? "=" type
+type_alias_decl ::= attribute_list? visibility? "type" identifier generic_params? "=" type
 
 extern_block      ::= attribute_list? visibility? "extern" abi_string? "{" extern_item* "}"
 abi_string        ::= string_literal
 extern_item       ::= foreign_procedure
-foreign_procedure ::= attribute_list? visibility? "procedure" identifier generic_params? signature predicate_clause? contract_clause? foreign_contract_clause_list? terminator
+foreign_procedure ::= attribute_list? visibility? "procedure" identifier generic_params? signature contract_clause? foreign_contract_clause_list? terminator
 ```
 
 ### B.7 Contract Grammar
@@ -30856,11 +30908,14 @@ contract_body      ::= precondition_expr "|=" postcondition_expr
 precondition_expr  ::= predicate_expr
 postcondition_expr ::= predicate_expr
 predicate_expr     ::= logical_or_expr
-contract_intrinsic ::= "@result" | "@entry" "(" expression ")"
+contract_intrinsic ::= decorated_identifier("@", "result")
+                     | decorated_identifier("@", "entry") "(" expression ")"
 
-(* Contract intrinsics parse in any primary-expression position; `@result`
-   outside a postcondition and `@entry` outside a contract predicate are
-   rejected statically (E-SEM-2806, E-CON-0415, E-CON-0416). *)
+(* `decorated_identifier(d, s)` denotes the token sequence Operator(d)
+   followed by Identifier(s), not one lexer token. Contract intrinsics parse
+   in any primary-expression position; `@result` outside a postcondition and
+   `@entry` outside a contract predicate are rejected statically
+   (E-SEM-2806, E-CON-0415, E-CON-0416). *)
 
 type_invariant ::= "|:" "{" predicate_expr "}"
 loop_invariant ::= "|:" "{" predicate_expr "}"
@@ -30924,7 +30979,10 @@ key_index     ::= key_marker? expression
 key_marker    ::= "#"
 
 key_block_stmt ::= key_block_head key_path_list key_options? block_expr
-key_block_head ::= "%read" | "%write" | "%release" key_mode | "%speculative" "write"
+key_block_head ::= decorated_identifier("%", "read")
+                 | decorated_identifier("%", "write")
+                 | decorated_identifier("%", "release") key_mode
+                 | decorated_identifier("%", "speculative") "write"
 key_path_list  ::= key_path_expr ("," key_path_expr)*
 key_options    ::= "[" key_option ("," key_option)* ","? "]"
 key_option     ::= "ordered"
@@ -30996,12 +31054,12 @@ comptime_if             ::= "comptime" "if" expression block_expr ("else" (compt
 comptime_loop           ::= "comptime" "loop" pattern (":" type)? "in" expression block_expr
 comptime_procedure_decl ::= attribute_list? "comptime" visibility? "procedure" identifier generic_params? signature contract_clause? block_expr
 
-type_literal   ::= "Type" "::<" type ">"
+type_literal   ::= "Type" "::" "<" type ">"
 quote_expr     ::= "quote" "{" quoted_content "}"
 quote_type     ::= "quote" "type" "{" type "}"
 quote_pattern  ::= "quote" "pattern" "{" pattern "}"
 quoted_content ::= expression | statement | top_level_item
-splice_expr    ::= "$(" expression ")"
+splice_expr    ::= "$" "(" expression ")"
 splice_ident   ::= "$" identifier
 
 (* Splice forms parse in any primary-expression position; use outside quoted
@@ -31019,13 +31077,15 @@ derive_clause       ::= "emits" identifier | "requires" identifier
 extern_block                 ::= attribute_list? visibility? "extern" abi_string? "{" extern_item* "}"
 abi_string                   ::= string_literal
 extern_item                  ::= foreign_procedure
-foreign_procedure            ::= attribute_list? visibility? "procedure" identifier generic_params? signature predicate_clause? contract_clause? foreign_contract_clause_list? terminator
+foreign_procedure            ::= attribute_list? visibility? "procedure" identifier generic_params? signature contract_clause? foreign_contract_clause_list? terminator
 
 ffi_verification_attr        ::= "#" ffi_verification_mode
 ffi_verification_mode        ::= "static" | "dynamic"
-foreign_contract             ::= "|:" "@foreign_assumes" "(" predicate_expr ")"
-                               | "|:" "@foreign_ensures" "(" ensures_predicate ")"
-ensures_predicate            ::= predicate_expr | "@error" ":" predicate_expr | "@null_result" ":" predicate_expr
+foreign_contract             ::= "|:" decorated_identifier("@", "foreign_assumes") "(" predicate_expr ")"
+                               | "|:" decorated_identifier("@", "foreign_ensures") "(" ensures_predicate ")"
+ensures_predicate            ::= predicate_expr
+                               | decorated_identifier("@", "error") ":" predicate_expr
+                               | decorated_identifier("@", "null_result") ":" predicate_expr
 foreign_contract_clause_list ::= foreign_contract+
 ```
 ### B.14 Region Grammar
@@ -31034,7 +31094,6 @@ foreign_contract_clause_list ::= foreign_contract+
 region_stmt  ::= "region" region_opts? region_alias? block_expr
 region_opts  ::= "(" expression ")"
 region_alias ::= "as" identifier
-alloc_expr   ::= identifier "^" expression
 frame_stmt   ::= "frame" block_expr | identifier "." "frame" block_expr
 ```
 

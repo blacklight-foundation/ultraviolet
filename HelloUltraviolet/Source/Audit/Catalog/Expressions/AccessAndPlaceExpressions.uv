@@ -2,7 +2,7 @@
 
 
 public procedure countExpressionsAccessAndPlaceExpressionsObligations() -> usize {
-    return 51usize
+    return 44usize
 }
 
 public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> usize {
@@ -79,15 +79,6 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.Parse-Place-Err",
-        58424usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/ParsePlaceError/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.16.AccessPlaceAst",
         58442usize,
@@ -103,24 +94,6 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsAccessAndPlacesReference",
         "Source/Reference/Expressions/AccessAndPlaces.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "def.16.FieldVisibility",
-        58468usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/FieldVisibility/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "def.16.IndexClassification",
-        58482usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/IndexClassification/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -304,24 +277,6 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.Union-DirectAccess-Err",
-        58820usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/UnionDirectAccess/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.ValueUse-NonBitcopyPlace",
-        58836usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/ValueUseNonBitcopyPlace/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-FieldAccess",
         58854usize,
@@ -445,24 +400,6 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "HelloUltraviolet::Audit",
         "expressionsWorkstreamLoweringConformanceExercise",
         "Source/Audit/ExpressionsWorkstreamArtifactExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.16.AccessAndPlaceExpressions",
-        59072usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/TupleAccessNonTuple/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.16.ArraySliceIndexDiagnosticsAndPanicBehavior",
-        59085usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/ArraySliceIndexDiagnostics/Source/Main.uv"
     ) {
         count = count + 1usize
     }

@@ -29,9 +29,7 @@ static inline void SpecDefsResolveGenerics() {
   SPEC_DEF("ResolveGenericParams", "5.1.7");
   SPEC_DEF("ResolveTypeParam", "5.1.7");
   SPEC_DEF("ResolveTypeBound", "5.1.7");
-  SPEC_DEF("ResolveWhereClause", "5.1.7");
   SPEC_DEF("ResolveGenericArgs", "5.1.7");
-  SPEC_DEF("ResolvePredicate", "5.1.7");
 }
 
 }  // namespace
@@ -210,99 +208,6 @@ ResolveResult<std::optional<ast::GenericParams>> ResolveGenericParamsOpt(
 
   result.value = resolved.value;
   SPEC_RULE("ResolveGenericParamsOpt-Some");
-  return result;
-}
-
-// -----------------------------------------------------------------------------
-// ResolvePredicate
-// -----------------------------------------------------------------------------
-// Resolves a predicate requirement pair: PredicateReq(pred, ty).
-// Implements (ResolvePredicateReq-Predicate):
-//   Gamma |- ResolveType(ty) => ty'
-
-ResolveResult<ast::PredicateReq> ResolvePredicate(
-    ResolveContext& ctx,
-    const ast::PredicateReq& pred) {
-  SpecDefsResolveGenerics();
-  ResolveResult<ast::PredicateReq> result;
-  result.ok = true;
-  result.value = pred;
-
-  const auto resolved = ResolveType(ctx, pred.type);
-  if (!resolved.ok) {
-    return {false, resolved.diag_id, resolved.span, {}};
-  }
-  result.value.type = resolved.value;
-
-  SPEC_RULE("ResolvePredicate");
-  return result;
-}
-
-// -----------------------------------------------------------------------------
-// ResolveWhereClause
-// -----------------------------------------------------------------------------
-// Resolves a where clause.
-// Implements (Resolve-Where-Clause):
-//   forall pred in predicates.
-//     pred = Bitcopy(T) -> T in dom(Gamma)
-//     pred = Clone(T) -> T in dom(Gamma)
-//     pred = Drop(T) -> T in dom(Gamma)
-//     pred = T <: C -> Gamma |- ResolveClassPath(C) => ok
-//   -> Gamma |- ResolveWhereClause(predicates) => ok
-
-ResolveResult<ast::PredicateClause> ResolveWhereClause(
-    ResolveContext& ctx,
-    const ast::PredicateClause& where_clause) {
-  SpecDefsResolveGenerics();
-  ResolveResult<ast::PredicateClause> result;
-  result.ok = true;
-  result.value = where_clause;
-  result.value.clear();
-  result.value.reserve(where_clause.size());
-
-  if (where_clause.empty()) {
-    SPEC_RULE("ResolveWhereClause-Empty");
-    return result;
-  }
-
-  for (const auto& pred : where_clause) {
-    const auto resolved = ResolvePredicate(ctx, pred);
-    if (!resolved.ok) {
-      return {false, resolved.diag_id, resolved.span, {}};
-    }
-    result.value.push_back(resolved.value);
-    SPEC_RULE("ResolveWhereClause-Cons");
-  }
-
-  SPEC_RULE("ResolveWhereClause");
-  return result;
-}
-
-// -----------------------------------------------------------------------------
-// ResolveWhereClauseOpt
-// -----------------------------------------------------------------------------
-// Resolves an optional where clause.
-
-ResolveResult<std::optional<ast::PredicateClause>> ResolveWhereClauseOpt(
-    ResolveContext& ctx,
-    const std::optional<ast::PredicateClause>& where_opt) {
-  SpecDefsResolveGenerics();
-  ResolveResult<std::optional<ast::PredicateClause>> result;
-  result.ok = true;
-
-  if (!where_opt.has_value()) {
-    result.value = std::nullopt;
-    SPEC_RULE("ResolveWhereClauseOpt-None");
-    return result;
-  }
-
-  const auto resolved = ResolveWhereClause(ctx, *where_opt);
-  if (!resolved.ok) {
-    return {false, resolved.diag_id, resolved.span, {}};
-  }
-
-  result.value = resolved.value;
-  SPEC_RULE("ResolveWhereClauseOpt-Some");
   return result;
 }
 

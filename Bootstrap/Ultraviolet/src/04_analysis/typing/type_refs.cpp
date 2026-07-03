@@ -1520,7 +1520,7 @@ bool IsRangeIndexType(const TypeRef& type) {
   return elem.has_value() && is_usize(*elem);
 }
 
-// UVX Extension: Async type helpers (§19.1)
+// UVX Extension: Async type helpers (§21.1)
 
 bool IdEq(const std::string& a, const std::string& b) {
   return a == b;

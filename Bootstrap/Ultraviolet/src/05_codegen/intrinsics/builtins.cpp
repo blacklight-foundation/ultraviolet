@@ -7,7 +7,8 @@
 //   - Section 6.12.14 String/Bytes builtins
 //   - Section 18.2 ExecutionDomain builtins
 //   - Section 18.6 CancelToken builtins
-//   - Section 19 Async/Reactor builtins
+//   - Section 21 Async builtins
+//   - Section 24.6 Reactor builtins
 //
 // This file provides symbol resolution for compiler-known built-in
 // procedures and methods. These symbols map to runtime library functions.
@@ -660,7 +661,7 @@ std::string BuiltinSymDiscretePredecessor() {
 }
 
 // =============================================================================
-// Section 19 Reactor builtins
+// Section 24.6 Reactor builtins
 // =============================================================================
 
 std::string BuiltinSymReactorRun() {
@@ -674,56 +675,56 @@ std::string BuiltinSymReactorRegister() {
 }
 
 // =============================================================================
-// Section 19 Async builtins
+// Section 21 Async builtins
 // =============================================================================
 
 std::string BuiltinSymAsyncResume() {
-  SPEC_DEF("BuiltinSym-Async-Resume", "Section 19.2.2");
+  SPEC_DEF("BuiltinSym-Async-Resume", "Section 21.2.2");
   return project::RuntimePathSig({"async", "resume"});
 }
 
 std::string BuiltinSymAsyncGetDiscriminant() {
-  SPEC_DEF("BuiltinSym-Async-GetDiscriminant", "Section 19");
+  SPEC_DEF("BuiltinSym-Async-GetDiscriminant", "Section 21");
   return project::RuntimePathSig({"async", "get_discriminant"});
 }
 
 std::string BuiltinSymAsyncGetSuspendedOutput() {
-  SPEC_DEF("BuiltinSym-Async-GetSuspendedOutput", "Section 19");
+  SPEC_DEF("BuiltinSym-Async-GetSuspendedOutput", "Section 21");
   return project::RuntimePathSig({"async", "get_suspended_output"});
 }
 
 std::string BuiltinSymAsyncGetCompletedValue() {
-  SPEC_DEF("BuiltinSym-Async-GetCompletedValue", "Section 19");
+  SPEC_DEF("BuiltinSym-Async-GetCompletedValue", "Section 21");
   return project::RuntimePathSig({"async", "get_completed_value"});
 }
 
 std::string BuiltinSymAsyncGetFailedError() {
-  SPEC_DEF("BuiltinSym-Async-GetFailedError", "Section 19");
+  SPEC_DEF("BuiltinSym-Async-GetFailedError", "Section 21");
   return project::RuntimePathSig({"async", "get_failed_error"});
 }
 
 std::string BuiltinSymAsyncCreateCompleted() {
-  SPEC_DEF("BuiltinSym-Async-CreateCompleted", "Section 19");
+  SPEC_DEF("BuiltinSym-Async-CreateCompleted", "Section 21");
   return project::RuntimePathSig({"async", "create_completed"});
 }
 
 std::string BuiltinSymAsyncCreateFailed() {
-  SPEC_DEF("BuiltinSym-Async-CreateFailed", "Section 19");
+  SPEC_DEF("BuiltinSym-Async-CreateFailed", "Section 21");
   return project::RuntimePathSig({"async", "create_failed"});
 }
 
 std::string BuiltinSymAsyncCreateSuspended() {
-  SPEC_DEF("BuiltinSym-Async-CreateSuspended", "Section 19");
+  SPEC_DEF("BuiltinSym-Async-CreateSuspended", "Section 21");
   return project::RuntimePathSig({"async", "create_suspended"});
 }
 
 std::string BuiltinSymAsyncAllocFrame() {
-  SPEC_DEF("BuiltinSym-Async-AllocFrame", "Section 19");
+  SPEC_DEF("BuiltinSym-Async-AllocFrame", "Section 21");
   return project::RuntimePathSig({"async", "alloc_frame"});
 }
 
 std::string BuiltinSymAsyncFreeFrame() {
-  SPEC_DEF("BuiltinSym-Async-FreeFrame", "Section 19");
+  SPEC_DEF("BuiltinSym-Async-FreeFrame", "Section 21");
   return project::RuntimePathSig({"async", "free_frame"});
 }
 
@@ -1304,7 +1305,7 @@ std::string BuiltinSym(const std::string& qualified_name) {
     return sym;
   }
 
-  // Reactor builtins (Section 19)
+  // Reactor builtins (Section 24.6)
   if (const auto sym = LookupBuiltinSymbol(qualified_name, kReactorBuiltins);
       !sym.empty()) {
     return record_builtin_linkage(sym);

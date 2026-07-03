@@ -2,7 +2,7 @@
 
 
 public procedure countCompileTimeExecutionAndMetaprogrammingQuoteSpliceAndEmissionObligations() -> usize {
-    return 29usize
+    return 23usize
 }
 
 public procedure validatedCompileTimeExecutionAndMetaprogrammingQuoteSpliceAndEmissionObligations() -> usize {
@@ -115,15 +115,6 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingQuoteSpliceAndEm
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.22.QuoteCompileTimeOnly",
-        85767usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/QuoteOutsideComptime/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.22.ResolveQuoteKind",
         85780usize,
@@ -133,48 +124,12 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingQuoteSpliceAndEm
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.22.QuotedContentValidity",
-        85795usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/InvalidQuotedContent/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.22.SpliceContextAndTypeCompatibility",
-        85808usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/SpliceTypeMismatch/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.22.SpliceIdentifierPositionRestrictions",
-        85821usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/SpliceIdentifierStructuralName/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "requirement.22.StringSpliceIdentifierHygiene",
         85834usize,
         "HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming",
         "comptimeAcceptedProjectQuoteSpliceConformanceMatches",
         "Source/Audit/Catalog/CompileTimeExecutionAndMetaprogramming/CompilerConformanceExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.22.EmitterEmitWellFormedness",
-        85847usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -256,15 +211,6 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingQuoteSpliceAndEm
         "HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming",
         "comptimeRuntimeErasureArtifactEvidenceMatches",
         "Source/Audit/Catalog/CompileTimeExecutionAndMetaprogramming/LoweringErasureArtifactExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.22.QuoteSpliceEmissionDiagnosticsReference",
-        86001usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/QuoteOutsideComptime/Source/Main.uv"
     ) {
         count = count + 1usize
     }

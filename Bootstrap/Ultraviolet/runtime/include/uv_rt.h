@@ -719,7 +719,7 @@ UVDynObject ultraviolet_x3a_x3aruntime_x3a_x3acontext_x3a_x3agpu(
 UVDynObject ultraviolet_x3a_x3aruntime_x3a_x3acontext_x3a_x3ainline(
   const UVContext* self);
 
-// Section 19.4 Reactor methods
+// Section 24.6.4 Reactor methods
 UVAsyncResumeValue ultraviolet_x3a_x3aruntime_x3a_x3areactor_x3a_x3arun(
   const UVDynObject* self,
   const void* future);

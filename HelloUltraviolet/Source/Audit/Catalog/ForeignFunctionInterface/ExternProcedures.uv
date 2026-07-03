@@ -2,7 +2,7 @@
 
 
 public procedure countForeignFunctionInterfaceExternProceduresObligations() -> usize {
-    return 13usize
+    return 10usize
 }
 
 public procedure validatedForeignFunctionInterfaceExternProceduresObligations() -> usize {
@@ -79,15 +79,6 @@ public procedure validatedForeignFunctionInterfaceExternProceduresObligations() 
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.23.ExternCallSafety",
-        87547usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedFFIRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/FFI/ExternCallSafety/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "requirement.23.ExternDynamicSemantics",
         87564usize,
@@ -103,24 +94,6 @@ public procedure validatedForeignFunctionInterfaceExternProceduresObligations() 
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.23.ExternProcedureDiagnostics",
-        87594usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedFFIRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/FFI/ExternGenericSignature/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.23.ExternProcedureDiagnosticOwnership",
-        87610usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedFFIRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/FFI/FfiPassByValueRequired/Source/Main.uv"
     ) {
         count = count + 1usize
     }

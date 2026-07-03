@@ -749,6 +749,20 @@ struct SourceNativeTestRunSummary {
   }
 };
 
+struct SourceNativeTestRunRecord {
+  const ultraviolet::driver::SourceNativeTestDescriptor* test = nullptr;
+  std::string outcome;
+  std::string reason;
+  int exit_code = -1;
+  bool process_launched = false;
+  bool pass_marker_present = false;
+  bool fail_marker_present = false;
+  std::string error_message;
+  std::string stdout_text;
+  std::string stderr_text;
+  std::string output;
+};
+
 constexpr std::string_view kSourceNativeTestOutcomePrefix =
     "uv-source-native-test-outcome\t";
 constexpr std::string_view kDynamicSemanticsObligation =
@@ -783,6 +797,147 @@ bool SourceNativeTestOutputContainsMarker(
   return result.stdout_text.find(marker) != std::string::npos ||
          result.stderr_text.find(marker) != std::string::npos ||
          result.output.find(marker) != std::string::npos;
+}
+
+bool SourceNativeTextEndsWithNewline(std::string_view value) {
+  return !value.empty() && (value.back() == '\n' || value.back() == '\r');
+}
+
+std::string SourceNativeCoverageReferencesText(
+    const ultraviolet::driver::SourceNativeTestDescriptor& test) {
+  if (test.coverage_references.empty()) {
+    return "<none>";
+  }
+  std::string references;
+  for (std::size_t index = 0; index < test.coverage_references.size();
+       ++index) {
+    if (index != 0) {
+      references += ", ";
+    }
+    references += test.coverage_references[index];
+  }
+  return references;
+}
+
+void AppendSourceNativeTextBlock(std::ostringstream& out,
+                                 std::string_view label,
+                                 std::string_view value) {
+  out << label << ":\n";
+  if (value.empty()) {
+    out << "<empty>\n";
+    return;
+  }
+  out << value;
+  if (!SourceNativeTextEndsWithNewline(value)) {
+    out << '\n';
+  }
+}
+
+std::string RenderSourceNativeTestDiagnostics(
+    const ultraviolet::project::Project& project,
+    const ultraviolet::project::Assembly& assembly,
+    const std::filesystem::path& harness_source,
+    const std::filesystem::path& executable,
+    const std::filesystem::path& temporary_directory,
+    ultraviolet::project::TargetProfile target_profile,
+    const ultraviolet::core::HostProcessResult& build_result,
+    const SourceNativeTestRunSummary& summary,
+    std::size_t selected_test_count,
+    const std::vector<SourceNativeTestRunRecord>& records) {
+  std::ostringstream out;
+  out << "\n";
+  out << "==== Source-native test diagnostics ====\n";
+  out << "assembly: " << assembly.name << "\n";
+  out << "target_profile: "
+      << ultraviolet::project::TargetProfileName(target_profile) << "\n";
+  out << "project_root: " << project.root.generic_string() << "\n";
+  out << "harness_source: " << harness_source.generic_string() << "\n";
+  out << "harness_executable: " << executable.generic_string() << "\n";
+  out << "temporary_directory: " << temporary_directory.generic_string()
+      << "\n";
+  out << "harness_build_launched: "
+      << (build_result.launched ? "true" : "false") << "\n";
+  out << "harness_build_exit_code: " << build_result.exit_code << "\n";
+  if (!build_result.error_message.empty()) {
+    out << "harness_build_error: " << build_result.error_message << "\n";
+  }
+  out << "selected_tests: " << selected_test_count << "\n";
+  out << "recorded_tests: " << records.size() << "\n";
+  out << "passed: " << summary.passed << "\n";
+  out << "failed: " << summary.failed << "\n";
+  out << "errors: " << summary.errors << "\n";
+  out << "\n";
+
+  for (std::size_t index = 0; index < records.size(); ++index) {
+    const SourceNativeTestRunRecord& record = records[index];
+    out << "---- test " << (index + 1) << " ----\n";
+    if (record.test != nullptr) {
+      out << "stable_identity: " << record.test->stable_identity << "\n";
+      out << "display_name: " << record.test->display_name << "\n";
+      out << "procedure: " << record.test->procedure_name << "\n";
+      out << "coverage: " << SourceNativeCoverageReferencesText(*record.test)
+          << "\n";
+    } else {
+      out << "stable_identity: <unknown>\n";
+    }
+    out << "outcome: " << record.outcome << "\n";
+    out << "reason: " << record.reason << "\n";
+    out << "process_launched: "
+        << (record.process_launched ? "true" : "false") << "\n";
+    out << "exit_code: " << record.exit_code << "\n";
+    out << "pass_marker_present: "
+        << (record.pass_marker_present ? "true" : "false") << "\n";
+    out << "fail_marker_present: "
+        << (record.fail_marker_present ? "true" : "false") << "\n";
+    if (!record.error_message.empty()) {
+      out << "error_message: " << record.error_message << "\n";
+    }
+
+    if (record.outcome != "pass" || !record.stdout_text.empty() ||
+        !record.stderr_text.empty() || !record.output.empty()) {
+      AppendSourceNativeTextBlock(out, "stdout", record.stdout_text);
+      AppendSourceNativeTextBlock(out, "stderr", record.stderr_text);
+      AppendSourceNativeTextBlock(out, "merged_output", record.output);
+    }
+    out << "\n";
+  }
+  out << "==== End source-native test diagnostics ====\n";
+  return out.str();
+}
+
+bool WriteTextFile(const std::filesystem::path& path,
+                   const std::string& contents,
+                   ultraviolet::core::DiagnosticStream& diags);
+
+void EmitSourceNativeTestDiagnostics(
+    const ultraviolet::project::Project& project,
+    const ultraviolet::project::Assembly& assembly,
+    const std::filesystem::path& harness_source,
+    const std::filesystem::path& executable,
+    const std::filesystem::path& temporary_directory,
+    ultraviolet::project::TargetProfile target_profile,
+    const ultraviolet::core::HostProcessResult& build_result,
+    const SourceNativeTestRunSummary& summary,
+    std::size_t selected_test_count,
+    const std::vector<SourceNativeTestRunRecord>& records,
+    ultraviolet::core::DiagnosticStream& diags) {
+  const std::filesystem::path diagnostics_path =
+      temporary_directory / "source-native-test-diagnostics.log";
+  const std::string report = RenderSourceNativeTestDiagnostics(
+      project,
+      assembly,
+      harness_source,
+      executable,
+      temporary_directory,
+      target_profile,
+      build_result,
+      summary,
+      selected_test_count,
+      records);
+  std::cerr << report;
+  std::cerr << "Source-native diagnostics written to: "
+            << diagnostics_path.generic_string() << "\n";
+  WriteTextFile(diagnostics_path, report, diags);
 }
 
 bool SourceNativeTestCoverageReferenceMatches(std::string_view reference,
@@ -1115,11 +1270,14 @@ std::optional<SourceNativeTestRunSummary> BuildAndRunSourceNativeTestHarness(
       ultraviolet::project::AssemblyProject(project, harness_assembly);
   const std::filesystem::path executable =
       ultraviolet::project::ExePath(harness_project, target_profile);
+  const std::filesystem::path temporary_directory =
+      SourceNativeTestTemporaryDirectoryForAssembly(project, assembly);
 
   SourceNativeTestRunSummary summary;
+  std::vector<SourceNativeTestRunRecord> records;
   const std::string source = GenerateSourceNativeTestHarness(
       tests,
-      SourceNativeTestTemporaryDirectoryForAssembly(project, assembly),
+      temporary_directory,
       target_profile,
       project.root);
   if (!WriteTextFile(harness_source, source, diags)) {
@@ -1181,6 +1339,27 @@ std::optional<SourceNativeTestRunSummary> BuildAndRunSourceNativeTestHarness(
       ultraviolet::core::HostProcessOutputMode::Inherit;
   const auto build_result = ultraviolet::core::RunHostProcess(build_spec);
   if (!build_result.launched) {
+    summary.errors += static_cast<int>(tests.size());
+    for (const auto& test : tests) {
+      SourceNativeTestRunRecord record;
+      record.test = &test;
+      record.outcome = "error";
+      record.reason = "harness-build-launch-failed";
+      record.error_message = build_result.error_message;
+      records.push_back(std::move(record));
+    }
+    EmitSourceNativeTestDiagnostics(
+        project,
+        assembly,
+        harness_source,
+        executable,
+        temporary_directory,
+        target_profile,
+        build_result,
+        summary,
+        tests.size(),
+        records,
+        diags);
     EmitInternalDiagnostic(
         diags, ultraviolet::core::Severity::Error, std::nullopt,
         "failed to launch source-native test harness build: " +
@@ -1189,6 +1368,13 @@ std::optional<SourceNativeTestRunSummary> BuildAndRunSourceNativeTestHarness(
   }
   if (build_result.exit_code != 0) {
     summary.errors += static_cast<int>(tests.size());
+    for (const auto& test : tests) {
+      SourceNativeTestRunRecord record;
+      record.test = &test;
+      record.outcome = "error";
+      record.reason = "harness-build-failed";
+      records.push_back(std::move(record));
+    }
   }
 
   for (const auto& test : tests) {
@@ -1204,6 +1390,25 @@ std::optional<SourceNativeTestRunSummary> BuildAndRunSourceNativeTestHarness(
         ultraviolet::core::HostProcessOutputMode::CaptureSeparate;
     const auto run_result = ultraviolet::core::RunHostProcess(run_spec);
     if (!run_result.launched) {
+      SourceNativeTestRunRecord record;
+      record.test = &test;
+      record.outcome = "error";
+      record.reason = "test-launch-failed";
+      record.error_message = run_result.error_message;
+      records.push_back(std::move(record));
+      ++summary.errors;
+      EmitSourceNativeTestDiagnostics(
+          project,
+          assembly,
+          harness_source,
+          executable,
+          temporary_directory,
+          target_profile,
+          build_result,
+          summary,
+          tests.size(),
+          records,
+          diags);
       EmitInternalDiagnostic(diags, ultraviolet::core::Severity::Error,
                              std::nullopt,
                              "failed to launch source-native test harness: " +
@@ -1215,20 +1420,52 @@ std::optional<SourceNativeTestRunSummary> BuildAndRunSourceNativeTestHarness(
         SourceNativeTestOutcomeMarker("pass", test);
     const std::string fail_marker =
         SourceNativeTestOutcomeMarker("fail", test);
+    SourceNativeTestRunRecord record;
+    record.test = &test;
+    record.process_launched = true;
+    record.exit_code = run_result.exit_code;
+    record.pass_marker_present =
+        SourceNativeTestOutputContainsMarker(run_result, pass_marker);
+    record.fail_marker_present =
+        SourceNativeTestOutputContainsMarker(run_result, fail_marker);
+    record.stdout_text = run_result.stdout_text;
+    record.stderr_text = run_result.stderr_text;
+    record.output = run_result.output;
     if (run_result.exit_code == 0 &&
-        SourceNativeTestOutputContainsMarker(run_result, pass_marker)) {
+        record.pass_marker_present) {
       ++summary.passed;
-    } else if (SourceNativeTestOutputContainsMarker(run_result, fail_marker)) {
+      record.outcome = "pass";
+      record.reason = "exit-zero-pass-marker";
+    } else if (record.fail_marker_present) {
       ++summary.failed;
+      record.outcome = "fail";
+      record.reason = "fail-marker";
     } else {
       ++summary.errors;
+      record.outcome = "error";
+      record.reason = "missing-pass-or-fail-marker";
     }
+    records.push_back(std::move(record));
   }
 
   RecordSourceNativeTestDiscoveryOrder(assembly, tests, summary);
   RecordSourceNativeTestMetadata(assembly, tests, summary);
   RecordSourceNativeTestProcedureShapeAndAuthority(assembly, tests, summary);
   RecordSourceNativeTestDynamicSemantics(assembly, tests, summary);
+  if (summary.exit_code() != 0) {
+    EmitSourceNativeTestDiagnostics(
+        project,
+        assembly,
+        harness_source,
+        executable,
+        temporary_directory,
+        target_profile,
+        build_result,
+        summary,
+        tests.size(),
+        records,
+        diags);
+  }
   return summary;
 }
 
@@ -1713,24 +1950,6 @@ void AppendGenericSignature(
   }
 }
 
-void AppendPredicateSignature(
-    SourceTextCache& sources,
-    std::vector<std::string>& fields,
-    const std::optional<ultraviolet::ast::PredicateClause>& predicates_opt) {
-  fields.push_back(std::string("predicates=") +
-                   (predicates_opt.has_value() ? "1" : "0"));
-  if (!predicates_opt.has_value()) {
-    return;
-  }
-  fields.push_back("predicate-count=" + std::to_string(predicates_opt->size()));
-  for (const auto& predicate : *predicates_opt) {
-    std::string out;
-    AppendSignatureAtom(out, predicate.pred);
-    AppendSignatureAtom(out, TypeSignature(sources, predicate.type));
-    fields.push_back("predicate=" + out);
-  }
-}
-
 std::string ParamSignature(SourceTextCache& sources,
                            const ultraviolet::ast::Param& param) {
   std::string out;
@@ -1760,6 +1979,10 @@ std::string ReceiverSignature(SourceTextCache& sources,
         using T = std::decay_t<decltype(node)>;
         if constexpr (std::is_same_v<T, ultraviolet::ast::ReceiverShorthand>) {
           AppendSignatureAtom(out, "shorthand");
+          AppendSignatureBool(out, node.mode_opt.has_value());
+          if (node.mode_opt.has_value()) {
+            AppendSignatureAtom(out, ParamModeSignature(*node.mode_opt));
+          }
           AppendSignatureAtom(out, ReceiverPermSignature(node.perm));
         } else {
           AppendSignatureAtom(out, "explicit");
@@ -1852,7 +2075,6 @@ void AppendCallableSignature(
     ultraviolet::ast::Visibility vis,
     std::string_view name,
     const std::optional<ultraviolet::ast::GenericParams>& generic_params,
-    const std::optional<ultraviolet::ast::PredicateClause>& predicate_clause,
     const std::vector<ultraviolet::ast::Param>& params,
     const ultraviolet::ast::TypePtr& return_type,
     const std::optional<ultraviolet::ast::ContractClause>& contract) {
@@ -1861,7 +2083,6 @@ void AppendCallableSignature(
   fields.push_back("vis=" + std::string(VisibilitySignature(vis)));
   fields.push_back("name=" + std::string(name));
   AppendGenericSignature(sources, fields, generic_params);
-  AppendPredicateSignature(sources, fields, predicate_clause);
   AppendParamsSignature(sources, fields, params);
   fields.push_back("return=" + TypeSignature(sources, return_type));
   AppendContractSignature(sources, fields, contract);
@@ -2023,7 +2244,6 @@ std::string ItemInterfaceHash(SourceTextCache& sources,
                                           proc.vis,
                                           proc.name,
                                           proc.generic_params,
-                                          proc.where_clause,
                                           proc.params,
                                           proc.return_type_opt,
                                           proc.contract);
@@ -2053,7 +2273,6 @@ std::string ItemInterfaceHash(SourceTextCache& sources,
                                   node.vis,
                                   node.name,
                                   node.generic_params,
-                                  node.predicate_clause_opt,
                                   node.params,
                                   node.return_type_opt,
                                   node.contract);
@@ -2066,7 +2285,6 @@ std::string ItemInterfaceHash(SourceTextCache& sources,
                                   node.vis,
                                   node.name,
                                   node.generic_params,
-                                  std::nullopt,
                                   node.params,
                                   node.return_type_opt,
                                   node.contract);
@@ -2076,7 +2294,6 @@ std::string ItemInterfaceHash(SourceTextCache& sources,
           fields.push_back("vis=" + std::string(VisibilitySignature(node.vis)));
           fields.push_back("name=" + node.name);
           AppendGenericSignature(sources, fields, node.generic_params);
-          AppendPredicateSignature(sources, fields, node.predicate_clause_opt);
           fields.push_back("implements=" + std::to_string(node.implements.size()));
           for (const auto& impl : node.implements) {
             fields.push_back("implements-path=" + PathSignature(impl));
@@ -2115,7 +2332,6 @@ std::string ItemInterfaceHash(SourceTextCache& sources,
           fields.push_back("vis=" + std::string(VisibilitySignature(node.vis)));
           fields.push_back("name=" + node.name);
           AppendGenericSignature(sources, fields, node.generic_params);
-          AppendPredicateSignature(sources, fields, node.predicate_clause_opt);
           fields.push_back("implements=" + std::to_string(node.implements.size()));
           for (const auto& impl : node.implements) {
             fields.push_back("implements-path=" + PathSignature(impl));
@@ -2140,7 +2356,6 @@ std::string ItemInterfaceHash(SourceTextCache& sources,
           fields.push_back("vis=" + std::string(VisibilitySignature(node.vis)));
           fields.push_back("name=" + node.name);
           AppendGenericSignature(sources, fields, node.generic_params);
-          AppendPredicateSignature(sources, fields, node.predicate_clause_opt);
           fields.push_back("implements=" + std::to_string(node.implements.size()));
           for (const auto& impl : node.implements) {
             fields.push_back("implements-path=" + PathSignature(impl));
@@ -2213,7 +2428,6 @@ std::string ItemInterfaceHash(SourceTextCache& sources,
           fields.push_back(std::string("modal=") + (node.modal ? "1" : "0"));
           fields.push_back("name=" + node.name);
           AppendGenericSignature(sources, fields, node.generic_params);
-          AppendPredicateSignature(sources, fields, node.predicate_clause_opt);
           fields.push_back("supers=" + std::to_string(node.supers.size()));
           for (const auto& super : node.supers) {
             fields.push_back("super=" + PathSignature(super));
@@ -2229,7 +2443,6 @@ std::string ItemInterfaceHash(SourceTextCache& sources,
           fields.push_back("vis=" + std::string(VisibilitySignature(node.vis)));
           fields.push_back("name=" + node.name);
           AppendGenericSignature(sources, fields, node.generic_params);
-          AppendPredicateSignature(sources, fields, node.predicate_clause_opt);
           fields.push_back("type=" + TypeSignature(sources, node.type));
         } else if constexpr (std::is_same_v<T, ultraviolet::ast::DeriveTargetDecl>) {
           fields.push_back("item=derive-target");

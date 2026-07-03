@@ -62,27 +62,23 @@ ast::TypePtr MakeTypeSliceAst(ast::TypePtr element) {
   return MakeTypeNode(std::move(node));
 }
 
-ast::ModalStateRef MakeOutcomeStateRef(ast::TypePtr value_type,
-                                       std::string_view state) {
-  ast::ModalStateRef ref;
-  ref.path = {"Outcome"};
-  ref.generic_args = {std::move(value_type), MakeTypePathAst({"IoError"})};
-  ref.state = std::string(state);
-  ast::SyncModalStateRefFromFields(ref);
-  return ref;
-}
-
-CtValue MakeOutcomeValue(CtValue value, ast::TypePtr value_type) {
-  auto outcome = std::make_shared<CtModalState>();
-  outcome->target = MakeOutcomeStateRef(std::move(value_type), "Value");
-  outcome->fields = {{"value", std::move(value)}};
+CtValue MakeOutcomeValue(CtValue value) {
+  auto outcome = std::make_shared<CtEnum>();
+  outcome->path = {"Outcome"};
+  outcome->variant = "Value";
+  CtTuplePayload payload;
+  payload.elements.push_back(std::move(value));
+  outcome->payload = std::move(payload);
   return outcome;
 }
 
-CtValue MakeOutcomeError(CtValue error, ast::TypePtr value_type) {
-  auto outcome = std::make_shared<CtModalState>();
-  outcome->target = MakeOutcomeStateRef(std::move(value_type), "Error");
-  outcome->fields = {{"error", std::move(error)}};
+CtValue MakeOutcomeError(CtValue error) {
+  auto outcome = std::make_shared<CtEnum>();
+  outcome->path = {"Outcome"};
+  outcome->variant = "Error";
+  CtTuplePayload payload;
+  payload.elements.push_back(std::move(error));
+  outcome->payload = std::move(payload);
   return outcome;
 }
 
@@ -91,11 +87,11 @@ bool IsIoErrorValue(const CtValue& value) {
   return enum_value && *enum_value && (*enum_value)->path == Path{"IoError"};
 }
 
-CtValue MakeProjectFileOutcome(CtValue value, ast::TypePtr value_type) {
+CtValue MakeProjectFileOutcome(CtValue value) {
   if (IsIoErrorValue(value)) {
-    return MakeOutcomeError(std::move(value), std::move(value_type));
+    return MakeOutcomeError(std::move(value));
   }
-  return MakeOutcomeValue(std::move(value), std::move(value_type));
+  return MakeOutcomeValue(std::move(value));
 }
 
 std::string MapIoErrorVariant(const std::error_code& ec) {
@@ -467,56 +463,33 @@ std::optional<EvalResult> EvalProjectFilesMethod(const ast::MethodCallExpr& call
     } else {
       return std::nullopt;
     }
-    ast::TypePtr value_type;
-    if (call.name == "read") {
-      value_type = MakeTypePermAst(
-          ast::TypePerm::Unique,
-          MakeTypeStringAst(ast::StringState::Managed));
-    } else if (call.name == "read_bytes") {
-      value_type = MakeTypePermAst(
-          ast::TypePerm::Unique,
-          MakeTypeBytesAst(ast::BytesState::Managed));
-    } else if (call.name == "exists") {
-      value_type = MakeTypePrimAst("bool");
-    } else {
-      value_type = MakeTypeSliceAst(MakeTypeStringAst(ast::StringState::Managed));
-    }
-    result.value =
-        MakeOutcomeError(MakeIoErrorValue("InvalidPath"), std::move(value_type));
+    result.value = MakeOutcomeError(MakeIoErrorValue("InvalidPath"));
     return result;
   }
 
   if (call.name == "read") {
     SPEC_RULE("CtBuiltin-Read");
     result.value = MakeProjectFileOutcome(
-        SnapshotReadTextResult(*snapshot, *restricted),
-        MakeTypePermAst(
-            ast::TypePerm::Unique,
-            MakeTypeStringAst(ast::StringState::Managed)));
+        SnapshotReadTextResult(*snapshot, *restricted));
     return result;
   }
   if (call.name == "read_bytes") {
     SPEC_RULE("CtBuiltin-ReadBytes");
     result.value = MakeProjectFileOutcome(
-        SnapshotReadBytesResult(*snapshot, *restricted),
-        MakeTypePermAst(
-            ast::TypePerm::Unique,
-            MakeTypeBytesAst(ast::BytesState::Managed)));
+        SnapshotReadBytesResult(*snapshot, *restricted));
     return result;
   }
   if (call.name == "exists") {
     SPEC_RULE("CtBuiltin-Exists");
     result.value = MakeProjectFileOutcome(
-        SnapshotExistsResult(*snapshot, *restricted),
-        MakeTypePrimAst("bool"));
+        SnapshotExistsResult(*snapshot, *restricted));
     return result;
   }
   if (call.name == "list_dir") {
     SPEC_RULE("CtBuiltin-ListDir");
     SPEC_RULE_AT("rule.22.CtBuiltin-ListDir", call_span);
     result.value = MakeProjectFileOutcome(
-        SnapshotListDirResult(*snapshot, *restricted),
-        MakeTypeSliceAst(MakeTypeStringAst(ast::StringState::Managed)));
+        SnapshotListDirResult(*snapshot, *restricted));
     return result;
   }
 

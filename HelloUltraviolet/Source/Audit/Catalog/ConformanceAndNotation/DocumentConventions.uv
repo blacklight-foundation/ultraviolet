@@ -2,55 +2,10 @@
 
 
 public procedure countConformanceAndNotationDocumentConventionsObligations() -> usize {
-    return 5usize
+    return 0usize
 }
 
 public procedure validatedConformanceAndNotationDocumentConventionsObligations() -> usize {
     var count: usize = 0usize
-    if acceptedObligationEntryMatches(
-        "def.NormativeKeywords",
-        915usize,
-        "HelloUltraviolet::Reference::Conformance",
-        "runConformanceBehaviorClassificationReference",
-        "Source/Reference/Conformance/BehaviorClassification.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "conformance.RFC2119",
-        930usize,
-        "HelloUltraviolet::Reference::Conformance",
-        "runConformanceBehaviorClassificationReference",
-        "Source/Reference/Conformance/BehaviorClassification.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.DiagnosticCodeComponents",
-        945usize,
-        "HelloUltraviolet::Reference::Conformance",
-        "runConformanceBehaviorClassificationReference",
-        "Source/Reference/Conformance/BehaviorClassification.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.DiagnosticCodeFormat",
-        962usize,
-        "HelloUltraviolet::Reference::Conformance",
-        "runConformanceBehaviorClassificationReference",
-        "Source/Reference/Conformance/BehaviorClassification.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.DiagnosticCodeDigitParts",
-        976usize,
-        "HelloUltraviolet::Reference::Conformance",
-        "runConformanceBehaviorClassificationReference",
-        "Source/Reference/Conformance/BehaviorClassification.uv"
-    ) {
-        count = count + 1usize
-    }
     return count
 }

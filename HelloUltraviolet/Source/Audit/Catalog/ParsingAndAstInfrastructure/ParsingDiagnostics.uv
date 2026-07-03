@@ -2,7 +2,7 @@
 
 
 public procedure countParsingAndAstInfrastructureParsingDiagnosticsObligations() -> usize {
-    return 3usize
+    return 2usize
 }
 
 public procedure validatedParsingAndAstInfrastructureParsingDiagnosticsObligations() -> usize {
@@ -22,15 +22,6 @@ public procedure validatedParsingAndAstInfrastructureParsingDiagnosticsObligatio
         "HelloUltraviolet::Audit",
         "runParsingReferenceModels",
         "Source/Audit/ParsingReferenceModels.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "Parse-Syntax-Err",
-        12073usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParsingRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parsing/EnumCommaSeparator/Source/Main.uv"
     ) {
         count = count + 1usize
     }

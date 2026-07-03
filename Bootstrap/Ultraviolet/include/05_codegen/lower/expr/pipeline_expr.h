@@ -5,7 +5,7 @@
 // =============================================================================
 //
 // SPEC REFERENCE: Docs/SPECIFICATION.md Lines 16288-16302 (Pipeline Lowering)
-//   - Lower-Expr-Pipeline: e1 => e2 desugars to function/closure application
+//   - Lower-Expr-Pipeline: e1 => e2 lowers to call IR after left-first operand lowering
 //   - IsFunc case: CallIR(v_2, [v_1])
 //   - IsClosure case: IndirectCall(code, [env, v_1])
 //
@@ -20,8 +20,8 @@ namespace ultraviolet::codegen {
 
 /// Lower a pipeline expression (e1 => e2) to IR.
 ///
-/// Pipeline expressions desugar to function application:
-///   e1 => e2  =>  e2(e1)
+/// Pipeline expressions lower to function application after the LHS has
+/// been lowered before the RHS.
 ///
 /// For functions: creates CallIR(v_2, [v_1])
 /// For closures: creates IndirectCall(code, [env, v_1])

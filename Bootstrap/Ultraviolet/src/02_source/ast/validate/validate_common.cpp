@@ -326,11 +326,10 @@ ValidationResult validate_expr_context(const Expr& expr,
           }
         }
 
-        // Alloc (^) requires region context
         if constexpr (std::is_same_v<T, AllocExpr>) {
           if (!ctx.in_region_block && !node.region_opt.has_value()) {
             emit_error(ctx, expr.span, "E-MEM-3021",
-                       "allocation (^) requires region context");
+                       "`new` allocation requires an active region");
             result.valid = false;
           }
         }
@@ -399,4 +398,3 @@ ValidationResult validate_irrefutable_pattern(const Pattern& pattern,
 }
 
 }  // namespace ultraviolet::ast::validate
-

@@ -2,7 +2,7 @@
 
 
 public procedure countNameResolutionAndVisibilityLookupAndQualifiedResolutionObligations() -> usize {
-    return 18usize
+    return 17usize
 }
 
 public procedure validatedNameResolutionAndVisibilityLookupAndQualifiedResolutionObligations() -> usize {
@@ -28,15 +28,6 @@ public procedure validatedNameResolutionAndVisibilityLookupAndQualifiedResolutio
     if acceptedObligationEntryMatches(
         "Lookup-Unqualified",
         19448usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Lookup-Unqualified-None",
-        19466usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"

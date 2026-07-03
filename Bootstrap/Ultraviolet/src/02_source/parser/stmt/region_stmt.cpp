@@ -42,9 +42,9 @@
 // SEMANTICS:
 // - `region { ... }` creates a new memory arena
 // - `region (opts) { ... }` creates region with options (e.g., size)
-// - `region as r { ... }` creates named region (for explicit allocation)
+// - `region as r { ... }` creates named region handle
 // - `region (opts) as r { ... }` combines both options and name
-// - Allocations within region use `^` operator
+// - Allocations within region use a Region@Active handle's `~>alloc` operation
 // - Region is deallocated when block exits
 //
 // =============================================================================
@@ -148,7 +148,7 @@
 // - Order is: region (opts)? (as name)? block
 // - ParseRegionOptsOpt returns nullptr if no parentheses
 // - ParseRegionAliasOpt returns std::nullopt if no `as` keyword
-// - Named regions allow explicit allocation via `r ^ value`
+// - Named regions allow allocation via `r~>alloc(value)`
 // - Span covers from `region` keyword to closing brace
 // - Attributes are applied to the options expression if present
 // =============================================================================

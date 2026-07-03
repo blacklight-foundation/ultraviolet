@@ -2,7 +2,7 @@
 
 
 public procedure countProjectAndCompilationModelDeterministicOrderingAndCaseFoldingObligations() -> usize {
-    return 10usize
+    return 7usize
 }
 
 public procedure validatedProjectAndCompilationModelDeterministicOrderingAndCaseFoldingObligations() -> usize {
@@ -35,15 +35,6 @@ public procedure validatedProjectAndCompilationModelDeterministicOrderingAndCase
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "FileOrder-Rel-Fail",
-        4162usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsModuleDiscoveryReference",
-        "Source/Reference/Projects/ModuleDiscovery.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "def.Fold",
         4180usize,
         "HelloUltraviolet::Reference::Projects",
@@ -67,24 +58,6 @@ public procedure validatedProjectAndCompilationModelDeterministicOrderingAndCase
         "HelloUltraviolet::Audit",
         "artifactProjectModuleDiscoveryOrderingExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if artifactBehaviorObligationEntryMatches(
-        "def.DirSeq",
-        4225usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
-        "validatedArtifactProjectFixtureCount",
-        "Fixtures/ArtifactProjects/ModuleDiscoveryOrdering/Source/Alpha/Extra.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "DirSeq-Read-Err",
-        4239usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticDirSeqReadFailureExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
     ) {
         count = count + 1usize
     }

@@ -101,7 +101,13 @@ internal procedure generalStatementAndExpressionAttributeValue() -> i32 {
     }
 
     let file_attribute_ok: bool =
-        #files comptime { files~>exists("Ultraviolet.toml").value == true }
+        #files comptime {
+            if files~>exists("Ultraviolet.toml") is Outcome::Value(exists) {
+                exists == true
+            } else {
+                false
+            }
+        }
     return if file_attribute_ok { 17 } else { 0 }
 }
 

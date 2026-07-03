@@ -13,31 +13,24 @@ internal record PolymorphismReference {
     internal dynamically_dispatchable: bool
 }
 
-internal procedure defaultedGenericValue<TValue; TMirror = TValue>(
+internal procedure defaultedGenericValue<TValue <: Bitcopy; TMirror = TValue>(
     move value: TValue,
     mirror: TMirror
-) -> TValue
-|: Bitcopy(TValue)
-{
+) -> TValue {
     return move value
 }
 
-internal procedure genericAliasValue<TValue>(move value: TValue) -> GenericAlias<TValue>
-|: Bitcopy(TValue)
-{
+internal procedure genericAliasValue<TValue <: Bitcopy>(move value: TValue) -> GenericAlias<TValue> {
     return move value
 }
 
-internal procedure multiPredicateGenericValue<TValue>(move value: TValue) -> TValue
-|: Bitcopy(TValue)
-Clone(TValue)
-{
+internal procedure multiPredicateGenericValue<TValue <: Bitcopy, Clone>(
+    move value: TValue
+) -> TValue {
     return move value
 }
 
-internal procedure duplicateBitcopyGenericValue<TValue>(value: TValue) -> (TValue, TValue)
-|: Bitcopy(TValue)
-{
+internal procedure duplicateBitcopyGenericValue<TValue <: Bitcopy>(value: TValue) -> (TValue, TValue) {
     return (value, value)
 }
 

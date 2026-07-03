@@ -159,7 +159,11 @@
     "Reject-IllFormed": "DeclJudg",
     "Abort-On-ErrorCount": "DeclJudg",
     "Static-Undefined": "DeclJudg",
-    "Static-Undefined-NoCode": "DeclJudg"
+    "Static-Undefined-NoCode": "DeclJudg",
+    "New-NoActiveRegion-Err": "ExprJudg",
+    "P-New-CurrentRegion": "ProvExprJudg",
+    "P-Internal-Alloc-Explicit": "ProvExprJudg",
+    "P-Internal-Alloc-InvalidRegion": "ProvExprJudg"
   },
   "rule_diag_overrides": {
     "Main-Missing": "Main-Missing",
@@ -209,6 +213,7 @@
     "Index-Array-NonConst-Err": "04_analysis/typing/expr/index_access.cpp",
     "Index-Array-OOB-Err": "04_analysis/typing/expr/index_access.cpp",
     "Index-Array-NonUsize": "04_analysis/typing/expr/index_access.cpp",
-    "Index-NonIndexable": "04_analysis/typing/expr/index_access.cpp"
+    "Index-NonIndexable": "04_analysis/typing/expr/index_access.cpp",
+    "New-NoActiveRegion-Err": "04_analysis/typing/expr/alloc_expr.cpp"
   }
 }

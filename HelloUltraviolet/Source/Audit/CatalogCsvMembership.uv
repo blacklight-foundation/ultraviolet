@@ -33,11 +33,11 @@ public procedure expectedCsvObligationKeyCount() -> usize {
 }
 
 public procedure catalogGeneratedObligationKeyCount() -> usize {
-    return 6052usize
+    return 5019usize
 }
 
 public procedure catalogBlockedObligationKeyCount() -> usize {
-    return 0usize
+    return 1033usize
 }
 
 public procedure catalogAccountedObligationKeyCount() -> usize {
@@ -49,11 +49,11 @@ public procedure expectedCsvObligationKeyDigest() -> usize {
 }
 
 public procedure catalogGeneratedObligationKeyDigest() -> usize {
-    return 56786740usize
+    return 412356217usize
 }
 
 public procedure catalogBlockedObligationKeyDigest() -> usize {
-    return 0usize
+    return 35959581usize
 }
 
 public procedure catalogAccountedObligationKeyDigest() -> usize {
@@ -61,7 +61,7 @@ public procedure catalogAccountedObligationKeyDigest() -> usize {
 }
 
 public procedure expectedCsvFileByteCount() -> usize {
-    return 1526223usize
+    return 1526221usize
 }
 
 public procedure expectedCsvFileLineBreakCount() -> usize {
@@ -69,7 +69,7 @@ public procedure expectedCsvFileLineBreakCount() -> usize {
 }
 
 public procedure expectedCsvFileDigest() -> usize {
-    return 659536361usize
+    return 441404006usize
 }
 
 internal procedure csvFileShapeMatches(csv_text: string@View) -> bool {
@@ -88,11 +88,11 @@ public procedure catalogMatchesCsvObligations(context: Context) -> bool {
         "Docs/Internal/UltravioletObligations.csv"
     )
     return if move read_result is {
-        @Value { value } {
+        Outcome::Value(value) {
             let csv_text: string@View = string::as_view(value)
             csvFileShapeMatches(csv_text) && generatedCatalogKeysMatchCsv()
         }
-        @Error {
+        Outcome::Error(_) {
             false
         }
     }

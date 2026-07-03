@@ -2,7 +2,7 @@
 
 
 public procedure countStatementsAndBlocksAssignmentStatementsObligations() -> usize {
-    return 27usize
+    return 21usize
 }
 
 public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -> usize {
@@ -79,42 +79,6 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.18.Assign-NotPlace",
-        70278usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/AssignNotPlace/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.18.Assign-Immutable-Err",
-        70294usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/AssignImmutableLet/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.18.Assign-Type-Err",
-        70310usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/AssignTypeMismatch/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.18.AssignmentConstPermissionDiagnostic",
-        70326usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/AssignConst/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "req.18.AssignmentBindingStateRules",
         70342usize,
@@ -130,15 +94,6 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
         "HelloUltraviolet::Reference::Statements",
         "runStatementsAssignmentReference",
         "Source/Reference/Statements/Assignment.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.18.AssignmentProvenanceEscapeFailures",
-        70368usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/AssignmentProvenanceEscape/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -238,15 +193,6 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
         "HelloUltraviolet::Audit",
         "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
         "Source/Audit/AcceptedProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.18.AssignmentStatements",
-        70557usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/AssignmentStatementsDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

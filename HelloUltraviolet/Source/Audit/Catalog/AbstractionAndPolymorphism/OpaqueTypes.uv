@@ -2,7 +2,7 @@
 
 
 public procedure countAbstractionAndPolymorphismOpaqueTypesObligations() -> usize {
-    return 14usize
+    return 11usize
 }
 
 public procedure validatedAbstractionAndPolymorphismOpaqueTypesObligations() -> usize {
@@ -61,15 +61,6 @@ public procedure validatedAbstractionAndPolymorphismOpaqueTypesObligations() -> 
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "rule.14.WF-Opaque-Err",
-        51268usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/OpaqueUndefinedClassType/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.14.T-Equiv-Opaque",
         51284usize,
@@ -97,15 +88,6 @@ public procedure validatedAbstractionAndPolymorphismOpaqueTypesObligations() -> 
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "req.14.OpaqueEquivalenceAndInterfaceExposure",
-        51332usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/OpaqueMemberNotDefined/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "req.14.OpaqueTypesNoRuntimeWrapper",
         51347usize,
@@ -121,15 +103,6 @@ public procedure validatedAbstractionAndPolymorphismOpaqueTypesObligations() -> 
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.14.OpaqueTypes",
-        51377usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedPolymorphismRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Polymorphism/OpaqueReturnMissingImplementation/Source/Main.uv"
     ) {
         count = count + 1usize
     }

@@ -2,7 +2,7 @@
 
 
 public procedure countProjectAndCompilationModelAssembliesAndProjectLoadingObligations() -> usize {
-    return 34usize
+    return 24usize
 }
 
 public procedure validatedProjectAndCompilationModelAssembliesAndProjectLoadingObligations() -> usize {
@@ -44,26 +44,8 @@ public procedure validatedProjectAndCompilationModelAssembliesAndProjectLoadingO
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Step-Parse-Err",
-        3599usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics",
-        "validatedOutputProjectDiagnosticFixtureCount",
-        "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "Step-Validate",
         3617usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsManifestModelReference",
-        "Source/Reference/Projects/ManifestModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Step-Validate-Err",
-        3635usize,
         "HelloUltraviolet::Reference::Projects",
         "runProjectsManifestModelReference",
         "Source/Reference/Projects/ManifestModel.uv"
@@ -152,35 +134,8 @@ public procedure validatedProjectAndCompilationModelAssembliesAndProjectLoadingO
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Step-Asm-Err",
-        3800usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsManifestModelReference",
-        "Source/Reference/Projects/ManifestModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "Step-Asm-Done",
         3818usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsManifestModelReference",
-        "Source/Reference/Projects/ManifestModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Step-Asm-Own-Err",
-        3836usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsManifestModelReference",
-        "Source/Reference/Projects/ManifestModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Step-Asm-Done-Err",
-        3854usize,
         "HelloUltraviolet::Reference::Projects",
         "runProjectsManifestModelReference",
         "Source/Reference/Projects/ManifestModel.uv"
@@ -215,15 +170,6 @@ public procedure validatedProjectAndCompilationModelAssembliesAndProjectLoadingO
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Select-Err",
-        3928usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsAssemblyModelReference",
-        "Source/Reference/Projects/AssemblyModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "BuildAssembly-Ok",
         3948usize,
         "HelloUltraviolet::Reference::Projects",
@@ -233,47 +179,11 @@ public procedure validatedProjectAndCompilationModelAssembliesAndProjectLoadingO
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "BuildAssembly-Err-Resolve",
-        3966usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsAssemblyModelReference",
-        "Source/Reference/Projects/AssemblyModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "BuildAssembly-Err-Root",
-        3984usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsAssemblyModelReference",
-        "Source/Reference/Projects/AssemblyModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "BuildAssembly-Err-Modules",
-        4002usize,
-        "HelloUltraviolet::Audit",
-        "outputDiagnosticDirSeqReadFailureExercise",
-        "Source/Audit/OutputDiagnosticExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "LoadProject-Ok",
         4022usize,
         "HelloUltraviolet::Reference::Projects",
         "runProjectsManifestModelReference",
         "Source/Reference/Projects/ManifestModel.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "LoadProject-Err",
-        4040usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics",
-        "validatedOutputProjectDiagnosticFixtureCount",
-        "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml"
     ) {
         count = count + 1usize
     }

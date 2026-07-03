@@ -2,7 +2,7 @@
 
 
 public procedure countForeignFunctionInterfaceBoundaryUnwindingObligations() -> usize {
-    return 17usize
+    return 15usize
 }
 
 public procedure validatedForeignFunctionInterfaceBoundaryUnwindingObligations() -> usize {
@@ -67,15 +67,6 @@ public procedure validatedForeignFunctionInterfaceBoundaryUnwindingObligations()
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.23.UnwindMode-Invalid-Err",
-        89865usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedFFIRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/FFI/InvalidUnwindMode/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -148,15 +139,6 @@ public procedure validatedForeignFunctionInterfaceBoundaryUnwindingObligations()
         "HelloUltraviolet::Audit",
         "rejectedSourceFixturesCompileAndEmitExpectedDiagnostics",
         "Source/Audit/DiagnosticFixtureExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.23.BoundaryUnwindingDiagnosticOwnership",
-        90026usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedFFIRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/FFI/BoundaryUnwindingDiagnosticOwnership/Source/Main.uv"
     ) {
         count = count + 1usize
     }

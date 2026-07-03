@@ -2,7 +2,7 @@
 
 
 public procedure countCompileTimeExecutionAndMetaprogrammingCompileTimeFormsObligations() -> usize {
-    return 54usize
+    return 49usize
 }
 
 public procedure validatedCompileTimeExecutionAndMetaprogrammingCompileTimeFormsObligations() -> usize {
@@ -151,24 +151,6 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingCompileTimeForms
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.22.CompileTimeTypeAvailabilityRejection",
-        83898usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/ComptimePointerParameter/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.22.CompileTimeProhibitedConstructs",
-        83911usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/ComptimeProhibitedWait/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.22.T-CtStmt",
         83929usize,
@@ -211,24 +193,6 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingCompileTimeForms
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeCompileTimeFormsReference",
         "Source/Reference/Comptime/CompileTimeForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.22.CompileTimeProcedureContracts",
-        84009usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/ComptimeProcedureContractFailure/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "requirement.22.CompileTimeProcedureContextRestriction",
-        84022usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/RuntimeCallsComptimeProcedure/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -481,15 +445,6 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingCompileTimeForms
         "HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming",
         "comptimeRuntimeErasureArtifactEvidenceMatches",
         "Source/Audit/Catalog/CompileTimeExecutionAndMetaprogramming/LoweringErasureArtifactExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diagnostics.22.CompileTimeFormsDiagnosticsReference",
-        84484usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedComptimeRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Comptime/ComptimeIfConditionType/Source/Main.uv"
     ) {
         count = count + 1usize
     }

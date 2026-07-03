@@ -798,11 +798,6 @@ void collect_type_nodes_from_item(const ASTItem& item,
         } else if constexpr (std::is_same_v<T, ProcedureDecl>) {
           push_params(node.params);
           push_type(node.return_type_opt);
-          if (node.predicate_clause_opt.has_value()) {
-            for (const auto& pred : *node.predicate_clause_opt) {
-              push_type(pred.type);
-            }
-          }
         } else if constexpr (std::is_same_v<T, ComptimeProcedureDecl>) {
           push_params(node.params);
           push_type(node.return_type_opt);
@@ -812,20 +807,10 @@ void collect_type_nodes_from_item(const ASTItem& item,
                 [&](const auto& ext_item) {
                   push_params(ext_item.params);
                   push_type(ext_item.return_type_opt);
-                  if (ext_item.where_clause.has_value()) {
-                    for (const auto& pred : *ext_item.where_clause) {
-                      push_type(pred.type);
-                    }
-                  }
                 },
                 ext);
           }
         } else if constexpr (std::is_same_v<T, RecordDecl>) {
-          if (node.predicate_clause_opt.has_value()) {
-            for (const auto& pred : *node.predicate_clause_opt) {
-              push_type(pred.type);
-            }
-          }
           for (const auto& member : node.members) {
             std::visit(
                 [&](const auto& m) {
@@ -846,11 +831,6 @@ void collect_type_nodes_from_item(const ASTItem& item,
                 member);
           }
         } else if constexpr (std::is_same_v<T, EnumDecl>) {
-          if (node.predicate_clause_opt.has_value()) {
-            for (const auto& pred : *node.predicate_clause_opt) {
-              push_type(pred.type);
-            }
-          }
           for (const auto& variant : node.variants) {
             if (!variant.payload_opt.has_value()) {
               continue;
@@ -871,11 +851,6 @@ void collect_type_nodes_from_item(const ASTItem& item,
                 *variant.payload_opt);
           }
         } else if constexpr (std::is_same_v<T, ModalDecl>) {
-          if (node.predicate_clause_opt.has_value()) {
-            for (const auto& pred : *node.predicate_clause_opt) {
-              push_type(pred.type);
-            }
-          }
           for (const auto& state : node.states) {
             for (const auto& member : state.members) {
               std::visit(
@@ -898,11 +873,6 @@ void collect_type_nodes_from_item(const ASTItem& item,
             }
           }
         } else if constexpr (std::is_same_v<T, ClassDecl>) {
-          if (node.predicate_clause_opt.has_value()) {
-            for (const auto& pred : *node.predicate_clause_opt) {
-              push_type(pred.type);
-            }
-          }
           for (const auto& class_item : node.items) {
             std::visit(
                 [&](const auto& m) {
@@ -929,11 +899,6 @@ void collect_type_nodes_from_item(const ASTItem& item,
           }
         } else if constexpr (std::is_same_v<T, TypeAliasDecl>) {
           push_type(node.type);
-          if (node.predicate_clause_opt.has_value()) {
-            for (const auto& pred : *node.predicate_clause_opt) {
-              push_type(pred.type);
-            }
-          }
         }
       },
       item);

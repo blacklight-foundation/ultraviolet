@@ -2,7 +2,7 @@
 
 
 public procedure countCommonLoweringProgramLifecycleAndBackendRuntimeInterfaceObligations() -> usize {
-    return 68usize
+    return 67usize
 }
 
 public procedure validatedCommonLoweringProgramLifecycleAndBackendRuntimeInterfaceObligations() -> usize {
@@ -490,15 +490,6 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendRuntimeInterfa
         "HelloUltraviolet::Audit",
         "artifactProjectRuntimeInterfaceSymbolsExercise",
         "Source/Audit/RuntimeInterfaceArtifactExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if artifactBehaviorObligationEntryMatches(
-        "rule.24.RuntimeDecls",
-        97124usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
-        "validatedArtifactProjectFixtureCount",
-        "Fixtures/ArtifactProjects/RuntimeInterfaceSymbols/Source/Library.uv"
     ) {
         count = count + 1usize
     }

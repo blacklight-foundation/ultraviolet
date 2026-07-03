@@ -2,7 +2,7 @@
 
 
 public procedure countExpressionsConstructionExpressionsObligations() -> usize {
-    return 43usize
+    return 28usize
 }
 
 public procedure validatedExpressionsConstructionExpressionsObligations() -> usize {
@@ -142,15 +142,6 @@ public procedure validatedExpressionsConstructionExpressionsObligations() -> usi
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "def.16.FieldInitNamesAndSet",
-        61499usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/FieldInitNamesAndSet/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "req.16.QualifiedBraceApplicationResolution",
         61513usize,
@@ -205,60 +196,6 @@ public procedure validatedExpressionsConstructionExpressionsObligations() -> usi
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "def.16.RecordFieldNameSet",
-        61614usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/RecordFieldNameSet/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.T-Record-Literal",
-        61628usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/BootstrapNonCompliance/Polymorphism/GenericRecordLiteralExpectedType/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.Record-FieldInit-Dup",
-        61649usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/RecordFieldInitDuplicate/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.Record-FieldInit-Missing",
-        61665usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/RecordFieldInitMissing/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.RecordFieldUnknownNotVisibleFamily",
-        61681usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/RecordFieldUnknown/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.Record-Field-NonBitcopy-Move",
-        61694usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/RecordFieldNonBitcopyMove/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.16.EnumLiteralTypingFamily",
         61710usize,
@@ -268,30 +205,12 @@ public procedure validatedExpressionsConstructionExpressionsObligations() -> usi
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "def.16.RecordDefaultConstructionEligibility",
-        61723usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/RecordDefaultConstructionEligibility/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "rule.16.T-Record-Default",
         61737usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsConstructionReference",
         "Source/Reference/Expressions/Construction.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.16.Record-Default-Init-Err",
-        61753usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/RecordDefaultInit/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -337,60 +256,6 @@ public procedure validatedExpressionsConstructionExpressionsObligations() -> usi
         "HelloUltraviolet::Reference::Expressions",
         "recordDefaultConstructionRuntimeUsesCallRecordReference",
         "Source/Reference/Expressions/Construction.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Lower-Expr-Tuple",
-        61838usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Lower-Expr-Array",
-        61854usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Lower-Expr-Record",
-        61870usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.LowerEnumConstructionFamily",
-        61886usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.16.Lower-CallIR-RecordCtor",
-        61899usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.16.ConstructionExpressions",
-        61917usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/ConstructionExpressionsDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

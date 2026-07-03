@@ -4,6 +4,7 @@
 // =============================================================================
 #include "05_codegen/llvm/emit/llvm_emit_helpers.h"
 
+#include "04_analysis/composite/enums.h"
 #include "04_analysis/caps/cap_system.h"
 
 namespace ultraviolet::codegen::emit_detail {
@@ -37,7 +38,119 @@ namespace {
       return value ? builder->CreateFreeze(value) : nullptr;
     }
 
+    bool IsPointerValueType(analysis::TypeRef type)
+    {
+      if (!type)
+      {
+        return false;
+      }
+      if (analysis::TypeRef stripped = analysis::StripPerm(type))
+      {
+        type = stripped;
+      }
+      if (std::holds_alternative<analysis::TypePtr>(type->node) ||
+          std::holds_alternative<analysis::TypeRawPtr>(type->node))
+      {
+        return true;
+      }
+      if (const auto *path = std::get_if<analysis::TypePathType>(&type->node))
+      {
+        if (!path->path.empty())
+        {
+          const std::string &tail = path->path.back();
+          return tail == "Ptr" || tail == "RawPtr" || tail == "GpuPtr";
+        }
+      }
+      return false;
+    }
+
+    std::string EnumPayloadBitsPayload(std::string_view payload_kind,
+                                       const ast::VariantDecl &variant,
+                                       const analysis::layout::EnumLayout &layout,
+                                       std::size_t member_count)
+    {
+      std::string payload = "source=LLVMEmitter.EnumLit";
+      payload += ";payload_kind=";
+      payload += payload_kind;
+      payload += ";pad_bytes=true";
+      payload += ";variant=";
+      payload += variant.name;
+      payload += ";payload_size=";
+      payload += std::to_string(layout.payload_size);
+      payload += ";member_count=";
+      payload += std::to_string(member_count);
+      return payload;
+    }
+
+    std::string EnumValueBitsPayload(std::string_view payload_kind,
+                                     const ast::VariantDecl &variant,
+                                     std::uint64_t disc,
+                                     const analysis::layout::EnumLayout &layout,
+                                     std::uint64_t disc_size,
+                                     std::size_t member_count)
+    {
+      const std::uint64_t payload_offset =
+          AlignUpBytes(disc_size, layout.payload_align);
+      std::string payload = "source=LLVMEmitter.EnumLit";
+      payload += ";enum_layout=true";
+      payload += ";enum_payload_bits=true";
+      payload += ";tagged_bits=true";
+      payload += ";payload_kind=";
+      payload += payload_kind;
+      payload += ";variant=";
+      payload += variant.name;
+      payload += ";disc=";
+      payload += std::to_string(disc);
+      payload += ";disc_type=";
+      payload += layout.disc_type;
+      payload += ";disc_size=";
+      payload += std::to_string(disc_size);
+      payload += ";payload_size=";
+      payload += std::to_string(layout.payload_size);
+      payload += ";payload_align=";
+      payload += std::to_string(layout.payload_align);
+      payload += ";payload_offset=";
+      payload += std::to_string(payload_offset);
+      payload += ";size=";
+      payload += std::to_string(layout.layout.size);
+      payload += ";member_count=";
+      payload += std::to_string(member_count);
+      return payload;
+    }
+
 } // namespace
+
+
+    void RecordEnumValueBitsConformance(std::string_view payload_kind,
+                                         const ast::VariantDecl &variant,
+                                         std::uint64_t disc,
+                                         const analysis::layout::EnumLayout &layout,
+                                         std::uint64_t disc_size,
+                                         std::size_t member_count)
+    {
+      if (!core::Conformance::Enabled())
+      {
+        return;
+      }
+      core::Conformance::Record(
+          "def.EnumPayloadBits",
+          std::nullopt,
+          EnumPayloadBitsPayload(
+              payload_kind,
+              variant,
+              layout,
+              member_count));
+      core::Conformance::Record(
+          "def.EnumValueBits",
+          std::nullopt,
+          EnumValueBitsPayload(
+              payload_kind,
+              variant,
+              disc,
+              layout,
+              disc_size,
+              member_count));
+    }
 
 
     std::optional<AsyncCombinatorKind> AsyncCombinatorKindFromSymbol(
@@ -979,6 +1092,16 @@ namespace {
       return false;
     }
 
+    bool IsZeroSizedLLVMType(LLVMEmitter &emitter, llvm::Type *type)
+    {
+      if (!type || type->isVoidTy())
+      {
+        return false;
+      }
+      const llvm::DataLayout &layout = emitter.GetModule().getDataLayout();
+      return static_cast<std::uint64_t>(layout.getTypeAllocSize(type)) == 0;
+    }
+
     bool IsRuntimeHandleModalPath(const analysis::TypePath &path)
     {
       return analysis::IsBuiltinRuntimeHandleModalTypePath(path);
@@ -1589,13 +1712,13 @@ namespace {
           std::max<std::uint64_t>(1, align.value_or(1)));
     }
 
-    bool StoreIRValueToStorage(LLVMEmitter &emitter,
-                               llvm::IRBuilder<> *builder,
-                               llvm::Value *dst_storage,
-                               const IRValue &value,
-                               const analysis::TypeRef &target_type,
-                               llvm::Type *target_ll,
-                               std::uint64_t align)
+    bool StoreIRValueToStorageImpl(LLVMEmitter &emitter,
+                                   llvm::IRBuilder<> *builder,
+                                   llvm::Value *dst_storage,
+                                   const IRValue &value,
+                                   const analysis::TypeRef &target_type,
+                                   llvm::Type *target_ll,
+                                   std::uint64_t align)
     {
       if (!builder || !dst_storage || !target_type)
       {
@@ -1609,24 +1732,104 @@ namespace {
       {
         return false;
       }
+      if (IsZeroSizedLLVMType(emitter, target_ll))
+      {
+        return true;
+      }
 
       analysis::TypeRef source_type = LookupStorageValueType(emitter, value);
-      if (llvm::Value *source_storage = emitter.GetAddressableStorage(value))
+      const bool stores_pointer_value =
+          IsPointerValueType(source_type) || IsPointerValueType(target_type);
+      if (!stores_pointer_value)
       {
-        if (source_storage->stripPointerCasts() ==
-            dst_storage->stripPointerCasts())
+        if (llvm::Value *source_storage = emitter.GetAddressableStorage(value))
         {
-          return true;
-        }
-        if (TryEmitBitcopyAggregateStorageCopy(
-                emitter,
-                builder,
-                dst_storage,
-                source_storage,
-                target_type,
-                source_type))
-        {
-          return true;
+          if (source_storage->stripPointerCasts() ==
+              dst_storage->stripPointerCasts())
+          {
+            return true;
+          }
+          if (TryEmitBitcopyAggregateStorageCopy(
+                  emitter,
+                  builder,
+                  dst_storage,
+                  source_storage,
+                  target_type,
+                  source_type))
+          {
+            return true;
+          }
+          if (TryEmitAggregateStorageTransfer(
+                  emitter,
+                  builder,
+                  dst_storage,
+                  source_storage,
+                  target_type,
+                  source_type))
+          {
+            return true;
+          }
+          const bool target_aggregate =
+              target_ll->isStructTy() || target_ll->isArrayTy();
+          if (target_aggregate)
+          {
+            const LowerCtx *ctx = emitter.GetCurrentCtx();
+            const analysis::ScopeContext scope = BuildScope(ctx);
+            const auto target_size =
+                ::ultraviolet::analysis::layout::SizeOf(scope, target_type);
+            const auto target_align =
+                ::ultraviolet::analysis::layout::AlignOf(scope, target_type);
+            bool compatible_size = target_size.has_value();
+            if (source_type)
+            {
+              const auto source_size =
+                  ::ultraviolet::analysis::layout::SizeOf(scope, source_type);
+              compatible_size =
+                  compatible_size && source_size.has_value() &&
+                  *source_size == *target_size;
+            }
+            if (compatible_size && target_size.has_value())
+            {
+              if (*target_size == 0)
+              {
+                return true;
+              }
+              llvm::Value *size_value =
+                  llvm::ConstantInt::get(
+                      llvm::Type::getInt64Ty(emitter.GetContext()),
+                      static_cast<std::uint64_t>(*target_size));
+              EmitAggMemcpy(
+                  emitter,
+                  dst_storage,
+                  source_storage,
+                  size_value,
+                  std::max<std::uint64_t>(1, target_align.value_or(1)));
+              return true;
+            }
+          }
+          else
+          {
+            llvm::Value *typed_source =
+                TypedStoragePointer(emitter, builder, source_storage, target_ll);
+            llvm::Value *typed_dst =
+                TypedStoragePointer(emitter, builder, dst_storage, target_ll);
+            if (typed_source && typed_dst)
+            {
+              llvm::LoadInst *loaded = builder->CreateLoad(target_ll, typed_source);
+              if (align != 0)
+              {
+                loaded->setAlignment(
+                    llvm::Align(std::max<std::uint64_t>(1, align)));
+              }
+              llvm::StoreInst *store = builder->CreateStore(loaded, typed_dst);
+              if (align != 0)
+              {
+                store->setAlignment(
+                    llvm::Align(std::max<std::uint64_t>(1, align)));
+              }
+              return true;
+            }
+          }
         }
       }
       else if ((target_ll->isStructTy() || target_ll->isArrayTy()) &&
@@ -1726,7 +1929,7 @@ namespace {
         {
           return false;
         }
-        (void)StoreIRValueToStorage(emitter,
+        (void)StoreIRValueToStorageImpl(emitter,
                                     builder,
                                     field_ptr,
                                     store.value,
@@ -1787,7 +1990,7 @@ namespace {
                                         func->getEntryBlock().begin());
         repeat_storage = entry_builder.CreateAlloca(
             element_ll, nullptr, "array.repeat.value");
-        if (!StoreIRValueToStorage(emitter,
+        if (!StoreIRValueToStorageImpl(emitter,
                                    builder,
                                    repeat_storage,
                                    value,
@@ -2008,7 +2211,7 @@ namespace {
             llvm::Type::getInt64Ty(emitter.GetContext()), index);
         llvm::Value *elem_ptr =
             builder->CreateGEP(array_ll, array_ptr, {zero, elem_index});
-        (void)StoreIRValueToStorage(emitter,
+        (void)StoreIRValueToStorageImpl(emitter,
                                     builder,
                                     elem_ptr,
                                     write.value,
@@ -2020,7 +2223,394 @@ namespace {
       return true;
     }
 
+    const ast::EnumDecl *EnumDeclForTypeInScope(
+        const analysis::ScopeContext &scope,
+        analysis::TypeRef type,
+        analysis::TypePath *out_path)
+    {
+      type = analysis::StripPerm(type);
+      const analysis::TypePath *path =
+          type ? analysis::AppliedTypePath(*type) : nullptr;
+      if (!path)
+      {
+        return nullptr;
+      }
+      if (out_path)
+      {
+        *out_path = *path;
+      }
+      if (const ast::EnumDecl *decl = analysis::LookupEnumDecl(scope, *path))
+      {
+        return decl;
+      }
+      if (!scope.current_module.empty() && path->size() == 1u)
+      {
+        analysis::TypePath qualified = scope.current_module;
+        qualified.insert(qualified.end(), path->begin(), path->end());
+        if (out_path)
+        {
+          *out_path = qualified;
+        }
+        return analysis::LookupEnumDecl(scope, qualified);
+      }
+      return nullptr;
+    }
+
+    const ast::EnumDecl *EnumDeclForStaticPathInScope(
+        const analysis::ScopeContext &scope,
+        const std::vector<std::string> &path,
+        analysis::TypePath *out_path)
+    {
+      if (path.empty())
+      {
+        return nullptr;
+      }
+      analysis::TypePath resolved_path;
+      resolved_path.reserve(path.size());
+      for (const std::string &segment : path)
+      {
+        resolved_path.push_back(segment);
+      }
+      if (out_path)
+      {
+        *out_path = resolved_path;
+      }
+      if (const ast::EnumDecl *decl =
+              analysis::LookupEnumDecl(scope, resolved_path))
+      {
+        return decl;
+      }
+      if (!scope.current_module.empty() && resolved_path.size() == 1u)
+      {
+        analysis::TypePath qualified = scope.current_module;
+        qualified.insert(qualified.end(),
+                         resolved_path.begin(),
+                         resolved_path.end());
+        if (out_path)
+        {
+          *out_path = qualified;
+        }
+        return analysis::LookupEnumDecl(scope, qualified);
+      }
+      return nullptr;
+    }
+
+    std::vector<analysis::TypeRef> EnumGenericArgsForType(
+        analysis::TypeRef type)
+    {
+      type = analysis::StripPerm(type);
+      if (!type)
+      {
+        return {};
+      }
+      const std::vector<analysis::TypeRef> *args =
+          analysis::AppliedTypeArgs(*type);
+      return args ? *args : std::vector<analysis::TypeRef>{};
+    }
+
+    const ast::VariantDecl *FindEnumVariant(
+        const ast::EnumDecl &decl,
+        std::string_view variant_name)
+    {
+      for (const ast::VariantDecl &variant : decl.variants)
+      {
+        if (analysis::IdEq(variant.name, std::string(variant_name)))
+        {
+          return &variant;
+        }
+      }
+      return nullptr;
+    }
+
+    std::optional<std::uint64_t> EnumVariantDiscriminant(
+        const ast::EnumDecl &decl,
+        std::string_view variant_name)
+    {
+      const analysis::EnumDiscResult discs =
+          analysis::EnumDiscriminants(decl);
+      if (!discs.ok || discs.discs.size() != decl.variants.size())
+      {
+        return std::nullopt;
+      }
+      for (std::size_t i = 0; i < decl.variants.size(); ++i)
+      {
+        if (analysis::IdEq(decl.variants[i].name,
+                           std::string(variant_name)))
+        {
+          return discs.discs[i];
+        }
+      }
+      return std::nullopt;
+    }
+
+    bool TryEmitEnumLiteralToStorage(LLVMEmitter &emitter,
+                                     llvm::IRBuilder<> *builder,
+                                     llvm::Value *dst_storage,
+                                     const DerivedValueInfo &derived,
+                                     const analysis::TypeRef &enum_type,
+                                     const analysis::ScopeContext &scope)
+    {
+      analysis::TypePath enum_path;
+      const ast::EnumDecl *enum_decl =
+          EnumDeclForTypeInScope(scope, enum_type, &enum_path);
+      const std::vector<analysis::TypeRef> enum_generic_args =
+          EnumGenericArgsForType(enum_type);
+      if (!enum_decl && !derived.static_path.empty())
+      {
+        enum_decl =
+            EnumDeclForStaticPathInScope(scope, derived.static_path, &enum_path);
+      }
+      if (!enum_decl)
+      {
+        return false;
+      }
+
+      const ast::VariantDecl *variant =
+          FindEnumVariant(*enum_decl, derived.variant);
+      const std::optional<std::uint64_t> disc =
+          EnumVariantDiscriminant(*enum_decl, derived.variant);
+      const auto enum_layout =
+          ::ultraviolet::analysis::layout::EnumLayoutOf(
+              scope,
+              *enum_decl,
+              enum_generic_args,
+              ::ultraviolet::analysis::layout::ResolveEnumLayoutOptions(
+                  enum_decl->attrs));
+      llvm::Type *enum_ll = emitter.GetLLVMType(enum_type);
+      if (!variant || !disc.has_value() || !enum_layout.has_value() ||
+          !enum_ll)
+      {
+        return false;
+      }
+      const auto enum_disc_size =
+          ::ultraviolet::analysis::layout::PrimSize(scope, enum_layout->disc_type);
+
+      std::string enum_payload_kind = "unit";
+      std::size_t enum_payload_member_count = 0;
+      bool enum_payload_complete =
+          derived.payload_elems.empty() && derived.payload_fields.empty();
+      if (variant->payload_opt.has_value())
+      {
+        enum_payload_complete = false;
+        if (const auto *tuple_payload =
+                std::get_if<ast::VariantPayloadTuple>(&*variant->payload_opt))
+        {
+          enum_payload_kind = "tuple";
+          enum_payload_member_count = tuple_payload->elements.size();
+          enum_payload_complete =
+              derived.payload_fields.empty() &&
+              derived.payload_elems.size() == enum_payload_member_count;
+        }
+        else if (const auto *record_payload =
+                     std::get_if<ast::VariantPayloadRecord>(&*variant->payload_opt))
+        {
+          enum_payload_kind = "record";
+          enum_payload_member_count = record_payload->fields.size();
+          enum_payload_complete =
+              derived.payload_elems.empty() &&
+              derived.payload_fields.size() == enum_payload_member_count;
+          for (const auto &field : record_payload->fields)
+          {
+            const auto found = std::find_if(
+                derived.payload_fields.begin(),
+                derived.payload_fields.end(),
+                [&](const auto &entry)
+                {
+                  return analysis::IdEq(entry.first, field.name);
+                });
+            if (found == derived.payload_fields.end())
+            {
+              enum_payload_complete = false;
+              break;
+            }
+          }
+        }
+      }
+
+      auto record_enum_value_bits = [&]()
+      {
+        if (!enum_payload_complete || !enum_disc_size.has_value())
+        {
+          return;
+        }
+        RecordEnumValueBitsConformance(
+            enum_payload_kind,
+            *variant,
+            *disc,
+            *enum_layout,
+            *enum_disc_size,
+            enum_payload_member_count);
+      };
+
+      if (enum_layout->payload_size == 0)
+      {
+        llvm::Value *typed_dst =
+            TypedStoragePointer(emitter, builder, dst_storage, enum_ll);
+        if (!typed_dst)
+        {
+          return false;
+        }
+        llvm::Value *disc_value = llvm::ConstantInt::get(
+            llvm::Type::getInt64Ty(emitter.GetContext()), *disc);
+        if (disc_value->getType() != enum_ll)
+        {
+          disc_value = CoerceTo(builder, disc_value, enum_ll);
+        }
+        if (!disc_value)
+        {
+          return false;
+        }
+        builder->CreateStore(disc_value, typed_dst);
+        record_enum_value_bits();
+        return true;
+      }
+
+      auto *enum_struct_ty = llvm::dyn_cast<llvm::StructType>(enum_ll);
+      if (!enum_struct_ty || enum_struct_ty->getNumElements() < 2)
+      {
+        return false;
+      }
+
+      EmitStorageMemZero(emitter, builder, dst_storage, scope, enum_type);
+
+      llvm::Type *disc_ty = enum_struct_ty->getElementType(0);
+      llvm::Value *disc_ptr =
+          ByteOffsetPointer(emitter, builder, dst_storage, disc_ty, 0);
+      if (!disc_ptr)
+      {
+        return false;
+      }
+      llvm::Value *disc_value = llvm::ConstantInt::get(
+          llvm::Type::getInt64Ty(emitter.GetContext()), *disc);
+      if (disc_value->getType() != disc_ty)
+      {
+        disc_value = CoerceTo(builder, disc_value, disc_ty);
+      }
+      if (!disc_value)
+      {
+        return false;
+      }
+      builder->CreateStore(disc_value, disc_ptr);
+
+      llvm::Value *enum_ptr =
+          TypedStoragePointer(emitter, builder, dst_storage, enum_struct_ty);
+      llvm::Value *payload_base_i8 = CreateTaggedPayloadI8Ptr(
+          emitter,
+          builder,
+          enum_struct_ty,
+          enum_ptr,
+          enum_layout->payload_align);
+      if (!payload_base_i8)
+      {
+        return false;
+      }
+
+      auto store_payload_member =
+          [&](const analysis::layout::EnumPayloadMemberLayout &member,
+              const IRValue &member_value) -> bool {
+        if (!member.type)
+        {
+          return false;
+        }
+        llvm::Type *member_ty = emitter.GetLLVMType(member.type);
+        if (!member_ty || member_ty->isVoidTy())
+        {
+          return false;
+        }
+        llvm::Type *i8_ty = llvm::Type::getInt8Ty(emitter.GetContext());
+        llvm::Type *i64_ty = llvm::Type::getInt64Ty(emitter.GetContext());
+        llvm::Value *field_i8 = builder->CreateGEP(
+            i8_ty,
+            payload_base_i8,
+            llvm::ConstantInt::get(i64_ty, member.offset));
+        llvm::Value *field_ptr = builder->CreateBitCast(
+            field_i8,
+            llvm::PointerType::get(member_ty, 0));
+        return StoreIRValueToStorageImpl(emitter,
+                                     builder,
+                                     field_ptr,
+                                     member_value,
+                                     member.type,
+                                     member_ty,
+                                     1);
+      };
+
+      if (const auto *tuple_payload =
+              variant->payload_opt.has_value()
+                  ? std::get_if<ast::VariantPayloadTuple>(
+                        &*variant->payload_opt)
+                  : nullptr)
+      {
+        const std::size_t count =
+            std::min(tuple_payload->elements.size(),
+                     derived.payload_elems.size());
+        for (std::size_t i = 0; i < count; ++i)
+        {
+          const auto member =
+              ::ultraviolet::analysis::layout::EnumTuplePayloadMemberLayout(
+                  scope,
+                  *enum_decl,
+                  *variant,
+                  enum_generic_args,
+                  i);
+          if (!member.has_value() ||
+              !store_payload_member(*member, derived.payload_elems[i]))
+          {
+            return false;
+          }
+        }
+        record_enum_value_bits();
+        return true;
+      }
+
+      if (const auto *record_payload =
+              variant->payload_opt.has_value()
+                  ? std::get_if<ast::VariantPayloadRecord>(
+                        &*variant->payload_opt)
+                  : nullptr)
+      {
+        (void)record_payload;
+        for (const auto &[field_name, field_value] : derived.payload_fields)
+        {
+          const auto member =
+              ::ultraviolet::analysis::layout::EnumRecordPayloadMemberLayout(
+                  scope,
+                  *enum_decl,
+                  *variant,
+                  enum_generic_args,
+                  field_name);
+          if (!member.has_value() ||
+              !store_payload_member(*member, field_value))
+          {
+            return false;
+          }
+        }
+        record_enum_value_bits();
+        return true;
+      }
+
+      record_enum_value_bits();
+      return true;
+    }
+
 } // namespace
+
+    bool StoreIRValueToStorage(LLVMEmitter &emitter,
+                               llvm::IRBuilder<> *builder,
+                               llvm::Value *dst_storage,
+                               const IRValue &value,
+                               const analysis::TypeRef &target_type,
+                               llvm::Type *target_ll,
+                               std::uint64_t align)
+    {
+      return StoreIRValueToStorageImpl(emitter,
+                                       builder,
+                                       dst_storage,
+                                       value,
+                                       target_type,
+                                       target_ll,
+                                       align);
+    }
 
     bool TryEmitDerivedAggregateToStorage(LLVMEmitter &emitter,
                                           llvm::IRBuilder<> *builder,
@@ -2064,6 +2654,9 @@ namespace {
       case DerivedValueInfo::Kind::ArrayRepeat:
       case DerivedValueInfo::Kind::ArraySegments:
         return TryEmitArrayAggregateToStorage(
+            emitter, builder, dst_storage, *derived, resolved_target, scope);
+      case DerivedValueInfo::Kind::EnumLit:
+        return TryEmitEnumLiteralToStorage(
             emitter, builder, dst_storage, *derived, resolved_target, scope);
       default:
         return false;

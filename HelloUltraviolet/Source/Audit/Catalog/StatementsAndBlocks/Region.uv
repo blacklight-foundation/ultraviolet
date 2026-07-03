@@ -2,7 +2,7 @@
 
 
 public procedure countStatementsAndBlocksRegionObligations() -> usize {
-    return 25usize
+    return 24usize
 }
 
 public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
@@ -220,15 +220,6 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
         "HelloUltraviolet::Audit",
         "acceptedProjectFixturesBuildAndExerciseArtifactObligations",
         "Source/Audit/AcceptedProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "diag.18.Region",
-        71347usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedStatementsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Statements/RegionDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

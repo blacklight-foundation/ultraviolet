@@ -155,7 +155,7 @@ struct CopyExpr {
     ExprPtr value;
 };
 
-/// Allocation expression - ^value or region^value
+/// Region allocation expression; `region_opt == none` is the source `new value` form.
 struct AllocExpr {
     std::optional<Identifier> region_opt;
     ExprPtr value;

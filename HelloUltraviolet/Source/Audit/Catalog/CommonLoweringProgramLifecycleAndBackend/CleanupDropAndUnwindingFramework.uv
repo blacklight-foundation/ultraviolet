@@ -2,7 +2,7 @@
 
 
 public procedure countCommonLoweringProgramLifecycleAndBackendCleanupDropAndUnwindingFrameworkObligations() -> usize {
-    return 56usize
+    return 47usize
 }
 
 public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAndUnwindingFrameworkObligations() -> usize {
@@ -178,15 +178,6 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     ) {
         count = count + 1usize
     }
-    if acceptedProjectObligationEntryMatches(
-        "def.24.ReleaseValue",
-        95551usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.24.DropChildren",
         95565usize,
@@ -251,24 +242,6 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.DropValueOut-DropPanic",
-        95676usize,
-        "HelloUltraviolet::Audit",
-        "artifactProjectEmitLlExercise",
-        "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.DropValueOut-ChildPanic",
-        95692usize,
-        "HelloUltraviolet::Audit",
-        "artifactProjectEmitLlExercise",
-        "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "rule.24.DropValueOut-Ok",
         95708usize,
         "HelloUltraviolet::Audit",
@@ -305,15 +278,6 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.Cleanup-Step-Drop-Panic",
-        95771usize,
-        "HelloUltraviolet::Audit",
-        "artifactProjectEmitLlExercise",
-        "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "rule.24.Cleanup-Step-Drop-Abort",
         95787usize,
         "HelloUltraviolet::Audit",
@@ -332,15 +296,6 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.Cleanup-Step-DropStatic-Panic",
-        95819usize,
-        "HelloUltraviolet::Audit",
-        "artifactProjectEmitLlExercise",
-        "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "rule.24.Cleanup-Step-DropStatic-Abort",
         95835usize,
         "HelloUltraviolet::Audit",
@@ -352,15 +307,6 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     if acceptedObligationEntryMatches(
         "rule.24.Cleanup-Step-Defer-Ok",
         95851usize,
-        "HelloUltraviolet::Audit",
-        "artifactProjectEmitLlExercise",
-        "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Cleanup-Step-Defer-Panic",
-        95867usize,
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Source/Audit/ArtifactProjectExecution.uv"
@@ -431,15 +377,6 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.Cleanup-Cons-Drop-Panic",
-        95990usize,
-        "HelloUltraviolet::Audit",
-        "artifactProjectEmitLlExercise",
-        "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "rule.24.Cleanup-Cons-DropStatic",
         96006usize,
         "HelloUltraviolet::Audit",
@@ -449,26 +386,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.Cleanup-Cons-DropStatic-Panic",
-        96022usize,
-        "HelloUltraviolet::Audit",
-        "artifactProjectEmitLlExercise",
-        "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "rule.24.Cleanup-Cons-Defer-Ok",
         96038usize,
-        "HelloUltraviolet::Audit",
-        "artifactProjectEmitLlExercise",
-        "Source/Audit/ArtifactProjectExecution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Cleanup-Cons-Defer-Panic",
-        96054usize,
         "HelloUltraviolet::Audit",
         "artifactProjectEmitLlExercise",
         "Source/Audit/ArtifactProjectExecution.uv"

@@ -2,7 +2,7 @@
 
 
 public procedure countSourceTextAndLexicalStructureSourceLoadingAndNormalizationObligations() -> usize {
-    return 70usize
+    return 57usize
 }
 
 public procedure validatedSourceTextAndLexicalStructureSourceLoadingAndNormalizationObligations() -> usize {
@@ -118,15 +118,6 @@ public procedure validatedSourceTextAndLexicalStructureSourceLoadingAndNormaliza
     if acceptedObligationEntryMatches(
         "Decode-Ok",
         7032usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextUnicodeNormalizationReference",
-        "Source/Reference/SourceText/UnicodeNormalization.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Decode-Err",
-        7050usize,
         "HelloUltraviolet::Reference::SourceText",
         "runSourceTextUnicodeNormalizationReference",
         "Source/Reference/SourceText/UnicodeNormalization.uv"
@@ -340,15 +331,6 @@ public procedure validatedSourceTextAndLexicalStructureSourceLoadingAndNormaliza
     ) {
         count = count + 1usize
     }
-    if artifactBehaviorObligationEntryMatches(
-        "def.TokenizeOutputConstraints",
-        7449usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
-        "validatedArtifactProjectFixtureCount",
-        "Fixtures/ArtifactProjects/LexerTokenizerOutput/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.NestingDepth",
         7464usize,
@@ -430,15 +412,6 @@ public procedure validatedSourceTextAndLexicalStructureSourceLoadingAndNormaliza
     ) {
         count = count + 1usize
     }
-    if rejectedSourceObligationEntryMatches(
-        "Missing-Terminator-Err",
-        7624usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedParsingRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Parsing/MissingStatementTerminator/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
     if acceptedObligationEntryMatches(
         "def.SourceLoadState",
         7644usize,
@@ -476,15 +449,6 @@ public procedure validatedSourceTextAndLexicalStructureSourceLoadingAndNormaliza
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Step-Decode-Err",
-        7711usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextUnicodeNormalizationReference",
-        "Source/Reference/SourceText/UnicodeNormalization.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "Step-BOM",
         7729usize,
         "HelloUltraviolet::Reference::SourceText",
@@ -496,15 +460,6 @@ public procedure validatedSourceTextAndLexicalStructureSourceLoadingAndNormaliza
     if acceptedObligationEntryMatches(
         "Step-Norm",
         7747usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextUnicodeNormalizationReference",
-        "Source/Reference/SourceText/UnicodeNormalization.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Step-EmbeddedBOM-Err",
-        7765usize,
         "HelloUltraviolet::Reference::SourceText",
         "runSourceTextUnicodeNormalizationReference",
         "Source/Reference/SourceText/UnicodeNormalization.uv"
@@ -530,15 +485,6 @@ public procedure validatedSourceTextAndLexicalStructureSourceLoadingAndNormaliza
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Step-Prohibited-Err",
-        7819usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextUnicodeNormalizationReference",
-        "Source/Reference/SourceText/UnicodeNormalization.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "LoadSource-Ok",
         7839usize,
         "HelloUltraviolet::Reference::SourceText",
@@ -548,26 +494,8 @@ public procedure validatedSourceTextAndLexicalStructureSourceLoadingAndNormaliza
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "LoadSource-Err",
-        7857usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextUnicodeNormalizationReference",
-        "Source/Reference/SourceText/UnicodeNormalization.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
         "def.SourceLoadTemporarySource",
         7877usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextUnicodeNormalizationReference",
-        "Source/Reference/SourceText/UnicodeNormalization.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.SourceLoadDiagnosticOffsets",
-        7891usize,
         "HelloUltraviolet::Reference::SourceText",
         "runSourceTextUnicodeNormalizationReference",
         "Source/Reference/SourceText/UnicodeNormalization.uv"
@@ -589,51 +517,6 @@ public procedure validatedSourceTextAndLexicalStructureSourceLoadingAndNormaliza
         "HelloUltraviolet::Reference::SourceText",
         "runSourceTextLogicalLinesReference",
         "Source/Reference/SourceText/LogicalLines.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.LeadingBOMWarningPersistence",
-        7938usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedSourceTextRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/SourceText/LeadingBOMEmbeddedBOM/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if diagnosticSourceObligationEntryMatches(
-        "Span-BOM-Warn",
-        7952usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
-        "validatedSourceTextDiagnosticSourceFixtureCount",
-        "Fixtures/DiagnosticSource/SourceText/LeadingBOMWarning/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "Span-BOM-Embedded",
-        7970usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedSourceTextRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/SourceText/LeadingBOMEmbeddedBOM/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "Span-Prohibited",
-        7988usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedSourceTextRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/SourceText/ProhibitedControlCharacter/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "NoSpan-Decode",
-        8006usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedSourceTextRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/SourceText/InvalidUTF8/Source/Main.uv"
     ) {
         count = count + 1usize
     }

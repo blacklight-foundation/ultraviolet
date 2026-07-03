@@ -34,6 +34,7 @@
 #include "04_analysis/typing/type_equiv.h"
 #include "04_analysis/typing/type_lower.h"
 #include "04_analysis/typing/type_predicates.h"
+#include "05_codegen/abi/abi.h"
 #include "05_codegen/cleanup/cleanup.h"
 #include "05_codegen/cleanup/unwind.h"
 #include "05_codegen/ir/ir_control_flow.h"
@@ -78,6 +79,19 @@ LowerCtx MakeBranchCtx(LowerCtx& base) {
   branch.values.parent = &base;
   branch.extra_procs.clear();
   return branch;
+}
+
+bool ShouldCaptureIfCaseClauseValue(const analysis::TypeRef& type,
+                                    LowerCtx& ctx) {
+  if (!type) {
+    return false;
+  }
+  const analysis::ScopeContext& scope = ScopeForLowering(ctx);
+  const auto size = ::ultraviolet::analysis::layout::SizeOf(scope, type);
+  if (!size.has_value()) {
+    return true;
+  }
+  return *size <= kByValMax;
 }
 
 IRPtr CleanupTemps(const std::vector<TempValue>& temps, LowerCtx& ctx) {
@@ -1267,7 +1281,8 @@ LowerIfCaseClauseResult LowerIfCaseClauseImpl(
   if (!body_type && !arm.body) {
     body_type = analysis::MakeTypePrim("()");
   }
-  if (arm.body && body_may_fallthrough) {
+  if (arm.body && body_may_fallthrough &&
+      ShouldCaptureIfCaseClauseValue(body_type, ctx)) {
     if (!body_type && ctx.expr_type) {
       body_type = ctx.expr_type(*arm.body);
     }

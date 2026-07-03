@@ -2,7 +2,7 @@
 
 
 public procedure countNameResolutionAndVisibilityVisibilityAndAccessibilityObligations() -> usize {
-    return 15usize
+    return 13usize
 }
 
 public procedure validatedNameResolutionAndVisibilityVisibilityAndAccessibilityObligations() -> usize {
@@ -103,24 +103,6 @@ public procedure validatedNameResolutionAndVisibilityVisibilityAndAccessibilityO
         "HelloUltraviolet::Reference::Names",
         "runNamesVisibilityReference",
         "Source/Reference/Names/Visibility.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "Access-Internal-Err",
-        19873usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedNamesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Names/InternalAccess/Source/InternalAccess/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "Access-Err",
-        19891usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedNamesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Names/PrivateAccess/Source/Main.uv"
     ) {
         count = count + 1usize
     }
