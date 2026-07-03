@@ -5552,17 +5552,23 @@ internal procedure artifactProjectEmitLlModalLayoutVariantsMatch(
             authority,
             "getelementptr i8, ptr %value, i64 8"
         ) &&
-        artifactProjectEmitLlIrContains(
+        artifactProjectEmitLlIrLineContains(
             authority,
-            "icmp eq i8 %14, 0"
+            "icmp eq i8 %",
+            ", 0",
+            ""
         ) &&
-        artifactProjectEmitLlIrContains(
+        artifactProjectEmitLlIrLineContains(
             authority,
-            "br i1 %18, label %ifcase.case3, label %ifcase.next4"
+            "br i1 %",
+            "label %ifcase.case3",
+            "label %ifcase.next4"
         ) &&
-        artifactProjectEmitLlIrContains(
+        artifactProjectEmitLlIrLineContains(
             authority,
-            "br i1 %27, label %ifcase.case5, label %ifcase.unmatched"
+            "br i1 %",
+            "label %ifcase.case5",
+            "label %ifcase.unmatched"
         ) &&
         artifactProjectEmitLlIrContains(
             authority,
