@@ -94,6 +94,38 @@ jobs:
             @releaseConfigureArgs `
             2>&1 | Tee-Object -FilePath artifacts\hello-verification-windows.txt
           $verificationExitCode = $LASTEXITCODE
+          if ($verificationExitCode -ne 0) {
+            "==== Source-native diagnostics files ====" |
+              Tee-Object -FilePath artifacts\hello-verification-windows.txt -Append
+            $diagnostics = @()
+            if (Test-Path -LiteralPath "Build") {
+              $diagnostics += Get-ChildItem `
+                -LiteralPath "Build" `
+                -Recurse `
+                -File `
+                -Filter source-native-test-diagnostics.log
+            }
+            if (Test-Path -LiteralPath "HelloUltraviolet\Build") {
+              $diagnostics += Get-ChildItem `
+                -LiteralPath "HelloUltraviolet\Build" `
+                -Recurse `
+                -File `
+                -Filter source-native-test-diagnostics.log
+            }
+            if ($diagnostics.Count -eq 0) {
+              "No source-native test diagnostics log found." |
+                Tee-Object -FilePath artifacts\hello-verification-windows.txt -Append
+            } else {
+              $diagnostics |
+                Sort-Object FullName |
+                ForEach-Object {
+                  "===== $($_.FullName) =====" |
+                    Tee-Object -FilePath artifacts\hello-verification-windows.txt -Append
+                  Get-Content -LiteralPath $_.FullName |
+                    Tee-Object -FilePath artifacts\hello-verification-windows.txt -Append
+                }
+            }
+          }
           Get-Content -LiteralPath artifacts\hello-verification-windows.txt |
             Set-Content -LiteralPath artifacts\hello-verification-windows.utf8.txt -Encoding utf8
           Move-Item -Force `
