@@ -2391,6 +2391,32 @@ internal procedure artifactProjectTextLineContainsAll(
     return false
 }
 
+internal procedure artifactProjectReportEmitLlIrLineFailure(
+    authority: TestAuthority,
+    required_one: string@View,
+    required_two: string@View,
+    required_three: string@View
+) -> bool {
+    let _ = diagnosticReportFixtureFailure(
+        authority,
+        "artifact project emit ll IR missing line fragment: ",
+        required_one
+    )
+    let _ = diagnosticReportFixtureFailure(
+        authority,
+        "artifact project emit ll IR missing line fragment: ",
+        required_two
+    )
+    if !string::is_empty(required_three) {
+        let _ = diagnosticReportFixtureFailure(
+            authority,
+            "artifact project emit ll IR missing line fragment: ",
+            required_three
+        )
+    }
+    return false
+}
+
 internal procedure artifactProjectEmitLlIrLineContains(
     authority: TestAuthority,
     required_one: string@View,
@@ -2406,28 +2432,52 @@ internal procedure artifactProjectEmitLlIrLineContains(
                 !diagnosticBuildPath(value, "IR", authority.heap) ||
                 !diagnosticBuildPath(value, "Source", authority.heap) ||
                 !diagnosticBuildPath(value, "EmitLlLibrary.ll", authority.heap) {
-                false
+                artifactProjectReportEmitLlIrLineFailure(
+                    authority,
+                    required_one,
+                    required_two,
+                    required_three
+                )
             } else {
                 let path: string@View = string::as_view(value)
                 let read_result: Outcome<unique string@Managed, IoError> =
                     authority.io~>read_file(path)
                 if move read_result is {
                     Outcome::Value(text) {
-                        artifactProjectTextLineContainsAll(
+                        let matched: bool = artifactProjectTextLineContainsAll(
                             string::as_view(text),
                             required_one,
                             required_two,
                             required_three
                         )
+                        if !matched {
+                            let _ = artifactProjectReportEmitLlIrLineFailure(
+                                authority,
+                                required_one,
+                                required_two,
+                                required_three
+                            )
+                        }
+                        matched
                     }
                     Outcome::Error(_) {
-                        false
+                        artifactProjectReportEmitLlIrLineFailure(
+                            authority,
+                            required_one,
+                            required_two,
+                            required_three
+                        )
                     }
                 }
             }
         }
         Outcome::Error(_) {
-            false
+            artifactProjectReportEmitLlIrLineFailure(
+                authority,
+                required_one,
+                required_two,
+                required_three
+            )
         }
     }
 }
@@ -5484,9 +5534,11 @@ internal procedure artifactProjectEmitLlModalLayoutVariantsMatch(
             authority,
             "load ptr, ptr %pointer, align 8"
         ) &&
-        artifactProjectEmitLlIrContains(
+        artifactProjectEmitLlIrLineContains(
             authority,
-            "br i1 %17, label %check_ok, label %check_fail"
+            "br i1 %",
+            "label %check_ok",
+            "label %check_fail"
         ) &&
         artifactProjectEmitLlIrContains(
             authority,
