@@ -2273,24 +2273,40 @@ internal procedure artifactProjectEmitLlIrContains(
     authority: TestAuthority,
     required_text: string@View
 ) -> bool {
-    return acceptedProjectTempFileContains(
+    let matched: bool = acceptedProjectTempFileContains(
         authority,
         "ArtifactProjectEmitLlBuild",
         "Intermediate/IR/Source/EmitLlLibrary.ll",
         required_text
     )
+    if !matched {
+        let _ = diagnosticReportFixtureFailure(
+            authority,
+            "artifact project emit ll IR missing: ",
+            required_text
+        )
+    }
+    return matched
 }
 
 internal procedure artifactProjectEmitLlIrExcludes(
     authority: TestAuthority,
     forbidden_text: string@View
 ) -> bool {
-    return artifactProjectTempFileExcludes(
+    let excluded: bool = artifactProjectTempFileExcludes(
         authority,
         "ArtifactProjectEmitLlBuild",
         "Intermediate/IR/Source/EmitLlLibrary.ll",
         forbidden_text
     )
+    if !excluded {
+        let _ = diagnosticReportFixtureFailure(
+            authority,
+            "artifact project emit ll IR contains forbidden text: ",
+            forbidden_text
+        )
+    }
+    return excluded
 }
 
 internal procedure artifactProjectEmitLlConformanceContains(
@@ -6379,16 +6395,12 @@ internal procedure artifactProjectEmitLlExercise(
         artifactProjectEmitLlFfiAttributeRulesMatch(authority) &&
         artifactProjectEmitLlFfiSafeRulesMatch(authority) &&
         artifactProjectEmitLlFfiForeignContractsMatch(authority) &&
-        acceptedProjectTempFileContains(
+        artifactProjectEmitLlIrContains(
             authority,
-            "ArtifactProjectEmitLlBuild",
-            "Intermediate/IR/Source/EmitLlLibrary.ll",
             "call void @EmitLlLibrary_x3a_x3aemitLlSRetPair(ptr noalias noundef nonnull sret("
         ) &&
-        acceptedProjectTempFileContains(
+        artifactProjectEmitLlIrContains(
             authority,
-            "ArtifactProjectEmitLlBuild",
-            "Intermediate/IR/Source/EmitLlLibrary.ll",
             artifactProjectTargetProfileText(
                 authority,
                 "call void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite(ptr noalias noundef nonnull sret(",
@@ -6396,10 +6408,8 @@ internal procedure artifactProjectEmitLlExercise(
                 "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite("
             )
         ) &&
-        artifactProjectTempFileExcludes(
+        artifactProjectEmitLlIrExcludes(
             authority,
-            "ArtifactProjectEmitLlBuild",
-            "Intermediate/IR/Source/EmitLlLibrary.ll",
             "ptr noundef nonnull align 16 dereferenceable(16)"
         )
     if !passed {
