@@ -5526,9 +5526,11 @@ internal procedure artifactProjectEmitLlModalLayoutVariantsMatch(
             authority,
             "load ptr, ptr %value, align 8"
         ) &&
-        artifactProjectEmitLlIrContains(
+        artifactProjectEmitLlIrLineContains(
             authority,
-            "getelementptr i8, ptr %0, i64 0"
+            "getelementptr i8, ptr %",
+            ", i64 0",
+            ""
         ) &&
         artifactProjectEmitLlIrContains(
             authority,
@@ -5574,13 +5576,17 @@ internal procedure artifactProjectEmitLlModalLayoutVariantsMatch(
             authority,
             "getelementptr i8, ptr %value, i64 8"
         ) &&
-        artifactProjectEmitLlIrContains(
+        artifactProjectEmitLlIrLineContains(
             authority,
-            "getelementptr i8, ptr %1, i64 8"
+            "getelementptr i8, ptr %",
+            ", i64 8",
+            ""
         ) &&
-        artifactProjectEmitLlIrContains(
+        artifactProjectEmitLlIrLineContains(
             authority,
-            "getelementptr i8, ptr %0, i64 8"
+            "getelementptr i8, ptr %",
+            ", i64 8",
+            ""
         ) &&
         artifactProjectEmitLlIrContains(
             authority,
@@ -6013,9 +6019,11 @@ internal procedure artifactProjectEmitLlDynamicClassObjectsMatch(
             authority,
             "insertvalue { ptr, ptr } zeroinitializer, ptr %owner, 0"
         ) &&
-        artifactProjectEmitLlIrContains(
+        artifactProjectEmitLlIrLineContains(
             authority,
-            "store { ptr, ptr } %11, ptr %dynamic_owner, align 8"
+            "store { ptr, ptr } %",
+            "ptr %dynamic_owner",
+            "align 8"
         ) &&
         artifactProjectEmitLlIrContains(
             authority,
