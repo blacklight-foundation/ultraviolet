@@ -5563,14 +5563,14 @@ internal procedure artifactProjectEmitLlModalLayoutVariantsMatch(
         artifactProjectEmitLlIrLineContains(
             authority,
             "br i1 %",
-            "label %ifcase.case3",
-            "label %ifcase.next4"
+            "label %ifcase.",
+            ", label %ifcase."
         ) &&
         artifactProjectEmitLlIrLineContains(
             authority,
             "br i1 %",
-            "label %ifcase.case5",
-            "label %ifcase.unmatched"
+            "label %ifcase.",
+            ", label %ifcase.unmatched"
         ) &&
         artifactProjectEmitLlIrContains(
             authority,
